@@ -1,0 +1,108 @@
+# ================================================
+# FICHIERS SYSTÈME
+# ================================================
+.DS_Store
+*.swp
+*~
+Thumbs.db
+._*
+desktop.ini
+
+# ================================================
+# ENVIRONNEMENT ET CONFIGURATION
+# ================================================
+.env
+.env.*
+!.env.example
+docker-compose.override.yml
+docker-compose.*.yml
+
+# ================================================
+# PARTIE API (Slim PHP)
+# ================================================
+# Dependencies
+/api/vendor/
+/api/composer.lock
+/api/composer.phar
+
+# Cache
+/api/var/cache/*
+!/api/var/cache/.gitkeep
+/api/var/tmp/*
+!/api/var/tmp/.gitkeep
+
+# Logs
+/api/var/log/*
+!/api/var/log/.gitkeep
+
+# Tests
+/api/tests/_output/*
+/api/tests/_support/_generated/*
+.phpunit.result.cache
+
+# ================================================
+# PARTIE APPLICATION FLUTTER (/app)
+# ================================================
+# Build et artefacts
+/app/build/
+/app/android/
+/app/ios/
+/app/web/
+/app/linux/
+/app/windows/
+/app/macos/
+
+# Fichiers générés Flutter
+/app/.dart_tool/
+/app/.flutter-plugins
+/app/.flutter-plugins-dependencies
+/app/.packages
+/app/.metadata
+/app/pubspec.lock
+
+# Fichiers IDE
+/app/.idea/
+/app/*.iml
+/app/.vscode/launch.json
+/app/.vscode/settings.json
+
+# Fichiers temporaires
+/app/*.swp
+/app/*.swo
+
+# ================================================
+# FICHIERS COMMUNS
+# ================================================
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Dependencies
+node_modules/
+bower_components/
+jspm_packages/
+
+# OS
+ehthumbs.db
+[Tt]humbs.db
+
+# Tests
+coverage/
+*.lcov
+.nyc_output/
+
+# Debug
+*.log
+*.pid
+*.pid.lock
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip

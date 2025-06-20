@@ -1,0 +1,55 @@
+name: Deploy API via FTP
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Checkout le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Étape 2 : Configurer PHP
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          coverage: none
+
+      # Étape 3 : Installer les dépendances
+      - name: Install dependencies
+        working-directory: ./api
+        run: |
+          composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+          composer dump-autoload --optimize
+
+      # Étape 4 : Vérifier la structure avant déploiement
+      - name: List files to deploy
+        working-directory: ./api
+        run: ls -la
+
+      # Étape 5 : Déploiement FTP
+      - name: Deploy to server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0  # Version vérifiée et fonctionnelle
+        with:
+          server: ${{ secrets.FTP_SERVER_EL }}
+          username: ${{ secrets.FTP_USERNAME_EL }}
+          password: ${{ secrets.FTP_PASSWORD_EL }}
+          local-dir: ./api/
+          server-dir: /public_html/api.epilist/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.env
+            **/README.md
+            **/composer.*
+            **/vendor/tests/*
+          log-level: verbose
