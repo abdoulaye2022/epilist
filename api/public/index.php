@@ -4,7 +4,7 @@
 declare(strict_types=1);
 
 // Gestion des erreurs pour le développement
-if ($_ENV['APP_ENV'] ?? 'production' === 'local') {
+if ($_ENV['APP_ENV'] == 'dev') {
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
@@ -47,7 +47,7 @@ Carbon::setLocale('fr');
 $app = AppFactory::create();
 
 // Configuration du base path pour la production
-if (($_ENV['APP_ENV'] ?? 'production') !== 'local') {
+if ($_ENV['APP_ENV'] == 'dev') {
     $app->setBasePath('/api.epilist/public');
 }
 
@@ -68,7 +68,7 @@ $app->addBodyParsingMiddleware();
 
 // Middleware d'erreurs
 $app->addErrorMiddleware(
-    displayErrorDetails: ($_ENV['APP_ENV'] ?? 'production') === 'local',
+    displayErrorDetails: $_ENV['APP_ENV'] == 'dev',
     logErrors: true,
     logErrorDetails: true
 );
