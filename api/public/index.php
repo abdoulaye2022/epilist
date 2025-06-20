@@ -63,7 +63,7 @@ $app->add(new CorsMiddleware());
 
 
 if( $_ENV['APP_ENV'] != 'dev') {
-    $app->setBasePath('/api.kiloshare/public');
+    $app->setBasePath('/api.epilist/public');
 }
 
 // Récupérer la ResponseFactoryInterface depuis le conteneur de Slim
