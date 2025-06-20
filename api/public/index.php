@@ -48,7 +48,7 @@ $app = AppFactory::create();
 
 // Configuration du base path pour la production
 if (($_ENV['APP_ENV'] ?? 'production') !== 'local') {
-    $app->setBasePath('/api.kiloshare/public');
+    $app->setBasePath('/api.epilist/public');
 }
 
 // Middlewares globaux
