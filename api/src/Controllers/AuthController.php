@@ -121,54 +121,58 @@ class AuthController
     public function login(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
-    
-        // error_log(print_r($data, true));
-    
-        if (empty($data)) {
-            return $this->createErrorResponse('Missing or invalid request data', 400);
+
+        // Initialize validator
+        $validator = new Validator($data);
+        
+        // Validation rules
+        $validator->rule('required', ['email', 'password'])
+            ->message('{field} is required');
+        
+        $validator->rule('email', 'email')
+            ->message('Invalid email address');
+        
+        $validator->rule('lengthMax', 'email', 255)
+            ->message('Email is too long (max 255 characters)');
+
+        // Validate
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
         }
-    
-        $email = $data['email'] ?? '';
-        $password = $data['password'] ?? '';
-    
-        // Validation de l'email
-        if (empty($email)) {
-            return $this->createErrorResponse('Email is required', 400);
-        }
-    
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->createErrorResponse('Invalid email address', 400);
-        }
-    
-        // Validation du mot de passe
-        if (empty($password)) {
-            return $this->createErrorResponse('Password is required', 400);
-        }
-    
-        $user = User::findByEmail($email);
-    
-        if (!$user) {
-            return $this->createErrorResponse('Identifiants incorrects. Veuillez réessayer.', 400);
-        }
-    
-        if (!password_verify($password, $user->password_hash)) {
-            return $this->createErrorResponse('Identifiants incorrects. Veuillez réessayer.', 400);
-        }
-    
-        $accessToken = $this->jwtService->generateToken([
-            'auth_id' => $user->id
-        ]);
-    
-        $refreshToken = $this->jwtService->generateRefreshToken([
-            'auth_id' => $user->id
-        ]);
-    
-        return new JsonResponse(
-            200,
-            new Headers(['Content-Type' => 'application/json']),
-            (new StreamFactory())->createStream(json_encode([
+
+        try {
+            // Find user by email
+            $user = User::findByEmail($data['email']);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Invalid credentials. Please try again. hhahaha', 401);
+            }
+
+            // Verify password
+            if (!password_verify($data['password'], $user->password_hash)) {
+                return $this->createErrorResponse('Invalid credentials. Please try again. yyyyy', 401);
+            }
+
+            // Generate tokens
+            $accessToken = $this->jwtService->generateToken([
+                'auth_id' => $user->id
+            ]);
+
+            $refreshToken = $this->jwtService->generateRefreshToken([
+                'auth_id' => $user->id
+            ]);
+
+            // Success response
+            $response->getBody()->write(json_encode([
                 'success' => true,
-                'message' => 'Login successful.',
+                'message' => 'Login successful',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'data' => [
@@ -177,14 +181,28 @@ class AuthController
                     'last_name' => $user->last_name,
                     'email' => $user->email
                 ]
-            ]))
-        );
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(200);
+
+        } catch (\Exception $e) {
+            // Error handling
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Login failed',
+                'error' => $e->getMessage()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(500);
+        }
     }
 
     public function register(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
-        
+
         // Initialize validator
         $validator = new Validator($data);
         
@@ -224,7 +242,7 @@ class AuthController
                 'first_name' => trim($data['first_name']),
                 'last_name' => trim($data['last_name']),
                 'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
-                'password_hash' => password_hash($data['password'], PASSWORD_BCRYPT),
+                'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'terms_accepted' => 1, // Always set to 1 as required
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()

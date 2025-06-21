@@ -25,7 +25,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await authService.login(event.email, event.password);
       emit(AuthSuccess(user: user));
     } catch (e) {
-      print(e.toString());
       emit(AuthFailure(error: e.toString()));
     }
   }

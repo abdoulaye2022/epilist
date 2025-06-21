@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:epilist/models/user.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://10.0.2.2:8000";
-  // "https://m2acode.com/api.epilist/public";
+  final String baseUrl =
+      "https://m2acode.com/api.epilist/public"; // "http://10.0.2.2:8000";
   static const String _userKey = 'current_user';
   static const String _tokenKey = 'auth_token';
 
@@ -19,17 +22,30 @@ class AuthService {
 
       if (response.statusCode! >= 200 && response.statusCode! < 300) {
         if (response.data['data'] != null) {
-          final user = User.fromJson(response.data['data']);
-          await _saveUserData(user, response.data['token']);
+          final userData = response.data['data'] as Map<String, dynamic>;
+
+          final user = User(
+            id: userData['id'],
+            firstName: userData['first_name'],
+            lastName: userData['last_name'],
+            email: userData['email'],
+            accessToken: response.data['access_token'],
+            refreshToken: response.data['refresh_token'],
+          );
+
+          try {
+            await _saveUserData(user, response.data['access_token']);
+          } catch (e) {
+            // On continue quand même car l'authentification a réussi
+            // mais il faut notifier qu'il y a eu un problème de persistance
+          }
+
           return user;
         } else {
-          throw FormatException(
-            'Données utilisateur manquantes dans la réponse',
-          );
+          throw FormatException('User data missing in response');
         }
       } else {
-        final errorMessage =
-            response.data['message'] ?? 'Échec de la connexion';
+        final errorMessage = response.data['message'] ?? 'Login failed';
         throw AuthenticationException(errorMessage);
       }
     } on DioException catch (e) {
@@ -148,9 +164,21 @@ class AuthService {
   }
 
   Future<void> _saveUserData(User user, String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userKey, user.toJson().toString());
-    await prefs.setString(_tokenKey, token);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Convertir l'utilisateur en JSON
+      final userJson = user.toJson();
+
+      // Sauvegarder les données
+      await prefs.setString(_userKey, json.encode(userJson));
+      await prefs.setString(_tokenKey, token);
+
+      // debugPrint('User data saved: ${user.toJson()}');
+    } catch (e) {
+      // debugPrint('Failed to save user data: $e');
+      throw Exception('Failed to persist user data');
+    }
   }
 
   Future<void> clearUserData() async {
