@@ -1,12 +1,20 @@
 part of 'auth_bloc.dart';
 
-abstract class AuthEvent {}
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
+
+  @override
+  List<Object> get props => [];
+}
 
 class LoginButtonPressed extends AuthEvent {
   final String email;
   final String password;
 
-  LoginButtonPressed({required this.email, required this.password});
+  const LoginButtonPressed({required this.email, required this.password});
+
+  @override
+  List<Object> get props => [email, password];
 }
 
 class LogoutRequested extends AuthEvent {}
@@ -14,24 +22,26 @@ class LogoutRequested extends AuthEvent {}
 class CheckAuthentication extends AuthEvent {}
 
 class RegisterRequested extends AuthEvent {
-  // Vérifiez l'orthographe ici aussi
   final String firstName;
   final String lastName;
   final String email;
   final String password;
 
-  RegisterRequested({
+  const RegisterRequested({
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.password,
   });
+
+  @override
+  List<Object> get props => [firstName, lastName, email, password];
 }
 
 class RefreshTokenRequested extends AuthEvent {
   final String refreshToken;
 
-  RefreshTokenRequested(this.refreshToken);
+  const RefreshTokenRequested(this.refreshToken);
 
   @override
   List<Object> get props => [refreshToken];
@@ -43,8 +53,11 @@ class UpdateProfile extends AuthEvent {
   final String firstName;
   final String lastName;
 
-  UpdateProfile({required this.firstName, required this.lastName});
+  const UpdateProfile({required this.firstName, required this.lastName});
 
   @override
   List<Object> get props => [firstName, lastName];
 }
+
+// AJOUT: Événement pour réinitialiser l'état d'erreur
+class ClearAuthError extends AuthEvent {}

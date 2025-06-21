@@ -1,5 +1,5 @@
+// auth_service.dart - VERSION CORRIGÉE POUR success:false
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:epilist/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +17,8 @@ class AuthService {
       _sharedPreferences = sharedPreferences;
 
   Future<User> login(String email, String password) async {
+    print('🔄 AuthService.login() - Début de la connexion pour: $email');
+
     try {
       final response = await _dio.post(
         '/auth/login',
@@ -24,53 +26,86 @@ class AuthService {
         options: Options(validateStatus: (status) => status! < 500),
       );
 
-      if (response.statusCode! >= 200 && response.statusCode! < 300) {
-        if (response.data['data'] != null) {
-          final userData = response.data['data'] as Map<String, dynamic>;
+      print('🔄 AuthService.login() - Response reçue: ${response.data}');
+      print('🔄 AuthService.login() - Status Code: ${response.statusCode}');
+
+      // CORRECTION PRINCIPALE: Vérifier d'abord le champ success
+      if (response.data != null && response.data is Map) {
+        final responseData = response.data as Map<String, dynamic>;
+
+        // ⚠️ IMPORTANT: Si success est false, lancer immédiatement l'exception
+        if (responseData['success'] == false) {
+          final errorMessage =
+              responseData['message'] ?? 'Identifiants invalides';
+          print(
+            '❌ AuthService.login() - success:false détecté, message: $errorMessage',
+          );
+          throw AuthenticationException(errorMessage);
+        }
+
+        // Si success est true et qu'on a les données
+        if (responseData['success'] == true && responseData['data'] != null) {
+          print('✅ AuthService.login() - success:true détecté');
+          final userData = responseData['data'] as Map<String, dynamic>;
 
           final user = User(
             id: userData['id'],
             firstName: userData['first_name'],
             lastName: userData['last_name'],
             email: userData['email'],
-            accessToken: response.data['access_token'],
-            refreshToken: response.data['refresh_token'],
+            accessToken: responseData['access_token'],
+            refreshToken: responseData['refresh_token'],
           );
 
           try {
-            await _saveUserData(user, response.data['access_token']);
+            await _saveUserData(user, responseData['access_token']);
+            print('✅ AuthService.login() - Données utilisateur sauvegardées');
           } catch (e) {
-            // On continue quand même car l'authentification a réussi
-            // mais il faut notifier qu'il y a eu un problème de persistance
+            print('⚠️ AuthService.login() - Erreur sauvegarde: $e');
           }
 
           return user;
-        } else {
-          throw FormatException('User data missing in response');
         }
+      }
+
+      // Si on arrive ici, la réponse n'a pas le format attendu
+      print('❌ AuthService.login() - Format de réponse inattendu');
+      if (response.statusCode! >= 200 && response.statusCode! < 300) {
+        throw AuthenticationException('Format de réponse inattendu du serveur');
       } else {
-        final errorMessage = response.data['message'] ?? 'Login failed';
+        final errorMessage = response.data?['message'] ?? 'Erreur de connexion';
         throw AuthenticationException(errorMessage);
       }
     } on DioException catch (e) {
+      print('❌ AuthService.login() - DioException: ${e.type} - ${e.message}');
+      print('❌ AuthService.login() - Response Data: ${e.response?.data}');
+
       if (e.response != null) {
         final errorData = e.response?.data;
-        final message =
-            errorData is Map
-                ? errorData['message'] ?? 'Erreur inconnue'
-                : 'Erreur de serveur';
-        throw AuthenticationException(message);
+        if (errorData is Map) {
+          // Vérifier si c'est une erreur d'API avec success: false
+          if (errorData['success'] == false) {
+            final message = errorData['message'] ?? 'Identifiants invalides';
+            print(
+              '❌ AuthService.login() - DioException avec success:false, message: $message',
+            );
+            throw AuthenticationException(message);
+          }
+          // Sinon utiliser le message générique
+          final message = errorData['message'] ?? 'Erreur de serveur';
+          throw AuthenticationException(message);
+        } else {
+          throw AuthenticationException('Erreur de serveur');
+        }
       } else {
         throw AuthenticationException(_getDioErrorMessage(e));
       }
-    } on FormatException catch (e) {
-      throw AuthenticationException(
-        'Erreur de format des données: ${e.message}',
-      );
+    } on AuthenticationException catch (e) {
+      print('❌ AuthService.login() - AuthenticationException: ${e.message}');
+      rethrow; // Relancer les exceptions d'authentification telles quelles
     } catch (e) {
-      throw AuthenticationException(
-        'Identifiants incorrects. Veuillez réessayer.',
-      );
+      print('❌ AuthService.login() - Exception générale: $e');
+      throw AuthenticationException('Erreur inattendue: ${e.toString()}');
     }
   }
 
@@ -113,20 +148,18 @@ class AuthService {
         options: Options(validateStatus: (status) => status! < 500),
       );
 
+      print('Register - Response: ${response.data}');
+
       if (response.statusCode == 201 || response.statusCode == 200) {
-        // Vérifier que la réponse indique un succès
         final responseData = response.data;
         if (responseData is Map && responseData['success'] == true) {
-          // Inscription réussie
-          return;
+          return; // Inscription réussie
         } else {
-          // Réponse inattendue
-          throw AuthenticationException(
-            responseData['message'] ?? 'Erreur lors de l\'inscription',
-          );
+          final errorMessage =
+              responseData['message'] ?? 'Erreur lors de l\'inscription';
+          throw AuthenticationException(errorMessage);
         }
       } else {
-        // Erreur HTTP
         final errorMessage =
             response.data is Map
                 ? response.data['message'] ?? 'Échec de l\'inscription'
@@ -136,6 +169,11 @@ class AuthService {
     } on DioException catch (e) {
       if (e.response != null) {
         final errorData = e.response?.data;
+        if (errorData is Map && errorData['success'] == false) {
+          throw AuthenticationException(
+            errorData['message'] ?? 'Erreur lors de l\'inscription',
+          );
+        }
         final message =
             errorData is Map
                 ? errorData['message'] ?? 'Erreur lors de l\'inscription'
@@ -153,8 +191,26 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    // Implémentez votre logique de déconnexion ici
-    // Par exemple, supprimer le token, effacer le cache, etc.
+    try {
+      final token = await getToken();
+      if (token != null) {
+        try {
+          await _dio.post(
+            '/auth/logout',
+            options: Options(headers: {'Authorization': 'Bearer $token'}),
+          );
+        } catch (e) {
+          print('Erreur lors de la déconnexion côté serveur: $e');
+        }
+      }
+
+      await clearUserData();
+      await _sharedPreferences.remove(_refreshTokenKey);
+    } catch (e) {
+      await clearUserData();
+      await _sharedPreferences.remove(_refreshTokenKey);
+      throw AuthenticationException('Erreur lors de la déconnexion');
+    }
   }
 
   Future<bool> isAuthenticated() async {
@@ -178,17 +234,10 @@ class AuthService {
   Future<void> _saveUserData(User user, String token) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      // Convertir l'utilisateur en JSON
       final userJson = user.toJson();
-
-      // Sauvegarder les données
       await prefs.setString(_userKey, json.encode(userJson));
       await prefs.setString(_tokenKey, token);
-
-      // debugPrint('User data saved: ${user.toJson()}');
     } catch (e) {
-      // debugPrint('Failed to save user data: $e');
       throw Exception('Failed to persist user data');
     }
   }
@@ -240,19 +289,16 @@ class AuthService {
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        // Créer un objet User depuis la réponse API
         final userData = response.data['data'];
         final updatedUser = User(
           id: userData['id'],
           firstName: userData['first_name'],
           lastName: userData['last_name'],
           email: userData['email'],
-          accessToken: token!, // Garder le token actuel
-          refreshToken:
-              await getRefreshToken(), // Garder le refresh token actuel
+          accessToken: token!,
+          refreshToken: await getRefreshToken(),
         );
 
-        // Sauvegarder les nouvelles données utilisateur
         await _sharedPreferences.setString(
           _userKey,
           json.encode(updatedUser.toJson()),

@@ -20,6 +20,7 @@
         "nesbot/carbon": "^3.8",
         "guzzlehttp/guzzle": "^7.9",
         "firebase/php-jwt": "^6.10",
-        "vlucas/valitron": "^1.4"
+        "vlucas/valitron": "^1.4",
+        "google/apiclient": "^2.15"
     }
 }

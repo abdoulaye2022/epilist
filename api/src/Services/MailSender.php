@@ -355,63 +355,61 @@ class MailSender
     }
 
     /**
-     * Template pour email de confirmation en français
+     * Template pour email de réinitialisation de mot de passe en français
      */
     public static function getConfirmationEmailTemplate(string $firstName, string $lastName, string $confirmationLink): string
     {
-        return self::headerContent("Confirmation d'email | Kiloshare") . "
+        return self::headerContent("Confirmation de compte | Epilist") . "
             <tr>
                 <td class='content' style='padding: 50px 40px; line-height: 1.7;'>
                     <h1 style='color: #1a202c; font-size: 26px; font-weight: 700; margin: 0 0 25px; text-align: center;'>
-                        Confirmez votre adresse email
+                        Confirmez votre compte Epilist
                     </h1>
                     
-                    <h2 style='color: #4096FF; font-size: 20px; font-weight: 600; margin: 0 0 25px;'>
-                        Bonjour {$firstName} {$lastName},
+                    <h2 style='color: #4CAF50; font-size: 20px; font-weight: 600; margin: 0 0 25px;'>
+                        Bonjour $firstName $lastName,
                     </h2>
                     
                     <p style='margin: 0 0 25px; color: #4a5568; font-size: 16px; line-height: 1.8;'>
-                        Bienvenue dans la communauté Kiloshare ! Nous sommes ravis de vous accueillir parmi nous.
+                        Bienvenue sur Epilist ! Nous sommes ravis de vous accueillir dans notre communauté.
                     </p>
                     
                     <p style='margin: 0 0 35px; color: #4a5568; font-size: 16px; line-height: 1.8;'>
-                        Pour finaliser votre inscription et accéder à toutes les fonctionnalités de notre plateforme, 
-                        nous avons besoin que vous confirmiez votre adresse email en cliquant sur le bouton ci-dessous :
+                        Pour commencer à utiliser votre compte, veuillez confirmer votre adresse email en cliquant sur le bouton ci-dessous :
                     </p>
                     
                     <div style='text-align: center; margin: 40px 0 50px;'>
-                        <a href='{$confirmationLink}' class='button' style='display: inline-block; background: linear-gradient(135deg, #4096FF 0%, #1E90FF 100%); color: #ffffff !important; padding: 18px 40px; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 15px rgba(64, 150, 255, 0.3);'>
-                            ✓ Confirmer mon email
+                        <a href='$confirmationLink' class='button' style='display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); color: #ffffff !important; padding: 18px 40px; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);'>
+                            ✓ Confirmer mon compte
                         </a>
                     </div>
                     
-                    <div style='background-color: #f8fafc; padding: 25px; margin: 35px 0; border-radius: 10px; border-left: 4px solid #4096FF;'>
+                    <div style='background-color: #f8fafc; padding: 25px; margin: 35px 0; border-radius: 10px; border-left: 4px solid #4CAF50;'>
                         <p style='margin: 0 0 15px; color: #4a5568; font-weight: 600; font-size: 15px;'>
                             💡 Vous ne pouvez pas cliquer sur le bouton ?
                         </p>
                         <p style='margin: 0; color: #4a5568; font-size: 14px; line-height: 1.6;'>
                             Copiez et collez ce lien dans votre navigateur :<br>
-                            <span style='word-break: break-all; color: #4096FF; font-family: monospace; background: #edf2f7; padding: 4px 8px; border-radius: 4px; margin-top: 8px; display: inline-block;'>{$confirmationLink}</span>
+                            <span style='word-break: break-all; color: #4CAF50; font-family: monospace; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; margin-top: 8px; display: inline-block;'>$confirmationLink</span>
                         </p>
                     </div>
                     
                     <div style='background-color: #fff5f5; border-left: 4px solid #fed7d7; padding: 20px; margin: 30px 0; border-radius: 6px;'>
                         <p style='margin: 0; color: #744210; font-size: 14px;'>
-                            <strong>⏰ Important :</strong> Ce lien de confirmation expirera dans 24 heures pour des raisons de sécurité.
+                            <strong>⏰ Important :</strong> Ce lien de confirmation expirera dans 24 heures.
                         </p>
                     </div>
                     
                     <p style='margin: 35px 0 25px; color: #718096; font-size: 14px; line-height: 1.6;'>
-                        Si vous n'avez pas créé de compte sur Kiloshare, vous pouvez ignorer cet email en toute sécurité. 
-                        Aucune action ne sera effectuée sur votre adresse email.
+                        Si vous n'avez pas créé de compte sur Epilist, vous pouvez ignorer cet email.
                     </p>
                     
                     <div style='margin-top: 40px; padding-top: 25px; border-top: 1px solid #e2e8f0;'>
                         <p style='margin: 0 0 8px; color: #4a5568; font-weight: 600; font-size: 15px;'>
                             Cordialement,
                         </p>
-                        <p style='margin: 0; color: #4096FF; font-weight: 600; font-size: 15px;'>
-                            L'équipe Kiloshare
+                        <p style='margin: 0; color: #4CAF50; font-weight: 600; font-size: 15px;'>
+                            L'équipe Epilist
                         </p>
                     </div>
                 </td>
@@ -419,104 +417,63 @@ class MailSender
         " . self::footerContent();
     }
 
-    /**
-     * Template pour email de réinitialisation de mot de passe en français
-     */
     public static function getPasswordResetEmailTemplate(string $firstName, string $lastName, string $resetLink): string
     {
-        return self::headerContent("Réinitialisation de mot de passe | Kiloshare") . "     
+        return self::headerContent("Réinitialisation de mot de passe | Epilist") . "     
             <tr>
                 <td class='content' style='padding: 50px 40px; line-height: 1.7;'>
                     <h1 style='color: #1a202c; font-size: 26px; font-weight: 700; margin: 0 0 25px; text-align: center;'>
-                        Réinitialisation de votre mot de passe
+                        Réinitialisez votre mot de passe
                     </h1>
                     
-                    <h2 style='color: #4096FF; font-size: 20px; font-weight: 600; margin: 0 0 25px;'>
-                        Bonjour {$firstName} {$lastName},
+                    <h2 style='color: #4CAF50; font-size: 20px; font-weight: 600; margin: 0 0 25px;'>
+                        Bonjour $firstName $lastName,
                     </h2>
                     
                     <p style='margin: 0 0 25px; color: #4a5568; font-size: 16px; line-height: 1.8;'>
-                        Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte Kiloshare.
+                        Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte Epilist.
                     </p>
                     
                     <p style='margin: 0 0 35px; color: #4a5568; font-size: 16px; line-height: 1.8;'>
-                        Si vous êtes à l'origine de cette demande, cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :
+                        Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :
                     </p>
                     
                     <div style='text-align: center; margin: 40px 0 50px;'>
-                        <a href='{$resetLink}' class='button' style='display: inline-block; background: linear-gradient(135deg, #4096FF 0%, #1E90FF 100%); color: #ffffff !important; padding: 18px 40px; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 15px rgba(64, 150, 255, 0.3);'>
+                        <a href='$resetLink' class='button' style='display: inline-block; background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); color: #ffffff !important; padding: 18px 40px; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);'>
                             🔒 Réinitialiser mon mot de passe
                         </a>
                     </div>
                     
                     <div style='background-color: #fff5f5; border-left: 4px solid #f56565; padding: 20px; margin: 35px 0; border-radius: 6px;'>
                         <p style='margin: 0; color: #c53030; font-size: 15px; line-height: 1.6;'>
-                            <strong>⚠️ Important :</strong> Ce lien expirera dans 1 heure pour votre sécurité. 
-                            Si vous n'avez pas demandé cette réinitialisation, ignorez cet email ou 
-                            <a href='mailto:support@kiloshare.com' style='color: #c53030; text-decoration: underline;'>contactez-nous immédiatement</a>.
+                            <strong>⚠️ Important :</strong> Ce lien expirera dans 1 heure. Si vous n'avez pas fait cette demande, ignorez cet email.
                         </p>
                     </div>
                     
-                    <div style='background-color: #f8fafc; padding: 25px; margin: 35px 0; border-radius: 10px; border-left: 4px solid #4096FF;'>
+                    <div style='background-color: #f8fafc; padding: 25px; margin: 35px 0; border-radius: 10px; border-left: 4px solid #4CAF50;'>
                         <p style='margin: 0 0 15px; color: #4a5568; font-weight: 600; font-size: 15px;'>
                             💡 Vous ne pouvez pas cliquer sur le bouton ?
                         </p>
                         <p style='margin: 0; color: #4a5568; font-size: 14px; line-height: 1.6;'>
                             Copiez et collez ce lien dans votre navigateur :<br>
-                            <span style='word-break: break-all; color: #4096FF; font-family: monospace; background: #edf2f7; padding: 4px 8px; border-radius: 4px; margin-top: 8px; display: inline-block;'>{$resetLink}</span>
+                            <span style='word-break: break-all; color: #4CAF50; font-family: monospace; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; margin-top: 8px; display: inline-block;'>$resetLink</span>
                         </p>
                     </div>
                     
                     <p style='margin: 35px 0 25px; color: #718096; font-size: 14px; line-height: 1.6;'>
-                        Pour votre sécurité, nous vous recommandons de choisir un mot de passe fort contenant au moins 8 caractères, 
-                        avec des majuscules, minuscules, chiffres et caractères spéciaux.
+                        Pour votre sécurité, choisissez un mot de passe fort et unique.
                     </p>
                     
                     <div style='margin-top: 40px; padding-top: 25px; border-top: 1px solid #e2e8f0;'>
                         <p style='margin: 0 0 8px; color: #4a5568; font-weight: 600; font-size: 15px;'>
                             Cordialement,
                         </p>
-                        <p style='margin: 0; color: #4096FF; font-weight: 600; font-size: 15px;'>
-                            L'équipe Kiloshare
+                        <p style='margin: 0; color: #4CAF50; font-weight: 600; font-size: 15px;'>
+                            L'équipe Epilist
                         </p>
                     </div>
                 </td>
             </tr>
-        " . self::footerContent();
-    }
-
-    public static function creationConfirmationEmailTemplate(Ad $ad): string
-    {
-         return self::headerContent("Merci pour votre annonce ! (Validation en cours)") . "
-            <tr>
-                <td class='content' style='padding: 30px 40px; line-height: 1.6;'>
-                    <h1 style='color: #1A202C; font-size: 22px; font-weight: 600; margin-top: 0; margin-bottom: 20px;'>Validation de votre annonce</h1>
-                    
-                    <h2 style='color: #4096FF; font-size: 18px; font-weight: 600; margin-bottom: 15px;'>Bonjour {$ad->user->first_name} {$ad->user->last_name},</h2>
-                    
-                    <p style='margin: 0 0 20px; color: #4A5568;'>
-                        Nous vous remercions d'avoir créé une annonce sur Kiloshare ! Votre annonce <strong>{$ad->title}</strong> est en cours de validation et sera approuvée d'ici peu, généralement dans un délai de <strong>24 heures</strong>.
-                    </p>
-                    
-                    <p style='margin: 0 0 20px; color: #4A5568;'>
-                        Une fois validée, vous recevrez une notification et votre annonce sera visible par tous les utilisateurs de la plateforme.
-                    </p>
-                    
-                    <div style='background-color: #F8FAFC; border-left: 4px solid #4096FF; padding: 15px; margin: 25px 0; border-radius: 0 4px 4px 0;'>
-                        <p style='margin: 0; color: #4A5568; font-size: 15px;'>
-                            Nous vous remercions pour la confiance que vous accordez à Kiloshare. Pour toute question, contactez-nous à <a href='mailto:contact@kiloshare.com' style='color: #4096FF; text-decoration: none; font-weight: 600;'>contact@kiloshare.com</a>.
-                        </p>
-                    </div>
-                    
-                    <p style='margin: 25px 0 15px; color: #4A5568;'>
-                        À très bientôt sur Kiloshare !
-                    </p>
-                    
-                    <p style='margin: 30px 0 10px; color: #4A5568; font-weight: 600;'>
-                        L'équipe Kiloshare
-                    </p>
-                </td>
-            </tr> 
         " . self::footerContent();
     }
 }

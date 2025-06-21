@@ -1,4 +1,3 @@
-// models/list_item.dart
 class ListItem {
   final int id;
   final int listId;
@@ -17,6 +16,10 @@ class ListItem {
     this.storeName,
     this.isPurchased = false,
   });
+
+  // AJOUT: Getter pour compatibilité avec l'UI
+  bool get isCompleted => isPurchased;
+  String get name => productName; // AJOUT: Getter pour compatibilité
 
   factory ListItem.fromJson(Map<String, dynamic> json) {
     return ListItem(
