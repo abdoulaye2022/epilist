@@ -1,17 +1,54 @@
+import 'package:dio/dio.dart';
+import 'package:epilist/config/app_config.dart';
 import 'package:epilist/screens/signup_screen.dart';
+import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/services/shopping_list_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialisez SharedPreferences avant runApp
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  // Initialisez Dio avec la configuration de base
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: AppConfig.baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+    ),
+  );
+
   runApp(
     MultiRepositoryProvider(
-      providers: [RepositoryProvider(create: (context) => AuthService())],
+      providers: [
+        RepositoryProvider(
+          create:
+              (context) =>
+                  AuthService(dio: dio, sharedPreferences: sharedPreferences),
+        ),
+        RepositoryProvider(
+          create:
+              (context) => ShoppingListService(
+                dio: dio,
+                authService: context.read<AuthService>(),
+              ),
+        ),
+        RepositoryProvider(
+          create:
+              (context) => ListItemService(
+                dio: dio,
+                authService: context.read<AuthService>(),
+              ),
+        ),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(

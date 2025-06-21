@@ -27,3 +27,24 @@ class RegisterRequested extends AuthEvent {
     required this.password,
   });
 }
+
+class RefreshTokenRequested extends AuthEvent {
+  final String refreshToken;
+
+  RefreshTokenRequested(this.refreshToken);
+
+  @override
+  List<Object> get props => [refreshToken];
+}
+
+class GetCurrentUser extends AuthEvent {}
+
+class UpdateProfile extends AuthEvent {
+  final String firstName;
+  final String lastName;
+
+  UpdateProfile({required this.firstName, required this.lastName});
+
+  @override
+  List<Object> get props => [firstName, lastName];
+}

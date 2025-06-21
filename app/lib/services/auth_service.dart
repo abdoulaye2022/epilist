@@ -2,20 +2,24 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:epilist/models/user.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final Dio _dio = Dio();
-  final String baseUrl =
-      "https://m2acode.com/api.epilist/public"; // "http://10.0.2.2:8000";
+  final Dio _dio;
+  final SharedPreferences _sharedPreferences;
+
   static const String _userKey = 'current_user';
   static const String _tokenKey = 'auth_token';
+  static const String _refreshTokenKey = 'refresh_token';
+
+  AuthService({required Dio dio, required SharedPreferences sharedPreferences})
+    : _dio = dio,
+      _sharedPreferences = sharedPreferences;
 
   Future<User> login(String email, String password) async {
     try {
       final response = await _dio.post(
-        '$baseUrl/auth/login',
+        '/auth/login',
         data: {'email': email, 'password': password},
         options: Options(validateStatus: (status) => status! < 500),
       );
@@ -99,7 +103,7 @@ class AuthService {
   ) async {
     try {
       final response = await _dio.post(
-        '$baseUrl/auth/register',
+        '/auth/register',
         data: {
           'first_name': firstName,
           'last_name': lastName,
@@ -154,13 +158,21 @@ class AuthService {
   }
 
   Future<bool> isAuthenticated() async {
-    // Implémentez la logique pour vérifier si l'utilisateur est authentifié
-    return false; // Temporaire
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey) != null;
   }
 
-  Future<User> getCurrentUser() async {
-    // Implémentez la récupération des informations de l'utilisateur
-    throw UnimplementedError();
+  Future<User?> getCurrentUser() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userString = prefs.getString(_userKey);
+      if (userString != null) {
+        return User.fromJson(json.decode(userString));
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> _saveUserData(User user, String token) async {
@@ -191,6 +203,88 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
   }
+
+  Future<Map<String, String>> refreshToken(String refreshToken) async {
+    final response = await _dio.post(
+      '/auth/refresh-token',
+      data: {'refresh_token': refreshToken},
+    );
+
+    await _sharedPreferences.setString(
+      _tokenKey,
+      response.data['access_token'],
+    );
+    await _sharedPreferences.setString(
+      _refreshTokenKey,
+      response.data['refresh_token'],
+    );
+
+    return {
+      'access_token': response.data['access_token'],
+      'refresh_token': response.data['refresh_token'],
+    };
+  }
+
+  Future<User> updateProfile({
+    required String firstName,
+    required String lastName,
+    String? phone,
+    String? avatar,
+  }) async {
+    try {
+      final token = await getToken();
+      final response = await _dio.put(
+        '/auth/me',
+        data: {'first_name': firstName, 'last_name': lastName},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        // Créer un objet User depuis la réponse API
+        final userData = response.data['data'];
+        final updatedUser = User(
+          id: userData['id'],
+          firstName: userData['first_name'],
+          lastName: userData['last_name'],
+          email: userData['email'],
+          accessToken: token!, // Garder le token actuel
+          refreshToken:
+              await getRefreshToken(), // Garder le refresh token actuel
+        );
+
+        // Sauvegarder les nouvelles données utilisateur
+        await _sharedPreferences.setString(
+          _userKey,
+          json.encode(updatedUser.toJson()),
+        );
+
+        return updatedUser;
+      } else {
+        throw AuthenticationException(
+          response.data['message'] ?? 'Erreur lors de la mise à jour du profil',
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        final errorData = e.response?.data;
+        final message =
+            errorData is Map
+                ? errorData['message'] ??
+                    'Erreur lors de la mise à jour du profil'
+                : 'Erreur de serveur';
+        throw AuthenticationException(message);
+      } else {
+        throw AuthenticationException(_getDioErrorMessage(e));
+      }
+    } catch (e) {
+      throw AuthenticationException(
+        'Erreur inattendue lors de la mise à jour du profil',
+      );
+    }
+  }
+
+  Future<String?> getRefreshToken() async =>
+      _sharedPreferences.getString(_refreshTokenKey);
 }
 
 class AuthenticationException implements Exception {

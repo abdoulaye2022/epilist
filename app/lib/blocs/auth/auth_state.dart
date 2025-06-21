@@ -1,4 +1,4 @@
-// auth_state.dart
+// blocs/auth/auth_state.dart
 part of 'auth_bloc.dart';
 
 abstract class AuthState extends Equatable {
@@ -11,8 +11,6 @@ abstract class AuthState extends Equatable {
 class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
-
-class Unauthenticated extends AuthState {} // Ajoutez cet état
 
 class AuthSuccess extends AuthState {
   final User user;
@@ -32,4 +30,25 @@ class AuthFailure extends AuthState {
   List<Object> get props => [error];
 }
 
+class Unauthenticated extends AuthState {}
+
 class RegistrationSuccess extends AuthState {}
+
+class TokensRefreshed extends AuthState {
+  final String accessToken;
+  final String refreshToken;
+
+  const TokensRefreshed(this.accessToken, this.refreshToken);
+
+  @override
+  List<Object> get props => [accessToken, refreshToken];
+}
+
+class ProfileUpdated extends AuthState {
+  final User user;
+
+  const ProfileUpdated(this.user);
+
+  @override
+  List<Object> get props => [user];
+}

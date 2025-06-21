@@ -19,20 +19,29 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
         // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-        if (state is! AuthSuccess) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-            );
-          });
+        if (state is Unauthenticated) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        } else if (state is ProfileUpdated) {
+          // Le message de succès sera affiché dans le dialog
+          // Pas besoin d'action supplémentaire ici
+        }
+      },
+      builder: (context, state) {
+        // Si l'utilisateur n'est pas connecté, afficher un loader
+        if (state is! AuthSuccess && state is! ProfileUpdated) {
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
-        final User user = state.user;
+        // Récupérer l'utilisateur depuis l'état approprié
+        final User user =
+            state is AuthSuccess ? state.user : (state as ProfileUpdated).user;
+
         final String userName = '${user.firstName} ${user.lastName}';
 
         return Scaffold(
@@ -76,11 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         radius: 40,
                         backgroundColor: Colors.green[100],
                         child: Text(
-                          '${user.firstName[0]}${user.lastName[0]}',
+                          '${user.firstName[0].toUpperCase()}•${user.lastName[0].toUpperCase()}',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Colors.green[600],
+                            letterSpacing:
+                                2, // Espacement entre les caractères pour une meilleure lisibilité
                           ),
                         ),
                       ),
@@ -292,67 +303,131 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: Text('Modifier le profil'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: firstNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Prénom',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: lastNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nom',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Annuler'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // TODO: Implémenter la mise à jour du profil via l'API
-                  // context.read<AuthBloc>().add(UpdateProfileRequested(
-                  //   firstName: firstNameController.text.trim(),
-                  //   lastName: lastNameController.text.trim(),
-                  //   email: emailController.text.trim(),
-                  // ));
-
+          (context) => BlocProvider.value(
+            value: context.read<AuthBloc>(),
+            child: BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is ProfileUpdated) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Mise à jour du profil à implémenter'),
-                      backgroundColor: Colors.orange[600],
+                      content: Text('Profil mis à jour avec succès'),
+                      backgroundColor: Colors.green[600],
                     ),
                   );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
-                ),
-                child: Text('Sauvegarder'),
-              ),
-            ],
+                } else if (state is AuthFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.error),
+                      backgroundColor: Colors.red[600],
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                final isLoading = state is AuthLoading;
+
+                return AlertDialog(
+                  title: Text('Modifier le profil'),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: firstNameController,
+                          decoration: InputDecoration(
+                            labelText: 'Prénom',
+                            border: OutlineInputBorder(),
+                          ),
+                          enabled: !isLoading,
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: lastNameController,
+                          decoration: InputDecoration(
+                            labelText: 'Nom',
+                            border: OutlineInputBorder(),
+                          ),
+                          enabled: !isLoading,
+                        ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: emailController,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                            enabled: false, // Email non modifiable
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          enabled: false,
+                        ),
+                        if (!isLoading) ...[
+                          SizedBox(height: 8),
+                          Text(
+                            'Note: L\'email ne peut pas être modifié',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed:
+                          isLoading ? null : () => Navigator.pop(context),
+                      child: Text('Annuler'),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                final firstName =
+                                    firstNameController.text.trim();
+                                final lastName = lastNameController.text.trim();
+
+                                if (firstName.isEmpty || lastName.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Le prénom et le nom sont obligatoires',
+                                      ),
+                                      backgroundColor: Colors.orange[600],
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                context.read<AuthBloc>().add(
+                                  UpdateProfile(
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                  ),
+                                );
+                              },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                      ),
+                      child:
+                          isLoading
+                              ? SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text('Sauvegarder'),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
     );
   }

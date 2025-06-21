@@ -95,6 +95,8 @@ $app->post('/auth/resend-confirm-email', [AuthController::class, 'resendconfirme
 $app->group('', function ($group) {
     // Authentification
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
+    $group->get('/auth/me', [AuthController::class, 'getCurrentUser']);
+    $group->put('/auth/me', [AuthController::class, 'updateProfile']);
 
     // Shopping Lists Routes
     $group->get('/shopping-lists', [ShoppingListController::class, 'index']);

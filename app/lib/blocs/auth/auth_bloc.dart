@@ -14,6 +14,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthentication>(_onCheckAuthentication);
     on<RegisterRequested>(_onRegisterRequested);
+    on<RefreshTokenRequested>(_onRefreshTokenRequested);
+    on<GetCurrentUser>(_onGetCurrentUser);
+    on<UpdateProfile>(_onUpdateProfile);
   }
 
   Future<void> _onLoginButtonPressed(
@@ -26,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthSuccess(user: user));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -41,13 +45,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (user != null) {
           emit(AuthSuccess(user: user));
         } else {
+          await authService.clearUserData();
           emit(Unauthenticated());
         }
       } else {
         emit(Unauthenticated());
       }
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      emit(AuthFailure(error: 'Failed to check authentication'));
+      emit(Unauthenticated());
     }
   }
 
@@ -57,7 +63,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      // await authService.logout();
+      await authService.logout();
       emit(Unauthenticated());
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
@@ -65,7 +71,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onRegisterRequested(
-    // Nom corrigé (sans 'd' final)
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
@@ -79,9 +84,72 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(RegistrationSuccess());
     } catch (e) {
-      emit(
-        AuthFailure(error: e.toString()),
-      ); // Utilisez AuthError au lieu de AuthFailure pour la cohérence
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onRefreshTokenRequested(
+    RefreshTokenRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final tokens = await authService.refreshToken(event.refreshToken);
+      emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
+    } catch (e) {
+      emit(AuthFailure(error: 'Failed to refresh token'));
+      emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _onGetCurrentUser(
+    GetCurrentUser event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        emit(AuthSuccess(user: user));
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      emit(AuthFailure(error: 'Failed to get current user'));
+      emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _onUpdateProfile(
+    UpdateProfile event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final updatedUser = await authService.updateProfile(
+        firstName: event.firstName,
+        lastName: event.lastName,
+      );
+
+      // Émettre ProfileUpdated temporairement pour afficher le message de succès
+      emit(ProfileUpdated(updatedUser));
+
+      // Puis revenir à AuthSuccess avec les nouvelles données utilisateur
+      emit(AuthSuccess(user: updatedUser));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+
+      // Recharger l'utilisateur actuel en cas d'erreur
+      try {
+        final currentUser = await authService.getCurrentUser();
+        if (currentUser != null) {
+          emit(AuthSuccess(user: currentUser));
+        } else {
+          emit(Unauthenticated());
+        }
+      } catch (_) {
+        emit(Unauthenticated());
+      }
     }
   }
 }

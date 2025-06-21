@@ -152,12 +152,12 @@ class AuthController
             $user = User::findByEmail($data['email']);
             
             if (!$user) {
-                return $this->createErrorResponse('Invalid credentials. Please try again. hhahaha', 401);
+                return $this->createErrorResponse('Invalid credentials. Please try again.', 401);
             }
 
             // Verify password
             if (!password_verify($data['password'], $user->password_hash)) {
-                return $this->createErrorResponse('Invalid credentials. Please try again. yyyyy', 401);
+                return $this->createErrorResponse('Invalid credentials. Please try again.', 401);
             }
 
             // Generate tokens
@@ -276,6 +276,107 @@ class AuthController
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(500);
+        }
+    }
+
+    public function getCurrentUser(Request $request, Response $response)
+    {
+        // Récupérer l'ID de l'utilisateur depuis le token JWT
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'data' => [
+                        'id' => $user->id,
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'email' => $user->email,
+                        'phone' => $user->phone ?? null,
+                        'avatar' => $user->avatar ?? null,
+                        'email_verified' => (bool)$user->email_verified,
+                        'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function updateProfile(Request $request, Response $response)
+    {
+        // Get user ID from JWT token
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Unauthorized', 401);
+        }
+
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['first_name', 'last_name'])
+            ->message('{field} is required');
+        $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
+            ->message('{field} is too long (max 100 characters)');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('User not found', 404);
+            }
+
+            // Update ONLY first name and last name fields
+            $user->first_name = $data['first_name'];
+            $user->last_name = $data['last_name'];
+            $user->updated_at = new \DateTime();
+            $user->save();
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Profile updated successfully',
+                    'data' => [
+                        'id' => $user->id,
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'email' => $user->email,
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Update error: ' . $e->getMessage(), 500);
         }
     }
 
