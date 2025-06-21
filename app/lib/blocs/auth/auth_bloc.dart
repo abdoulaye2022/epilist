@@ -13,9 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthentication>(_onCheckAuthentication);
-    on<RegisterRequested>(
-      _onRegisterRequested,
-    ); // Nom corrigé pour correspondre
+    on<RegisterRequested>(_onRegisterRequested);
   }
 
   Future<void> _onLoginButtonPressed(
@@ -32,19 +30,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLogoutRequested(
-    LogoutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-    try {
-      // await authService.logout();
-      emit(AuthInitial());
-    } catch (e) {
-      emit(AuthFailure(error: e.toString()));
-    }
-  }
-
   Future<void> _onCheckAuthentication(
     CheckAuthentication event,
     Emitter<AuthState> emit,
@@ -54,10 +39,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final isAuthenticated = await authService.isAuthenticated();
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
-        emit(AuthSuccess(user: user));
+        if (user != null) {
+          emit(AuthSuccess(user: user));
+        } else {
+          emit(Unauthenticated());
+        }
       } else {
         emit(Unauthenticated());
       }
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onLogoutRequested(
+    LogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      // await authService.logout();
+      emit(Unauthenticated());
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }

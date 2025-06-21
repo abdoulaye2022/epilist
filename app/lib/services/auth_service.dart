@@ -1,20 +1,27 @@
 import 'package:dio/dio.dart';
 import 'package:epilist/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
+  final String baseUrl = "http://10.0.2.2:8000";
+  // "https://m2acode.com/api.epilist/public";
+  static const String _userKey = 'current_user';
+  static const String _tokenKey = 'auth_token';
 
   Future<User> login(String email, String password) async {
     try {
       final response = await _dio.post(
-        'http://10.0.2.2:8000/auth/login',
+        '$baseUrl/auth/login',
         data: {'email': email, 'password': password},
         options: Options(validateStatus: (status) => status! < 500),
       );
 
       if (response.statusCode! >= 200 && response.statusCode! < 300) {
         if (response.data['data'] != null) {
-          return User.fromJson(response.data['data']);
+          final user = User.fromJson(response.data['data']);
+          await _saveUserData(user, response.data['token']);
+          return user;
         } else {
           throw FormatException(
             'Données utilisateur manquantes dans la réponse',
@@ -76,7 +83,7 @@ class AuthService {
   ) async {
     try {
       final response = await _dio.post(
-        'http://10.0.2.2:8000/auth/register',
+        '$baseUrl/auth/register',
         data: {
           'first_name': firstName,
           'last_name': lastName,
@@ -138,6 +145,23 @@ class AuthService {
   Future<User> getCurrentUser() async {
     // Implémentez la récupération des informations de l'utilisateur
     throw UnimplementedError();
+  }
+
+  Future<void> _saveUserData(User user, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userKey, user.toJson().toString());
+    await prefs.setString(_tokenKey, token);
+  }
+
+  Future<void> clearUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_userKey);
+    await prefs.remove(_tokenKey);
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_tokenKey);
   }
 }
 

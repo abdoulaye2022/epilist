@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use Valitron\Validator;
 
 class AuthController
 {
@@ -183,68 +184,81 @@ class AuthController
     public function register(Request $request, Response $response)
     {
         $data = $request->getParsedBody();
+        
+        // Initialize validator
+        $validator = new Validator($data);
+        
+        // Validation rules
+        $validator->rule('required', ['first_name', 'last_name', 'email', 'password'])
+            ->message('{field} is required');
+        
+        $validator->rule('email', 'email')
+            ->message('Email is not valid');
+        
+        $validator->rule('lengthMax', 'email', 255)
+            ->message('Email is too long (max 255 characters)');
+        
+        $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
+            ->message('{field} is too long (max 100 characters)');
     
-        $errors = [];
-    
-        // Validation des champs
-        if (empty($data['first_name'])) {
-            $errors['first_name'] = 'Le prénom est obligatoire.';
-        }
-    
-        if (empty($data['last_name'])) {
-            $errors['last_name'] = 'Le nom est obligatoire.';
-        }
-    
-        if (empty($data['email'])) {
-            $errors['email'] = 'L\'email est obligatoire.';
-        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'L\'email n\'est pas valide.';
-        } else {
-            $data['email'] = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
-        }
-    
-        if (empty($data['password'])) {
-            $errors['password'] = 'Le mot de passe est obligatoire.';
-        }
-    
-        // Si des erreurs sont détectées, retournez une réponse JSON avec les erreurs
-        if (!empty($errors)) {
+        
+        $validator->rule(function($field, $value, $params, $fields) {
+            return User::where('email', $value)->count() === 0;
+        }, 'email')->message('This email is already registered');
+
+        // Validation
+        if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Validation failed.',
-                'errors' => $errors,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(400);
         }
-    
-        // Vérifier si l'utilisateur existe déjà
-        $existingUser = User::where('email', $data['email'])->first();
-    
-        if ($existingUser) {
+
+        try {
+            // Data sanitization
+            $cleanData = [
+                'first_name' => trim($data['first_name']),
+                'last_name' => trim($data['last_name']),
+                'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
+                'password_hash' => password_hash($data['password'], PASSWORD_BCRYPT),
+                'terms_accepted' => 1, // Always set to 1 as required
+                'created_at' => new \DateTime(),
+                'updated_at' => new \DateTime()
+            ];
+
+            // Create user
+            $user = User::create($cleanData);
+
+            // Success response
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Account created successfully',
+                'data' => [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name
+                ]
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(201);
+
+        } catch (\Exception $e) {
+            // Error handling
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Ce courriel est déjà associé à un compte.',
-                'errors' => ['email' => 'This email is already registered.'],
+                'message' => 'Error creating account',
+                'error' => $e->getMessage()
             ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(500);
         }
-    
-        // Hacher le mot de passe
-        $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
-    
-        // Créer l'utilisateur
-        $user = User::create($data);
-    
-        // Retourner une réponse JSON de succès
-        $response->getBody()->write(json_encode([
-            'success' => true,
-            'message' => 'Compte créé avec succès. Veuillez vérifier votre e-mail pour confirmedr votre compte.',
-        ]));
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
     }
 
     private function genererResetToken(): string {

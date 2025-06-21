@@ -10,6 +10,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use App\Controllers\{
     AuthController,
+    ShoppingListController,
+    ListItemController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -91,7 +93,24 @@ $app->post('/auth/confirm-email', [AuthController::class, 'confirmedmail']);
 $app->post('/auth/resend-confirm-email', [AuthController::class, 'resendconfirmedmail']);
 
 $app->group('', function ($group) {
+    // Authentification
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
+
+    // Shopping Lists Routes
+    $group->get('/shopping-lists', [ShoppingListController::class, 'index']);
+    $group->post('/shopping-lists', [ShoppingListController::class, 'store']);
+    $group->get('/shopping-lists/{id}', [ShoppingListController::class, 'show']);
+    $group->put('/shopping-lists/{id}', [ShoppingListController::class, 'update']);
+    $group->delete('/shopping-lists/{id}', [ShoppingListController::class, 'destroy']);
+    $group->post('/shopping-lists/{id}/restore', [ShoppingListController::class, 'restore']);
+
+    // List Items Routes
+    $group->get('/shopping-lists/{listId}/items', [ListItemController::class, 'index']);
+    $group->post('/shopping-lists/{listId}/items', [ListItemController::class, 'store']);
+    $group->put('/shopping-lists/{listId}/items/{itemId}', [ListItemController::class, 'update']);
+    $group->patch('/shopping-lists/{listId}/items/{itemId}/toggle', [ListItemController::class, 'togglePurchased']);
+    $group->delete('/shopping-lists/{listId}/items/{itemId}', [ListItemController::class, 'destroy']);
+    $group->post('/shopping-lists/{listId}/items/{itemId}/restore', [ListItemController::class, 'restore']);
 
 })->add($jwtMiddleware);
 

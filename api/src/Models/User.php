@@ -1,25 +1,27 @@
 <?php
-// src/Models/Employee.php
+// src/Models/User.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-use App\Models\ConnectedAccount;
 
 class User extends Model
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    public $timestamps = false;
+
+    // Active automatiquement les colonnes created_at et updated_at
+    public $timestamps = true;
 
     protected $fillable = [
         'first_name', 
         'last_name', 
-        'phone', 
         'email', 
-        'password_hash'
+        'password_hash', 
+        'terms_accepted',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     protected $hidden = [
@@ -27,12 +29,14 @@ class User extends Model
     ];
 
     protected $casts = [
-        'created_at' => 'date'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+        'terms_accepted' => 'boolean',
     ];
 
     public static function findByEmail(string $email): ?User
     {
         return static::where('email', $email)->first();
     }
-
 }

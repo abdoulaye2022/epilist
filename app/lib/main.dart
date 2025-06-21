@@ -6,7 +6,9 @@ import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(
     MultiRepositoryProvider(
       providers: [RepositoryProvider(create: (context) => AuthService())],
