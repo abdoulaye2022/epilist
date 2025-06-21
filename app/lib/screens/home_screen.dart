@@ -4,6 +4,7 @@ import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
+import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,20 +16,29 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider<ShoppingListBloc>(
-      create:
-          (context) => ShoppingListBloc(
-            shoppingListService: context.read<ShoppingListService>(),
-          )..add(LoadShoppingLists()),
-      child: _HomeScreenView(),
-    );
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Charger les listes au démarrage
+    context.read<ShoppingListBloc>().add(LoadShoppingLists());
   }
-}
 
-class _HomeScreenView extends StatelessWidget {
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Recharger quand l'app devient active
+    if (state == AppLifecycleState.resumed) {
+      context.read<ShoppingListBloc>().add(LoadShoppingLists());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +55,20 @@ class _HomeScreenView extends StatelessWidget {
           ),
         ),
         actions: [
+          // Bouton refresh
+          IconButton(
+            onPressed: () {
+              context.read<ShoppingListBloc>().add(LoadShoppingLists());
+            },
+            icon: Icon(Icons.refresh, color: Colors.grey[700]),
+            tooltip: 'Actualiser',
+          ),
+          // Bouton Voir toutes les listes
+          IconButton(
+            onPressed: () => _goToAllLists(context),
+            icon: Icon(Icons.list, color: Colors.grey[700]),
+            tooltip: 'Toutes les listes',
+          ),
           // Bouton Profile
           IconButton(
             onPressed: () => _goToProfile(context),
@@ -59,129 +83,205 @@ class _HomeScreenView extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Message de bienvenue
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue[100]!),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bonjour ! 👋',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<ShoppingListBloc>().add(LoadShoppingLists());
+        },
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Message de bienvenue
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue[100]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bonjour ! 👋',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[800],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Gérez vos listes d\'épicerie facilement',
-                    style: TextStyle(fontSize: 16, color: Colors.blue[700]),
-                  ),
-                ],
+                    SizedBox(height: 8),
+                    Text(
+                      'Gérez vos listes d\'épicerie facilement',
+                      style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            SizedBox(height: 24),
+              SizedBox(height: 24),
 
-            // Section des listes
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Mes Listes d\'Épicerie',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => _createNewList(context),
-                  icon: Icon(Icons.add, size: 18),
-                  label: Text('Nouvelle'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[600],
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    elevation: 2,
-                  ),
-                ),
-              ],
-            ),
+              // Section des listes - responsive
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isSmallScreen = constraints.maxWidth < 400;
 
-            SizedBox(height: 16),
-
-            // Liste des épiceries avec BLoC
-            Expanded(
-              child: BlocConsumer<ShoppingListBloc, ShoppingListState>(
-                listener: (context, state) {
-                  if (state is ShoppingListError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: Colors.red,
-                      ),
+                  if (isSmallScreen) {
+                    // Layout vertical pour petits écrans
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Mes Listes d\'Épicerie',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () => _goToAllLists(context),
+                              child: Text(
+                                'Voir tout',
+                                style: TextStyle(color: Colors.blue[600]),
+                              ),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: () => _createNewList(context),
+                              icon: Icon(Icons.add, size: 16),
+                              label: Text('Nouvelle'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green[600],
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                elevation: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     );
-                  } else if (state is ShoppingListCreated) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Liste créée avec succès !'),
-                        backgroundColor: Colors.green,
-                      ),
+                  } else {
+                    // Layout horizontal pour grands écrans
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Mes Listes d\'Épicerie',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () => _goToAllLists(context),
+                              child: Text(
+                                'Voir tout',
+                                style: TextStyle(color: Colors.blue[600]),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            ElevatedButton.icon(
+                              onPressed: () => _createNewList(context),
+                              icon: Icon(Icons.add, size: 18),
+                              label: Text('Nouvelle'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green[600],
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                elevation: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     );
                   }
                 },
-                builder: (context, state) {
-                  if (state is ShoppingListLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.green[600]!,
+              ),
+
+              SizedBox(height: 16),
+
+              // Liste des épiceries avec BLoC
+              Expanded(
+                child: BlocConsumer<ShoppingListBloc, ShoppingListState>(
+                  listener: (context, state) {
+                    if (state is ShoppingListError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 3),
                         ),
-                      ),
-                    );
-                  } else if (state is ShoppingListLoaded) {
-                    if (state.lists.isEmpty) {
-                      return _buildEmptyState(context);
+                      );
+                    } else if (state is ShoppingListOperationSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
                     }
-                    return RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<ShoppingListBloc>().add(
-                          LoadShoppingLists(),
-                        );
-                      },
-                      child: ListView.builder(
-                        itemCount: state.lists.length,
+                  },
+                  builder: (context, state) {
+                    if (state is ShoppingListLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.green[600]!,
+                          ),
+                        ),
+                      );
+                    } else if (state is ShoppingListLoaded) {
+                      if (state.lists.isEmpty) {
+                        return _buildEmptyState(context);
+                      }
+
+                      // Afficher seulement les 5 dernières listes sur la page d'accueil
+                      final displayLists = state.lists.take(5).toList();
+
+                      return ListView.builder(
+                        itemCount: displayLists.length,
                         itemBuilder: (context, index) {
-                          return _buildSimpleListCard(
+                          return _buildEnhancedListCard(
                             context,
-                            state.lists[index],
+                            displayLists[index],
                           );
                         },
-                      ),
-                    );
-                  } else if (state is ShoppingListError) {
-                    return _buildErrorState(context, state.message);
-                  }
+                      );
+                    } else if (state is ShoppingListError) {
+                      return _buildErrorState(context, state.message);
+                    }
 
-                  // État initial ou autres états
-                  return _buildEmptyState(context);
-                },
+                    // État initial
+                    return _buildEmptyState(context);
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -262,7 +362,13 @@ class _HomeScreenView extends StatelessWidget {
     );
   }
 
-  Widget _buildSimpleListCard(BuildContext context, ShoppingList list) {
+  Widget _buildEnhancedListCard(BuildContext context, ShoppingList list) {
+    // Utiliser les getters du modèle comme dans ShoppingListScreen
+    final totalItems = list.itemsCount;
+    final completedItems = list.purchasedItemsCount;
+    final progress = list.progress;
+    final totalPrice = list.totalPrice;
+
     return Card(
       margin: EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -275,7 +381,7 @@ class _HomeScreenView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Nom de la liste
+              // Nom de la liste et menu
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -287,25 +393,200 @@ class _HomeScreenView extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                  SizedBox(width: 8), // Espace entre le titre et le menu
+                  PopupMenuButton(
+                    icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 20),
+                                SizedBox(width: 8),
+                                Text('Modifier'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'duplicate',
+                            child: Row(
+                              children: [
+                                Icon(Icons.copy, size: 20),
+                                SizedBox(width: 8),
+                                Text('Dupliquer'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, size: 20, color: Colors.red),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Supprimer',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                    onSelected:
+                        (value) =>
+                            _handleListAction(value.toString(), list, context),
+                  ),
                 ],
               ),
 
               SizedBox(height: 12),
 
-              // Informations de base
-              Row(
-                children: [
-                  Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
-                  SizedBox(width: 6),
-                  Text(
-                    'Cliquez pour voir les articles',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
+              // Informations détaillées - responsive
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isSmallScreen = constraints.maxWidth < 300;
+
+                  if (isSmallScreen && totalPrice > 0) {
+                    // Layout vertical pour très petits écrans
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.shopping_cart,
+                              size: 16,
+                              color: Colors.grey[600],
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              '$totalItems articles',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.attach_money,
+                              size: 16,
+                              color: Colors.green[600],
+                            ),
+                            SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                '${totalPrice.toStringAsFixed(2)} \$CAD',
+                                style: TextStyle(
+                                  color: Colors.green[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  } else {
+                    // Layout horizontal pour écrans normaux
+                    return Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          size: 16,
+                          color: Colors.grey[600],
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          '$totalItems articles',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        if (totalPrice > 0) ...[
+                          SizedBox(width: 16),
+                          Icon(
+                            Icons.attach_money,
+                            size: 16,
+                            color: Colors.green[600],
+                          ),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '${totalPrice.toStringAsFixed(2)} \$CAD',
+                              style: TextStyle(
+                                color: Colors.green[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    );
+                  }
+                },
               ),
+
+              if (totalItems > 0) ...[
+                SizedBox(height: 8),
+
+                // Barre de progression
+                Row(
+                  children: [
+                    Expanded(
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.grey[200],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.green[600]!,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      '$completedItems/$totalItems',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 8),
+
+                // Status
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color:
+                        list.isCompleted ? Colors.green[50] : Colors.orange[50],
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color:
+                          list.isCompleted
+                              ? Colors.green[200]!
+                              : Colors.orange[200]!,
+                    ),
+                  ),
+                  child: Text(
+                    list.isCompleted ? '✅ Terminée' : '🛒 En cours',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color:
+                          list.isCompleted
+                              ? Colors.green[700]
+                              : Colors.orange[700],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
 
               SizedBox(height: 8),
 
@@ -314,12 +595,6 @@ class _HomeScreenView extends StatelessWidget {
                 'Créée ${_formatDate(list.createdAt)}',
                 style: TextStyle(fontSize: 12, color: Colors.grey[500]),
               ),
-              if (list.updatedAt != null) ...[
-                Text(
-                  'Modifiée ${_formatDate(list.updatedAt!)}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                ),
-              ],
             ],
           ),
         ),
@@ -399,6 +674,149 @@ class _HomeScreenView extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ListDetailScreen(shoppingList: list),
       ),
+    ).then((_) {
+      // Recharger les listes au retour
+      context.read<ShoppingListBloc>().add(LoadShoppingLists());
+    });
+  }
+
+  void _goToAllLists(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ShoppingListScreen()),
+    ).then((_) {
+      // Recharger les listes au retour
+      context.read<ShoppingListBloc>().add(LoadShoppingLists());
+    });
+  }
+
+  void _handleListAction(
+    String action,
+    ShoppingList list,
+    BuildContext context,
+  ) {
+    switch (action) {
+      case 'edit':
+        _editListName(list, context);
+        break;
+      case 'duplicate':
+        context.read<ShoppingListBloc>().add(DuplicateShoppingList(list.id));
+        break;
+      case 'delete':
+        _deleteList(list, context);
+        break;
+    }
+  }
+
+  void _editListName(ShoppingList list, BuildContext context) {
+    final nameController = TextEditingController(text: list.name);
+
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<ShoppingListBloc>(),
+            child: AlertDialog(
+              title: Text('Modifier le nom'),
+              content: TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nom de la liste',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text('Annuler'),
+                ),
+                BlocBuilder<ShoppingListBloc, ShoppingListState>(
+                  builder: (dialogContext, state) {
+                    final isLoading = state is ShoppingListLoading;
+                    return ElevatedButton(
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                if (nameController.text.trim().isNotEmpty) {
+                                  dialogContext.read<ShoppingListBloc>().add(
+                                    UpdateShoppingList(
+                                      list.id,
+                                      nameController.text.trim(),
+                                    ),
+                                  );
+                                  Navigator.pop(dialogContext);
+                                }
+                              },
+                      child:
+                          isLoading
+                              ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : Text('Sauvegarder'),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _deleteList(ShoppingList list, BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<ShoppingListBloc>(),
+            child: AlertDialog(
+              title: Text('Supprimer la liste'),
+              content: Text(
+                'Êtes-vous sûr de vouloir supprimer "${list.name}" ?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text('Annuler'),
+                ),
+                BlocBuilder<ShoppingListBloc, ShoppingListState>(
+                  builder: (dialogContext, state) {
+                    final isLoading = state is ShoppingListLoading;
+                    return ElevatedButton(
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () {
+                                dialogContext.read<ShoppingListBloc>().add(
+                                  DeleteShoppingList(list.id),
+                                );
+                                Navigator.pop(dialogContext);
+                              },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child:
+                          isLoading
+                              ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : Text('Supprimer'),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
     );
   }
 

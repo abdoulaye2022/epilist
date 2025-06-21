@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ShoppingList extends Model
 {
@@ -36,5 +37,13 @@ class ShoppingList extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the items for the shopping list.
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(ListItem::class, 'list_id');
     }
 }

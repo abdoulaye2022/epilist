@@ -49,11 +49,21 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
       print("Item ajouté avec succès: ${newItem.toJson()}");
 
-      // Recharger la liste complète pour éviter les problèmes de synchronisation
-      add(LoadListItems(event.listId));
+      // Ajouter l'item à la liste existante au lieu de recharger
+      if (state is ListItemLoaded) {
+        final currentState = state as ListItemLoaded;
+        final updatedItems = [newItem, ...currentState.items];
 
-      // Émettre un message de succès
-      emit(ListItemOperationSuccess('Item ajouté avec succès'));
+        // Émettre d'abord le message de succès
+        emit(ListItemOperationSuccess('Item ajouté avec succès'));
+
+        // Puis émettre la liste mise à jour
+        emit(ListItemLoaded(updatedItems));
+      } else {
+        // Si pas d'état loaded, recharger tout
+        emit(ListItemOperationSuccess('Item ajouté avec succès'));
+        add(LoadListItems(event.listId));
+      }
     } catch (e) {
       print("Error adding item: $e");
       emit(ListItemError('Erreur lors de l\'ajout de l\'item'));
@@ -108,12 +118,10 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
                 .where((item) => item.id != event.itemId)
                 .toList();
 
-        emit(ListItemLoaded(updatedItems));
-
-        // Émettre un message de succès
+        // Émettre d'abord le message de succès
         emit(ListItemOperationSuccess('Item supprimé avec succès'));
 
-        // Revenir à l'état loaded
+        // Puis émettre la liste mise à jour
         emit(ListItemLoaded(updatedItems));
       }
     } catch (e) {

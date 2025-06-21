@@ -1,5 +1,4 @@
 // blocs/shopping_list/shopping_list_bloc.dart
-// ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/services/shopping_list_service.dart';
@@ -16,6 +15,9 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       super(ShoppingListInitial()) {
     on<LoadShoppingLists>(_onLoadShoppingLists);
     on<CreateShoppingList>(_onCreateShoppingList);
+    on<UpdateShoppingList>(_onUpdateShoppingList);
+    on<DeleteShoppingList>(_onDeleteShoppingList);
+    on<DuplicateShoppingList>(_onDuplicateShoppingList);
   }
 
   Future<void> _onLoadShoppingLists(
@@ -27,7 +29,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       final lists = await _shoppingListService.getShoppingLists();
       emit(ShoppingListLoaded(lists));
     } catch (e) {
-      emit(ShoppingListError('Failed to load shopping lists'));
+      print("Error loading shopping lists: $e");
+      emit(ShoppingListError('Erreur lors du chargement des listes'));
     }
   }
 
@@ -37,11 +40,100 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
   ) async {
     try {
       final newList = await _shoppingListService.createShoppingList(event.name);
-      emit(ShoppingListCreated(newList));
-      // Recharge les listes après création
-      add(LoadShoppingLists());
+
+      // Ajouter la nouvelle liste à la liste existante
+      if (state is ShoppingListLoaded) {
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists = [newList, ...currentState.lists];
+
+        // Émettre d'abord le message de succès
+        emit(ShoppingListOperationSuccess('Liste créée avec succès'));
+
+        // Puis émettre l'état loaded avec les nouvelles données
+        emit(ShoppingListLoaded(updatedLists));
+      } else {
+        // Si pas d'état loaded, recharger tout
+        emit(ShoppingListOperationSuccess('Liste créée avec succès'));
+        add(LoadShoppingLists());
+      }
     } catch (e) {
-      emit(ShoppingListError('Failed to create shopping list'));
+      print("Error creating shopping list: $e");
+      emit(ShoppingListError('Erreur lors de la création de la liste'));
+    }
+  }
+
+  Future<void> _onUpdateShoppingList(
+    UpdateShoppingList event,
+    Emitter<ShoppingListState> emit,
+  ) async {
+    try {
+      final updatedList = await _shoppingListService.updateShoppingList(
+        event.id,
+        event.name,
+      );
+
+      // Mettre à jour la liste dans l'état actuel
+      if (state is ShoppingListLoaded) {
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists =
+            currentState.lists.map((list) {
+              if (list.id == event.id) {
+                return updatedList;
+              }
+              return list;
+            }).toList();
+
+        emit(ShoppingListOperationSuccess('Liste modifiée avec succès'));
+        emit(ShoppingListLoaded(updatedLists));
+      }
+    } catch (e) {
+      print("Error updating shopping list: $e");
+      emit(ShoppingListError('Erreur lors de la modification'));
+    }
+  }
+
+  Future<void> _onDeleteShoppingList(
+    DeleteShoppingList event,
+    Emitter<ShoppingListState> emit,
+  ) async {
+    try {
+      await _shoppingListService.deleteShoppingList(event.id);
+
+      // Supprimer la liste de l'état actuel
+      if (state is ShoppingListLoaded) {
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists =
+            currentState.lists.where((list) => list.id != event.id).toList();
+
+        emit(ShoppingListOperationSuccess('Liste supprimée avec succès'));
+        emit(ShoppingListLoaded(updatedLists));
+      }
+    } catch (e) {
+      print("Error deleting shopping list: $e");
+      emit(ShoppingListError('Erreur lors de la suppression'));
+    }
+  }
+
+  Future<void> _onDuplicateShoppingList(
+    DuplicateShoppingList event,
+    Emitter<ShoppingListState> emit,
+  ) async {
+    try {
+      final duplicatedList = await _shoppingListService.duplicateShoppingList(
+        event.id,
+      );
+
+      // Ajouter la liste dupliquée à l'état actuel
+      if (state is ShoppingListLoaded) {
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists = [duplicatedList, ...currentState.lists];
+
+        emit(ShoppingListOperationSuccess('Liste dupliquée avec succès'));
+        emit(ShoppingListLoaded(updatedLists));
+      }
+    } catch (e) {
+      print("Error duplicating shopping list: $e");
+      emit(ShoppingListError('Erreur lors de la duplication'));
     }
   }
 }

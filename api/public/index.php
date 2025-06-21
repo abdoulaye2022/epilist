@@ -105,6 +105,7 @@ $app->group('', function ($group) {
     $group->put('/shopping-lists/{id}', [ShoppingListController::class, 'update']);
     $group->delete('/shopping-lists/{id}', [ShoppingListController::class, 'destroy']);
     $group->post('/shopping-lists/{id}/restore', [ShoppingListController::class, 'restore']);
+    $group->post('/shopping-lists/{id}/duplicate', [ShoppingListController::class, 'duplicate']);
 
     // List Items Routes
     $group->get('/shopping-lists/{listId}/items', [ListItemController::class, 'index']);

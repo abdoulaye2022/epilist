@@ -54,14 +54,13 @@ class ShoppingListController
         }
     }
 
-    /**
-     * Affiche toutes les listes de courses de l'utilisateur connecté
-     */
+   // Dans la méthode index
     public function index(Request $request, Response $response): Response
     {
         try {
             $user_id = $request->getAttribute('auth_id');
             $shoppingLists = ShoppingList::where('user_id', $user_id)
+                ->with('items') // Charge les items associés
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -80,14 +79,13 @@ class ShoppingListController
         }
     }
 
-    /**
-     * Affiche une liste de courses spécifique
-     */
+    // Dans la méthode show
     public function show(Request $request, Response $response, array $args): Response
     {
         try {
             $user_id = $request->getAttribute('auth_id');
             $shoppingList = ShoppingList::where('user_id', $user_id)
+                ->with('items') // Charge les items associés
                 ->findOrFail($args['id']);
 
             $response->getBody()->write(json_encode([
@@ -197,6 +195,55 @@ class ShoppingListController
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la restauration de la liste',
+                'error' => $e->getMessage()
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * Duplique une liste de courses avec ses items
+     */
+    public function duplicate(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            
+            // Récupère la liste originale avec ses items
+            $originalList = ShoppingList::with('items')
+                ->where('user_id', $user_id)
+                ->findOrFail($args['id']);
+
+            // Crée une nouvelle liste avec le même nom + " (Copie)"
+            $newList = ShoppingList::create([
+                'user_id' => $user_id,
+                'name' => $originalList->name . ' (Copie)',
+            ]);
+
+            // Duplique tous les items de la liste originale
+            foreach ($originalList->items as $item) {
+                $newList->items()->create([
+                    'product_name' => $item->product_name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'store_name' => $item->store_name,
+                    'is_purchased' => false, // On remet à false pour les items dupliqués
+                ]);
+            }
+
+            // Recharge la nouvelle liste avec ses items pour la réponse
+            $newListWithItems = ShoppingList::with('items')->find($newList->id);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $newListWithItems,
+                'message' => 'Liste dupliquée avec succès'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la duplication de la liste',
                 'error' => $e->getMessage()
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

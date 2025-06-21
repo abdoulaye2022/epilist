@@ -30,6 +30,15 @@ class ShoppingListCreated extends ShoppingListState {
   List<Object> get props => [newList];
 }
 
+class ShoppingListOperationSuccess extends ShoppingListState {
+  final String message;
+
+  const ShoppingListOperationSuccess(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
 class ShoppingListError extends ShoppingListState {
   final String message;
 

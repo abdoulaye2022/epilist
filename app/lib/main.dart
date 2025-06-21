@@ -3,6 +3,7 @@ import 'package:epilist/config/app_config.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
+import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart'; // ✅ Ajouté
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -53,8 +54,16 @@ void main() async {
         providers: [
           BlocProvider(
             create:
-                (context) => AuthBloc(authService: context.read<AuthService>())
-                  ..add(CheckAuthentication()), // Maintenant géré correctement
+                (context) =>
+                    AuthBloc(authService: context.read<AuthService>())
+                      ..add(CheckAuthentication()),
+          ),
+          // ✅ Ajout du ShoppingListBloc
+          BlocProvider(
+            create:
+                (context) => ShoppingListBloc(
+                  shoppingListService: context.read<ShoppingListService>(),
+                ),
           ),
         ],
         child: const MyApp(),

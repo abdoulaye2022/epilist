@@ -496,15 +496,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Icon(Icons.email, size: 16, color: Colors.grey[600]),
                     SizedBox(width: 8),
-                    Text('support@epilist.app'),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.phone, size: 16, color: Colors.grey[600]),
-                    SizedBox(width: 8),
-                    Text('01 23 45 67 89'),
+                    Text('contact@m2atech.com'),
                   ],
                 ),
                 SizedBox(height: 12),

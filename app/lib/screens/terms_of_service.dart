@@ -122,8 +122,8 @@ class TermsOfServicePage extends StatelessWidget {
             _buildTermSection(
               '11. Contact',
               'Pour toute question sur ces conditions :\n\n'
-                  'Email : legal@epilist.app\n'
-                  'Adresse : [Votre adresse légale]\n\n'
+                  'Email : contact@m2atech.com\n'
+                  'Adresse : Moncton, New Brunswick\n\n'
                   'Nous répondons sous 5 jours ouvrés.',
             ),
 

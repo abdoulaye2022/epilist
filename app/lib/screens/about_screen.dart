@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -80,21 +83,21 @@ class AboutPage extends StatelessWidget {
                 _buildActionButton(
                   'Nous contacter',
                   Icons.email,
-                  () => _launchEmail(),
+                  () => _launchEmail(context),
                   Colors.blue,
                 ),
                 SizedBox(height: 12),
                 _buildActionButton(
                   'Noter l\'application',
                   Icons.star,
-                  () => _rateApp(),
+                  () => _rateApp(context),
                   Colors.orange,
                 ),
                 SizedBox(height: 12),
                 _buildActionButton(
                   'Partager EpiList',
                   Icons.share,
-                  () => _shareApp(),
+                  () => _shareApp(context),
                   Colors.green,
                 ),
               ],
@@ -105,6 +108,12 @@ class AboutPage extends StatelessWidget {
             // Copyright
             Text(
               '© 2025 EpiList. Tous droits réservés.',
+              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Développé par M2A Tech',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
               textAlign: TextAlign.center,
             ),
@@ -178,19 +187,167 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  void _launchEmail() async {
-    // if (await canLaunchUrl(emailUri)) {
-    //   await launchUrl(emailUri);
-    // }
+  void _launchEmail(BuildContext context) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'contact@m2atech.com',
+      query:
+          'subject=Support EpiList&body=Bonjour,%0A%0AJe vous contacte concernant l\'application EpiList.%0A%0A',
+    );
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+      } else {
+        // Si l'email ne peut pas être ouvert, proposer d'autres options
+        _showContactDialog(context);
+      }
+    } catch (e) {
+      _showContactDialog(context);
+    }
   }
 
-  void _rateApp() {
-    // Logique pour noter l'app sur les stores
-    print('Redirection vers le store pour noter l\'app');
+  void _showContactDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Nous contacter'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Vous pouvez nous contacter par email :'),
+              SizedBox(height: 8),
+              SelectableText(
+                'contact@m2atech.com',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[600],
+                ),
+              ),
+              SizedBox(height: 16),
+              Text('Ou essayer d\'ouvrir votre client email :'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Fermer'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _copyEmailToClipboard(context);
+              },
+              child: Text('Copier l\'email'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _shareApp() {
-    // Logique pour partager l'app
-    print('Partage de l\'application');
+  void _copyEmailToClipboard(BuildContext context) {
+    // Copy to clipboard
+    final data = ClipboardData(text: 'contact@m2atech.com');
+    Clipboard.setData(data);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Email copié dans le presse-papiers'),
+        backgroundColor: Colors.green[600],
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _rateApp(BuildContext context) async {
+    // URLs pour les stores
+    const String androidUrl =
+        'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
+    const String iosUrl = 'https://apps.apple.com/app/epilist/id123456789';
+
+    try {
+      // Détecter la plateforme et utiliser l'URL appropriée
+      final Uri storeUri;
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        storeUri = Uri.parse(androidUrl);
+      } else {
+        storeUri = Uri.parse(iosUrl);
+      }
+
+      if (await canLaunchUrl(storeUri)) {
+        await launchUrl(storeUri, mode: LaunchMode.externalApplication);
+      } else {
+        _showRatingDialog(context);
+      }
+    } catch (e) {
+      _showRatingDialog(context);
+    }
+  }
+
+  void _showRatingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Noter l\'application'),
+          content: Text(
+            'Merci de vouloir noter EpiList ! '
+            'Vous pouvez nous laisser un avis sur votre store d\'applications habituel.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Plus tard'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Merci pour votre soutien ! 🌟'),
+                    backgroundColor: Colors.orange[600],
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              child: Text('Merci !'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _shareApp(BuildContext context) async {
+    const String appName = 'EpiList';
+    const String appDescription =
+        'Organisez vos courses facilement avec EpiList !';
+    const String downloadLink =
+        'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
+
+    const String shareText =
+        '$appName\n\n'
+        '$appDescription\n\n'
+        'Téléchargez l\'application :\n'
+        '$downloadLink\n\n'
+        '#EpiList #Courses #Organisation';
+
+    try {
+      // ignore: deprecated_member_use
+      await Share.share(
+        shareText,
+        subject: 'Découvrez EpiList - Votre assistant courses !',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de partager pour le moment'),
+          backgroundColor: Colors.red[600],
+        ),
+      );
+    }
   }
 }
