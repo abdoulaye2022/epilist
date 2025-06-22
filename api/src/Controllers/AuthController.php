@@ -160,6 +160,23 @@ class AuthController
                 return $this->createErrorResponse('Invalid credentials. Please try again.', 401);
             }
 
+            // Vérifier si l'email est confirmé
+            if (!$user->isEmailVerified()) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'code' => 'EMAIL_NOT_VERIFIED',
+                    'message' => 'Please verify your email address before logging in.',
+                    'data' => [
+                        'email' => $user->email,
+                        'verification_required' => true,
+                        'can_resend_code' => true
+                    ]
+                ]));
+                return $response
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withStatus(403); // 403 Forbidden - Compte existe mais non autorisé
+            }
+
             // Generate tokens
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
@@ -179,7 +196,8 @@ class AuthController
                     'id' => $user->id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
-                    'email' => $user->email
+                    'email' => $user->email,
+                    'email_verified' => $user->email_verified
                 ]
             ]));
             return $response
@@ -218,8 +236,7 @@ class AuthController
         
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
-    
-        
+
         $validator->rule(function($field, $value, $params, $fields) {
             return User::where('email', $value)->count() === 0;
         }, 'email')->message('This email is already registered');
@@ -237,13 +254,19 @@ class AuthController
         }
 
         try {
+            // Générer un code de vérification
+            $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $expiration = Carbon::now()->addHours(2);
+
             // Data sanitization
             $cleanData = [
                 'first_name' => trim($data['first_name']),
                 'last_name' => trim($data['last_name']),
                 'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
                 'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
-                'terms_accepted' => 1, // Always set to 1 as required
+                'terms_accepted' => 1,
+                'email_verification_code' => $verificationCode,
+                'email_verification_code_expires_at' => $expiration,
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()
             ];
@@ -251,15 +274,24 @@ class AuthController
             // Create user
             $user = User::create($cleanData);
 
-            // Success response
+            if(Config::get('APP_ENV')=='dev') {
+                $user->email = 'm2atodev@gmail.com';
+            }
+
+            // Envoyer le code de vérification par email
+            $mailSender = new MailSender();
+            $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
+
+            // Success response (sans donner le code)
             $response->getBody()->write(json_encode([
                 'success' => true,
-                'message' => 'Account created successfully',
+                'message' => 'Account created successfully. Please check your email for verification code.',
                 'data' => [
                     'id' => $user->id,
                     'email' => $user->email,
                     'first_name' => $user->first_name,
-                    'last_name' => $user->last_name
+                    'last_name' => $user->last_name,
+                    'email_verified' => $user->email_verified
                 ]
             ]));
             return $response
@@ -276,6 +308,268 @@ class AuthController
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(500);
+        }
+    }
+
+    public function confirmEmail(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['email', 'code'])
+            ->message('{field} is required');
+        $validator->rule('email', 'email')
+            ->message('Invalid email address');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::findByEmail($data['email']);
+            
+            if (!$user) {
+                return $this->createErrorResponse('User not found', 404);
+            }
+
+            // Vérifier si l'email est déjà vérifié
+            if ($user->isEmailVerified()) {
+                return $this->createErrorResponse('Email already verified', 400);
+            }
+
+            // Vérifier le code et son expiration
+            if ($user->email_verification_code !== $data['code']) {
+                return $this->createErrorResponse('Invalid verification code', 400);
+            }
+
+            if (Carbon::now()->gt($user->email_verification_code_expires_at)) {
+                return $this->createErrorResponse('Verification code has expired', 400);
+            }
+
+            // Marquer l'email comme vérifié
+            $user->email_verified_at = Carbon::now();
+            $user->email_verification_code = null;
+            $user->email_verification_code_expires_at = null;
+            $user->email_verified = 1;
+            $user->save();
+
+            if(Config::get('APP_ENV')=='dev') {
+                $user->email = 'm2atodev@gmail.com';
+            }
+
+            // Envoyer l'email de bienvenue
+            $mailSender = new MailSender();
+            $mailSender->sendWelcomeEmail($user->email, $user->first_name);
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Email verified successfully',
+                    'data' => [
+                        'email_verified' => true,
+                        'email_verified_at' => $user->email_verified_at->format('Y-m-d H:i:s')
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Error verifying email: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function resendVerificationEmail(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['email'])
+            ->message('{field} is required');
+        $validator->rule('email', 'email')
+            ->message('Invalid email address');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::findByEmail($data['email']);
+            
+            if (!$user) {
+                return $this->createErrorResponse('User not found', 404);
+            }
+
+            // Vérifier si l'email est déjà vérifié
+            if ($user->isEmailVerified()) {
+                return $this->createErrorResponse('Email already verified', 400);
+            }
+
+            // Générer un nouveau code de vérification
+            $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $expiration = Carbon::now()->addHours(2);
+
+            // Mettre à jour le code
+            $user->email_verification_code = $verificationCode;
+            $user->email_verification_code_expires_at = $expiration;
+            $user->save();
+
+            if(Config::get('APP_ENV')=='dev') {
+                $user->email = 'm2atodev@gmail.com';
+            }
+
+            // Envoyer le nouveau code par email
+            $mailSender = new MailSender();
+            $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Verification email resent successfully'
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Error resending verification email: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function requestPasswordChange(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['email'])
+            ->message('{field} is required');
+        $validator->rule('email', 'email')
+            ->message('Invalid email address');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::findByEmail($data['email']);
+            
+            if (!$user) {
+                return $this->createErrorResponse('If this email exists, a password change code has been sent.', 200);
+            }
+
+            // Générer un code de 6 chiffres
+            $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $expiration = Carbon::now()->addHours(2); // Code valide pendant 2 heures
+
+            // Sauvegarder le code et sa date d'expiration
+            $user->password_change_code = $code;
+            $user->password_change_code_expires_at = $expiration;
+            $user->save();
+
+
+            if(Config::get('APP_ENV')=='dev') {
+                $user->email = 'm2atodev@gmail.com';
+            }
+
+            // Envoyer le code par email
+            $mailSender = new MailSender();
+            $mailSender->sendPasswordChangeCode($user->email, $code);
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'If this email exists, a password change code has been sent.'
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Error sending password change code: ' . $e->getMessage(), 500);
+        }
+    }
+
+    public function verifyPasswordChangeCode(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['email', 'code', 'new_password'])
+            ->message('{field} is required');
+        $validator->rule('email', 'email')
+            ->message('Invalid email address');
+        $validator->rule('lengthMin', 'new_password', 6)
+            ->message('Password must be at least 6 characters');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::findByEmail($data['email']);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Invalid request', 400);
+            }
+
+            // Vérifier le code et son expiration
+            if ($user->password_change_code !== $data['code']) {
+                return $this->createErrorResponse('Invalid code', 400);
+            }
+
+            if (Carbon::now()->gt($user->password_change_code_expires_at)) {
+                return $this->createErrorResponse('Code has expired', 400);
+            }
+
+            // Mettre à jour le mot de passe
+            $user->password_hash = password_hash($data['new_password'], PASSWORD_DEFAULT);
+            $user->password_change_code = null;
+            $user->password_change_code_expires_at = null;
+            $user->save();
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Password changed successfully'
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Error changing password: ' . $e->getMessage(), 500);
         }
     }
 

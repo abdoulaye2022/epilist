@@ -29,7 +29,7 @@ class JwtService
         $this->refreshSecretKey = Config::get('JWT_REFRESH_SECRET');
         $this->refreshAlgorithm = Config::get('JWT_REFRESH_ALGORITHM') ?? 'HS256';
         $this->refreshExpiration = (int) Config::get('JWT_REFRESH_EXPIRATION');
-        $this->issuer = Config::get('APP_URL') ?? 'kiloshare-api';
+        $this->issuer = Config::get('APP_URL') ?? 'EpiList-api';
 
         $this->validateConfiguration();
     }

@@ -89,8 +89,11 @@ $app->post('/auth/register', [AuthController::class, 'register']);
 $app->post('/auth/reset-link', [AuthController::class, 'resetLink']);
 $app->post('/auth/validate-reset-token', [AuthController::class, 'validateResetToken']);
 $app->post('/auth/reset-password', [AuthController::class, 'resetPassword']);
-$app->post('/auth/confirm-email', [AuthController::class, 'confirmedmail']);
-$app->post('/auth/resend-confirm-email', [AuthController::class, 'resendconfirmedmail']);
+$app->post('/auth/confirm-email', [AuthController::class, 'confirmEmail']);
+$app->post('/auth/resend-confirm-email', [AuthController::class, 'resendVerificationEmail']);
+
+$app->post('/auth/request-password-change', [AuthController::class, 'requestPasswordChange']);
+$app->post('/auth/verify-password-change-code', [AuthController::class, 'verifyPasswordChangeCode']);
 
 $app->group('', function ($group) {
     // Authentification

@@ -1,3 +1,4 @@
+// auth_event.dart - VERSION CORRIGÉE
 part of 'auth_bloc.dart';
 
 abstract class AuthEvent extends Equatable {
@@ -59,5 +60,48 @@ class UpdateProfile extends AuthEvent {
   List<Object> get props => [firstName, lastName];
 }
 
-// AJOUT: Événement pour réinitialiser l'état d'erreur
 class ClearAuthError extends AuthEvent {}
+
+class RequestPasswordChangeCode extends AuthEvent {
+  final String email;
+
+  const RequestPasswordChangeCode(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class VerifyPasswordChangeCode extends AuthEvent {
+  final String email;
+  final String code;
+  final String newPassword;
+
+  const VerifyPasswordChangeCode({
+    required this.email,
+    required this.code,
+    required this.newPassword,
+  });
+
+  @override
+  List<Object> get props => [email, code, newPassword];
+}
+
+// AJOUT: Événements manquants pour la confirmation d'email
+class ConfirmEmailRequested extends AuthEvent {
+  final String email;
+  final String code;
+
+  const ConfirmEmailRequested({required this.email, required this.code});
+
+  @override
+  List<Object> get props => [email, code];
+}
+
+class ResendVerificationCode extends AuthEvent {
+  final String email;
+
+  const ResendVerificationCode(this.email);
+
+  @override
+  List<Object> get props => [email];
+}

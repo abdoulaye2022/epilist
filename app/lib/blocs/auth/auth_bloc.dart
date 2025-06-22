@@ -1,4 +1,4 @@
-// auth_bloc.dart - VERSION AVEC DEBUG COMPLET
+// auth_bloc.dart - VERSION CORRIGÉE POUR REDIRECTION VERS LOGIN
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
@@ -19,46 +19,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetCurrentUser>(_onGetCurrentUser);
     on<UpdateProfile>(_onUpdateProfile);
     on<ClearAuthError>(_onClearAuthError);
+    on<RequestPasswordChangeCode>(_onRequestPasswordChangeCode);
+    on<VerifyPasswordChangeCode>(_onVerifyPasswordChangeCode);
+    on<ConfirmEmailRequested>(_onConfirmEmailRequested);
+    on<ResendVerificationCode>(_onResendVerificationCode);
   }
 
   Future<void> _onLoginButtonPressed(
     LoginButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onLoginButtonPressed() - Début pour: ${event.email}');
+    print('🚀 AuthBloc._onLoginButtonPressed appelé');
+    print('📧 Email: ${event.email}');
 
-    // 1. Émettre l'état de chargement
     emit(AuthLoading());
-    print('📤 AuthBloc - État émis: AuthLoading');
+    print('⏳ État AuthLoading émis');
 
     try {
-      // 2. Tentative de connexion
-      print('🔄 AuthBloc - Appel authService.login()...');
+      print('🔐 Appel authService.login...');
       final user = await authService.login(event.email, event.password);
-      print('✅ AuthBloc - Connexion réussie pour: ${user.email}');
-
-      // 3. Émettre le succès
+      print('✅ Utilisateur connecté avec succès: ${user.email}');
       emit(AuthSuccess(user: user));
-      print('📤 AuthBloc - État émis: AuthSuccess');
+      print('🎉 État AuthSuccess émis');
     } on AuthenticationException catch (e) {
-      print('❌ AuthBloc - AuthenticationException capturée: ${e.message}');
+      print('❌ AuthenticationException capturée dans le bloc: ${e.message}');
       emit(AuthFailure(error: e.message));
-      print('📤 AuthBloc - État émis: AuthFailure avec message: ${e.message}');
+      print('💔 État AuthFailure émis avec le message: ${e.message}');
     } catch (e) {
-      print('❌ AuthBloc - Exception générale capturée: $e');
-      final errorMessage = e.toString();
-      emit(AuthFailure(error: errorMessage));
-      print('📤 AuthBloc - État émis: AuthFailure avec message: $errorMessage');
+      print('💥 Exception générale capturée dans le bloc: $e');
+      print('🔍 Type d\'exception: ${e.runtimeType}');
+      emit(AuthFailure(error: e.toString()));
+      print('💔 État AuthFailure émis avec le message: ${e.toString()}');
     }
-
-    print('🔚 AuthBloc._onLoginButtonPressed() - Fin');
   }
 
   Future<void> _onCheckAuthentication(
     CheckAuthentication event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onCheckAuthentication() - Début');
     emit(AuthLoading());
 
     try {
@@ -66,23 +64,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
         if (user != null) {
-          print('✅ AuthBloc - Utilisateur authentifié trouvé: ${user.email}');
           emit(AuthSuccess(user: user));
         } else {
-          print(
-            '⚠️ AuthBloc - Token présent mais pas d\'utilisateur, nettoyage...',
-          );
           await authService.clearUserData();
           emit(Unauthenticated());
         }
       } else {
-        print('❌ AuthBloc - Pas authentifié');
         emit(Unauthenticated());
       }
     } catch (e) {
-      print('❌ AuthBloc - Erreur check auth: $e');
       emit(AuthFailure(error: 'Failed to check authentication'));
-      // Après une pause, passer à Unauthenticated
       await Future.delayed(Duration(seconds: 2));
       emit(Unauthenticated());
     }
@@ -92,15 +83,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onLogoutRequested() - Début');
     emit(AuthLoading());
 
     try {
       await authService.logout();
-      print('✅ AuthBloc - Déconnexion réussie');
       emit(Unauthenticated());
     } catch (e) {
-      print('❌ AuthBloc - Erreur déconnexion: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -109,7 +97,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onRegisterRequested() - Début pour: ${event.email}');
     emit(AuthLoading());
 
     try {
@@ -119,10 +106,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.email,
         event.password,
       );
-      print('✅ AuthBloc - Inscription réussie');
-      emit(RegistrationSuccess());
+
+      emit(EmailConfirmationRequired(event.email));
     } catch (e) {
-      print('❌ AuthBloc - Erreur inscription: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -131,15 +117,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     RefreshTokenRequested event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onRefreshTokenRequested() - Début');
     emit(AuthLoading());
 
     try {
       final tokens = await authService.refreshToken(event.refreshToken);
-      print('✅ AuthBloc - Token rafraîchi avec succès');
       emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
     } catch (e) {
-      print('❌ AuthBloc - Erreur refresh token: $e');
       emit(AuthFailure(error: 'Failed to refresh token'));
       await Future.delayed(Duration(seconds: 2));
       emit(Unauthenticated());
@@ -150,20 +133,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     GetCurrentUser event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onGetCurrentUser() - Début');
     emit(AuthLoading());
 
     try {
       final user = await authService.getCurrentUser();
       if (user != null) {
-        print('✅ AuthBloc - Utilisateur trouvé: ${user.email}');
         emit(AuthSuccess(user: user));
       } else {
-        print('❌ AuthBloc - Aucun utilisateur trouvé');
         emit(Unauthenticated());
       }
     } catch (e) {
-      print('❌ AuthBloc - Erreur get current user: $e');
       emit(AuthFailure(error: 'Failed to get current user'));
       await Future.delayed(Duration(seconds: 2));
       emit(Unauthenticated());
@@ -174,7 +153,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     UpdateProfile event,
     Emitter<AuthState> emit,
   ) async {
-    print('🔄 AuthBloc._onUpdateProfile() - Début');
     emit(AuthLoading());
 
     try {
@@ -183,17 +161,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         lastName: event.lastName,
       );
 
-      print('✅ AuthBloc - Profil mis à jour avec succès');
-      // Émettre ProfileUpdated temporairement pour afficher le message de succès
       emit(ProfileUpdated(updatedUser));
-
-      // Puis revenir à AuthSuccess avec les nouvelles données utilisateur
       emit(AuthSuccess(user: updatedUser));
     } catch (e) {
-      print('❌ AuthBloc - Erreur update profile: $e');
       emit(AuthFailure(error: e.toString()));
 
-      // Recharger l'utilisateur actuel en cas d'erreur
       try {
         final currentUser = await authService.getCurrentUser();
         if (currentUser != null) {
@@ -207,27 +179,77 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // Méthode pour réinitialiser l'erreur
   void _onClearAuthError(ClearAuthError event, Emitter<AuthState> emit) {
-    print('🔄 AuthBloc._onClearAuthError() - Effacement erreur');
     if (state is AuthFailure) {
       emit(AuthInitial());
     }
   }
 
-  @override
-  void onChange(Change<AuthState> change) {
-    super.onChange(change);
-    print(
-      '🔄 AuthBloc.onChange() - ${change.currentState.runtimeType} -> ${change.nextState.runtimeType}',
-    );
+  Future<void> _onRequestPasswordChangeCode(
+    RequestPasswordChangeCode event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      await authService.requestPasswordChangeCode(event.email);
+      emit(PasswordChangeCodeSent(event.email));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 
-  @override
-  void onTransition(Transition<AuthEvent, AuthState> transition) {
-    super.onTransition(transition);
-    print(
-      '🔄 AuthBloc.onTransition() - ${transition.event.runtimeType} -> ${transition.nextState.runtimeType}',
-    );
+  Future<void> _onVerifyPasswordChangeCode(
+    VerifyPasswordChangeCode event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      await authService.verifyPasswordChangeCode(
+        email: event.email,
+        code: event.code,
+        newPassword: event.newPassword,
+      );
+      emit(PasswordChanged());
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  // CORRIGÉ: Maintenant redirige vers login après vérification réussie
+  Future<void> _onConfirmEmailRequested(
+    ConfirmEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      // Appel du service qui vérifie l'email (ne retourne rien)
+      await authService.confirmEmail(email: event.email, code: event.code);
+
+      // Émettre le succès de confirmation (sans utilisateur)
+      emit(EmailConfirmationSuccess());
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onResendVerificationCode(
+    ResendVerificationCode event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      await authService.resendVerificationCode(event.email);
+      emit(VerificationCodeResent(event.email));
+
+      // Retourner à l'état de confirmation d'email
+      await Future.delayed(Duration(milliseconds: 500));
+      emit(EmailConfirmationRequired(event.email));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 }

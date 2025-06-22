@@ -1,4 +1,4 @@
-// auth_state.dart
+// auth_state.dart - VERSION CORRIGÉE
 part of 'auth_bloc.dart';
 
 abstract class AuthState extends Equatable {
@@ -51,4 +51,37 @@ class ProfileUpdated extends AuthState {
 
   @override
   List<Object> get props => [user];
+}
+
+class PasswordChangeCodeSent extends AuthState {
+  final String email;
+
+  const PasswordChangeCodeSent(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class PasswordChanged extends AuthState {}
+
+class EmailConfirmationRequired extends AuthState {
+  final String email;
+
+  const EmailConfirmationRequired(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+// CORRIGÉ: EmailConfirmationSuccess ne devrait pas avoir d'utilisateur
+// car la vérification d'email ne retourne pas de tokens
+class EmailConfirmationSuccess extends AuthState {}
+
+class VerificationCodeResent extends AuthState {
+  final String email;
+
+  const VerificationCodeResent(this.email);
+
+  @override
+  List<Object> get props => [email];
 }

@@ -1,5 +1,6 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
+import 'package:epilist/screens/email_verification_screen.dart'; // AJOUT
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,8 +26,36 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        // MODIFIÉ: Redirection vers vérification email au lieu de connexion
+        if (state is EmailConfirmationRequired) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Compte créé avec succès ! ${_firstNameController.text.trim()} ${_lastNameController.text.trim()}\nVeuillez vérifier votre email pour activer votre compte.',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.green[600],
+              duration: Duration(seconds: 4),
+            ),
+          );
+
+          // Redirection vers l'écran de vérification email
+          Future.delayed(Duration(milliseconds: 500), () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => EmailVerificationScreen(
+                      email: state.email,
+                      fromRegistration: true,
+                    ),
+              ),
+            );
+          });
+        }
+
+        // CONSERVÉ: Gestion des succès de vérification (si nécessaire)
         if (state is RegistrationSuccess) {
-          // Message de succès avec le nom complet
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -38,7 +67,6 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
           );
 
-          // Redirection vers l'écran de connexion après un délai
           Future.delayed(Duration(milliseconds: 500), () {
             Navigator.pushReplacement(
               context,
@@ -48,7 +76,6 @@ class _SignUpPageState extends State<SignUpPage> {
         }
 
         if (state is AuthFailure) {
-          // Message d'erreur
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),
@@ -359,7 +386,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                       SizedBox(height: 20),
 
-                      // Message d'information pour l'inscription
+                      // MODIFIÉ: Message d'information mis à jour
                       Container(
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -370,14 +397,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Row(
                           children: [
                             Icon(
-                              Icons.info_outline,
+                              Icons.email_outlined,
                               color: Colors.green[600],
                               size: 20,
                             ),
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Après inscription, vous serez redirigé vers la page de connexion',
+                                'Après inscription, vous recevrez un code de vérification par email',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.green[700],
@@ -426,7 +453,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _signUp() {
     if (_formKey.currentState!.validate()) {
-      // Utilisation du BLoC pour l'inscription
       context.read<AuthBloc>().add(
         RegisterRequested(
           firstName: _firstNameController.text.trim(),

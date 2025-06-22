@@ -1,4 +1,4 @@
-// auth_service.dart - VERSION CORRIGÉE POUR success:false
+// auth_service.dart - VERSION CORRIGÉE POUR LA VERIFICATION EMAIL
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:epilist/models/user.dart';
@@ -16,8 +16,92 @@ class AuthService {
     : _dio = dio,
       _sharedPreferences = sharedPreferences;
 
+  // CORRIGÉ: Méthode pour vérifier l'email - ne retourne pas d'utilisateur car pas de tokens
+  Future<void> confirmEmail({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/auth/confirm-email',
+        data: {'email': email, 'code': code},
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        // Succès - l'email est maintenant vérifié
+        // Ne pas essayer de créer un utilisateur car pas de tokens dans la réponse
+        return;
+      } else {
+        final errorMessage =
+            response.data['message'] ?? 'Code de vérification invalide';
+        throw AuthenticationException(errorMessage);
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        final errorData = e.response?.data;
+        if (errorData is Map && errorData['success'] == false) {
+          throw AuthenticationException(
+            errorData['message'] ??
+                'Erreur lors de la confirmation de l\'email',
+          );
+        }
+        final message =
+            errorData is Map
+                ? errorData['message'] ??
+                    'Erreur lors de la confirmation de l\'email'
+                : 'Erreur de serveur';
+        throw AuthenticationException(message);
+      } else {
+        throw AuthenticationException(_getDioErrorMessage(e));
+      }
+    } catch (e) {
+      throw AuthenticationException(
+        'Erreur inattendue lors de la confirmation de l\'email',
+      );
+    }
+  }
+
+  Future<void> resendVerificationCode(String email) async {
+    try {
+      final response = await _dio.post(
+        '/auth/resend-confirm-email',
+        data: {'email': email},
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      if (response.data['success'] != true) {
+        throw AuthenticationException(
+          response.data['message'] ??
+              'Échec de l\'envoi du code de vérification',
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        final errorData = e.response?.data;
+        if (errorData is Map && errorData['success'] == false) {
+          throw AuthenticationException(
+            errorData['message'] ?? 'Échec de l\'envoi du code de vérification',
+          );
+        }
+        final message =
+            errorData is Map
+                ? errorData['message'] ??
+                    'Échec de l\'envoi du code de vérification'
+                : 'Erreur de serveur';
+        throw AuthenticationException(message);
+      } else {
+        throw AuthenticationException(_getDioErrorMessage(e));
+      }
+    } catch (e) {
+      throw AuthenticationException(
+        'Erreur inattendue lors de l\'envoi du code de vérification',
+      );
+    }
+  }
+
   Future<User> login(String email, String password) async {
-    print('🔄 AuthService.login() - Début de la connexion pour: $email');
+    print('🔑 AuthService.login appelé pour: $email');
 
     try {
       final response = await _dio.post(
@@ -26,72 +110,108 @@ class AuthService {
         options: Options(validateStatus: (status) => status! < 500),
       );
 
-      print('🔄 AuthService.login() - Response reçue: ${response.data}');
-      print('🔄 AuthService.login() - Status Code: ${response.statusCode}');
+      print('📥 Réponse reçue - Status: ${response.statusCode}');
+      print('📄 Données de réponse: ${response.data}');
 
-      // CORRECTION PRINCIPALE: Vérifier d'abord le champ success
       if (response.data != null && response.data is Map) {
         final responseData = response.data as Map<String, dynamic>;
 
-        // ⚠️ IMPORTANT: Si success est false, lancer immédiatement l'exception
+        // NOUVELLE GESTION: Vérifier d'abord si success = false
         if (responseData['success'] == false) {
-          final errorMessage =
-              responseData['message'] ?? 'Identifiants invalides';
+          final errorCode = responseData['code'];
+          final errorMessage = responseData['message'] ?? 'Erreur de connexion';
+
           print(
-            '❌ AuthService.login() - success:false détecté, message: $errorMessage',
+            '❌ Erreur API détectée - Code: $errorCode, Message: $errorMessage',
           );
+
+          // Gestion spécifique du code EMAIL_NOT_VERIFIED
+          if (errorCode == 'EMAIL_NOT_VERIFIED') {
+            print('📧 Email non vérifié détecté');
+            throw AuthenticationException(
+              'Veuillez vérifier votre email avant de vous connecter',
+            );
+          }
+
+          // Autres erreurs
           throw AuthenticationException(errorMessage);
         }
 
-        // Si success est true et qu'on a les données
+        // Si success = true, traitement normal
         if (responseData['success'] == true && responseData['data'] != null) {
-          print('✅ AuthService.login() - success:true détecté');
+          print('✅ Connexion réussie - Création de l\'utilisateur');
+
           final userData = responseData['data'] as Map<String, dynamic>;
+
+          // Double vérification de l'email (au cas où)
+          if (userData['email_verified'] != true) {
+            print('⚠️ Email non vérifié selon les données utilisateur');
+            throw AuthenticationException(
+              'Veuillez vérifier votre email avant de vous connecter',
+            );
+          }
 
           final user = User(
             id: userData['id'],
             firstName: userData['first_name'],
             lastName: userData['last_name'],
             email: userData['email'],
+            emailVerified: userData['email_verified'] ?? false,
             accessToken: responseData['access_token'],
             refreshToken: responseData['refresh_token'],
+            emailVerifiedAt:
+                userData['email_verified_at'] != null
+                    ? DateTime.parse(userData['email_verified_at'])
+                    : null,
+            createdAt:
+                userData['created_at'] != null
+                    ? DateTime.parse(userData['created_at'])
+                    : null,
+            updatedAt:
+                userData['updated_at'] != null
+                    ? DateTime.parse(userData['updated_at'])
+                    : null,
           );
 
           try {
             await _saveUserData(user, responseData['access_token']);
-            print('✅ AuthService.login() - Données utilisateur sauvegardées');
+            print('💾 Données utilisateur sauvegardées');
           } catch (e) {
-            print('⚠️ AuthService.login() - Erreur sauvegarde: $e');
+            print('⚠️ Erreur lors de la sauvegarde: $e');
           }
 
           return user;
         }
       }
 
-      // Si on arrive ici, la réponse n'a pas le format attendu
-      print('❌ AuthService.login() - Format de réponse inattendu');
-      if (response.statusCode! >= 200 && response.statusCode! < 300) {
-        throw AuthenticationException('Format de réponse inattendu du serveur');
-      } else {
-        final errorMessage = response.data?['message'] ?? 'Erreur de connexion';
-        throw AuthenticationException(errorMessage);
-      }
+      // Si on arrive ici, la réponse est inattendue
+      print('❓ Format de réponse inattendu');
+      throw AuthenticationException('Format de réponse inattendu du serveur');
     } on DioException catch (e) {
-      print('❌ AuthService.login() - DioException: ${e.type} - ${e.message}');
-      print('❌ AuthService.login() - Response Data: ${e.response?.data}');
+      print('🌐 DioException capturée: ${e.type}');
+      print('📄 Response data: ${e.response?.data}');
 
       if (e.response != null) {
         final errorData = e.response?.data;
         if (errorData is Map) {
-          // Vérifier si c'est une erreur d'API avec success: false
+          // Gestion spécifique des codes d'erreur API
           if (errorData['success'] == false) {
-            final message = errorData['message'] ?? 'Identifiants invalides';
+            final errorCode = errorData['code'];
+            final message = errorData['message'] ?? 'Erreur de connexion';
+
             print(
-              '❌ AuthService.login() - DioException avec success:false, message: $message',
+              '❌ Erreur API via DioException - Code: $errorCode, Message: $message',
             );
+
+            if (errorCode == 'EMAIL_NOT_VERIFIED') {
+              throw AuthenticationException(
+                'Veuillez vérifier votre email avant de vous connecter',
+              );
+            }
+
             throw AuthenticationException(message);
           }
-          // Sinon utiliser le message générique
+
           final message = errorData['message'] ?? 'Erreur de serveur';
           throw AuthenticationException(message);
         } else {
@@ -101,10 +221,10 @@ class AuthService {
         throw AuthenticationException(_getDioErrorMessage(e));
       }
     } on AuthenticationException catch (e) {
-      print('❌ AuthService.login() - AuthenticationException: ${e.message}');
-      rethrow; // Relancer les exceptions d'authentification telles quelles
+      print('🔄 AuthenticationException relancée: ${e.message}');
+      rethrow;
     } catch (e) {
-      print('❌ AuthService.login() - Exception générale: $e');
+      print('💥 Erreur inattendue: $e');
       throw AuthenticationException('Erreur inattendue: ${e.toString()}');
     }
   }
@@ -147,8 +267,6 @@ class AuthService {
         },
         options: Options(validateStatus: (status) => status! < 500),
       );
-
-      print('Register - Response: ${response.data}');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final responseData = response.data;
@@ -199,9 +317,7 @@ class AuthService {
             '/auth/logout',
             options: Options(headers: {'Authorization': 'Bearer $token'}),
           );
-        } catch (e) {
-          print('Erreur lors de la déconnexion côté serveur: $e');
-        }
+        } catch (e) {}
       }
 
       await clearUserData();
@@ -295,8 +411,21 @@ class AuthService {
           firstName: userData['first_name'],
           lastName: userData['last_name'],
           email: userData['email'],
+          emailVerified: userData['email_verified'],
           accessToken: token!,
           refreshToken: await getRefreshToken(),
+          emailVerifiedAt:
+              userData['email_verified_at'] != null
+                  ? DateTime.parse(userData['email_verified_at'])
+                  : null,
+          createdAt:
+              userData['created_at'] != null
+                  ? DateTime.parse(userData['created_at'])
+                  : null,
+          updatedAt:
+              userData['updated_at'] != null
+                  ? DateTime.parse(userData['updated_at'])
+                  : null,
         );
 
         await _sharedPreferences.setString(
@@ -326,6 +455,54 @@ class AuthService {
       throw AuthenticationException(
         'Erreur inattendue lors de la mise à jour du profil',
       );
+    }
+  }
+
+  Future<void> requestPasswordChangeCode(String email) async {
+    try {
+      final response = await _dio.post(
+        '/auth/request-password-change',
+        data: {'email': email},
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      if (response.data['success'] != true) {
+        throw AuthenticationException(
+          response.data['message'] ?? 'Failed to send password change code',
+        );
+      }
+    } on DioException catch (e) {
+      throw AuthenticationException(
+        e.response?.data['message'] ?? 'Failed to send password change code',
+      );
+    } catch (e) {
+      throw AuthenticationException('Failed to send password change code');
+    }
+  }
+
+  Future<void> verifyPasswordChangeCode({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/auth/verify-password-change-code',
+        data: {'email': email, 'code': code, 'new_password': newPassword},
+        options: Options(validateStatus: (status) => status! < 500),
+      );
+
+      if (response.data['success'] != true) {
+        throw AuthenticationException(
+          response.data['message'] ?? 'Failed to change password',
+        );
+      }
+    } on DioException catch (e) {
+      throw AuthenticationException(
+        e.response?.data['message'] ?? 'Failed to change password',
+      );
+    } catch (e) {
+      throw AuthenticationException('Failed to change password');
     }
   }
 
