@@ -356,7 +356,7 @@ class AuthService {
     try {
       final token = await getToken();
       final response = await dio.put(
-        '/auth/profile',
+        '/auth/me',
         data: {'first_name': firstName, 'last_name': lastName},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );

@@ -668,6 +668,8 @@ class AuthController
                         'first_name' => $user->first_name,
                         'last_name' => $user->last_name,
                         'email' => $user->email,
+                        'email_verified' => $user->email_verified,
+                        'email_verified_at' => $user->email_verified_at
                     ]
                 ]))
             );
