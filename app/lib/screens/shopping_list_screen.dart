@@ -48,16 +48,26 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           if (state is ShoppingListError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
+                content: Text('❌ ${state.message}'),
+                backgroundColor: Colors.red[600],
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: EdgeInsets.all(16),
                 duration: Duration(seconds: 3),
               ),
             );
           } else if (state is ShoppingListOperationSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
+                content: Text('✅ ${state.message}'),
+                backgroundColor: Colors.green[600],
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: EdgeInsets.all(16),
                 duration: Duration(seconds: 2),
               ),
             );
@@ -342,57 +352,187 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
-            child: AlertDialog(
-              title: Text('Nouvelle liste de courses'),
-              content: TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nom de la liste',
-                  hintText: 'Ex: Courses de la semaine',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: true,
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text('Annuler'),
+              elevation: 10,
+              child: Container(
+                padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
                 ),
-                BlocBuilder<ShoppingListBloc, ShoppingListState>(
-                  builder: (dialogContext, state) {
-                    final isLoading = state is ShoppingListLoading;
-                    return ElevatedButton(
-                      onPressed:
-                          isLoading
-                              ? null
-                              : () {
-                                if (nameController.text.trim().isNotEmpty) {
-                                  dialogContext.read<ShoppingListBloc>().add(
-                                    CreateShoppingList(
-                                      nameController.text.trim(),
-                                    ),
-                                  );
-                                  Navigator.pop(dialogContext);
-                                }
-                              },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[600],
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icône de création
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(40),
                       ),
-                      child:
-                          isLoading
-                              ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                      child: Icon(
+                        Icons.add_shopping_cart_rounded,
+                        size: 40,
+                        color: Colors.green[600],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Titre
+                    Text(
+                      'Nouvelle liste de courses',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    // Message
+                    Text(
+                      'Donnez un nom à votre nouvelle liste de courses',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Champ de saisie
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom de la liste',
+                        hintText: 'Ex: Courses de la semaine',
+                        prefixIcon: Icon(
+                          Icons.list_alt,
+                          color: Colors.green[600],
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.green[600]!,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                      autofocus: true,
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Boutons
+                    Row(
+                      children: [
+                        // Bouton Annuler
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey[300]!),
+                              ),
+                            ),
+                            child: Text(
+                              'Annuler',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(width: 12),
+
+                        // Bouton Créer
+                        Expanded(
+                          child: BlocBuilder<
+                            ShoppingListBloc,
+                            ShoppingListState
+                          >(
+                            builder: (dialogContext, state) {
+                              final isLoading = state is ShoppingListLoading;
+                              return ElevatedButton(
+                                onPressed:
+                                    isLoading
+                                        ? null
+                                        : () {
+                                          if (nameController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            dialogContext
+                                                .read<ShoppingListBloc>()
+                                                .add(
+                                                  CreateShoppingList(
+                                                    nameController.text.trim(),
+                                                  ),
+                                                );
+                                            Navigator.pop(dialogContext);
+                                          }
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green[600],
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor: Colors.green[300],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
                                 ),
-                              )
-                              : Text('Créer'),
-                    );
-                  },
+                                child:
+                                    isLoading
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  Colors.white,
+                                                ),
+                                          ),
+                                        )
+                                        : Text(
+                                          'Créer',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
     );
@@ -432,53 +572,184 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
-            child: AlertDialog(
-              title: Text('Modifier le nom'),
-              content: TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nom de la liste',
-                  border: OutlineInputBorder(),
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 10,
+              child: Container(
+                padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icône de modification
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: Icon(
+                        Icons.edit_rounded,
+                        size: 40,
+                        color: Colors.blue[600],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Titre
+                    Text(
+                      'Modifier le nom',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    // Message
+                    Text(
+                      'Modifiez le nom de votre liste de courses',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Champ de saisie
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom de la liste',
+                        prefixIcon: Icon(
+                          Icons.list_alt,
+                          color: Colors.blue[600],
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.blue[600]!,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                      autofocus: true,
+                    ),
+
+                    SizedBox(height: 24),
+
+                    // Boutons
+                    Row(
+                      children: [
+                        // Bouton Annuler
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey[300]!),
+                              ),
+                            ),
+                            child: Text(
+                              'Annuler',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(width: 12),
+
+                        // Bouton Sauvegarder
+                        Expanded(
+                          child: BlocBuilder<
+                            ShoppingListBloc,
+                            ShoppingListState
+                          >(
+                            builder: (dialogContext, state) {
+                              final isLoading = state is ShoppingListLoading;
+                              return ElevatedButton(
+                                onPressed:
+                                    isLoading
+                                        ? null
+                                        : () {
+                                          if (nameController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            dialogContext
+                                                .read<ShoppingListBloc>()
+                                                .add(
+                                                  UpdateShoppingList(
+                                                    list.id,
+                                                    nameController.text.trim(),
+                                                  ),
+                                                );
+                                            Navigator.pop(dialogContext);
+                                          }
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue[600],
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor: Colors.blue[300],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                child:
+                                    isLoading
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                        : Text(
+                                          'Sauvegarder',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text('Annuler'),
-                ),
-                BlocBuilder<ShoppingListBloc, ShoppingListState>(
-                  builder: (dialogContext, state) {
-                    final isLoading = state is ShoppingListLoading;
-                    return ElevatedButton(
-                      onPressed:
-                          isLoading
-                              ? null
-                              : () {
-                                if (nameController.text.trim().isNotEmpty) {
-                                  dialogContext.read<ShoppingListBloc>().add(
-                                    UpdateShoppingList(
-                                      list.id,
-                                      nameController.text.trim(),
-                                    ),
-                                  );
-                                  Navigator.pop(dialogContext);
-                                }
-                              },
-                      child:
-                          isLoading
-                              ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                              : Text('Sauvegarder'),
-                    );
-                  },
-                ),
-              ],
             ),
           ),
     );
@@ -490,47 +761,247 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
-            child: AlertDialog(
-              title: Text('Supprimer la liste'),
-              content: Text(
-                'Êtes-vous sûr de vouloir supprimer "${list.name}" ?',
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text('Annuler'),
+              elevation: 10,
+              child: Container(
+                padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
                 ),
-                BlocBuilder<ShoppingListBloc, ShoppingListState>(
-                  builder: (dialogContext, state) {
-                    final isLoading = state is ShoppingListLoading;
-                    return ElevatedButton(
-                      onPressed:
-                          isLoading
-                              ? null
-                              : () {
-                                dialogContext.read<ShoppingListBloc>().add(
-                                  DeleteShoppingList(list.id),
-                                );
-                                Navigator.pop(dialogContext);
-                              },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icône de suppression
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(40),
                       ),
-                      child:
-                          isLoading
-                              ? SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                      child: Icon(
+                        Icons.delete_rounded,
+                        size: 40,
+                        color: Colors.red[600],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // Titre
+                    Text(
+                      'Supprimer la liste',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    // Message principal
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
+                        children: [
+                          TextSpan(text: 'Êtes-vous sûr de vouloir supprimer '),
+                          TextSpan(
+                            text: '"${list.name}"',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          TextSpan(text: ' ?'),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 8),
+
+                    // Avertissement
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_rounded,
+                            color: Colors.red[600],
+                            size: 16,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Cette action est irréversible',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Afficher les statistiques de la liste si elle contient des éléments
+                    if (list.itemsCount > 0) ...[
+                      SizedBox(height: 12),
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amber[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.amber[200]!),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.amber[700],
+                                  size: 16,
                                 ),
-                              )
-                              : Text('Supprimer'),
-                    );
-                  },
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Cette liste contient ${list.itemsCount} article${list.itemsCount > 1 ? 's' : ''}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.amber[700],
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (list.totalPrice > 0) ...[
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.attach_money,
+                                    color: Colors.amber[700],
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Budget estimé: ${list.totalPrice.toStringAsFixed(2)} \$CAD',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.amber[700],
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+
+                    SizedBox(height: 24),
+
+                    // Boutons
+                    Row(
+                      children: [
+                        // Bouton Annuler
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey[300]!),
+                              ),
+                            ),
+                            child: Text(
+                              'Annuler',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(width: 12),
+
+                        // Bouton Supprimer
+                        Expanded(
+                          child: BlocBuilder<
+                            ShoppingListBloc,
+                            ShoppingListState
+                          >(
+                            builder: (dialogContext, state) {
+                              final isLoading = state is ShoppingListLoading;
+                              return ElevatedButton(
+                                onPressed:
+                                    isLoading
+                                        ? null
+                                        : () {
+                                          dialogContext
+                                              .read<ShoppingListBloc>()
+                                              .add(DeleteShoppingList(list.id));
+                                          Navigator.pop(dialogContext);
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red[600],
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor: Colors.red[300],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                child:
+                                    isLoading
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                        : Text(
+                                          'Supprimer',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
     );

@@ -73,8 +73,6 @@ class ShoppingList {
   bool get hasItems => items.isNotEmpty;
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) {
-    print("Parsing ShoppingList from JSON: $json"); // Debug
-
     List<ListItem> itemsList = [];
     if (json['items'] != null) {
       try {
@@ -82,7 +80,6 @@ class ShoppingList {
             (json['items'] as List<dynamic>)
                 .map((item) => ListItem.fromJson(item as Map<String, dynamic>))
                 .toList();
-        print("Parsed ${itemsList.length} items"); // Debug
       } catch (e) {
         print("Error parsing items: $e");
       }

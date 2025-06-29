@@ -97,11 +97,13 @@ class ConfirmEmailRequested extends AuthEvent {
   List<Object> get props => [email, code];
 }
 
+// Dans votre auth_event.dart
 class ResendVerificationCode extends AuthEvent {
   final String email;
+  final bool isFromRegistration;
 
-  const ResendVerificationCode(this.email);
+  const ResendVerificationCode(this.email, {this.isFromRegistration = false});
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [email, isFromRegistration];
 }

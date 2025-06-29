@@ -1,254 +1,325 @@
-// auth_service.dart - VERSION CORRIGÉE POUR LA VERIFICATION EMAIL
-import 'dart:convert';
+// auth_service.dart - VERSION CORRIGÉE AVEC PERSISTANCE
 import 'package:dio/dio.dart';
-import 'package:epilist/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/models/user.dart';
+import 'package:flutter/foundation.dart';
+
+class AuthenticationException implements Exception {
+  final String message;
+  final String code;
+  final String? email;
+
+  AuthenticationException(this.message, this.code, {this.email});
+
+  @override
+  String toString() => message;
+}
 
 class AuthService {
-  final Dio _dio;
-  final SharedPreferences _sharedPreferences;
+  final Dio dio;
+  final SharedPreferences sharedPreferences;
 
-  static const String _userKey = 'current_user';
-  static const String _tokenKey = 'auth_token';
+  // Clés pour le stockage
+  static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
+  static const String _userKey = 'user_data';
+  static const String _tokenExpiryKey = 'token_expiry';
 
-  AuthService({required Dio dio, required SharedPreferences sharedPreferences})
-    : _dio = dio,
-      _sharedPreferences = sharedPreferences;
+  AuthService({required this.dio, required this.sharedPreferences});
 
-  // CORRIGÉ: Méthode pour vérifier l'email - ne retourne pas d'utilisateur car pas de tokens
-  Future<void> confirmEmail({
-    required String email,
-    required String code,
-  }) async {
+  // === GESTION DES TOKENS ===
+
+  Future<void> saveTokens(String accessToken, String refreshToken) async {
     try {
-      final response = await _dio.post(
-        '/auth/confirm-email',
-        data: {'email': email, 'code': code},
-        options: Options(validateStatus: (status) => status! < 500),
-      );
+      await Future.wait([
+        sharedPreferences.setString(_accessTokenKey, accessToken),
+        sharedPreferences.setString(_refreshTokenKey, refreshToken),
+        // Calculer et sauvegarder l'heure d'expiration (1 heure)
+        sharedPreferences.setInt(
+          _tokenExpiryKey,
+          DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
+        ),
+      ]);
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        // Succès - l'email est maintenant vérifié
-        // Ne pas essayer de créer un utilisateur car pas de tokens dans la réponse
-        return;
-      } else {
-        final errorMessage =
-            response.data['message'] ?? 'Code de vérification invalide';
-        throw AuthenticationException(errorMessage);
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        final errorData = e.response?.data;
-        if (errorData is Map && errorData['success'] == false) {
-          throw AuthenticationException(
-            errorData['message'] ??
-                'Erreur lors de la confirmation de l\'email',
-          );
-        }
-        final message =
-            errorData is Map
-                ? errorData['message'] ??
-                    'Erreur lors de la confirmation de l\'email'
-                : 'Erreur de serveur';
-        throw AuthenticationException(message);
-      } else {
-        throw AuthenticationException(_getDioErrorMessage(e));
-      }
+      debugPrint('✅ Tokens sauvegardés avec succès');
+      debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
+      debugPrint('🔄 Refresh Token: ${refreshToken.substring(0, 20)}...');
     } catch (e) {
-      throw AuthenticationException(
-        'Erreur inattendue lors de la confirmation de l\'email',
-      );
+      debugPrint('❌ Erreur lors de la sauvegarde des tokens: $e');
+      throw Exception('Impossible de sauvegarder les tokens');
     }
   }
 
-  Future<void> resendVerificationCode(String email) async {
+  Future<String?> getToken() async {
     try {
-      final response = await _dio.post(
-        '/auth/resend-confirm-email',
-        data: {'email': email},
-        options: Options(validateStatus: (status) => status! < 500),
-      );
-
-      if (response.data['success'] != true) {
-        throw AuthenticationException(
-          response.data['message'] ??
-              'Échec de l\'envoi du code de vérification',
-        );
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        final errorData = e.response?.data;
-        if (errorData is Map && errorData['success'] == false) {
-          throw AuthenticationException(
-            errorData['message'] ?? 'Échec de l\'envoi du code de vérification',
-          );
+      final token = sharedPreferences.getString(_accessTokenKey);
+      if (token != null && token.isNotEmpty) {
+        // Vérifier si le token n'est pas expiré
+        final expiry = sharedPreferences.getInt(_tokenExpiryKey);
+        if (expiry != null) {
+          final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
+          if (DateTime.now().isBefore(expiryDate)) {
+            return token;
+          } else {
+            debugPrint('⚠️ Token expiré, refresh nécessaire');
+            return null;
+          }
         }
-        final message =
-            errorData is Map
-                ? errorData['message'] ??
-                    'Échec de l\'envoi du code de vérification'
-                : 'Erreur de serveur';
-        throw AuthenticationException(message);
-      } else {
-        throw AuthenticationException(_getDioErrorMessage(e));
+        return token;
       }
+      return null;
     } catch (e) {
-      throw AuthenticationException(
-        'Erreur inattendue lors de l\'envoi du code de vérification',
-      );
+      debugPrint('❌ Erreur lors de la récupération du token: $e');
+      return null;
     }
   }
 
-  Future<User> login(String email, String password) async {
-    print('🔑 AuthService.login appelé pour: $email');
-
+  Future<String?> getRefreshToken() async {
     try {
-      final response = await _dio.post(
+      return sharedPreferences.getString(_refreshTokenKey);
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la récupération du refresh token: $e');
+      return null;
+    }
+  }
+
+  Future<bool> isTokenExpired() async {
+    try {
+      final expiry = sharedPreferences.getInt(_tokenExpiryKey);
+      if (expiry == null) return true;
+
+      final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
+      return DateTime.now().isAfter(expiryDate);
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la vérification d\'expiration: $e');
+      return true;
+    }
+  }
+
+  // === AUTHENTIFICATION ===
+
+  Future<Map<String, String>> login(String email, String password) async {
+    try {
+      debugPrint('🔐 Tentative de connexion pour: $email');
+
+      final response = await dio.post(
         '/auth/login',
         data: {'email': email, 'password': password},
-        options: Options(validateStatus: (status) => status! < 500),
       );
 
-      print('📥 Réponse reçue - Status: ${response.statusCode}');
-      print('📄 Données de réponse: ${response.data}');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final user = User.fromLoginResponse(response.data);
 
-      if (response.data != null && response.data is Map) {
-        final responseData = response.data as Map<String, dynamic>;
+        final accessToken = data['access_token'] as String?;
+        final refreshToken = data['refresh_token'] as String?;
 
-        // NOUVELLE GESTION: Vérifier d'abord si success = false
-        if (responseData['success'] == false) {
-          final errorCode = responseData['code'];
-          final errorMessage = responseData['message'] ?? 'Erreur de connexion';
-
-          print(
-            '❌ Erreur API détectée - Code: $errorCode, Message: $errorMessage',
+        if (accessToken == null || refreshToken == null) {
+          throw AuthenticationException(
+            'Tokens manquants dans la réponse',
+            'MISSING_TOKENS',
           );
-
-          // Gestion spécifique du code EMAIL_NOT_VERIFIED
-          if (errorCode == 'EMAIL_NOT_VERIFIED') {
-            print('📧 Email non vérifié détecté');
-            throw AuthenticationException(
-              'Veuillez vérifier votre email avant de vous connecter',
-            );
-          }
-
-          // Autres erreurs
-          throw AuthenticationException(errorMessage);
         }
 
-        // Si success = true, traitement normal
-        if (responseData['success'] == true && responseData['data'] != null) {
-          print('✅ Connexion réussie - Création de l\'utilisateur');
-
-          final userData = responseData['data'] as Map<String, dynamic>;
-
-          // Double vérification de l'email (au cas où)
-          if (userData['email_verified'] != true) {
-            print('⚠️ Email non vérifié selon les données utilisateur');
-            throw AuthenticationException(
-              'Veuillez vérifier votre email avant de vous connecter',
-            );
-          }
-
-          final user = User(
-            id: userData['id'],
-            firstName: userData['first_name'],
-            lastName: userData['last_name'],
-            email: userData['email'],
-            emailVerified: userData['email_verified'] ?? false,
-            accessToken: responseData['access_token'],
-            refreshToken: responseData['refresh_token'],
-            emailVerifiedAt:
-                userData['email_verified_at'] != null
-                    ? DateTime.parse(userData['email_verified_at'])
-                    : null,
-            createdAt:
-                userData['created_at'] != null
-                    ? DateTime.parse(userData['created_at'])
-                    : null,
-            updatedAt:
-                userData['updated_at'] != null
-                    ? DateTime.parse(userData['updated_at'])
-                    : null,
-          );
-
-          try {
-            await _saveUserData(user, responseData['access_token']);
-            print('💾 Données utilisateur sauvegardées');
-          } catch (e) {
-            print('⚠️ Erreur lors de la sauvegarde: $e');
-          }
-
-          return user;
-        }
-      }
-
-      // Si on arrive ici, la réponse est inattendue
-      print('❓ Format de réponse inattendu');
-      throw AuthenticationException('Format de réponse inattendu du serveur');
-    } on DioException catch (e) {
-      print('🌐 DioException capturée: ${e.type}');
-      print('📄 Response data: ${e.response?.data}');
-
-      if (e.response != null) {
-        final errorData = e.response?.data;
-        if (errorData is Map) {
-          // Gestion spécifique des codes d'erreur API
-          if (errorData['success'] == false) {
-            final errorCode = errorData['code'];
-            final message = errorData['message'] ?? 'Erreur de connexion';
-
-            print(
-              '❌ Erreur API via DioException - Code: $errorCode, Message: $message',
-            );
-
-            if (errorCode == 'EMAIL_NOT_VERIFIED') {
-              throw AuthenticationException(
-                'Veuillez vérifier votre email avant de vous connecter',
-              );
-            }
-
-            throw AuthenticationException(message);
-          }
-
-          final message = errorData['message'] ?? 'Erreur de serveur';
-          throw AuthenticationException(message);
-        } else {
-          throw AuthenticationException('Erreur de serveur');
-        }
+        debugPrint('✅ Connexion réussie');
+        return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
-        throw AuthenticationException(_getDioErrorMessage(e));
+        throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
-    } on AuthenticationException catch (e) {
-      print('🔄 AuthenticationException relancée: ${e.message}');
-      rethrow;
+    } on DioException catch (e) {
+      debugPrint('❌ Erreur DioException: ${e.response?.data}');
+
+      if (e.response?.statusCode == 401) {
+        final errorData = e.response?.data;
+        if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
+          throw AuthenticationException(
+            'Email non vérifié',
+            'EMAIL_NOT_VERIFIED',
+            email: email,
+          );
+        }
+        throw AuthenticationException(
+          'Email ou mot de passe incorrect',
+          'INVALID_CREDENTIALS',
+        );
+      } else if (e.response?.statusCode == 404) {
+        throw AuthenticationException(
+          'Aucun compte trouvé avec cet email',
+          'USER_NOT_FOUND',
+        );
+      } else {
+        throw AuthenticationException(
+          'Erreur de connexion: ${e.message}',
+          'NETWORK_ERROR',
+        );
+      }
     } catch (e) {
-      print('💥 Erreur inattendue: $e');
-      throw AuthenticationException('Erreur inattendue: ${e.toString()}');
+      debugPrint('❌ Erreur inattendue: $e');
+      throw AuthenticationException(
+        'Une erreur inattendue est survenue',
+        'UNKNOWN_ERROR',
+      );
     }
   }
 
-  String _getDioErrorMessage(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-        return 'Timeout de connexion';
-      case DioExceptionType.sendTimeout:
-        return 'Timeout d\'envoi';
-      case DioExceptionType.receiveTimeout:
-        return 'Timeout de réception';
-      case DioExceptionType.badCertificate:
-        return 'Certificat invalide';
-      case DioExceptionType.badResponse:
-        return 'Réponse invalide du serveur';
-      case DioExceptionType.cancel:
-        return 'Requête annulée';
-      case DioExceptionType.connectionError:
-        return 'Erreur de connexion';
-      case DioExceptionType.unknown:
-        return 'Erreur réseau inconnue';
+  Future<Map<String, String>> refreshToken(String refreshToken) async {
+    try {
+      debugPrint('🔄 Rafraîchissement du token...');
+
+      final response = await dio.post(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        final newAccessToken = data['access_token'] as String?;
+        final newRefreshToken = data['refresh_token'] as String?;
+
+        if (newAccessToken == null || newRefreshToken == null) {
+          throw Exception('Nouveaux tokens manquants dans la réponse');
+        }
+
+        debugPrint('✅ Token rafraîchi avec succès');
+        return {
+          'access_token': newAccessToken,
+          'refresh_token': newRefreshToken,
+        };
+      } else {
+        throw Exception('Échec du rafraîchissement du token');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Erreur lors du refresh: ${e.response?.data}');
+      if (e.response?.statusCode == 401) {
+        throw Exception('Refresh token invalide ou expiré');
+      }
+      throw Exception('Erreur réseau lors du refresh: ${e.message}');
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue lors du refresh: $e');
+      rethrow;
     }
   }
+
+  Future<bool> isAuthenticated() async {
+    try {
+      final accessToken = await getToken();
+      final refreshToken = await getRefreshToken();
+
+      if (accessToken != null && accessToken.isNotEmpty) {
+        return true;
+      }
+
+      // Si pas de access token mais refresh token présent, essayer de rafraîchir
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        try {
+          final tokens = await this.refreshToken(refreshToken);
+          await saveTokens(tokens['access_token']!, tokens['refresh_token']!);
+          return true;
+        } catch (e) {
+          debugPrint('❌ Impossible de rafraîchir le token: $e');
+          await clearUserData();
+          return false;
+        }
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la vérification d\'authentification: $e');
+      return false;
+    }
+  }
+
+  // Méthode pour sauvegarder l'utilisateur en cache
+  Future<void> saveUserToCache(User user) async {
+    try {
+      await sharedPreferences.setString(_userKey, user.toJsonString());
+      debugPrint('👤 Utilisateur sauvegardé en cache: ${user.fullName}');
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la sauvegarde utilisateur: $e');
+    }
+  }
+
+  Future<User?> getCurrentUser() async {
+    try {
+      // D'abord vérifier si on a l'utilisateur en cache
+      final cachedUserData = sharedPreferences.getString(_userKey);
+      if (cachedUserData != null) {
+        final userData = User.fromJsonString(cachedUserData);
+        debugPrint('👤 Utilisateur récupéré du cache');
+        return userData;
+      }
+
+      // Sinon, récupérer depuis l'API
+      final token = await getToken();
+      if (token == null) {
+        debugPrint('❌ Aucun token disponible pour getCurrentUser');
+        return null;
+      }
+
+      final response = await dio.get(
+        '/auth/me',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        final user = User.fromMap(response.data);
+
+        // Sauvegarder l'utilisateur en cache
+        await sharedPreferences.setString(_userKey, user.toJsonString());
+
+        debugPrint('👤 Utilisateur récupéré de l\'API');
+        return user;
+      }
+
+      return null;
+    } on DioException catch (e) {
+      debugPrint(
+        '❌ Erreur lors de la récupération de l\'utilisateur: ${e.response?.data}',
+      );
+      if (e.response?.statusCode == 401) {
+        // Token invalide, nettoyer les données
+        await clearUserData();
+      }
+      return null;
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue getCurrentUser: $e');
+      return null;
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      final token = await getToken();
+      if (token != null) {
+        await dio.post(
+          '/auth/logout',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
+      }
+    } catch (e) {
+      debugPrint('⚠️ Erreur lors de la déconnexion côté serveur: $e');
+      // Continuer avec la déconnexion locale même si l'API échoue
+    }
+
+    await clearUserData();
+  }
+
+  Future<void> clearUserData() async {
+    try {
+      await Future.wait([
+        sharedPreferences.remove(_accessTokenKey),
+        sharedPreferences.remove(_refreshTokenKey),
+        sharedPreferences.remove(_userKey),
+        sharedPreferences.remove(_tokenExpiryKey),
+      ]);
+      debugPrint('🧹 Données utilisateur nettoyées');
+    } catch (e) {
+      debugPrint('❌ Erreur lors du nettoyage: $e');
+    }
+  }
+
+  // === AUTRES MÉTHODES ===
 
   Future<void> register(
     String firstName,
@@ -257,7 +328,7 @@ class AuthService {
     String password,
   ) async {
     try {
-      final response = await _dio.post(
+      final response = await dio.post(
         '/auth/register',
         data: {
           'first_name': firstName,
@@ -265,218 +336,47 @@ class AuthService {
           'email': email,
           'password': password,
         },
-        options: Options(validateStatus: (status) => status! < 500),
       );
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final responseData = response.data;
-        if (responseData is Map && responseData['success'] == true) {
-          return; // Inscription réussie
-        } else {
-          final errorMessage =
-              responseData['message'] ?? 'Erreur lors de l\'inscription';
-          throw AuthenticationException(errorMessage);
-        }
-      } else {
-        final errorMessage =
-            response.data is Map
-                ? response.data['message'] ?? 'Échec de l\'inscription'
-                : 'Échec de l\'inscription';
-        throw AuthenticationException(errorMessage);
+      if (response.statusCode != 201) {
+        throw Exception('Erreur lors de l\'inscription');
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        final errorData = e.response?.data;
-        if (errorData is Map && errorData['success'] == false) {
-          throw AuthenticationException(
-            errorData['message'] ?? 'Erreur lors de l\'inscription',
-          );
-        }
-        final message =
-            errorData is Map
-                ? errorData['message'] ?? 'Erreur lors de l\'inscription'
-                : 'Erreur de serveur';
-        throw AuthenticationException(message);
-      } else {
-        throw AuthenticationException(_getDioErrorMessage(e));
+      if (e.response?.statusCode == 409) {
+        throw Exception('Un compte avec cet email existe déjà');
       }
-    } catch (e) {
-      if (e is AuthenticationException) {
-        rethrow;
-      }
-      throw AuthenticationException('Erreur inattendue lors de l\'inscription');
+      throw Exception('Erreur lors de l\'inscription: ${e.message}');
     }
-  }
-
-  Future<void> logout() async {
-    try {
-      final token = await getToken();
-      if (token != null) {
-        try {
-          await _dio.post(
-            '/auth/logout',
-            options: Options(headers: {'Authorization': 'Bearer $token'}),
-          );
-        } catch (e) {}
-      }
-
-      await clearUserData();
-      await _sharedPreferences.remove(_refreshTokenKey);
-    } catch (e) {
-      await clearUserData();
-      await _sharedPreferences.remove(_refreshTokenKey);
-      throw AuthenticationException('Erreur lors de la déconnexion');
-    }
-  }
-
-  Future<bool> isAuthenticated() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey) != null;
-  }
-
-  Future<User?> getCurrentUser() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userString = prefs.getString(_userKey);
-      if (userString != null) {
-        return User.fromJson(json.decode(userString));
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<void> _saveUserData(User user, String token) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userJson = user.toJson();
-      await prefs.setString(_userKey, json.encode(userJson));
-      await prefs.setString(_tokenKey, token);
-    } catch (e) {
-      throw Exception('Failed to persist user data');
-    }
-  }
-
-  Future<void> clearUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_userKey);
-    await prefs.remove(_tokenKey);
-  }
-
-  Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
-  }
-
-  Future<Map<String, String>> refreshToken(String refreshToken) async {
-    final response = await _dio.post(
-      '/auth/refresh-token',
-      data: {'refresh_token': refreshToken},
-    );
-
-    await _sharedPreferences.setString(
-      _tokenKey,
-      response.data['access_token'],
-    );
-    await _sharedPreferences.setString(
-      _refreshTokenKey,
-      response.data['refresh_token'],
-    );
-
-    return {
-      'access_token': response.data['access_token'],
-      'refresh_token': response.data['refresh_token'],
-    };
   }
 
   Future<User> updateProfile({
     required String firstName,
     required String lastName,
-    String? phone,
-    String? avatar,
   }) async {
     try {
       final token = await getToken();
-      final response = await _dio.put(
-        '/auth/me',
+      final response = await dio.put(
+        '/auth/profile',
         data: {'first_name': firstName, 'last_name': lastName},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        final userData = response.data['data'];
-        final updatedUser = User(
-          id: userData['id'],
-          firstName: userData['first_name'],
-          lastName: userData['last_name'],
-          email: userData['email'],
-          emailVerified: userData['email_verified'],
-          accessToken: token!,
-          refreshToken: await getRefreshToken(),
-          emailVerifiedAt:
-              userData['email_verified_at'] != null
-                  ? DateTime.parse(userData['email_verified_at'])
-                  : null,
-          createdAt:
-              userData['created_at'] != null
-                  ? DateTime.parse(userData['created_at'])
-                  : null,
-          updatedAt:
-              userData['updated_at'] != null
-                  ? DateTime.parse(userData['updated_at'])
-                  : null,
-        );
+      final updatedUser = User.fromMap(response.data);
 
-        await _sharedPreferences.setString(
-          _userKey,
-          json.encode(updatedUser.toJson()),
-        );
+      // Mettre à jour le cache
+      await sharedPreferences.setString(_userKey, updatedUser.toJsonString());
 
-        return updatedUser;
-      } else {
-        throw AuthenticationException(
-          response.data['message'] ?? 'Erreur lors de la mise à jour du profil',
-        );
-      }
+      return updatedUser;
     } on DioException catch (e) {
-      if (e.response != null) {
-        final errorData = e.response?.data;
-        final message =
-            errorData is Map
-                ? errorData['message'] ??
-                    'Erreur lors de la mise à jour du profil'
-                : 'Erreur de serveur';
-        throw AuthenticationException(message);
-      } else {
-        throw AuthenticationException(_getDioErrorMessage(e));
-      }
-    } catch (e) {
-      throw AuthenticationException(
-        'Erreur inattendue lors de la mise à jour du profil',
-      );
+      throw Exception('Erreur lors de la mise à jour: ${e.message}');
     }
   }
 
   Future<void> requestPasswordChangeCode(String email) async {
     try {
-      final response = await _dio.post(
-        '/auth/request-password-change',
-        data: {'email': email},
-        options: Options(validateStatus: (status) => status! < 500),
-      );
-
-      if (response.data['success'] != true) {
-        throw AuthenticationException(
-          response.data['message'] ?? 'Failed to send password change code',
-        );
-      }
+      await dio.post('/auth/password-reset-request', data: {'email': email});
     } on DioException catch (e) {
-      throw AuthenticationException(
-        e.response?.data['message'] ?? 'Failed to send password change code',
-      );
-    } catch (e) {
-      throw AuthenticationException('Failed to send password change code');
+      throw Exception('Erreur lors de la demande: ${e.message}');
     }
   }
 
@@ -486,34 +386,34 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      final response = await _dio.post(
-        '/auth/verify-password-change-code',
+      await dio.post(
+        '/auth/password-reset-verify',
         data: {'email': email, 'code': code, 'new_password': newPassword},
-        options: Options(validateStatus: (status) => status! < 500),
       );
-
-      if (response.data['success'] != true) {
-        throw AuthenticationException(
-          response.data['message'] ?? 'Failed to change password',
-        );
-      }
     } on DioException catch (e) {
-      throw AuthenticationException(
-        e.response?.data['message'] ?? 'Failed to change password',
-      );
-    } catch (e) {
-      throw AuthenticationException('Failed to change password');
+      throw Exception('Erreur lors de la vérification: ${e.message}');
     }
   }
 
-  Future<String?> getRefreshToken() async =>
-      _sharedPreferences.getString(_refreshTokenKey);
-}
+  Future<void> confirmEmail({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await dio.post(
+        '/auth/confirm-email',
+        data: {'email': email, 'code': code},
+      );
+    } on DioException catch (e) {
+      throw Exception('Erreur lors de la confirmation: ${e.message}');
+    }
+  }
 
-class AuthenticationException implements Exception {
-  final String message;
-  AuthenticationException(this.message);
-
-  @override
-  String toString() => message;
+  Future<void> resendVerificationCode(String email) async {
+    try {
+      await dio.post('/auth/resend-verification', data: {'email': email});
+    } on DioException catch (e) {
+      throw Exception('Erreur lors du renvoi: ${e.message}');
+    }
+  }
 }

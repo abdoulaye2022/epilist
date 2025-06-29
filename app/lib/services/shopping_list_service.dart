@@ -26,7 +26,6 @@ class ShoppingListService {
     print("API Response: ${response.data}"); // Debug
 
     return (response.data['data'] as List).map((json) {
-      print("Processing list: $json"); // Debug
       return ShoppingList.fromJson(json);
     }).toList();
   }

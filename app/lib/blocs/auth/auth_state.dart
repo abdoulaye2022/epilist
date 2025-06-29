@@ -73,8 +73,16 @@ class EmailConfirmationRequired extends AuthState {
   List<Object> get props => [email];
 }
 
-// CORRIGÉ: EmailConfirmationSuccess ne devrait pas avoir d'utilisateur
-// car la vérification d'email ne retourne pas de tokens
+// NOUVEAU: État spécifique pour email non vérifié lors du login
+class EmailVerificationRequired extends AuthState {
+  final String email;
+
+  const EmailVerificationRequired(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
 class EmailConfirmationSuccess extends AuthState {}
 
 class VerificationCodeResent extends AuthState {

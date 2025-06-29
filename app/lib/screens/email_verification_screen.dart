@@ -1,5 +1,5 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
-import 'package:epilist/screens/login_screen.dart'; // Import du LoginScreen
+import 'package:epilist/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +16,7 @@ class EmailVerificationScreen extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _EmailVerificationScreenState createState() =>
       _EmailVerificationScreenState();
 }
@@ -30,10 +31,34 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Timer? _resendTimer;
   int _resendCountdown = 0;
   bool _canResend = true;
+  bool _initialCodeSent = false; // Pour tracker si le code initial a été envoyé
 
   @override
   void initState() {
     super.initState();
+
+    // Si c'est un cas de connexion (pas d'inscription), envoyer automatiquement le code
+    if (!widget.fromRegistration && !_initialCodeSent) {
+      _sendInitialVerificationCode();
+    } else {
+      // Pour l'inscription, le code a déjà été envoyé, on démarre juste le countdown
+      _startResendCountdown();
+    }
+  }
+
+  void _sendInitialVerificationCode() {
+    print('📧 Envoi automatique du code de vérification pour: ${widget.email}');
+
+    // Envoyer le code de vérification
+    context.read<AuthBloc>().add(
+      ResendVerificationCode(widget.email, isFromRegistration: false),
+    );
+
+    setState(() {
+      _initialCodeSent = true;
+    });
+
+    // Démarrer le countdown après l'envoi
     _startResendCountdown();
   }
 
@@ -73,13 +98,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     }
   }
 
-  void _onBackspace(int index) {
-    if (index > 0) {
-      _controllers[index - 1].clear();
-      _focusNodes[index - 1].requestFocus();
-    }
-  }
-
   void _verifyCode() {
     if (_isCodeComplete) {
       context.read<AuthBloc>().add(
@@ -90,7 +108,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   void _resendCode() {
     if (_canResend) {
-      context.read<AuthBloc>().add(ResendVerificationCode(widget.email));
+      context.read<AuthBloc>().add(
+        ResendVerificationCode(
+          widget.email,
+          isFromRegistration: widget.fromRegistration,
+        ),
+      );
       _startResendCountdown();
     }
   }
@@ -106,12 +129,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        // CORRIGÉ: Redirection vers LoginScreen après vérification réussie
         if (state is EmailConfirmationSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Email vérifié avec succès ! 🎉\nVous pouvez maintenant vous connecter.',
+                '🎉 Email vérifié avec succès !',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.green[600],
@@ -119,20 +141,31 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             ),
           );
 
-          // CHANGEMENT: Redirection vers LoginScreen au lieu de HomeScreen
-          Future.delayed(Duration(milliseconds: 800), () {
+          if (widget.fromRegistration) {
+            // Après inscription, aller vers login
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => LoginScreen()),
               (route) => false,
             );
-          });
+          } else {
+            // Après vérification d'email lors de la connexion,
+            // ne pas faire de navigation ici, laisser AuthWrapper gérer
+            // car l'utilisateur devrait maintenant être authentifié
+            print(
+              '✅ Email confirmé lors de la connexion - AuthWrapper va gérer la redirection',
+            );
+          }
         }
 
         if (state is VerificationCodeResent) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Code de vérification renvoyé !'),
+              content: Text(
+                widget.fromRegistration
+                    ? 'Code de vérification renvoyé !'
+                    : 'Code de vérification envoyé !',
+              ),
               backgroundColor: Colors.green[600],
               duration: Duration(seconds: 2),
             ),
@@ -158,7 +191,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black87),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              // Toujours retourner vers LoginScreen
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (route) => false,
+              );
+            },
           ),
         ),
         body: SafeArea(
@@ -199,9 +239,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                 SizedBox(height: 12),
 
-                // Description
+                // Description dynamique selon le contexte
                 Text(
-                  'Nous avons envoyé un code de vérification à',
+                  widget.fromRegistration
+                      ? 'Nous avons envoyé un code de vérification à'
+                      : 'Un code de vérification va être envoyé à',
                   style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -428,24 +470,44 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                 SizedBox(height: 20),
 
-                // AJOUTÉ: Message informatif sur la redirection
+                // Message informatif sur le flux
                 Container(
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green[50],
+                    color:
+                        widget.fromRegistration
+                            ? Colors.green[50]
+                            : Colors.orange[50],
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[200]!),
+                    border: Border.all(
+                      color:
+                          widget.fromRegistration
+                              ? Colors.green[200]!
+                              : Colors.orange[200]!,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.login, color: Colors.green[600], size: 20),
+                      Icon(
+                        widget.fromRegistration ? Icons.login : Icons.refresh,
+                        color:
+                            widget.fromRegistration
+                                ? Colors.green[600]
+                                : Colors.orange[600],
+                        size: 20,
+                      ),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Après vérification, vous serez redirigé vers la page de connexion',
+                          widget.fromRegistration
+                              ? 'Après vérification, vous serez redirigé vers la page de connexion'
+                              : 'Après vérification, vous pourrez vous reconnecter avec vos identifiants',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.green[700],
+                            color:
+                                widget.fromRegistration
+                                    ? Colors.green[700]
+                                    : Colors.orange[700],
                             fontWeight: FontWeight.w500,
                           ),
                         ),

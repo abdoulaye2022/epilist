@@ -1,14 +1,17 @@
-// auth_bloc.dart - VERSION CORRIGÉE POUR REDIRECTION VERS LOGIN
+// auth_bloc.dart - VERSION CORRIGÉE AVEC GESTION TOKENS
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/models/user.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:async';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
+  Timer? _tokenRefreshTimer;
 
   AuthBloc({required this.authService}) : super(AuthInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
@@ -25,31 +28,62 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResendVerificationCode>(_onResendVerificationCode);
   }
 
+  @override
+  Future<void> close() {
+    _tokenRefreshTimer?.cancel();
+    return super.close();
+  }
+
   Future<void> _onLoginButtonPressed(
     LoginButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
-    print('🚀 AuthBloc._onLoginButtonPressed appelé');
-    print('📧 Email: ${event.email}');
-
     emit(AuthLoading());
-    print('⏳ État AuthLoading émis');
 
     try {
-      print('🔐 Appel authService.login...');
-      final user = await authService.login(event.email, event.password);
-      print('✅ Utilisateur connecté avec succès: ${user.email}');
-      emit(AuthSuccess(user: user));
-      print('🎉 État AuthSuccess émis');
+      final loginResponse = await authService.login(
+        event.email,
+        event.password,
+      );
+
+      // Sauvegarder les tokens de manière persistante
+      await authService.saveTokens(
+        loginResponse['access_token']!,
+        loginResponse['refresh_token']!,
+      );
+
+      // Récupérer l'utilisateur
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        _scheduleTokenRefresh();
+        emit(AuthSuccess(user: user));
+      } else {
+        emit(
+          AuthFailure(
+            error: 'Impossible de récupérer les informations utilisateur',
+          ),
+        );
+      }
     } on AuthenticationException catch (e) {
-      print('❌ AuthenticationException capturée dans le bloc: ${e.message}');
-      emit(AuthFailure(error: e.message));
-      print('💔 État AuthFailure émis avec le message: ${e.message}');
+      String errorMessage;
+      switch (e.code) {
+        case 'INVALID_CREDENTIALS':
+          errorMessage = 'Email ou mot de passe incorrect';
+          break;
+        case 'USER_NOT_FOUND':
+          errorMessage = 'Aucun compte trouvé avec cet email';
+          break;
+        case 'EMAIL_NOT_VERIFIED':
+          final email = e.email?.isNotEmpty == true ? e.email : event.email;
+          emit(EmailVerificationRequired(email!));
+          return;
+        default:
+          errorMessage = e.message;
+      }
+      emit(AuthFailure(error: errorMessage));
     } catch (e) {
-      print('💥 Exception générale capturée dans le bloc: $e');
-      print('🔍 Type d\'exception: ${e.runtimeType}');
-      emit(AuthFailure(error: e.toString()));
-      print('💔 État AuthFailure émis avec le message: ${e.toString()}');
+      debugPrint('❌ Erreur de connexion: $e');
+      emit(AuthFailure(error: 'Une erreur est survenue lors de la connexion'));
     }
   }
 
@@ -64,6 +98,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
         if (user != null) {
+          _scheduleTokenRefresh();
           emit(AuthSuccess(user: user));
         } else {
           await authService.clearUserData();
@@ -73,8 +108,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
+      debugPrint('❌ Erreur vérification auth: $e');
       emit(AuthFailure(error: 'Failed to check authentication'));
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
+      emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _onRefreshTokenRequested(
+    RefreshTokenRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      debugPrint('🔄 Rafraîchissement du token...');
+
+      final tokens = await authService.refreshToken(event.refreshToken);
+
+      // Sauvegarder les nouveaux tokens
+      await authService.saveTokens(
+        tokens['access_token']!,
+        tokens['refresh_token']!,
+      );
+
+      debugPrint('✅ Tokens rafraîchis et sauvegardés');
+
+      // Programmer le prochain refresh
+      _scheduleTokenRefresh();
+
+      // Émettre l'état de succès avec les tokens mis à jour
+      emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
+    } catch (e) {
+      debugPrint('❌ Échec du refresh token: $e');
+      emit(AuthFailure(error: 'Session expirée - Veuillez vous reconnecter'));
+      await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
     }
   }
@@ -86,10 +152,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
+      // Annuler le timer de refresh
+      _tokenRefreshTimer?.cancel();
+
+      // Effectuer la déconnexion côté serveur
       await authService.logout();
+
+      // Nettoyer toutes les données locales
+      await authService.clearUserData();
+
+      await Future.delayed(const Duration(milliseconds: 100));
       emit(Unauthenticated());
+
+      debugPrint('🔴 Déconnexion réussie');
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      debugPrint('❌ Erreur lors de la déconnexion: $e');
+
+      // Forcer la déconnexion locale même en cas d'erreur
+      try {
+        _tokenRefreshTimer?.cancel();
+        await authService.clearUserData();
+        emit(Unauthenticated());
+      } catch (clearError) {
+        emit(AuthFailure(error: 'Erreur lors de la déconnexion: $e'));
+        await Future.delayed(const Duration(seconds: 2));
+        emit(Unauthenticated());
+      }
     }
   }
 
@@ -106,26 +194,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.email,
         event.password,
       );
-
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
-    }
-  }
-
-  Future<void> _onRefreshTokenRequested(
-    RefreshTokenRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-
-    try {
-      final tokens = await authService.refreshToken(event.refreshToken);
-      emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
-    } catch (e) {
-      emit(AuthFailure(error: 'Failed to refresh token'));
-      await Future.delayed(Duration(seconds: 2));
-      emit(Unauthenticated());
     }
   }
 
@@ -138,13 +209,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await authService.getCurrentUser();
       if (user != null) {
-        emit(AuthSuccess(user: user));
+        emit(AuthSuccess(user: user)); // Émettre AuthSuccess
       } else {
         emit(Unauthenticated());
       }
     } catch (e) {
       emit(AuthFailure(error: 'Failed to get current user'));
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
     }
   }
@@ -217,7 +288,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // CORRIGÉ: Maintenant redirige vers login après vérification réussie
   Future<void> _onConfirmEmailRequested(
     ConfirmEmailRequested event,
     Emitter<AuthState> emit,
@@ -225,10 +295,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      // Appel du service qui vérifie l'email (ne retourne rien)
       await authService.confirmEmail(email: event.email, code: event.code);
-
-      // Émettre le succès de confirmation (sans utilisateur)
       emit(EmailConfirmationSuccess());
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
@@ -245,11 +312,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.resendVerificationCode(event.email);
       emit(VerificationCodeResent(event.email));
 
-      // Retourner à l'état de confirmation d'email
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }
+  }
+
+  // Programmer le rafraîchissement automatique du token
+  void _scheduleTokenRefresh() {
+    _tokenRefreshTimer?.cancel();
+
+    // Programmer le refresh pour 50 minutes (10 minutes avant expiration)
+    _tokenRefreshTimer = Timer(const Duration(minutes: 50), () async {
+      try {
+        final refreshToken = await authService.getRefreshToken();
+        if (refreshToken != null && refreshToken.isNotEmpty) {
+          add(RefreshTokenRequested(refreshToken));
+        }
+      } catch (e) {
+        debugPrint('❌ Erreur lors du refresh automatique: $e');
+      }
+    });
+
+    debugPrint('⏰ Refresh programmé dans 50 minutes');
   }
 }

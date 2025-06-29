@@ -36,13 +36,14 @@ class AuthController
      * @param int $statusCode
      * @return JsonResponse
      */
-    private function createErrorResponse(string $message, int $statusCode): JsonResponse
+    private function createErrorResponse(string $message, int $statusCode, string $code = ''): JsonResponse
     {
         return new JsonResponse(
             $statusCode,
             new Headers(['Content-Type' => 'application/json']),
             (new StreamFactory())->createStream(json_encode([
                 'success' => false,
+                'code' => $code,
                 'message' => $message,
             ]))
         );
@@ -72,7 +73,7 @@ class AuthController
             }
 
             // Récupérer l'employé associé au refresh_token
-            $user = User::find($decoded['sub']->auth_id);
+            $user = User::find($decoded['data']->auth_id);
 
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
@@ -93,23 +94,17 @@ class AuthController
                 new Headers(['Content-Type' => 'application/json']),
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
-                    'message' => 'Tokens rafraîchis avec succès',
-                    'access_token' => $accessToken,
-                    'refresh_token' => $newRefreshToken,
-                    'data' => [
-                        'id' => $user->id,
-                        'number' => $user->number,
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'email' => $user->email,
-                        'phone' => $user->phone,
-                        'email_verified' => $user->email_verified,
-                        'is_stripe_active' => $user->is_stripe_active, 
-                        'role' => $user->role,
-                        'avatar' => $user->avatar
-                    ],
-                    'iva' => $user->role == 'admin' ? 1 : 0 
-                ]))
+                'message' => 'Login successful',
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'data' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'email_verified' => $user->email_verified,
+                    'email_verified_at' => $user->email_verified_at
+                ]]))
             );
 
         } catch (\Exception $e) {
@@ -139,6 +134,7 @@ class AuthController
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
+                'code' => 'VALIDATION_ERROR',
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ]));
@@ -152,12 +148,20 @@ class AuthController
             $user = User::findByEmail($data['email']);
             
             if (!$user) {
-                return $this->createErrorResponse('Invalid credentials. Please try again.', 401);
+                return $this->createErrorResponse(
+                    'Invalid credentials. Please try again.', 
+                    401,
+                    'USER_NOT_FOUND'
+                );
             }
 
             // Verify password
             if (!password_verify($data['password'], $user->password_hash)) {
-                return $this->createErrorResponse('Invalid credentials. Please try again.', 401);
+                return $this->createErrorResponse(
+                    'Invalid credentials. Please try again.', 
+                    401,
+                    'INVALID_PASSWORD'
+                );
             }
 
             // Vérifier si l'email est confirmé
@@ -174,7 +178,7 @@ class AuthController
                 ]));
                 return $response
                     ->withHeader('Content-Type', 'application/json')
-                    ->withStatus(403); // 403 Forbidden - Compte existe mais non autorisé
+                    ->withStatus(403);
             }
 
             // Generate tokens
@@ -197,7 +201,8 @@ class AuthController
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'email' => $user->email,
-                    'email_verified' => $user->email_verified
+                    'email_verified' => $user->email_verified,
+                    'email_verified_at' => $user->email_verified_at
                 ]
             ]));
             return $response
@@ -208,8 +213,8 @@ class AuthController
             // Error handling
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Login failed',
-                'error' => $e->getMessage()
+                'code' => 'SERVER_ERROR',
+                'message' => 'Login failed: ' . $e->getMessage()
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -599,10 +604,8 @@ class AuthController
                         'first_name' => $user->first_name,
                         'last_name' => $user->last_name,
                         'email' => $user->email,
-                        'phone' => $user->phone ?? null,
-                        'avatar' => $user->avatar ?? null,
-                        'email_verified' => (bool)$user->email_verified,
-                        'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                        'email_verified' => $user->email_verified,
+                        'email_verified_at' => $user->email_verified_at
                     ]
                 ]))
             );
