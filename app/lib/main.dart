@@ -1,13 +1,17 @@
-// main.dart - VERSION CORRIGÉE
+// main.dart - VERSION AVEC SYSTÈME DE PARTAGE
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
+import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
+import 'package:epilist/services/shared_list_service.dart'; // NOUVEAU
+import 'package:epilist/services/deep_link_handler.dart'; // NOUVEAU
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/blocs/shared_list/shared_list_bloc.dart'; // NOUVEAU
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -82,6 +86,14 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          // NOUVEAU: Service de partage
+          RepositoryProvider(
+            create:
+                (context) => SharedListService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -92,6 +104,13 @@ void main() async {
               create:
                   (context) => ShoppingListBloc(
                     shoppingListService: context.read<ShoppingListService>(),
+                  ),
+            ),
+            // NOUVEAU: Bloc de partage
+            BlocProvider(
+              create:
+                  (context) => SharedListBloc(
+                    sharedListService: context.read<SharedListService>(),
                   ),
             ),
           ],
@@ -128,6 +147,23 @@ class MyApp extends StatelessWidget {
             fromRegistration: args['fromRegistration'] ?? false,
           );
         },
+        // NOUVEAU: Route pour les liens de partage
+        '/share': (context) {
+          final args =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>?;
+          final shareToken = args?['token'] as String?;
+          if (shareToken != null) {
+            return BlocProvider(
+              create:
+                  (context) => SharedListBloc(
+                    sharedListService: context.read<SharedListService>(),
+                  ),
+              child: ShareInvitationScreen(shareToken: shareToken),
+            );
+          }
+          return const HomeScreen(); // Fallback
+        },
       },
       home: const AuthWrapper(),
     );
@@ -143,6 +179,24 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _redirecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // NOUVEAU: Initialiser le gestionnaire de liens profonds après la construction
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        DeepLinkHandler.initialize(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // NOUVEAU: Nettoyer le gestionnaire de liens profonds
+    DeepLinkHandler.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

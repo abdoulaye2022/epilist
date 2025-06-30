@@ -27,6 +27,9 @@ class User {
 
   bool get isEmailVerified => emailVerified && emailVerifiedAt != null;
 
+  // NOUVEAU: Getter pour compatibilité avec le système de partage
+  String get name => fullName;
+
   // Factory pour la réponse de login
   factory User.fromLoginResponse(Map<String, dynamic> response) {
     final data = response['data'] ?? {};

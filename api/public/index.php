@@ -11,7 +11,8 @@ use Slim\Factory\AppFactory;
 use App\Controllers\{
     AuthController,
     ShoppingListController,
-    ListItemController
+    ListItemController,
+    SharedListController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -109,6 +110,20 @@ $app->group('', function ($group) {
     $group->delete('/shopping-lists/{id}', [ShoppingListController::class, 'destroy']);
     $group->post('/shopping-lists/{id}/restore', [ShoppingListController::class, 'restore']);
     $group->post('/shopping-lists/{id}/duplicate', [ShoppingListController::class, 'duplicate']);
+
+
+    // Shared Lists Routes
+    $group->post('/shopping-lists/{id}/share', [SharedListController::class, 'createShareLink']);
+    $group->get('/share/invitation/{token}', [SharedListController::class, 'getShareInvitation']);
+    $group->post('/share/accept/{token}', [SharedListController::class, 'acceptShareInvitation']);
+    $group->post('/share/decline/{token}', [SharedListController::class, 'declineShareInvitation']);
+    $group->get('/shared-lists', [SharedListController::class, 'getSharedLists']);
+    $group->get('/shopping-lists/{id}/shares', [SharedListController::class, 'getListShares']);
+    $group->put('/shared-lists/{id}', [SharedListController::class, 'updateSharePermission']);
+    $group->delete('/shared-lists/{id}', [SharedListController::class, 'revokeShare']);
+    $group->post('/shopping-lists/{id}/leave', [SharedListController::class, 'leaveSharedList']);
+    $group->delete('/shopping-lists/{id}/share-links', [SharedListController::class, 'revokeAllShareLinks']);
+    $group->get('/shopping-lists/{id}/share-stats', [SharedListController::class, 'getShareStats']);
 
     // List Items Routes
     $group->get('/shopping-lists/{listId}/items', [ListItemController::class, 'index']);
