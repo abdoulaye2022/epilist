@@ -1,4 +1,4 @@
-// services/shared_list_service.dart
+// services/shared_list_service.dart - VERSION MISE À JOUR POUR BRANCH.IO
 import 'package:dio/dio.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -12,8 +12,8 @@ class SharedListService {
     : _dio = dio,
       _authService = authService;
 
-  // Créer un lien de partage pour une liste
-  Future<String> createShareLink({
+  // Créer un lien de partage pour une liste - VERSION BRANCH.IO
+  Future<Map<String, dynamic>> createShareLink({
     required int listId,
     required SharePermission permission,
     int? expirationDays,
@@ -24,12 +24,18 @@ class SharedListService {
       '/shopping-lists/$listId/share',
       data: {
         'permission': permission.name,
-        'expiration_days': expirationDays ?? 30, // Par défaut 30 jours
+        'expiration_days': expirationDays ?? 30,
       },
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    return response.data['data']['share_url'];
+    // Retourner les données nécessaires pour Branch.io
+    return {
+      'share_token': response.data['data']['share_token'],
+      'list_name': response.data['data']['list_name'],
+      'owner_name': response.data['data']['owner_name'],
+      'expiration_date': response.data['data']['expiration_date'],
+    };
   }
 
   // Obtenir les informations d'une invitation via le token
@@ -156,5 +162,72 @@ class SharedListService {
     );
 
     return response.data['data'];
+  }
+
+  // Obtenir les liens de partage actifs pour une liste
+  Future<List<Map<String, dynamic>>> getActiveShareLinks(int listId) async {
+    final token = await _authService.getToken();
+
+    final response = await _dio.get(
+      '/shopping-lists/$listId/share-links',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    return List<Map<String, dynamic>>.from(response.data['data']);
+  }
+
+  // Révoquer un lien de partage spécifique
+  Future<void> revokeShareLink(String shareToken) async {
+    final token = await _authService.getToken();
+
+    await _dio.delete(
+      '/share/links/$shareToken',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
+
+  // Obtenir les détails d'un partage par token
+  Future<Map<String, dynamic>> getShareDetails(String shareToken) async {
+    final token = await _authService.getToken();
+
+    final response = await _dio.get(
+      '/share/details/$shareToken',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    return response.data['data'];
+  }
+
+  // Mettre à jour les paramètres d'un lien de partage
+  Future<void> updateShareLink({
+    required String shareToken,
+    SharePermission? permission,
+    int? expirationDays,
+  }) async {
+    final token = await _authService.getToken();
+
+    final data = <String, dynamic>{};
+    if (permission != null) data['permission'] = permission.name;
+    if (expirationDays != null) data['expiration_days'] = expirationDays;
+
+    await _dio.put(
+      '/share/links/$shareToken',
+      data: data,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+  }
+
+  // Obtenir l'historique des accès à un lien de partage
+  Future<List<Map<String, dynamic>>> getShareLinkHistory(
+    String shareToken,
+  ) async {
+    final token = await _authService.getToken();
+
+    final response = await _dio.get(
+      '/share/links/$shareToken/history',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    return List<Map<String, dynamic>>.from(response.data['data']);
   }
 }

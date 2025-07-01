@@ -1,4 +1,4 @@
-// main.dart - VERSION AVEC SYSTÈME DE PARTAGE
+// main.dart - VERSION AVEC BRANCH.IO
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -8,10 +8,10 @@ import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
-import 'package:epilist/services/shared_list_service.dart'; // NOUVEAU
-import 'package:epilist/services/deep_link_handler.dart'; // NOUVEAU
+import 'package:epilist/services/shared_list_service.dart';
+import 'package:epilist/services/branch_links_service.dart'; // 🌿 NOUVEAU: Branch.io
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
-import 'package:epilist/blocs/shared_list/shared_list_bloc.dart'; // NOUVEAU
+import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -86,7 +86,6 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
-          // NOUVEAU: Service de partage
           RepositoryProvider(
             create:
                 (context) => SharedListService(
@@ -106,7 +105,6 @@ void main() async {
                     shoppingListService: context.read<ShoppingListService>(),
                   ),
             ),
-            // NOUVEAU: Bloc de partage
             BlocProvider(
               create:
                   (context) => SharedListBloc(
@@ -147,7 +145,7 @@ class MyApp extends StatelessWidget {
             fromRegistration: args['fromRegistration'] ?? false,
           );
         },
-        // NOUVEAU: Route pour les liens de partage
+        // Route pour les liens de partage Branch.io
         '/share': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments
@@ -183,18 +181,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    // NOUVEAU: Initialiser le gestionnaire de liens profonds après la construction
+    // 🌿 NOUVEAU: Initialiser Branch.io après la construction
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        DeepLinkHandler.initialize(context);
+        BranchLinksService.initialize(context);
       }
     });
   }
 
   @override
   void dispose() {
-    // NOUVEAU: Nettoyer le gestionnaire de liens profonds
-    DeepLinkHandler.dispose();
+    // 🌿 NOUVEAU: Nettoyer Branch.io
+    BranchLinksService.dispose();
     super.dispose();
   }
 
@@ -231,13 +229,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
         // Gérer les tokens rafraîchis
         if (state is TokensRefreshed) {
           debugPrint('✅ Tokens rafraîchis dans AuthWrapper');
-          // Optionnel: afficher un message de succès discret
         }
 
         // Gérer les erreurs d'authentification
         if (state is AuthFailure) {
           debugPrint('❌ Erreur d\'authentification: ${state.error}');
-          // Optionnel: afficher un snackbar avec l'erreur
           if (mounted && state.error.contains('Session expirée')) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

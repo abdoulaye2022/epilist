@@ -1,10 +1,10 @@
-// blocs/shared_list/shared_list_bloc.dart
+// blocs/shared_list/shared_list_bloc.dart - VERSION BRANCH.IO
 import 'package:bloc/bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/services/shared_list_service.dart';
-import 'package:epilist/services/deep_link_handler.dart';
+import 'package:epilist/services/branch_links_service.dart';
 
 class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   final SharedListService _sharedListService;
@@ -57,17 +57,31 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
     Emitter<SharedListState> emit,
   ) async {
     try {
-      // Créer le lien de partage côté serveur
-      final shareToken = await _sharedListService.createShareLink(
+      // 🌿 Étape 1: Créer le token côté serveur
+      final shareData = await _sharedListService.createShareLink(
         listId: event.listId,
         permission: event.permission,
         expirationDays: event.expirationDays,
       );
-
-      // 🆕 Générer l'URL avec le nouveau domaine
-      final shareUrl = DeepLinkHandler.generateUniversalShareUrl(shareToken);
-
-      emit(ShareLinkCreated(shareUrl));
+      
+      // 🌿 Étape 2: Créer le lien Branch.io avec les données reçues
+      final branchLink = await BranchLinksService.createShareLink(
+        shareToken: shareData['share_token'],
+        listName: shareData['list_name'],
+        ownerName: shareData['owner_name'],
+      );
+      
+      // 🌿 Étape 3: Tracker l'événement de création de lien
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'share_link_created',
+        customData: {
+          'list_id': event.listId.toString(),
+          'permission': event.permission.toString(),
+          'expiration_days': (event.expirationDays ?? 30).toString(),
+        },
+      );
+      
+      emit(ShareLinkCreated(branchLink));
     } catch (e) {
       print("Error creating share link: $e");
       emit(SharedListError('Erreur lors de la création du lien de partage'));
@@ -83,6 +97,16 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
       final invitation = await _sharedListService.getShareInvitation(
         event.shareToken,
       );
+      
+      // 🌿 Tracker l'ouverture d'une invitation
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'invitation_viewed',
+        customData: {
+          'share_token': event.shareToken,
+          'list_name': invitation.listName,
+        },
+      );
+      
       emit(ShareInvitationLoaded(invitation));
     } catch (e) {
       print("Error loading share invitation: $e");
@@ -98,6 +122,17 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
       final shoppingList = await _sharedListService.acceptShareInvitation(
         event.shareToken,
       );
+      
+      // 🌿 Tracker l'acceptation d'une invitation
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'invitation_accepted',
+        customData: {
+          'share_token': event.shareToken,
+          'list_id': shoppingList.id.toString(),
+          'list_name': shoppingList.name,
+        },
+      );
+      
       emit(ShareInvitationAccepted(shoppingList));
     } catch (e) {
       print("Error accepting share invitation: $e");
@@ -111,6 +146,15 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   ) async {
     try {
       await _sharedListService.declineShareInvitation(event.shareToken);
+      
+      // 🌿 Tracker le refus d'une invitation
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'invitation_declined',
+        customData: {
+          'share_token': event.shareToken,
+        },
+      );
+      
       emit(ShareInvitationDeclined());
     } catch (e) {
       print("Error declining share invitation: $e");
@@ -127,6 +171,16 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
         shareId: event.shareId,
         permission: event.permission,
       );
+      
+      // 🌿 Tracker la modification de permissions
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'permission_updated',
+        customData: {
+          'share_id': event.shareId.toString(),
+          'new_permission': event.permission.toString(),
+        },
+      );
+      
       emit(ShareOperationSuccess('Permissions mises à jour avec succès'));
     } catch (e) {
       print("Error updating share permission: $e");
@@ -140,6 +194,15 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   ) async {
     try {
       await _sharedListService.revokeShare(event.shareId);
+      
+      // 🌿 Tracker la révocation de partage
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'share_revoked',
+        customData: {
+          'share_id': event.shareId.toString(),
+        },
+      );
+      
       emit(ShareOperationSuccess('Partage révoqué avec succès'));
     } catch (e) {
       print("Error revoking share: $e");
@@ -153,6 +216,15 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   ) async {
     try {
       await _sharedListService.leaveSharedList(event.listId);
+      
+      // 🌿 Tracker la sortie d'une liste partagée
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'shared_list_left',
+        customData: {
+          'list_id': event.listId.toString(),
+        },
+      );
+      
       emit(ShareOperationSuccess('Vous avez quitté la liste partagée'));
     } catch (e) {
       print("Error leaving shared list: $e");
@@ -166,6 +238,15 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   ) async {
     try {
       await _sharedListService.revokeAllShareLinks(event.listId);
+      
+      // 🌿 Tracker la révocation de tous les liens
+      await BranchLinksService.trackCustomEvent(
+        eventName: 'all_share_links_revoked',
+        customData: {
+          'list_id': event.listId.toString(),
+        },
+      );
+      
       emit(ShareOperationSuccess('Tous les liens de partage ont été révoqués'));
     } catch (e) {
       print("Error revoking all share links: $e");
