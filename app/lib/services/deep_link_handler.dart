@@ -6,15 +6,22 @@ import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'dart:async';
 
-import 'package:uni_links3/uni_links.dart';
+// 🔄 Remplacé uni_links3 par app_links
+import 'package:app_links/app_links.dart';
 
 class DeepLinkHandler {
-  static StreamSubscription? _linkSubscription;
+  static StreamSubscription<Uri>? _linkSubscription;
   static BuildContext? _context;
+  static AppLinks? _appLinks;
+
+  // 🌐 Configuration du domaine personnalisé
+  static const String customDomain = 'epilist.app';
+  static const String appScheme = 'epilist';
 
   // Initialiser le gestionnaire de liens profonds
   static void initialize(BuildContext context) {
     _context = context;
+    _appLinks = AppLinks();
     _initializeDeepLinks();
   }
 
@@ -23,16 +30,16 @@ class DeepLinkHandler {
     _linkSubscription?.cancel();
     _linkSubscription = null;
     _context = null;
+    _appLinks = null;
   }
 
   static void _initializeDeepLinks() {
     // Écouter les liens entrants quand l'app est déjà ouverte
-    _linkSubscription = linkStream.listen(
-      (String link) {
-            debugPrint('🔗 Lien reçu: $link');
-            _handleDeepLink(link);
-          }
-          as void Function(String? event)?,
+    _linkSubscription = _appLinks!.uriLinkStream.listen(
+      (Uri uri) {
+        debugPrint('🔗 Lien reçu: ${uri.toString()}');
+        _handleDeepLink(uri.toString());
+      },
       onError: (err) {
         debugPrint('❌ Erreur de lien profond: $err');
       },
@@ -44,12 +51,12 @@ class DeepLinkHandler {
 
   static Future<void> _getInitialLink() async {
     try {
-      final String? initialLink = await getInitialLink();
-      if (initialLink != null) {
-        debugPrint('🔗 Lien initial: $initialLink');
+      final Uri? initialUri = await _appLinks!.getInitialLink();
+      if (initialUri != null) {
+        debugPrint('🔗 Lien initial: ${initialUri.toString()}');
         // Attendre que le contexte soit disponible
         Future.delayed(const Duration(milliseconds: 500), () {
-          _handleDeepLink(initialLink);
+          _handleDeepLink(initialUri.toString());
         });
       }
     } catch (e) {
@@ -65,6 +72,7 @@ class DeepLinkHandler {
 
     final uri = Uri.parse(link);
     debugPrint('🔍 URI parsée: ${uri.toString()}');
+    debugPrint('🔍 Scheme: ${uri.scheme}');
     debugPrint('🔍 Host: ${uri.host}');
     debugPrint('🔍 Path: ${uri.path}');
     debugPrint('🔍 Query: ${uri.queryParameters}');
@@ -81,14 +89,22 @@ class DeepLinkHandler {
     // Vérifier si c'est un lien de partage
     // Formats supportés:
     // - https://epilist.app/share/{token}
-    // - https://app.epilist.com/share/{token}
+    // - https://epilist.app/share?token={token}
     // - epilist://share/{token}
+    // - epilist://share?token={token}
 
-    return (uri.host == 'epilist.app' ||
-            uri.host == 'app.epilist.com' ||
-            uri.scheme == 'epilist') &&
-        uri.pathSegments.isNotEmpty &&
-        uri.pathSegments[0] == 'share';
+    return (
+        // Liens HTTPS avec domaine personnalisé
+        (uri.scheme == 'https' && uri.host == customDomain) ||
+            // Liens avec scheme personnalisé
+            uri.scheme == appScheme) &&
+        (
+        // Path contient 'share'
+        (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'share') ||
+            // Ou c'est un lien direct vers share
+            uri.path.startsWith('/share') ||
+            // Ou c'est un lien avec query parameter
+            uri.queryParameters.containsKey('token'));
   }
 
   static void _handleShareLink(Uri uri) {
@@ -96,9 +112,16 @@ class DeepLinkHandler {
       // Extraire le token de partage
       String? shareToken;
 
-      if (uri.pathSegments.length >= 2) {
+      // Pour https://epilist.app/share/{token} ou epilist://share/{token}
+      if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'share') {
         shareToken = uri.pathSegments[1];
-      } else if (uri.queryParameters.containsKey('token')) {
+      }
+      // Pour https://epilist.app/share?token={token} ou epilist://share?token={token}
+      else if (uri.queryParameters.containsKey('token')) {
+        shareToken = uri.queryParameters['token'];
+      }
+      // Pour https://epilist.app/?token={token} (lien direct)
+      else if (uri.path == '/' && uri.queryParameters.containsKey('token')) {
         shareToken = uri.queryParameters['token'];
       }
 
@@ -158,9 +181,38 @@ class DeepLinkHandler {
     );
   }
 
-  // Méthode utilitaire pour générer des liens de partage
-  static String generateShareUrl(String token) {
-    return 'https://epilist.app/share/$token';
+  // 🆕 Méthodes pour générer des liens avec le domaine personnalisé
+
+  /// Génère un lien de partage pour le web (avec fallback vers Play Store)
+  static String generateWebShareUrl(String token) {
+    return 'https://$customDomain/share/$token';
+  }
+
+  /// Génère un lien de partage pour l'application (schema personnalisé)
+  static String generateAppShareUrl(String token) {
+    return '$appScheme://share/$token';
+  }
+
+  /// Génère un lien universel qui fonctionne pour les deux
+  static String generateUniversalShareUrl(String token) {
+    // Utiliser le domaine web avec paramètres pour le fallback
+    return 'https://$customDomain/share?token=$token';
+  }
+
+  /// Génère un lien de partage complet avec métadonnées
+  static Map<String, String> generateShareData(
+    String token,
+    String listName,
+    String ownerName,
+  ) {
+    final shareUrl = generateUniversalShareUrl(token);
+
+    return {
+      'url': shareUrl,
+      'title': 'Invitation EpiList',
+      'text': '$ownerName vous invite à collaborer sur la liste "$listName"',
+      'subject': 'Invitation à partager une liste d\'épicerie',
+    };
   }
 
   // Méthode pour tester si un lien est valide
@@ -179,9 +231,12 @@ class DeepLinkHandler {
       final uri = Uri.parse(link);
       if (!_isShareLink(uri)) return null;
 
-      if (uri.pathSegments.length >= 2) {
+      // Pour https://epilist.app/share/{token} ou epilist://share/{token}
+      if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'share') {
         return uri.pathSegments[1];
-      } else if (uri.queryParameters.containsKey('token')) {
+      }
+      // Pour les liens avec query parameter
+      else if (uri.queryParameters.containsKey('token')) {
         return uri.queryParameters['token'];
       }
 
@@ -190,65 +245,127 @@ class DeepLinkHandler {
       return null;
     }
   }
+
+  // 🆕 Méthode pour générer le HTML de la page de fallback
+  static String generateFallbackPageHtml(
+    String token,
+    String listName,
+    String ownerName,
+  ) {
+    return '''
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation EpiList - $listName</title>
+    <meta name="description" content="$ownerName vous invite à collaborer sur la liste d'épicerie $listName">
+    
+    <!-- Open Graph pour le partage social -->
+    <meta property="og:title" content="Invitation EpiList - $listName">
+    <meta property="og:description" content="$ownerName vous invite à collaborer sur cette liste d'épicerie">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://$customDomain/share/$token">
+    
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5;
+            text-align: center;
+        }
+        .container { 
+            max-width: 400px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .logo { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #4CAF50; 
+            margin-bottom: 20px;
+        }
+        .invite-text { 
+            margin: 20px 0; 
+            color: #333;
+            line-height: 1.5;
+        }
+        .app-button { 
+            display: inline-block; 
+            background: #4CAF50; 
+            color: white; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            margin: 10px;
+            font-weight: bold;
+        }
+        .store-button {
+            background: #2196F3;
+        }
+        .fallback-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+    
+    <script>
+        // Tentative d'ouverture automatique de l'app
+        function tryOpenApp() {
+            const appUrl = '$appScheme://share/$token';
+            const fallbackUrl = 'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
+            
+            // Tenter d'ouvrir l'app
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appUrl;
+            document.body.appendChild(iframe);
+            
+            // Fallback vers le Play Store après 2 secondes
+            setTimeout(() => {
+                window.location.href = fallbackUrl;
+            }, 2000);
+        }
+        
+        // Auto-redirection sur mobile
+        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            setTimeout(tryOpenApp, 1000);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📱 EpiList</div>
+        <h2>Invitation de partage</h2>
+        <div class="invite-text">
+            <strong>$ownerName</strong> vous invite à collaborer sur la liste d'épicerie 
+            <strong>"$listName"</strong>
+        </div>
+        
+        <a href="$appScheme://share/$token" class="app-button">
+            Ouvrir dans EpiList
+        </a>
+        
+        <br>
+        
+        <a href="https://play.google.com/store/apps/details?id=com.m2atech.epilist" class="app-button store-button">
+            Télécharger EpiList
+        </a>
+        
+        <div class="fallback-link">
+            <small>
+                Si vous avez déjà l'application, elle devrait s'ouvrir automatiquement.
+                <br>Sinon, téléchargez l'application et utilisez ce lien.
+            </small>
+        </div>
+    </div>
+</body>
+</html>
+    ''';
+  }
 }
-
-// Configuration des liens profonds dans Android (android/app/src/main/AndroidManifest.xml)
-/*
-Ajouter dans <activity android:name=".MainActivity" ...>:
-
-<intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="https"
-          android:host="epilist.app" />
-</intent-filter>
-
-<intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="https"
-          android:host="app.epilist.com" />
-</intent-filter>
-
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="epilist" />
-</intent-filter>
-*/
-
-// Configuration des liens profonds dans iOS (ios/Runner/Info.plist)
-/*
-Ajouter dans <dict>:
-
-<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleURLName</key>
-        <string>epilist.app</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>https</string>
-        </array>
-        <key>CFBundleURLTypes</key>
-        <string>Editor</string>
-    </dict>
-    <dict>
-        <key>CFBundleURLName</key>
-        <string>epilist.custom</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>epilist</string>
-        </array>
-    </dict>
-</array>
-
-<key>com.apple.developer.associated-domains</key>
-<array>
-    <string>applinks:epilist.app</string>
-    <string>applinks:app.epilist.com</string>
-</array>
-*/

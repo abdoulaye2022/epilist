@@ -4,6 +4,7 @@ import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/services/shared_list_service.dart';
+import 'package:epilist/services/deep_link_handler.dart';
 
 class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
   final SharedListService _sharedListService;
@@ -56,11 +57,16 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
     Emitter<SharedListState> emit,
   ) async {
     try {
-      final shareUrl = await _sharedListService.createShareLink(
+      // Créer le lien de partage côté serveur
+      final shareToken = await _sharedListService.createShareLink(
         listId: event.listId,
         permission: event.permission,
         expirationDays: event.expirationDays,
       );
+
+      // 🆕 Générer l'URL avec le nouveau domaine
+      final shareUrl = DeepLinkHandler.generateUniversalShareUrl(shareToken);
+
       emit(ShareLinkCreated(shareUrl));
     } catch (e) {
       print("Error creating share link: $e");
