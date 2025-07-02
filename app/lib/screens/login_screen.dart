@@ -1,8 +1,10 @@
+// login_screen.dart - VERSION MISE À JOUR AVEC SNACKBAR MANAGER
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/screens/password_change_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
+import 'package:epilist/utils/snackbar_manager.dart'; // Import du gestionnaire
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isObscure = true;
-  String? _errorMessage;
   bool _isLoading = false;
 
   @override
@@ -30,43 +31,68 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is AuthLoading) {
             setState(() => _isLoading = true);
           } else if (state is AuthFailure) {
-            setState(() {
-              _isLoading = false; // <-- IMPORTANT: Désactiver le loader
-              _errorMessage = state.error;
-            });
-            // Ajoutez ceci pour voir le message dans les logs
+            setState(() => _isLoading = false);
+
+            // Utiliser le gestionnaire de SnackBar avec message en français
+            final localizedError = AuthErrorMessages.getLocalizedError(
+              state.error,
+            );
+            SnackBarManager.showErrorSnackBar(
+              context,
+              localizedError,
+              duration: const Duration(seconds: 5), // 5 secondes
+            );
+
             print('Erreur de connexion: ${state.error}');
           } else if (state is EmailVerificationRequired) {
-            setState(() {
-              _isLoading = false;
-              _errorMessage = null;
-            });
+            setState(() => _isLoading = false);
 
-            Navigator.push(
+            // Afficher un message informatif pour la vérification d'email
+            SnackBarManager.showErrorSnackBar(
               context,
-              MaterialPageRoute(
-                builder:
-                    (context) => EmailVerificationScreen(
-                      email: state.email,
-                      fromRegistration: false,
-                    ),
-              ),
+              'Votre email doit être vérifié avant de continuer.',
+              duration: const Duration(seconds: 4),
             );
+
+            // Naviguer après un court délai pour que l'utilisateur voie le message
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => EmailVerificationScreen(
+                          email: state.email,
+                          fromRegistration: false,
+                        ),
+                  ),
+                );
+              }
+            });
           } else if (state is AuthSuccess) {
-            setState(() {
-              _isLoading = false;
-              _errorMessage = null;
-            });
+            setState(() => _isLoading = false);
 
-            Navigator.pushReplacement(
+            // Effacer tous les SnackBars avant la navigation
+            SnackBarManager.clearAll(context);
+
+            // Optionnel: afficher un message de succès
+            SnackBarManager.showSuccessSnackBar(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              'Connexion réussie ! Bienvenue ${state.user.firstName}.',
+              duration: const Duration(seconds: 2),
             );
-          } else if (state is Unauthenticated) {
-            setState(() {
-              _isLoading = false;
-              _errorMessage = null;
+
+            // Naviguer après un court délai
+            Future.delayed(const Duration(milliseconds: 800), () {
+              if (mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
+              }
             });
+          } else if (state is Unauthenticated) {
+            setState(() => _isLoading = false);
           }
         },
         child: GestureDetector(
@@ -203,39 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // AFFICHAGE DE L'ERREUR
-                  // AFFICHAGE DE L'ERREUR
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 300),
-                    child:
-                        _errorMessage != null
-                            ? Container(
-                              padding: EdgeInsets.all(16),
-                              margin: EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.red[50],
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.red),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.error_outline, color: Colors.red),
-                                  SizedBox(width: 8),
-                                  Expanded(child: Text(_errorMessage!)),
-                                  IconButton(
-                                    icon: Icon(Icons.close),
-                                    onPressed:
-                                        () => setState(
-                                          () => _errorMessage = null,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            )
-                            : SizedBox.shrink(),
-                  ),
-
-                  // INDICATEUR DE CHARGEMENT
+                  // INDICATEUR DE CHARGEMENT (simplifié)
                   if (_isLoading)
                     Container(
                       width: double.infinity,
@@ -286,35 +280,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color:
-                                    _errorMessage != null
-                                        ? Colors.red[300]!
-                                        : Colors.grey[300]!,
-                              ),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color:
-                                    _errorMessage != null
-                                        ? Colors.red[500]!
-                                        : Colors.green[600]!,
-                              ),
+                              borderSide: BorderSide(color: Colors.green[600]!),
                             ),
                             filled: true,
-                            fillColor:
-                                _errorMessage != null
-                                    ? Colors.red[25]
-                                    : Colors.grey[50],
+                            fillColor: Colors.grey[50],
                           ),
-                          onChanged: (value) {
-                            if (_errorMessage != null) {
-                              setState(() {
-                                _errorMessage = null;
-                              });
-                            }
-                          },
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return 'Veuillez saisir votre email';
@@ -355,35 +329,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color:
-                                    _errorMessage != null
-                                        ? Colors.red[300]!
-                                        : Colors.grey[300]!,
-                              ),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color:
-                                    _errorMessage != null
-                                        ? Colors.red[500]!
-                                        : Colors.green[600]!,
-                              ),
+                              borderSide: BorderSide(color: Colors.green[600]!),
                             ),
                             filled: true,
-                            fillColor:
-                                _errorMessage != null
-                                    ? Colors.red[25]
-                                    : Colors.grey[50],
+                            fillColor: Colors.grey[50],
                           ),
-                          onChanged: (value) {
-                            if (_errorMessage != null) {
-                              setState(() {
-                                _errorMessage = null;
-                              });
-                            }
-                          },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Veuillez saisir votre mot de passe';
@@ -402,11 +356,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed:
-                                _isLoading
-                                    ? null
-                                    : () {
-                                      _showForgotPasswordDialog();
-                                    },
+                                _isLoading ? null : _showForgotPasswordDialog,
                             child: Text(
                               'Mot de passe oublié ?',
                               style: TextStyle(
@@ -562,58 +512,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  String _getErrorMessage(String error) {
-    final lowerError = error.toLowerCase();
-
-    if (lowerError.contains('invalid credentials') ||
-        lowerError.contains('identifiants invalides') ||
-        lowerError.contains('please try again')) {
-      return 'Email ou mot de passe incorrect. Veuillez vérifier vos informations.';
-    }
-
-    if (lowerError.contains('user not found') ||
-        lowerError.contains('utilisateur non trouvé') ||
-        lowerError.contains('email not found') ||
-        lowerError.contains('compte introuvable')) {
-      return 'Aucun compte associé à cette adresse email. Créez un compte ou vérifiez votre email.';
-    }
-
-    if (lowerError.contains('wrong password') ||
-        lowerError.contains('mot de passe incorrect') ||
-        lowerError.contains('invalid password')) {
-      return 'Mot de passe incorrect. Veuillez réessayer.';
-    }
-
-    if (lowerError.contains('network') ||
-        lowerError.contains('connection') ||
-        lowerError.contains('timeout')) {
-      return 'Problème de connexion. Vérifiez votre connexion internet.';
-    }
-
-    if (lowerError.contains('account disabled') ||
-        lowerError.contains('compte désactivé')) {
-      return 'Compte désactivé. Contactez le support.';
-    }
-
-    if (lowerError.contains('too many attempts') ||
-        lowerError.contains('trop de tentatives')) {
-      return 'Trop de tentatives. Attendez quelques minutes.';
-    }
-
-    // Message par défaut
-    return error.length > 100
-        ? 'Erreur de connexion. Vérifiez vos informations.'
-        : error;
-  }
-
   void _login() {
     // Ferme le clavier
     FocusScope.of(context).unfocus();
 
-    setState(() {
-      _errorMessage = null;
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
@@ -623,10 +526,13 @@ class _LoginScreenState extends State<LoginScreen> {
         LoginButtonPressed(email: email, password: password),
       );
     } else {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Veuillez corriger les erreurs dans le formulaire';
-      });
+      setState(() => _isLoading = false);
+
+      SnackBarManager.showErrorSnackBar(
+        context,
+        'Veuillez corriger les erreurs dans le formulaire',
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 

@@ -12,6 +12,7 @@ import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
+import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -253,16 +254,44 @@ class _AuthWrapperState extends State<AuthWrapper> {
           debugPrint('✅ Tokens rafraîchis dans AuthWrapper');
         }
 
-        // Gérer les erreurs d'authentification
+        // Gérer les erreurs d'authentification avec SnackBar
         if (state is AuthFailure) {
           debugPrint('❌ Erreur d\'authentification: ${state.error}');
-          if (mounted && state.error.contains('Session expirée')) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: Colors.orange,
-                duration: const Duration(seconds: 3),
-              ),
+
+          if (mounted) {
+            // Utiliser le gestionnaire de SnackBar pour les erreurs de session
+            if (state.error.contains('Session expirée') ||
+                state.error.contains('token') ||
+                state.error.contains('unauthorized')) {
+              SnackBarManager.showErrorSnackBar(
+                context,
+                'Votre session a expiré. Veuillez vous reconnecter.',
+                duration: const Duration(seconds: 4),
+              );
+            } else {
+              // Pour autres erreurs, utiliser le message localisé
+              final localizedError = AuthErrorMessages.getLocalizedError(
+                state.error,
+              );
+              SnackBarManager.showErrorSnackBar(
+                context,
+                localizedError,
+                duration: const Duration(seconds: 4),
+              );
+            }
+          }
+        }
+
+        // Gérer les succès avec SnackBar de confirmation
+        if (state is AuthSuccess) {
+          debugPrint('✅ Utilisateur connecté: ${state.user.email}');
+
+          // Optionnel: message de bienvenue dans certains cas
+          if (mounted) {
+            SnackBarManager.showSuccessSnackBar(
+              context,
+              'Bienvenue, ${state.user.firstName} !',
+              duration: const Duration(seconds: 2),
             );
           }
         }

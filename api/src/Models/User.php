@@ -51,6 +51,6 @@ class User extends Model
     // Vérifie si l'email est vérifié
     public function isEmailVerified(): bool
     {
-        return $this->email_verified_at !== null;
+        return $this->email_verified !== 0;
     }
 }
