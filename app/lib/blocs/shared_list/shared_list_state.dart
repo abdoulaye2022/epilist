@@ -1,6 +1,7 @@
 // blocs/shared_list/shared_list_state.dart
+import 'package:epilist/models/share_invitation.dart';
 import 'package:equatable/equatable.dart';
-import 'package:epilist/models/shared_list.dart';
+import 'package:epilist/models/shared_list.dart' hide ShareInvitation;
 import 'package:epilist/models/shopping_list.dart';
 
 abstract class SharedListState extends Equatable {

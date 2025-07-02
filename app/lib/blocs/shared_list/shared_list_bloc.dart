@@ -1,8 +1,9 @@
-// blocs/shared_list/shared_list_bloc.dart - VERSION CLEAN SANS BRANCH.IO
+// blocs/shared_list/shared_list_bloc.dart - VERSION AVEC IMPORTS CORRIGÉS
 import 'package:bloc/bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/shared_list.dart';
+import 'package:epilist/models/share_invitation.dart'; // ✅ Import ajouté
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -59,7 +60,6 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
     try {
       debugPrint('🔄 Création du lien de partage...');
 
-      // Créer le lien de partage côté serveur
       final shareData = await _sharedListService.createShareLink(
         listId: event.listId,
         permission: event.permission,

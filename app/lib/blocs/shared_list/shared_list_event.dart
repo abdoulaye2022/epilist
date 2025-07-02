@@ -1,4 +1,5 @@
 // blocs/shared_list/shared_list_event.dart
+import 'package:epilist/models/shared_enums.dart';
 import 'package:equatable/equatable.dart';
 import 'package:epilist/models/shared_list.dart';
 

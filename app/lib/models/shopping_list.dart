@@ -1,5 +1,6 @@
 // models/shopping_list.dart - VERSION COMPATIBLE AVEC USER EXISTANT
 import 'package:epilist/models/list_item.dart';
+import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/models/user.dart';
 

@@ -1,8 +1,7 @@
-// models/shared_list.dart - VERSION COMPATIBLE AVEC USER EXISTANT
+// models/shared_list.dart - VERSION AVEC ENUMS CENTRALISÉS
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/user.dart';
-
-enum SharePermission { readOnly, edit, admin }
+import 'package:epilist/models/shared_enums.dart';
 
 class SharedList {
   final int id;
@@ -15,7 +14,7 @@ class SharedList {
   final ShoppingList? shoppingList;
   final User? owner;
   final User? sharedWithUser;
-  final String? shareToken; // Token pour le partage via lien
+  final String? shareToken;
 
   const SharedList({
     required this.id,
@@ -47,7 +46,6 @@ class SharedList {
           json['shopping_list'] != null
               ? ShoppingList.fromJson(json['shopping_list'])
               : null,
-      // ADAPTATION: Utilise fromMap au lieu de fromJson pour compatibilité
       owner: json['owner'] != null ? User.fromMap(json['owner']) : null,
       sharedWithUser:
           json['shared_with_user'] != null
@@ -70,10 +68,10 @@ class SharedList {
     };
   }
 
-  bool get canEdit =>
-      permission == SharePermission.edit || permission == SharePermission.admin;
-  bool get canDelete => permission == SharePermission.admin;
-  bool get isOwner => permission == SharePermission.admin;
+  // Utilisation des extensions pour les permissions
+  bool get canEdit => permission.canEdit;
+  bool get canDelete => permission.canDelete;
+  bool get isOwner => permission.isAdmin;
 
   SharedList copyWith({
     int? id,
@@ -129,64 +127,5 @@ class SharedList {
   @override
   String toString() {
     return 'SharedList{id: $id, listId: $listId, permission: $permission, sharedWithUser: ${sharedWithUser?.name}}';
-  }
-}
-
-// models/share_invitation.dart
-class ShareInvitation {
-  final String token;
-  final int listId;
-  final String listName;
-  final String ownerName;
-  final String ownerEmail;
-  final SharePermission permission;
-  final DateTime expiresAt;
-  final bool isExpired;
-  final ShoppingList? shoppingList;
-
-  const ShareInvitation({
-    required this.token,
-    required this.listId,
-    required this.listName,
-    required this.ownerName,
-    required this.ownerEmail,
-    required this.permission,
-    required this.expiresAt,
-    required this.isExpired,
-    this.shoppingList,
-  });
-
-  factory ShareInvitation.fromJson(Map<String, dynamic> json) {
-    return ShareInvitation(
-      token: json['token'],
-      listId: json['list_id'],
-      listName: json['list_name'],
-      ownerName: json['owner_name'],
-      ownerEmail: json['owner_email'],
-      permission: SharePermission.values.firstWhere(
-        (e) => e.name == json['permission'],
-        orElse: () => SharePermission.readOnly,
-      ),
-      expiresAt: DateTime.parse(json['expires_at']),
-      isExpired: json['is_expired'] ?? false,
-      shoppingList:
-          json['shopping_list'] != null
-              ? ShoppingList.fromJson(json['shopping_list'])
-              : null,
-    );
-  }
-
-  bool get canEdit =>
-      permission == SharePermission.edit || permission == SharePermission.admin;
-
-  String get permissionDisplayName {
-    switch (permission) {
-      case SharePermission.readOnly:
-        return 'Lecture seule';
-      case SharePermission.edit:
-        return 'Modification';
-      case SharePermission.admin:
-        return 'Administration';
-    }
   }
 }

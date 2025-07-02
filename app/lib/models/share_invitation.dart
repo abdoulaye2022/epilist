@@ -1,23 +1,26 @@
-// models/share_invitation.dart - VERSION MISE À JOUR POUR VOTRE API
+// models/share_invitation.dart - VERSION AVEC ENUMS CENTRALISÉS
 import 'package:epilist/models/shopping_list.dart';
-import 'package:epilist/models/shared_list.dart';
+import 'package:epilist/models/shared_enums.dart';
 
 class ShareInvitation {
   final String token;
-  final String listName; // ✅ Pas de listId dans votre API
+  final int listId;
+  final String listName;
   final String ownerName;
   final String ownerEmail;
   final SharePermission permission;
-  final String permissionDisplayName; // ✅ Ajouté pour votre API
+  final String permissionDisplayName;
   final DateTime expiresAt;
   final bool isExpired;
-  final DateTime createdAt; // ✅ Ajouté pour votre API
-  final ShoppingListSummary?
-  shoppingList; // ✅ Résumé au lieu de l'objet complet
-  final ShareUrls? shareUrls; // ✅ Ajouté pour votre API
+  final InvitationStatus status;
+  final String statusDisplayName;
+  final DateTime createdAt;
+  final ShoppingList? shoppingList;
+  final ShareUrls? shareUrls;
 
   const ShareInvitation({
     required this.token,
+    required this.listId,
     required this.listName,
     required this.ownerName,
     required this.ownerEmail,
@@ -25,26 +28,34 @@ class ShareInvitation {
     required this.permissionDisplayName,
     required this.expiresAt,
     required this.isExpired,
+    required this.status,
+    required this.statusDisplayName,
     required this.createdAt,
     this.shoppingList,
     this.shareUrls,
   });
 
-  // ✅ Factory constructor adapté à votre réponse API
   factory ShareInvitation.fromJson(Map<String, dynamic> json) {
     return ShareInvitation(
       token: json['token'] as String,
+      listId: _extractListId(json),
       listName: json['list_name'] as String,
       ownerName: json['owner_name'] as String,
       ownerEmail: json['owner_email'] as String,
-      permission: _parsePermission(json['permission'] as String),
-      permissionDisplayName: json['permission_display_name'] as String,
+      permission: _parsePermission(json['permission']),
+      permissionDisplayName:
+          json['permission_display_name'] as String? ??
+          _getDefaultPermissionDisplayName(json['permission']),
       expiresAt: DateTime.parse(json['expires_at'] as String),
-      isExpired: json['is_expired'] as bool,
+      isExpired: json['is_expired'] as bool? ?? false,
+      status: _parseStatus(json['status']),
+      statusDisplayName:
+          json['status_display_name'] as String? ??
+          _getDefaultStatusDisplayName(json['status']),
       createdAt: DateTime.parse(json['created_at'] as String),
       shoppingList:
           json['shopping_list'] != null
-              ? ShoppingListSummary.fromJson(
+              ? ShoppingList.fromJson(
                 json['shopping_list'] as Map<String, dynamic>,
               )
               : null,
@@ -55,26 +66,49 @@ class ShareInvitation {
     );
   }
 
-  static SharePermission _parsePermission(String permission) {
-    switch (permission.toLowerCase()) {
-      case 'readonly':
-      case 'read_only':
-        return SharePermission.readOnly;
-      case 'edit':
-        return SharePermission.edit;
-      case 'admin':
-        return SharePermission.admin;
-      default:
-        return SharePermission.readOnly;
+  // Méthodes utilitaires pour parser les données
+  static int _extractListId(Map<String, dynamic> json) {
+    if (json['list_id'] != null) {
+      return json['list_id'] as int;
     }
+    if (json['shopping_list'] != null && json['shopping_list']['id'] != null) {
+      return json['shopping_list']['id'] as int;
+    }
+    throw FormatException('list_id manquant dans la réponse API');
   }
 
-  bool get canEdit =>
-      permission == SharePermission.edit || permission == SharePermission.admin;
+  static SharePermission _parsePermission(dynamic permission) {
+    if (permission == null) return SharePermission.readOnly;
+
+    return SharePermission.values.firstWhere(
+      (e) => e.name == permission.toString(),
+      orElse: () => SharePermission.readOnly,
+    );
+  }
+
+  static InvitationStatus _parseStatus(dynamic status) {
+    if (status == null) return InvitationStatus.pending;
+
+    return InvitationStatus.values.firstWhere(
+      (e) => e.name == status.toString(),
+      orElse: () => InvitationStatus.pending,
+    );
+  }
+
+  static String _getDefaultPermissionDisplayName(dynamic permission) {
+    final parsedPermission = _parsePermission(permission);
+    return parsedPermission.displayName;
+  }
+
+  static String _getDefaultStatusDisplayName(dynamic status) {
+    final parsedStatus = _parseStatus(status);
+    return parsedStatus.displayName;
+  }
 
   Map<String, dynamic> toJson() {
     return {
       'token': token,
+      'list_id': listId,
       'list_name': listName,
       'owner_name': ownerName,
       'owner_email': ownerEmail,
@@ -82,55 +116,76 @@ class ShareInvitation {
       'permission_display_name': permissionDisplayName,
       'expires_at': expiresAt.toIso8601String(),
       'is_expired': isExpired,
+      'status': status.name,
+      'status_display_name': statusDisplayName,
       'created_at': createdAt.toIso8601String(),
-      'shopping_list': shoppingList?.toJson(),
-      'share_urls': shareUrls?.toJson(),
+      if (shoppingList != null) 'shopping_list': shoppingList!.toJson(),
+      if (shareUrls != null) 'share_urls': shareUrls!.toJson(),
     };
   }
-}
 
-// ✅ Classe pour le résumé de la liste (données de votre API)
-class ShoppingListSummary {
-  final int id;
-  final String name;
-  final int itemsCount;
-  final int purchasedItemsCount;
-  final double totalPrice;
-  final DateTime createdAt;
+  // Utilisation des extensions pour les permissions et statuts
+  bool get canEdit => permission.canEdit;
+  bool get isPending => status.isPending;
+  bool get isAccepted => status.isAccepted;
+  bool get isDeclined => status.isDeclined;
 
-  const ShoppingListSummary({
-    required this.id,
-    required this.name,
-    required this.itemsCount,
-    required this.purchasedItemsCount,
-    required this.totalPrice,
-    required this.createdAt,
-  });
-
-  factory ShoppingListSummary.fromJson(Map<String, dynamic> json) {
-    return ShoppingListSummary(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      itemsCount: json['items_count'] as int,
-      purchasedItemsCount: json['purchased_items_count'] as int,
-      totalPrice: (json['total_price'] as num).toDouble(),
-      createdAt: DateTime.parse(json['created_at'] as String),
+  ShareInvitation copyWith({
+    String? token,
+    int? listId,
+    String? listName,
+    String? ownerName,
+    String? ownerEmail,
+    SharePermission? permission,
+    String? permissionDisplayName,
+    DateTime? expiresAt,
+    bool? isExpired,
+    InvitationStatus? status,
+    String? statusDisplayName,
+    DateTime? createdAt,
+    ShoppingList? shoppingList,
+    ShareUrls? shareUrls,
+  }) {
+    return ShareInvitation(
+      token: token ?? this.token,
+      listId: listId ?? this.listId,
+      listName: listName ?? this.listName,
+      ownerName: ownerName ?? this.ownerName,
+      ownerEmail: ownerEmail ?? this.ownerEmail,
+      permission: permission ?? this.permission,
+      permissionDisplayName:
+          permissionDisplayName ?? this.permissionDisplayName,
+      expiresAt: expiresAt ?? this.expiresAt,
+      isExpired: isExpired ?? this.isExpired,
+      status: status ?? this.status,
+      statusDisplayName: statusDisplayName ?? this.statusDisplayName,
+      createdAt: createdAt ?? this.createdAt,
+      shoppingList: shoppingList ?? this.shoppingList,
+      shareUrls: shareUrls ?? this.shareUrls,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'items_count': itemsCount,
-      'purchased_items_count': purchasedItemsCount,
-      'total_price': totalPrice,
-      'created_at': createdAt.toIso8601String(),
-    };
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ShareInvitation &&
+          runtimeType == other.runtimeType &&
+          token == other.token &&
+          listId == other.listId &&
+          permission == other.permission &&
+          status == other.status;
+
+  @override
+  int get hashCode =>
+      token.hashCode ^ listId.hashCode ^ permission.hashCode ^ status.hashCode;
+
+  @override
+  String toString() {
+    return 'ShareInvitation{token: $token, listName: $listName, permission: $permission, status: $status}';
   }
 }
 
-// ✅ Classe pour les URLs de partage (données de votre API)
+// Classe pour gérer les URLs de partage
 class ShareUrls {
   final String web;
   final String app;
@@ -160,5 +215,10 @@ class ShareUrls {
       'android_store': androidStore,
       'ios_store': iosStore,
     };
+  }
+
+  @override
+  String toString() {
+    return 'ShareUrls{web: $web, app: $app}';
   }
 }
