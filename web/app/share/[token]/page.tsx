@@ -1,106 +1,79 @@
-// app/share/[token]/page.tsx - PAGE DE PARTAGE CORRIGÉE
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import type { InvitationData } from "@/types";
-import { getInvitationData } from "@/app/lib/api";
-import ShareRedirect from "@/app/components/ShareRedirect";
-import { ShareErrorFallback } from "@/app/components/ShareErrorFallback";
+"use client";
 
-interface SharePageProps {
-  params: {
-    token: string;
-  };
-}
+// app/share/[token]/page.tsx - VERSION REDIRECTION INVISIBLE ET INSTANTANÉE
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
-// ✅ Génération dynamique des métadonnées (inchangée)
-export async function generateMetadata({
-  params,
-}: SharePageProps): Promise<Metadata> {
-  const { token } = params;
+export default function SharePage() {
+  const params = useParams();
+  const token = params.token as string;
 
-  try {
-    const invitationData = await getInvitationData(token);
+  useEffect(() => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isMobile = isAndroid || isIOS;
 
-    const title = `Invitation EpiList - ${invitationData.listName}`;
-    const description = `${invitationData.ownerName} vous invite à collaborer sur la liste "${invitationData.listName}"`;
-    const url = `https://epilist.app/share/${token}`;
+    const appUrl = `epilist://share/${token}`;
+    const androidStoreUrl =
+      "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
+    const iosStoreUrl = "https://apps.apple.com/app/epilist/id123456789";
 
-    return {
-      title,
-      description,
-      openGraph: {
-        title,
-        description,
-        type: "website",
-        url,
-        images: [
-          {
-            url: "/logo.png",
-            width: 1200,
-            height: 630,
-            alt: `Invitation EpiList - ${invitationData.listName}`,
-          },
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title,
-        description,
-        images: ["/logo.png"],
-      },
-      alternates: {
-        canonical: url,
-      },
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  } catch (error) {
-    return {
-      title: "Invitation EpiList",
-      description: "Invitation à collaborer sur une liste de courses",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  }
-}
+    function instantRedirect() {
+      if (isMobile) {
+        // Tentative d'ouverture de l'app
+        window.location.href = appUrl;
 
-// ✅ Server Component qui gère les données et passe au Client Component
-export default async function SharePage({ params }: SharePageProps) {
-  const { token } = params;
-
-  // Validation basique du token
-  if (!token || token.length < 8) {
-    notFound();
-  }
-
-  try {
-    // ✅ Récupération des données côté serveur
-    const invitationData = await getInvitationData(token);
-
-    // Vérification de l'expiration côté serveur
-    if (invitationData.isExpired) {
-      return (
-        <ShareErrorFallback
-          type="expired"
-          listName={invitationData.listName}
-          ownerName={invitationData.ownerName}
-        />
-      );
+        // Fallback immédiat vers le store (si l'app ne s'ouvre pas)
+        setTimeout(() => {
+          const storeUrl = isIOS ? iosStoreUrl : androidStoreUrl;
+          window.location.href = storeUrl;
+        }, 1500); // Délai très court
+      } else {
+        // Sur desktop, rediriger vers Play Store par défaut
+        window.location.href = androidStoreUrl;
+      }
     }
 
-    // ✅ Passer les données au composant client
-    return <ShareRedirect token={token} invitationData={invitationData} />;
-  } catch (error) {
-    console.error("Erreur lors de la récupération de l'invitation:", error);
+    // Redirection immédiate dès que le composant est monté
+    const timer = setTimeout(instantRedirect, 50);
 
-    // ✅ Fallback vers le composant client avec gestion d'erreur
-    return <ShareRedirect token={token} invitationData={null} />;
-  }
+    return () => clearTimeout(timer);
+  }, [token]);
+
+  // Interface ultra-minimale (à peine visible)
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#ffffff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      {/* Spinner très discret */}
+      <div
+        style={{
+          width: "24px",
+          height: "24px",
+          border: "2px solid #f3f3f3",
+          borderTop: "2px solid #28a745",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite",
+        }}
+      ></div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
+    </div>
+  );
 }
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;

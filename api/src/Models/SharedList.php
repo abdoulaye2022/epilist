@@ -20,15 +20,17 @@ class SharedList extends Model
         'list_id',
         'owner_id',
         'shared_with_user_id',
-        'permission',        // correspond à votre table SQL
+        'permission',
         'share_token',
-        'is_active'
+        'is_active',
+        'expires_at'  // Ajouté
     ];
 
     protected $casts = [
         'permission' => 'string',
         'shared_at' => 'datetime',
         'is_active' => 'boolean',
+        'expires_at' => 'datetime',  // Ajouté
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime'

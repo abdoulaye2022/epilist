@@ -53,7 +53,7 @@ class SharedListController
             // Générer un token sécurisé
             $shareToken = $this->generateShareToken();
             $expirationDays = $data['expiration_days'] ?? 30;
-            $expiresAt = Carbon::now()->addDays($expirationDays);
+            $expiresAt = $expirationDays ? Carbon::now()->addDays($expirationDays) : null;
             
             // Créer le partage
             SharedList::create([
@@ -118,10 +118,13 @@ class SharedListController
             
             // Vérifier que le token est valide et actif
             $sharedList = SharedList::with(['shoppingList.items', 'owner'])
-                ->where('share_token', $shareToken)
-                ->where('is_active', true)
-                ->where('expires_at', '>', Carbon::now())
-                ->firstOrFail();
+                        ->where('share_token', $shareToken)
+                        ->where('is_active', true)
+                        ->when(config('app.share_expiration_enabled'), function($query) {
+                            $query->where('expires_at', '>', Carbon::now())
+                                ->orWhereNull('expires_at');
+                        })
+                        ->firstOrFail();
 
             // Préparer les données d'invitation
             $invitation = [
@@ -232,11 +235,9 @@ class SharedListController
      */
     private function generateShareToken(): string
     {
-        $token = substr(bin2hex(random_bytes(6)), 0, 12);
-        
-        while (SharedList::where('share_token', $token)->exists()) {
-            $token = substr(bin2hex(random_bytes(6)), 0, 12);
-        }
+        do {
+            $token = bin2hex(random_bytes(16));
+        } while (SharedList::where('share_token', $token)->exists());
         
         return $token;
     }

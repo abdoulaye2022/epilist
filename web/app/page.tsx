@@ -1,29 +1,56 @@
-import { Card } from "./components/ui/Card";
-import { HomeButtons } from "./components/ui/HomeButtons";
-
+// app/page.tsx - VERSION SIMPLE SANS TAILWIND
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full text-center">
-        <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6 shadow-lg">
-          📱
-        </div>
+    <div className="container">
+      <div className="card">
+        <div className="logo">📱</div>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">EpiList</h1>
+        <h1 className="title">EpiList</h1>
 
-        <p className="text-gray-600 mb-8">
-          Vos listes de courses partagées en famille ou entre amis
+        <p className="subtitle">
+          Créez et partagez vos listes de courses facilement avec vos proches
         </p>
 
-        <HomeButtons />
+        <a
+          href="https://play.google.com/store/apps/details?id=com.m2atech.epilist"
+          className="btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📲 Télécharger sur Play Store
+        </a>
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500">
-            Vous avez reçu une invitation ? Elle s'ouvrira automatiquement dans
-            l'application.
-          </p>
+        <a
+          href="https://apps.apple.com/app/epilist/id123456789"
+          className="btn btn-blue"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🍎 Télécharger sur App Store
+        </a>
+
+        <div className="features">
+          <div className="feature">
+            <div className="feature-icon">✓</div>
+            <div>Créez vos listes de courses rapidement</div>
+          </div>
+
+          <div className="feature">
+            <div className="feature-icon">✓</div>
+            <div>Partagez avec famille et amis</div>
+          </div>
+
+          <div className="feature">
+            <div className="feature-icon">✓</div>
+            <div>Synchronisation en temps réel</div>
+          </div>
+
+          <div className="feature">
+            <div className="feature-icon">✓</div>
+            <div>Interface simple et intuitive</div>
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

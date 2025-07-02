@@ -1,4 +1,4 @@
-// main.dart - VERSION CLEAN SANS BRANCH.IO
+// main.dart - VERSION FINALE SANS DEBUG
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -307,6 +307,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
           // Utilisateur authentifié avec succès
           if (state is AuthSuccess) {
             debugPrint('✅ Utilisateur connecté: ${state.user.email}');
+
+            // ✅ Traiter les tokens de partage en attente après connexion
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              DeepLinkHandler.processPendingTokenAfterLogin();
+            });
+
             return const HomeScreen();
           }
 

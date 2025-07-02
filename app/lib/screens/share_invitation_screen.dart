@@ -1,4 +1,4 @@
-// screens/share_invitation_screen.dart
+// screens/share_invitation_screen.dart - VERSION AVEC VALIDATION API
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
+import 'package:epilist/screens/home_screen.dart';
 
 class ShareInvitationScreen extends StatefulWidget {
   final String shareToken;
@@ -20,6 +21,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint('🔍 ShareInvitationScreen - Token reçu: ${widget.shareToken}');
+
+    // ✅ Charger l'invitation via l'API
     context.read<SharedListBloc>().add(LoadShareInvitation(widget.shareToken));
   }
 
@@ -32,10 +36,37 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black87,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            // Retourner à l'écran d'accueil au lieu de pop
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              (route) => false,
+            );
+          },
+        ),
       ),
       body: BlocConsumer<SharedListBloc, SharedListState>(
         listener: (context, state) {
           if (state is ShareInvitationAccepted) {
+            debugPrint('✅ Invitation acceptée, redirection vers la liste');
+
+            // Afficher un message de succès
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Invitation acceptée avec succès !'),
+                  ],
+                ),
+                backgroundColor: Colors.green[600],
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
             // Rediriger vers la liste acceptée
             Navigator.pushReplacement(
               context,
@@ -46,31 +77,56 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               ),
             );
           } else if (state is ShareInvitationDeclined) {
-            // Retourner à l'écran précédent
-            Navigator.pop(context);
+            debugPrint('✅ Invitation refusée');
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Invitation refusée'),
+                content: const Row(
+                  children: [
+                    Icon(Icons.info, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Invitation refusée'),
+                  ],
+                ),
                 backgroundColor: Colors.orange[600],
+                duration: const Duration(seconds: 2),
               ),
             );
+
+            // Retourner à l'écran d'accueil
+            Future.delayed(const Duration(seconds: 1), () {
+              if (mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  (route) => false,
+                );
+              }
+            });
           } else if (state is SharedListError) {
+            debugPrint('❌ Erreur: ${state.message}');
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('❌ ${state.message}'),
+                content: Row(
+                  children: [
+                    const Icon(Icons.error, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text('❌ ${state.message}')),
+                  ],
+                ),
                 backgroundColor: Colors.red[600],
+                duration: const Duration(seconds: 4),
               ),
             );
           }
         },
         builder: (context, state) {
           if (state is SharedListLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.green),
-            );
+            return _buildLoadingContent();
           }
 
           if (state is ShareInvitationLoaded) {
+            debugPrint('✅ Invitation chargée: ${state.invitation.listName}');
             return _buildInvitationContent(state.invitation);
           }
 
@@ -78,8 +134,85 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             return _buildErrorContent(state.message);
           }
 
-          return const Center(child: CircularProgressIndicator());
+          return _buildLoadingContent();
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Animation de chargement
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(
+                color: Colors.green,
+                strokeWidth: 3,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          Text(
+            'Validation de l\'invitation...',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            'Vérification du token de partage',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Informations sur le token (pour debug)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Token',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.shareToken,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[800],
+                    fontFamily: 'monospace',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -90,7 +223,49 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
+
+          // ✅ Statut de l'invitation
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: invitation.isExpired ? Colors.red[50] : Colors.green[50],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color:
+                    invitation.isExpired
+                        ? Colors.red[200]!
+                        : Colors.green[200]!,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  invitation.isExpired ? Icons.warning : Icons.check_circle,
+                  size: 16,
+                  color:
+                      invitation.isExpired
+                          ? Colors.red[600]
+                          : Colors.green[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  invitation.isExpired ? 'Expirée' : 'Valide',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color:
+                        invitation.isExpired
+                            ? Colors.red[600]
+                            : Colors.green[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
 
           // Icône d'invitation
           Container(
@@ -111,7 +286,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 32),
 
           // Titre
-          Text(
+          const Text(
             'Invitation de partage',
             style: TextStyle(
               fontSize: 28,
@@ -135,7 +310,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               children: [
                 TextSpan(
                   text: invitation.ownerName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
@@ -285,69 +460,89 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           const SizedBox(height: 40),
 
-          // Boutons d'action
-          Row(
-            children: [
-              // Bouton Refuser
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    context.read<SharedListBloc>().add(
-                      DeclineShareInvitation(invitation.token),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: Colors.red[300]!),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+          // ✅ Boutons d'action améliorés
+          if (!invitation.isExpired) ...[
+            // Boutons pour invitation valide
+            Row(
+              children: [
+                // Bouton Refuser
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      _showDeclineConfirmation(invitation);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: BorderSide(color: Colors.red[300]!),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Refuser',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red[600],
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // Bouton Accepter
-              Expanded(
-                child: ElevatedButton(
-                  onPressed:
-                      invitation.isExpired
-                          ? null
-                          : () {
-                            context.read<SharedListBloc>().add(
-                              AcceptShareInvitation(invitation.token),
-                            );
-                          },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[600],
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey[300],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                  child: Text(
-                    invitation.isExpired ? 'Expirée' : 'Accepter',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    child: Text(
+                      'Refuser',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red[600],
+                      ),
                     ),
                   ),
                 ),
+
+                const SizedBox(width: 16),
+
+                // Bouton Accepter
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _showAcceptConfirmation(invitation);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: const Text(
+                      'Accepter',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            // Bouton pour invitation expirée
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (route) => false,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[600],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Retour à l\'accueil',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
 
           const SizedBox(height: 24),
 
@@ -375,6 +570,78 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  // ✅ Confirmation pour accepter l'invitation
+  void _showAcceptConfirmation(ShareInvitation invitation) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Accepter l\'invitation'),
+          content: Text(
+            'Voulez-vous accepter l\'invitation de ${invitation.ownerName} pour la liste "${invitation.listName}" ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                debugPrint(
+                  '🤝 Acceptation de l\'invitation: ${invitation.token}',
+                );
+                context.read<SharedListBloc>().add(
+                  AcceptShareInvitation(invitation.token),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text(
+                'Accepter',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ✅ Confirmation pour refuser l'invitation
+  void _showDeclineConfirmation(ShareInvitation invitation) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Refuser l\'invitation'),
+          content: Text(
+            'Voulez-vous refuser l\'invitation de ${invitation.ownerName} pour la liste "${invitation.listName}" ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                debugPrint('❌ Refus de l\'invitation: ${invitation.token}');
+                context.read<SharedListBloc>().add(
+                  DeclineShareInvitation(invitation.token),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text(
+                'Refuser',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -556,7 +823,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           children: [
             Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Invitation invalide',
               style: TextStyle(
                 fontSize: 24,
@@ -572,7 +839,12 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             ),
             const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  (route) => false,
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[600],
                 foregroundColor: Colors.white,
@@ -581,7 +853,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   vertical: 12,
                 ),
               ),
-              child: const Text('Retour'),
+              child: const Text('Retour à l\'accueil'),
             ),
           ],
         ),
