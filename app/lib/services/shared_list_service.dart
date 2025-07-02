@@ -1,8 +1,9 @@
-// services/shared_list_service.dart - VERSION MISE À JOUR POUR BRANCH.IO
+// services/shared_list_service.dart - VERSION CORRIGÉE
 import 'package:dio/dio.dart';
 import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/services/auth_service.dart';
+import 'package:epilist/services/deep_link_handler.dart';
 
 class SharedListService {
   final Dio _dio;
@@ -12,7 +13,7 @@ class SharedListService {
     : _dio = dio,
       _authService = authService;
 
-  // Créer un lien de partage pour une liste - VERSION BRANCH.IO
+  // ✅ Créer un lien de partage - VERSION AVEC DOMAINE
   Future<Map<String, dynamic>> createShareLink({
     required int listId,
     required SharePermission permission,
@@ -29,12 +30,40 @@ class SharedListService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    // Retourner les données nécessaires pour Branch.io
+    final responseData = response.data['data'];
+    final shareToken = responseData['share_token'];
+
+    // ✅ CORRECTION : Utiliser l'URL web comme lien principal
+    final shareUrl =
+        responseData['share_url'] ??
+        DeepLinkHandler.generateWebShareUrl(shareToken);
+
     return {
-      'share_token': response.data['data']['share_token'],
-      'list_name': response.data['data']['list_name'],
-      'owner_name': response.data['data']['owner_name'],
-      'expiration_date': response.data['data']['expiration_date'],
+      'share_token': shareToken,
+      'share_url': shareUrl, // https://epilist.app/share/token
+      'list_name': responseData['list_name'],
+      'owner_name': responseData['owner_name'],
+      'expiration_date':
+          responseData['expiration_date'] ?? responseData['expires_at'],
+      // ✅ Message de partage optimisé pour le web
+      'share_message':
+          responseData['share_message'] ??
+          _createWebShareMessage(
+            shareToken,
+            responseData['list_name'],
+            responseData['owner_name'],
+            shareUrl,
+          ),
+      // ✅ URLs des stores pour fallback
+      'store_urls':
+          responseData['store_urls'] ??
+          {
+            'android':
+                'https://play.google.com/store/apps/details?id=com.m2atech.epilist',
+            'ios': 'https://apps.apple.com/app/epilist/id123456789',
+          },
+      // ✅ URL alternative avec schéma app
+      'app_url': DeepLinkHandler.generateAppShareUrl(shareToken),
     };
   }
 
@@ -229,5 +258,63 @@ class SharedListService {
     );
 
     return List<Map<String, dynamic>>.from(response.data['data']);
+  }
+
+  // ✅ MÉTHODES UTILITAIRES AVEC DOMAINE
+
+  // Méthode utilitaire pour générer les données de partage
+  Map<String, String> generateShareData(
+    String shareToken,
+    String listName,
+    String ownerName,
+  ) {
+    return DeepLinkHandler.generateShareData(shareToken, listName, ownerName);
+  }
+
+  // ✅ Générer un lien web avec votre domaine (principal)
+  String generateWebShareUrl(String shareToken) {
+    return DeepLinkHandler.generateWebShareUrl(shareToken);
+  }
+
+  // ✅ Générer un lien avec schéma app (fallback)
+  String generateAppShareUrl(String shareToken) {
+    return DeepLinkHandler.generateAppShareUrl(shareToken);
+  }
+
+  // ✅ Créer un message de partage optimisé pour le web
+  String _createWebShareMessage(
+    String shareToken,
+    String listName,
+    String ownerName,
+    String webUrl,
+  ) {
+    return '$ownerName vous invite à collaborer sur la liste d\'épicerie "$listName".\n\n'
+        '🔗 Cliquez sur ce lien pour ouvrir l\'app ou la télécharger :\n$webUrl\n\n'
+        '📱 EpiList - Vos listes de courses partagées';
+  }
+
+  // ✅ Créer un message de partage complet avec instructions
+  String createShareMessage(
+    String shareToken,
+    String listName,
+    String ownerName,
+  ) {
+    final webUrl = generateWebShareUrl(shareToken);
+    return _createWebShareMessage(shareToken, listName, ownerName, webUrl);
+  }
+
+  // Méthode pour valider un lien de partage
+  bool isValidShareUrl(String url) {
+    return DeepLinkHandler.isValidShareLink(url);
+  }
+
+  // Extraire le token d'un lien de partage
+  String? extractTokenFromUrl(String url) {
+    return DeepLinkHandler.extractTokenFromLink(url);
+  }
+
+  // ✅ Méthode pour ouvrir l'app ou rediriger vers le store (maintenant disponible)
+  Future<void> openAppOrStore(String shareToken) async {
+    await DeepLinkHandler.openAppOrStore(shareToken);
   }
 }

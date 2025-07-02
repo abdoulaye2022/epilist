@@ -96,6 +96,40 @@ $app->post('/auth/resend-confirm-email', [AuthController::class, 'resendVerifica
 $app->post('/auth/request-password-change', [AuthController::class, 'requestPasswordChange']);
 $app->post('/auth/verify-password-change-code', [AuthController::class, 'verifyPasswordChangeCode']);
 
+$app->get('/share/{token}', [SharedListController::class, 'showSharePage']);
+
+$app->get('/', function ($request, $response) {
+    $response->getBody()->write('EpiList API');
+    return $response;
+});
+
+$app->get('/test', function ($request, $response) {
+    $response->getBody()->write('Test route works!');
+    return $response->withHeader('Content-Type', 'text/plain');
+});
+
+$app->get('/share/test', function ($request, $response) {
+    $response->getBody()->write('Share route works!');
+    return $response->withHeader('Content-Type', 'text/plain');
+});
+
+$app->get('/share/{token}', function ($request, $response, $args) {
+    $token = $args['token'];
+    $html = "<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Share Page</title>
+</head>
+<body>
+    <h1>Share Token: {$token}</h1>
+    <p>This is a test page for token: {$token}</p>
+</body>
+</html>";
+    
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html');
+});
+
 $app->group('', function ($group) {
     // Authentification
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
@@ -113,6 +147,7 @@ $app->group('', function ($group) {
 
 
     // Shared Lists Routes
+    $app->get('/share/{token}', [SharedListController::class, 'showSharePage']);
     $group->post('/shopping-lists/{id}/share', [SharedListController::class, 'createShareLink']);
     $group->get('/share/invitation/{token}', [SharedListController::class, 'getShareInvitation']);
     $group->post('/share/accept/{token}', [SharedListController::class, 'acceptShareInvitation']);

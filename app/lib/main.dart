@@ -1,4 +1,4 @@
-// main.dart - VERSION AVEC BRANCH.IO
+// main.dart - VERSION CLEAN SANS BRANCH.IO
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -9,7 +9,7 @@ import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
-import 'package:epilist/services/branch_links_service.dart'; // 🌿 NOUVEAU: Branch.io
+import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:flutter/material.dart';
@@ -145,7 +145,7 @@ class MyApp extends StatelessWidget {
             fromRegistration: args['fromRegistration'] ?? false,
           );
         },
-        // Route pour les liens de partage Branch.io
+        // Route pour les liens de partage
         '/share': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments
@@ -160,7 +160,7 @@ class MyApp extends StatelessWidget {
               child: ShareInvitationScreen(shareToken: shareToken),
             );
           }
-          return const HomeScreen(); // Fallback
+          return const HomeScreen();
         },
       },
       home: const AuthWrapper(),
@@ -177,22 +177,44 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _redirecting = false;
+  bool _deepLinkInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    // 🌿 NOUVEAU: Initialiser Branch.io après la construction
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDeepLinks();
+  }
+
+  /// Initialiser les deep links
+  Future<void> _initializeDeepLinks() async {
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (mounted && !_deepLinkInitialized) {
+          debugPrint('🔄 Initialisation des deep links...');
+
+          DeepLinkHandler.initialize(context);
+
+          setState(() {
+            _deepLinkInitialized = true;
+          });
+
+          debugPrint('✅ Deep links initialisés avec succès');
+        }
+      });
+    } catch (e) {
+      debugPrint('❌ Erreur lors de l\'initialisation des deep links: $e');
       if (mounted) {
-        BranchLinksService.initialize(context);
+        setState(() {
+          _deepLinkInitialized = true;
+        });
       }
-    });
+    }
   }
 
   @override
   void dispose() {
-    // 🌿 NOUVEAU: Nettoyer Branch.io
-    BranchLinksService.dispose();
+    // Nettoyer les deep links
+    DeepLinkHandler.dispose();
     super.dispose();
   }
 
@@ -262,9 +284,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
         builder: (context, state) {
           debugPrint('🔍 AuthWrapper Builder - État: ${state.runtimeType}');
 
-          // États de chargement
-          if (state is AuthInitial || state is AuthLoading) {
-            return const LoadingScreen();
+          // Afficher l'écran de chargement jusqu'à l'initialisation
+          if (!_deepLinkInitialized ||
+              state is AuthInitial ||
+              state is AuthLoading) {
+            String message = 'Initialisation...';
+            if (state is AuthLoading) {
+              message = 'Vérification de l\'authentification...';
+            }
+
+            return LoadingScreen(message: message);
           }
 
           // Confirmation d'email requise (après inscription)
@@ -298,7 +327,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
 }
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({super.key});
+  final String? message;
+
+  const LoadingScreen({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -343,14 +374,15 @@ class LoadingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Message de chargement
+            // Message de chargement personnalisé
             Text(
-              'Initialisation...',
+              message ?? 'Initialisation...',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
+              textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 40),
@@ -447,7 +479,7 @@ class ErrorApp extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  // Redémarrer l'app ou retourner à l'écran principal
+                  // Redémarrer l'app
                 },
                 child: const Text('Réessayer'),
               ),
