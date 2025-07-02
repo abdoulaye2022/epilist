@@ -120,7 +120,7 @@ class SharedListController
             $sharedList = SharedList::with(['shoppingList.items', 'owner'])
                         ->where('share_token', $shareToken)
                         ->where('is_active', true)
-                        ->when(config('app.share_expiration_enabled'), function($query) {
+                        ->where(function($query) {
                             $query->where('expires_at', '>', Carbon::now())
                                 ->orWhereNull('expires_at');
                         })
