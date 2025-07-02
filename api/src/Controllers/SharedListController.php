@@ -154,6 +154,8 @@ class SharedListController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            die;
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Invitation invalide ou expirée'
