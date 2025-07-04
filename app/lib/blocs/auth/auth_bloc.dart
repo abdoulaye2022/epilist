@@ -310,8 +310,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      await authService.confirmEmail(email: event.email, code: event.code);
-      emit(EmailConfirmationSuccess());
+      // Confirmer l'email et récupérer les éventuels tokens
+      final tokens = await authService.confirmEmail(
+        email: event.email,
+        code: event.code,
+      );
+
+      if (tokens != null) {
+        // NOUVEAU COMPORTEMENT: Si des tokens sont retournés, connecter automatiquement
+        debugPrint(
+          '🔑 Tokens reçus - connexion automatique après confirmation',
+        );
+
+        // Sauvegarder les tokens
+        await authService.saveTokens(
+          tokens['access_token']!,
+          tokens['refresh_token']!,
+        );
+
+        // Récupérer l'utilisateur
+        final user = await authService.getCurrentUser();
+        if (user != null) {
+          _scheduleTokenRefresh();
+          emit(AuthSuccess(user: user));
+        } else {
+          emit(
+            AuthFailure(
+              error: 'Impossible de récupérer les informations utilisateur',
+            ),
+          );
+        }
+      } else {
+        // ANCIEN COMPORTEMENT: Pas de tokens, juste confirmer l'email
+        debugPrint('✅ Email confirmé sans connexion automatique');
+        emit(EmailConfirmationSuccess());
+      }
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }

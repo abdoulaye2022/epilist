@@ -494,7 +494,7 @@ class AuthService {
     }
   }
 
-  Future<void> confirmEmail({
+  Future<Map<String, String>?> confirmEmail({
     required String email,
     required String code,
   }) async {
@@ -510,6 +510,21 @@ class AuthService {
 
       if (response.statusCode == 200) {
         debugPrint('✅ Email confirmé avec succès pour: $email');
+
+        final data = response.data;
+
+        // Vérifier si la réponse contient des tokens (nouvelle API)
+        final accessToken = data['access_token'] as String?;
+        final refreshToken = data['refresh_token'] as String?;
+
+        if (accessToken != null && refreshToken != null) {
+          debugPrint('🔑 Tokens reçus lors de la confirmation email');
+          return {'access_token': accessToken, 'refresh_token': refreshToken};
+        } else {
+          // Ancienne API - pas de tokens
+          debugPrint('✅ Confirmation sans tokens (ancienne API)');
+          return null;
+        }
       } else {
         throw AuthenticationException(
           'Erreur lors de la confirmation de l\'email',
@@ -593,9 +608,75 @@ class AuthService {
 
   Future<void> resendVerificationCode(String email) async {
     try {
-      await dio.post('/auth/resend-verification', data: {'email': email});
+      debugPrint('📧 Tentative de renvoi du code de vérification pour: $email');
+
+      final response = await dio.post(
+        '/auth/resend-verification',
+        data: {'email': email},
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('✅ Code de vérification renvoyé avec succès');
+      } else {
+        throw AuthenticationException(
+          'Erreur lors du renvoi du code',
+          'RESEND_FAILED',
+        );
+      }
     } on DioException catch (e) {
-      throw Exception('Erreur lors du renvoi: ${e.message}');
+      debugPrint('❌ Erreur DioException renvoi code: ${e.response?.data}');
+
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        if (errorData != null && errorData['errors'] != null) {
+          // Erreur de validation spécifique
+          final errors = errorData['errors'] as Map<String, dynamic>;
+          if (errors['code'] != null) {
+            throw AuthenticationException(
+              'Erreur de configuration du serveur',
+              'SERVER_CONFIG_ERROR',
+            );
+          }
+          if (errors['email'] != null) {
+            throw AuthenticationException(
+              'Format d\'email invalide',
+              'INVALID_EMAIL_FORMAT',
+            );
+          }
+        }
+
+        // Erreur générale de validation
+        throw AuthenticationException(
+          'Données de requête invalides',
+          'VALIDATION_ERROR',
+        );
+      } else if (e.response?.statusCode == 404) {
+        throw AuthenticationException(
+          'Aucun compte trouvé avec cet email',
+          'USER_NOT_FOUND',
+        );
+      } else if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+        if (errorData != null &&
+            errorData['message'] == 'Email already verified') {
+          throw AuthenticationException(
+            'Cet email est déjà vérifié',
+            'EMAIL_ALREADY_VERIFIED',
+          );
+        }
+      } else {
+        throw AuthenticationException(
+          'Erreur lors du renvoi: ${e.message}',
+          'NETWORK_ERROR',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue renvoi code: $e');
+      throw AuthenticationException(
+        'Une erreur inattendue est survenue lors du renvoi',
+        'UNKNOWN_ERROR',
+      );
     }
   }
 }

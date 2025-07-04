@@ -167,22 +167,29 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
-                if (widget.fromRegistration) {
-                  // Après inscription, aller vers login
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false,
-                  );
-                } else {
-                  // Après vérification d'email lors de la connexion,
-                  // ne pas faire de navigation ici, laisser AuthWrapper gérer
-                  print(
-                    '✅ Email confirmé lors de la connexion - AuthWrapper va gérer la redirection',
-                  );
-                }
+                // Toujours rediriger vers login pour l'ancien comportement
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (route) => false,
+                );
               }
             });
+          } else if (state is AuthSuccess) {
+            setState(() => _isLoading = false);
+
+            // NOUVEAU: Gestion de la connexion automatique après confirmation
+            SnackBarManager.clearAll(context);
+
+            SnackBarManager.showSuccessSnackBar(
+              context,
+              '🎉 Email vérifié et connexion automatique ! Bienvenue ${state.user.firstName}.',
+              duration: const Duration(seconds: 3),
+            );
+
+            // L'AuthWrapper va automatiquement rediriger vers HomeScreen
+            // car l'état AuthSuccess est émis
+            debugPrint('✅ Connexion automatique après confirmation email');
           } else if (state is VerificationCodeResent) {
             setState(() => _isLoading = false);
 
@@ -259,9 +266,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   // Description dynamique selon le contexte
                   Text(
-                    widget.fromRegistration
-                        ? 'Nous avons envoyé un code de vérification à'
-                        : 'Un code de vérification va être envoyé à',
+                    'Nous avons envoyé un code de vérification à',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),

@@ -335,6 +335,7 @@ class AuthController
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
+                'code' => 'VALIDATION_ERROR',
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ]));
@@ -347,31 +348,44 @@ class AuthController
             $user = User::findByEmail($data['email']);
             
             if (!$user) {
-                return $this->createErrorResponse('User not found', 404);
+                return $this->createErrorResponse(
+                    'User not found', 
+                    404,
+                    'USER_NOT_FOUND'
+                );
             }
 
             // Vérifier si l'email est déjà vérifié
             if ($user->isEmailVerified()) {
-                return $this->createErrorResponse('Email already verified', 400);
+                return $this->createErrorResponse(
+                    'Email already verified', 
+                    400,
+                    'EMAIL_ALREADY_VERIFIED'
+                );
             }
 
             // Vérifier le code et son expiration
             if ($user->email_verification_code !== $data['code']) {
-                return $this->createErrorResponse('Invalid verification code', 400);
+                return $this->createErrorResponse(
+                    'Invalid verification code', 
+                    400,
+                    'INVALID_VERIFICATION_CODE'
+                );
             }
 
             if (Carbon::now()->gt($user->email_verification_code_expires_at)) {
-                return $this->createErrorResponse('Verification code has expired', 400);
+                return $this->createErrorResponse(
+                    'Verification code has expired', 
+                    400,
+                    'VERIFICATION_CODE_EXPIRED'
+                );
             }
 
             // Marquer l'email comme vérifié
-            $user->email_verified_at = Carbon::now();
-            $user->email_verification_code = null;
-            $user->email_verification_code_expires_at = null;
-            $user->email_verified = 1;
+            $user->markEmailAsVerified();
             $user->save();
 
-            if(Config::get('APP_ENV')=='dev') {
+            if(Config::get('APP_ENV') == 'dev') {
                 $user->email = 'm2atodev@gmail.com';
             }
 
@@ -379,21 +393,45 @@ class AuthController
             $mailSender = new MailSender();
             $mailSender->sendWelcomeEmail($user->email, $user->first_name);
 
-            return new JsonResponse(
-                200,
-                new Headers(['Content-Type' => 'application/json']),
-                (new StreamFactory())->createStream(json_encode([
-                    'success' => true,
-                    'message' => 'Email verified successfully',
-                    'data' => [
-                        'email_verified' => true,
-                        'email_verified_at' => $user->email_verified_at->format('Y-m-d H:i:s')
-                    ]
-                ]))
-            );
+            // Generate tokens (comme dans login)
+            $accessToken = $this->jwtService->generateToken([
+                'auth_id' => $user->id
+            ]);
+
+            $refreshToken = $this->jwtService->generateRefreshToken([
+                'auth_id' => $user->id
+            ]);
+
+            // Success response (même structure que login)
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Email verified successfully. You are now logged in.',
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'data' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'email_verified' => $user->email_verified,
+                    'email_verified_at' => $user->email_verified_at ? 
+                        $user->email_verified_at->format('Y-m-d H:i:s') : null
+                ]
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(200);
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Error verifying email: ' . $e->getMessage(), 500);
+            // Error handling
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'SERVER_ERROR',
+                'message' => 'Error verifying email: ' . $e->getMessage()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(500);
         }
     }
 
