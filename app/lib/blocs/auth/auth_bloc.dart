@@ -74,8 +74,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage = 'Aucun compte trouvé avec cet email';
           break;
         case 'EMAIL_NOT_VERIFIED':
-          final email = e.email?.isNotEmpty == true ? e.email : event.email;
-          emit(EmailVerificationRequired(email!));
+          // Extraire l'email de l'exception ou utiliser celui du login
+          final email = e.email?.isNotEmpty == true ? e.email! : event.email;
+
+          debugPrint('📧 Email non vérifié détecté: $email');
+
+          // Envoyer automatiquement un code de vérification
+          try {
+            await authService.resendVerificationCode(email);
+            debugPrint('✅ Code de vérification envoyé automatiquement');
+
+            // Émettre l'état avec l'email pour redirection vers vérification
+            emit(EmailVerificationRequired(email));
+          } catch (resendError) {
+            debugPrint('❌ Erreur envoi code: $resendError');
+            // Même si l'envoi échoue, rediriger vers la page de vérification
+            emit(EmailVerificationRequired(email));
+          }
           return;
         default:
           errorMessage = e.message;

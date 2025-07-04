@@ -130,7 +130,46 @@ class AuthErrorMessages {
   static String getLocalizedError(String error) {
     final lowerError = error.toLowerCase();
 
-    // Erreurs de connexion
+    // === ERREURS D'INSCRIPTION ===
+
+    if (lowerError.contains('email_already_exists') ||
+        lowerError.contains('email already exists') ||
+        lowerError.contains('account with this email exists') ||
+        lowerError.contains('email already registered') ||
+        lowerError.contains('email déjà utilisé') ||
+        lowerError.contains('compte avec cet email existe')) {
+      return 'Un compte avec cette adresse email existe déjà. Essayez de vous connecter ou utilisez un autre email.';
+    }
+
+    if (lowerError.contains('registration_failed') ||
+        lowerError.contains('registration failed') ||
+        lowerError.contains('signup failed') ||
+        lowerError.contains('inscription échouée')) {
+      return 'Échec de l\'inscription. Vérifiez vos informations et réessayez.';
+    }
+
+    if (lowerError.contains('validation_error') ||
+        lowerError.contains('validation failed') ||
+        lowerError.contains('invalid data') ||
+        lowerError.contains('données invalides')) {
+      return 'Les informations saisies ne sont pas valides. Vérifiez tous les champs.';
+    }
+
+    if (lowerError.contains('password too weak') ||
+        lowerError.contains('weak password') ||
+        lowerError.contains('mot de passe trop faible')) {
+      return 'Le mot de passe est trop faible. Utilisez au moins 6 caractères avec des lettres et des chiffres.';
+    }
+
+    if (lowerError.contains('email format') ||
+        lowerError.contains('invalid email') ||
+        lowerError.contains('malformed email') ||
+        lowerError.contains('email invalide')) {
+      return 'Le format de l\'email n\'est pas valide. Vérifiez votre adresse email.';
+    }
+
+    // === ERREURS DE CONNEXION (existantes) ===
+
     if (lowerError.contains('invalid_credentials') ||
         lowerError.contains('invalid credentials') ||
         lowerError.contains('wrong password') ||
@@ -153,7 +192,8 @@ class AuthErrorMessages {
       return 'Votre email n\'est pas encore vérifié. Consultez votre boîte de réception.';
     }
 
-    // Erreurs de réseau
+    // === ERREURS DE RÉSEAU ===
+
     if (lowerError.contains('network') ||
         lowerError.contains('connection') ||
         lowerError.contains('timeout') ||
@@ -162,7 +202,8 @@ class AuthErrorMessages {
       return 'Problème de connexion internet. Vérifiez votre réseau et réessayez.';
     }
 
-    // Erreurs de serveur
+    // === ERREURS DE SERVEUR ===
+
     if (lowerError.contains('server error') ||
         lowerError.contains('internal server') ||
         lowerError.contains('500') ||
@@ -170,39 +211,71 @@ class AuthErrorMessages {
       return 'Problème temporaire du serveur. Veuillez réessayer dans quelques instants.';
     }
 
-    // Erreurs de validation
-    if (lowerError.contains('validation') ||
-        lowerError.contains('invalid format') ||
-        lowerError.contains('malformed')) {
-      return 'Format de données invalide. Vérifiez vos informations.';
-    }
+    // === ERREURS DE SESSION ===
 
-    // Erreurs de session
     if (lowerError.contains('session expired') ||
         lowerError.contains('token expired') ||
         lowerError.contains('unauthorized')) {
       return 'Votre session a expiré. Veuillez vous reconnecter.';
     }
 
-    // Erreurs de limite
+    // === ERREURS DE LIMITE ===
+
     if (lowerError.contains('too many attempts') ||
         lowerError.contains('rate limit') ||
         lowerError.contains('too many requests')) {
       return 'Trop de tentatives. Attendez quelques minutes avant de réessayer.';
     }
 
-    // Erreurs de compte
+    // === ERREURS DE COMPTE ===
+
     if (lowerError.contains('account disabled') ||
         lowerError.contains('account suspended') ||
         lowerError.contains('account locked')) {
       return 'Votre compte est temporairement désactivé. Contactez le support.';
     }
 
-    // Message générique si aucune correspondance
-    if (error.length > 100) {
-      return 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
+    // === ERREURS DE VÉRIFICATION EMAIL ===
+
+    if (lowerError.contains('invalid_verification_code') ||
+        lowerError.contains('invalid verification code') ||
+        lowerError.contains('verification code') ||
+        lowerError.contains('invalid code') ||
+        lowerError.contains('code invalide')) {
+      return 'Le code de vérification est invalide. Vérifiez et réessayez.';
     }
 
+    if (lowerError.contains('expired_verification_code') ||
+        lowerError.contains('code expired') ||
+        lowerError.contains('code expiré')) {
+      return 'Le code de vérification a expiré. Demandez un nouveau code.';
+    }
+
+    if (lowerError.contains('email_already_verified') ||
+        lowerError.contains('email already verified') ||
+        lowerError.contains('email déjà vérifié')) {
+      return 'Cet email est déjà vérifié. Vous pouvez vous connecter.';
+    }
+
+    if (lowerError.contains('email verification') ||
+        lowerError.contains('verification failed') ||
+        lowerError.contains('verification_error')) {
+      return 'Échec de la vérification email. Vérifiez le code et réessayez.';
+    }
+
+    if (lowerError.contains('email_confirmation_failed') ||
+        lowerError.contains('confirmation failed')) {
+      return 'Impossible de confirmer l\'email. Réessayez plus tard.';
+    }
+
+    // === MESSAGE GÉNÉRIQUE ===
+
+    // Si le message d'erreur est trop long, utiliser un message générique
+    if (error.length > 100) {
+      return 'Une erreur est survenue. Veuillez réessayer.';
+    }
+
+    // Retourner le message original s'il n'est pas vide, sinon message par défaut
     return error.isNotEmpty ? error : 'Une erreur inattendue est survenue.';
   }
 }

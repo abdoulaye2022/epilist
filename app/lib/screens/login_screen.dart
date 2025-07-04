@@ -1,9 +1,8 @@
-// login_screen.dart - VERSION MISE À JOUR AVEC SNACKBAR MANAGER
+// login_screen.dart - VERSION CORRIGÉE SANS NAVIGATION MANUELLE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/screens/password_change_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
-import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/utils/snackbar_manager.dart'; // Import du gestionnaire
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,28 +46,17 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is EmailVerificationRequired) {
             setState(() => _isLoading = false);
 
-            // Afficher un message informatif pour la vérification d'email
+            // Afficher seulement un message informatif
+            // La redirection sera gérée par AuthWrapper
             SnackBarManager.showErrorSnackBar(
               context,
-              'Votre email doit être vérifié avant de continuer.',
-              duration: const Duration(seconds: 4),
+              'Un code de vérification a été envoyé à votre email.',
+              duration: const Duration(seconds: 3),
             );
 
-            // Naviguer après un court délai pour que l'utilisateur voie le message
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => EmailVerificationScreen(
-                          email: state.email,
-                          fromRegistration: false,
-                        ),
-                  ),
-                );
-              }
-            });
+            print(
+              'Email non vérifié - redirection vers vérification: ${state.email}',
+            );
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 

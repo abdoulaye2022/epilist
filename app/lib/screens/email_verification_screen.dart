@@ -1,5 +1,7 @@
+// email_verification_screen.dart - VERSION AMÉLIORÉE AVEC SNACKBAR_MANAGER
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
+import 'package:epilist/utils/snackbar_manager.dart'; // AJOUT
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +33,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Timer? _resendTimer;
   int _resendCountdown = 0;
   bool _canResend = true;
-  bool _initialCodeSent = false; // Pour tracker si le code initial a été envoyé
+  bool _initialCodeSent = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -50,9 +53,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     print('📧 Envoi automatique du code de vérification pour: ${widget.email}');
 
     // Envoyer le code de vérification
-    context.read<AuthBloc>().add(
-      ResendVerificationCode(widget.email, isFromRegistration: false),
-    );
+    context.read<AuthBloc>().add(ResendVerificationCode(widget.email));
 
     setState(() {
       _initialCodeSent = true;
@@ -99,7 +100,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   void _verifyCode() {
-    if (_isCodeComplete) {
+    if (_isCodeComplete && !_isLoading) {
+      // Fermer le clavier
+      FocusScope.of(context).unfocus();
+
+      setState(() => _isLoading = true);
+
       context.read<AuthBloc>().add(
         ConfirmEmailRequested(email: widget.email, code: _verificationCode),
       );
@@ -107,13 +113,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   }
 
   void _resendCode() {
-    if (_canResend) {
-      context.read<AuthBloc>().add(
-        ResendVerificationCode(
-          widget.email,
-          isFromRegistration: widget.fromRegistration,
-        ),
-      );
+    if (_canResend && !_isLoading) {
+      context.read<AuthBloc>().add(ResendVerificationCode(widget.email));
       _startResendCountdown();
     }
   }
@@ -127,395 +128,451 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is EmailConfirmationSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '🎉 Email vérifié avec succès !',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.green[600],
-              duration: Duration(seconds: 3),
-            ),
-          );
-
-          if (widget.fromRegistration) {
-            // Après inscription, aller vers login
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-              (route) => false,
-            );
-          } else {
-            // Après vérification d'email lors de la connexion,
-            // ne pas faire de navigation ici, laisser AuthWrapper gérer
-            // car l'utilisateur devrait maintenant être authentifié
-            print(
-              '✅ Email confirmé lors de la connexion - AuthWrapper va gérer la redirection',
-            );
-          }
-        }
-
-        if (state is VerificationCodeResent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                widget.fromRegistration
-                    ? 'Code de vérification renvoyé !'
-                    : 'Code de vérification envoyé !',
-              ),
-              backgroundColor: Colors.green[600],
-              duration: Duration(seconds: 2),
-            ),
-          );
-          _clearCode();
-        }
-
-        if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: Colors.red[600],
-              duration: Duration(seconds: 3),
-            ),
-          );
-          _clearCode();
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black87),
-            onPressed: () {
-              // Toujours retourner vers LoginScreen
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-                (route) => false,
-              );
-            },
-          ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed:
+              _isLoading
+                  ? null
+                  : () {
+                    // Toujours retourner vers LoginScreen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (route) => false,
+                    );
+                  },
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 20),
+      ),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLoading) {
+            setState(() => _isLoading = true);
+          } else if (state is EmailConfirmationSuccess) {
+            setState(() => _isLoading = false);
 
-                // Icône email
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(50),
+            // Effacer tous les SnackBars avant d'afficher le nouveau
+            SnackBarManager.clearAll(context);
+
+            // Afficher un message de succès
+            SnackBarManager.showSuccessSnackBar(
+              context,
+              '🎉 Email vérifié avec succès !',
+              duration: const Duration(seconds: 3),
+            );
+
+            Future.delayed(const Duration(milliseconds: 800), () {
+              if (mounted) {
+                if (widget.fromRegistration) {
+                  // Après inscription, aller vers login
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    (route) => false,
+                  );
+                } else {
+                  // Après vérification d'email lors de la connexion,
+                  // ne pas faire de navigation ici, laisser AuthWrapper gérer
+                  print(
+                    '✅ Email confirmé lors de la connexion - AuthWrapper va gérer la redirection',
+                  );
+                }
+              }
+            });
+          } else if (state is VerificationCodeResent) {
+            setState(() => _isLoading = false);
+
+            // Effacer tous les SnackBars avant d'afficher le nouveau
+            SnackBarManager.clearAll(context);
+
+            SnackBarManager.showSuccessSnackBar(
+              context,
+              widget.fromRegistration
+                  ? 'Code de vérification renvoyé !'
+                  : 'Code de vérification envoyé !',
+              duration: const Duration(seconds: 2),
+            );
+            _clearCode();
+          } else if (state is AuthFailure) {
+            setState(() => _isLoading = false);
+
+            // Utiliser le gestionnaire de SnackBar avec message en français
+            final localizedError = AuthErrorMessages.getLocalizedError(
+              state.error,
+            );
+
+            SnackBarManager.showErrorSnackBar(
+              context,
+              localizedError,
+              duration: const Duration(seconds: 5),
+            );
+
+            print('Erreur de vérification email: ${state.error}');
+            _clearCode();
+          } else if (state is Unauthenticated) {
+            setState(() => _isLoading = false);
+          }
+        },
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20),
+
+                  // Icône email
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Icon(
+                      Icons.email_outlined,
+                      size: 50,
+                      color: Colors.green[600],
+                    ),
                   ),
-                  child: Icon(
-                    Icons.email_outlined,
-                    size: 50,
-                    color: Colors.green[600],
-                  ),
-                ),
 
-                SizedBox(height: 24),
+                  SizedBox(height: 24),
 
-                // Titre
-                Text(
-                  'Vérifiez votre email',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-                SizedBox(height: 12),
-
-                // Description dynamique selon le contexte
-                Text(
-                  widget.fromRegistration
-                      ? 'Nous avons envoyé un code de vérification à'
-                      : 'Un code de vérification va être envoyé à',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  textAlign: TextAlign.center,
-                ),
-
-                SizedBox(height: 8),
-
-                // Email
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[200]!),
-                  ),
-                  child: Text(
-                    widget.email,
+                  // Titre
+                  Text(
+                    'Vérifiez votre email',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.green[700],
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                ),
 
-                SizedBox(height: 32),
+                  SizedBox(height: 12),
 
-                // Champs de saisie du code
-                Text(
-                  'Entrez le code à 6 chiffres',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                  // Description dynamique selon le contexte
+                  Text(
+                    widget.fromRegistration
+                        ? 'Nous avons envoyé un code de vérification à'
+                        : 'Un code de vérification va être envoyé à',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
                   ),
-                ),
 
-                SizedBox(height: 20),
+                  SizedBox(height: 8),
 
-                // Code input fields
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(6, (index) {
-                    return Container(
-                      width: 45,
-                      height: 55,
+                  // Email
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Text(
+                      widget.email,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green[700],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+
+                  SizedBox(height: 32),
+
+                  // INDICATEUR DE CHARGEMENT (comme dans login et signup)
+                  if (_isLoading)
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(12),
+                      margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        border: Border.all(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.blue[600],
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            'Vérification en cours...',
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Champs de saisie du code
+                  Text(
+                    'Entrez le code à 6 chiffres',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  // Code input fields
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(6, (index) {
+                      return Container(
+                        width: 45,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                _controllers[index].text.isEmpty
+                                    ? Colors.grey[300]!
+                                    : Colors.green[600]!,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
                           color:
                               _controllers[index].text.isEmpty
-                                  ? Colors.grey[300]!
-                                  : Colors.green[600]!,
-                          width: 2,
+                                  ? Colors.grey[50]
+                                  : Colors.green[50],
                         ),
-                        borderRadius: BorderRadius.circular(8),
-                        color:
-                            _controllers[index].text.isEmpty
-                                ? Colors.grey[50]
-                                : Colors.green[50],
-                      ),
-                      child: TextFormField(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          counterText: '',
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        onChanged: (value) => _onCodeChanged(value, index),
-                        onTap: () {
-                          _controllers[index]
-                              .selection = TextSelection.fromPosition(
-                            TextPosition(
-                              offset: _controllers[index].text.length,
-                            ),
-                          );
-                        },
-                        onEditingComplete: () {
-                          if (_isCodeComplete) {
-                            _verifyCode();
-                          }
-                        },
-                      ),
-                    );
-                  }),
-                ),
-
-                SizedBox(height: 32),
-
-                // Bouton de vérification
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    final isLoading = state is AuthLoading;
-
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed:
-                            (isLoading || !_isCodeComplete)
-                                ? null
-                                : _verifyCode,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: Colors.grey[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                        ),
-                        child:
-                            isLoading
-                                ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : Text(
-                                  'Vérifier le code',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                      ),
-                    );
-                  },
-                ),
-
-                SizedBox(height: 24),
-
-                // Section renvoyer le code
-                Column(
-                  children: [
-                    Text(
-                      'Vous n\'avez pas reçu le code ?',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-
-                    SizedBox(height: 8),
-
-                    if (!_canResend)
-                      Text(
-                        'Renvoyer dans ${_resendCountdown}s',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    else
-                      TextButton(
-                        onPressed: _resendCode,
-                        child: Text(
-                          'Renvoyer le code',
+                        child: TextFormField(
+                          controller: _controllers[index],
+                          focusNode: _focusNodes[index],
+                          enabled: !_isLoading,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
                           style: TextStyle(
-                            color: Colors.green[600],
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            color: Colors.black87,
                           ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            counterText: '',
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (value) => _onCodeChanged(value, index),
+                          onTap: () {
+                            _controllers[index]
+                                .selection = TextSelection.fromPosition(
+                              TextPosition(
+                                offset: _controllers[index].text.length,
+                              ),
+                            );
+                          },
+                          onEditingComplete: () {
+                            if (_isCodeComplete && !_isLoading) {
+                              _verifyCode();
+                            }
+                          },
                         ),
+                      );
+                    }),
+                  ),
+
+                  SizedBox(height: 32),
+
+                  // Bouton de vérification
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed:
+                          (_isLoading || !_isCodeComplete) ? null : _verifyCode,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey[300],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
                       ),
-                  ],
-                ),
-
-                SizedBox(height: 20),
-
-                // Bouton effacer
-                if (_verificationCode.isNotEmpty)
-                  TextButton.icon(
-                    onPressed: _clearCode,
-                    icon: Icon(Icons.clear, color: Colors.grey[600], size: 18),
-                    label: Text(
-                      'Effacer le code',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      child:
+                          _isLoading
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text(
+                                'Vérifier le code',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                     ),
                   ),
 
-                SizedBox(height: 20),
+                  SizedBox(height: 24),
 
-                // Message d'information
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue[200]!),
-                  ),
-                  child: Row(
+                  // Section renvoyer le code
+                  Column(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.blue[600],
-                        size: 20,
+                      Text(
+                        'Vous n\'avez pas reçu le code ?',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Vérifiez votre dossier de courrier indésirable si vous ne trouvez pas l\'email',
+
+                      SizedBox(height: 8),
+
+                      if (!_canResend)
+                        Text(
+                          'Renvoyer dans ${_resendCountdown}s',
                           style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.blue[700],
+                            fontSize: 14,
+                            color: Colors.grey[500],
                             fontWeight: FontWeight.w500,
                           ),
+                        )
+                      else
+                        TextButton(
+                          onPressed: _isLoading ? null : _resendCode,
+                          child: Text(
+                            'Renvoyer le code',
+                            style: TextStyle(
+                              color:
+                                  _isLoading
+                                      ? Colors.grey[400]
+                                      : Colors.green[600],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
                         ),
-                      ),
                     ],
                   ),
-                ),
 
-                SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                // Message informatif sur le flux
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color:
-                        widget.fromRegistration
-                            ? Colors.green[50]
-                            : Colors.orange[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
+                  // Bouton effacer
+                  if (_verificationCode.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: _isLoading ? null : _clearCode,
+                      icon: Icon(
+                        Icons.clear,
+                        color: _isLoading ? Colors.grey[400] : Colors.grey[600],
+                        size: 18,
+                      ),
+                      label: Text(
+                        'Effacer le code',
+                        style: TextStyle(
+                          color:
+                              _isLoading ? Colors.grey[400] : Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+
+                  SizedBox(height: 20),
+
+                  // Message d'information
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue[600],
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Vérifiez votre dossier de courrier indésirable si vous ne trouvez pas l\'email',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.blue[700],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  // Message informatif sur le flux
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
                       color:
                           widget.fromRegistration
-                              ? Colors.green[200]!
-                              : Colors.orange[200]!,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        widget.fromRegistration ? Icons.login : Icons.refresh,
+                              ? Colors.green[50]
+                              : Colors.orange[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
                         color:
                             widget.fromRegistration
-                                ? Colors.green[600]
-                                : Colors.orange[600],
-                        size: 20,
+                                ? Colors.green[200]!
+                                : Colors.orange[200]!,
                       ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          widget.fromRegistration
-                              ? 'Après vérification, vous serez redirigé vers la page de connexion'
-                              : 'Après vérification, vous pourrez vous reconnecter avec vos identifiants',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color:
-                                widget.fromRegistration
-                                    ? Colors.green[700]
-                                    : Colors.orange[700],
-                            fontWeight: FontWeight.w500,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          widget.fromRegistration ? Icons.login : Icons.refresh,
+                          color:
+                              widget.fromRegistration
+                                  ? Colors.green[600]
+                                  : Colors.orange[600],
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            widget.fromRegistration
+                                ? 'Après vérification, vous serez redirigé vers la page de connexion'
+                                : 'Après vérification, vous pourrez vous reconnecter avec vos identifiants',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color:
+                                  widget.fromRegistration
+                                      ? Colors.green[700]
+                                      : Colors.orange[700],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

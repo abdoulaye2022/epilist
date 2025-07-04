@@ -129,15 +129,30 @@ class AuthService {
     } on DioException catch (e) {
       debugPrint('❌ Erreur DioException: ${e.response?.data}');
 
-      if (e.response?.statusCode == 401) {
+      // CORRECTION: Gérer les codes 401 ET 403 pour EMAIL_NOT_VERIFIED
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
         if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
+          // Extraire l'email de la réponse API
+          String emailFromResponse =
+              email; // Par défaut, utiliser l'email du login
+
+          // Essayer d'extraire l'email de la structure data
+          if (errorData['data'] != null && errorData['data']['email'] != null) {
+            emailFromResponse = errorData['data']['email'];
+            debugPrint(
+              '📧 Email extrait de la réponse API: $emailFromResponse',
+            );
+          }
+
           throw AuthenticationException(
             'Email non vérifié',
             'EMAIL_NOT_VERIFIED',
-            email: email,
+            email: emailFromResponse,
           );
         }
+
+        // Autres erreurs 401/403
         throw AuthenticationException(
           'Email ou mot de passe incorrect',
           'INVALID_CREDENTIALS',
@@ -369,6 +384,8 @@ class AuthService {
     String password,
   ) async {
     try {
+      debugPrint('📝 Tentative d\'inscription pour: $email');
+
       final response = await dio.post(
         '/auth/register',
         data: {
@@ -379,14 +396,55 @@ class AuthService {
         },
       );
 
-      if (response.statusCode != 201) {
-        throw Exception('Erreur lors de l\'inscription');
+      if (response.statusCode == 201) {
+        debugPrint('✅ Inscription réussie pour: $email');
+      } else {
+        throw AuthenticationException(
+          'Erreur lors de l\'inscription',
+          'REGISTRATION_FAILED',
+        );
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 409) {
-        throw Exception('Un compte avec cet email existe déjà');
+      debugPrint('❌ Erreur DioException inscription: ${e.response?.data}');
+
+      if (e.response?.statusCode == 409 || e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        // Vérifier le code d'erreur spécifique
+        if (errorData != null && errorData['code'] == 'EMAIL_ALREADY_EXISTS') {
+          throw AuthenticationException(
+            'Un compte avec cet email existe déjà',
+            'EMAIL_ALREADY_EXISTS',
+          );
+        }
+
+        // Autres erreurs de conflit
+        throw AuthenticationException(
+          'Un compte avec cet email existe déjà',
+          'EMAIL_CONFLICT',
+        );
+      } else if (e.response?.statusCode == 422) {
+        // Erreurs de validation
+        final errorData = e.response?.data;
+        String errorMessage = 'Données invalides';
+
+        if (errorData != null && errorData['message'] != null) {
+          errorMessage = errorData['message'].toString();
+        }
+
+        throw AuthenticationException(errorMessage, 'VALIDATION_ERROR');
+      } else {
+        throw AuthenticationException(
+          'Erreur lors de l\'inscription: ${e.message}',
+          'NETWORK_ERROR',
+        );
       }
-      throw Exception('Erreur lors de l\'inscription: ${e.message}');
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue inscription: $e');
+      throw AuthenticationException(
+        'Une erreur inattendue est survenue lors de l\'inscription',
+        'UNKNOWN_ERROR',
+      );
     }
   }
 
@@ -441,12 +499,95 @@ class AuthService {
     required String code,
   }) async {
     try {
-      await dio.post(
+      debugPrint(
+        '📧 Tentative de confirmation email pour: $email avec code: ${code.substring(0, 2)}...',
+      );
+
+      final response = await dio.post(
         '/auth/confirm-email',
         data: {'email': email, 'code': code},
       );
+
+      if (response.statusCode == 200) {
+        debugPrint('✅ Email confirmé avec succès pour: $email');
+      } else {
+        throw AuthenticationException(
+          'Erreur lors de la confirmation de l\'email',
+          'EMAIL_CONFIRMATION_FAILED',
+        );
+      }
     } on DioException catch (e) {
-      throw Exception('Erreur lors de la confirmation: ${e.message}');
+      debugPrint(
+        '❌ Erreur DioException confirmation email: ${e.response?.data}',
+      );
+
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        // Vérifier les codes d'erreur spécifiques
+        if (errorData != null && errorData is Map) {
+          final errorCode = errorData['code'] as String?;
+          final errorMessage = errorData['message'] as String?;
+
+          switch (errorCode) {
+            case 'INVALID_CODE':
+            case 'CODE_INVALID':
+              throw AuthenticationException(
+                'Le code de vérification est invalide',
+                'INVALID_VERIFICATION_CODE',
+              );
+            case 'CODE_EXPIRED':
+            case 'EXPIRED_CODE':
+              throw AuthenticationException(
+                'Le code de vérification a expiré',
+                'EXPIRED_VERIFICATION_CODE',
+              );
+            case 'USER_NOT_FOUND':
+              throw AuthenticationException(
+                'Aucun compte trouvé avec cet email',
+                'USER_NOT_FOUND',
+              );
+            case 'EMAIL_ALREADY_VERIFIED':
+              throw AuthenticationException(
+                'Cet email est déjà vérifié',
+                'EMAIL_ALREADY_VERIFIED',
+              );
+            default:
+              throw AuthenticationException(
+                errorMessage ??
+                    'Le code de vérification est incorrect ou expiré',
+                'VERIFICATION_ERROR',
+              );
+          }
+        } else {
+          throw AuthenticationException(
+            'Le code de vérification est incorrect ou expiré',
+            'INVALID_VERIFICATION_CODE',
+          );
+        }
+      } else if (e.response?.statusCode == 422) {
+        // Erreurs de validation
+        throw AuthenticationException(
+          'Données de vérification invalides',
+          'VALIDATION_ERROR',
+        );
+      } else if (e.response?.statusCode == 404) {
+        throw AuthenticationException(
+          'Service de vérification non disponible',
+          'SERVICE_UNAVAILABLE',
+        );
+      } else {
+        throw AuthenticationException(
+          'Erreur de réseau lors de la confirmation: ${e.message}',
+          'NETWORK_ERROR',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue confirmation email: $e');
+      throw AuthenticationException(
+        'Une erreur inattendue est survenue lors de la confirmation',
+        'UNKNOWN_ERROR',
+      );
     }
   }
 
