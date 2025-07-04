@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class User extends Model
 {
@@ -70,7 +71,7 @@ class User extends Model
     {
         $this->update([
             'email_verified' => true,
-            'email_verified_at' => now(),
+            'email_verified_at' => Carbon::now(),
             'email_verification_code' => null,
             'email_verification_code_expires_at' => null
         ]);
