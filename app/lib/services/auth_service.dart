@@ -593,7 +593,7 @@ class AuthService {
 
   Future<void> resendVerificationCode(String email) async {
     try {
-      await dio.post('/auth/resend-verification', data: {'email': email});
+      await dio.post('/auth/confirm-email', data: {'email': email});
     } on DioException catch (e) {
       throw Exception('Erreur lors du renvoi: ${e.message}');
     }
