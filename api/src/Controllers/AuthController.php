@@ -234,7 +234,7 @@ class AuthController
             ->message('{field} is required');
         
         $validator->rule('email', 'email')
-            ->message('Email is not valid');
+            ->message('Invalid email address');
         
         $validator->rule('lengthMax', 'email', 255)
             ->message('Email is too long (max 255 characters)');
@@ -246,10 +246,11 @@ class AuthController
             return User::where('email', $value)->count() === 0;
         }, 'email')->message('This email is already registered');
 
-        // Validation
+        // Validate
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
+                'code' => 'VALIDATION_ERROR',
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ]));
@@ -259,35 +260,42 @@ class AuthController
         }
 
         try {
-            // Générer un code de vérification
+            // Check if email already exists
+            if (User::findByEmail($data['email'])) {
+                return $this->createErrorResponse(
+                    'This email is already registered', 
+                    400,
+                    'EMAIL_ALREADY_EXISTS'
+                );
+            }
+
+            // Generate verification code
             $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
-            // Data sanitization
-            $cleanData = [
+            // Create user
+            $user = User::create([
                 'first_name' => trim($data['first_name']),
                 'last_name' => trim($data['last_name']),
                 'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
                 'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
-                'terms_accepted' => 1,
+                'terms_accepted' => true,
                 'email_verification_code' => $verificationCode,
                 'email_verification_code_expires_at' => $expiration,
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()
-            ];
+            ]);
 
-            // Create user
-            $user = User::create($cleanData);
-
-            if(Config::get('APP_ENV')=='dev') {
+            // In dev environment, override email for testing
+            if(Config::get('APP_ENV') == 'dev') {
                 $user->email = 'm2atodev@gmail.com';
             }
 
-            // Envoyer le code de vérification par email
+            // Send verification email
             $mailSender = new MailSender();
             $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
 
-            // Success response (sans donner le code)
+            // Success response
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Account created successfully. Please check your email for verification code.',
@@ -296,7 +304,8 @@ class AuthController
                     'email' => $user->email,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
-                    'email_verified' => $user->email_verified
+                    'email_verified' => $user->email_verified,
+                    'verification_required' => true
                 ]
             ]));
             return $response
@@ -307,8 +316,8 @@ class AuthController
             // Error handling
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Error creating account',
-                'error' => $e->getMessage()
+                'code' => 'SERVER_ERROR',
+                'message' => 'Registration failed: ' . $e->getMessage()
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
