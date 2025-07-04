@@ -242,10 +242,6 @@ class AuthController
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
 
-        $validator->rule(function($field, $value, $params, $fields) {
-            return User::where('email', $value)->count() === 0;
-        }, 'email')->message('This email is already registered');
-
         // Validate
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
