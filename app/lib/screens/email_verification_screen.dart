@@ -1,7 +1,8 @@
-// email_verification_screen.dart - VERSION AMÉLIORÉE AVEC SNACKBAR_MANAGER
+// email_verification_screen.dart - VERSION COMPLÈTE CORRIGÉE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
-import 'package:epilist/utils/snackbar_manager.dart'; // AJOUT
+import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,32 +36,20 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _canResend = true;
   bool _initialCodeSent = false;
   bool _isLoading = false;
+  bool _isRedirecting =
+      false; // ✅ NOUVEAU: Flag pour éviter multiple redirections
 
   @override
   void initState() {
     super.initState();
 
-    // Si c'est un cas de connexion (pas d'inscription), envoyer automatiquement le code
-    if (!widget.fromRegistration && !_initialCodeSent) {
-      _sendInitialVerificationCode();
-    } else {
-      // Pour l'inscription, le code a déjà été envoyé, on démarre juste le countdown
-      _startResendCountdown();
-    }
-  }
-
-  void _sendInitialVerificationCode() {
-    print('📧 Envoi automatique du code de vérification pour: ${widget.email}');
-
-    // Envoyer le code de vérification
-    context.read<AuthBloc>().add(ResendVerificationCode(widget.email));
+    // Pour tous les cas, le code a déjà été envoyé par le AuthBloc
+    // On démarre juste le countdown
+    _startResendCountdown();
 
     setState(() {
       _initialCodeSent = true;
     });
-
-    // Démarrer le countdown après l'envoi
-    _startResendCountdown();
   }
 
   void _startResendCountdown() {
@@ -126,6 +115,24 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     _focusNodes[0].requestFocus();
   }
 
+  // ✅ NOUVELLE MÉTHODE: Redirection sécurisée vers HomeScreen
+  void _redirectToHome() {
+    if (!_isRedirecting && mounted) {
+      setState(() => _isRedirecting = true);
+
+      debugPrint(
+        '🏠 Redirection vers HomeScreen depuis EmailVerificationScreen',
+      );
+
+      // Remplacer complètement la pile de navigation
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,10 +143,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black87),
           onPressed:
-              _isLoading
+              _isLoading || _isRedirecting
                   ? null
                   : () {
-                    // Toujours retourner vers LoginScreen
+                    // Retourner vers LoginScreen
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -150,57 +157,65 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
+          debugPrint(
+            '📧 EmailVerificationScreen - État reçu: ${state.runtimeType}',
+          );
+
           if (state is AuthLoading) {
             setState(() => _isLoading = true);
           } else if (state is EmailConfirmationSuccess) {
             setState(() => _isLoading = false);
 
-            // Effacer tous les SnackBars avant d'afficher le nouveau
+            // ✅ CORRECTION: Si EmailConfirmationSuccess, on redirige vers HomeScreen
             SnackBarManager.clearAll(context);
 
-            // Afficher un message de succès
             SnackBarManager.showSuccessSnackBar(
               context,
               '🎉 Email vérifié avec succès !',
-              duration: const Duration(seconds: 3),
+              duration: const Duration(seconds: 2),
             );
 
-            Future.delayed(const Duration(milliseconds: 800), () {
-              if (mounted) {
-                // Toujours rediriger vers login pour l'ancien comportement
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                  (route) => false,
-                );
+            debugPrint(
+              '✅ EmailConfirmationSuccess - Redirection vers HomeScreen',
+            );
+
+            // Redirection immédiate vers HomeScreen
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted && !_isRedirecting) {
+                _redirectToHome();
               }
             });
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 
-            // NOUVEAU: Gestion de la connexion automatique après confirmation
+            // ✅ CORRECTION: Connexion automatique réussie - Redirection vers HomeScreen
             SnackBarManager.clearAll(context);
 
             SnackBarManager.showSuccessSnackBar(
               context,
-              '🎉 Email vérifié et connexion automatique ! Bienvenue ${state.user.firstName}.',
-              duration: const Duration(seconds: 3),
+              '🎉 Email vérifié ! Connexion automatique réussie !',
+              duration: const Duration(seconds: 2),
             );
 
-            // L'AuthWrapper va automatiquement rediriger vers HomeScreen
-            // car l'état AuthSuccess est émis
-            debugPrint('✅ Connexion automatique après confirmation email');
+            debugPrint(
+              '✅ AuthSuccess - Utilisateur connecté: ${state.user.email}',
+            );
+            debugPrint('🏠 Redirection immédiate vers HomeScreen');
+
+            // ✅ REDIRECTION IMMÉDIATE: Ne pas attendre l'AuthWrapper
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted && !_isRedirecting) {
+                _redirectToHome();
+              }
+            });
           } else if (state is VerificationCodeResent) {
             setState(() => _isLoading = false);
 
-            // Effacer tous les SnackBars avant d'afficher le nouveau
             SnackBarManager.clearAll(context);
 
             SnackBarManager.showSuccessSnackBar(
               context,
-              widget.fromRegistration
-                  ? 'Code de vérification renvoyé !'
-                  : 'Code de vérification envoyé !',
+              'Code de vérification renvoyé !',
               duration: const Duration(seconds: 2),
             );
             _clearCode();
@@ -218,7 +233,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               duration: const Duration(seconds: 5),
             );
 
-            print('Erreur de vérification email: ${state.error}');
+            debugPrint('❌ Erreur de vérification email: ${state.error}');
             _clearCode();
           } else if (state is Unauthenticated) {
             setState(() => _isLoading = false);
@@ -264,7 +279,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 12),
 
-                  // Description dynamique selon le contexte
+                  // Description
                   Text(
                     'Nous avons envoyé un code de vérification à',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
@@ -294,16 +309,22 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 32),
 
-                  // INDICATEUR DE CHARGEMENT (comme dans login et signup)
-                  if (_isLoading)
+                  // ✅ INDICATEUR DE CHARGEMENT AMÉLIORÉ
+                  if (_isLoading || _isRedirecting)
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(12),
                       margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color:
+                            _isRedirecting ? Colors.green[50] : Colors.blue[50],
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!),
+                        border: Border.all(
+                          color:
+                              _isRedirecting
+                                  ? Colors.green[200]!
+                                  : Colors.blue[200]!,
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -311,15 +332,23 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: Colors.blue[600],
+                              color:
+                                  _isRedirecting
+                                      ? Colors.green[600]
+                                      : Colors.blue[600],
                               strokeWidth: 2,
                             ),
                           ),
                           SizedBox(width: 12),
                           Text(
-                            'Vérification en cours...',
+                            _isRedirecting
+                                ? 'Connexion réussie ! Redirection...'
+                                : 'Vérification en cours...',
                             style: TextStyle(
-                              color: Colors.blue[700],
+                              color:
+                                  _isRedirecting
+                                      ? Colors.green[700]
+                                      : Colors.blue[700],
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -364,7 +393,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         child: TextFormField(
                           controller: _controllers[index],
                           focusNode: _focusNodes[index],
-                          enabled: !_isLoading,
+                          enabled: !_isLoading && !_isRedirecting,
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
                           maxLength: 1,
@@ -390,7 +419,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             );
                           },
                           onEditingComplete: () {
-                            if (_isCodeComplete && !_isLoading) {
+                            if (_isCodeComplete &&
+                                !_isLoading &&
+                                !_isRedirecting) {
                               _verifyCode();
                             }
                           },
@@ -407,7 +438,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed:
-                          (_isLoading || !_isCodeComplete) ? null : _verifyCode,
+                          (_isLoading || _isRedirecting || !_isCodeComplete)
+                              ? null
+                              : _verifyCode,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[600],
                         foregroundColor: Colors.white,
@@ -418,7 +451,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         elevation: 2,
                       ),
                       child:
-                          _isLoading
+                          (_isLoading || _isRedirecting)
                               ? SizedBox(
                                 height: 20,
                                 width: 20,
@@ -460,12 +493,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         )
                       else
                         TextButton(
-                          onPressed: _isLoading ? null : _resendCode,
+                          onPressed:
+                              (_isLoading || _isRedirecting)
+                                  ? null
+                                  : _resendCode,
                           child: Text(
                             'Renvoyer le code',
                             style: TextStyle(
                               color:
-                                  _isLoading
+                                  (_isLoading || _isRedirecting)
                                       ? Colors.grey[400]
                                       : Colors.green[600],
                               fontWeight: FontWeight.bold,
@@ -479,7 +515,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   SizedBox(height: 20),
 
                   // Bouton effacer
-                  if (_verificationCode.isNotEmpty)
+                  if (_verificationCode.isNotEmpty && !_isRedirecting)
                     TextButton.icon(
                       onPressed: _isLoading ? null : _clearCode,
                       icon: Icon(
@@ -500,82 +536,64 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   SizedBox(height: 20),
 
                   // Message d'information
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue[200]!),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.blue[600],
-                          size: 20,
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Vérifiez votre dossier de courrier indésirable si vous ne trouvez pas l\'email',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.blue[700],
-                              fontWeight: FontWeight.w500,
+                  if (!_isRedirecting)
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.blue[600],
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Vérifiez votre dossier de courrier indésirable si vous ne trouvez pas l\'email',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // Message informatif sur le flux
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color:
-                          widget.fromRegistration
-                              ? Colors.green[50]
-                              : Colors.orange[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color:
-                            widget.fromRegistration
-                                ? Colors.green[200]!
-                                : Colors.orange[200]!,
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          widget.fromRegistration ? Icons.login : Icons.refresh,
-                          color:
-                              widget.fromRegistration
-                                  ? Colors.green[600]
-                                  : Colors.orange[600],
-                          size: 20,
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            widget.fromRegistration
-                                ? 'Après vérification, vous serez redirigé vers la page de connexion'
-                                : 'Après vérification, vous pourrez vous reconnecter avec vos identifiants',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color:
-                                  widget.fromRegistration
-                                      ? Colors.green[700]
-                                      : Colors.orange[700],
-                              fontWeight: FontWeight.w500,
+
+                  if (!_isRedirecting) SizedBox(height: 20),
+
+                  // Message informatif sur le flux
+                  if (!_isRedirecting)
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.home, color: Colors.green[600], size: 20),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Après vérification, vous serez automatiquement connecté et redirigé vers l\'accueil',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.green[700],
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

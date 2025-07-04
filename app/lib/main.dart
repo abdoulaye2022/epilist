@@ -295,6 +295,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
             );
           }
         }
+
+        // ✅ CORRECTION: Gérer la confirmation d'email réussie
+        if (state is EmailConfirmationSuccess) {
+          debugPrint('✅ Email confirmé avec succès');
+
+          if (mounted) {
+            SnackBarManager.showSuccessSnackBar(
+              context,
+              'Email confirmé avec succès ! Bienvenue !',
+              duration: const Duration(seconds: 3),
+            );
+          }
+        }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
@@ -333,9 +346,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
             );
           }
 
-          // Utilisateur authentifié avec succès
-          if (state is AuthSuccess) {
-            debugPrint('✅ Utilisateur connecté: ${state.user.email}');
+          // ✅ CORRECTION: Utilisateur authentifié avec succès OU email confirmé
+          if (state is AuthSuccess || state is EmailConfirmationSuccess) {
+            if (state is AuthSuccess) {
+              debugPrint('✅ Utilisateur connecté: ${state.user.email}');
+            } else {
+              debugPrint(
+                '✅ Email confirmé avec succès - redirection vers HomeScreen',
+              );
+            }
 
             // ✅ Traiter les tokens de partage en attente après connexion
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -348,8 +367,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           // États nécessitant une redirection vers login
           if (state is Unauthenticated ||
               state is AuthFailure ||
-              state is PasswordChanged ||
-              state is EmailConfirmationSuccess) {
+              state is PasswordChanged) {
             return const LoginScreen();
           }
 
