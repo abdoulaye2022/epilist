@@ -7,9 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
-import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/services/deep_link_handler.dart';
-import 'package:flutter/foundation.dart';
 
 class ShareListDialog extends StatefulWidget {
   final int listId;

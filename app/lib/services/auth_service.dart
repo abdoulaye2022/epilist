@@ -1,4 +1,4 @@
-// auth_service.dart - VERSION CORRIGÉE AVEC PERSISTANCE
+// auth_service.dart - VERSION AVEC NETTOYAGE COMPLET
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
@@ -292,30 +292,71 @@ class AuthService {
     try {
       final token = await getToken();
       if (token != null) {
+        debugPrint('📡 Déconnexion côté serveur...');
         await dio.post(
           '/auth/logout',
           options: Options(headers: {'Authorization': 'Bearer $token'}),
         );
+        debugPrint('✅ Déconnexion serveur réussie');
       }
     } catch (e) {
       debugPrint('⚠️ Erreur lors de la déconnexion côté serveur: $e');
       // Continuer avec la déconnexion locale même si l'API échoue
     }
 
+    // TOUJOURS nettoyer les données locales
     await clearUserData();
   }
 
   Future<void> clearUserData() async {
     try {
-      await Future.wait([
-        sharedPreferences.remove(_accessTokenKey),
-        sharedPreferences.remove(_refreshTokenKey),
-        sharedPreferences.remove(_userKey),
-        sharedPreferences.remove(_tokenExpiryKey),
-      ]);
-      debugPrint('🧹 Données utilisateur nettoyées');
+      debugPrint('🧹 Début du nettoyage des données...');
+
+      // Supprimer toutes les clés une par une pour s'assurer qu'elles sont supprimées
+      final keysToRemove = [
+        _accessTokenKey,
+        _refreshTokenKey,
+        _userKey,
+        _tokenExpiryKey,
+      ];
+
+      for (final key in keysToRemove) {
+        final removed = await sharedPreferences.remove(key);
+        debugPrint('🗑️ Suppression $key: ${removed ? 'OK' : 'ÉCHEC'}');
+      }
+
+      // Vérification que les clés ont bien été supprimées
+      final accessToken = sharedPreferences.getString(_accessTokenKey);
+      final refreshToken = sharedPreferences.getString(_refreshTokenKey);
+      final userData = sharedPreferences.getString(_userKey);
+      final tokenExpiry = sharedPreferences.getInt(_tokenExpiryKey);
+
+      if (accessToken == null &&
+          refreshToken == null &&
+          userData == null &&
+          tokenExpiry == null) {
+        debugPrint('✅ Toutes les données utilisateur ont été supprimées');
+      } else {
+        debugPrint('⚠️ Certaines données n\'ont pas été supprimées:');
+        if (accessToken != null) debugPrint('  - Access token encore présent');
+        if (refreshToken != null)
+          debugPrint('  - Refresh token encore présent');
+        if (userData != null)
+          debugPrint('  - Données utilisateur encore présentes');
+        if (tokenExpiry != null)
+          debugPrint('  - Expiration token encore présente');
+      }
+
+      debugPrint('🧹 Nettoyage des données terminé');
     } catch (e) {
       debugPrint('❌ Erreur lors du nettoyage: $e');
+      // En cas d'erreur, essayer de forcer la suppression
+      try {
+        await sharedPreferences.clear();
+        debugPrint('🔥 Nettoyage forcé effectué (clear total)');
+      } catch (clearError) {
+        debugPrint('❌ Impossible de nettoyer les données: $clearError');
+      }
     }
   }
 

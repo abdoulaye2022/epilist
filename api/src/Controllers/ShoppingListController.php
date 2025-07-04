@@ -31,16 +31,19 @@ class ShoppingListController
         }
 
         try {
-            $user_id = $request->getAttribute('auth_id'); // Récupéré depuis le middleware JWT
+            $user_id = $request->getAttribute('auth_id');
             
             $shoppingList = ShoppingList::create([
                 'user_id' => $user_id,
                 'name' => $data['name'],
             ]);
 
+            // Charger la liste fraîchement créée avec ses items (même si vide)
+            $shoppingListWithItems = ShoppingList::with('items')->find($shoppingList->id);
+
             $response->getBody()->write(json_encode([
                 'success' => true,
-                'data' => $shoppingList,
+                'data' => $shoppingListWithItems,
                 'message' => 'Liste créée avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -125,9 +128,13 @@ class ShoppingListController
         try {
             $user_id = $request->getAttribute('auth_id');
             $shoppingList = ShoppingList::where('user_id', $user_id)
+                ->with('items') // Charger les items dès la récupération
                 ->findOrFail($args['id']);
 
             $shoppingList->update(['name' => $data['name']]);
+
+            // Recharger le modèle pour s'assurer d'avoir les dernières données
+            $shoppingList->refresh();
 
             $response->getBody()->write(json_encode([
                 'success' => true,
