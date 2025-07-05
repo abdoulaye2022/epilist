@@ -149,6 +149,7 @@ class SharedListController
 
             $invitation = [
                 'token' => $shareToken,
+                'list_id' => $sharedList->shoppingList->id,
                 'list_name' => $sharedList->shoppingList ? $sharedList->shoppingList->name : 'Liste inconnue',
                 'owner_name' => $sharedList->owner ? ($sharedList->owner->name ?? $sharedList->owner->email) : 'Utilisateur inconnu',
                 'owner_email' => $sharedList->owner ? $sharedList->owner->email : '',

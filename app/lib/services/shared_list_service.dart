@@ -1,4 +1,4 @@
-// services/shared_list_service.dart - VERSION CORRIGÉE AVEC GESTION ROBUSTE DES DONNÉES API
+// services/shared_list_service.dart - VERSION CORRIGÉE AVEC BONNES URLS
 import 'package:dio/dio.dart';
 import 'package:epilist/models/share_invitation.dart';
 import 'package:epilist/models/shared_enums.dart';
@@ -16,27 +16,38 @@ class SharedListService {
     : _dio = dio,
       _authService = authService;
 
-  // ✅ Obtenir les informations d'une invitation via le token - VERSION ROBUSTE
+  // ✅ Obtenir les informations d'une invitation via le token - URL CORRIGÉE
   Future<ShareInvitation> getShareInvitation(String shareToken) async {
     try {
       debugPrint('🔄 Récupération de l\'invitation pour le token: $shareToken');
+      debugPrint('🌐 URL appelée: /share/invitation/$shareToken');
 
+      // ✅ CORRECTION: Utiliser la bonne URL selon votre contrôleur PHP
       final response = await _dio.get('/share/invitation/$shareToken');
 
-      debugPrint('✅ Réponse API reçue: ${response.data}');
+      debugPrint('✅ Réponse API reçue - Status: ${response.statusCode}');
+      debugPrint('✅ Données reçues: ${response.data}');
 
       // Vérifier la structure de la réponse
       if (response.data == null) {
         throw Exception('Réponse API vide');
       }
 
-      final data = response.data['data'];
+      final responseData = response.data as Map<String, dynamic>;
+
+      // Vérifier le succès de la réponse
+      if (responseData['success'] != true) {
+        final message = responseData['message'] ?? 'Erreur inconnue';
+        throw Exception(message);
+      }
+
+      final data = responseData['data'];
       if (data == null) {
         throw Exception('Données d\'invitation manquantes');
       }
 
       // Créer l'invitation avec gestion d'erreur robuste
-      final invitation = ShareInvitation.fromJson(data);
+      final invitation = ShareInvitation.fromJson(data as Map<String, dynamic>);
 
       debugPrint(
         '✅ Invitation parsée: ${invitation.listName} (${invitation.status})',
@@ -44,16 +55,24 @@ class SharedListService {
 
       return invitation;
     } on DioException catch (e) {
-      debugPrint(
-        '❌ Erreur Dio lors de la récupération de l\'invitation: ${e.message}',
-      );
+      debugPrint('❌ Erreur Dio lors de la récupération de l\'invitation:');
+      debugPrint('   - Status Code: ${e.response?.statusCode}');
+      debugPrint('   - Message: ${e.message}');
+      debugPrint('   - Response Data: ${e.response?.data}');
 
       if (e.response?.statusCode == 404) {
         throw Exception('Invitation non trouvée ou expirée');
+      } else if (e.response?.statusCode == 410) {
+        throw Exception('Invitation expirée');
       } else if (e.response?.statusCode == 400) {
         throw Exception('Token d\'invitation invalide');
       } else {
-        throw Exception('Erreur réseau: ${e.message}');
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ?? e.message
+                : e.message;
+        throw Exception('Erreur réseau: $errorMessage');
       }
     } catch (e) {
       debugPrint('❌ Erreur lors du parsing de l\'invitation: $e');
@@ -61,39 +80,66 @@ class SharedListService {
     }
   }
 
-  // ✅ Accepter une invitation de partage - VERSION ROBUSTE
+  // ✅ Accepter une invitation de partage - URL CORRIGÉE
   Future<ShoppingList> acceptShareInvitation(String shareToken) async {
     try {
       final token = await _authService.getToken();
 
       debugPrint('🔄 Acceptation de l\'invitation: $shareToken');
+      debugPrint('🌐 URL appelée: /share/accept/$shareToken');
 
+      // ✅ CORRECTION: Utiliser la bonne URL selon votre contrôleur PHP
       final response = await _dio.post(
         '/share/accept/$shareToken',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      debugPrint('✅ Invitation acceptée, réponse: ${response.data}');
+      debugPrint('✅ Invitation acceptée - Status: ${response.statusCode}');
+      debugPrint('✅ Réponse: ${response.data}');
 
-      final data = response.data['data'];
+      final responseData = response.data as Map<String, dynamic>;
+
+      if (responseData['success'] != true) {
+        final message =
+            responseData['message'] ?? 'Erreur lors de l\'acceptation';
+        throw Exception(message);
+      }
+
+      final data = responseData['data'];
       if (data == null) {
         throw Exception('Données de liste manquantes après acceptation');
       }
 
-      return ShoppingList.fromJson(data);
+      return ShoppingList.fromJson(data as Map<String, dynamic>);
     } on DioException catch (e) {
-      debugPrint('❌ Erreur lors de l\'acceptation: ${e.message}');
+      debugPrint('❌ Erreur lors de l\'acceptation:');
+      debugPrint('   - Status Code: ${e.response?.statusCode}');
+      debugPrint('   - Message: ${e.message}');
+      debugPrint('   - Response Data: ${e.response?.data}');
 
       if (e.response?.statusCode == 404) {
         throw Exception('Invitation non trouvée ou expirée');
       } else if (e.response?.statusCode == 409) {
         throw Exception('Invitation déjà traitée');
+      } else if (e.response?.statusCode == 400) {
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ??
+                    'Invitation ne peut plus être acceptée'
+                : 'Invitation ne peut plus être acceptée';
+        throw Exception(errorMessage);
       } else if (e.response?.statusCode == 403) {
         throw Exception(
           'Vous n\'êtes pas autorisé à accepter cette invitation',
         );
       } else {
-        throw Exception('Erreur lors de l\'acceptation: ${e.message}');
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ?? e.message
+                : e.message;
+        throw Exception('Erreur lors de l\'acceptation: $errorMessage');
       }
     } catch (e) {
       debugPrint('❌ Erreur inattendue lors de l\'acceptation: $e');
@@ -101,28 +147,55 @@ class SharedListService {
     }
   }
 
-  // ✅ Refuser une invitation de partage - VERSION ROBUSTE
+  // ✅ Refuser une invitation de partage - URL CORRIGÉE
   Future<void> declineShareInvitation(String shareToken) async {
     try {
       final token = await _authService.getToken();
 
       debugPrint('🔄 Refus de l\'invitation: $shareToken');
+      debugPrint('🌐 URL appelée: /share/decline/$shareToken');
 
-      await _dio.post(
+      // ✅ CORRECTION: Utiliser la bonne URL selon votre contrôleur PHP
+      final response = await _dio.post(
         '/share/decline/$shareToken',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      debugPrint('✅ Invitation refusée avec succès');
+      debugPrint(
+        '✅ Invitation refusée avec succès - Status: ${response.statusCode}',
+      );
+
+      final responseData = response.data as Map<String, dynamic>;
+
+      if (responseData['success'] != true) {
+        final message = responseData['message'] ?? 'Erreur lors du refus';
+        throw Exception(message);
+      }
     } on DioException catch (e) {
-      debugPrint('❌ Erreur lors du refus: ${e.message}');
+      debugPrint('❌ Erreur lors du refus:');
+      debugPrint('   - Status Code: ${e.response?.statusCode}');
+      debugPrint('   - Message: ${e.message}');
+      debugPrint('   - Response Data: ${e.response?.data}');
 
       if (e.response?.statusCode == 404) {
         throw Exception('Invitation non trouvée');
       } else if (e.response?.statusCode == 409) {
         throw Exception('Invitation déjà traitée');
+      } else if (e.response?.statusCode == 400) {
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ??
+                    'Invitation ne peut plus être refusée'
+                : 'Invitation ne peut plus être refusée';
+        throw Exception(errorMessage);
       } else {
-        throw Exception('Erreur lors du refus: ${e.message}');
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ?? e.message
+                : e.message;
+        throw Exception('Erreur lors du refus: $errorMessage');
       }
     } catch (e) {
       debugPrint('❌ Erreur inattendue lors du refus: $e');
