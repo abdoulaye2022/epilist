@@ -363,4 +363,59 @@ class SharedListController
             default => 'Inconnu'
         };
     }
+
+    /**
+     * ✅ Quitter une liste partagée
+     */
+    public function leaveSharedList(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $list_id = $args['id'];
+            
+            // Vérifier que l'utilisateur a bien accès à cette liste partagée
+            $sharedList = SharedList::where('list_id', $list_id)
+                ->where('shared_with_user_id', $user_id)
+                ->where('status', SharedList::STATUS_ACCEPTED)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$sharedList) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous n\'avez pas accès à cette liste ou elle n\'existe pas'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            // Vérifier que l'utilisateur n'est pas le propriétaire de la liste
+            $shoppingList = ShoppingList::find($list_id);
+            if ($shoppingList && $shoppingList->user_id == $user_id) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous ne pouvez pas quitter une liste dont vous êtes le propriétaire'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Marquer comme quitté
+            $sharedList->markAsLeft();
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Vous avez quitté la liste partagée avec succès'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+            
+        } catch (\Exception $e) {
+            error_log("Erreur leaveSharedList: " . $e->getMessage());
+            
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression de la liste partagée',
+                'error' => $e->getMessage()
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
 }
