@@ -38,7 +38,6 @@ class User {
       firstName: data['first_name'] as String? ?? '',
       lastName: data['last_name'] as String? ?? '',
       email: data['email'] as String? ?? '',
-      // ✅ CORRECTION: Gérer les types boolean ET integer
       emailVerified: _parseBooleanField(data['email_verified']),
       accessToken: response['access_token'] as String?,
       refreshToken: response['refresh_token'] as String?,
@@ -46,8 +45,8 @@ class User {
           data['email_verified_at'] != null
               ? DateTime.tryParse(data['email_verified_at'].toString())
               : null,
-      createdAt: null, // Pas dans la réponse de login
-      updatedAt: null, // Pas dans la réponse de login
+      createdAt: null,
+      updatedAt: null,
     );
   }
 
@@ -56,15 +55,30 @@ class User {
     // Gestion de la structure imbriquée
     final data = map['data'] ?? map;
 
+    // ✅ NOUVEAU: Gestion du champ 'name' de l'API de partage
+    String firstName = data['first_name'] as String? ?? '';
+    String lastName = data['last_name'] as String? ?? '';
+
+    // Si l'API renvoie un champ 'name' au lieu de first_name/last_name
+    if (firstName.isEmpty && lastName.isEmpty && data['name'] != null) {
+      final fullName = data['name'] as String;
+      final nameParts = fullName.trim().split(' ');
+      if (nameParts.isNotEmpty) {
+        firstName = nameParts.first;
+        if (nameParts.length > 1) {
+          lastName = nameParts.sublist(1).join(' ');
+        }
+      }
+    }
+
     return User(
       id: data['id'] as int? ?? 0,
-      firstName: data['first_name'] as String? ?? '',
-      lastName: data['last_name'] as String? ?? '',
+      firstName: firstName,
+      lastName: lastName,
       email: data['email'] as String? ?? '',
-      // ✅ CORRECTION: Gérer les types boolean ET integer
       emailVerified: _parseBooleanField(data['email_verified']),
-      accessToken: map['access_token'] as String?, // Au niveau racine
-      refreshToken: map['refresh_token'] as String?, // Au niveau racine
+      accessToken: map['access_token'] as String?,
+      refreshToken: map['refresh_token'] as String?,
       emailVerifiedAt:
           data['email_verified_at'] != null
               ? DateTime.tryParse(data['email_verified_at'].toString())
@@ -77,6 +91,30 @@ class User {
           data['updated_at'] != null
               ? DateTime.tryParse(data['updated_at'].toString())
               : null,
+    );
+  }
+
+  // ✅ NOUVEAU: Factory spécifiquement pour l'API de partage
+  factory User.fromSharedApiMap(Map<String, dynamic> map) {
+    final fullName = map['name'] as String? ?? '';
+    final nameParts = fullName.trim().split(' ');
+
+    String firstName = '';
+    String lastName = '';
+
+    if (nameParts.isNotEmpty) {
+      firstName = nameParts.first;
+      if (nameParts.length > 1) {
+        lastName = nameParts.sublist(1).join(' ');
+      }
+    }
+
+    return User(
+      id: map['id'] as int? ?? 0,
+      firstName: firstName,
+      lastName: lastName,
+      email: map['email'] as String? ?? '',
+      emailVerified: false, // Pas d'info de vérification dans l'API de partage
     );
   }
 
@@ -143,8 +181,12 @@ class User {
     };
   }
 
-  // Alias pour compatibilité
-  Map<String, dynamic> toJson() => toMap();
+  // ✅ NOUVEAU: Sérialisation avec le champ 'name' pour compatibilité API
+  Map<String, dynamic> toJson() {
+    final map = toMap();
+    map['name'] = fullName; // Ajouter le champ 'name' pour compatibilité
+    return map;
+  }
 
   // Sérialisation en chaîne JSON
   String toJsonString() => json.encode(toCacheMap());
