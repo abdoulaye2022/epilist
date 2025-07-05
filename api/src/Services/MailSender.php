@@ -299,9 +299,16 @@ class MailSender
                             <table class='email-container' role='presentation' width='600' cellspacing='0' cellpadding='0' border='0' style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08); overflow: hidden;'>
                                 <tr>
                                     <td class='header' style='background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 40px 30px 30px; text-align: center; border-bottom: 1px solid #e5e7eb;'>
-                                        <!-- Logo Epilist -->
-                                        <div style='display: inline-block; width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 20px; margin-bottom: 16px; position: relative;'>
-                                            <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 36px;'>🛒</div>
+                                        <!-- Logo EpiList depuis votre serveur -->
+                                        <div style='margin-bottom: 16px;'>
+                                            <img src='https://m2acode.com/api.epilist/public/app_logo.png' 
+                                                 alt='EpiList Logo' 
+                                                 style='width: 80px; height: 80px; border-radius: 20px; border: none; display: block; margin: 0 auto;'
+                                                 onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
+                                            <!-- Fallback si l'image ne charge pas -->
+                                            <div style='display: none; width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 20px; margin: 0 auto; position: relative;'>
+                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 36px;'>🛒</div>
+                                            </div>
                                         </div>
                                         <h1 style='margin: 0 0 8px; font-size: 28px; font-weight: bold; color: #047857;'>EpiList</h1>
                                         <p style='margin: 0 0 16px; font-size: 16px; color: #6b7280; font-weight: 500;'>
@@ -324,8 +331,15 @@ class MailSender
                                 <tr>
                                     <td class='footer' style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-align: center; padding: 40px 30px;'>
                                         <!-- Logo footer -->
-                                        <div style='display: inline-block; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin-bottom: 20px; position: relative;'>
-                                            <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
+                                        <div style='margin-bottom: 20px;'>
+                                            <img src='https://m2acode.com/api.epilist/public/app_logo.png' 
+                                                 alt='EpiList Logo' 
+                                                 style='width: 60px; height: 60px; border-radius: 16px; border: none; display: block; margin: 0 auto;'
+                                                 onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
+                                            <!-- Fallback si l'image ne charge pas -->
+                                            <div style='display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto; position: relative;'>
+                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
+                                            </div>
                                         </div>
                                         
                                         <h3 style='margin: 0 0 8px; font-size: 18px; font-weight: 600; color: #ffffff;'>EpiList</h3>
@@ -343,10 +357,25 @@ class MailSender
                                                 <span style='margin-right: 8px;'>🛍️</span>
                                                 <span>Cochez vos achats en temps réel</span>
                                             </div>
-                                            <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
+                                            <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
                                                 <span style='margin-right: 8px;'>💰</span>
                                                 <span>Suivez vos dépenses d'épicerie en CAD\$</span>
                                             </div>
+                                            <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
+                                                <span style='margin-right: 8px;'>👨‍👩‍👧‍👦</span>
+                                                <span>Partagez vos listes avec votre famille</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Bouton vers le site web -->
+                                        <div style='margin: 25px 0; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);'>
+                                            <p style='margin: 0 0 12px; font-size: 15px; color: #10b981; font-weight: 600; text-align: center;'>
+                                                🌐 Découvrez toutes nos fonctionnalités
+                                            </p>
+                                            <a href='https://epilist.app' 
+                                               style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;'>
+                                                Visitez epilist.app
+                                            </a>
                                         </div>
                                         
                                         <!-- Informations de contact -->
@@ -355,13 +384,13 @@ class MailSender
                                             Nouveau-Brunswick, Canada
                                         </p>
                                         
-                                        <!-- Contact -->
-                                        <div style='margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);'>
+                                        <!-- Une question ou besoin d'aide -->
+                                        <div style='margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.15);'>
                                             <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600; text-align: center;'>
                                                 Une question ? Besoin d'aide ?
                                             </p>
                                             <p style='margin: 0; font-size: 13px; color: #059669; text-align: center;'>
-                                                Contactez-nous : <a href='mailto:contact@m2atech.com' style='color: #047857; font-weight: 600; text-decoration: none;'>contact@m2atech.com</a>
+                                                Rendez-vous sur notre site web pour nous contacter
                                             </p>
                                         </div>
                                         

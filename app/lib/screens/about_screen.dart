@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import '../utils/smart_snackbar_manager.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -30,7 +31,32 @@ class AboutPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.shopping_cart, size: 80, color: Colors.green[600]),
+                  // Logo de l'application - vous pouvez remplacer par votre vraie image
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.green[600],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/app_logo.png', // Remplacez par le chemin de votre logo
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback si l'image n'est pas trouvée
+                          return Icon(
+                            Icons.shopping_cart,
+                            size: 50,
+                            color: Colors.white,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 16),
                   Text(
                     'EpiList',
@@ -53,26 +79,39 @@ class AboutPage extends StatelessWidget {
             // Description
             _buildSection(
               'Notre Mission',
-              'EpiList vous aide à organiser vos courses de manière simple et efficace. '
-                  'Suivez vos habitudes d\'achat, gérez vos budgets et ne manquez plus jamais '
-                  'un article important grâce à notre système de listes intelligentes.',
+              'EpiList révolutionne la façon dont vous gérez vos courses d\'épicerie. '
+                  'Créez des listes intelligentes, suivez vos dépenses en temps réel, '
+                  'partagez avec votre famille et ne manquez plus jamais un article important '
+                  'grâce à notre système de gestion collaborative.',
             ),
 
             _buildSection(
-              'Fonctionnalités',
-              '• Création de listes d\'épicerie personnalisées\n'
-                  '• Suivi semaine après semaine de vos achats\n'
-                  '• Calcul automatique des totaux\n'
-                  '• Historique de vos courses\n'
-                  '• Interface simple et intuitive\n'
-                  '• Synchronisation de vos données',
+              'Fonctionnalités Principales',
+              '• Création de compte sécurisé (nom, prénom, email)\n'
+                  '• Listes d\'épicerie personnalisées et intelligentes\n'
+                  '• Ajout d\'articles avec quantité, prix et magasin\n'
+                  '• Calcul automatique des totaux et pourcentages\n'
+                  '• Marquage des articles achetés en temps réel\n'
+                  '• Duplication rapide de listes existantes\n'
+                  '• Partage sécurisé via liens avec permissions\n'
+                  '• Gestion des droits (lecture, modification, administration)\n'
+                  '• Synchronisation entre tous vos appareils\n'
+                  '• Interface moderne et intuitive',
+            ),
+
+            _buildSection(
+              'Collaboration Familiale',
+              'EpiList facilite les courses en famille grâce à son système de partage avancé. '
+                  'Partagez vos listes avec un simple lien, définissez qui peut voir, modifier '
+                  'ou administrer chaque liste. Tout le monde reste synchronisé en temps réel !',
             ),
 
             _buildSection(
               'Développement',
-              'EpiList est développé avec passion pour vous offrir la meilleure '
+              'EpiList est développé avec passion par M2A Tech pour vous offrir la meilleure '
                   'expérience de gestion de vos courses. Nous sommes constamment à '
-                  'l\'écoute de vos retours pour améliorer l\'application.',
+                  'l\'écoute de vos retours pour améliorer l\'application et ajouter '
+                  'de nouvelles fonctionnalités innovantes.',
             ),
 
             SizedBox(height: 24),
@@ -83,7 +122,7 @@ class AboutPage extends StatelessWidget {
                 _buildActionButton(
                   'Nous contacter',
                   Icons.email,
-                  () => _launchEmail(context),
+                  () => _launchContactPage(context),
                   Colors.blue,
                 ),
                 SizedBox(height: 12),
@@ -100,6 +139,13 @@ class AboutPage extends StatelessWidget {
                   () => _shareApp(context),
                   Colors.green,
                 ),
+                SizedBox(height: 12),
+                _buildActionButton(
+                  'Site Web',
+                  Icons.language,
+                  () => _launchWebsite(context),
+                  Colors.purple,
+                ),
               ],
             ),
 
@@ -113,8 +159,14 @@ class AboutPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Développé par M2A Tech',
+              'Développé avec ❤️ par M2A Tech',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Moncton, Nouveau-Brunswick, Canada',
+              style: TextStyle(color: Colors.grey[400], fontSize: 10),
               textAlign: TextAlign.center,
             ),
           ],
@@ -187,89 +239,57 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  void _launchEmail(BuildContext context) async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'contact@m2atech.com',
-      query:
-          'subject=Support EpiList&body=Bonjour,%0A%0AJe vous contacte concernant l\'application EpiList.%0A%0A',
-    );
+  void _launchContactPage(BuildContext context) async {
+    final Uri contactUrl = Uri.parse('https://epilist.app/contact');
 
     try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
+      if (await canLaunchUrl(contactUrl)) {
+        await launchUrl(contactUrl, mode: LaunchMode.externalApplication);
       } else {
-        // Si l'email ne peut pas être ouvert, proposer d'autres options
-        _showContactDialog(context);
+        SmartSnackBarManager.showMessage(
+          context,
+          'Impossible d\'ouvrir le lien. Visitez https://epilist.app/contact',
+          type: SnackBarType.error,
+        );
       }
     } catch (e) {
-      _showContactDialog(context);
+      SmartSnackBarManager.showMessage(
+        context,
+        'Erreur lors de l\'ouverture du lien de contact',
+        type: SnackBarType.error,
+      );
     }
   }
 
-  void _showContactDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Nous contacter'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Vous pouvez nous contacter par email :'),
-              SizedBox(height: 8),
-              SelectableText(
-                'contact@m2atech.com',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[600],
-                ),
-              ),
-              SizedBox(height: 16),
-              Text('Ou essayer d\'ouvrir votre client email :'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Fermer'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _copyEmailToClipboard(context);
-              },
-              child: Text('Copier l\'email'),
-            ),
-          ],
+  void _launchWebsite(BuildContext context) async {
+    final Uri websiteUrl = Uri.parse('https://epilist.app');
+
+    try {
+      if (await canLaunchUrl(websiteUrl)) {
+        await launchUrl(websiteUrl, mode: LaunchMode.externalApplication);
+      } else {
+        SmartSnackBarManager.showMessage(
+          context,
+          'Impossible d\'ouvrir le site web. Visitez https://epilist.app',
+          type: SnackBarType.error,
         );
-      },
-    );
-  }
-
-  void _copyEmailToClipboard(BuildContext context) {
-    // Copy to clipboard
-    final data = ClipboardData(text: 'contact@m2atech.com');
-    Clipboard.setData(data);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Email copié dans le presse-papiers'),
-        backgroundColor: Colors.green[600],
-        duration: Duration(seconds: 2),
-      ),
-    );
+      }
+    } catch (e) {
+      SmartSnackBarManager.showMessage(
+        context,
+        'Erreur lors de l\'ouverture du site web',
+        type: SnackBarType.error,
+      );
+    }
   }
 
   void _rateApp(BuildContext context) async {
-    // URLs pour les stores
+    // URLs pour les stores - à mettre à jour avec vos vraies URLs
     const String androidUrl =
         'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
     const String iosUrl = 'https://apps.apple.com/app/epilist/id123456789';
 
     try {
-      // Détecter la plateforme et utiliser l'URL appropriée
       final Uri storeUri;
       if (Theme.of(context).platform == TargetPlatform.android) {
         storeUri = Uri.parse(androidUrl);
@@ -280,73 +300,45 @@ class AboutPage extends StatelessWidget {
       if (await canLaunchUrl(storeUri)) {
         await launchUrl(storeUri, mode: LaunchMode.externalApplication);
       } else {
-        _showRatingDialog(context);
+        SmartSnackBarManager.showMessage(
+          context,
+          'Store non disponible. Merci de noter EpiList sur votre store habituel !',
+          type: SnackBarType.info,
+        );
       }
     } catch (e) {
-      _showRatingDialog(context);
+      SmartSnackBarManager.showMessage(
+        context,
+        'Impossible d\'ouvrir le store pour le moment',
+        type: SnackBarType.warning,
+      );
     }
-  }
-
-  void _showRatingDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Noter l\'application'),
-          content: Text(
-            'Merci de vouloir noter EpiList ! '
-            'Vous pouvez nous laisser un avis sur votre store d\'applications habituel.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Plus tard'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Merci pour votre soutien ! 🌟'),
-                    backgroundColor: Colors.orange[600],
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-              child: Text('Merci !'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _shareApp(BuildContext context) async {
     const String appName = 'EpiList';
     const String appDescription =
-        'Organisez vos courses facilement avec EpiList !';
-    const String downloadLink =
-        'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
+        'Organisez vos courses d\'épicerie en famille avec EpiList ! '
+        'Listes partagées, calculs automatiques, synchronisation temps réel.';
+    const String websiteLink = 'https://epilist.app';
 
     const String shareText =
-        '$appName\n\n'
+        '$appName 🛒\n\n'
         '$appDescription\n\n'
-        'Téléchargez l\'application :\n'
-        '$downloadLink\n\n'
-        '#EpiList #Courses #Organisation';
+        'Découvrez l\'application :\n'
+        '$websiteLink\n\n'
+        '#EpiList #Courses #Organisation #Famille';
 
     try {
-      // ignore: deprecated_member_use
       await Share.share(
         shareText,
-        subject: 'Découvrez EpiList - Votre assistant courses !',
+        subject: 'Découvrez EpiList - Votre assistant courses en famille !',
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de partager pour le moment'),
-          backgroundColor: Colors.red[600],
-        ),
+      SmartSnackBarManager.showMessage(
+        context,
+        'Impossible de partager pour le moment',
+        type: SnackBarType.error,
       );
     }
   }

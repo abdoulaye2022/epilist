@@ -1,35 +1,25 @@
-// app/layout.tsx
-import "./globals.css";
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import LanguageProvider from '@/components/LanguageProvider';
 
-export const metadata = {
-  title: "EpiList - Vos listes de courses partagées",
-  description:
-    "Créez et partagez vos listes de courses facilement avec EpiList",
-  keywords: ["liste de courses", "épicerie", "partage", "mobile", "app"],
-  authors: [{ name: "EpiList" }],
-  metadataBase: new URL("https://epilist.app"),
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'EpiList - Simplifiez vos courses',
+  description: 'L\'application mobile qui révolutionne votre façon de faire les courses. Créez, partagez et gérez vos listes en famille.',
+  keywords: 'courses, épicerie, liste, famille, mobile, app, partage, organisation',
+  authors: [{ name: 'EpiList Team' }],
   openGraph: {
-    title: "EpiList - Vos listes de courses partagées",
-    description:
-      "Créez et partagez vos listes de courses facilement avec EpiList",
-    url: "https://epilist.app",
-    siteName: "EpiList",
-    type: "website",
-    images: [
-      {
-        url: "/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "EpiList Logo",
-      },
-    ],
+    title: 'EpiList - Simplifiez vos courses',
+    description: 'L\'application mobile qui révolutionne votre façon de faire les courses.',
+    type: 'website',
+    locale: 'fr_FR',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "EpiList - Vos listes de courses partagées",
-    description:
-      "Créez et partagez vos listes de courses facilement avec EpiList",
-    images: ["/logo.png"],
+    card: 'summary_large_image',
+    title: 'EpiList - Simplifiez vos courses',
+    description: 'L\'application mobile qui révolutionne votre façon de faire les courses.',
   },
   robots: {
     index: true,
@@ -44,7 +34,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body className={inter.className}>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
