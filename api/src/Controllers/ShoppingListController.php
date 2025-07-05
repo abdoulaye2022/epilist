@@ -72,12 +72,12 @@ class ShoppingListController
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // ✅ 2. Récupérer les listes partagées avec l'utilisateur (avec eager loading amélioré)
+            // ✅ 2. Récupérer les listes partagées avec l'utilisateur (avec eager loading corrigé)
             $sharedListsData = SharedList::with([
                 'shoppingList.items', 
                 'owner' => function($query) {
-                    // S'assurer de charger tous les champs nécessaires de l'utilisateur
-                    $query->select('id', 'name', 'email', 'first_name', 'last_name');
+                    // S'assurer de charger les bons champs selon votre structure de table
+                    $query->select('id', 'first_name', 'last_name', 'email');
                 }
             ])
                 ->where('shared_with_user_id', $user_id)
@@ -185,11 +185,11 @@ class ShoppingListController
                 return $response->withHeader('Content-Type', 'application/json');
             }
 
-            // ✅ 2. Vérifier si c'est une liste partagée (avec eager loading amélioré)
+            // ✅ 2. Vérifier si c'est une liste partagée (avec eager loading corrigé)
             $sharedList = SharedList::with([
                 'shoppingList.items', 
                 'owner' => function($query) {
-                    $query->select('id', 'name', 'email', 'first_name', 'last_name');
+                    $query->select('id', 'first_name', 'last_name', 'email');
                 }
             ])
                 ->where('shared_with_user_id', $user_id)
@@ -502,11 +502,7 @@ class ShoppingListController
      */
     private function getUserDisplayName($user): string
     {
-        // Priorité : name > first_name last_name > email
-        if (!empty($user->name)) {
-            return $user->name;
-        }
-        
+        // Concaténer first_name et last_name selon votre structure de table
         if (!empty($user->first_name) || !empty($user->last_name)) {
             return trim($user->first_name . ' ' . $user->last_name);
         }
