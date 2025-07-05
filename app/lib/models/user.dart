@@ -30,7 +30,7 @@ class User {
   // NOUVEAU: Getter pour compatibilité avec le système de partage
   String get name => fullName;
 
-  // Factory pour la réponse de login
+  // ✅ CORRECTION: Factory pour la réponse de login
   factory User.fromLoginResponse(Map<String, dynamic> response) {
     final data = response['data'] ?? {};
     return User(
@@ -38,7 +38,8 @@ class User {
       firstName: data['first_name'] as String? ?? '',
       lastName: data['last_name'] as String? ?? '',
       email: data['email'] as String? ?? '',
-      emailVerified: (data['email_verified'] == 1),
+      // ✅ CORRECTION: Gérer les types boolean ET integer
+      emailVerified: _parseBooleanField(data['email_verified']),
       accessToken: response['access_token'] as String?,
       refreshToken: response['refresh_token'] as String?,
       emailVerifiedAt:
@@ -50,7 +51,7 @@ class User {
     );
   }
 
-  // Factory pour getCurrentUser et autres endpoints
+  // ✅ CORRECTION: Factory pour getCurrentUser et autres endpoints
   factory User.fromMap(Map<String, dynamic> map) {
     // Gestion de la structure imbriquée
     final data = map['data'] ?? map;
@@ -60,7 +61,8 @@ class User {
       firstName: data['first_name'] as String? ?? '',
       lastName: data['last_name'] as String? ?? '',
       email: data['email'] as String? ?? '',
-      emailVerified: (data['email_verified'] == 1),
+      // ✅ CORRECTION: Gérer les types boolean ET integer
+      emailVerified: _parseBooleanField(data['email_verified']),
       accessToken: map['access_token'] as String?, // Au niveau racine
       refreshToken: map['refresh_token'] as String?, // Au niveau racine
       emailVerifiedAt:
@@ -76,6 +78,26 @@ class User {
               ? DateTime.tryParse(data['updated_at'].toString())
               : null,
     );
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Parser le champ email_verified qui peut être boolean ou integer
+  static bool _parseBooleanField(dynamic value) {
+    if (value == null) return false;
+
+    // Si c'est déjà un boolean
+    if (value is bool) return value;
+
+    // Si c'est un integer (1 = true, 0 = false)
+    if (value is int) return value == 1;
+
+    // Si c'est une string
+    if (value is String) {
+      final lowercaseValue = value.toLowerCase();
+      return lowercaseValue == 'true' || lowercaseValue == '1';
+    }
+
+    // Par défaut, false
+    return false;
   }
 
   // Alias pour compatibilité
