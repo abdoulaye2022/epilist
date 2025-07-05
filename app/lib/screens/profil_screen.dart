@@ -12,6 +12,7 @@ import 'package:epilist/widgets/dialogs/help_support_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:epilist/widgets/dialogs/notifications_settings_dialog.dart';
 import 'package:epilist/widgets/dialogs/security_settings_dialog.dart';
+import 'package:epilist/widgets/profile/account_deletion_status_widget.dart';
 import 'package:epilist/widgets/profile/logout_button.dart';
 import 'package:epilist/widgets/profile/profile_action_tile.dart';
 import 'package:epilist/widgets/profile/profile_app_bar.dart';
@@ -96,6 +97,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onEditProfile: () => _showEditProfileDialog(user),
             ),
             const SizedBox(height: 20),
+
+            // ✅ NOUVEAU: Widget de statut de suppression
+            const AccountDeletionStatusWidget(),
+
             _buildDataSection(),
             const SizedBox(height: 16),
             _buildSettingsSection(),

@@ -93,3 +93,41 @@ class VerificationCodeResent extends AuthState {
   @override
   List<Object> get props => [email];
 }
+
+// États pour la suppression de compte
+class AccountDeletionCodeSent extends AuthState {
+  final String email;
+  final int codeExpiresInMinutes;
+
+  const AccountDeletionCodeSent({
+    required this.email,
+    required this.codeExpiresInMinutes,
+  });
+
+  @override
+  List<Object> get props => [email, codeExpiresInMinutes];
+}
+
+class AccountDeletionConfirmed extends AuthState {
+  final DateTime deletionEffectiveDate;
+  final DateTime canCancelUntil;
+
+  const AccountDeletionConfirmed({
+    required this.deletionEffectiveDate,
+    required this.canCancelUntil,
+  });
+
+  @override
+  List<Object> get props => [deletionEffectiveDate, canCancelUntil];
+}
+
+class AccountDeletionCancelled extends AuthState {}
+
+class AccountDeletionStatusLoaded extends AuthState {
+  final AccountDeletionStatus status;
+
+  const AccountDeletionStatusLoaded(this.status);
+
+  @override
+  List<Object> get props => [status];
+}

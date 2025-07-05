@@ -107,3 +107,27 @@ class ResendVerificationCode extends AuthEvent {
   @override
   List<Object> get props => [email, isFromRegistration];
 }
+
+// Événements pour la suppression de compte
+class RequestAccountDeletion extends AuthEvent {
+  final String? reason;
+
+  const RequestAccountDeletion({this.reason});
+
+  @override
+  List<Object> get props => [reason ?? ''];
+}
+
+class ConfirmAccountDeletion extends AuthEvent {
+  final String deletionCode;
+  final String? reason;
+
+  const ConfirmAccountDeletion({required this.deletionCode, this.reason});
+
+  @override
+  List<Object> get props => [deletionCode, reason ?? ''];
+}
+
+class CancelAccountDeletion extends AuthEvent {}
+
+class GetAccountDeletionStatus extends AuthEvent {}

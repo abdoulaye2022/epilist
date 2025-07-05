@@ -6,6 +6,7 @@ import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
+import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
@@ -94,6 +95,13 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          RepositoryProvider(
+            create:
+                (context) => AccountDeletionService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -111,6 +119,14 @@ void main() async {
                   (context) => SharedListBloc(
                     sharedListService: context.read<SharedListService>(),
                   ),
+            ),
+            BlocProvider<AuthBloc>(
+              create:
+                  (context) => AuthBloc(
+                    authService: authService,
+                    accountDeletionService:
+                        context.read<AccountDeletionService>(), // ✅ NOUVEAU
+                  )..add(CheckAuthentication()),
             ),
           ],
           child: const MyApp(),

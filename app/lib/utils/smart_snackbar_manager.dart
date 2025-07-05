@@ -43,6 +43,72 @@ class SmartSnackBarManager {
     );
   }
 
+  // ✅ NOUVELLES MÉTHODES AJOUTÉES
+
+  /// Affiche un SnackBar de succès
+  static void showSuccessSnackBar(
+    BuildContext context,
+    String message, {
+    Duration? duration,
+    bool forceShow = false,
+  }) {
+    _showSnackBar(
+      context,
+      message: message,
+      type: SnackBarType.success,
+      duration: duration ?? const Duration(seconds: 3),
+      forceShow: forceShow,
+    );
+  }
+
+  /// Affiche un SnackBar d'erreur
+  static void showErrorSnackBar(
+    BuildContext context,
+    String message, {
+    Duration? duration,
+    bool forceShow = false,
+  }) {
+    _showSnackBar(
+      context,
+      message: message,
+      type: SnackBarType.error,
+      duration: duration ?? const Duration(seconds: 4),
+      forceShow: forceShow,
+    );
+  }
+
+  /// Affiche un SnackBar d'avertissement
+  static void showWarningSnackBar(
+    BuildContext context,
+    String message, {
+    Duration? duration,
+    bool forceShow = false,
+  }) {
+    _showSnackBar(
+      context,
+      message: message,
+      type: SnackBarType.warning,
+      duration: duration ?? const Duration(seconds: 4),
+      forceShow: forceShow,
+    );
+  }
+
+  /// Affiche un SnackBar d'information
+  static void showInfoSnackBar(
+    BuildContext context,
+    String message, {
+    Duration? duration,
+    bool forceShow = false,
+  }) {
+    _showSnackBar(
+      context,
+      message: message,
+      type: SnackBarType.info,
+      duration: duration ?? const Duration(seconds: 3),
+      forceShow: forceShow,
+    );
+  }
+
   /// Détermine le type de SnackBar selon l'état
   static SnackBarType _determineType(dynamic state) {
     final stateType = state.runtimeType.toString().toLowerCase();

@@ -1,4 +1,6 @@
 // auth_bloc.dart - VERSION CORRIGÉE AVEC GESTION TOKENS
+import 'package:epilist/models/account_deletion_status.dart';
+import 'package:epilist/services/account_deletion_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
@@ -11,9 +13,11 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
+  final AccountDeletionService accountDeletionService;
   Timer? _tokenRefreshTimer;
 
-  AuthBloc({required this.authService}) : super(AuthInitial()) {
+  AuthBloc(this.accountDeletionService, {required this.authService})
+    : super(AuthInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthentication>(_onCheckAuthentication);
@@ -26,6 +30,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<VerifyPasswordChangeCode>(_onVerifyPasswordChangeCode);
     on<ConfirmEmailRequested>(_onConfirmEmailRequested);
     on<ResendVerificationCode>(_onResendVerificationCode);
+    on<RequestAccountDeletion>(_onRequestAccountDeletion);
+    on<ConfirmAccountDeletion>(_onConfirmAccountDeletion);
+    on<CancelAccountDeletion>(_onCancelAccountDeletion);
+    on<GetAccountDeletionStatus>(_onGetAccountDeletionStatus);
   }
 
   @override
@@ -384,5 +392,121 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     debugPrint('⏰ Refresh programmé dans 50 minutes');
+  }
+
+  Future<void> _onRequestAccountDeletion(
+    RequestAccountDeletion event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      debugPrint('🔄 Demande de suppression de compte...');
+
+      final result = await accountDeletionService.requestAccountDeletion(
+        reason: event.reason,
+      );
+
+      debugPrint('✅ Code de suppression envoyé');
+
+      emit(
+        AccountDeletionCodeSent(
+          email: result['email_sent_to'] ?? '',
+          codeExpiresInMinutes: result['code_expires_in_minutes'] ?? 120,
+        ),
+      );
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la demande de suppression: $e');
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onConfirmAccountDeletion(
+    ConfirmAccountDeletion event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      debugPrint('🔄 Confirmation de suppression de compte...');
+
+      final result = await accountDeletionService.confirmAccountDeletion(
+        deletionCode: event.deletionCode,
+        reason: event.reason,
+      );
+
+      debugPrint('✅ Suppression de compte confirmée');
+
+      // Émettre l'état de confirmation
+      emit(
+        AccountDeletionConfirmed(
+          deletionEffectiveDate: DateTime.parse(
+            result['deletion_effective_date'],
+          ),
+          canCancelUntil: DateTime.parse(result['can_cancel_until']),
+        ),
+      );
+
+      // Après 2 secondes, déconnecter l'utilisateur
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Annuler le timer de refresh
+      _tokenRefreshTimer?.cancel();
+
+      // Nettoyer toutes les données locales
+      await authService.clearUserData();
+
+      // Émettre l'état de déconnexion
+      emit(Unauthenticated());
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la confirmation de suppression: $e');
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onCancelAccountDeletion(
+    CancelAccountDeletion event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      debugPrint('🔄 Annulation de la demande de suppression...');
+
+      await accountDeletionService.cancelAccountDeletion();
+
+      debugPrint('✅ Demande de suppression annulée');
+
+      emit(AccountDeletionCancelled());
+
+      // Récupérer l'utilisateur mis à jour
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        emit(AuthSuccess(user: user));
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur lors de l\'annulation: $e');
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  Future<void> _onGetAccountDeletionStatus(
+    GetAccountDeletionStatus event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      debugPrint('🔄 Récupération du statut de suppression...');
+
+      final status = await accountDeletionService.getAccountDeletionStatus();
+
+      debugPrint('✅ Statut de suppression récupéré');
+
+      emit(AccountDeletionStatusLoaded(status));
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la récupération du statut: $e');
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 }

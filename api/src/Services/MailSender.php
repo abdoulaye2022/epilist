@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use App\Config\Config;
 use GuzzleHttp\Client as GuzzleClient;
 use App\Models\Ad;
+use Carbon\Carbon;
 
 class MailSender
 {
