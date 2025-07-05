@@ -1,8 +1,9 @@
-// screens/share_invitation_screen.dart - VERSION MISE À JOUR AVEC NOUVEAUX CHAMPS
+// screens/share_invitation_screen.dart - VERSION AVEC SMART SNACKBAR
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/share_invitation.dart';
 import 'package:epilist/models/shared_enums.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart'; // ✅ Import ajouté
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -50,21 +51,16 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       ),
       body: BlocConsumer<SharedListBloc, SharedListState>(
         listener: (context, state) {
+          // ✅ CORRECTION: Utilisation de SmartSnackBarManager
           if (state is ShareInvitationAccepted) {
             debugPrint('✅ Invitation acceptée, redirection vers la liste');
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Invitation acceptée avec succès !'),
-                  ],
-                ),
-                backgroundColor: Colors.green[600],
-                duration: const Duration(seconds: 2),
-              ),
+            // Utiliser SmartSnackBarManager pour le succès
+            SmartSnackBarManager.showMessage(
+              context,
+              'Invitation acceptée avec succès !',
+              type: SnackBarType.success,
+              duration: const Duration(seconds: 2),
             );
 
             Navigator.pushReplacement(
@@ -78,18 +74,12 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           } else if (state is ShareInvitationDeclined) {
             debugPrint('✅ Invitation refusée');
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
-                  children: [
-                    Icon(Icons.info, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Invitation refusée'),
-                  ],
-                ),
-                backgroundColor: Colors.orange[600],
-                duration: const Duration(seconds: 2),
-              ),
+            // Utiliser SmartSnackBarManager pour l'information
+            SmartSnackBarManager.showMessage(
+              context,
+              'Invitation refusée',
+              type: SnackBarType.info,
+              duration: const Duration(seconds: 2),
             );
 
             Future.delayed(const Duration(seconds: 1), () {
@@ -103,19 +93,20 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           } else if (state is SharedListError) {
             debugPrint('❌ Erreur: ${state.message}');
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.error, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text('❌ ${state.message}')),
-                  ],
-                ),
-                backgroundColor: Colors.red[600],
-                duration: const Duration(seconds: 4),
-              ),
+            // ✅ OPTION 1: Utiliser la détection automatique d'état
+            SmartSnackBarManager.showForState(
+              context,
+              state,
+              duration: const Duration(seconds: 4),
             );
+
+            // ✅ OPTION 2: Ou utiliser explicitement le type error
+            // SmartSnackBarManager.showMessage(
+            //   context,
+            //   state.message,
+            //   type: SnackBarType.error,
+            //   duration: const Duration(seconds: 4),
+            // );
           }
         },
         builder: (context, state) {
@@ -558,7 +549,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           _buildInfoRow(
             icon: Icons.person,
             title: 'Partagé par',
-            value: '${invitation.ownerName} (${invitation.ownerEmail})',
+            value:
+                '${invitation.ownerName}${invitation.ownerEmail.isNotEmpty ? ' (${invitation.ownerEmail})' : ''}',
           ),
 
           const SizedBox(height: 12),
@@ -608,7 +600,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   child: _buildStatCard(
                     icon: Icons.list_alt,
                     title: 'Articles',
-                    value: '${invitation.shoppingList!.itemsCount}',
+                    value: '${invitation.shoppingList!.apiItemsCount}',
                     color: Colors.blue,
                   ),
                 ),
@@ -617,20 +609,20 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   child: _buildStatCard(
                     icon: Icons.check_circle,
                     title: 'Complétés',
-                    value: '${invitation.shoppingList!.purchasedItemsCount}',
+                    value: '${invitation.shoppingList!.apiPurchasedItemsCount}',
                     color: Colors.green,
                   ),
                 ),
               ],
             ),
 
-            if (invitation.shoppingList!.totalPrice > 0) ...[
+            if (invitation.shoppingList!.apiTotalPrice > 0) ...[
               const SizedBox(height: 12),
               _buildStatCard(
                 icon: Icons.attach_money,
                 title: 'Budget estimé',
                 value:
-                    '${invitation.shoppingList!.totalPrice.toStringAsFixed(2)} \$CAD',
+                    '${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} \$CAD',
                 color: Colors.orange,
               ),
             ],
@@ -640,11 +632,11 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     );
   }
 
-  // Méthodes existantes...
+  // ✅ CORRECTION: Dialogues de confirmation avec SmartSnackBar en cas d'erreur
   void _showAcceptConfirmation(ShareInvitation invitation) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Accepter l\'invitation'),
           content: Text(
@@ -652,18 +644,28 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: const Text('Annuler'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
                 debugPrint(
                   '🤝 Acceptation de l\'invitation: ${invitation.token}',
                 );
-                context.read<SharedListBloc>().add(
-                  AcceptShareInvitation(invitation.token),
-                );
+
+                try {
+                  context.read<SharedListBloc>().add(
+                    AcceptShareInvitation(invitation.token),
+                  );
+                } catch (e) {
+                  // ✅ Gestion d'erreur avec SmartSnackBar
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    'Erreur lors de l\'acceptation de l\'invitation',
+                    type: SnackBarType.error,
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               child: const Text(
@@ -680,7 +682,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
   void _showDeclineConfirmation(ShareInvitation invitation) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Refuser l\'invitation'),
           content: Text(
@@ -688,16 +690,26 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: const Text('Annuler'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
                 debugPrint('❌ Refus de l\'invitation: ${invitation.token}');
-                context.read<SharedListBloc>().add(
-                  DeclineShareInvitation(invitation.token),
-                );
+
+                try {
+                  context.read<SharedListBloc>().add(
+                    DeclineShareInvitation(invitation.token),
+                  );
+                } catch (e) {
+                  // ✅ Gestion d'erreur avec SmartSnackBar
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    'Erreur lors du refus de l\'invitation',
+                    type: SnackBarType.error,
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text(

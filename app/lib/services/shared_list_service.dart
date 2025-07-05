@@ -88,7 +88,6 @@ class SharedListService {
       debugPrint('🔄 Acceptation de l\'invitation: $shareToken');
       debugPrint('🌐 URL appelée: /share/accept/$shareToken');
 
-      // ✅ CORRECTION: Utiliser la bonne URL selon votre contrôleur PHP
       final response = await _dio.post(
         '/share/accept/$shareToken',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
@@ -110,7 +109,32 @@ class SharedListService {
         throw Exception('Données de liste manquantes après acceptation');
       }
 
-      return ShoppingList.fromJson(data as Map<String, dynamic>);
+      // ✅ CORRECTION: Utiliser la factory spécifique et gérer les champs manquants
+      try {
+        final shoppingListData = data as Map<String, dynamic>;
+
+        // S'assurer que les champs requis sont présents avec des valeurs par défaut
+        final correctedData = {
+          'id': shoppingListData['id'],
+          'name': shoppingListData['name'],
+          'description':
+              shoppingListData['description'] ?? '', // ✅ Valeur par défaut
+          'created_at': shoppingListData['created_at'],
+          'updated_at':
+              shoppingListData['updated_at'] ??
+              DateTime.now().toIso8601String(), // ✅ Valeur par défaut
+          'user_id': shoppingListData['user_id'] ?? 0, // ✅ Valeur par défaut
+          'items': shoppingListData['items'] ?? [], // ✅ Valeur par défaut
+        };
+
+        return ShoppingList.fromShareApiJson(correctedData);
+      } catch (parseError) {
+        debugPrint('❌ Erreur de parsing détaillée: $parseError');
+        debugPrint('❌ Données reçues: $data');
+        throw Exception(
+          'Erreur lors du parsing des données de la liste: $parseError',
+        );
+      }
     } on DioException catch (e) {
       debugPrint('❌ Erreur lors de l\'acceptation:');
       debugPrint('   - Status Code: ${e.response?.statusCode}');

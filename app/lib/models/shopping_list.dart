@@ -411,4 +411,44 @@ class ShoppingList {
       owner.hashCode ^
       isOwner.hashCode ^
       userPermission.hashCode;
+
+  factory ShoppingList.fromShareApiJson(Map<String, dynamic> json) {
+    return ShoppingList(
+      id: json['id'] as int,
+      userId: 0, // ✅ Valeur par défaut car absent de l'API de partage
+      name: json['name'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.now(), // ✅ Valeur par défaut car absente
+      items: [], // ✅ Pas d'items détaillés dans l'API de partage
+      // Utiliser les nouveaux champs spécifiques à l'API de partage
+      sharedWith: [],
+      owner: null,
+      isOwner: false,
+      userPermission: null,
+    );
+  }
+
+  // ✅ GETTERS SUPPLÉMENTAIRES POUR L'API DE PARTAGE
+  int get apiItemsCount => _apiItemsCount ?? itemsCount;
+  int get apiPurchasedItemsCount =>
+      _apiPurchasedItemsCount ?? purchasedItemsCount;
+  double get apiTotalPrice => _apiTotalPrice ?? totalPrice;
+
+  // ✅ CHAMPS PRIVÉS POUR STOCKER LES DONNÉES DE L'API
+  int? _apiItemsCount;
+  int? _apiPurchasedItemsCount;
+  double? _apiTotalPrice;
+
+  // ✅ MÉTHODE POUR CRÉER UNE INSTANCE AVEC LES DONNÉES DE L'API DE PARTAGE
+  ShoppingList withShareApiData({
+    required int itemsCount,
+    required int purchasedItemsCount,
+    required double totalPrice,
+  }) {
+    final instance = copyWith();
+    instance._apiItemsCount = itemsCount;
+    instance._apiPurchasedItemsCount = purchasedItemsCount;
+    instance._apiTotalPrice = totalPrice;
+    return instance;
+  }
 }

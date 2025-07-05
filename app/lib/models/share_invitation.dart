@@ -1,10 +1,10 @@
-// models/share_invitation.dart - VERSION AVEC ENUMS CENTRALISÉS
+// models/share_invitation.dart - VERSION CORRIGÉE
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/shared_enums.dart';
 
 class ShareInvitation {
   final String token;
-  final int listId;
+  final int? listId;
   final String listName;
   final String ownerName;
   final String ownerEmail;
@@ -20,7 +20,7 @@ class ShareInvitation {
 
   const ShareInvitation({
     required this.token,
-    required this.listId,
+    this.listId,
     required this.listName,
     required this.ownerName,
     required this.ownerEmail,
@@ -36,12 +36,28 @@ class ShareInvitation {
   });
 
   factory ShareInvitation.fromJson(Map<String, dynamic> json) {
+    // ✅ CORRECTION: Parsing du shopping_list avec la nouvelle méthode
+    ShoppingList? shoppingList;
+    if (json['shopping_list'] != null) {
+      final shoppingListData = json['shopping_list'] as Map<String, dynamic>;
+
+      // Utiliser la factory spécifique pour l'API de partage
+      shoppingList = ShoppingList.fromShareApiJson(
+        shoppingListData,
+      ).withShareApiData(
+        itemsCount: shoppingListData['items_count'] as int? ?? 0,
+        purchasedItemsCount:
+            shoppingListData['purchased_items_count'] as int? ?? 0,
+        totalPrice: _parseDouble(shoppingListData['total_price']) ?? 0.0,
+      );
+    }
+
     return ShareInvitation(
       token: json['token'] as String,
       listId: _extractListId(json),
       listName: json['list_name'] as String,
       ownerName: json['owner_name'] as String,
-      ownerEmail: json['owner_email'] as String,
+      ownerEmail: json['owner_email'] as String? ?? '',
       permission: _parsePermission(json['permission']),
       permissionDisplayName:
           json['permission_display_name'] as String? ??
@@ -53,12 +69,7 @@ class ShareInvitation {
           json['status_display_name'] as String? ??
           _getDefaultStatusDisplayName(json['status']),
       createdAt: DateTime.parse(json['created_at'] as String),
-      shoppingList:
-          json['shopping_list'] != null
-              ? ShoppingList.fromJson(
-                json['shopping_list'] as Map<String, dynamic>,
-              )
-              : null,
+      shoppingList: shoppingList,
       shareUrls:
           json['share_urls'] != null
               ? ShareUrls.fromJson(json['share_urls'] as Map<String, dynamic>)
@@ -66,15 +77,28 @@ class ShareInvitation {
     );
   }
 
-  // Méthodes utilitaires pour parser les données
-  static int _extractListId(Map<String, dynamic> json) {
+  // ✅ Méthode utilitaire pour parser les doubles
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value);
+    }
+    return null;
+  }
+
+  // Méthodes utilitaires pour parser les données (inchangées)
+  static int? _extractListId(Map<String, dynamic> json) {
     if (json['list_id'] != null) {
       return json['list_id'] as int;
     }
+
     if (json['shopping_list'] != null && json['shopping_list']['id'] != null) {
       return json['shopping_list']['id'] as int;
     }
-    throw FormatException('list_id manquant dans la réponse API');
+
+    return null;
   }
 
   static SharePermission _parsePermission(dynamic permission) {
@@ -108,7 +132,7 @@ class ShareInvitation {
   Map<String, dynamic> toJson() {
     return {
       'token': token,
-      'list_id': listId,
+      if (listId != null) 'list_id': listId,
       'list_name': listName,
       'owner_name': ownerName,
       'owner_email': ownerEmail,
@@ -177,7 +201,10 @@ class ShareInvitation {
 
   @override
   int get hashCode =>
-      token.hashCode ^ listId.hashCode ^ permission.hashCode ^ status.hashCode;
+      token.hashCode ^
+      (listId?.hashCode ?? 0) ^
+      permission.hashCode ^
+      status.hashCode;
 
   @override
   String toString() {
@@ -185,7 +212,7 @@ class ShareInvitation {
   }
 }
 
-// Classe pour gérer les URLs de partage
+// Classe pour gérer les URLs de partage (inchangée)
 class ShareUrls {
   final String web;
   final String app;
