@@ -745,4 +745,295 @@ class AuthController
     
         return $numero;
     }
+
+    /**
+     * Demander la suppression de compte (envoie un code par email)
+     */
+    public function requestAccountDeletion(Request $request, Response $response)
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('lengthMax', 'reason', 500)
+            ->message('La raison ne peut pas dépasser 500 caractères');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user || !$user->isActive()) {
+                return $this->createErrorResponse('Utilisateur non trouvé ou inactif', 404);
+            }
+
+            // Générer le code de suppression
+            $deletionCode = $user->generateDeletionCode();
+
+            // Préparer l'email de vérification
+            if(Config::get('APP_ENV') == 'dev') {
+                $emailToSend = 'm2atodev@gmail.com';
+            } else {
+                $emailToSend = $user->email;
+            }
+
+            // Envoyer l'email avec le code
+            $mailSender = new MailSender();
+            $mailSent = $mailSender->sendAccountDeletionCode(
+                $emailToSend, 
+                $user->first_name, 
+                $deletionCode
+            );
+
+            if (!$mailSent) {
+                return $this->createErrorResponse(
+                    'Erreur lors de l\'envoi de l\'email de vérification', 
+                    500
+                );
+            }
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Code de suppression envoyé par email. Vérifiez votre boîte de réception.',
+                    'data' => [
+                        'code_expires_in_minutes' => 120,
+                        'email_sent_to' => $user->email
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la demande de suppression: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    /**
+     * Confirmer la suppression de compte avec le code
+     */
+    public function confirmAccountDeletion(Request $request, Response $response)
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', ['deletion_code'])
+            ->message('Code de suppression requis');
+        $validator->rule('regex', 'deletion_code', '/^\d{6}$/')
+            ->message('Le code doit contenir exactement 6 chiffres');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            // Vérifier le code de suppression
+            if (!$user->isAccountDeletionCodeValid($data['deletion_code'])) {
+                return $this->createErrorResponse(
+                    'Code de suppression invalide ou expiré', 
+                    400,
+                    'INVALID_DELETION_CODE'
+                );
+            }
+
+            // Marquer le compte pour suppression
+            $reason = $data['reason'] ?? 'Demande utilisateur';
+            $user->requestDeletion($reason);
+
+            // Envoyer email de confirmation
+            if(Config::get('APP_ENV') == 'dev') {
+                $emailToSend = 'm2atodev@gmail.com';
+            } else {
+                $emailToSend = $user->email;
+            }
+
+            $mailSender = new MailSender();
+            $mailSender->sendAccountDeletionConfirmation(
+                $emailToSend, 
+                $user->first_name
+            );
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Votre compte a été marqué pour suppression. Vous avez 30 jours pour annuler cette action.',
+                    'data' => [
+                        'deletion_effective_date' => Carbon::now()->addDays(30)->toISOString(),
+                        'can_cancel_until' => Carbon::now()->addDays(30)->toISOString()
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la confirmation de suppression: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    /**
+     * Annuler la demande de suppression de compte
+     */
+    public function cancelAccountDeletion(Request $request, Response $response)
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            if (!$user->isDeletionRequested()) {
+                return $this->createErrorResponse(
+                    'Aucune demande de suppression en cours', 
+                    400
+                );
+            }
+
+            // Vérifier si dans les 30 jours
+            if ($user->deletion_requested_at && 
+                $user->deletion_requested_at->addDays(30)->isPast()) {
+                return $this->createErrorResponse(
+                    'La période d\'annulation de 30 jours est écoulée', 
+                    400
+                );
+            }
+
+            // Annuler la demande de suppression
+            $user->cancelDeletionRequest();
+
+            // Envoyer email de confirmation d'annulation
+            if(Config::get('APP_ENV') == 'dev') {
+                $emailToSend = 'm2atodev@gmail.com';
+            } else {
+                $emailToSend = $user->email;
+            }
+
+            $mailSender = new MailSender();
+            $mailSender->sendAccountDeletionCancellation(
+                $emailToSend, 
+                $user->first_name
+            );
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Demande de suppression annulée avec succès. Votre compte est de nouveau actif.',
+                    'data' => [
+                        'account_status' => 'active',
+                        'reactivated_at' => Carbon::now()->toISOString()
+                    ]
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de l\'annulation: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    /**
+     * Obtenir le statut de suppression du compte
+     */
+    public function getAccountDeletionStatus(Request $request, Response $response)
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            $status = [
+                'is_active' => $user->isActive(),
+                'is_deletion_requested' => $user->isDeletionRequested(),
+                'deletion_requested_at' => $user->deletion_requested_at?->toISOString(),
+                'deletion_reason' => $user->deletion_reason,
+                'can_cancel_deletion' => false,
+                'deletion_effective_date' => null
+            ];
+
+            if ($user->isDeletionRequested() && $user->deletion_requested_at) {
+                $deletionDate = $user->deletion_requested_at->addDays(30);
+                $canCancel = $deletionDate->isFuture();
+                
+                $status['can_cancel_deletion'] = $canCancel;
+                $status['deletion_effective_date'] = $deletionDate->toISOString();
+                $status['days_remaining'] = max(0, $deletionDate->diffInDays(Carbon::now()));
+            }
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'data' => $status
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la récupération du statut: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
 }

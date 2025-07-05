@@ -114,6 +114,12 @@ $app->group('', function ($group) {
     $group->get('/auth/me', [AuthController::class, 'getCurrentUser']);
     $group->put('/auth/me', [AuthController::class, 'updateProfile']);
 
+    // ✅ NOUVELLES ROUTES POUR LA SUPPRESSION DE COMPTE
+    $group->post('/auth/request-account-deletion', [AuthController::class, 'requestAccountDeletion']);
+    $group->post('/auth/confirm-account-deletion', [AuthController::class, 'confirmAccountDeletion']);
+    $group->post('/auth/cancel-account-deletion', [AuthController::class, 'cancelAccountDeletion']);
+    $group->get('/auth/account-deletion-status', [AuthController::class, 'getAccountDeletionStatus']);
+
     // Shopping Lists Routes
     $group->get('/shopping-lists', [ShoppingListController::class, 'index']);
     $group->post('/shopping-lists', [ShoppingListController::class, 'store']);

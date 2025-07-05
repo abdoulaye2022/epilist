@@ -692,4 +692,269 @@ class MailSender
             $htmlContent
         );
     }
+
+    /**
+     * Template pour code de suppression de compte
+     */
+    public static function accountDeletionCodeEmail(string $prenom, string $code): string
+    {
+        $header = self::headerContent('Code de suppression de compte EpiList');
+        $footer = self::footerContent();
+        
+        $content = "
+                                <tr>
+                                    <td class='content' style='padding: 40px 30px;'>
+                                        <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #dc2626;'>
+                                            🚨 Code de suppression de compte
+                                        </h2>
+                                        
+                                        <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Bonjour <strong>{$prenom}</strong>,
+                                        </p>
+                                        
+                                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Vous avez demandé la suppression de votre compte EpiList. Voici votre code de vérification :
+                                        </p>
+                                        
+                                        <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #991b1b; font-size: 32px; font-weight: bold; padding: 20px; text-align: center; border: 2px solid #fca5a5; border-radius: 12px; letter-spacing: 4px; margin: 20px 0;'>
+                                            {$code}
+                                        </div>
+                                        
+                                        <p style='margin: 20px 0; font-size: 14px; color: #6b7280; text-align: center;'>
+                                            <strong>Ce code expire dans 2 heures</strong>
+                                        </p>
+                                        
+                                        <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <p style='margin: 0; font-size: 14px; color: #dc2626;'>
+                                                <strong>⚠️ ATTENTION :</strong> Cette action est définitive ! Une fois confirmée, toutes vos données personnelles seront supprimées de manière irréversible.
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'>Ce qui sera supprimé :</h4>
+                                            <ul style='margin: 0; padding-left: 20px; color: #92400e; font-size: 14px;'>
+                                                <li>Votre profil et informations personnelles</li>
+                                                <li>Toutes vos listes d'épicerie privées</li>
+                                                <li>Vos préférences et paramètres</li>
+                                                <li>Votre historique d'achats</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #047857;'>Ce qui sera préservé :</h4>
+                                            <ul style='margin: 0; padding-left: 20px; color: #047857; font-size: 14px;'>
+                                                <li>Les listes partagées avec d'autres utilisateurs (anonymisées)</li>
+                                                <li>Les commentaires ou contributions dans les listes partagées</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <p style='margin: 25px 0; color: #6b7280; font-size: 14px; line-height: 1.6; text-align: center;'>
+                                            <strong>Vous avez changé d'avis ?</strong><br>
+                                            Ignorez simplement cet email et votre compte restera actif.
+                                        </p>
+                                        
+                                        <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
+                                                L'équipe EpiList
+                                            </p>
+                                            <p style='margin: 0; color: #6b7280; font-size: 14px;'>
+                                                Nous sommes tristes de vous voir partir 😢
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+        ";
+        
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Template pour confirmation de suppression
+     */
+    public static function accountDeletionConfirmationEmail(string $prenom): string
+    {
+        $header = self::headerContent('Confirmation de suppression de compte EpiList');
+        $footer = self::footerContent();
+        
+        $content = "
+                                <tr>
+                                    <td class='content' style='padding: 40px 30px;'>
+                                        <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #dc2626;'>
+                                            ⏳ Suppression de compte programmée
+                                        </h2>
+                                        
+                                        <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Bonjour <strong>{$prenom}</strong>,
+                                        </p>
+                                        
+                                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Votre demande de suppression de compte EpiList a été confirmée. Votre compte sera définitivement supprimé dans <strong>30 jours</strong>.
+                                        </p>
+                                        
+                                        <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #fca5a5; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
+                                            <h3 style='margin: 0 0 16px; font-size: 18px; color: #991b1b;'>📅 Date de suppression définitive</h3>
+                                            <p style='margin: 0; font-size: 20px; color: #dc2626; font-weight: bold;'>
+                                                " . Carbon::now()->addDays(30)->format('d/m/Y à H:i') . "
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #92400e;'>🔄 Vous pouvez encore changer d'avis !</h4>
+                                            <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
+                                                Pendant les 30 prochains jours, vous pouvez annuler cette suppression en vous connectant à votre compte EpiList et en accédant aux paramètres de votre profil.
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #047857;'>📋 Rappel de ce qui sera supprimé :</h4>
+                                            <ul style='margin: 0; padding-left: 20px; color: #047857; font-size: 14px;'>
+                                                <li>Votre profil et toutes vos informations personnelles</li>
+                                                <li>Toutes vos listes d'épicerie privées</li>
+                                                <li>Vos préférences et paramètres personnalisés</li>
+                                                <li>Votre historique d'achats et statistiques</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div style='background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin: 25px 0; text-align: center;'>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'>📞 Besoin d'aide ?</h4>
+                                            <p style='margin: 0; font-size: 14px; color: #6b7280;'>
+                                                Si vous avez des questions ou souhaitez nous faire part de vos commentaires, n'hésitez pas à nous contacter avant la suppression définitive.
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
+                                                Merci d'avoir utilisé EpiList,
+                                            </p>
+                                            <p style='margin: 0; color: #6b7280; font-size: 14px;'>
+                                                L'équipe EpiList 💙
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+        ";
+        
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Template pour annulation de suppression
+     */
+    public static function accountDeletionCancellationEmail(string $prenom): string
+    {
+        $header = self::headerContent('Suppression de compte annulée - EpiList');
+        $footer = self::footerContent();
+        
+        $content = "
+                                <tr>
+                                    <td class='content' style='padding: 40px 30px;'>
+                                        <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                                            🎉 Suppression de compte annulée !
+                                        </h2>
+                                        
+                                        <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Bonjour <strong>{$prenom}</strong>,
+                                        </p>
+                                        
+                                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                                            Excellente nouvelle ! Vous avez annulé la suppression de votre compte EpiList avec succès. Votre compte est maintenant de nouveau actif et toutes vos données sont préservées.
+                                        </p>
+                                        
+                                        <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
+                                            <h3 style='margin: 0 0 16px; font-size: 20px; color: #047857;'>✅ Votre compte est actif !</h3>
+                                            <p style='margin: 0; font-size: 16px; color: #059669; font-weight: 600;'>
+                                                Vous pouvez continuer à utiliser EpiList normalement
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #047857;'>🔄 Ce qui a été restauré :</h4>
+                                            <ul style='margin: 0; padding-left: 20px; color: #047857; font-size: 14px;'>
+                                                <li>Accès complet à votre profil</li>
+                                                <li>Toutes vos listes d'épicerie</li>
+                                                <li>Vos préférences et paramètres</li>
+                                                <li>Votre historique d'achats</li>
+                                                <li>Accès aux listes partagées</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'>💡 Conseil :</h4>
+                                            <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
+                                                Nous sommes ravis que vous ayez décidé de rester ! N'hésitez pas à explorer toutes les fonctionnalités d'EpiList pour optimiser vos courses.
+                                            </p>
+                                        </div>
+                                        
+                                        <div style='text-align: center; margin: 30px 0;'>
+                                            <p style='margin: 0 0 16px; font-size: 16px; color: #374151; font-weight: 600;'>
+                                                Prêt à reprendre la gestion de vos courses ?
+                                            </p>
+                                            <a href='https://epilist.app' 
+                                               style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 16px;'>
+                                                Ouvrir EpiList
+                                            </a>
+                                        </div>
+                                        
+                                        <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
+                                                Bienvenue de retour !
+                                            </p>
+                                            <p style='margin: 0; color: #047857; font-size: 14px;'>
+                                                L'équipe EpiList 🛒💚
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+        ";
+        
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Envoie un email avec code de suppression de compte
+     */
+    public static function sendAccountDeletionCode(string $email, string $firstName, string $code): bool
+    {
+        $subject = "🚨 Code de suppression de votre compte EpiList";
+        
+        $htmlContent = self::accountDeletionCodeEmail($firstName, $code);
+        
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
+
+    /**
+     * Envoie un email de confirmation de suppression
+     */
+    public static function sendAccountDeletionConfirmation(string $email, string $firstName): bool
+    {
+        $subject = "⏳ Suppression de compte confirmée - EpiList";
+        
+        $htmlContent = self::accountDeletionConfirmationEmail($firstName);
+        
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
+
+    /**
+     * Envoie un email d'annulation de suppression
+     */
+    public static function sendAccountDeletionCancellation(string $email, string $firstName): bool
+    {
+        $subject = "🎉 Suppression de compte annulée - EpiList";
+        
+        $htmlContent = self::accountDeletionCancellationEmail($firstName);
+        
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
 }

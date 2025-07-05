@@ -1,7 +1,8 @@
-// services/shopping_list_service.dart
+// services/shopping_list_service.dart - VERSION AVEC LEAVE SHARED LIST
 import 'package:dio/dio.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/services/auth_service.dart';
+import 'package:flutter/foundation.dart';
 
 class ShoppingListService {
   final Dio _dio;
@@ -23,7 +24,7 @@ class ShoppingListService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    print("API Response: ${response.data}"); // Debug
+    debugPrint("API Response: ${response.data}"); // Debug
 
     return (response.data['data'] as List).map((json) {
       return ShoppingList.fromJson(json);
@@ -86,5 +87,60 @@ class ShoppingListService {
     );
 
     return ShoppingList.fromJson(response.data['data']);
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Quitter une liste partagée
+  Future<void> leaveSharedList(int listId) async {
+    try {
+      final token = await _authService.getToken();
+
+      debugPrint('🔄 Quitter la liste partagée: $listId');
+
+      final response = await _dio.post(
+        '/shopping-lists/$listId/leave',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      debugPrint(
+        '✅ Liste quittée avec succès - Status: ${response.statusCode}',
+      );
+
+      // Vérifier la réponse
+      final responseData = response.data as Map<String, dynamic>;
+      if (responseData['success'] != true) {
+        final message =
+            responseData['message'] ?? 'Erreur lors de la sortie de la liste';
+        throw Exception(message);
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Erreur lors de la sortie de la liste:');
+      debugPrint('   - Status Code: ${e.response?.statusCode}');
+      debugPrint('   - Message: ${e.message}');
+      debugPrint('   - Response Data: ${e.response?.data}');
+
+      if (e.response?.statusCode == 404) {
+        throw Exception('Liste non trouvée ou vous n\'y avez pas accès');
+      } else if (e.response?.statusCode == 400) {
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ??
+                    'Vous ne pouvez pas quitter cette liste'
+                : 'Vous ne pouvez pas quitter cette liste';
+        throw Exception(errorMessage);
+      } else if (e.response?.statusCode == 403) {
+        throw Exception('Vous n\'êtes pas autorisé à quitter cette liste');
+      } else {
+        final responseData = e.response?.data;
+        final errorMessage =
+            responseData is Map<String, dynamic>
+                ? responseData['message'] ?? e.message
+                : e.message;
+        throw Exception('Erreur lors de la sortie: $errorMessage');
+      }
+    } catch (e) {
+      debugPrint('❌ Erreur inattendue lors de la sortie de la liste: $e');
+      throw Exception('Erreur lors de la sortie de la liste partagée');
+    }
   }
 }
