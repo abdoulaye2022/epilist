@@ -24,51 +24,106 @@ class AboutPage extends StatelessWidget {
           children: [
             // Logo et nom de l'app
             Container(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
-                  // Logo de l'application - vous pouvez remplacer par votre vraie image
+                  // Logo de l'application avec design amélioré
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.green[600],
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.green[400]!, Colors.green[600]!],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(20),
                       child: Image.asset(
-                        'assets/images/app_logo.png', // Remplacez par le chemin de votre logo
-                        width: 80,
-                        height: 80,
+                        'assets/images/app_logo.png',
+                        width: 100,
+                        height: 100,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          // Fallback si l'image n'est pas trouvée
-                          return Icon(
-                            Icons.shopping_cart,
-                            size: 50,
-                            color: Colors.white,
+                          // Fallback avec design amélioré si l'image n'est pas trouvée
+                          return Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.green[400]!,
+                                  Colors.green[600]!,
+                                ],
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.shopping_cart_rounded,
+                              size: 50,
+                              color: Colors.white,
+                            ),
                           );
                         },
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 20),
                   Text(
                     'EpiList',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: Colors.green[700],
+                      letterSpacing: -0.5,
                     ),
                   ),
+                  SizedBox(height: 4),
                   Text(
-                    'Version 1.0.0',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    'Organisez vos courses',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Text(
+                      'Version 1.0.0',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -108,7 +163,7 @@ class AboutPage extends StatelessWidget {
 
             _buildSection(
               'Développement',
-              'EpiList est développé avec passion par M2A Tech pour vous offrir la meilleure '
+              'EpiList est développé avec passion par M2atech Solutions Inc. pour vous offrir la meilleure '
                   'expérience de gestion de vos courses. Nous sommes constamment à '
                   'l\'écoute de vos retours pour améliorer l\'application et ajouter '
                   'de nouvelles fonctionnalités innovantes.',
@@ -159,7 +214,7 @@ class AboutPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Développé avec ❤️ par M2A Tech',
+              'Développé avec ❤️ par M2atech Solutions Inc.',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
               textAlign: TextAlign.center,
             ),

@@ -74,7 +74,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               _errorMessage = null;
             });
 
-            // ✅ CORRECTION: Utiliser SmartSnackBarManager
             SmartSnackBarManager.showMessage(
               context,
               'Code de vérification envoyé à ${state.email}',
@@ -84,17 +83,19 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
           } else if (state is PasswordChanged) {
             debugPrint('✅ PasswordChanged détecté');
             setState(() {
-              _isLoading = false;
+              _isLoading = false; // ✅ CORRECTION: Arrêter le loading
               _errorMessage = null;
             });
 
-            // ✅ CORRECTION: Utiliser SmartSnackBarManager
             SmartSnackBarManager.showMessage(
               context,
               'Mot de passe changé avec succès !',
               type: SnackBarType.success,
               duration: const Duration(seconds: 2),
             );
+
+            // ✅ CORRECTION: Émettre un état Unauthenticated avant la navigation
+            context.read<AuthBloc>().add(LogoutRequested());
 
             // Retourner à l'écran de connexion après 2 secondes
             Future.delayed(const Duration(seconds: 2), () {
@@ -109,7 +110,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               _errorMessage = _getLocalizedErrorMessage(state.error);
             });
 
-            // ✅ CORRECTION: Utiliser SmartSnackBarManager pour les erreurs
             SmartSnackBarManager.showMessage(
               context,
               _getLocalizedErrorMessage(state.error),
@@ -117,6 +117,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               duration: const Duration(seconds: 4),
             );
           } else {
+            // ✅ CORRECTION: S'assurer que le loading s'arrête pour tous les autres états
             setState(() {
               _isLoading = false;
             });
