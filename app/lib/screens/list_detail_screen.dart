@@ -1,15 +1,9 @@
-// screens/list_detail_screen.dart - VERSION REFACTORISÉE
+// screens/list_detail_screen.dart - VERSION AVEC PERMISSIONS ET SMART SNACKBAR
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
-import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/models/list_item.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/widgets/dialogs/add_item_dialog.dart';
-import 'package:epilist/widgets/dialogs/delete_item_dialog.dart';
-import 'package:epilist/widgets/list_detail/empty_items_state.dart';
-import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart';
-import 'package:epilist/widgets/list_detail/list_item_card.dart';
-import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +13,7 @@ class ListDetailScreen extends StatefulWidget {
   const ListDetailScreen({super.key, required this.shoppingList});
 
   @override
-  State<ListDetailScreen> createState() => _ListDetailScreenState();
+  _ListDetailScreenState createState() => _ListDetailScreenState();
 }
 
 class _ListDetailScreenState extends State<ListDetailScreen> {
@@ -41,11 +35,15 @@ class _ListDetailView extends StatefulWidget {
   const _ListDetailView({required this.shoppingList});
 
   @override
-  State<_ListDetailView> createState() => _ListDetailViewState();
+  _ListDetailViewState createState() => _ListDetailViewState();
 }
 
 class _ListDetailViewState extends State<_ListDetailView> {
   late ShoppingList currentList;
+
+  String _formatPrice(double price) {
+    return '${price.toStringAsFixed(2)} \$CAD';
+  }
 
   @override
   void initState() {
@@ -57,33 +55,273 @@ class _ListDetailViewState extends State<_ListDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: ListDetailAppBar(
-        listName: currentList.name,
-        onAddItem: _showAddItemDialog,
-      ),
+      appBar: _buildAppBar(),
       body: BlocConsumer<ListItemBloc, ListItemState>(
         listener: (context, state) {
-          // ✨ Gestion intelligente des notifications
+          // Utiliser SmartSnackBarManager pour gérer les notifications
           SmartSnackBarManager.showForState(context, state);
         },
         builder: (context, state) => _buildBody(state),
       ),
+      floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            currentList.name,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          if (currentList.isShared) _buildSharingSubtitle(),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      elevation: 1,
+      actions: [
+        if (currentList.canManageItems)
+          IconButton(
+            onPressed: _addNewItem,
+            icon: Icon(Icons.add),
+            tooltip: 'Ajouter un article',
+          )
+        else
+          IconButton(
+            onPressed: () => _showPermissionDenied('ajouter des articles'),
+            icon: Icon(Icons.add, color: Colors.grey),
+            tooltip: 'Permission insuffisante',
+          ),
+        _buildOptionsMenu(),
+      ],
+    );
+  }
+
+  Widget _buildSharingSubtitle() {
+    String subtitle;
+    Color color;
+
+    if (currentList.isOwner) {
+      subtitle = 'Liste partagée';
+      color = Colors.blue[600]!;
+    } else {
+      subtitle = currentList.permissionDisplayName ?? 'Liste partagée';
+      color = currentList.isReadOnly ? Colors.blue[600]! : Colors.green[600]!;
+    }
+
+    return Text(
+      subtitle,
+      style: TextStyle(
+        fontSize: 12,
+        color: color,
+        fontWeight: FontWeight.normal,
+      ),
+    );
+  }
+
+  Widget _buildOptionsMenu() {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.more_vert),
+      onSelected: _handleMenuAction,
+      itemBuilder:
+          (context) => [
+            if (currentList.canEdit)
+              PopupMenuItem(
+                value: 'edit_list',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+                    SizedBox(width: 8),
+                    Text('Modifier la liste'),
+                  ],
+                ),
+              ),
+            if (currentList.canShare)
+              PopupMenuItem(
+                value: 'share',
+                child: Row(
+                  children: [
+                    Icon(Icons.share, size: 20, color: Colors.green[600]),
+                    SizedBox(width: 8),
+                    Text('Partager'),
+                  ],
+                ),
+              ),
+            PopupMenuItem(
+              value: 'info',
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+                  SizedBox(width: 8),
+                  Text('Informations'),
+                ],
+              ),
+            ),
+            if (!currentList.isOwner || currentList.canDelete)
+              PopupMenuDivider(),
+            if (!currentList.isOwner)
+              PopupMenuItem(
+                value: 'leave',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.exit_to_app,
+                      size: 20,
+                      color: Colors.orange[600],
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Quitter',
+                      style: TextStyle(color: Colors.orange[600]),
+                    ),
+                  ],
+                ),
+              ),
+            if (currentList.canDelete)
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, size: 20, color: Colors.red[600]),
+                    SizedBox(width: 8),
+                    Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+                  ],
+                ),
+              ),
+          ],
+    );
+  }
+
+  void _handleMenuAction(String action) {
+    switch (action) {
+      case 'edit_list':
+        if (currentList.canEdit) {
+          // TODO: Naviguer vers l'écran d'édition de liste
+          SmartSnackBarManager.showMessage(
+            context,
+            'Fonctionnalité d\'édition à venir',
+            type: SnackBarType.info,
+          );
+        } else {
+          _showPermissionDenied('modifier cette liste');
+        }
+        break;
+      case 'share':
+        if (currentList.canShare) {
+          // TODO: Ouvrir le dialogue de partage
+          SmartSnackBarManager.showMessage(
+            context,
+            'Fonctionnalité de partage à venir',
+            type: SnackBarType.info,
+          );
+        } else {
+          _showPermissionDenied('partager cette liste');
+        }
+        break;
+      case 'info':
+        _showListInfo();
+        break;
+      case 'leave':
+        _showLeaveConfirmation();
+        break;
+      case 'delete':
+        if (currentList.canDelete) {
+          _showDeleteConfirmation();
+        } else {
+          _showPermissionDenied('supprimer cette liste');
+        }
+        break;
+    }
+  }
+
+  Widget? _buildFloatingActionButton() {
+    if (!currentList.canManageItems) return null;
+
+    return FloatingActionButton(
+      onPressed: _addNewItem,
+      backgroundColor: Colors.green[600],
+      child: Icon(Icons.add, color: Colors.white),
+      tooltip: 'Ajouter un article',
     );
   }
 
   Widget _buildBody(ListItemState state) {
     List<ListItem> items = [];
-    bool isLoading = state is ListItemLoading;
+    bool isLoading = false;
 
-    if (state is ListItemLoaded) {
+    if (state is ListItemLoading) {
+      isLoading = true;
+    } else if (state is ListItemLoaded) {
       items = state.items;
     }
 
     return Column(
       children: [
+        if (!currentList.isOwner) _buildPermissionBanner(),
         _buildStatsHeader(items),
         Expanded(child: _buildContent(items, isLoading)),
       ],
+    );
+  }
+
+  Widget _buildPermissionBanner() {
+    Color bannerColor;
+    String bannerText;
+    IconData bannerIcon;
+
+    if (currentList.isReadOnly) {
+      bannerColor = Colors.blue;
+      bannerText =
+          'Mode lecture seule - Vous ne pouvez pas modifier cette liste';
+      bannerIcon = Icons.visibility;
+    } else if (currentList.canEdit) {
+      bannerColor = Colors.green;
+      bannerText = 'Liste partagée - Vous pouvez modifier les articles';
+      bannerIcon = Icons.edit;
+    } else {
+      bannerColor = Colors.orange;
+      bannerText = 'Accès limité à cette liste';
+      bannerIcon = Icons.lock;
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: bannerColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: bannerColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(bannerIcon, size: 16, color: bannerColor),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              bannerText,
+              style: TextStyle(
+                fontSize: 13,
+                color: bannerColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          if (currentList.sharedBy != null) ...[
+            SizedBox(width: 8),
+            Text(
+              'Par ${currentList.sharedBy!.name}',
+              style: TextStyle(
+                fontSize: 12,
+                color: bannerColor,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -95,10 +333,37 @@ class _ListDetailViewState extends State<_ListDetailView> {
       (sum, item) => sum + (item.price ?? 0) * item.quantity,
     );
 
-    return ListStatsHeader(
-      totalItems: totalItems,
-      purchasedItems: purchasedItems,
-      totalPrice: totalPrice,
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem('Articles', '$purchasedItems/$totalItems'),
+          _buildStatItem('Total', _formatPrice(totalPrice)),
+          _buildStatItem(
+            'Progression',
+            '${totalItems > 0 ? ((purchasedItems / totalItems) * 100).round() : 0}%',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green[600],
+          ),
+        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+      ],
     );
   }
 
@@ -112,7 +377,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     }
 
     if (items.isEmpty) {
-      return EmptyItemsState(onAddItem: _showAddItemDialog);
+      return _buildEmptyState();
     }
 
     return RefreshIndicator(
@@ -123,48 +388,934 @@ class _ListDetailViewState extends State<_ListDetailView> {
         padding: EdgeInsets.all(16),
         itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = items[index];
-          return ListItemCard(
-            item: item,
-            onTogglePurchased:
-                (isPurchased) => _toggleItemStatus(item, isPurchased),
-            onDelete: () => _showDeleteItemDialog(item),
-          );
+          return _buildItemCard(items[index]);
         },
       ),
     );
   }
 
-  // Actions
-  void _toggleItemStatus(ListItem item, bool isPurchased) {
-    context.read<ListItemBloc>().add(
-      TogglePurchasedStatus(
-        listId: currentList.id,
-        itemId: item.id,
-        isPurchased: isPurchased,
+  Widget _buildEmptyState() {
+    String title;
+    String subtitle;
+    String buttonText;
+    VoidCallback? onPressed;
+
+    if (currentList.isReadOnly) {
+      title = 'Liste vide';
+      subtitle = 'Cette liste ne contient aucun article pour le moment';
+      buttonText = 'Actualiser';
+      onPressed =
+          () => context.read<ListItemBloc>().add(LoadListItems(currentList.id));
+    } else if (!currentList.canManageItems) {
+      title = 'Liste vide';
+      subtitle = 'Vous n\'avez pas la permission d\'ajouter des articles';
+      buttonText = 'Permissions limitées';
+      onPressed = () => _showPermissionDenied('ajouter des articles');
+    } else {
+      title = 'Liste vide';
+      subtitle = 'Ajoutez votre premier article';
+      buttonText = 'Ajouter un article';
+      onPressed = _addNewItem;
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.add_shopping_cart, size: 60, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(title, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+          SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: TextStyle(color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: onPressed,
+            icon: Icon(currentList.canManageItems ? Icons.add : Icons.lock),
+            label: Text(buttonText),
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  currentList.canManageItems
+                      ? Colors.green[600]
+                      : Colors.grey[600],
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // Dialogues
-  void _showAddItemDialog() {
+  Widget _buildItemCard(ListItem item) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 8),
+      // Bordure spéciale si lecture seule
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side:
+            currentList.isReadOnly
+                ? BorderSide(color: Colors.blue[200]!, width: 1)
+                : BorderSide.none,
+      ),
+      color: currentList.isReadOnly ? Colors.grey[50] : null,
+      child: ListTile(
+        leading: _buildCheckbox(item),
+        title: Text(
+          item.productName,
+          style: TextStyle(
+            decoration: item.isPurchased ? TextDecoration.lineThrough : null,
+            color:
+                currentList.isReadOnly
+                    ? (item.isPurchased ? Colors.grey[500] : Colors.grey[700])
+                    : (item.isPurchased ? Colors.grey : Colors.black87),
+            fontWeight:
+                currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
+          ),
+        ),
+        subtitle: _buildItemSubtitle(item),
+        trailing: _buildItemTrailing(item),
+      ),
+    );
+  }
+
+  Widget _buildCheckbox(ListItem item) {
+    // En mode lecture seule, afficher un indicateur visuel
+    if (currentList.isReadOnly) {
+      return Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: item.isPurchased ? Colors.green[100] : Colors.grey[100],
+          border: Border.all(
+            color: item.isPurchased ? Colors.green[300]! : Colors.grey[300]!,
+            width: 2,
+          ),
+        ),
+        child:
+            item.isPurchased
+                ? Icon(Icons.check, size: 16, color: Colors.green[600])
+                : null,
+      );
+    }
+
+    return Checkbox(
+      value: item.isPurchased,
+      onChanged:
+          currentList.canManageItems
+              ? (value) {
+                context.read<ListItemBloc>().add(
+                  TogglePurchasedStatus(
+                    listId: currentList.id,
+                    itemId: item.id,
+                    isPurchased: value!,
+                  ),
+                );
+              }
+              : (value) =>
+                  _showPermissionDenied('modifier le statut des articles'),
+      activeColor: Colors.green[600],
+      fillColor:
+          currentList.canManageItems
+              ? null
+              : MaterialStateProperty.all(Colors.grey[300]),
+    );
+  }
+
+  Widget _buildItemSubtitle(ListItem item) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Qté: ${item.quantity}',
+              style: TextStyle(
+                color:
+                    currentList.isReadOnly
+                        ? Colors.grey[500]
+                        : Colors.grey[600],
+              ),
+            ),
+            if (item.price != null) ...[
+              Text(
+                ' • ${_formatPrice(item.price!)}',
+                style: TextStyle(
+                  color:
+                      currentList.isReadOnly
+                          ? Colors.grey[500]
+                          : Colors.grey[600],
+                ),
+              ),
+            ],
+          ],
+        ),
+        if (item.storeName != null && item.storeName!.isNotEmpty) ...[
+          SizedBox(height: 2),
+          Row(
+            children: [
+              Icon(
+                Icons.store,
+                size: 12,
+                color:
+                    currentList.isReadOnly
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
+              ),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  item.storeName!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color:
+                        currentList.isReadOnly
+                            ? Colors.grey[400]
+                            : Colors.grey[600],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildItemTrailing(ListItem item) {
+    // En mode lecture seule, afficher un badge
+    if (currentList.isReadOnly) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.blue[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue[200]!),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
+            SizedBox(width: 4),
+            Text(
+              'Lecture seule',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.blue[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return IconButton(
+      icon: Icon(Icons.delete, color: Colors.red[400]),
+      onPressed:
+          currentList.canEdit
+              ? () => _confirmDeleteItem(item)
+              : () => _showPermissionDenied('supprimer des articles'),
+      tooltip:
+          currentList.canEdit
+              ? 'Supprimer l\'article'
+              : 'Permission insuffisante',
+    );
+  }
+
+  // Méthodes de dialogue et d'action
+  void _showPermissionDenied(String action) {
+    String title;
+    String message;
+    String permission;
+
+    if (currentList.isReadOnly) {
+      title = 'Accès en lecture seule';
+      permission = currentList.permissionDisplayName ?? 'Lecture seule';
+      message =
+          'Vous ne pouvez pas $action car cette liste est en mode lecture seule.\n\n'
+          'Votre permission actuelle : $permission';
+    } else {
+      title = 'Permission insuffisante';
+      permission = currentList.permissionDisplayName ?? 'Limitée';
+      message =
+          'Vous n\'avez pas la permission de $action.\n\n'
+          'Votre permission actuelle : $permission';
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                currentList.isReadOnly ? Icons.visibility : Icons.lock,
+                color:
+                    currentList.isReadOnly
+                        ? Colors.blue[600]
+                        : Colors.orange[600],
+                size: 24,
+              ),
+              SizedBox(width: 8),
+              Expanded(child: Text(title)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              SizedBox(height: 16),
+              if (!currentList.isOwner && currentList.sharedBy != null) ...[
+                Text(
+                  'Cette liste a été partagée par ${currentList.sharedBy!.name}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Compris'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showListInfo() {
     showDialog(
       context: context,
       builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<ListItemBloc>(),
-            child: AddItemDialog(listId: currentList.id),
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.blue[600]),
+                SizedBox(width: 8),
+                Text('Informations de la liste'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('Nom', currentList.name),
+                SizedBox(height: 8),
+                _buildInfoRow(
+                  'Statut',
+                  currentList.isShared ? 'Partagée' : 'Privée',
+                ),
+                if (currentList.isShared) ...[
+                  SizedBox(height: 8),
+                  _buildInfoRow(
+                    'Votre rôle',
+                    currentList.isOwner
+                        ? 'Propriétaire'
+                        : (currentList.permissionDisplayName ??
+                            'Collaborateur'),
+                  ),
+                  if (!currentList.isOwner && currentList.sharedBy != null) ...[
+                    SizedBox(height: 8),
+                    _buildInfoRow('Partagée par', currentList.sharedBy!.name),
+                  ],
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Fermer'),
+              ),
+            ],
           ),
     );
   }
 
-  void _showDeleteItemDialog(ListItem item) {
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 80,
+          child: Text(
+            '$label:',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+        ),
+        Expanded(child: Text(value, style: TextStyle(color: Colors.black87))),
+      ],
+    );
+  }
+
+  void _showLeaveConfirmation() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Quitter la liste'),
+            content: Text(
+              'Êtes-vous sûr de vouloir quitter "${currentList.name}" ?\n\n'
+              'Vous perdrez l\'accès à cette liste et ne pourrez plus voir son contenu.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    'Vous avez quitté la liste "${currentList.name}"',
+                    type: SnackBarType.warning,
+                  );
+                  Navigator.of(context).pop(); // Retour à l'écran précédent
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.orange),
+                child: Text('Quitter'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Supprimer la liste'),
+            content: Text(
+              'Êtes-vous sûr de vouloir supprimer "${currentList.name}" ?\n\n'
+              'Cette action est irréversible et supprimera tous les articles.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    'Liste "${currentList.name}" supprimée',
+                    type: SnackBarType.success,
+                  );
+                  Navigator.of(context).pop(); // Retour à l'écran précédent
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text('Supprimer'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _confirmDeleteItem(ListItem item) {
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 10,
+            child: Container(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.red[50],
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Icon(
+                      Icons.delete_rounded,
+                      size: 40,
+                      color: Colors.red[600],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Supprimer l\'article',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
+                      children: [
+                        TextSpan(text: 'Êtes-vous sûr de vouloir supprimer '),
+                        TextSpan(
+                          text: '"${item.productName}"',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        TextSpan(text: ' de votre liste ?'),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Cette action est irréversible.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.red[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.grey[300]!),
+                            ),
+                          ),
+                          child: Text(
+                            'Annuler',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            context.read<ListItemBloc>().add(
+                              DeleteListItem(
+                                listId: currentList.id,
+                                itemId: item.id,
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[600],
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                          ),
+                          child: Text(
+                            'Supprimer',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  void _addNewItem() {
+    if (!currentList.canManageItems) {
+      _showPermissionDenied('ajouter des articles');
+      return;
+    }
+
+    final productController = TextEditingController();
+    final quantityController = TextEditingController(text: '1');
+    final priceController = TextEditingController();
+    final storeController = TextEditingController();
+
     showDialog(
       context: context,
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ListItemBloc>(),
-            child: DeleteItemDialog(item: item, listId: currentList.id),
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 10,
+              child: Container(
+                padding: EdgeInsets.all(24),
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icône d'ajout
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: Icon(
+                        Icons.add_shopping_cart_rounded,
+                        size: 40,
+                        color: Colors.green[600],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'Nouvel Article',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Ajoutez un nouvel article à votre liste d\'épicerie',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    // Formulaire
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            // Nom du produit
+                            TextField(
+                              controller: productController,
+                              decoration: InputDecoration(
+                                labelText: 'Nom du produit*',
+                                hintText: 'Ex: Bananes, Pain, Lait...',
+                                prefixIcon: Icon(
+                                  Icons.shopping_basket,
+                                  color: Colors.green[600],
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.green[600]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              autofocus: true,
+                              textCapitalization: TextCapitalization.words,
+                            ),
+                            SizedBox(height: 16),
+                            // Quantité et Prix sur la même ligne
+                            Row(
+                              children: [
+                                // Quantité
+                                Expanded(
+                                  flex: 1,
+                                  child: TextField(
+                                    controller: quantityController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Quantité',
+                                      hintText: '1',
+                                      prefixIcon: Icon(
+                                        Icons.numbers,
+                                        color: Colors.blue[600],
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey[300]!,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.blue[600]!,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey[300]!,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[50],
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                // Prix
+                                Expanded(
+                                  flex: 2,
+                                  child: TextField(
+                                    controller: priceController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Prix (\$CAD)',
+                                      hintText: '0.00',
+                                      prefixIcon: Icon(
+                                        Icons.attach_money,
+                                        color: Colors.amber[700],
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey[300]!,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.amber[700]!,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey[300]!,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[50],
+                                    ),
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                          decimal: true,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16),
+                            // Magasin
+                            TextField(
+                              controller: storeController,
+                              decoration: InputDecoration(
+                                labelText: 'Magasin (optionnel)',
+                                hintText: 'Ex: IGA, Metro, Provigo...',
+                                prefixIcon: Icon(
+                                  Icons.store,
+                                  color: Colors.purple[600],
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.purple[600]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              textCapitalization: TextCapitalization.words,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    // Boutons
+                    Row(
+                      children: [
+                        // Bouton Annuler
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey[300]!),
+                              ),
+                            ),
+                            child: Text(
+                              'Annuler',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        // Bouton Ajouter
+                        Expanded(
+                          child: BlocBuilder<ListItemBloc, ListItemState>(
+                            builder: (dialogContext, state) {
+                              final isLoading = state is ListItemLoading;
+                              return ElevatedButton(
+                                onPressed:
+                                    isLoading
+                                        ? null
+                                        : () {
+                                          if (productController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            dialogContext
+                                                .read<ListItemBloc>()
+                                                .add(
+                                                  AddListItem(
+                                                    listId: currentList.id,
+                                                    productName:
+                                                        productController.text
+                                                            .trim(),
+                                                    quantity:
+                                                        int.tryParse(
+                                                          quantityController
+                                                              .text,
+                                                        ) ??
+                                                        1,
+                                                    price: double.tryParse(
+                                                      priceController.text,
+                                                    ),
+                                                    storeName:
+                                                        storeController.text
+                                                                .trim()
+                                                                .isEmpty
+                                                            ? null
+                                                            : storeController
+                                                                .text
+                                                                .trim(),
+                                                  ),
+                                                );
+                                            Navigator.pop(dialogContext);
+                                          } else {
+                                            SmartSnackBarManager.showMessage(
+                                              context,
+                                              'Le nom du produit est obligatoire',
+                                              type: SnackBarType.error,
+                                            );
+                                          }
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green[600],
+                                  foregroundColor: Colors.white,
+                                  disabledBackgroundColor: Colors.green[300],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 2,
+                                ),
+                                child:
+                                    isLoading
+                                        ? SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  Colors.white,
+                                                ),
+                                          ),
+                                        )
+                                        : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.add, size: 18),
+                                            SizedBox(width: 6),
+                                            Text(
+                                              'Ajouter',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
     );
   }

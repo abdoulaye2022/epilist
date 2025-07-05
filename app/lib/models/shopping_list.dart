@@ -1,4 +1,4 @@
-// models/shopping_list.dart - VERSION COMPATIBLE AVEC USER EXISTANT
+// models/shopping_list.dart - VERSION COMPATIBLE AVEC NOUVELLE API
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/models/shared_list.dart';
@@ -13,11 +13,20 @@ class ShoppingList {
   final DateTime? deletedAt;
   final List<ListItem> items;
 
-  // NOUVEAUX CHAMPS POUR LE PARTAGE
-  final List<SharedList> sharedWith; // Personnes avec qui la liste est partagée
-  final User? owner; // Propriétaire de la liste
-  final bool isOwner; // Si l'utilisateur actuel est propriétaire
-  final SharePermission? userPermission; // Permission de l'utilisateur actuel
+  // CHAMPS POUR LE PARTAGE (NOUVELLE API)
+  final bool isShared;
+  final bool isOwner;
+  final String? sharePermission; // "edit", "read", "admin"
+  final String? permissionDisplayName; // "Modification", "Lecture seule", etc.
+  final User? sharedBy; // Utilisateur qui a partagé la liste
+  final DateTime? sharedAt; // Date de partage
+  final bool canEdit;
+  final bool canDelete;
+
+  // ANCIENS CHAMPS POUR COMPATIBILITÉ
+  final List<SharedList> sharedWith;
+  final User? owner;
+  final SharePermission? userPermission;
 
   ShoppingList({
     required this.id,
@@ -27,10 +36,18 @@ class ShoppingList {
     required this.updatedAt,
     this.deletedAt,
     required this.items,
-    // Nouveaux paramètres avec valeurs par défaut
+    // Nouveaux champs API
+    this.isShared = false,
+    this.isOwner = true,
+    this.sharePermission,
+    this.permissionDisplayName,
+    this.sharedBy,
+    this.sharedAt,
+    this.canEdit = true,
+    this.canDelete = true,
+    // Anciens champs avec valeurs par défaut pour compatibilité
     this.sharedWith = const [],
     this.owner,
-    this.isOwner = true,
     this.userPermission,
   });
 
@@ -48,7 +65,7 @@ class ShoppingList {
   /// Prix total de tous les articles (avec gestion des prix null)
   double get totalPrice {
     return items.fold(0.0, (sum, item) {
-      final itemPrice = item.price ?? 0.0; // Gérer les prix null
+      final itemPrice = item.price ?? 0.0;
       return sum + (itemPrice * item.quantity);
     });
   }
@@ -87,83 +104,54 @@ class ShoppingList {
   /// Vérifie si la liste a des articles
   bool get hasItems => items.isNotEmpty;
 
-  // NOUVEAUX GETTERS POUR LE PARTAGE
+  // GETTERS POUR LE PARTAGE (NOUVELLE API)
 
-  /// Vérifie si la liste est partagée
-  bool get isShared => sharedWith.isNotEmpty;
-
-  /// Nombre de personnes avec qui la liste est partagée
-  int get sharedWithCount => sharedWith.length;
-
-  /// Vérifie si l'utilisateur peut éditer la liste
-  bool get canEdit {
-    if (isOwner) return true;
-    return userPermission == SharePermission.edit ||
-        userPermission == SharePermission.admin;
-  }
-
-  /// Vérifie si l'utilisateur peut supprimer la liste
-  bool get canDelete {
-    if (isOwner) return true;
-    return userPermission == SharePermission.admin;
-  }
+  /// Nombre de personnes avec qui la liste est partagée (estimation)
+  int get sharedWithCount =>
+      isShared ? 1 : 0; // API ne fournit pas le nombre exact
 
   /// Vérifie si l'utilisateur peut partager la liste
-  bool get canShare {
-    if (isOwner) return true;
-    return userPermission == SharePermission.admin;
-  }
+  bool get canShare => isOwner || sharePermission == 'admin';
 
   /// Vérifie si l'utilisateur peut gérer les articles
-  bool get canManageItems {
-    if (isOwner) return true;
-    return userPermission == SharePermission.edit ||
-        userPermission == SharePermission.admin;
-  }
+  bool get canManageItems => canEdit;
 
   /// Vérifie si l'utilisateur a seulement accès en lecture
-  bool get isReadOnly => userPermission == SharePermission.readOnly;
+  bool get isReadOnly => sharePermission == 'read' || (!canEdit && !canDelete);
 
   /// Retourne le statut de partage sous forme de texte
   String get sharingStatus {
     if (!isShared) return 'Privée';
-    if (sharedWithCount == 1) return 'Partagée avec 1 personne';
-    return 'Partagée avec $sharedWithCount personnes';
+    if (isOwner) return 'Partagée';
+    return 'Partagée avec vous';
   }
 
   /// Retourne une description détaillée du statut de partage
   String get detailedSharingStatus {
     if (!isShared) return 'Cette liste est privée';
 
-    final editCount = editableShares.length;
-    final readOnlyCount = readOnlyShares.length;
-
-    if (editCount > 0 && readOnlyCount > 0) {
-      return 'Partagée avec $editCount collaborateur${editCount > 1 ? 's' : ''} et $readOnlyCount observateur${readOnlyCount > 1 ? 's' : ''}';
-    } else if (editCount > 0) {
-      return 'Partagée avec $editCount collaborateur${editCount > 1 ? 's' : ''}';
+    if (isOwner) {
+      return 'Cette liste est partagée';
     } else {
-      return 'Partagée avec $readOnlyCount observateur${readOnlyCount > 1 ? 's' : ''}';
+      final sharedByName = sharedBy?.name ?? 'un utilisateur';
+      return 'Partagée par $sharedByName';
     }
   }
 
-  /// Liste des collaborateurs (utilisateurs avec qui la liste est partagée)
-  List<User> get collaborators {
-    return sharedWith
-        .map((share) => share.sharedWithUser)
-        .where((user) => user != null)
-        .cast<User>()
-        .toList();
-  }
+  /// Retourne la permission sous forme d'enum pour compatibilité
+  SharePermission? get computedUserPermission {
+    if (sharePermission == null) return userPermission;
 
-  /// Liste des partages avec permissions d'édition
-  List<SharedList> get editableShares {
-    return sharedWith.where((share) => share.canEdit).toList();
-  }
-
-  /// Liste des partages en lecture seule
-  List<SharedList> get readOnlyShares {
-    return sharedWith.where((share) => !share.canEdit).toList();
+    switch (sharePermission) {
+      case 'admin':
+        return SharePermission.admin;
+      case 'edit':
+        return SharePermission.edit;
+      case 'read':
+        return SharePermission.readOnly;
+      default:
+        return SharePermission.edit;
+    }
   }
 
   /// Vérifie si la liste a été modifiée récemment par quelqu'un d'autre
@@ -178,36 +166,32 @@ class ShoppingList {
 
   /// Vérifie si un utilisateur spécifique a accès à la liste
   bool hasUserAccess(int userId) {
-    if (owner?.id == userId || this.userId == userId) return true;
-    return sharedWith.any((share) => share.sharedWithUserId == userId);
+    if (this.userId == userId || owner?.id == userId) return true;
+    return isShared; // Si partagée, on assume que l'utilisateur a accès
   }
 
   /// Obtient la permission d'un utilisateur spécifique
   SharePermission? getUserPermission(int userId) {
-    if (owner?.id == userId || this.userId == userId)
+    if (this.userId == userId || owner?.id == userId) {
       return SharePermission.admin;
-    final share =
-        sharedWith
-            .where((share) => share.sharedWithUserId == userId)
-            .firstOrNull;
-    return share?.permission;
+    }
+    return computedUserPermission;
   }
 
   /// Vérifie si un utilisateur peut effectuer une action spécifique
   bool canUserEdit(int userId) {
-    final permission = getUserPermission(userId);
-    return permission == SharePermission.edit ||
-        permission == SharePermission.admin;
+    if (this.userId == userId || owner?.id == userId) return true;
+    return canEdit;
   }
 
   bool canUserDelete(int userId) {
-    final permission = getUserPermission(userId);
-    return permission == SharePermission.admin;
+    if (this.userId == userId || owner?.id == userId) return true;
+    return canDelete;
   }
 
   bool canUserShare(int userId) {
-    final permission = getUserPermission(userId);
-    return permission == SharePermission.admin;
+    if (this.userId == userId || owner?.id == userId) return true;
+    return sharePermission == 'admin';
   }
 
   // MÉTHODES POUR GÉRER LES ARTICLES (AVEC VÉRIFICATION DES PERMISSIONS)
@@ -274,7 +258,27 @@ class ShoppingList {
       }
     }
 
-    // Parsing des partages
+    // Parsing du partageur (shared_by)
+    User? sharedBy;
+    if (json['shared_by'] != null) {
+      try {
+        sharedBy = User.fromMap(json['shared_by'] as Map<String, dynamic>);
+      } catch (e) {
+        print("Error parsing shared_by: $e");
+      }
+    }
+
+    // Parsing du propriétaire pour compatibilité
+    User? owner;
+    if (json['owner'] != null) {
+      try {
+        owner = User.fromMap(json['owner'] as Map<String, dynamic>);
+      } catch (e) {
+        print("Error parsing owner: $e");
+      }
+    }
+
+    // Parsing des partages pour compatibilité
     List<SharedList> sharedWithList = [];
     if (json['shared_with'] != null) {
       try {
@@ -289,17 +293,7 @@ class ShoppingList {
       }
     }
 
-    // Parsing du propriétaire - UTILISE fromMap POUR COMPATIBILITÉ
-    User? owner;
-    if (json['owner'] != null) {
-      try {
-        owner = User.fromMap(json['owner'] as Map<String, dynamic>);
-      } catch (e) {
-        print("Error parsing owner: $e");
-      }
-    }
-
-    // Parsing de la permission utilisateur
+    // Parsing de la permission utilisateur pour compatibilité
     SharePermission? userPermission;
     if (json['user_permission'] != null) {
       try {
@@ -323,9 +317,21 @@ class ShoppingList {
               ? DateTime.parse(json['deleted_at'] as String)
               : null,
       items: itemsList,
+      // Nouveaux champs API
+      isShared: json['is_shared'] ?? false,
+      isOwner: json['is_owner'] ?? true,
+      sharePermission: json['share_permission'] as String?,
+      permissionDisplayName: json['permission_display_name'] as String?,
+      sharedBy: sharedBy,
+      sharedAt:
+          json['shared_at'] != null
+              ? DateTime.parse(json['shared_at'] as String)
+              : null,
+      canEdit: json['can_edit'] ?? true,
+      canDelete: json['can_delete'] ?? true,
+      // Anciens champs pour compatibilité
       sharedWith: sharedWithList,
       owner: owner,
-      isOwner: json['is_owner'] ?? true,
       userPermission: userPermission,
     );
   }
@@ -339,9 +345,18 @@ class ShoppingList {
       'updated_at': updatedAt.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
       'items': items.map((item) => item.toJson()).toList(),
+      // Nouveaux champs API
+      'is_shared': isShared,
+      'is_owner': isOwner,
+      'share_permission': sharePermission,
+      'permission_display_name': permissionDisplayName,
+      'shared_by': sharedBy?.toJson(),
+      'shared_at': sharedAt?.toIso8601String(),
+      'can_edit': canEdit,
+      'can_delete': canDelete,
+      // Anciens champs pour compatibilité
       'shared_with': sharedWith.map((share) => share.toJson()).toList(),
       'owner': owner?.toJson(),
-      'is_owner': isOwner,
       'user_permission': userPermission?.name,
     };
   }
@@ -354,9 +369,16 @@ class ShoppingList {
     DateTime? updatedAt,
     DateTime? deletedAt,
     List<ListItem>? items,
+    bool? isShared,
+    bool? isOwner,
+    String? sharePermission,
+    String? permissionDisplayName,
+    User? sharedBy,
+    DateTime? sharedAt,
+    bool? canEdit,
+    bool? canDelete,
     List<SharedList>? sharedWith,
     User? owner,
-    bool? isOwner,
     SharePermission? userPermission,
   }) {
     return ShoppingList(
@@ -367,9 +389,17 @@ class ShoppingList {
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       items: items ?? this.items,
+      isShared: isShared ?? this.isShared,
+      isOwner: isOwner ?? this.isOwner,
+      sharePermission: sharePermission ?? this.sharePermission,
+      permissionDisplayName:
+          permissionDisplayName ?? this.permissionDisplayName,
+      sharedBy: sharedBy ?? this.sharedBy,
+      sharedAt: sharedAt ?? this.sharedAt,
+      canEdit: canEdit ?? this.canEdit,
+      canDelete: canDelete ?? this.canDelete,
       sharedWith: sharedWith ?? this.sharedWith,
       owner: owner ?? this.owner,
-      isOwner: isOwner ?? this.isOwner,
       userPermission: userPermission ?? this.userPermission,
     );
   }
@@ -377,8 +407,8 @@ class ShoppingList {
   @override
   String toString() {
     return 'ShoppingList{id: $id, name: $name, itemsCount: ${items.length}, '
-        'isShared: $isShared, sharedWithCount: $sharedWithCount, '
-        'isOwner: $isOwner, userPermission: $userPermission}';
+        'isShared: $isShared, isOwner: $isOwner, '
+        'sharePermission: $sharePermission, canEdit: $canEdit, canDelete: $canDelete}';
   }
 
   @override
@@ -393,10 +423,11 @@ class ShoppingList {
           updatedAt == other.updatedAt &&
           deletedAt == other.deletedAt &&
           items == other.items &&
-          sharedWith == other.sharedWith &&
-          owner == other.owner &&
+          isShared == other.isShared &&
           isOwner == other.isOwner &&
-          userPermission == other.userPermission;
+          sharePermission == other.sharePermission &&
+          canEdit == other.canEdit &&
+          canDelete == other.canDelete;
 
   @override
   int get hashCode =>
@@ -407,39 +438,41 @@ class ShoppingList {
       updatedAt.hashCode ^
       deletedAt.hashCode ^
       items.hashCode ^
-      sharedWith.hashCode ^
-      owner.hashCode ^
+      isShared.hashCode ^
       isOwner.hashCode ^
-      userPermission.hashCode;
+      sharePermission.hashCode ^
+      canEdit.hashCode ^
+      canDelete.hashCode;
 
+  // MÉTHODES POUR COMPATIBILITÉ AVEC L'ANCIENNE API DE PARTAGE
   factory ShoppingList.fromShareApiJson(Map<String, dynamic> json) {
     return ShoppingList(
       id: json['id'] as int,
-      userId: 0, // ✅ Valeur par défaut car absent de l'API de partage
+      userId: 0,
       name: json['name'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.now(), // ✅ Valeur par défaut car absente
-      items: [], // ✅ Pas d'items détaillés dans l'API de partage
-      // Utiliser les nouveaux champs spécifiques à l'API de partage
-      sharedWith: [],
-      owner: null,
+      updatedAt: DateTime.now(),
+      items: [],
+      isShared: true,
       isOwner: false,
-      userPermission: null,
+      sharePermission: 'edit',
+      canEdit: true,
+      canDelete: false,
     );
   }
 
-  // ✅ GETTERS SUPPLÉMENTAIRES POUR L'API DE PARTAGE
+  // GETTERS SUPPLÉMENTAIRES POUR L'API DE PARTAGE (compatibilité)
   int get apiItemsCount => _apiItemsCount ?? itemsCount;
   int get apiPurchasedItemsCount =>
       _apiPurchasedItemsCount ?? purchasedItemsCount;
   double get apiTotalPrice => _apiTotalPrice ?? totalPrice;
 
-  // ✅ CHAMPS PRIVÉS POUR STOCKER LES DONNÉES DE L'API
+  // CHAMPS PRIVÉS POUR STOCKER LES DONNÉES DE L'API
   int? _apiItemsCount;
   int? _apiPurchasedItemsCount;
   double? _apiTotalPrice;
 
-  // ✅ MÉTHODE POUR CRÉER UNE INSTANCE AVEC LES DONNÉES DE L'API DE PARTAGE
+  // MÉTHODE POUR CRÉER UNE INSTANCE AVEC LES DONNÉES DE L'API DE PARTAGE
   ShoppingList withShareApiData({
     required int itemsCount,
     required int purchasedItemsCount,

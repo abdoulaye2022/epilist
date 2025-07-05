@@ -1,36 +1,162 @@
-// widgets/list_detail/empty_items_state.dart
+// widgets/list_detail/empty_items_state.dart - VERSION AVEC PERMISSIONS
+import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
 class EmptyItemsState extends StatelessWidget {
-  final VoidCallback onAddItem;
+  final VoidCallback? onAddItem;
+  final ShoppingList shoppingList;
 
-  const EmptyItemsState({super.key, required this.onAddItem});
+  const EmptyItemsState({
+    super.key,
+    this.onAddItem,
+    required this.shoppingList,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Padding(
+        padding: EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildIcon(),
+            SizedBox(height: 24),
+            _buildTitle(),
+            SizedBox(height: 12),
+            _buildDescription(),
+            SizedBox(height: 32),
+            _buildActionButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIcon() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(40),
+        border: Border.all(color: Colors.grey[300]!, width: 2),
+      ),
+      child: Icon(
+        Icons.shopping_cart_outlined,
+        size: 40,
+        color: Colors.grey[400],
+      ),
+    );
+  }
+
+  Widget _buildTitle() {
+    String title;
+    if (shoppingList.isReadOnly) {
+      title = 'Cette liste est vide';
+    } else {
+      title = 'Votre liste est vide';
+    }
+
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey[700],
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildDescription() {
+    String description;
+    if (shoppingList.isReadOnly) {
+      description =
+          'Il n\'y a pas encore d\'articles dans cette liste.\n'
+          'Vous pouvez seulement consulter son contenu.';
+    } else if (!shoppingList.canManageItems) {
+      description =
+          'Il n\'y a pas encore d\'articles dans cette liste.\n'
+          'Vous n\'avez pas la permission d\'ajouter des articles.';
+    } else {
+      description =
+          'Commencez par ajouter votre premier article\n'
+          'pour organiser vos courses.';
+    }
+
+    return Text(
+      description,
+      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.5),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildActionButton() {
+    // Si aucune permission d'ajout, afficher un message informatif
+    if (!shoppingList.canManageItems) {
+      return _buildPermissionInfo();
+    }
+
+    // Si permission d'ajout mais pas de callback, ne rien afficher
+    if (onAddItem == null) {
+      return SizedBox.shrink();
+    }
+
+    // Bouton normal d'ajout
+    return ElevatedButton.icon(
+      onPressed: onAddItem,
+      icon: Icon(Icons.add, color: Colors.white),
+      label: Text(
+        'Ajouter un article',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green[600],
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 2,
+      ),
+    );
+  }
+
+  Widget _buildPermissionInfo() {
+    String infoText;
+    Color infoColor;
+    IconData infoIcon;
+
+    if (shoppingList.isReadOnly) {
+      infoText = 'Mode lecture seule';
+      infoColor = Colors.blue[600]!;
+      infoIcon = Icons.visibility;
+    } else {
+      infoText = 'Permission requise pour ajouter';
+      infoColor = Colors.orange[600]!;
+      infoIcon = Icons.lock;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: infoColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: infoColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.add_shopping_cart, size: 60, color: Colors.grey[400]),
-          SizedBox(height: 16),
+          Icon(infoIcon, size: 20, color: infoColor),
+          SizedBox(width: 8),
           Text(
-            'Liste vide',
-            style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Ajoutez votre premier article',
-            style: TextStyle(color: Colors.grey[500]),
-          ),
-          SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: onAddItem,
-            icon: Icon(Icons.add),
-            label: Text('Ajouter un article'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
-              foregroundColor: Colors.white,
+            infoText,
+            style: TextStyle(
+              fontSize: 14,
+              color: infoColor,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/ShoppingListController.php - VERSION AVEC LISTES PARTAGÉES
+// app/Http/Controllers/ShoppingListController.php - VERSION AVEC shared_by.name CORRIGÉ
 
 namespace App\Controllers;
 
@@ -72,8 +72,14 @@ class ShoppingListController
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // ✅ 2. Récupérer les listes partagées avec l'utilisateur
-            $sharedListsData = SharedList::with(['shoppingList.items', 'owner'])
+            // ✅ 2. Récupérer les listes partagées avec l'utilisateur (avec eager loading amélioré)
+            $sharedListsData = SharedList::with([
+                'shoppingList.items', 
+                'owner' => function($query) {
+                    // S'assurer de charger tous les champs nécessaires de l'utilisateur
+                    $query->select('id', 'name', 'email', 'first_name', 'last_name');
+                }
+            ])
                 ->where('shared_with_user_id', $user_id)
                 ->where('status', SharedList::STATUS_ACCEPTED)
                 ->where('is_active', true)
@@ -83,6 +89,7 @@ class ShoppingListController
             // ✅ 3. Transformer les listes partagées avec les informations de partage
             $sharedLists = $sharedListsData->map(function($sharedList) use ($user_id) {
                 $list = $sharedList->shoppingList;
+                $owner = $sharedList->owner;
                 
                 // Ajouter les métadonnées de partage à la liste
                 $listArray = $list->toArray();
@@ -90,11 +97,14 @@ class ShoppingListController
                 $listArray['is_owner'] = false;
                 $listArray['share_permission'] = $sharedList->permission;
                 $listArray['permission_display_name'] = $this->getPermissionDisplayName($sharedList->permission);
+                
+                // ✅ Amélioration pour shared_by.name
                 $listArray['shared_by'] = [
-                    'id' => $sharedList->owner->id,
-                    'name' => $sharedList->owner->name ?? $sharedList->owner->email,
-                    'email' => $sharedList->owner->email
+                    'id' => $owner->id,
+                    'name' => $this->getUserDisplayName($owner),
+                    'email' => $owner->email
                 ];
+                
                 $listArray['shared_at'] = $sharedList->accepted_at->toISOString();
                 $listArray['can_edit'] = $sharedList->canEdit();
                 $listArray['can_delete'] = $sharedList->canDelete();
@@ -175,8 +185,13 @@ class ShoppingListController
                 return $response->withHeader('Content-Type', 'application/json');
             }
 
-            // ✅ 2. Vérifier si c'est une liste partagée
-            $sharedList = SharedList::with(['shoppingList.items', 'owner'])
+            // ✅ 2. Vérifier si c'est une liste partagée (avec eager loading amélioré)
+            $sharedList = SharedList::with([
+                'shoppingList.items', 
+                'owner' => function($query) {
+                    $query->select('id', 'name', 'email', 'first_name', 'last_name');
+                }
+            ])
                 ->where('shared_with_user_id', $user_id)
                 ->whereHas('shoppingList', function($query) use ($list_id) {
                     $query->where('id', $list_id);
@@ -188,16 +203,21 @@ class ShoppingListController
             if ($sharedList) {
                 // C'est une liste partagée
                 $list = $sharedList->shoppingList;
+                $owner = $sharedList->owner;
+                
                 $listArray = $list->toArray();
                 $listArray['is_shared'] = true;
                 $listArray['is_owner'] = false;
                 $listArray['share_permission'] = $sharedList->permission;
                 $listArray['permission_display_name'] = $this->getPermissionDisplayName($sharedList->permission);
+                
+                // ✅ Amélioration pour shared_by.name
                 $listArray['shared_by'] = [
-                    'id' => $sharedList->owner->id,
-                    'name' => $sharedList->owner->name ?? $sharedList->owner->email,
-                    'email' => $sharedList->owner->email
+                    'id' => $owner->id,
+                    'name' => $this->getUserDisplayName($owner),
+                    'email' => $owner->email
                 ];
+                
                 $listArray['shared_at'] = $sharedList->accepted_at->toISOString();
                 $listArray['can_edit'] = $sharedList->canEdit();
                 $listArray['can_delete'] = $sharedList->canDelete();
@@ -475,6 +495,29 @@ class ShoppingListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    /**
+     * ✅ Méthode utilitaire pour obtenir le nom d'affichage d'un utilisateur
+     */
+    private function getUserDisplayName($user): string
+    {
+        // Priorité : name > first_name last_name > email
+        if (!empty($user->name)) {
+            return $user->name;
+        }
+        
+        if (!empty($user->first_name) || !empty($user->last_name)) {
+            return trim($user->first_name . ' ' . $user->last_name);
+        }
+        
+        // En dernier recours, utiliser la partie avant @ de l'email
+        if (!empty($user->email)) {
+            $emailParts = explode('@', $user->email);
+            return $emailParts[0];
+        }
+        
+        return 'Utilisateur inconnu';
     }
 
     /**

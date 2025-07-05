@@ -1,10 +1,11 @@
+// models/list_item.dart - VERSION CORRIGÉE
 class ListItem {
   final int id;
   final int listId;
   final String productName;
   final int quantity;
-  final double price;
-  final String storeName;
+  final double? price; // Nullable pour gérer les prix absents
+  final String? storeName; // Nullable pour gérer les magasins absents
   final bool isPurchased;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -15,8 +16,8 @@ class ListItem {
     required this.listId,
     required this.productName,
     required this.quantity,
-    required this.price,
-    required this.storeName,
+    this.price, // Nullable
+    this.storeName, // Nullable
     required this.isPurchased,
     required this.createdAt,
     required this.updatedAt,
@@ -27,14 +28,32 @@ class ListItem {
   bool get isCompleted => isPurchased;
   String get name => productName;
 
+  /// Retourne le prix formaté ou une chaîne vide si null
+  String get formattedPrice {
+    if (price == null) return '';
+    return '${price!.toStringAsFixed(2)} \$CAD';
+  }
+
+  /// Retourne le nom du magasin ou une chaîne vide si null
+  String get storeDisplayName => storeName ?? '';
+
+  /// Vérifie si l'article a un prix défini
+  bool get hasPrice => price != null && price! > 0;
+
+  /// Vérifie si l'article a un magasin défini
+  bool get hasStore => storeName != null && storeName!.isNotEmpty;
+
+  /// Calcule le prix total (prix * quantité)
+  double get totalPrice => (price ?? 0.0) * quantity;
+
   factory ListItem.fromJson(Map<String, dynamic> json) {
     return ListItem(
       id: _parseInt(json['id']),
       listId: _parseInt(json['list_id']),
       productName: json['product_name'] as String? ?? '',
       quantity: _parseInt(json['quantity']),
-      price: _parseDouble(json['price']) ?? 0.0,
-      storeName: json['store_name'] as String? ?? '',
+      price: _parseDouble(json['price']), // Peut être null
+      storeName: _parseString(json['store_name']), // Peut être null
       isPurchased: json['is_purchased'] == true || json['is_purchased'] == 1,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -45,7 +64,7 @@ class ListItem {
     );
   }
 
-  // Fonctions helpers pour le parsing
+  // Fonctions helpers pour le parsing améliorées
   static int _parseInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;
@@ -55,11 +74,23 @@ class ListItem {
   }
 
   static double? _parseDouble(dynamic value) {
-    if (value == null) return 0.0;
+    if (value == null) return null;
     if (value is double) return value;
     if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0.0;
-    return 0.0;
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      return parsed == 0.0 ? null : parsed; // Retourne null si 0
+    }
+    return null;
+  }
+
+  static String? _parseString(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      final trimmed = value.trim();
+      return trimmed.isEmpty ? null : trimmed;
+    }
+    return value.toString().trim().isEmpty ? null : value.toString().trim();
   }
 
   Map<String, dynamic> toJson() {
@@ -105,7 +136,9 @@ class ListItem {
 
   @override
   String toString() {
-    return 'ListItem{id: $id, product: $productName, qty: $quantity, purchased: $isPurchased}';
+    return 'ListItem{id: $id, product: $productName, qty: $quantity, '
+        'price: ${price ?? 'N/A'}, store: ${storeName ?? 'N/A'}, '
+        'purchased: $isPurchased}';
   }
 
   @override
@@ -136,4 +169,29 @@ class ListItem {
       createdAt.hashCode ^
       updatedAt.hashCode ^
       deletedAt.hashCode;
+}
+
+// Extension pour les validations d'articles
+extension ListItemValidation on ListItem {
+  /// Vérifie si l'article est valide
+  bool get isValid {
+    return productName.isNotEmpty && quantity > 0;
+  }
+
+  /// Vérifie si l'article est complet (avec toutes les informations)
+  bool get isComplete {
+    return isValid && hasPrice && hasStore;
+  }
+
+  /// Retourne les champs manquants
+  List<String> get missingFields {
+    List<String> missing = [];
+
+    if (productName.isEmpty) missing.add('Nom du produit');
+    if (quantity <= 0) missing.add('Quantité');
+    if (!hasPrice) missing.add('Prix');
+    if (!hasStore) missing.add('Magasin');
+
+    return missing;
+  }
 }
