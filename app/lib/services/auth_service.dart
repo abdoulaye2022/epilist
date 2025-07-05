@@ -473,7 +473,7 @@ class AuthService {
 
   Future<void> requestPasswordChangeCode(String email) async {
     try {
-      await dio.post('/auth/password-reset-request', data: {'email': email});
+      await dio.post('/auth/request-password-change', data: {'email': email});
     } on DioException catch (e) {
       throw Exception('Erreur lors de la demande: ${e.message}');
     }
@@ -486,7 +486,7 @@ class AuthService {
   }) async {
     try {
       await dio.post(
-        '/auth/password-reset-verify',
+        '/auth/verify-password-change-code',
         data: {'email': email, 'code': code, 'new_password': newPassword},
       );
     } on DioException catch (e) {

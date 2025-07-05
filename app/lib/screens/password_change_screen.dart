@@ -1,5 +1,6 @@
 // screens/password_change_screen.dart
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,65 +56,71 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          print('🔍 BlocListener - État reçu: ${state.runtimeType}');
+          debugPrint('🔍 BlocListener - État reçu: ${state.runtimeType}');
 
           if (state is AuthLoading) {
-            print('⏳ AuthLoading détecté');
+            debugPrint('⏳ AuthLoading détecté');
             setState(() {
               _isLoading = true;
               _errorMessage = null;
             });
           } else if (state is PasswordChangeCodeSent) {
-            print('📧 PasswordChangeCodeSent détecté pour: ${state.email}');
+            debugPrint(
+              '📧 PasswordChangeCodeSent détecté pour: ${state.email}',
+            );
             setState(() {
               _isLoading = false;
               _hasRequestedCode = true;
               _errorMessage = null;
             });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Code de vérification envoyé à ${state.email}',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.green[600],
-                duration: Duration(seconds: 3),
-              ),
+            // ✅ CORRECTION: Utiliser SmartSnackBarManager
+            SmartSnackBarManager.showMessage(
+              context,
+              'Code de vérification envoyé à ${state.email}',
+              type: SnackBarType.success,
+              duration: const Duration(seconds: 3),
             );
           } else if (state is PasswordChanged) {
-            print('✅ PasswordChanged détecté');
+            debugPrint('✅ PasswordChanged détecté');
             setState(() {
               _isLoading = false;
               _errorMessage = null;
             });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Mot de passe changé avec succès !',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.green[600],
-                duration: Duration(seconds: 2),
-              ),
+            // ✅ CORRECTION: Utiliser SmartSnackBarManager
+            SmartSnackBarManager.showMessage(
+              context,
+              'Mot de passe changé avec succès !',
+              type: SnackBarType.success,
+              duration: const Duration(seconds: 2),
             );
 
             // Retourner à l'écran de connexion après 2 secondes
-            Future.delayed(Duration(seconds: 2), () {
-              Navigator.of(context).pop();
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
             });
           } else if (state is AuthFailure) {
-            print('❌ AuthFailure détecté avec erreur: ${state.error}');
+            debugPrint('❌ AuthFailure détecté avec erreur: ${state.error}');
             setState(() {
               _isLoading = false;
-              _errorMessage = state.error;
+              _errorMessage = _getLocalizedErrorMessage(state.error);
             });
+
+            // ✅ CORRECTION: Utiliser SmartSnackBarManager pour les erreurs
+            SmartSnackBarManager.showMessage(
+              context,
+              _getLocalizedErrorMessage(state.error),
+              type: SnackBarType.error,
+              duration: const Duration(seconds: 4),
+            );
           } else {
             setState(() {
               _isLoading = false;
             });
-            print('❓ État non géré: ${state.runtimeType}');
+            debugPrint('❓ État non géré: ${state.runtimeType}');
           }
         },
         child: SafeArea(
@@ -175,7 +182,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
                     // AFFICHAGE DE L'ERREUR
                     AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       height: _errorMessage != null ? null : 0,
                       margin: EdgeInsets.only(
                         bottom: _errorMessage != null ? 16 : 0,
@@ -184,7 +191,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           _errorMessage != null
                               ? Container(
                                 width: double.infinity,
-                                padding: EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   color: Colors.red[50],
                                   borderRadius: BorderRadius.circular(8),
@@ -197,7 +204,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                       color: Colors.red[600],
                                       size: 20,
                                     ),
-                                    SizedBox(width: 8),
+                                    const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         _errorMessage!,
@@ -220,7 +227,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                         });
                                       },
                                       padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(
+                                      constraints: const BoxConstraints(
                                         minWidth: 24,
                                         minHeight: 24,
                                       ),
@@ -228,7 +235,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                   ],
                                 ),
                               )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                     ),
 
                     Form(
@@ -507,7 +514,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                               ),
                               child:
                                   _isLoading
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                         height: 20,
                                         width: 20,
                                         child: CircularProgressIndicator(
@@ -519,7 +526,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                         _hasRequestedCode
                                             ? 'Changer le mot de passe'
                                             : 'Envoyer le code',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -549,7 +556,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
                           // Informations utiles
                           Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.blue[50],
                               borderRadius: BorderRadius.circular(8),
@@ -562,7 +569,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                   color: Colors.blue[600],
                                   size: 20,
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     _hasRequestedCode
@@ -591,7 +598,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   color: Colors.black.withOpacity(0.3),
                   child: Center(
                     child: Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -599,7 +606,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 10,
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -610,7 +617,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             color: Colors.green[600],
                             strokeWidth: 3,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             _hasRequestedCode
                                 ? 'Changement en cours...'
@@ -634,15 +641,15 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
   }
 
   void _handleAction() {
-    print('🚀 Tentative d\'action...');
+    debugPrint('🚀 Tentative d\'action...');
 
     if (_formKey.currentState!.validate()) {
-      print('✅ Validation réussie');
+      debugPrint('✅ Validation réussie');
 
       if (!_hasRequestedCode) {
         // Demander le code
         final email = _emailController.text.trim();
-        print('📤 Envoi RequestPasswordChangeCode pour: $email');
+        debugPrint('📤 Envoi RequestPasswordChangeCode pour: $email');
 
         context.read<AuthBloc>().add(RequestPasswordChangeCode(email));
       } else {
@@ -651,7 +658,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         final code = _codeController.text.trim();
         final newPassword = _newPasswordController.text;
 
-        print('📤 Envoi VerifyPasswordChangeCode pour: $email');
+        debugPrint('📤 Envoi VerifyPasswordChangeCode pour: $email');
 
         context.read<AuthBloc>().add(
           VerifyPasswordChangeCode(
@@ -662,16 +669,58 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         );
       }
     } else {
-      print('❌ Validation échouée');
+      debugPrint('❌ Validation échouée');
     }
   }
 
   void _resendCode() {
     final email = _emailController.text.trim();
     if (email.isNotEmpty) {
-      print('📤 Renvoi du code pour: $email');
+      debugPrint('📤 Renvoi du code pour: $email');
       context.read<AuthBloc>().add(RequestPasswordChangeCode(email));
     }
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Localisation des messages d'erreur
+  String _getLocalizedErrorMessage(String error) {
+    // Messages spécifiques pour le changement de mot de passe
+    if (error.toLowerCase().contains('code invalid') ||
+        error.toLowerCase().contains('invalid code') ||
+        error.toLowerCase().contains('code_invalid')) {
+      return 'Le code de vérification est invalide';
+    }
+
+    if (error.toLowerCase().contains('code expired') ||
+        error.toLowerCase().contains('expired code') ||
+        error.toLowerCase().contains('code_expired')) {
+      return 'Le code de vérification a expiré. Demandez un nouveau code.';
+    }
+
+    if (error.toLowerCase().contains('user not found') ||
+        error.toLowerCase().contains('email not found')) {
+      return 'Aucun compte trouvé avec cet email';
+    }
+
+    if (error.toLowerCase().contains('email not verified')) {
+      return 'Votre email n\'est pas encore vérifié';
+    }
+
+    if (error.toLowerCase().contains('password')) {
+      return 'Erreur lors du changement de mot de passe';
+    }
+
+    if (error.toLowerCase().contains('network') ||
+        error.toLowerCase().contains('connection') ||
+        error.toLowerCase().contains('timeout')) {
+      return 'Problème de connexion. Vérifiez votre réseau.';
+    }
+
+    if (error.toLowerCase().contains('validation')) {
+      return 'Les données saisies ne sont pas valides';
+    }
+
+    // Message par défaut
+    return error.isNotEmpty ? error : 'Une erreur inattendue est survenue';
   }
 
   @override
