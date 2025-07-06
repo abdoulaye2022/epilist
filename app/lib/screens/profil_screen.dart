@@ -1,4 +1,4 @@
-// screens/profile_screen.dart - VERSION REFACTORISÉE
+// screens/profile_screen.dart - VERSION CORRIGÉE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
@@ -22,6 +22,7 @@ import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,6 +32,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  User? _currentUser; // ✅ Stocker l'utilisateur localement
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +43,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _loadUserProfile() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = context.read<AuthBloc>().state;
-      if (authState is! AuthSuccess && authState is! ProfileUpdated) {
+      debugPrint('🔍 ProfileScreen initState - État: ${authState.runtimeType}');
+
+      if (authState is AuthSuccess) {
+        _currentUser = authState.user;
+        debugPrint('✅ Utilisateur déjà disponible: ${_currentUser?.email}');
+      } else if (authState is ProfileUpdated) {
+        _currentUser = authState.user;
+        debugPrint(
+          '✅ Utilisateur mis à jour disponible: ${_currentUser?.email}',
+        );
+      } else {
+        debugPrint('🔄 Chargement de l\'utilisateur...');
         context.read<AuthBloc>().add(GetCurrentUser());
       }
     });
@@ -50,38 +64,113 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: _handleAuthStateChanges,
+      buildWhen: (previous, current) {
+        debugPrint(
+          '🔍 ProfileScreen buildWhen: ${previous.runtimeType} → ${current.runtimeType}',
+        );
+
+        // ✅ Reconstruire seulement pour les états d'authentification principaux
+        return current is AuthLoading ||
+            current is AuthSuccess ||
+            current is ProfileUpdated ||
+            current is AuthFailure ||
+            current is Unauthenticated;
+      },
       builder: (context, state) => _buildContent(state),
     );
   }
 
   void _handleAuthStateChanges(BuildContext context, AuthState state) {
+    debugPrint('🎧 ProfileScreen Listener - État: ${state.runtimeType}');
+
     if (state is Unauthenticated) {
+      debugPrint('🔴 Utilisateur déconnecté, redirection vers login');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
+
+    // ✅ Mettre à jour l'utilisateur local quand nécessaire
+    if (state is AuthSuccess) {
+      _currentUser = state.user;
+      debugPrint('✅ Utilisateur mis à jour: ${_currentUser?.email}');
+    } else if (state is ProfileUpdated) {
+      _currentUser = state.user;
+      debugPrint('✅ Profil mis à jour: ${_currentUser?.email}');
+    }
+
+    // ✅ Gérer les états de suppression de compte avec SnackBar
+    if (state is AccountDeletionCodeSent) {
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        'Code de suppression envoyé ! Vérifiez votre email.',
+      );
+    } else if (state is AccountDeletionConfirmed) {
+      SmartSnackBarManager.showInfoSnackBar(
+        context,
+        'Votre compte sera supprimé dans 30 jours. Vous pouvez annuler cette action.',
+        duration: const Duration(seconds: 5),
+      );
+    } else if (state is AccountDeletionCancelled) {
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        'Suppression de compte annulée avec succès !',
+      );
+    }
   }
 
   Widget _buildContent(AuthState state) {
-    // État de chargement
-    if (state is AuthLoading) {
+    debugPrint('🎨 ProfileScreen _buildContent - État: ${state.runtimeType}');
+    debugPrint('👤 Utilisateur actuel: ${_currentUser?.email ?? 'null'}');
+
+    // ✅ État de chargement SEULEMENT si on n'a pas d'utilisateur
+    if (state is AuthLoading && _currentUser == null) {
+      debugPrint('⏳ Affichage du loading (pas d\'utilisateur)');
       return const ProfileLoadingState();
     }
 
-    // État d'erreur
-    if (state is! AuthSuccess && state is! ProfileUpdated) {
+    // ✅ Utilisateur disponible (soit dans l'état, soit stocké localement)
+    User? user;
+    if (state is AuthSuccess) {
+      user = state.user;
+    } else if (state is ProfileUpdated) {
+      user = state.user;
+    } else if (_currentUser != null) {
+      user = _currentUser; // Utiliser l'utilisateur stocké
+    }
+
+    if (user != null) {
+      debugPrint('✅ Affichage du profil pour: ${user.email}');
+      return _buildProfileView(user);
+    }
+
+    // ✅ État d'erreur seulement si vraiment en erreur ET pas d'utilisateur en backup
+    if (state is AuthFailure && _currentUser == null) {
+      debugPrint('❌ Affichage de l\'erreur: ${state.error}');
       return ProfileErrorState(
-        onRetry: () => context.read<AuthBloc>().add(GetCurrentUser()),
-        onLogout: () => context.read<AuthBloc>().add(LogoutRequested()),
+        onRetry: () {
+          debugPrint('🔄 Retry demandé...');
+          context.read<AuthBloc>().add(GetCurrentUser());
+        },
+        onLogout: () {
+          debugPrint('🔴 Logout demandé...');
+          context.read<AuthBloc>().add(LogoutRequested());
+        },
       );
     }
 
-    // Récupérer l'utilisateur
-    final User user =
-        state is AuthSuccess ? state.user : (state as ProfileUpdated).user;
+    // ✅ Si on a un utilisateur en backup, l'afficher même en cas d'erreur temporaire
+    if (_currentUser != null) {
+      debugPrint(
+        '✅ Affichage du profil en backup pour: ${_currentUser!.email}',
+      );
+      return _buildProfileView(_currentUser!);
+    }
 
-    return _buildProfileView(user);
+    // ✅ Fallback: état de chargement
+    debugPrint('⏳ Fallback vers loading');
+    return const ProfileLoadingState();
   }
 
   Widget _buildProfileView(User user) {
@@ -98,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // ✅ NOUVEAU: Widget de statut de suppression
+            // ✅ Widget de statut de suppression
             const AccountDeletionStatusWidget(),
 
             _buildDataSection(),

@@ -699,47 +699,183 @@ class _ListDetailViewState extends State<_ListDetailView> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            title: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.blue[600]),
-                SizedBox(width: 8),
-                Text('Informations de la liste'),
-              ],
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildInfoRow('Nom', currentList.name),
-                SizedBox(height: 8),
-                _buildInfoRow(
-                  'Statut',
-                  currentList.isShared ? 'Partagée' : 'Privée',
-                ),
-                if (currentList.isShared) ...[
-                  SizedBox(height: 8),
-                  _buildInfoRow(
-                    'Votre rôle',
-                    currentList.isOwner
-                        ? 'Propriétaire'
-                        : (currentList.permissionDisplayName ??
-                            'Collaborateur'),
-                  ),
-                  if (!currentList.isOwner && currentList.sharedBy != null) ...[
-                    SizedBox(height: 8),
-                    _buildInfoRow('Partagée par', currentList.sharedBy!.name),
-                  ],
+            elevation: 10,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildListInfoIcon(),
+                  const SizedBox(height: 20),
+                  _buildListInfoTitle(),
+                  const SizedBox(height: 12),
+                  _buildListInfoDescription(),
+                  const SizedBox(height: 24),
+                  _buildListInfoContent(),
+                  const SizedBox(height: 24),
+                  _buildListInfoButton(),
                 ],
-              ],
+              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Fermer'),
+          ),
+    );
+  }
+
+  Widget _buildListInfoIcon() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Icon(Icons.info_rounded, size: 40, color: Colors.blue[600]),
+    );
+  }
+
+  Widget _buildListInfoTitle() {
+    return const Text(
+      'Informations de la liste',
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+    );
+  }
+
+  Widget _buildListInfoDescription() {
+    return Text(
+      'Détails et permissions de "${currentList.name}"',
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+    );
+  }
+
+  Widget _buildListInfoContent() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRowStyled(
+            'Nom',
+            currentList.name,
+            Icons.list_alt_rounded,
+            Colors.blue[600]!,
+          ),
+          const SizedBox(height: 16),
+          _buildInfoRowStyled(
+            'Statut',
+            currentList.isShared ? 'Partagée' : 'Privée',
+            currentList.isShared ? Icons.people_rounded : Icons.lock_rounded,
+            currentList.isShared ? Colors.green[600]! : Colors.orange[600]!,
+          ),
+          if (currentList.isShared) ...[
+            const SizedBox(height: 16),
+            _buildInfoRowStyled(
+              'Votre rôle',
+              currentList.isOwner
+                  ? 'Propriétaire'
+                  : (currentList.permissionDisplayName ?? 'Collaborateur'),
+              currentList.isOwner ? Icons.crop_rounded : Icons.person_rounded,
+              currentList.isOwner ? Colors.amber[600]! : Colors.purple[600]!,
+            ),
+            if (!currentList.isOwner && currentList.sharedBy != null) ...[
+              const SizedBox(height: 16),
+              _buildInfoRowStyled(
+                'Partagée par',
+                currentList.sharedBy!.name,
+                Icons.share_rounded,
+                Colors.teal[600]!,
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRowStyled(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildListInfoButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => Navigator.of(context).pop(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue[600],
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+        ),
+        child: const Text(
+          'Fermer',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
     );
   }
 

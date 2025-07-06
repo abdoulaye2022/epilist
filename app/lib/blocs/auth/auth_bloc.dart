@@ -16,7 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AccountDeletionService accountDeletionService;
   Timer? _tokenRefreshTimer;
 
-  AuthBloc(this.accountDeletionService, {required this.authService})
+  AuthBloc({required this.authService, required this.accountDeletionService})
     : super(AuthInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);

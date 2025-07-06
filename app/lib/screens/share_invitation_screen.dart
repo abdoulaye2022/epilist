@@ -21,6 +21,9 @@ class ShareInvitationScreen extends StatefulWidget {
 }
 
 class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
+  // ✅ Variable pour empêcher le retour après action
+  bool _hasPerformedAction = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,99 +35,112 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text('Invitation de partage'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: Colors.black87,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
-            );
+    return WillPopScope(
+      // ✅ Empêcher le retour si une action a été effectuée
+      onWillPop: () async => !_hasPerformedAction,
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: AppBar(
+          title: const Text('Invitation de partage'),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          foregroundColor: Colors.black87,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed:
+                _hasPerformedAction
+                    ? null
+                    : () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+          ),
+        ),
+        body: BlocConsumer<SharedListBloc, SharedListState>(
+          listener: (context, state) {
+            // ✅ CORRECTION: Utilisation de SmartSnackBarManager
+            if (state is ShareInvitationAccepted) {
+              debugPrint('✅ Invitation acceptée, redirection vers l\'accueil');
+
+              // ✅ Marquer qu'une action a été effectuée
+              _hasPerformedAction = true;
+
+              // Utiliser SmartSnackBarManager pour le succès
+              SmartSnackBarManager.showMessage(
+                context,
+                'Invitation acceptée avec succès !',
+                type: SnackBarType.success,
+                duration: const Duration(seconds: 2),
+              );
+
+              // ✅ Rediriger vers HomeScreen pour acceptation aussi
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (route) => false,
+              );
+            } else if (state is ShareInvitationDeclined) {
+              debugPrint('✅ Invitation refusée');
+
+              // ✅ Marquer qu'une action a été effectuée
+              _hasPerformedAction = true;
+
+              // Utiliser SmartSnackBarManager pour l'information
+              SmartSnackBarManager.showMessage(
+                context,
+                'Invitation refusée',
+                type: SnackBarType.info,
+                duration: const Duration(seconds: 2),
+              );
+
+              Future.delayed(const Duration(seconds: 1), () {
+                if (mounted) {
+                  // ✅ Redirection directe vers HomeScreen sans délai
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    (route) => false,
+                  );
+                }
+              });
+            } else if (state is SharedListError) {
+              debugPrint('❌ Erreur: ${state.message}');
+
+              // ✅ OPTION 1: Utiliser la détection automatique d'état
+              SmartSnackBarManager.showForState(
+                context,
+                state,
+                duration: const Duration(seconds: 4),
+              );
+
+              // ✅ OPTION 2: Ou utiliser explicitement le type error
+              // SmartSnackBarManager.showMessage(
+              //   context,
+              //   state.message,
+              //   type: SnackBarType.error,
+              //   duration: const Duration(seconds: 4),
+              // );
+            }
+          },
+          builder: (context, state) {
+            if (state is SharedListLoading) {
+              return _buildLoadingContent();
+            }
+
+            if (state is ShareInvitationLoaded) {
+              debugPrint('✅ Invitation chargée: ${state.invitation.listName}');
+              return _buildInvitationContent(state.invitation);
+            }
+
+            if (state is SharedListError) {
+              return _buildErrorContent(state.message);
+            }
+
+            return _buildLoadingContent();
           },
         ),
-      ),
-      body: BlocConsumer<SharedListBloc, SharedListState>(
-        listener: (context, state) {
-          // ✅ CORRECTION: Utilisation de SmartSnackBarManager
-          if (state is ShareInvitationAccepted) {
-            debugPrint('✅ Invitation acceptée, redirection vers la liste');
-
-            // Utiliser SmartSnackBarManager pour le succès
-            SmartSnackBarManager.showMessage(
-              context,
-              'Invitation acceptée avec succès !',
-              type: SnackBarType.success,
-              duration: const Duration(seconds: 2),
-            );
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        ListDetailScreen(shoppingList: state.shoppingList),
-              ),
-            );
-          } else if (state is ShareInvitationDeclined) {
-            debugPrint('✅ Invitation refusée');
-
-            // Utiliser SmartSnackBarManager pour l'information
-            SmartSnackBarManager.showMessage(
-              context,
-              'Invitation refusée',
-              type: SnackBarType.info,
-              duration: const Duration(seconds: 2),
-            );
-
-            Future.delayed(const Duration(seconds: 1), () {
-              if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => false,
-                );
-              }
-            });
-          } else if (state is SharedListError) {
-            debugPrint('❌ Erreur: ${state.message}');
-
-            // ✅ OPTION 1: Utiliser la détection automatique d'état
-            SmartSnackBarManager.showForState(
-              context,
-              state,
-              duration: const Duration(seconds: 4),
-            );
-
-            // ✅ OPTION 2: Ou utiliser explicitement le type error
-            // SmartSnackBarManager.showMessage(
-            //   context,
-            //   state.message,
-            //   type: SnackBarType.error,
-            //   duration: const Duration(seconds: 4),
-            // );
-          }
-        },
-        builder: (context, state) {
-          if (state is SharedListLoading) {
-            return _buildLoadingContent();
-          }
-
-          if (state is ShareInvitationLoaded) {
-            debugPrint('✅ Invitation chargée: ${state.invitation.listName}');
-            return _buildInvitationContent(state.invitation);
-          }
-
-          if (state is SharedListError) {
-            return _buildErrorContent(state.message);
-          }
-
-          return _buildLoadingContent();
-        },
       ),
     );
   }
@@ -637,43 +653,182 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Accepter l\'invitation'),
-          content: Text(
-            'Voulez-vous accepter l\'invitation de ${invitation.ownerName} pour la liste "${invitation.listName}" ?',
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Annuler'),
+          elevation: 10,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                debugPrint(
-                  '🤝 Acceptation de l\'invitation: ${invitation.token}',
-                );
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icône d'acceptation
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(
+                    Icons.check_circle_rounded,
+                    size: 40,
+                    color: Colors.green[600],
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-                try {
-                  context.read<SharedListBloc>().add(
-                    AcceptShareInvitation(invitation.token),
-                  );
-                } catch (e) {
-                  // ✅ Gestion d'erreur avec SmartSnackBar
-                  SmartSnackBarManager.showMessage(
-                    context,
-                    'Erreur lors de l\'acceptation de l\'invitation',
-                    type: SnackBarType.error,
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text(
-                'Accepter',
-                style: TextStyle(color: Colors.white),
-              ),
+                // Titre
+                const Text(
+                  'Accepter l\'invitation',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Description avec informations
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      height: 1.4,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Voulez-vous accepter l\'invitation de ',
+                      ),
+                      TextSpan(
+                        text: invitation.ownerName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const TextSpan(text: ' pour la liste '),
+                      TextSpan(
+                        text: '"${invitation.listName}"',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                      const TextSpan(text: ' ?'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Information sur les permissions
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.security, color: Colors.green[600], size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Permissions : ${invitation.permissionDisplayName}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.green[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Boutons d'action
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.grey[300]!),
+                          ),
+                        ),
+                        child: Text(
+                          'Annuler',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          debugPrint(
+                            '🤝 Acceptation de l\'invitation: ${invitation.token}',
+                          );
+
+                          try {
+                            context.read<SharedListBloc>().add(
+                              AcceptShareInvitation(invitation.token),
+                            );
+                          } catch (e) {
+                            SmartSnackBarManager.showMessage(
+                              context,
+                              'Erreur lors de l\'acceptation de l\'invitation',
+                              type: SnackBarType.error,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.check, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Accepter',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
@@ -683,41 +838,186 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Refuser l\'invitation'),
-          content: Text(
-            'Voulez-vous refuser l\'invitation de ${invitation.ownerName} pour la liste "${invitation.listName}" ?',
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Annuler'),
+          elevation: 10,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                debugPrint('❌ Refus de l\'invitation: ${invitation.token}');
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icône de refus
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(
+                    Icons.cancel_rounded,
+                    size: 40,
+                    color: Colors.red[600],
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-                try {
-                  context.read<SharedListBloc>().add(
-                    DeclineShareInvitation(invitation.token),
-                  );
-                } catch (e) {
-                  // ✅ Gestion d'erreur avec SmartSnackBar
-                  SmartSnackBarManager.showMessage(
-                    context,
-                    'Erreur lors du refus de l\'invitation',
-                    type: SnackBarType.error,
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text(
-                'Refuser',
-                style: TextStyle(color: Colors.white),
-              ),
+                // Titre
+                const Text(
+                  'Refuser l\'invitation',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Description avec informations
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      height: 1.4,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Voulez-vous refuser l\'invitation de ',
+                      ),
+                      TextSpan(
+                        text: invitation.ownerName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const TextSpan(text: ' pour la liste '),
+                      TextSpan(
+                        text: '"${invitation.listName}"',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red[700],
+                        ),
+                      ),
+                      const TextSpan(text: ' ?'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Avertissement
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.orange[600],
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Vous devrez demander une nouvelle invitation pour accéder à cette liste.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.orange[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Boutons d'action
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.grey[300]!),
+                          ),
+                        ),
+                        child: Text(
+                          'Annuler',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          debugPrint(
+                            '❌ Refus de l\'invitation: ${invitation.token}',
+                          );
+
+                          try {
+                            context.read<SharedListBloc>().add(
+                              DeclineShareInvitation(invitation.token),
+                            );
+                          } catch (e) {
+                            SmartSnackBarManager.showMessage(
+                              context,
+                              'Erreur lors du refus de l\'invitation',
+                              type: SnackBarType.error,
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.close, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              'Refuser',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );

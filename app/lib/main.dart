@@ -1,4 +1,4 @@
-// main.dart - VERSION FINALE SANS DEBUG
+// main.dart - VERSION CORRIGÉE SANS DUPLICATION
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -59,7 +59,17 @@ void main() async {
       sharedPreferences: sharedPreferences,
     );
 
-    final authBloc = AuthBloc(authService: authService);
+    // ✅ CRÉER le service de suppression de compte
+    final accountDeletionService = AccountDeletionService(
+      dio: dio,
+      authService: authService,
+    );
+
+    // ✅ CRÉER l'AuthBloc avec les deux services
+    final authBloc = AuthBloc(
+      authService: authService,
+      accountDeletionService: accountDeletionService,
+    );
 
     // Ajouter l'interceptor de refresh token
     dio.interceptors.add(
@@ -74,6 +84,9 @@ void main() async {
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider<AuthService>.value(value: authService),
+          RepositoryProvider<AccountDeletionService>.value(
+            value: accountDeletionService,
+          ),
           RepositoryProvider(
             create:
                 (context) => ShoppingListService(
@@ -95,16 +108,10 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
-          RepositoryProvider(
-            create:
-                (context) => AccountDeletionService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
-          ),
         ],
         child: MultiBlocProvider(
           providers: [
+            // ✅ UN SEUL BlocProvider pour AuthBloc
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
@@ -119,14 +126,6 @@ void main() async {
                   (context) => SharedListBloc(
                     sharedListService: context.read<SharedListService>(),
                   ),
-            ),
-            BlocProvider<AuthBloc>(
-              create:
-                  (context) => AuthBloc(
-                    authService: authService,
-                    accountDeletionService:
-                        context.read<AccountDeletionService>(), // ✅ NOUVEAU
-                  )..add(CheckAuthentication()),
             ),
           ],
           child: const MyApp(),
@@ -212,7 +211,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           DeepLinkHandler.initialize(context);
 
           setState(() {
-            _deepLinkInitialized = true;
+            _deepLinkInitialized = true; // ← Point-virgule correct
           });
 
           debugPrint('✅ Deep links initialisés avec succès');
@@ -240,6 +239,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         debugPrint('🎧 AuthWrapper Listener - État: ${state.runtimeType}');
+
+        // ✅ IGNORER les états de suppression de compte (ne pas les traiter ici)
+        if (state is AccountDeletionStatusLoaded ||
+            state is AccountDeletionCodeSent ||
+            state is AccountDeletionConfirmed ||
+            state is AccountDeletionCancelled) {
+          return; // Ne rien faire, laisser ProfileScreen gérer ces états
+        }
 
         // Gérer la redirection vers la vérification d'email
         if (state is EmailVerificationRequired && !_redirecting) {
@@ -327,6 +334,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
+          // ✅ NE PAS reconstruire pour les états de suppression de compte
+          if (current is AccountDeletionStatusLoaded ||
+              current is AccountDeletionCodeSent ||
+              current is AccountDeletionConfirmed ||
+              current is AccountDeletionCancelled) {
+            return false;
+          }
+
           // Ne pas reconstruire pour EmailVerificationRequired si on redirige déjà
           if (current is EmailVerificationRequired && _redirecting) {
             return false;
