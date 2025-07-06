@@ -1,4 +1,5 @@
 // main.dart - VERSION CORRIGÉE SANS DUPLICATION
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -13,6 +14,7 @@ import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,13 +61,11 @@ void main() async {
       sharedPreferences: sharedPreferences,
     );
 
-    // ✅ CRÉER le service de suppression de compte
     final accountDeletionService = AccountDeletionService(
       dio: dio,
       authService: authService,
     );
 
-    // ✅ CRÉER l'AuthBloc avec les deux services
     final authBloc = AuthBloc(
       authService: authService,
       accountDeletionService: accountDeletionService,
@@ -111,7 +111,6 @@ void main() async {
         ],
         child: MultiBlocProvider(
           providers: [
-            // ✅ UN SEUL BlocProvider pour AuthBloc
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
@@ -133,7 +132,6 @@ void main() async {
       ),
     );
   } catch (e) {
-    debugPrint('❌ Erreur lors de l\'initialisation: $e');
     runApp(const ErrorApp());
   }
 }
@@ -191,14 +189,35 @@ class AuthWrapper extends StatefulWidget {
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _redirecting = false;
   bool _deepLinkInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // Nettoyer les deep links
+    DeepLinkHandler.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      // Réactiver les deep links quand l'app revient au premier plan
+      if (mounted) {
+        DeepLinkHandler.updateContext(context);
+      }
+    }
   }
 
   /// Initialiser les deep links
@@ -206,19 +225,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
     try {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (mounted && !_deepLinkInitialized) {
-          debugPrint('🔄 Initialisation des deep links...');
-
           DeepLinkHandler.initialize(context);
 
           setState(() {
-            _deepLinkInitialized = true; // ← Point-virgule correct
+            _deepLinkInitialized = true;
           });
-
-          debugPrint('✅ Deep links initialisés avec succès');
         }
       });
     } catch (e) {
-      debugPrint('❌ Erreur lors de l\'initialisation des deep links: $e');
       if (mounted) {
         setState(() {
           _deepLinkInitialized = true;
@@ -228,19 +242,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   @override
-  void dispose() {
-    // Nettoyer les deep links
-    DeepLinkHandler.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        debugPrint('🎧 AuthWrapper Listener - État: ${state.runtimeType}');
-
-        // ✅ IGNORER les états de suppression de compte (ne pas les traiter ici)
+        // Ignorer les états de suppression de compte (ne pas les traiter ici)
         if (state is AccountDeletionStatusLoaded ||
             state is AccountDeletionCodeSent ||
             state is AccountDeletionConfirmed ||
@@ -272,21 +277,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
           });
         }
 
-        // Gérer les tokens rafraîchis
-        if (state is TokensRefreshed) {
-          debugPrint('✅ Tokens rafraîchis dans AuthWrapper');
-        }
-
         // Gérer les erreurs d'authentification avec SnackBar
         if (state is AuthFailure) {
-          debugPrint('❌ Erreur d\'authentification: ${state.error}');
-
           if (mounted) {
-            // Utiliser le gestionnaire de SnackBar pour les erreurs de session
+            // Utiliser SmartSnackBarManager pour les erreurs de session
             if (state.error.contains('Session expirée') ||
                 state.error.contains('token') ||
                 state.error.contains('unauthorized')) {
-              SnackBarManager.showErrorSnackBar(
+              SmartSnackBarManager.showErrorSnackBar(
                 context,
                 'Votre session a expiré. Veuillez vous reconnecter.',
                 duration: const Duration(seconds: 4),
@@ -296,7 +294,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
               final localizedError = AuthErrorMessages.getLocalizedError(
                 state.error,
               );
-              SnackBarManager.showErrorSnackBar(
+              SmartSnackBarManager.showErrorSnackBar(
                 context,
                 localizedError,
                 duration: const Duration(seconds: 4),
@@ -305,26 +303,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
           }
         }
 
-        // Gérer les succès avec SnackBar de confirmation
-        if (state is AuthSuccess) {
-          debugPrint('✅ Utilisateur connecté: ${state.user.email}');
-
-          // Optionnel: message de bienvenue dans certains cas
-          if (mounted) {
-            SnackBarManager.showSuccessSnackBar(
-              context,
-              'Bienvenue, ${state.user.firstName} !',
-              duration: const Duration(seconds: 2),
-            );
-          }
-        }
-
-        // ✅ CORRECTION: Gérer la confirmation d'email réussie
+        // Gérer la confirmation d'email réussie
         if (state is EmailConfirmationSuccess) {
-          debugPrint('✅ Email confirmé avec succès');
-
           if (mounted) {
-            SnackBarManager.showSuccessSnackBar(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               'Email confirmé avec succès ! Bienvenue !',
               duration: const Duration(seconds: 3),
@@ -334,7 +316,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
-          // ✅ NE PAS reconstruire pour les états de suppression de compte
+          // NE PAS reconstruire pour les états de suppression de compte
           if (current is AccountDeletionStatusLoaded ||
               current is AccountDeletionCodeSent ||
               current is AccountDeletionConfirmed ||
@@ -355,8 +337,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return true;
         },
         builder: (context, state) {
-          debugPrint('🔍 AuthWrapper Builder - État: ${state.runtimeType}');
-
           // Afficher l'écran de chargement jusqu'à l'initialisation
           if (!_deepLinkInitialized ||
               state is AuthInitial ||
@@ -377,17 +357,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
             );
           }
 
-          // ✅ CORRECTION: Utilisateur authentifié avec succès OU email confirmé
+          // Utilisateur authentifié avec succès OU email confirmé
           if (state is AuthSuccess || state is EmailConfirmationSuccess) {
-            if (state is AuthSuccess) {
-              debugPrint('✅ Utilisateur connecté: ${state.user.email}');
-            } else {
-              debugPrint(
-                '✅ Email confirmé avec succès - redirection vers HomeScreen',
-              );
-            }
-
-            // ✅ Traiter les tokens de partage en attente après connexion
+            // Traiter les tokens de partage en attente après connexion
             WidgetsBinding.instance.addPostFrameCallback((_) {
               DeepLinkHandler.processPendingTokenAfterLogin();
             });

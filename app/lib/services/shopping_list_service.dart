@@ -24,8 +24,6 @@ class ShoppingListService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    debugPrint("API Response: ${response.data}"); // Debug
-
     return (response.data['data'] as List).map((json) {
       return ShoppingList.fromJson(json);
     }).toList();

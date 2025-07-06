@@ -2,7 +2,8 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
-import 'package:epilist/utils/snackbar_manager.dart'; // Utilisation du gestionnaire existant
+import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -44,25 +45,23 @@ class _SignUpPageState extends State<SignUpPage> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Utiliser le gestionnaire de SnackBar avec message en français
+            // Utiliser SmartSnackBarManager pour les erreurs
             final localizedError = AuthErrorMessages.getLocalizedError(
               state.error,
             );
-            SnackBarManager.showErrorSnackBar(
+            SmartSnackBarManager.showErrorSnackBar(
               context,
               localizedError,
               duration: const Duration(seconds: 5),
             );
-
-            print('Erreur d\'inscription: ${state.error}');
           } else if (state is EmailConfirmationRequired) {
             setState(() => _isLoading = false);
 
             // Effacer tous les SnackBars avant d'afficher le nouveau
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
             // Afficher un message de succès d'inscription
-            SnackBarManager.showSuccessSnackBar(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               'Compte créé avec succès ! ${_firstNameController.text.trim()} ${_lastNameController.text.trim()}\nVérifiez votre email pour activer votre compte.',
               duration: const Duration(seconds: 4),
@@ -85,13 +84,6 @@ class _SignUpPageState extends State<SignUpPage> {
             });
           } else if (state is RegistrationSuccess) {
             setState(() => _isLoading = false);
-
-            // Cas alternatif si l'inscription réussit directement
-            SnackBarManager.showSuccessSnackBar(
-              context,
-              'Compte créé avec succès ! Bienvenue ${_firstNameController.text.trim()} ${_lastNameController.text.trim()} !',
-              duration: const Duration(seconds: 3),
-            );
 
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
@@ -594,7 +586,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } else {
       setState(() => _isLoading = false);
 
-      SnackBarManager.showErrorSnackBar(
+      SmartSnackBarManager.showErrorSnackBar(
         context,
         'Veuillez corriger les erreurs dans le formulaire',
         duration: const Duration(seconds: 3),

@@ -1,5 +1,6 @@
 // widgets/list_detail/list_detail_app_bar.dart - VERSION AVEC PERMISSIONS
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 
 class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -336,13 +337,10 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                   // TODO: Implémenter la logique de quitter la liste
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Vous avez quitté la liste "${shoppingList.name}"',
-                      ),
-                      backgroundColor: Colors.orange[600],
-                    ),
+                  SmartSnackBarManager.showWarningSnackBar(
+                    context,
+                    'Vous avez quitté la liste "${shoppingList.name}"',
+                    duration: const Duration(seconds: 3),
                   );
                 },
                 style: TextButton.styleFrom(foregroundColor: Colors.orange),

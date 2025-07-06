@@ -2,7 +2,6 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
-import 'package:flutter/foundation.dart';
 
 class AuthenticationException implements Exception {
   final String message;
@@ -40,12 +39,7 @@ class AuthService {
           DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
         ),
       ]);
-
-      debugPrint('✅ Tokens sauvegardés avec succès');
-      debugPrint('🔑 Access Token: ${accessToken.substring(0, 20)}...');
-      debugPrint('🔄 Refresh Token: ${refreshToken.substring(0, 20)}...');
     } catch (e) {
-      debugPrint('❌ Erreur lors de la sauvegarde des tokens: $e');
       throw Exception('Impossible de sauvegarder les tokens');
     }
   }
@@ -61,7 +55,6 @@ class AuthService {
           if (DateTime.now().isBefore(expiryDate)) {
             return token;
           } else {
-            debugPrint('⚠️ Token expiré, refresh nécessaire');
             return null;
           }
         }
@@ -69,7 +62,6 @@ class AuthService {
       }
       return null;
     } catch (e) {
-      debugPrint('❌ Erreur lors de la récupération du token: $e');
       return null;
     }
   }
@@ -78,7 +70,6 @@ class AuthService {
     try {
       return sharedPreferences.getString(_refreshTokenKey);
     } catch (e) {
-      debugPrint('❌ Erreur lors de la récupération du refresh token: $e');
       return null;
     }
   }
@@ -91,7 +82,6 @@ class AuthService {
       final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
       return DateTime.now().isAfter(expiryDate);
     } catch (e) {
-      debugPrint('❌ Erreur lors de la vérification d\'expiration: $e');
       return true;
     }
   }
@@ -100,8 +90,6 @@ class AuthService {
 
   Future<Map<String, String>> login(String email, String password) async {
     try {
-      debugPrint('🔐 Tentative de connexion pour: $email');
-
       final response = await dio.post(
         '/auth/login',
         data: {'email': email, 'password': password},
@@ -121,14 +109,11 @@ class AuthService {
           );
         }
 
-        debugPrint('✅ Connexion réussie');
         return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
         throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
     } on DioException catch (e) {
-      debugPrint('❌ Erreur DioException: ${e.response?.data}');
-
       // CORRECTION: Gérer les codes 401 ET 403 pour EMAIL_NOT_VERIFIED
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
@@ -140,9 +125,6 @@ class AuthService {
           // Essayer d'extraire l'email de la structure data
           if (errorData['data'] != null && errorData['data']['email'] != null) {
             emailFromResponse = errorData['data']['email'];
-            debugPrint(
-              '📧 Email extrait de la réponse API: $emailFromResponse',
-            );
           }
 
           throw AuthenticationException(
@@ -169,7 +151,6 @@ class AuthService {
         );
       }
     } catch (e) {
-      debugPrint('❌ Erreur inattendue: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue',
         'UNKNOWN_ERROR',
@@ -179,8 +160,6 @@ class AuthService {
 
   Future<Map<String, String>> refreshToken(String refreshToken) async {
     try {
-      debugPrint('🔄 Rafraîchissement du token...');
-
       final response = await dio.post(
         '/auth/refresh',
         data: {'refresh_token': refreshToken},
@@ -196,7 +175,6 @@ class AuthService {
           throw Exception('Nouveaux tokens manquants dans la réponse');
         }
 
-        debugPrint('✅ Token rafraîchi avec succès');
         return {
           'access_token': newAccessToken,
           'refresh_token': newRefreshToken,
@@ -205,13 +183,11 @@ class AuthService {
         throw Exception('Échec du rafraîchissement du token');
       }
     } on DioException catch (e) {
-      debugPrint('❌ Erreur lors du refresh: ${e.response?.data}');
       if (e.response?.statusCode == 401) {
         throw Exception('Refresh token invalide ou expiré');
       }
       throw Exception('Erreur réseau lors du refresh: ${e.message}');
     } catch (e) {
-      debugPrint('❌ Erreur inattendue lors du refresh: $e');
       rethrow;
     }
   }
@@ -232,7 +208,6 @@ class AuthService {
           await saveTokens(tokens['access_token']!, tokens['refresh_token']!);
           return true;
         } catch (e) {
-          debugPrint('❌ Impossible de rafraîchir le token: $e');
           await clearUserData();
           return false;
         }
@@ -240,7 +215,6 @@ class AuthService {
 
       return false;
     } catch (e) {
-      debugPrint('❌ Erreur lors de la vérification d\'authentification: $e');
       return false;
     }
   }
@@ -249,9 +223,8 @@ class AuthService {
   Future<void> saveUserToCache(User user) async {
     try {
       await sharedPreferences.setString(_userKey, user.toJsonString());
-      debugPrint('👤 Utilisateur sauvegardé en cache: ${user.fullName}');
     } catch (e) {
-      debugPrint('❌ Erreur lors de la sauvegarde utilisateur: $e');
+      // Erreur silencieuse
     }
   }
 
@@ -261,14 +234,12 @@ class AuthService {
       final cachedUserData = sharedPreferences.getString(_userKey);
       if (cachedUserData != null) {
         final userData = User.fromJsonString(cachedUserData);
-        debugPrint('👤 Utilisateur récupéré du cache');
         return userData;
       }
 
       // Sinon, récupérer depuis l'API
       final token = await getToken();
       if (token == null) {
-        debugPrint('❌ Aucun token disponible pour getCurrentUser');
         return null;
       }
 
@@ -283,22 +254,17 @@ class AuthService {
         // Sauvegarder l'utilisateur en cache
         await sharedPreferences.setString(_userKey, user.toJsonString());
 
-        debugPrint('👤 Utilisateur récupéré de l\'API');
         return user;
       }
 
       return null;
     } on DioException catch (e) {
-      debugPrint(
-        '❌ Erreur lors de la récupération de l\'utilisateur: ${e.response?.data}',
-      );
       if (e.response?.statusCode == 401) {
         // Token invalide, nettoyer les données
         await clearUserData();
       }
       return null;
     } catch (e) {
-      debugPrint('❌ Erreur inattendue getCurrentUser: $e');
       return null;
     }
   }
@@ -307,15 +273,12 @@ class AuthService {
     try {
       final token = await getToken();
       if (token != null) {
-        debugPrint('📡 Déconnexion côté serveur...');
         await dio.post(
           '/auth/logout',
           options: Options(headers: {'Authorization': 'Bearer $token'}),
         );
-        debugPrint('✅ Déconnexion serveur réussie');
       }
     } catch (e) {
-      debugPrint('⚠️ Erreur lors de la déconnexion côté serveur: $e');
       // Continuer avec la déconnexion locale même si l'API échoue
     }
 
@@ -325,8 +288,6 @@ class AuthService {
 
   Future<void> clearUserData() async {
     try {
-      debugPrint('🧹 Début du nettoyage des données...');
-
       // Supprimer toutes les clés une par une pour s'assurer qu'elles sont supprimées
       final keysToRemove = [
         _accessTokenKey,
@@ -336,41 +297,14 @@ class AuthService {
       ];
 
       for (final key in keysToRemove) {
-        final removed = await sharedPreferences.remove(key);
-        debugPrint('🗑️ Suppression $key: ${removed ? 'OK' : 'ÉCHEC'}');
+        await sharedPreferences.remove(key);
       }
-
-      // Vérification que les clés ont bien été supprimées
-      final accessToken = sharedPreferences.getString(_accessTokenKey);
-      final refreshToken = sharedPreferences.getString(_refreshTokenKey);
-      final userData = sharedPreferences.getString(_userKey);
-      final tokenExpiry = sharedPreferences.getInt(_tokenExpiryKey);
-
-      if (accessToken == null &&
-          refreshToken == null &&
-          userData == null &&
-          tokenExpiry == null) {
-        debugPrint('✅ Toutes les données utilisateur ont été supprimées');
-      } else {
-        debugPrint('⚠️ Certaines données n\'ont pas été supprimées:');
-        if (accessToken != null) debugPrint('  - Access token encore présent');
-        if (refreshToken != null)
-          debugPrint('  - Refresh token encore présent');
-        if (userData != null)
-          debugPrint('  - Données utilisateur encore présentes');
-        if (tokenExpiry != null)
-          debugPrint('  - Expiration token encore présente');
-      }
-
-      debugPrint('🧹 Nettoyage des données terminé');
     } catch (e) {
-      debugPrint('❌ Erreur lors du nettoyage: $e');
       // En cas d'erreur, essayer de forcer la suppression
       try {
         await sharedPreferences.clear();
-        debugPrint('🔥 Nettoyage forcé effectué (clear total)');
       } catch (clearError) {
-        debugPrint('❌ Impossible de nettoyer les données: $clearError');
+        // Erreur silencieuse
       }
     }
   }
@@ -384,8 +318,6 @@ class AuthService {
     String password,
   ) async {
     try {
-      debugPrint('📝 Tentative d\'inscription pour: $email');
-
       final response = await dio.post(
         '/auth/register',
         data: {
@@ -396,17 +328,13 @@ class AuthService {
         },
       );
 
-      if (response.statusCode == 201) {
-        debugPrint('✅ Inscription réussie pour: $email');
-      } else {
+      if (response.statusCode != 201) {
         throw AuthenticationException(
           'Erreur lors de l\'inscription',
           'REGISTRATION_FAILED',
         );
       }
     } on DioException catch (e) {
-      debugPrint('❌ Erreur DioException inscription: ${e.response?.data}');
-
       if (e.response?.statusCode == 409 || e.response?.statusCode == 400) {
         final errorData = e.response?.data;
 
@@ -440,7 +368,6 @@ class AuthService {
         );
       }
     } catch (e) {
-      debugPrint('❌ Erreur inattendue inscription: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue lors de l\'inscription',
         'UNKNOWN_ERROR',
@@ -499,18 +426,12 @@ class AuthService {
     required String code,
   }) async {
     try {
-      debugPrint(
-        '📧 Tentative de confirmation email pour: $email avec code: ${code.substring(0, 2)}...',
-      );
-
       final response = await dio.post(
         '/auth/confirm-email',
         data: {'email': email, 'code': code},
       );
 
       if (response.statusCode == 200) {
-        debugPrint('✅ Email confirmé avec succès pour: $email');
-
         final data = response.data;
 
         // Vérifier si la réponse contient des tokens (nouvelle API)
@@ -518,11 +439,9 @@ class AuthService {
         final refreshToken = data['refresh_token'] as String?;
 
         if (accessToken != null && refreshToken != null) {
-          debugPrint('🔑 Tokens reçus lors de la confirmation email');
           return {'access_token': accessToken, 'refresh_token': refreshToken};
         } else {
           // Ancienne API - pas de tokens
-          debugPrint('✅ Confirmation sans tokens (ancienne API)');
           return null;
         }
       } else {
@@ -532,10 +451,6 @@ class AuthService {
         );
       }
     } on DioException catch (e) {
-      debugPrint(
-        '❌ Erreur DioException confirmation email: ${e.response?.data}',
-      );
-
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
 
@@ -598,7 +513,6 @@ class AuthService {
         );
       }
     } catch (e) {
-      debugPrint('❌ Erreur inattendue confirmation email: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue lors de la confirmation',
         'UNKNOWN_ERROR',
@@ -608,24 +522,18 @@ class AuthService {
 
   Future<void> resendVerificationCode(String email) async {
     try {
-      debugPrint('📧 Tentative de renvoi du code de vérification pour: $email');
-
       final response = await dio.post(
         '/auth/resend-verification',
         data: {'email': email},
       );
 
-      if (response.statusCode == 200) {
-        debugPrint('✅ Code de vérification renvoyé avec succès');
-      } else {
+      if (response.statusCode != 200) {
         throw AuthenticationException(
           'Erreur lors du renvoi du code',
           'RESEND_FAILED',
         );
       }
     } on DioException catch (e) {
-      debugPrint('❌ Erreur DioException renvoi code: ${e.response?.data}');
-
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
 
@@ -672,7 +580,6 @@ class AuthService {
         );
       }
     } catch (e) {
-      debugPrint('❌ Erreur inattendue renvoi code: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue lors du renvoi',
         'UNKNOWN_ERROR',

@@ -1,4 +1,4 @@
-// services/deep_link_handler.dart - VERSION AVEC VÉRIFICATION D'AUTHENTIFICATION
+// services/deep_link_handler.dart - VERSION COMPLÈTE CORRIGÉE
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -7,6 +7,7 @@ import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/auth_service.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,13 +25,6 @@ class DeepLinkHandler {
   static const String appStoreUrl =
       'https://apps.apple.com/app/epilist/id123456789';
 
-  static void initialize(BuildContext context) {
-    _context = context;
-    _appLinks = AppLinks();
-    _initializeDeepLinks();
-    _processPendingLink();
-  }
-
   static void dispose() {
     _linkSubscription?.cancel();
     _linkSubscription = null;
@@ -39,29 +33,87 @@ class DeepLinkHandler {
     _pendingShareToken = null;
   }
 
-  static void _initializeDeepLinks() {
-    _linkSubscription = _appLinks!.uriLinkStream.listen(
-      (Uri uri) {
-        debugPrint('🔗 Lien reçu: ${uri.toString()}');
-        _handleDeepLink(uri.toString());
-      },
-      onError: (err) {
-        debugPrint('❌ Erreur de lien profond: $err');
-      },
-    );
+  static void initialize(BuildContext context) {
+    _context = context;
 
-    _getInitialLink();
+    if (_appLinks == null) {
+      _appLinks = AppLinks();
+    }
+
+    _initializeDeepLinks();
+    _processPendingLink();
   }
 
-  static Future<void> _getInitialLink() async {
+  static void _initializeDeepLinks() {
+    if (_linkSubscription != null) {
+      _linkSubscription?.cancel();
+      _linkSubscription = null;
+    }
+
     try {
-      final Uri? initialUri = await _appLinks!.getInitialLink();
-      if (initialUri != null) {
-        debugPrint('🔗 Lien initial: ${initialUri.toString()}');
-        _handleDeepLink(initialUri.toString());
-      }
+      _appLinks = AppLinks();
+
+      _linkSubscription = _appLinks!.uriLinkStream.listen(
+        (Uri uri) {
+          _handleDeepLink(uri.toString());
+        },
+        onError: (err) {
+          // Gestion d'erreur silencieuse
+        },
+        onDone: () {
+          // Écoute terminée
+        },
+      );
+
+      _getInitialLink();
     } catch (e) {
-      debugPrint('❌ Erreur lors de la récupération du lien initial: $e');
+      // Erreur silencieuse
+    }
+  }
+
+  static void _navigateToShareInvitation(String shareToken) {
+    if (_context == null) return;
+
+    try {
+      Navigator.of(_context!)
+          .push(
+            MaterialPageRoute(
+              builder:
+                  (context) => BlocProvider(
+                    create:
+                        (context) => SharedListBloc(
+                          sharedListService: context.read<SharedListService>(),
+                        ),
+                    child: ShareInvitationScreen(shareToken: shareToken),
+                  ),
+            ),
+          )
+          .then((_) {
+            if (_context != null) {
+              updateContext(_context!);
+            }
+          });
+
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (_context != null) {
+          SmartSnackBarManager.showSuccessSnackBar(
+            _context!,
+            'Invitation reçue !',
+            duration: const Duration(seconds: 2),
+          );
+        }
+      });
+    } catch (e) {
+      _showError('Erreur lors de l\'ouverture de l\'invitation');
+    }
+  }
+
+  static void updateContext(BuildContext context) {
+    _context = context;
+    _processPendingLink();
+
+    if (_linkSubscription == null) {
+      _initializeDeepLinks();
     }
   }
 
@@ -70,8 +122,6 @@ class DeepLinkHandler {
 
     if (_isShareLink(uri)) {
       _handleShareLink(uri);
-    } else {
-      debugPrint('⚠️ Type de lien non reconnu: $link');
     }
   }
 
@@ -80,11 +130,11 @@ class DeepLinkHandler {
     bool isValidPath = false;
 
     if (uri.scheme == appScheme) {
-      // Pour epilist://share/token -> host="share", path="/token"
       isValidScheme = true;
-      isValidPath = uri.host == 'share' && uri.pathSegments.isNotEmpty;
+      bool hostValid = uri.host == 'share';
+      bool pathNotEmpty = uri.pathSegments.isNotEmpty;
+      isValidPath = hostValid && pathNotEmpty;
     } else if (uri.scheme == 'https' && uri.host == customDomain) {
-      // Pour https://epilist.app/share/token -> pathSegments=["share", "token"]
       isValidScheme = true;
       isValidPath =
           uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'share';
@@ -93,23 +143,39 @@ class DeepLinkHandler {
     return isValidScheme && isValidPath;
   }
 
+  static Future<void> _getInitialLink() async {
+    try {
+      final Uri? initialUri = await _appLinks!.getInitialLink();
+      if (initialUri != null) {
+        _handleDeepLink(initialUri.toString());
+      }
+    } catch (e) {
+      // Erreur silencieuse
+    }
+  }
+
+  static void ensureListening() {
+    if (_linkSubscription == null || _linkSubscription!.isPaused) {
+      forceReinitialize();
+    } else {
+      _testListening();
+    }
+  }
+
   static void _handleShareLink(Uri uri) {
     try {
       String? shareToken;
 
       if (uri.scheme == appScheme) {
-        // Pour epilist://share/token -> host="share", pathSegments=["token"]
         if (uri.host == 'share' && uri.pathSegments.isNotEmpty) {
           shareToken = uri.pathSegments[0];
         }
       } else if (uri.scheme == 'https' && uri.host == customDomain) {
-        // Pour https://epilist.app/share/token -> pathSegments=["share", "token"]
         if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'share') {
           shareToken = uri.pathSegments[1];
         }
       }
 
-      // Fallback: check query parameters
       if ((shareToken == null || shareToken.isEmpty) &&
           uri.queryParameters.containsKey('token')) {
         shareToken = uri.queryParameters['token'];
@@ -120,17 +186,13 @@ class DeepLinkHandler {
         return;
       }
 
-      debugPrint('🎯 Token de partage: $shareToken');
-
       if (_context == null) {
         _pendingShareToken = shareToken;
         return;
       }
 
-      // ✅ Vérifier l'authentification avant de naviguer
       _checkAuthAndNavigate(shareToken);
     } catch (e) {
-      debugPrint('❌ Erreur lors du traitement du lien de partage: $e');
       _showError('Erreur lors du traitement du lien de partage');
     }
   }
@@ -146,65 +208,44 @@ class DeepLinkHandler {
     }
   }
 
-  // ✅ NOUVELLE MÉTHODE : Vérifier l'authentification avant la navigation
   static Future<void> _checkAuthAndNavigate(String shareToken) async {
-    if (_context == null) return;
+    if (_context == null) {
+      return;
+    }
 
     try {
-      // Vérifier si l'utilisateur est authentifié
       final authService = _context!.read<AuthService>();
       final isAuthenticated = await authService.isAuthenticated();
 
       if (isAuthenticated) {
-        debugPrint('✅ Utilisateur authentifié, navigation vers l\'invitation');
         _navigateToShareInvitation(shareToken);
       } else {
-        debugPrint('❌ Utilisateur non authentifié, redirection vers login');
         _redirectToLoginWithToken(shareToken);
       }
     } catch (e) {
-      debugPrint('❌ Erreur lors de la vérification d\'authentification: $e');
-      // En cas d'erreur, rediriger vers login par sécurité
       _redirectToLoginWithToken(shareToken);
     }
   }
 
-  // ✅ NOUVELLE MÉTHODE : Rediriger vers login avec token sauvegardé
   static void _redirectToLoginWithToken(String shareToken) {
     if (_context == null) return;
 
-    // Sauvegarder le token pour après la connexion
     _pendingShareToken = shareToken;
 
-    // Afficher un message informatif
-    ScaffoldMessenger.of(_context!).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.info, color: Colors.white, size: 20),
-            SizedBox(width: 8),
-            Text('Connexion requise pour accéder à l\'invitation'),
-          ],
-        ),
-        backgroundColor: Colors.blue[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(16),
-      ),
+    SmartSnackBarManager.showInfoSnackBar(
+      _context!,
+      'Connexion requise pour accéder à l\'invitation',
+      duration: const Duration(seconds: 3),
     );
 
-    // Naviguer vers l'écran de connexion
     Navigator.of(_context!).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
 
-    // Écouter les changements d'état d'authentification
     _listenForAuthChanges();
   }
 
-  // ✅ NOUVELLE MÉTHODE : Écouter les changements d'authentification
   static void _listenForAuthChanges() {
     if (_context == null) return;
 
@@ -213,99 +254,56 @@ class DeepLinkHandler {
 
     authSubscription = authBloc.stream.listen((state) {
       if (state is AuthSuccess && _pendingShareToken != null) {
-        debugPrint('✅ Utilisateur connecté, traitement du token en attente');
-
         final token = _pendingShareToken!;
         _pendingShareToken = null;
 
-        // Petit délai pour laisser l'interface se stabiliser
         Future.delayed(const Duration(milliseconds: 1000), () {
           _navigateToShareInvitation(token);
         });
 
-        // Annuler l'écoute
         authSubscription.cancel();
       }
     });
 
-    // Annuler l'écoute après 5 minutes pour éviter les fuites mémoire
     Future.delayed(const Duration(minutes: 5), () {
       authSubscription.cancel();
       _pendingShareToken = null;
     });
   }
 
-  static void _navigateToShareInvitation(String shareToken) {
-    if (_context == null) return;
+  static void _testListening() {
+    Timer(const Duration(seconds: 2), () {
+      if (_linkSubscription == null || _linkSubscription!.isPaused) {
+        forceReinitialize();
+      }
+    });
+  }
 
-    try {
-      Navigator.of(_context!).push(
-        MaterialPageRoute(
-          builder:
-              (context) => BlocProvider(
-                create:
-                    (context) => SharedListBloc(
-                      sharedListService: context.read<SharedListService>(),
-                    ),
-                child: ShareInvitationScreen(shareToken: shareToken),
-              ),
-        ),
-      );
+  static void forceReinitialize() {
+    _linkSubscription?.cancel();
+    _linkSubscription = null;
+    _appLinks = null;
 
-      // Message de confirmation
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (_context != null) {
-          ScaffoldMessenger.of(_context!).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Icons.share, color: Colors.white, size: 20),
-                  SizedBox(width: 8),
-                  Text('Invitation reçue !'),
-                ],
-              ),
-              backgroundColor: Colors.green[600],
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              duration: const Duration(seconds: 2),
-              margin: const EdgeInsets.all(16),
-            ),
-          );
-        }
+    if (_context != null) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        _appLinks = AppLinks();
+        _initializeDeepLinks();
       });
-    } catch (e) {
-      debugPrint('❌ Erreur lors de la navigation: $e');
-      _showError('Erreur lors de l\'ouverture de l\'invitation');
     }
   }
 
   static void _showError(String message) {
     if (_context == null) return;
 
-    ScaffoldMessenger.of(_context!).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error, color: Colors.white),
-            const SizedBox(width: 8),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: Colors.red[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        duration: const Duration(seconds: 4),
-      ),
+    SmartSnackBarManager.showErrorSnackBar(
+      _context!,
+      message,
+      duration: const Duration(seconds: 4),
     );
   }
 
-  // ✅ NOUVELLE MÉTHODE : Traiter un token après connexion réussie
   static void processPendingTokenAfterLogin() {
     if (_pendingShareToken != null && _context != null) {
-      debugPrint('🔄 Traitement du token après connexion: $_pendingShareToken');
-
       final token = _pendingShareToken!;
       _pendingShareToken = null;
 
@@ -315,7 +313,7 @@ class DeepLinkHandler {
     }
   }
 
-  // MÉTHODES UTILITAIRES (inchangées)
+  // MÉTHODES UTILITAIRES
   static String generateWebShareUrl(String token) {
     return 'https://$customDomain/share/$token';
   }
@@ -401,7 +399,6 @@ class DeepLinkHandler {
         await _openStore();
       }
     } catch (e) {
-      debugPrint('❌ Erreur lors de l\'ouverture de l\'app: $e');
       await _openStore();
     }
   }
@@ -413,7 +410,7 @@ class DeepLinkHandler {
         mode: LaunchMode.externalApplication,
       );
     } catch (e) {
-      debugPrint('❌ Erreur lors de l\'ouverture du store: $e');
+      // Erreur silencieuse
     }
   }
 }

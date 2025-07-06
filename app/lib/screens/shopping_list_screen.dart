@@ -56,9 +56,17 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     return BlocListener<ShoppingListBloc, ShoppingListState>(
       listener: (context, state) {
         if (state is ShoppingListError) {
-          _showErrorSnackBar(state.message);
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            state.message,
+            duration: const Duration(seconds: 3),
+          );
         } else if (state is ShoppingListOperationSuccess) {
-          _showSuccessSnackBar(state.message);
+          SmartSnackBarManager.showSuccessSnackBar(
+            context,
+            state.message,
+            duration: const Duration(seconds: 2),
+          );
         }
       },
     );
@@ -68,9 +76,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     return BlocListener<SharedListBloc, SharedListState>(
       listener: (context, state) {
         if (state is SharedListError) {
-          _showErrorSnackBar(state.message);
+          SmartSnackBarManager.showErrorSnackBar(context, state.message);
         } else if (state is ShareOperationSuccess) {
-          _showSuccessSnackBar(state.message, isShare: true);
+          SmartSnackBarManager.showInfoSnackBar(
+            context,
+            state.message,
+            duration: const Duration(seconds: 2),
+          );
           _loadShoppingLists(); // Recharger après une opération de partage
         }
       },
@@ -235,33 +247,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             value: context.read<SharedListBloc>(),
             child: LeaveSharedListDialog(list: list),
           ),
-    );
-  }
-
-  // SnackBars
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('❌ $message'),
-        backgroundColor: Colors.red[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar(String message, {bool isShare = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('✅ $message'),
-        backgroundColor: isShare ? Colors.blue[600] : Colors.green[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 2),
-      ),
     );
   }
 }

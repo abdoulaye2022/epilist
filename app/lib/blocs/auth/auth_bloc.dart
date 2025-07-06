@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/models/user.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 part 'auth_event.dart';
@@ -85,17 +84,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           // Extraire l'email de l'exception ou utiliser celui du login
           final email = e.email?.isNotEmpty == true ? e.email! : event.email;
 
-          debugPrint('📧 Email non vérifié détecté: $email');
-
           // Envoyer automatiquement un code de vérification
           try {
             await authService.resendVerificationCode(email);
-            debugPrint('✅ Code de vérification envoyé automatiquement');
 
             // Émettre l'état avec l'email pour redirection vers vérification
             emit(EmailVerificationRequired(email));
           } catch (resendError) {
-            debugPrint('❌ Erreur envoi code: $resendError');
             // Même si l'envoi échoue, rediriger vers la page de vérification
             emit(EmailVerificationRequired(email));
           }
@@ -105,7 +100,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(AuthFailure(error: errorMessage));
     } catch (e) {
-      debugPrint('❌ Erreur de connexion: $e');
       emit(AuthFailure(error: 'Une erreur est survenue lors de la connexion'));
     }
   }
@@ -131,7 +125,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      debugPrint('❌ Erreur vérification auth: $e');
       emit(AuthFailure(error: 'Failed to check authentication'));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
@@ -143,8 +136,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      debugPrint('🔄 Rafraîchissement du token...');
-
       final tokens = await authService.refreshToken(event.refreshToken);
 
       // Sauvegarder les nouveaux tokens
@@ -153,15 +144,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         tokens['refresh_token']!,
       );
 
-      debugPrint('✅ Tokens rafraîchis et sauvegardés');
-
       // Programmer le prochain refresh
       _scheduleTokenRefresh();
 
       // Émettre l'état de succès avec les tokens mis à jour
       emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
     } catch (e) {
-      debugPrint('❌ Échec du refresh token: $e');
       emit(AuthFailure(error: 'Session expirée - Veuillez vous reconnecter'));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
@@ -186,11 +174,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await Future.delayed(const Duration(milliseconds: 100));
       emit(Unauthenticated());
-
-      debugPrint('🔴 Déconnexion réussie');
     } catch (e) {
-      debugPrint('❌ Erreur lors de la déconnexion: $e');
-
       // Forcer la déconnexion locale même en cas d'erreur
       try {
         _tokenRefreshTimer?.cancel();
@@ -326,10 +310,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (tokens != null) {
         // NOUVEAU COMPORTEMENT: Si des tokens sont retournés, connecter automatiquement
-        debugPrint(
-          '🔑 Tokens reçus - connexion automatique après confirmation',
-        );
-
         // Sauvegarder les tokens
         await authService.saveTokens(
           tokens['access_token']!,
@@ -350,7 +330,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       } else {
         // ANCIEN COMPORTEMENT: Pas de tokens, juste confirmer l'email
-        debugPrint('✅ Email confirmé sans connexion automatique');
         emit(EmailConfirmationSuccess());
       }
     } catch (e) {
@@ -387,11 +366,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           add(RefreshTokenRequested(refreshToken));
         }
       } catch (e) {
-        debugPrint('❌ Erreur lors du refresh automatique: $e');
+        // Erreur silencieuse
       }
     });
-
-    debugPrint('⏰ Refresh programmé dans 50 minutes');
   }
 
   Future<void> _onRequestAccountDeletion(
@@ -401,13 +378,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      debugPrint('🔄 Demande de suppression de compte...');
-
       final result = await accountDeletionService.requestAccountDeletion(
         reason: event.reason,
       );
-
-      debugPrint('✅ Code de suppression envoyé');
 
       emit(
         AccountDeletionCodeSent(
@@ -416,7 +389,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      debugPrint('❌ Erreur lors de la demande de suppression: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -428,14 +400,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      debugPrint('🔄 Confirmation de suppression de compte...');
-
       final result = await accountDeletionService.confirmAccountDeletion(
         deletionCode: event.deletionCode,
         reason: event.reason,
       );
-
-      debugPrint('✅ Suppression de compte confirmée');
 
       // Émettre l'état de confirmation
       emit(
@@ -459,7 +427,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Émettre l'état de déconnexion
       emit(Unauthenticated());
     } catch (e) {
-      debugPrint('❌ Erreur lors de la confirmation de suppression: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -471,11 +438,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      debugPrint('🔄 Annulation de la demande de suppression...');
-
       await accountDeletionService.cancelAccountDeletion();
-
-      debugPrint('✅ Demande de suppression annulée');
 
       emit(AccountDeletionCancelled());
 
@@ -487,7 +450,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      debugPrint('❌ Erreur lors de l\'annulation: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }
@@ -497,15 +459,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      debugPrint('🔄 Récupération du statut de suppression...');
-
       final status = await accountDeletionService.getAccountDeletionStatus();
-
-      debugPrint('✅ Statut de suppression récupéré');
 
       emit(AccountDeletionStatusLoaded(status));
     } catch (e) {
-      debugPrint('❌ Erreur lors de la récupération du statut: $e');
       emit(AuthFailure(error: e.toString()));
     }
   }

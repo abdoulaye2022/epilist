@@ -1,6 +1,8 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Smartphone, Menu, X, Download, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -67,16 +69,27 @@ export default function Header() {
               { key: 'features', id: 'fonctionnalites' },
               { key: 'benefits', id: 'avantages' },
               { key: 'testimonials', id: 'temoignages' },
-              { key: 'contact', id: 'contact' }
-            ].map((item, index) => (
-              <button
-                key={item.key}
-                onClick={() => scrollToSection(item.id)}
-                className="relative text-gray-700 hover:text-epilist-green transition-all duration-300 font-medium group"
-              >
-                {t(item.key as any)}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-epilist group-hover:w-full transition-all duration-300"></span>
-              </button>
+              { key: 'contact', href: '/contact' }
+            ].map((item) => (
+              item.href ? (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className="relative text-gray-700 hover:text-epilist-green transition-all duration-300 font-medium group"
+                >
+                  {t(item.key as any)}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-epilist group-hover:w-full transition-all duration-300"></span>
+                </Link>
+              ) : (
+                <button
+                  key={item.key}
+                  onClick={() => scrollToSection(item.id!)}
+                  className="relative text-gray-700 hover:text-epilist-green transition-all duration-300 font-medium group"
+                >
+                  {t(item.key as any)}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-epilist group-hover:w-full transition-all duration-300"></span>
+                </button>
+              )
             ))}
           </nav>
 
@@ -129,15 +142,26 @@ export default function Header() {
                 { key: 'features', id: 'fonctionnalites' },
                 { key: 'benefits', id: 'avantages' },
                 { key: 'testimonials', id: 'temoignages' },
-                { key: 'contact', id: 'contact' }
+                { key: 'contact', href: '/contact' }
               ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-left text-gray-700 hover:text-epilist-green transition-colors duration-300 font-medium py-2"
-                >
-                  {t(item.key as any)}
-                </button>
+                item.href ? (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className="text-left text-gray-700 hover:text-epilist-green transition-colors duration-300 font-medium py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {t(item.key as any)}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.key}
+                    onClick={() => scrollToSection(item.id!)}
+                    className="text-left text-gray-700 hover:text-epilist-green transition-colors duration-300 font-medium py-2"
+                  >
+                    {t(item.key as any)}
+                  </button>
+                )
               ))}
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
                 <LanguageToggle />

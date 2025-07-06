@@ -119,7 +119,7 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
     try {
       await _sharedListService.declineShareInvitation(event.shareToken);
 
-      debugPrint('✅ Invitation refusée');
+      // debugPrint('✅ Invitation refusée');
 
       emit(ShareInvitationDeclined());
     } catch (e) {

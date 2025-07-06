@@ -185,9 +185,9 @@ class SharedListService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      debugPrint(
-        '✅ Invitation refusée avec succès - Status: ${response.statusCode}',
-      );
+      // debugPrint(
+      //   '✅ Invitation refusée avec succès - Status: ${response.statusCode}',
+      // );
 
       final responseData = response.data as Map<String, dynamic>;
 

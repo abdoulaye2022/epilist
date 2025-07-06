@@ -76,11 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
             SnackBarManager.clearAll(context);
 
             // Optionnel: afficher un message de succès
-            SnackBarManager.showSuccessSnackBar(
-              context,
-              'Connexion réussie ! Bienvenue ${state.user.firstName}.',
-              duration: const Duration(seconds: 2),
-            );
+            // SnackBarManager.showSuccessSnackBar(
+            //   context,
+            //   'Connexion réussie ! Bienvenue ${state.user.firstName}.',
+            //   duration: const Duration(seconds: 2),
+            // );
 
             // Naviguer après un court délai
             Future.delayed(const Duration(milliseconds: 800), () {

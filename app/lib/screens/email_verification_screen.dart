@@ -2,6 +2,7 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,8 +37,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _canResend = true;
   bool _initialCodeSent = false;
   bool _isLoading = false;
-  bool _isRedirecting =
-      false; // ✅ NOUVEAU: Flag pour éviter multiple redirections
+  bool _isRedirecting = false;
 
   @override
   void initState() {
@@ -115,14 +115,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     _focusNodes[0].requestFocus();
   }
 
-  // ✅ NOUVELLE MÉTHODE: Redirection sécurisée vers HomeScreen
   void _redirectToHome() {
     if (!_isRedirecting && mounted) {
       setState(() => _isRedirecting = true);
-
-      debugPrint(
-        '🏠 Redirection vers HomeScreen depuis EmailVerificationScreen',
-      );
 
       // Remplacer complètement la pile de navigation
       Navigator.pushAndRemoveUntil(
@@ -157,26 +152,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          debugPrint(
-            '📧 EmailVerificationScreen - État reçu: ${state.runtimeType}',
-          );
-
           if (state is AuthLoading) {
             setState(() => _isLoading = true);
           } else if (state is EmailConfirmationSuccess) {
             setState(() => _isLoading = false);
 
-            // ✅ CORRECTION: Si EmailConfirmationSuccess, on redirige vers HomeScreen
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
-            SnackBarManager.showSuccessSnackBar(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               '🎉 Email vérifié avec succès !',
               duration: const Duration(seconds: 2),
-            );
-
-            debugPrint(
-              '✅ EmailConfirmationSuccess - Redirection vers HomeScreen',
             );
 
             // Redirection immédiate vers HomeScreen
@@ -188,21 +174,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 
-            // ✅ CORRECTION: Connexion automatique réussie - Redirection vers HomeScreen
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
-            SnackBarManager.showSuccessSnackBar(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               '🎉 Email vérifié ! Connexion automatique réussie !',
               duration: const Duration(seconds: 2),
             );
 
-            debugPrint(
-              '✅ AuthSuccess - Utilisateur connecté: ${state.user.email}',
-            );
-            debugPrint('🏠 Redirection immédiate vers HomeScreen');
-
-            // ✅ REDIRECTION IMMÉDIATE: Ne pas attendre l'AuthWrapper
+            // Redirection immédiate vers HomeScreen
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted && !_isRedirecting) {
                 _redirectToHome();
@@ -211,9 +191,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           } else if (state is VerificationCodeResent) {
             setState(() => _isLoading = false);
 
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
-            SnackBarManager.showSuccessSnackBar(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               'Code de vérification renvoyé !',
               duration: const Duration(seconds: 2),
@@ -222,18 +202,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Utiliser le gestionnaire de SnackBar avec message en français
+            // Utiliser SmartSnackBarManager pour les erreurs
             final localizedError = AuthErrorMessages.getLocalizedError(
               state.error,
             );
 
-            SnackBarManager.showErrorSnackBar(
+            SmartSnackBarManager.showErrorSnackBar(
               context,
               localizedError,
               duration: const Duration(seconds: 5),
             );
 
-            debugPrint('❌ Erreur de vérification email: ${state.error}');
             _clearCode();
           } else if (state is Unauthenticated) {
             setState(() => _isLoading = false);
@@ -309,7 +288,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 32),
 
-                  // ✅ INDICATEUR DE CHARGEMENT AMÉLIORÉ
+                  // Indicateur de chargement amélioré
                   if (_isLoading || _isRedirecting)
                     Container(
                       width: double.infinity,

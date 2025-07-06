@@ -8,6 +8,8 @@ import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
+import 'package:epilist/services/deep_link_handler.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/home/welcome_card.dart';
 import 'package:epilist/widgets/home/home_app_bar.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
@@ -33,21 +35,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
     context.read<ShoppingListBloc>().add(LoadShoppingLists());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DeepLinkHandler.updateContext(context);
+    });
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    DeepLinkHandler.updateContext(context);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       context.read<ShoppingListBloc>().add(LoadShoppingLists());
+
+      DeepLinkHandler.forceReinitialize();
+
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        DeepLinkHandler.updateContext(context);
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -67,9 +86,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           BlocListener<ShoppingListBloc, ShoppingListState>(
             listener: (context, state) {
               if (state is ShoppingListError) {
-                _showErrorSnackBar(state.message);
+                SmartSnackBarManager.showErrorSnackBar(
+                  context,
+                  state.message,
+                  duration: const Duration(seconds: 3),
+                );
               } else if (state is ShoppingListOperationSuccess) {
-                _showSuccessSnackBar(state.message);
+                SmartSnackBarManager.showSuccessSnackBar(
+                  context,
+                  state.message,
+                  duration: const Duration(seconds: 2),
+                );
               }
             },
           ),
@@ -77,9 +104,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           BlocListener<SharedListBloc, SharedListState>(
             listener: (context, state) {
               if (state is SharedListError) {
-                _showErrorSnackBar(state.message);
+                SmartSnackBarManager.showErrorSnackBar(context, state.message);
               } else if (state is ShareOperationSuccess) {
-                _showSuccessSnackBar(state.message, isShare: true);
+                SmartSnackBarManager.showInfoSnackBar(
+                  context,
+                  state.message,
+                  duration: const Duration(seconds: 2),
+                );
                 // Recharger la liste après une opération de partage
                 context.read<ShoppingListBloc>().add(LoadShoppingLists());
               }
@@ -234,7 +265,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (list.canEdit) {
           _showEditListDialog(list, context);
         } else {
-          _showErrorSnackBar(
+          SmartSnackBarManager.showWarningSnackBar(
+            context,
             'Vous n\'avez pas la permission de modifier cette liste',
           );
         }
@@ -248,7 +280,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (list.canShare) {
           _showShareDialog(list, context);
         } else {
-          _showErrorSnackBar(
+          SmartSnackBarManager.showWarningSnackBar(
+            context,
             'Vous n\'avez pas la permission de partager cette liste',
           );
         }
@@ -258,7 +291,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (list.isOwner && list.isShared) {
           _showManageSharesDialog(list, context);
         } else {
-          _showErrorSnackBar('Seul le propriétaire peut gérer les partages');
+          SmartSnackBarManager.showWarningSnackBar(
+            context,
+            'Seul le propriétaire peut gérer les partages',
+          );
         }
         break;
 
@@ -266,7 +302,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (!list.isOwner) {
           _showLeaveSharedListDialog(list, context);
         } else {
-          _showErrorSnackBar('Impossible de quitter votre propre liste');
+          SmartSnackBarManager.showWarningSnackBar(
+            context,
+            'Impossible de quitter votre propre liste',
+          );
         }
         break;
 
@@ -274,41 +313,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (list.canDelete) {
           _showDeleteListDialog(list, context);
         } else {
-          _showErrorSnackBar(
+          SmartSnackBarManager.showWarningSnackBar(
+            context,
             'Vous n\'avez pas la permission de supprimer cette liste',
           );
         }
         break;
-
-      default:
-        print('Action non reconnue: $action');
     }
-  }
-
-  // SnackBar methods
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('❌ $message'),
-        backgroundColor: Colors.red[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar(String message, {bool isShare = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('✅ $message'),
-        backgroundColor: isShare ? Colors.blue[600] : Colors.green[600],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.all(16),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 }
