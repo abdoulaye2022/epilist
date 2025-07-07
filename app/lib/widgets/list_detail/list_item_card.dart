@@ -1,4 +1,4 @@
-// widgets/list_detail/list_item_card.dart - VERSION AVEC PERMISSIONS
+// widgets/list_detail/list_item_card.dart - VERSION CORRIGÉE
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -9,7 +9,7 @@ class ListItemCard extends StatelessWidget {
   final Function(bool)? onTogglePurchased;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
-  final ShoppingList shoppingList; // Ajout pour les permissions
+  final ShoppingList shoppingList;
 
   const ListItemCard({
     super.key,
@@ -26,87 +26,153 @@ class ListItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Vérification des permissions
-    final canManageItems = shoppingList.canManageItems;
     final canEdit = shoppingList.canEdit;
     final isReadOnly = shoppingList.isReadOnly;
+    final canToggle =
+        !isReadOnly; // Peut cocher/décocher si pas en lecture seule
 
-    return Card(
-      margin: EdgeInsets.only(bottom: 8),
-      // Indication visuelle si lecture seule
-      color: isReadOnly ? Colors.grey[50] : null,
-      // Bordure spéciale pour le mode lecture seule
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side:
-            isReadOnly
-                ? BorderSide(color: Colors.blue[200]!, width: 1)
-                : BorderSide.none,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: _getCardBackgroundColor(),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: _getBorder(),
       ),
-      child: ListTile(
-        leading: _buildCheckbox(canManageItems),
-        title: _buildTitle(),
-        subtitle: _buildSubtitle(),
-        trailing: _buildTrailing(canManageItems, canEdit, context),
-        // Désactiver les interactions en mode lecture seule
-        enabled: !isReadOnly,
-        // Style différent si lecture seule
-        tileColor: isReadOnly ? Colors.grey[50] : null,
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap:
+              canToggle
+                  ? () => onTogglePurchased?.call(!item.isPurchased)
+                  : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                _buildCheckbox(canToggle),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 8),
+                      _buildDetails(),
+                      if (_shouldShowPermissionInfo()) ...[
+                        const SizedBox(height: 8),
+                        _buildPermissionChip(),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                _buildTrailing(canToggle, canEdit, context),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildCheckbox(bool canManageItems) {
-    return Checkbox(
-      value: item.isPurchased,
-      onChanged:
-          canManageItems
-              ? (value) => onTogglePurchased?.call(value!)
-              : null, // Désactive si pas de permission
-      activeColor: Colors.green[600],
-      // Style différent si désactivé
-      fillColor:
-          canManageItems ? null : MaterialStateProperty.all(Colors.grey[300]),
+  Color _getCardBackgroundColor() {
+    return Colors.white;
+  }
+
+  Border? _getBorder() {
+    if (item.isPurchased) {
+      return Border.all(color: Colors.green[200]!, width: 1);
+    } else if (shoppingList.isReadOnly) {
+      return Border.all(color: Colors.blue[200]!, width: 1.5);
+    }
+    return null;
+  }
+
+  Widget _buildCheckbox(bool canToggle) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _getCheckboxColor(),
+        border: Border.all(color: _getCheckboxBorderColor(), width: 2),
+      ),
+      child:
+          item.isPurchased
+              ? const Icon(Icons.check, size: 16, color: Colors.white)
+              : null,
     );
   }
 
-  Widget _buildTitle() {
+  Color _getCheckboxColor() {
+    if (item.isPurchased) return Colors.green[600]!;
+    if (shoppingList.isReadOnly) return Colors.grey[300]!;
+    return Colors.transparent;
+  }
+
+  Color _getCheckboxBorderColor() {
+    if (item.isPurchased) return Colors.green[600]!;
+    if (shoppingList.isReadOnly) return Colors.grey[400]!;
+    return Colors.grey[500]!;
+  }
+
+  Widget _buildHeader() {
     return Row(
       children: [
         Expanded(
           child: Text(
             item.productName,
             style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
               decoration: item.isPurchased ? TextDecoration.lineThrough : null,
-              color: item.isPurchased ? Colors.grey : Colors.black87,
-              // Style plus pâle si lecture seule
-              fontWeight:
-                  shoppingList.isReadOnly ? FontWeight.normal : FontWeight.w500,
+              color: _getTitleColor(),
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (shoppingList.isReadOnly) _buildReadOnlyIndicator(),
+        if (shoppingList.isReadOnly) ...[
+          const SizedBox(width: 8),
+          _buildReadOnlyBadge(),
+        ],
       ],
     );
   }
 
-  Widget _buildReadOnlyIndicator() {
+  Color _getTitleColor() {
+    if (item.isPurchased) return Colors.grey[500]!;
+    if (shoppingList.isReadOnly) return Colors.blue[700]!;
+    return Colors.black87;
+  }
+
+  Widget _buildReadOnlyBadge() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.blue[100],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.blue[300]!),
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.visibility, size: 12, color: Colors.blue[600]),
-          SizedBox(width: 2),
+          Icon(Icons.visibility, size: 10, color: Colors.blue[600]),
+          const SizedBox(width: 2),
           Text(
-            'Lecture seule',
+            'Lecture',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               color: Colors.blue[600],
               fontWeight: FontWeight.w500,
             ),
@@ -116,172 +182,270 @@ class ListItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Première ligne : Quantité et prix
-        Row(
-          children: [
-            Text(
-              'Qté: ${item.quantity}',
-              style: TextStyle(
-                color:
-                    shoppingList.isReadOnly
-                        ? Colors.grey[500]
-                        : Colors.grey[600],
-              ),
-            ),
-            if (item.price != null) ...[
-              Text(
-                ' • ${_formatPrice(item.price!)}',
-                style: TextStyle(
-                  color:
-                      shoppingList.isReadOnly
-                          ? Colors.grey[500]
-                          : Colors.grey[600],
-                ),
-              ),
-            ],
-          ],
-        ),
-        // Deuxième ligne : Magasin avec ellipsis si trop long
-        if (item.storeName != null && item.storeName!.isNotEmpty) ...[
-          SizedBox(height: 2),
-          Row(
+  Widget _buildDetails() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmallScreen = constraints.maxWidth < 250;
+
+        if (isSmallScreen && item.price != null) {
+          // Layout vertical pour très petits écrans
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                Icons.store,
-                size: 12,
-                color:
-                    shoppingList.isReadOnly
-                        ? Colors.grey[400]
-                        : Colors.grey[600],
+              _buildDetailChip(
+                icon: Icons.shopping_basket_outlined,
+                text: 'Qté: ${item.quantity}',
+                color: Colors.grey[600]!,
               ),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  item.storeName!,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color:
-                        shoppingList.isReadOnly
-                            ? Colors.grey[400]
-                            : Colors.grey[600],
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+              const SizedBox(height: 6),
+              _buildDetailChip(
+                icon: Icons.attach_money,
+                text: _formatPrice(item.price!),
+                color: Colors.green[600]!,
               ),
+              if (item.storeName != null && item.storeName!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                _buildStoreInfo(),
+              ],
             ],
-          ),
-        ],
-        // Troisième ligne : Indicateur de permissions si pas propriétaire
-        if (!shoppingList.isOwner && !shoppingList.isReadOnly) ...[
-          SizedBox(height: 4),
-          _buildPermissionInfo(),
-        ],
-      ],
+          );
+        } else {
+          // Layout horizontal pour écrans normaux
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Ligne quantité et prix
+              Row(
+                children: [
+                  _buildDetailChip(
+                    icon: Icons.shopping_basket_outlined,
+                    text: 'Qtédd: ${item.quantity}',
+                    color: Colors.grey[600]!,
+                  ),
+                  if (item.price != null) ...[
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildDetailChip(
+                        icon: Icons.attach_money,
+                        text: _formatPrice(item.price!),
+                        color: Colors.green[600]!,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              // Magasin si disponible
+              if (item.storeName != null && item.storeName!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                _buildStoreInfo(),
+              ],
+            ],
+          );
+        }
+      },
     );
   }
 
-  Widget _buildPermissionInfo() {
+  Widget _buildDetailChip({
+    required IconData icon,
+    required String text,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 11,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStoreInfo() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.purple[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.purple[200]!),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.store, size: 12, color: Colors.purple[600]),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              item.storeName!,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.purple[600],
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _shouldShowPermissionInfo() {
+    return !shoppingList.isOwner && !shoppingList.isReadOnly;
+  }
+
+  Widget _buildPermissionChip() {
     String permissionText;
     Color permissionColor;
     IconData permissionIcon;
 
-    if (shoppingList.isReadOnly) {
-      permissionText = shoppingList.permissionDisplayName ?? 'Lecture seule';
-      permissionColor = Colors.blue[600]!;
-      permissionIcon = Icons.visibility;
-    } else if (shoppingList.canEdit) {
-      permissionText = shoppingList.permissionDisplayName ?? 'Modification';
+    if (shoppingList.canEdit) {
+      permissionText = 'Modification';
       permissionColor = Colors.green[600]!;
       permissionIcon = Icons.edit;
+    } else if (!shoppingList.isReadOnly) {
+      permissionText = 'Consultation';
+      permissionColor = Colors.blue[600]!;
+      permissionIcon = Icons.check_circle_outline;
     } else {
       permissionText = 'Accès limité';
       permissionColor = Colors.orange[600]!;
       permissionIcon = Icons.lock;
     }
 
-    return Row(
-      children: [
-        Icon(permissionIcon, size: 12, color: permissionColor),
-        SizedBox(width: 4),
-        Text(
-          permissionText,
-          style: TextStyle(
-            fontSize: 11,
-            color: permissionColor,
-            fontWeight: FontWeight.w500,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: permissionColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: permissionColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(permissionIcon, size: 10, color: permissionColor),
+          const SizedBox(width: 2),
+          Text(
+            permissionText,
+            style: TextStyle(
+              fontSize: 9,
+              color: permissionColor,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget? _buildTrailing(
-    bool canManageItems,
-    bool canEdit,
-    BuildContext context,
-  ) {
-    // Si aucune permission, pas de boutons d'action
-    if (!canManageItems && !canEdit) {
-      return Icon(Icons.lock, color: Colors.grey[400], size: 20);
-    }
-
-    // Si seulement modification d'état (cocher/décocher) mais pas suppression
-    if (canManageItems && !canEdit) {
-      return Icon(Icons.check_circle_outline, color: Colors.green[400]);
-    }
-
-    // Menu complet si toutes les permissions
-    if (canEdit) {
-      return PopupMenuButton<String>(
-        icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-        onSelected: (value) => _handleMenuAction(value, context),
-        itemBuilder:
-            (context) => [
-              if (onEdit != null)
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, size: 20, color: Colors.blue[600]),
-                      SizedBox(width: 8),
-                      Text('Modifier'),
-                    ],
-                  ),
-                ),
-              if (onDelete != null)
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, size: 20, color: Colors.red[600]),
-                      SizedBox(width: 8),
-                      Text(
-                        'Supprimer',
-                        style: TextStyle(color: Colors.red[600]),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+  Widget _buildTrailing(bool canToggle, bool canEdit, BuildContext context) {
+    // Icône de verrouillage si aucune permission
+    if (!canToggle && !canEdit) {
+      return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.lock, color: Colors.grey[400], size: 16),
       );
     }
 
-    // Bouton de suppression simple si pas de menu d'édition
-    return IconButton(
-      icon: Icon(Icons.delete, color: Colors.red[400]),
-      onPressed: canManageItems ? onDelete : null,
-      tooltip:
-          canManageItems ? 'Supprimer l\'article' : 'Permission insuffisante',
-    );
+    // Icône de validation si seulement toggle mais pas d'édition
+    if (canToggle && !canEdit) {
+      return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.green[50],
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.check_circle_outline,
+          color: Colors.green[400],
+          size: 16,
+        ),
+      );
+    }
+
+    // Menu complet si édition possible
+    if (canEdit) {
+      return PopupMenuButton<String>(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.more_vert, color: Colors.grey[600], size: 16),
+        ),
+        onSelected: (value) => _handleMenuAction(value, context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        itemBuilder: (context) => _buildMenuItems(),
+      );
+    }
+
+    // Cas par défaut - ne devrait pas arriver
+    return const SizedBox.shrink();
+  }
+
+  List<PopupMenuEntry<String>> _buildMenuItems() {
+    List<PopupMenuEntry<String>> items = [];
+
+    // Modifier
+    if (onEdit != null) {
+      items.add(
+        PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit, size: 18, color: Colors.blue[600]),
+              const SizedBox(width: 8),
+              const Text('Modifier'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Supprimer
+    if (onDelete != null) {
+      items.add(
+        PopupMenuItem(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 18, color: Colors.red[600]),
+              const SizedBox(width: 8),
+              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return items;
   }
 
   void _handleMenuAction(String action, BuildContext context) {
-    // Bloquer toutes les actions en mode lecture seule
     if (shoppingList.isReadOnly) {
       _showPermissionDenied(context, 'modifier cette liste');
       return;
@@ -305,7 +469,6 @@ class ListItemCard extends StatelessWidget {
     }
   }
 
-  // Nouvelle méthode pour afficher l'alerte de permission refusée
   void _showPermissionDenied(BuildContext context, String action) {
     String title;
     String message;
@@ -329,18 +492,39 @@ class ListItemCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
-              Icon(
-                shoppingList.isReadOnly ? Icons.visibility : Icons.lock,
-                color:
-                    shoppingList.isReadOnly
-                        ? Colors.blue[600]
-                        : Colors.orange[600],
-                size: 24,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color:
+                      shoppingList.isReadOnly
+                          ? Colors.blue[50]
+                          : Colors.orange[50],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  shoppingList.isReadOnly ? Icons.visibility : Icons.lock,
+                  color:
+                      shoppingList.isReadOnly
+                          ? Colors.blue[600]
+                          : Colors.orange[600],
+                  size: 20,
+                ),
               ),
-              SizedBox(width: 8),
-              Expanded(child: Text(title)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ],
           ),
           content: Column(
@@ -348,14 +532,30 @@ class ListItemCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(message),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               if (!shoppingList.isOwner && shoppingList.sharedBy != null) ...[
-                Text(
-                  'Cette liste a été partagée par ${shoppingList.sharedBy!.name}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, size: 16, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Partagée par ${shoppingList.sharedBy!.name}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -364,33 +564,23 @@ class ListItemCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Compris'),
+              child: const Text('Compris'),
             ),
             if (!shoppingList.isReadOnly)
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Utiliser SmartSnackBarManager pour afficher une info
                   SmartSnackBarManager.showMessage(
                     context,
                     'Contactez le propriétaire pour obtenir plus de permissions',
                     type: SnackBarType.info,
                   );
                 },
-                child: Text('Plus d\'infos'),
+                child: const Text('Plus d\'infos'),
               ),
           ],
         );
       },
-    );
-  }
-
-  void _showReadOnlyWarning(BuildContext context) {
-    SmartSnackBarManager.showMessage(
-      context,
-      'Cette liste est en lecture seule - Aucune modification possible',
-      type: SnackBarType.warning,
-      duration: Duration(seconds: 3),
     );
   }
 
@@ -399,22 +589,49 @@ class ListItemCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Supprimer l\'article'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red[50],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.delete, color: Colors.red[600], size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Supprimer l\'article',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
           content: Text(
             'Êtes-vous sûr de vouloir supprimer "${item.productName}" de la liste ?',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Annuler'),
+              child: const Text('Annuler'),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 onDelete?.call();
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: Text('Supprimer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[600],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Supprimer'),
             ),
           ],
         );
@@ -423,11 +640,11 @@ class ListItemCard extends StatelessWidget {
   }
 }
 
-// Extension pour les permissions sur ListItem (optionnel)
+// Extension pour les permissions sur ListItem
 extension ListItemPermissions on ListItem {
   /// Vérifie si l'utilisateur peut modifier cet article
   bool canModify(ShoppingList shoppingList) {
-    return shoppingList.canManageItems;
+    return !shoppingList.isReadOnly;
   }
 
   /// Vérifie si l'utilisateur peut supprimer cet article

@@ -1,4 +1,4 @@
-// widgets/shopping/shopping_list_card.dart
+// widgets/shopping/shopping_list_card.dart - VERSION UNIFIÉE
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class ShoppingListCard extends StatelessWidget {
     final totalPrice = list.totalPrice;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -31,35 +31,40 @@ class ShoppingListCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
-        border: list.isShared
-            ? Border.all(
-                color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
-                width: 1,
-              )
-            : null,
+        border:
+            list.isShared
+                ? Border.all(
+                  color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
+                  width: 1.5,
+                )
+                : null,
       ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              SizedBox(height: 8),
-              _buildBasicInfo(totalItems),
-              if (totalPrice > 0) ...[
-                SizedBox(height: 4),
-                _buildPriceInfo(totalPrice),
+              const SizedBox(height: 12),
+              _buildListInfo(totalItems, totalPrice),
+              if (list.isShared) ...[
+                const SizedBox(height: 8),
+                _buildSharingInfo(),
               ],
-              SizedBox(height: 12),
-              _buildProgressBar(progress, completedItems, totalItems),
-              SizedBox(height: 12),
-              _buildStatusRow(),
+              if (totalItems > 0) ...[
+                const SizedBox(height: 12),
+                _buildProgressSection(progress, completedItems, totalItems),
+                const SizedBox(height: 12),
+                _buildBottomRow(),
+              ],
+              const SizedBox(height: 8),
+              _buildDateInfo(),
             ],
           ),
         ),
@@ -77,59 +82,142 @@ class ShoppingListCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   list.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
               if (list.isShared) ...[
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 _buildSharingIndicator(),
               ],
             ],
           ),
         ),
+        const SizedBox(width: 8),
         _buildPopupMenu(),
       ],
     );
   }
 
-  Widget _buildBasicInfo(int totalItems) {
-    return Row(
-      children: [
-        Text(
-          '${_formatDate(list.createdAt)} • $totalItems articles',
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+  Widget _buildListInfo(int totalItems, double totalPrice) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmallScreen = constraints.maxWidth < 300;
+
+        if (isSmallScreen && totalPrice > 0) {
+          // Layout vertical pour très petits écrans
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$totalItems articles',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                      style: TextStyle(
+                        color: Colors.green[600],
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        } else {
+          // Layout horizontal pour écrans normaux
+          return Row(
+            children: [
+              Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
+              const SizedBox(width: 6),
+              Text(
+                '$totalItems articles',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
+              if (totalPrice > 0) ...[
+                const SizedBox(width: 16),
+                Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                    style: TextStyle(
+                      color: Colors.green[600],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildSharingInfo() {
+    if (!list.isShared) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
         ),
-        if (list.isShared) ...[
-          Text(' • ', style: TextStyle(color: Colors.grey[600])),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            list.isOwner ? Icons.people_outline : Icons.person_add,
+            size: 14,
+            color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+          ),
+          const SizedBox(width: 4),
           Text(
-            list.sharingStatus,
+            list.isOwner
+                ? 'Liste partagée • ${list.sharedWithCount} collaborateur(s)'
+                : 'Partagée par ${list.sharedBy?.name ?? "un utilisateur"}',
             style: TextStyle(
+              fontSize: 12,
               color: list.isOwner ? Colors.blue[600] : Colors.green[600],
-              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
           ),
         ],
-      ],
-    );
-  }
-
-  Widget _buildPriceInfo(double totalPrice) {
-    return Text(
-      'Budget estimé: ${totalPrice.toStringAsFixed(2)} \$CAD',
-      style: TextStyle(
-        color: Colors.green[600],
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
       ),
     );
   }
 
-  Widget _buildProgressBar(double progress, int completedItems, int totalItems) {
+  Widget _buildProgressSection(
+    double progress,
+    int completedItems,
+    int totalItems,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -137,9 +225,10 @@ class ShoppingListCard extends StatelessWidget {
             value: progress,
             backgroundColor: Colors.grey[200],
             valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+            minHeight: 6,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Text(
           '$completedItems/$totalItems',
           style: TextStyle(
@@ -152,36 +241,47 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusRow() {
+  Widget _buildBottomRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: list.isCompleted ? Colors.green[50] : Colors.orange[50],
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
-            ),
-          ),
-          child: Text(
-            list.isCompleted ? '✅ Terminée' : '🛒 En cours',
-            style: TextStyle(
-              fontSize: 12,
-              color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        _buildStatusChip(),
         if (!list.isOwner) _buildPermissionIndicator(),
       ],
     );
   }
 
+  Widget _buildStatusChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: list.isCompleted ? Colors.green[50] : Colors.orange[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
+        ),
+      ),
+      child: Text(
+        list.isCompleted ? '✅ Terminée' : '🛒 En cours',
+        style: TextStyle(
+          fontSize: 12,
+          color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateInfo() {
+    return Text(
+      'Créée ${_formatDate(list.createdAt)}',
+      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+    );
+  }
+
   Widget _buildSharingIndicator() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: list.isOwner ? Colors.blue[50] : Colors.green[50],
         borderRadius: BorderRadius.circular(4),
@@ -198,7 +298,7 @@ class ShoppingListCard extends StatelessWidget {
             color: list.isOwner ? Colors.blue[600] : Colors.green[600],
           ),
           if (list.isOwner) ...[
-            SizedBox(width: 2),
+            const SizedBox(width: 2),
             Text(
               '${list.sharedWithCount}',
               style: TextStyle(
@@ -214,26 +314,25 @@ class ShoppingListCard extends StatelessWidget {
   }
 
   Widget _buildPermissionIndicator() {
-    String text;
+    if (list.isOwner) return const SizedBox.shrink();
+
+    String text = list.permissionDisplayName ?? 'Accès';
     Color color;
     IconData icon;
 
     if (list.isReadOnly) {
-      text = 'Lecture seule';
       color = Colors.blue[600]!;
       icon = Icons.visibility;
     } else if (list.canEdit) {
-      text = 'Modification';
       color = Colors.green[600]!;
       icon = Icons.edit;
     } else {
-      text = 'Admin';
       color = Colors.purple[600]!;
       icon = Icons.admin_panel_settings;
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(4),
@@ -243,7 +342,7 @@ class ShoppingListCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 10, color: color),
-          SizedBox(width: 2),
+          const SizedBox(width: 2),
           Text(
             text,
             style: TextStyle(
@@ -268,9 +367,10 @@ class ShoppingListCard extends StatelessWidget {
   List<PopupMenuEntry<String>> _buildMenuItems() {
     List<PopupMenuEntry<String>> items = [];
 
+    // Modifier (si permission d'édition)
     if (list.canEdit) {
       items.add(
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
@@ -283,8 +383,9 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
+    // Dupliquer (toujours disponible)
     items.add(
-      PopupMenuItem(
+      const PopupMenuItem(
         value: 'duplicate',
         child: Row(
           children: [
@@ -296,6 +397,7 @@ class ShoppingListCard extends StatelessWidget {
       ),
     );
 
+    // Partager (si propriétaire ou admin)
     if (list.canShare) {
       items.add(
         PopupMenuItem(
@@ -303,7 +405,7 @@ class ShoppingListCard extends StatelessWidget {
           child: Row(
             children: [
               Icon(Icons.share, size: 20, color: Colors.blue[600]),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text('Partager', style: TextStyle(color: Colors.blue[600])),
             ],
           ),
@@ -311,6 +413,7 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
+    // Gérer les partages (si propriétaire et liste partagée)
     if (list.isOwner && list.isShared) {
       items.add(
         PopupMenuItem(
@@ -318,7 +421,7 @@ class ShoppingListCard extends StatelessWidget {
           child: Row(
             children: [
               Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Gérer les partages',
                 style: TextStyle(color: Colors.purple[600]),
@@ -329,13 +432,15 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
+    // Séparateur si actions de suppression/quitter
     if (list.canDelete || !list.isOwner) {
-      items.add(PopupMenuDivider());
+      items.add(const PopupMenuDivider());
     }
 
+    // Quitter (si pas propriétaire)
     if (!list.isOwner) {
       items.add(
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'leave',
           child: Row(
             children: [
@@ -348,9 +453,10 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
+    // Supprimer (si permission)
     if (list.canDelete) {
       items.add(
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
@@ -371,13 +477,13 @@ class ShoppingListCard extends StatelessWidget {
     final difference = now.difference(date).inDays;
 
     if (difference == 0) {
-      return 'Aujourd\'hui';
+      return 'aujourd\'hui';
     } else if (difference == 1) {
-      return 'Hier';
+      return 'hier';
     } else if (difference < 7) {
-      return 'Il y a $difference jours';
+      return 'il y a $difference jours';
     } else {
-      return '${date.day}/${date.month}/${date.year}';
+      return 'le ${date.day}/${date.month}/${date.year}';
     }
   }
 }

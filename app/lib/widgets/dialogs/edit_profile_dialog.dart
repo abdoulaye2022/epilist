@@ -62,8 +62,16 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 10,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            width: double.infinity,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+              maxWidth: 500,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.white,
@@ -71,17 +79,28 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildIcon(),
-                const SizedBox(height: 20),
-                _buildTitle(),
-                const SizedBox(height: 12),
-                _buildDescription(),
-                const SizedBox(height: 24),
-                _buildForm(isLoading),
-                const SizedBox(height: 8),
-                _buildEmailNote(),
-                const SizedBox(height: 24),
-                _buildButtons(isLoading),
+                // Contenu scrollable
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildIcon(),
+                        const SizedBox(height: 20),
+                        _buildTitle(),
+                        const SizedBox(height: 12),
+                        _buildDescription(),
+                        const SizedBox(height: 24),
+                        _buildForm(isLoading),
+                        const SizedBox(height: 8),
+                        _buildEmailNote(),
+                        const SizedBox(height: 24),
+                        _buildButtons(isLoading),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

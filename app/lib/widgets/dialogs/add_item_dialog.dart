@@ -1,4 +1,5 @@
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,11 +32,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
-        padding: EdgeInsets.all(24),
+        width: double.infinity,
         constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
           maxWidth: 500,
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -44,15 +46,26 @@ class _AddItemDialogState extends State<AddItemDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildIcon(),
-            SizedBox(height: 20),
-            _buildTitle(),
-            SizedBox(height: 12),
-            _buildDescription(),
-            SizedBox(height: 24),
-            _buildForm(),
-            SizedBox(height: 24),
-            _buildButtons(),
+            // Contenu scrollable
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildIcon(),
+                    const SizedBox(height: 20),
+                    _buildTitle(),
+                    const SizedBox(height: 12),
+                    _buildDescription(),
+                    const SizedBox(height: 24),
+                    _buildForm(),
+                    const SizedBox(height: 24),
+                    _buildButtons(),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -76,7 +89,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildTitle() {
-    return Text(
+    return const Text(
       'Nouvel Article',
       style: TextStyle(
         fontSize: 24,
@@ -95,18 +108,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildForm() {
-    return Flexible(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildProductNameField(),
-            SizedBox(height: 16),
-            _buildQuantityAndPriceRow(),
-            SizedBox(height: 16),
-            _buildStoreField(),
-          ],
-        ),
-      ),
+    return Column(
+      children: [
+        _buildProductNameField(),
+        const SizedBox(height: 16),
+        _buildQuantityAndPriceRow(),
+        const SizedBox(height: 16),
+        _buildStoreField(),
+      ],
     );
   }
 
@@ -166,7 +175,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             keyboardType: TextInputType.number,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           flex: 2,
           child: TextField(
@@ -190,7 +199,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               filled: true,
               fillColor: Colors.grey[50],
             ),
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
         ),
       ],
@@ -230,7 +239,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           child: TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: Colors.grey[300]!),
@@ -246,7 +255,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             ),
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: BlocBuilder<ListItemBloc, ListItemState>(
             builder: (context, state) {
@@ -257,7 +266,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.green[300],
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -265,7 +274,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ),
                 child:
                     isLoading
-                        ? SizedBox(
+                        ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -275,7 +284,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                             ),
                           ),
                         )
-                        : Row(
+                        : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add, size: 18),
@@ -299,12 +308,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   void _addItem() {
     if (productController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Le nom du produit est obligatoire'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
+      SmartSnackBarManager.showWarningSnackBar(
+        context,
+        'Le nom du produit est obligatoire',
+        duration: const Duration(seconds: 2),
       );
       return;
     }

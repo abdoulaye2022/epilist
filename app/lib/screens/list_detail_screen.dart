@@ -1,9 +1,12 @@
-// screens/list_detail_screen.dart - VERSION AVEC PERMISSIONS ET SMART SNACKBAR
+// screens/list_detail_screen.dart - VERSION AVEC CARTES BLANCHES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/dialogs/add_item_dialog.dart';
+import 'package:epilist/widgets/list_detail/list_stats_header.dart';
+import 'package:epilist/widgets/list_detail/empty_items_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -260,7 +263,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
     return Column(
       children: [
         if (!currentList.isOwner) _buildPermissionBanner(),
-        _buildStatsHeader(items),
+        ListStatsHeader(
+          totalItems: items.length,
+          purchasedItems: items.where((item) => item.isPurchased).length,
+          totalPrice: items.fold(
+            0.0,
+            (sum, item) => sum + (item.price ?? 0) * item.quantity,
+          ),
+        ),
         Expanded(child: _buildContent(items, isLoading)),
       ],
     );
@@ -325,48 +335,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  Widget _buildStatsHeader(List<ListItem> items) {
-    final totalItems = items.length;
-    final purchasedItems = items.where((item) => item.isPurchased).length;
-    final totalPrice = items.fold(
-      0.0,
-      (sum, item) => sum + (item.price ?? 0) * item.quantity,
-    );
-
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('Articles', '$purchasedItems/$totalItems'),
-          _buildStatItem('Total', _formatPrice(totalPrice)),
-          _buildStatItem(
-            'Progression',
-            '${totalItems > 0 ? ((purchasedItems / totalItems) * 100).round() : 0}%',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.green[600],
-          ),
-        ),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-      ],
-    );
-  }
-
   Widget _buildContent(List<ListItem> items, bool isLoading) {
     if (isLoading) {
       return Center(
@@ -377,7 +345,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
     }
 
     if (items.isEmpty) {
-      return _buildEmptyState();
+      return EmptyItemsState(
+        shoppingList: currentList,
+        onAddItem: currentList.canManageItems ? _addNewItem : null,
+      );
     }
 
     return RefreshIndicator(
@@ -394,64 +365,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  Widget _buildEmptyState() {
-    String title;
-    String subtitle;
-    String buttonText;
-    VoidCallback? onPressed;
-
-    if (currentList.isReadOnly) {
-      title = 'Liste vide';
-      subtitle = 'Cette liste ne contient aucun article pour le moment';
-      buttonText = 'Actualiser';
-      onPressed =
-          () => context.read<ListItemBloc>().add(LoadListItems(currentList.id));
-    } else if (!currentList.canManageItems) {
-      title = 'Liste vide';
-      subtitle = 'Vous n\'avez pas la permission d\'ajouter des articles';
-      buttonText = 'Permissions limitées';
-      onPressed = () => _showPermissionDenied('ajouter des articles');
-    } else {
-      title = 'Liste vide';
-      subtitle = 'Ajoutez votre premier article';
-      buttonText = 'Ajouter un article';
-      onPressed = _addNewItem;
-    }
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.add_shopping_cart, size: 60, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(title, style: TextStyle(fontSize: 18, color: Colors.grey[600])),
-          SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: TextStyle(color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: onPressed,
-            icon: Icon(currentList.canManageItems ? Icons.add : Icons.lock),
-            label: Text(buttonText),
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  currentList.canManageItems
-                      ? Colors.green[600]
-                      : Colors.grey[600],
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildItemCard(ListItem item) {
     return Card(
       margin: EdgeInsets.only(bottom: 8),
+      // CORRECTION: Fond blanc pour toutes les cartes
+      color: Colors.white,
       // Bordure spéciale si lecture seule
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -460,7 +378,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 ? BorderSide(color: Colors.blue[200]!, width: 1)
                 : BorderSide.none,
       ),
-      color: currentList.isReadOnly ? Colors.grey[50] : null,
       child: ListTile(
         leading: _buildCheckbox(item),
         title: Text(
@@ -1104,354 +1021,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
       return;
     }
 
-    final productController = TextEditingController();
-    final quantityController = TextEditingController(text: '1');
-    final priceController = TextEditingController();
-    final storeController = TextEditingController();
-
     showDialog(
       context: context,
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ListItemBloc>(),
-            child: Dialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              elevation: 10,
-              child: Container(
-                padding: EdgeInsets.all(24),
-                constraints: BoxConstraints(
-                  maxWidth: 500,
-                  maxHeight: MediaQuery.of(context).size.height * 0.8,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Icône d'ajout
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Icon(
-                        Icons.add_shopping_cart_rounded,
-                        size: 40,
-                        color: Colors.green[600],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      'Nouvel Article',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      'Ajoutez un nouvel article à votre liste d\'épicerie',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                        height: 1.4,
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    // Formulaire
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Nom du produit
-                            TextField(
-                              controller: productController,
-                              decoration: InputDecoration(
-                                labelText: 'Nom du produit*',
-                                hintText: 'Ex: Bananes, Pain, Lait...',
-                                prefixIcon: Icon(
-                                  Icons.shopping_basket,
-                                  color: Colors.green[600],
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.green[600]!,
-                                    width: 2,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[50],
-                              ),
-                              autofocus: true,
-                              textCapitalization: TextCapitalization.words,
-                            ),
-                            SizedBox(height: 16),
-                            // Quantité et Prix sur la même ligne
-                            Row(
-                              children: [
-                                // Quantité
-                                Expanded(
-                                  flex: 1,
-                                  child: TextField(
-                                    controller: quantityController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Quantité',
-                                      hintText: '1',
-                                      prefixIcon: Icon(
-                                        Icons.numbers,
-                                        color: Colors.blue[600],
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[300]!,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.blue[600]!,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[300]!,
-                                        ),
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[50],
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                // Prix
-                                Expanded(
-                                  flex: 2,
-                                  child: TextField(
-                                    controller: priceController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Prix (\$CAD)',
-                                      hintText: '0.00',
-                                      prefixIcon: Icon(
-                                        Icons.attach_money,
-                                        color: Colors.amber[700],
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[300]!,
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.amber[700]!,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: Colors.grey[300]!,
-                                        ),
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[50],
-                                    ),
-                                    keyboardType:
-                                        TextInputType.numberWithOptions(
-                                          decimal: true,
-                                        ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            // Magasin
-                            TextField(
-                              controller: storeController,
-                              decoration: InputDecoration(
-                                labelText: 'Magasin (optionnel)',
-                                hintText: 'Ex: IGA, Metro, Provigo...',
-                                prefixIcon: Icon(
-                                  Icons.store,
-                                  color: Colors.purple[600],
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.purple[600]!,
-                                    width: 2,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[50],
-                              ),
-                              textCapitalization: TextCapitalization.words,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    // Boutons
-                    Row(
-                      children: [
-                        // Bouton Annuler
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(dialogContext),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.grey[300]!),
-                              ),
-                            ),
-                            child: Text(
-                              'Annuler',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        // Bouton Ajouter
-                        Expanded(
-                          child: BlocBuilder<ListItemBloc, ListItemState>(
-                            builder: (dialogContext, state) {
-                              final isLoading = state is ListItemLoading;
-                              return ElevatedButton(
-                                onPressed:
-                                    isLoading
-                                        ? null
-                                        : () {
-                                          if (productController.text
-                                              .trim()
-                                              .isNotEmpty) {
-                                            dialogContext
-                                                .read<ListItemBloc>()
-                                                .add(
-                                                  AddListItem(
-                                                    listId: currentList.id,
-                                                    productName:
-                                                        productController.text
-                                                            .trim(),
-                                                    quantity:
-                                                        int.tryParse(
-                                                          quantityController
-                                                              .text,
-                                                        ) ??
-                                                        1,
-                                                    price: double.tryParse(
-                                                      priceController.text,
-                                                    ),
-                                                    storeName:
-                                                        storeController.text
-                                                                .trim()
-                                                                .isEmpty
-                                                            ? null
-                                                            : storeController
-                                                                .text
-                                                                .trim(),
-                                                  ),
-                                                );
-                                            Navigator.pop(dialogContext);
-                                          } else {
-                                            SmartSnackBarManager.showMessage(
-                                              context,
-                                              'Le nom du produit est obligatoire',
-                                              type: SnackBarType.error,
-                                            );
-                                          }
-                                        },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green[600],
-                                  foregroundColor: Colors.white,
-                                  disabledBackgroundColor: Colors.green[300],
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
-                                ),
-                                child:
-                                    isLoading
-                                        ? SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                        : Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.add, size: 18),
-                                            SizedBox(width: 6),
-                                            Text(
-                                              'Ajouter',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: AddItemDialog(listId: currentList.id),
           ),
     );
   }
