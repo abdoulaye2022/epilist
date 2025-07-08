@@ -171,27 +171,6 @@ export const translations = {
     nbQualityOfLifeDesc: 'Équilibre travail-famille parfait',
     nbCapital: 'Capitale technologique des Maritimes',
     
-    // Testimonials content
-    testimonial1Name: 'Marie Dubois',
-    testimonial1Role: 'Mère de famille, Moncton',
-    testimonial1Content: 'EpiList a complètement transformé notre organisation familiale ! Plus de stress, plus d\'oublis. Mes enfants peuvent même ajouter ce dont ils ont besoin depuis leur téléphone.',
-    
-    testimonial2Name: 'Pierre Martin',
-    testimonial2Role: 'Père de 3 enfants, Fredericton',
-    testimonial2Content: 'La synchronisation en temps réel est magique. Ma femme ajoute des articles au bureau et je les vois immédiatement. Nous économisons 2h par semaine !',
-    
-    testimonial3Name: 'Sophie Laurent',
-    testimonial3Role: 'Étudiante, Saint John',
-    testimonial3Content: 'Interface ultra-intuitive et gratuite ! Je partage mes listes avec mes colocataires et on évite les doublons. Plus jamais 3 packs de lait dans le frigo !',
-    
-    testimonial4Name: 'Jean-Marc Petit',
-    testimonial4Role: 'Retraité, Bathurst',
-    testimonial4Content: 'Même à 65 ans, j\'ai adopté EpiList en 5 minutes ! Mes enfants m\'aident à distance en ajoutant des articles. C\'est formidable pour rester connecté.',
-    
-    testimonial5Name: 'Amélie Chen',
-    testimonial5Role: 'Professeure, Dieppe',
-    testimonial5Content: 'L\'organisation par catégories et la suggestion automatique me font gagner un temps précieux. EpiList comprend mes habitudes et anticipe mes besoins !',
-    
     // Common
     activeUsers: 'utilisateurs actifs',
     averageRating: 'Note moyenne',
@@ -230,7 +209,7 @@ export const translations = {
     dataCollectionText: 'Nous collectons uniquement les données nécessaires pour vous offrir la meilleure expérience possible avec EpiList.',
     dataUsageText: 'Vos données sont utilisées exclusivement pour améliorer votre expérience et assurer le bon fonctionnement de l\'application.',
     dataSecurityText: 'Nous utilisons les technologies de sécurité les plus avancées pour protéger vos informations personnelles.',
-    userRightsText: 'Vous avez un contrôle total sur vos données personnelles et pouvez exercer vos droits à tout moment.',
+    userRightsTextP: 'Vous avez un contrôle total sur vos données personnelles et pouvez exercer vos droits à tout moment.',
     emailSupport: 'Support par email',
     phoneSupport: 'Support téléphonique',
     ourLocation: 'Notre emplacement',
@@ -285,44 +264,43 @@ export const translations = {
     legalTeam: 'Équipe juridique',
     
     acceptanceTitle: 'Acceptation des conditions',
-    acceptanceText1: 'En téléchargeant, installant ou utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation.',
-    acceptanceText2: 'Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.',
+    acceptanceContent: 'En téléchargeant, installant ou utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.',
     
     serviceDescriptionTitle: 'Description du service',
-    serviceDescriptionText: 'EpiList est une application mobile gratuite qui permet aux utilisateurs de créer, gérer et partager des listes de courses avec leur famille. Le service comprend :',
-    serviceFeature1: 'Création et gestion de listes de courses',
-    serviceFeature2: 'Synchronisation en temps réel entre appareils',
-    serviceFeature3: 'Partage familial sécurisé',
-    serviceFeature4: 'Suggestions intelligentes d\'articles',
+    serviceDescriptionContent: 'EpiList est une application mobile gratuite qui permet aux utilisateurs de créer, gérer et partager des listes de courses avec leur famille. Le service comprend la création et gestion de listes de courses, la synchronisation en temps réel entre appareils, le partage familial sécurisé et les suggestions intelligentes d\'articles.',
     
-    userResponsibilitiesTitle: 'Responsabilités de l\'utilisateur',
-    userResponsibilitiesText: 'En utilisant EpiList, vous vous engagez à :',
-    userResponsibility1: 'Fournir des informations exactes lors de l\'inscription',
-    userResponsibility2: 'Maintenir la confidentialité de votre compte',
-    userResponsibility3: 'Utiliser le service de manière légale et éthique',
-    userResponsibility4: 'Respecter les droits des autres utilisateurs',
-    userResponsibility5: 'Signaler tout comportement abusif ou problème de sécurité',
+    userAccountTitle: 'Compte utilisateur',
+    userAccountContent: 'Pour utiliser EpiList, vous devez créer un compte avec une adresse email valide. Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se produisent sous votre compte.',
     
-    prohibitedUsesTitle: 'Utilisations interdites',
-    prohibitedUsesText: 'Vous ne devez pas utiliser EpiList pour :',
-    prohibitedUse1: 'Violer des lois locales, nationales ou internationales',
-    prohibitedUse2: 'Transmettre du contenu offensant ou illégal',
-    prohibitedUse3: 'Tenter d\'accéder aux comptes d\'autres utilisateurs',
-    prohibitedUse4: 'Utiliser le service à des fins commerciales non autorisées',
-    prohibitedUse5: 'Interférer avec le fonctionnement normal du service',
+    listsAndSharingTitle: 'Listes et partage',
+    listsAndSharingContent: 'Vous pouvez créer des listes de courses personnelles et les partager avec votre famille ou amis via des liens sécurisés. Vous contrôlez les permissions d\'accès (lecture, modification, administration) pour chaque personne invitée.',
     
-    intellectualPropertyTitle: 'Propriété intellectuelle',
-    intellectualPropertyText1: 'EpiList et tous ses contenus, fonctionnalités et fonctionnalités sont la propriété exclusive d\'EpiList Inc. et sont protégés par les lois canadiennes et internationales sur le droit d\'auteur.',
-    intellectualPropertyText2: 'Vous conservez la propriété de vos listes de courses et données personnelles. En utilisant notre service, vous nous accordez une licence limitée pour traiter ces données afin de fournir le service.',
+    acceptableUseTitle: 'Utilisation acceptable',
+    acceptableUseContent: 'Vous vous engagez à utiliser EpiList de manière légale et éthique. Il est interdit d\'utiliser le service pour violer des lois, transmettre du contenu offensant, accéder aux comptes d\'autres utilisateurs ou interférer avec le fonctionnement normal du service.',
+    
+    contentOwnershipTitle: 'Propriété du contenu',
+    contentOwnershipContent: 'Vous conservez la propriété de vos listes de courses et données personnelles. EpiList et ses contenus sont protégés par les lois sur le droit d\'auteur. En utilisant notre service, vous nous accordez une licence limitée pour traiter vos données afin de fournir le service.',
+    
+    calculationsTitle: 'Calculs et totaux',
+    calculationsContent: 'EpiList effectue des calculs automatiques pour vos totaux de courses et pourcentages d\'articles achetés. Bien que nous nous efforcions d\'assurer l\'exactitude, ces calculs sont fournis à titre indicatif.',
+    
+    serviceAvailabilityTitle: 'Disponibilité du service',
+    serviceAvailabilityContent: 'Nous nous efforçons de maintenir EpiList disponible 24h/7j, mais nous ne garantissons pas un service ininterrompu. Des maintenances programmées ou des problèmes techniques peuvent occasionnellement affecter la disponibilité.',
     
     limitationLiabilityTitle: 'Limitation de responsabilité',
-    limitationLiabilityText1: 'EpiList est fourni "tel quel" sans garantie d\'aucune sorte. Nous ne garantissons pas que le service sera ininterrompu ou exempt d\'erreurs.',
-    limitationLiabilityText2: 'Dans la mesure permise par la loi, EpiList Inc. ne sera pas responsable des dommages indirects, accessoires ou consécutifs résultant de l\'utilisation du service.',
+    limitationLiabilityContent: 'EpiList est fourni "tel quel" sans garantie d\'aucune sorte. Nous ne garantissons pas que le service sera ininterrompu ou exempt d\'erreurs. Dans la mesure permise par la loi, EpiList Inc. ne sera pas responsable des dommages indirects, accessoires ou consécutifs résultant de l\'utilisation du service.',
+    
+    suspensionTitle: 'Suspension et résiliation',
+    suspensionContent: 'Nous nous réservons le droit de suspendre ou résilier votre accès à EpiList en cas de violation de ces conditions. Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l\'application.',
     
     modificationsTitle: 'Modifications des conditions',
-    modificationsText: 'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications importantes seront communiquées par email ou notification dans l\'application.',
+    modificationsContent: 'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications importantes seront communiquées par email ou notification dans l\'application.',
     
-    termsContactText: 'Pour toute question concernant ces conditions d\'utilisation, contactez notre équipe juridique :',
+    applicableLawTitle: 'Droit applicable',
+    applicableLawContent: 'Ces conditions sont régies par les lois du Canada et de la province du Nouveau-Brunswick. Tout litige sera soumis à la juridiction exclusive des tribunaux du Nouveau-Brunswick.',
+    
+    contactSupportTitle: 'Contact et support',
+    contactSupportContent: 'Pour toute question concernant ces conditions d\'utilisation ou si vous avez besoin d\'aide, notre équipe est à votre disposition.',
     
     // Support Page
     supportTitle: 'Centre d\'aide',
@@ -407,7 +385,6 @@ export const translations = {
     subject: 'Sujet',
     selectSubject: 'Sélectionnez un sujet',
     technicalSupport: 'Support technique',
-    featureRequest: 'Demande de fonctionnalité',
     bugReport: 'Signalement de bug',
     partnership: 'Partenariat',
     other: 'Autre',
@@ -424,6 +401,42 @@ export const translations = {
     businessHours: 'Heures d\'ouverture',
     closed: 'Fermé',
     quickLinks: 'Liens rapides',
+    
+    // Privacy Policy - Detailed Content
+    dataCollectionTitleP: '1. Collecte des informations',
+    dataCollectionContent: 'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : nom, prénom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms des listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, modification, administration)\n• Données d\'usage : statut d\'achat des articles, calculs de totaux et pourcentages\n• Données techniques : logs d\'erreur, performances de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.',
+    
+    dataUsageTitleP: '2. Utilisation des données',
+    dataUsageContent: 'Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d\'épicerie\n• Calculer les totaux et pourcentages d\'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d\'accès (lecture, modification, administration)\n• Synchroniser vos données entre vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.',
+    
+    dataSecurityTitleP: '3. Stockage et sécurité',
+    dataSecurityContent: 'Vos données sont protégées par :\n\n• Stockage sécurisé sur nos serveurs avec chiffrement\n• Chiffrement des mots de passe avec des algorithmes sécurisés\n• Protection des données lors du transit et au repos\n• Liens de partage sécurisés avec contrôle d\'accès\n• Sauvegarde régulière de vos listes et données\n• Mesures de sécurité conformes aux standards de l\'industrie\n\nNous appliquons les meilleures pratiques de sécurité pour protéger vos informations.',
+    
+    dataSharingTitle: '4. Partage des données',
+    dataSharingContent: 'Vos données personnelles sont uniquement partagées dans les cas suivants :\n\n• Avec les personnes que vous autorisez via les liens de partage de listes\n• Avec nos prestataires de services techniques (hébergement, support)\n• Avec les autorités légales si requis par la loi\n\nLe partage de listes se fait selon les permissions que vous définissez :\n• Lecture seule : consultation des listes sans modification\n• Modification : ajout, suppression et modification d\'articles\n• Administration : gestion complète incluant suppression de liste\n\nAucun partage commercial de vos données n\'est effectué.',
+    
+    userRightsTitleP: '5. Vos droits',
+    userRightsContent: 'Vous avez le droit de :\n\n• Accéder à toutes vos données personnelles\n• Modifier vos informations de compte (nom, prénom, email)\n• Supprimer votre compte et toutes vos données associées\n• Exporter vos listes d\'épicerie\n• Révoquer les liens de partage à tout moment\n• Modifier les permissions d\'accès des utilisateurs invités\n• Supprimer individuellement vos listes ou articles\n\nContactez-nous pour exercer ces droits.',
+    
+    appFeaturesTitle: '6. Fonctionnalités de l\'application',
+    appFeaturesContent: 'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n• Création et gestion de comptes utilisateurs\n• Création, duplication, modification et suppression de listes\n• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n• Marquage d\'articles comme achetés ou suppression d\'articles\n• Calcul automatique des totaux et pourcentages d\'achat\n• Génération de liens de partage sécurisés\n• Gestion des permissions d\'accès collaboratif\n\nToutes ces données restent sous votre contrôle.',
+    
+    cookiesTitle: '7. Cookies et technologies similaires',
+    cookiesContent: 'EpiList utilise des technologies de suivi pour :\n\n• Maintenir votre session active\n• Mémoriser vos préférences d\'utilisation\n• Analyser l\'utilisation de l\'application (données anonymes)\n• Optimiser les performances de l\'application\n\nVous pouvez désactiver ces fonctions dans les paramètres de l\'application.',
+    
+    modificationsTitleP: '8. Modifications',
+    modificationsContentP: 'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Email à l\'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l\'application après les modifications constitue votre acceptation.',
+    
+    contactTitleP: '9. Contact',
+    contactContent: 'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre sous 48h ouvrées.',
+    
+    // Additional privacy terms
+    encryptedStorage: 'Stockage chiffré',
+    dataProtection: 'Protection des données',
+    industryStandards: 'Standards de l\'industrie',
+    userControl: 'Contrôle utilisateur',
+    fullDataControl: 'Contrôle total de vos données',
+    allRightsReserved: 'Tous droits réservés',
   },
   en: {
     // Header
@@ -597,27 +610,6 @@ export const translations = {
     nbQualityOfLifeDesc: 'Perfect work-family balance',
     nbCapital: 'Technological capital of the Maritimes',
     
-    // Testimonials content
-    testimonial1Name: 'Marie Dubois',
-    testimonial1Role: 'Mother of family, Moncton',
-    testimonial1Content: 'EpiList has completely transformed our family organization! No more stress, no more forgotten items. My children can even add what they need from their phone.',
-    
-    testimonial2Name: 'Pierre Martin',
-    testimonial2Role: 'Father of 3 children, Fredericton',
-    testimonial2Content: 'Real-time synchronization is magical. My wife adds items at the office and I see them immediately. We save 2 hours per week!',
-    
-    testimonial3Name: 'Sophie Laurent',
-    testimonial3Role: 'Student, Saint John',
-    testimonial3Content: 'Ultra-intuitive interface and free! I share my lists with my roommates and we avoid duplicates. Never again 3 milk packs in the fridge!',
-    
-    testimonial4Name: 'Jean-Marc Petit',
-    testimonial4Role: 'Retiree, Bathurst',
-    testimonial4Content: 'Even at 65, I adopted EpiList in 5 minutes! My children help me remotely by adding items. It\'s wonderful to stay connected.',
-    
-    testimonial5Name: 'Amélie Chen',
-    testimonial5Role: 'Teacher, Dieppe',
-    testimonial5Content: 'Category organization and automatic suggestions save me precious time. EpiList understands my habits and anticipates my needs!',
-    
     // Common
     activeUsers: 'active users',
     averageRating: 'Average rating',
@@ -656,7 +648,7 @@ export const translations = {
     dataCollectionText: 'We only collect the data necessary to provide you with the best possible EpiList experience.',
     dataUsageText: 'Your data is used exclusively to improve your experience and ensure the proper functioning of the application.',
     dataSecurityText: 'We use the most advanced security technologies to protect your personal information.',
-    userRightsText: 'You have complete control over your personal data and can exercise your rights at any time.',
+    userRightsTextP: 'You have complete control over your personal data and can exercise your rights at any time.',
     emailSupport: 'Email support',
     phoneSupport: 'Phone support',
     ourLocation: 'Our location',
@@ -711,44 +703,43 @@ export const translations = {
     legalTeam: 'Legal team',
     
     acceptanceTitle: 'Acceptance of Terms',
-    acceptanceText1: 'By downloading, installing, or using the EpiList application, you agree to be bound by these terms of service.',
-    acceptanceText2: 'If you do not agree to these terms, please do not use our service.',
+    acceptanceContent: 'By downloading, installing, or using the EpiList application, you agree to be bound by these terms of service. If you do not agree to these terms, please do not use our service.',
     
     serviceDescriptionTitle: 'Service Description',
-    serviceDescriptionText: 'EpiList is a free mobile application that allows users to create, manage, and share shopping lists with their family. The service includes:',
-    serviceFeature1: 'Creation and management of shopping lists',
-    serviceFeature2: 'Real-time synchronization across devices',
-    serviceFeature3: 'Secure family sharing',
-    serviceFeature4: 'Smart item suggestions',
+    serviceDescriptionContent: 'EpiList is a free mobile application that allows users to create, manage, and share shopping lists with their family. The service includes creation and management of shopping lists, real-time synchronization across devices, secure family sharing, and smart item suggestions.',
     
-    userResponsibilitiesTitle: 'User Responsibilities',
-    userResponsibilitiesText: 'By using EpiList, you agree to:',
-    userResponsibility1: 'Provide accurate information during registration',
-    userResponsibility2: 'Maintain the confidentiality of your account',
-    userResponsibility3: 'Use the service legally and ethically',
-    userResponsibility4: 'Respect the rights of other users',
-    userResponsibility5: 'Report any abusive behavior or security issues',
+    userAccountTitle: 'User Account',
+    userAccountContent: 'To use EpiList, you must create an account with a valid email address. You are responsible for maintaining the confidentiality of your login information and all activities that occur under your account.',
     
-    prohibitedUsesTitle: 'Prohibited Uses',
-    prohibitedUsesText: 'You must not use EpiList to:',
-    prohibitedUse1: 'Violate local, national, or international laws',
-    prohibitedUse2: 'Transmit offensive or illegal content',
-    prohibitedUse3: 'Attempt to access other users\' accounts',
-    prohibitedUse4: 'Use the service for unauthorized commercial purposes',
-    prohibitedUse5: 'Interfere with the normal operation of the service',
+    listsAndSharingTitle: 'Lists and Sharing',
+    listsAndSharingContent: 'You can create personal shopping lists and share them with your family or friends via secure links. You control access permissions (read, edit, admin) for each invited person.',
     
-    intellectualPropertyTitle: 'Intellectual Property',
-    intellectualPropertyText1: 'EpiList and all its content, features, and functionality are the exclusive property of EpiList Inc. and are protected by Canadian and international copyright laws.',
-    intellectualPropertyText2: 'You retain ownership of your shopping lists and personal data. By using our service, you grant us a limited license to process this data to provide the service.',
+    acceptableUseTitle: 'Acceptable Use',
+    acceptableUseContent: 'You agree to use EpiList legally and ethically. It is prohibited to use the service to violate laws, transmit offensive content, access other users\' accounts, or interfere with the normal operation of the service.',
+    
+    contentOwnershipTitle: 'Content Ownership',
+    contentOwnershipContent: 'You retain ownership of your shopping lists and personal data. EpiList and its contents are protected by copyright laws. By using our service, you grant us a limited license to process your data to provide the service.',
+    
+    calculationsTitle: 'Calculations and Totals',
+    calculationsContent: 'EpiList performs automatic calculations for your shopping totals and percentages of purchased items. While we strive to ensure accuracy, these calculations are provided for informational purposes.',
+    
+    serviceAvailabilityTitle: 'Service Availability',
+    serviceAvailabilityContent: 'We strive to keep EpiList available 24/7, but we do not guarantee uninterrupted service. Scheduled maintenance or technical issues may occasionally affect availability.',
     
     limitationLiabilityTitle: 'Limitation of Liability',
-    limitationLiabilityText1: 'EpiList is provided "as is" without warranty of any kind. We do not guarantee that the service will be uninterrupted or error-free.',
-    limitationLiabilityText2: 'To the extent permitted by law, EpiList Inc. will not be liable for indirect, incidental, or consequential damages resulting from the use of the service.',
+    limitationLiabilityContent: 'EpiList is provided "as is" without warranty of any kind. We do not guarantee that the service will be uninterrupted or error-free. To the extent permitted by law, EpiList Inc. will not be liable for indirect, incidental, or consequential damages resulting from the use of the service.',
+    
+    suspensionTitle: 'Suspension and Termination',
+    suspensionContent: 'We reserve the right to suspend or terminate your access to EpiList in case of violation of these terms. You can delete your account at any time from the application settings.',
     
     modificationsTitle: 'Modifications to Terms',
-    modificationsText: 'We reserve the right to modify these terms at any time. Significant changes will be communicated by email or in-app notification.',
+    modificationsContent: 'We reserve the right to modify these terms at any time. Significant changes will be communicated by email or in-app notification.',
     
-    termsContactText: 'For any questions regarding these terms of service, contact our legal team:',
+    applicableLawTitle: 'Applicable Law',
+    applicableLawContent: 'These terms are governed by the laws of Canada and the province of New Brunswick. Any dispute will be submitted to the exclusive jurisdiction of the courts of New Brunswick.',
+    
+    contactSupportTitle: 'Contact and Support',
+    contactSupportContent: 'For any questions regarding these terms of service or if you need help, our team is at your disposal.',
     
     // Support Page
     supportTitle: 'Help Center',
@@ -833,7 +824,6 @@ export const translations = {
     subject: 'Subject',
     selectSubject: 'Select a subject',
     technicalSupport: 'Technical Support',
-    featureRequest: 'Feature Request',
     bugReport: 'Bug Report',
     partnership: 'Partnership',
     other: 'Other',
@@ -850,6 +840,42 @@ export const translations = {
     businessHours: 'Business Hours',
     closed: 'Closed',
     quickLinks: 'Quick Links',
+    
+    // Privacy Policy - Detailed Content
+    dataCollectionTitleP: '1. Information Collection',
+    dataCollectionContent: 'EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, admin)\n• Usage data: item purchase status, total and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.',
+    
+    dataUsageTitleP: '2. Data Usage',
+    dataUsageContent: 'Your data is used exclusively to:\n\n• Create and manage your user account\n• Create, edit and delete your grocery lists\n• Calculate totals and percentages of purchased items\n• Duplicate your existing lists\n• Share your lists with family members or friends via secure links\n• Manage access permissions (read, edit, admin)\n• Synchronize your data across your devices\n• Provide technical support\n\nWe do not sell or rent your personal data to third parties.',
+    
+    dataSecurityTitleP: '3. Storage and Security',
+    dataSecurityContent: 'Your data is protected by:\n\n• Secure storage on our servers with encryption\n• Password encryption with secure algorithms\n• Data protection during transit and at rest\n• Secure sharing links with access control\n• Regular backup of your lists and data\n• Security measures compliant with industry standards\n\nWe apply security best practices to protect your information.',
+    
+    dataSharingTitle: '4. Data Sharing',
+    dataSharingContent: 'Your personal data is only shared in the following cases:\n\n• With people you authorize via list sharing links\n• With our technical service providers (hosting, support)\n• With legal authorities if required by law\n\nList sharing is done according to the permissions you define:\n• Read-only: view lists without modification\n• Edit: add, delete and modify items\n• Admin: complete management including list deletion\n\nNo commercial sharing of your data is performed.',
+    
+    userRightsTitleP: '5. Your Rights',
+    userRightsContent: 'You have the right to:\n\n• Access all your personal data\n• Modify your account information (first name, last name, email)\n• Delete your account and all associated data\n• Export your grocery lists\n• Revoke sharing links at any time\n• Modify access permissions for invited users\n• Delete your lists or items individually\n\nContact us to exercise these rights.',
+    
+    appFeaturesTitle: '6. Application Features',
+    appFeaturesContent: 'EpiList processes your data to offer the following features:\n\n• Creation and management of user accounts\n• Creation, duplication, modification and deletion of lists\n• Adding items with name, quantity, price and store (optional)\n• Marking items as purchased or deleting items\n• Automatic calculation of purchase totals and percentages\n• Generation of secure sharing links\n• Management of collaborative access permissions\n\nAll this data remains under your control.',
+    
+    cookiesTitle: '7. Cookies and Similar Technologies',
+    cookiesContent: 'EpiList uses tracking technologies to:\n\n• Maintain your active session\n• Remember your usage preferences\n• Analyze application usage (anonymous data)\n• Optimize application performance\n\nYou can disable these functions in the application settings.',
+    
+    modificationsTitleP: '8. Modifications',
+    modificationsContentP: 'This policy may be updated to reflect application developments. We will inform you of important changes by:\n\n• Email to the address associated with your account\n• Updating the date at the top of this policy\n\nYour continued use of the application after modifications constitutes your acceptance.',
+    
+    contactTitleP: '9. Contact',
+    contactContent: 'For any questions regarding this privacy policy or your data, please contact us via our website.\n\nWe are committed to responding within 48 business hours.',
+    
+    // Additional privacy terms
+    encryptedStorage: 'Encrypted storage',
+    dataProtection: 'Data protection',
+    industryStandards: 'Industry standards',
+    userControl: 'User control',
+    fullDataControl: 'Full control of your data',
+    allRightsReserved: 'All rights reserved',
   }
 };
 

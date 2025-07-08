@@ -8,9 +8,7 @@ import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/terms_of_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/edit_profile_dialog.dart';
-import 'package:epilist/widgets/dialogs/help_support_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
-import 'package:epilist/widgets/dialogs/notifications_settings_dialog.dart';
 import 'package:epilist/widgets/dialogs/security_settings_dialog.dart';
 import 'package:epilist/widgets/profile/account_deletion_status_widget.dart';
 import 'package:epilist/widgets/profile/logout_button.dart';
@@ -222,11 +220,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       title: 'Paramètres',
       children: [
         ProfileActionTile(
-          icon: Icons.notifications_outlined,
-          title: 'Notifications',
-          onTap: _showNotificationsDialog,
-        ),
-        ProfileActionTile(
           icon: Icons.security_outlined,
           title: 'Sécurité',
           onTap: _showSecurityDialog,
@@ -253,11 +246,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: Icons.article_outlined,
           title: 'Conditions d\'utilisation',
           onTap: _navigateToTerms,
-        ),
-        ProfileActionTile(
-          icon: Icons.help_outline,
-          title: 'Aide & Support',
-          onTap: _showHelpDialog,
         ),
       ],
     );
@@ -304,24 +292,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showNotificationsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const NotificationsSettingsDialog(),
-    );
-  }
-
   void _showSecurityDialog() {
     showDialog(
       context: context,
       builder: (context) => const SecuritySettingsDialog(),
-    );
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const HelpSupportDialog(),
     );
   }
 

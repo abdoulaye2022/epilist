@@ -1,4 +1,4 @@
-// main.dart - VERSION CORRIGÉE SANS DUPLICATION
+// main.dart - VERSION CORRIGÉE AVEC WELCOME SCREEN
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
@@ -7,6 +7,7 @@ import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
+import 'package:epilist/screens/welcome_screen.dart'; // AJOUT DU WELCOME SCREEN
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
@@ -150,6 +151,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/profil': (context) => const ProfileScreen(),
+        '/welcome':
+            (context) => const WelcomeScreen(), // AJOUT DE LA ROUTE WELCOME
         '/email-verification': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments
@@ -192,6 +195,7 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _redirecting = false;
   bool _deepLinkInitialized = false;
+  bool _hasCheckedAuth = false; // AJOUT: Pour savoir si on a vérifié l'auth
 
   @override
   void initState() {
@@ -245,6 +249,15 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        // AJOUT: Marquer qu'on a vérifié l'authentification
+        if (!_hasCheckedAuth &&
+            state is! AuthInitial &&
+            state is! AuthLoading) {
+          setState(() {
+            _hasCheckedAuth = true;
+          });
+        }
+
         // Ignorer les états de suppression de compte (ne pas les traiter ici)
         if (state is AccountDeletionStatusLoaded ||
             state is AccountDeletionCodeSent ||
@@ -367,21 +380,22 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             return const HomeScreen();
           }
 
-          // États nécessitant une redirection vers login
+          // MODIFICATION PRINCIPALE: Rediriger vers WelcomeScreen au lieu de LoginScreen
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
-            return const LoginScreen();
+            return const WelcomeScreen();
           }
 
-          // État par défaut
-          return const LoginScreen();
+          // État par défaut: WelcomeScreen au lieu de LoginScreen
+          return const WelcomeScreen();
         },
       ),
     );
   }
 }
 
+// CONSERVATION COMPLÈTE DES CLASSES EXISTANTES
 class LoadingScreen extends StatelessWidget {
   final String? message;
 

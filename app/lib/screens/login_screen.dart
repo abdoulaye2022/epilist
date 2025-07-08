@@ -109,17 +109,54 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: Column(
                       children: [
+                        // Logo avec design amélioré
                         Container(
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.green[100],
                             borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.green[400]!, Colors.green[600]!],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.3),
+                                spreadRadius: 2,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            Icons.shopping_cart,
-                            size: 40,
-                            color: Colors.green[600],
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              'assets/images/app_logo.png',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback avec design amélioré si l'image n'est pas trouvée
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.green[400]!,
+                                        Colors.green[600]!,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.shopping_cart_rounded,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
