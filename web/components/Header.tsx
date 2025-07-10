@@ -14,6 +14,12 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
 
+  // URLs des stores
+  const APP_STORE_URL =
+    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+  const GOOGLE_PLAY_URL =
+    "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -29,6 +35,15 @@ export default function Header() {
       element.scrollIntoView({ behavior: "smooth" });
     }
     setIsMobileMenuOpen(false);
+  };
+
+  // Fonction pour ouvrir les liens des stores
+  const openAppStore = () => {
+    window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const openGooglePlay = () => {
+    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -125,6 +140,7 @@ export default function Header() {
           <div className="hidden lg:flex items-center space-x-3">
             <LanguageToggle />
             <Button
+              onClick={openAppStore}
               variant="outline"
               className="border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300 group relative overflow-hidden"
             >
@@ -134,7 +150,10 @@ export default function Header() {
               </span>
               <div className="absolute inset-0 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </Button>
-            <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl group relative overflow-hidden">
+            <Button
+              onClick={openGooglePlay}
+              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl group relative overflow-hidden"
+            >
               <span className="relative z-10 flex items-center">
                 <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
                 {t("googlePlay")}
@@ -195,13 +214,17 @@ export default function Header() {
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
                 <LanguageToggle />
                 <Button
+                  onClick={openAppStore}
                   variant="outline"
                   className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300"
                 >
                   <Download className="mr-2 h-4 w-4" />
                   {t("appStore")}
                 </Button>
-                <Button className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                <Button
+                  onClick={openGooglePlay}
+                  className="bg-gradient-to-r from-green-500 to-blue-500 text-white"
+                >
                   <Download className="mr-2 h-4 w-4" />
                   {t("googlePlay")}
                 </Button>

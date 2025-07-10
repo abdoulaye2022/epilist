@@ -1,14 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download, ArrowRight, Users, Shield, Zap, Star, CheckCircle } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Download,
+  ArrowRight,
+  Users,
+  Shield,
+  Zap,
+  Star,
+  CheckCircle,
+} from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function CTASection() {
   const [isVisible, setIsVisible] = useState(false);
   const { t } = useLanguage();
+
+  // URLs des stores
+  const APP_STORE_URL =
+    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+  const GOOGLE_PLAY_URL =
+    "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -22,14 +36,47 @@ export default function CTASection() {
       { threshold: 0.1 }
     );
 
-    const element = document.getElementById('cta-section');
+    const element = document.getElementById("cta-section");
     if (element) observer.observe(element);
 
     return () => observer.disconnect();
   }, []);
 
+  // Fonction pour détecter l'appareil et ouvrir le bon store
+  const handleDownload = () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    if (isIOS) {
+      window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
+    } else if (isAndroid) {
+      window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+    } else {
+      // Par défaut sur desktop, ouvrir Google Play
+      window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  // Fonction pour la démo (peut être modifiée selon vos besoins)
+  const handleWatchDemo = () => {
+    // Option 1: Rediriger vers une vidéo YouTube/Vimeo
+    // window.open('https://youtube.com/watch?v=VOTRE_VIDEO_ID', '_blank', 'noopener,noreferrer');
+
+    // Option 2: Rediriger vers Google Play pour l'instant
+    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+
+    // Option 3: Scroll vers une section de démo sur votre site
+    // const demoElement = document.getElementById('demo-section');
+    // if (demoElement) {
+    //   demoElement.scrollIntoView({ behavior: 'smooth' });
+    // }
+  };
+
   return (
-    <section id="cta-section" className="py-24 bg-gradient-to-br from-epilist-green via-epilist-blue to-epilist-green relative overflow-hidden">
+    <section
+      id="cta-section"
+      className="py-24 bg-gradient-to-br from-epilist-green via-epilist-blue to-epilist-green relative overflow-hidden"
+    >
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float"></div>
@@ -37,33 +84,38 @@ export default function CTASection() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className={`text-center text-white ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
-          
+        <div
+          className={`text-center text-white ${
+            isVisible ? "animate-fade-in" : "opacity-0"
+          }`}
+        >
           {/* Main CTA */}
           <div className="max-w-4xl mx-auto mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              {t('ctaTitle')}
+              {t("ctaTitle")}
             </h2>
             <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
-              {t('ctaSubtitle')}
+              {t("ctaSubtitle")}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
               <Button
+                onClick={handleDownload}
                 size="lg"
-                className="bg-white text-epilist-green hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
+                className="bg-white text-epilist-green hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group cursor-pointer"
               >
                 <Download className="mr-3 h-6 w-6 group-hover:animate-bounce-gentle" />
-                {t('downloadNow')}
+                {t("downloadNow")}
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
+                onClick={handleWatchDemo}
                 size="lg"
                 variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-epilist-green transition-all duration-300 group"
+                className="border-2 border-white text-white hover:bg-white hover:text-epilist-green transition-all duration-300 group cursor-pointer"
               >
-                {t('watchDemo')}
+                {t("watchDemo")}
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -72,15 +124,15 @@ export default function CTASection() {
             <div className="flex flex-wrap justify-center items-center gap-8 text-white/80">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5" />
-                <span>{t('free')}</span>
+                <span>{t("free")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5" />
-                <span>{t('adFree')}</span>
+                <span>{t("adFree")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5" />
-                <span>{t('quickInstall')}</span>
+                <span>{t("quickInstall")}</span>
               </div>
             </div>
           </div>
@@ -91,7 +143,7 @@ export default function CTASection() {
               <CardContent className="p-8 text-center">
                 <Users className="h-12 w-12 text-white mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">50k+</div>
-                <div className="text-white/80">{t('activeUsers')}</div>
+                <div className="text-white/80">{t("activeUsers")}</div>
               </CardContent>
             </Card>
 
@@ -99,7 +151,7 @@ export default function CTASection() {
               <CardContent className="p-8 text-center">
                 <Star className="h-12 w-12 text-white mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">4.9/5</div>
-                <div className="text-white/80">{t('averageRating')}</div>
+                <div className="text-white/80">{t("averageRating")}</div>
               </CardContent>
             </Card>
 
@@ -107,7 +159,7 @@ export default function CTASection() {
               <CardContent className="p-8 text-center">
                 <Shield className="h-12 w-12 text-white mx-auto mb-4" />
                 <div className="text-3xl font-bold text-white mb-2">100%</div>
-                <div className="text-white/80">{t('secureData')}</div>
+                <div className="text-white/80">{t("secureData")}</div>
               </CardContent>
             </Card>
           </div>
@@ -115,10 +167,9 @@ export default function CTASection() {
           {/* Bottom Text */}
           <div className="max-w-3xl mx-auto">
             <p className="text-lg text-white/90 leading-relaxed">
-              {t('ctaBottomText')}
+              {t("ctaBottomText")}
             </p>
           </div>
-
         </div>
       </div>
     </section>
