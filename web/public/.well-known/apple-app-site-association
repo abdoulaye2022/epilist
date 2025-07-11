@@ -1,0 +1,22 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "79F8TZGAPL.com.m2atech.epilist"
+        ],
+        "components": [
+          {
+            "/": "/share/*",
+            "comment": "Liens de partage de listes EpiList"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "79F8TZGAPL.com.m2atech.epilist"
+    ]
+  }
+}
