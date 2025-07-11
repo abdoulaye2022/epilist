@@ -1,7 +1,8 @@
-// auth_service.dart - VERSION AVEC NETTOYAGE COMPLET
+// auth_service.dart - VERSION CORRIGÉE POUR JWT 1 AN
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
+import 'dart:convert';
 
 class AuthenticationException implements Exception {
   final String message;
@@ -26,21 +27,64 @@ class AuthService {
 
   AuthService({required this.dio, required this.sharedPreferences});
 
-  // === GESTION DES TOKENS ===
+  // === GESTION DES TOKENS CORRIGÉE ===
+
+  /// Décoder le JWT pour extraire la vraie date d'expiration
+  DateTime? _getTokenExpiration(String token) {
+    try {
+      // Séparer le token JWT en parties
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      // Décoder le payload (partie 2)
+      String payload = parts[1];
+
+      // Ajouter le padding nécessaire pour base64
+      switch (payload.length % 4) {
+        case 2:
+          payload += '==';
+          break;
+        case 3:
+          payload += '=';
+          break;
+      }
+
+      // Décoder le JSON
+      final decoded = utf8.decode(base64Url.decode(payload));
+      final Map<String, dynamic> payloadMap = json.decode(decoded);
+
+      // Récupérer 'exp' (expiration timestamp)
+      final exp = payloadMap['exp'];
+      if (exp != null) {
+        return DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+      }
+    } catch (e) {
+      print('Erreur lors du décodage du token: $e');
+    }
+    return null;
+  }
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
     try {
+      // Extraire la vraie date d'expiration du JWT
+      final tokenExpiry = _getTokenExpiration(accessToken);
+
       await Future.wait([
         sharedPreferences.setString(_accessTokenKey, accessToken),
         sharedPreferences.setString(_refreshTokenKey, refreshToken),
-        // Calculer et sauvegarder l'heure d'expiration (1 heure)
+        // Sauvegarder la vraie date d'expiration du JWT ou par défaut 1 an
         sharedPreferences.setInt(
           _tokenExpiryKey,
-          DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch,
+          (tokenExpiry ?? DateTime.now().add(const Duration(days: 365)))
+              .millisecondsSinceEpoch,
         ),
       ]);
+
+      print(
+        'Token sauvegardé avec expiration: ${tokenExpiry ?? "1 an par défaut"}',
+      );
     } catch (e) {
-      throw Exception('Impossible de sauvegarder les tokens');
+      throw Exception('Impossible de sauvegarder les tokens: $e');
     }
   }
 
@@ -49,19 +93,32 @@ class AuthService {
       final token = sharedPreferences.getString(_accessTokenKey);
       if (token != null && token.isNotEmpty) {
         // Vérifier si le token n'est pas expiré
-        final expiry = sharedPreferences.getInt(_tokenExpiryKey);
-        if (expiry != null) {
-          final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
-          if (DateTime.now().isBefore(expiryDate)) {
-            return token;
-          } else {
-            return null;
+        if (await isTokenExpired()) {
+          print('Token expiré, tentative de refresh automatique');
+
+          // Essayer de rafraîchir automatiquement
+          final refreshToken = await getRefreshToken();
+          if (refreshToken != null && refreshToken.isNotEmpty) {
+            try {
+              final newTokens = await this.refreshToken(refreshToken);
+              await saveTokens(
+                newTokens['access_token']!,
+                newTokens['refresh_token']!,
+              );
+              return newTokens['access_token'];
+            } catch (e) {
+              print('Échec du refresh automatique: $e');
+              await clearUserData();
+              return null;
+            }
           }
+          return null;
         }
         return token;
       }
       return null;
     } catch (e) {
+      print('Erreur lors de la récupération du token: $e');
       return null;
     }
   }
@@ -80,7 +137,34 @@ class AuthService {
       if (expiry == null) return true;
 
       final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
-      return DateTime.now().isAfter(expiryDate);
+      final isExpired = DateTime.now().isAfter(expiryDate);
+
+      if (isExpired) {
+        print('Token expiré: $expiryDate');
+      } else {
+        final timeLeft = expiryDate.difference(DateTime.now());
+        print(
+          'Token valide, expire dans: ${timeLeft.inDays} jours, ${timeLeft.inHours % 24} heures',
+        );
+      }
+
+      return isExpired;
+    } catch (e) {
+      print('Erreur lors de la vérification d\'expiration: $e');
+      return true;
+    }
+  }
+
+  /// Vérifier si le token expire bientôt (dans les 7 jours)
+  Future<bool> shouldRefreshSoon() async {
+    try {
+      final expiry = sharedPreferences.getInt(_tokenExpiryKey);
+      if (expiry == null) return true;
+
+      final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
+      final daysLeft = expiryDate.difference(DateTime.now()).inDays;
+
+      return daysLeft <= 7; // Refresh si moins de 7 jours
     } catch (e) {
       return true;
     }
@@ -109,20 +193,21 @@ class AuthService {
           );
         }
 
+        // Afficher l'expiration du token reçu
+        final expiry = _getTokenExpiration(accessToken);
+        print('Nouveau token reçu, expire le: $expiry');
+
         return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
         throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
     } on DioException catch (e) {
-      // CORRECTION: Gérer les codes 401 ET 403 pour EMAIL_NOT_VERIFIED
+      // [Votre gestion d'erreur existante reste la même]
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
         if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
-          // Extraire l'email de la réponse API
-          String emailFromResponse =
-              email; // Par défaut, utiliser l'email du login
+          String emailFromResponse = email;
 
-          // Essayer d'extraire l'email de la structure data
           if (errorData['data'] != null && errorData['data']['email'] != null) {
             emailFromResponse = errorData['data']['email'];
           }
@@ -134,7 +219,6 @@ class AuthService {
           );
         }
 
-        // Autres erreurs 401/403
         throw AuthenticationException(
           'Email ou mot de passe incorrect',
           'INVALID_CREDENTIALS',
@@ -160,6 +244,8 @@ class AuthService {
 
   Future<Map<String, String>> refreshToken(String refreshToken) async {
     try {
+      print('Tentative de refresh du token...');
+
       final response = await dio.post(
         '/auth/refresh',
         data: {'refresh_token': refreshToken},
@@ -175,6 +261,10 @@ class AuthService {
           throw Exception('Nouveaux tokens manquants dans la réponse');
         }
 
+        // Afficher l'expiration du nouveau token
+        final expiry = _getTokenExpiration(newAccessToken);
+        print('Token refreshé avec succès, expire le: $expiry');
+
         return {
           'access_token': newAccessToken,
           'refresh_token': newRefreshToken,
@@ -183,48 +273,34 @@ class AuthService {
         throw Exception('Échec du rafraîchissement du token');
       }
     } on DioException catch (e) {
+      print('Erreur lors du refresh: ${e.response?.statusCode} - ${e.message}');
       if (e.response?.statusCode == 401) {
         throw Exception('Refresh token invalide ou expiré');
       }
       throw Exception('Erreur réseau lors du refresh: ${e.message}');
     } catch (e) {
+      print('Erreur inattendue lors du refresh: $e');
       rethrow;
     }
   }
 
   Future<bool> isAuthenticated() async {
     try {
-      final accessToken = await getToken();
-      final refreshToken = await getRefreshToken();
-
-      if (accessToken != null && accessToken.isNotEmpty) {
-        return true;
-      }
-
-      // Si pas de access token mais refresh token présent, essayer de rafraîchir
-      if (refreshToken != null && refreshToken.isNotEmpty) {
-        try {
-          final tokens = await this.refreshToken(refreshToken);
-          await saveTokens(tokens['access_token']!, tokens['refresh_token']!);
-          return true;
-        } catch (e) {
-          await clearUserData();
-          return false;
-        }
-      }
-
-      return false;
+      final accessToken =
+          await getToken(); // getToken() gère déjà le refresh automatique
+      return accessToken != null && accessToken.isNotEmpty;
     } catch (e) {
+      print('Erreur lors de la vérification d\'authentification: $e');
       return false;
     }
   }
 
-  // Méthode pour sauvegarder l'utilisateur en cache
+  // [Le reste de votre code reste identique]
   Future<void> saveUserToCache(User user) async {
     try {
       await sharedPreferences.setString(_userKey, user.toJsonString());
     } catch (e) {
-      // Erreur silencieuse
+      print('Erreur lors de la sauvegarde utilisateur: $e');
     }
   }
 
@@ -238,7 +314,7 @@ class AuthService {
       }
 
       // Sinon, récupérer depuis l'API
-      final token = await getToken();
+      final token = await getToken(); // getToken() gère le refresh automatique
       if (token == null) {
         return null;
       }
@@ -250,21 +326,18 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final user = User.fromMap(response.data);
-
-        // Sauvegarder l'utilisateur en cache
         await sharedPreferences.setString(_userKey, user.toJsonString());
-
         return user;
       }
 
       return null;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        // Token invalide, nettoyer les données
         await clearUserData();
       }
       return null;
     } catch (e) {
+      print('Erreur lors de la récupération utilisateur: $e');
       return null;
     }
   }
@@ -279,16 +352,14 @@ class AuthService {
         );
       }
     } catch (e) {
-      // Continuer avec la déconnexion locale même si l'API échoue
+      print('Erreur lors de la déconnexion côté serveur: $e');
     }
 
-    // TOUJOURS nettoyer les données locales
     await clearUserData();
   }
 
   Future<void> clearUserData() async {
     try {
-      // Supprimer toutes les clés une par une pour s'assurer qu'elles sont supprimées
       final keysToRemove = [
         _accessTokenKey,
         _refreshTokenKey,
@@ -299,12 +370,14 @@ class AuthService {
       for (final key in keysToRemove) {
         await sharedPreferences.remove(key);
       }
+
+      print('Données utilisateur effacées');
     } catch (e) {
-      // En cas d'erreur, essayer de forcer la suppression
+      print('Erreur lors du nettoyage: $e');
       try {
         await sharedPreferences.clear();
       } catch (clearError) {
-        // Erreur silencieuse
+        print('Erreur lors du clear global: $clearError');
       }
     }
   }
