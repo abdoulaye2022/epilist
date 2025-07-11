@@ -15,6 +15,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       super(ListItemInitial()) {
     on<LoadListItems>(_onLoadListItems);
     on<AddListItem>(_onAddListItem);
+    on<UpdateListItem>(_onUpdateListItem);
     on<TogglePurchasedStatus>(_onTogglePurchasedStatus);
     on<DeleteListItem>(_onDeleteListItem);
   }
@@ -67,6 +68,50 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     } catch (e) {
       print("Error adding item: $e");
       emit(ListItemError('Erreur lors de l\'ajout de l\'item'));
+    }
+  }
+
+  Future<void> _onUpdateListItem(
+    UpdateListItem event,
+    Emitter<ListItemState> emit,
+  ) async {
+    try {
+      // Mettre à jour l'item via l'API
+      final updatedItem = await _listItemService.updateListItem(
+        listId: event.listId,
+        itemId: event.itemId,
+        productName: event.productName,
+        quantity: event.quantity,
+        price: event.price,
+        storeName: event.storeName,
+      );
+
+      print("Item mis à jour avec succès: ${updatedItem.toJson()}");
+
+      // Mettre à jour l'item dans la liste existante
+      if (state is ListItemLoaded) {
+        final currentState = state as ListItemLoaded;
+        final updatedItems =
+            currentState.items.map((item) {
+              if (item.id == event.itemId) {
+                return updatedItem;
+              }
+              return item;
+            }).toList();
+
+        // Émettre d'abord le message de succès
+        emit(ListItemOperationSuccess('Item mis à jour avec succès'));
+
+        // Puis émettre la liste mise à jour
+        emit(ListItemLoaded(updatedItems));
+      } else {
+        // Si pas d'état loaded, recharger tout
+        emit(ListItemOperationSuccess('Item mis à jour avec succès'));
+        add(LoadListItems(event.listId));
+      }
+    } catch (e) {
+      print("Error updating item: $e");
+      emit(ListItemError('Erreur lors de la mise à jour de l\'item'));
     }
   }
 

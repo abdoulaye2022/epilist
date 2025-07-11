@@ -1,4 +1,4 @@
-// auth_bloc.dart - VERSION CORRIGÉE AVEC GESTION TOKENS
+// auth_bloc.dart - VERSION CORRIGÉE POUR JWT 1 AN
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:equatable/equatable.dart';
@@ -62,7 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Récupérer l'utilisateur
       final user = await authService.getCurrentUser();
       if (user != null) {
-        _scheduleTokenRefresh();
+        _scheduleTokenRefresh(); // Programmer le refresh adaptatif
         emit(AuthSuccess(user: user));
       } else {
         emit(
@@ -81,17 +81,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage = 'Aucun compte trouvé avec cet email';
           break;
         case 'EMAIL_NOT_VERIFIED':
-          // Extraire l'email de l'exception ou utiliser celui du login
           final email = e.email?.isNotEmpty == true ? e.email! : event.email;
 
-          // Envoyer automatiquement un code de vérification
           try {
             await authService.resendVerificationCode(email);
-
-            // Émettre l'état avec l'email pour redirection vers vérification
             emit(EmailVerificationRequired(email));
           } catch (resendError) {
-            // Même si l'envoi échoue, rediriger vers la page de vérification
             emit(EmailVerificationRequired(email));
           }
           return;
@@ -115,7 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
         if (user != null) {
-          _scheduleTokenRefresh();
+          _scheduleTokenRefresh(); // Programmer le refresh adaptatif
           emit(AuthSuccess(user: user));
         } else {
           await authService.clearUserData();
@@ -188,6 +183,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  // [Vos autres méthodes existantes restent identiques]
   Future<void> _onRegisterRequested(
     RegisterRequested event,
     Emitter<AuthState> emit,
@@ -216,7 +212,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await authService.getCurrentUser();
       if (user != null) {
-        emit(AuthSuccess(user: user)); // Émettre AuthSuccess
+        emit(AuthSuccess(user: user));
       } else {
         emit(Unauthenticated());
       }
@@ -302,21 +298,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      // Confirmer l'email et récupérer les éventuels tokens
       final tokens = await authService.confirmEmail(
         email: event.email,
         code: event.code,
       );
 
       if (tokens != null) {
-        // NOUVEAU COMPORTEMENT: Si des tokens sont retournés, connecter automatiquement
-        // Sauvegarder les tokens
         await authService.saveTokens(
           tokens['access_token']!,
           tokens['refresh_token']!,
         );
 
-        // Récupérer l'utilisateur
         final user = await authService.getCurrentUser();
         if (user != null) {
           _scheduleTokenRefresh();
@@ -329,7 +321,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
       } else {
-        // ANCIEN COMPORTEMENT: Pas de tokens, juste confirmer l'email
         emit(EmailConfirmationSuccess());
       }
     } catch (e) {
@@ -354,23 +345,60 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // Programmer le rafraîchissement automatique du token
-  void _scheduleTokenRefresh() {
+  // ⭐ NOUVELLE MÉTHODE: Programmer le rafraîchissement adaptatif du token
+  void _scheduleTokenRefresh() async {
     _tokenRefreshTimer?.cancel();
 
-    // Programmer le refresh pour 50 minutes (10 minutes avant expiration)
-    _tokenRefreshTimer = Timer(const Duration(minutes: 50), () async {
-      try {
-        final refreshToken = await authService.getRefreshToken();
-        if (refreshToken != null && refreshToken.isNotEmpty) {
-          add(RefreshTokenRequested(refreshToken));
-        }
-      } catch (e) {
-        // Erreur silencieuse
+    try {
+      // Vérifier si le token doit être rafraîchi bientôt
+      final shouldRefresh = await authService.shouldRefreshSoon();
+
+      if (shouldRefresh) {
+        // Si le token expire dans moins de 7 jours, programmer un refresh dans 1 jour
+        _tokenRefreshTimer = Timer(const Duration(days: 1), () async {
+          try {
+            final refreshToken = await authService.getRefreshToken();
+            if (refreshToken != null && refreshToken.isNotEmpty) {
+              add(RefreshTokenRequested(refreshToken));
+            }
+          } catch (e) {
+            print('Erreur lors du refresh programmé: $e');
+          }
+        });
+
+        print('Refresh programmé dans 1 jour (token expire bientôt)');
+      } else {
+        // Si le token a encore plus de 7 jours, programmer un refresh dans 7 jours
+        _tokenRefreshTimer = Timer(const Duration(days: 7), () async {
+          try {
+            final refreshToken = await authService.getRefreshToken();
+            if (refreshToken != null && refreshToken.isNotEmpty) {
+              add(RefreshTokenRequested(refreshToken));
+            }
+          } catch (e) {
+            print('Erreur lors du refresh programmé: $e');
+          }
+        });
+
+        print('Refresh programmé dans 7 jours');
       }
-    });
+    } catch (e) {
+      print('Erreur lors de la programmation du refresh: $e');
+      // En cas d'erreur, programmer un refresh dans 1 jour par sécurité
+      _tokenRefreshTimer = Timer(const Duration(days: 1), () async {
+        try {
+          final refreshToken = await authService.getRefreshToken();
+          if (refreshToken != null && refreshToken.isNotEmpty) {
+            add(RefreshTokenRequested(refreshToken));
+          }
+        } catch (e) {
+          print('Erreur lors du refresh de secours: $e');
+        }
+      });
+    }
   }
 
+  // [Vos méthodes de suppression de compte restent identiques]
   Future<void> _onRequestAccountDeletion(
     RequestAccountDeletion event,
     Emitter<AuthState> emit,
@@ -405,7 +433,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         reason: event.reason,
       );
 
-      // Émettre l'état de confirmation
       emit(
         AccountDeletionConfirmed(
           deletionEffectiveDate: DateTime.parse(
@@ -415,16 +442,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
 
-      // Après 2 secondes, déconnecter l'utilisateur
       await Future.delayed(const Duration(seconds: 2));
 
-      // Annuler le timer de refresh
       _tokenRefreshTimer?.cancel();
-
-      // Nettoyer toutes les données locales
       await authService.clearUserData();
-
-      // Émettre l'état de déconnexion
       emit(Unauthenticated());
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
@@ -442,7 +463,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(AccountDeletionCancelled());
 
-      // Récupérer l'utilisateur mis à jour
       final user = await authService.getCurrentUser();
       if (user != null) {
         emit(AuthSuccess(user: user));
@@ -460,7 +480,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       final status = await accountDeletionService.getAccountDeletionStatus();
-
       emit(AccountDeletionStatusLoaded(status));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));

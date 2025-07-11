@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/ShoppingListController.php - VERSION AVEC shared_by.name CORRIGÉ
+// app/Http/Controllers/ShoppingListController.php - VERSION AVEC ORDRE COHÉRENT DES ITEMS
 
 namespace App\Controllers;
 
@@ -12,6 +12,17 @@ use Valitron\Validator;
 
 class ShoppingListController
 {
+    /**
+     * ✅ Méthode utilitaire pour l'ordre cohérent des items
+     */
+    private function getItemsOrdering()
+    {
+        return function($query) {
+            return $query->orderBy('is_purchased') // Articles non achetés en premier
+                        ->orderBy('created_at', 'desc'); // Plus récent en premier
+        };
+    }
+
     /**
      * Crée une nouvelle liste de courses
      */
@@ -39,8 +50,9 @@ class ShoppingListController
                 'name' => $data['name'],
             ]);
 
-            // Charger la liste fraîchement créée avec ses items (même si vide)
-            $shoppingListWithItems = ShoppingList::with('items')->find($shoppingList->id);
+            // ✅ Charger la liste fraîchement créée avec ses items (même si vide) dans l'ordre cohérent
+            $shoppingListWithItems = ShoppingList::with(['items' => $this->getItemsOrdering()])
+                ->find($shoppingList->id);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -59,22 +71,22 @@ class ShoppingListController
     }
 
     /**
-     * ✅ Récupère toutes les listes (propres + partagées) de l'utilisateur
+     * ✅ Récupère toutes les listes (propres + partagées) de l'utilisateur avec ordre cohérent
      */
     public function index(Request $request, Response $response): Response
     {
         try {
             $user_id = $request->getAttribute('auth_id');
             
-            // ✅ 1. Récupérer les listes propres de l'utilisateur
+            // ✅ 1. Récupérer les listes propres de l'utilisateur avec ordre cohérent des items
             $ownLists = ShoppingList::where('user_id', $user_id)
-                ->with('items')
+                ->with(['items' => $this->getItemsOrdering()])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // ✅ 2. Récupérer les listes partagées avec l'utilisateur (avec eager loading corrigé)
+            // ✅ 2. Récupérer les listes partagées avec l'utilisateur avec ordre cohérent des items
             $sharedListsData = SharedList::with([
-                'shoppingList.items', 
+                'shoppingList.items' => $this->getItemsOrdering(), 
                 'owner' => function($query) {
                     // S'assurer de charger les bons champs selon votre structure de table
                     $query->select('id', 'first_name', 'last_name', 'email');
@@ -154,7 +166,7 @@ class ShoppingListController
     }
 
     /**
-     * ✅ Affiche une liste spécifique (propre ou partagée)
+     * ✅ Affiche une liste spécifique (propre ou partagée) avec ordre cohérent
      */
     public function show(Request $request, Response $response, array $args): Response
     {
@@ -162,10 +174,10 @@ class ShoppingListController
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
             
-            // ✅ 1. Vérifier si c'est une liste propre
+            // ✅ 1. Vérifier si c'est une liste propre avec ordre cohérent des items
             $ownList = ShoppingList::where('user_id', $user_id)
                 ->where('id', $list_id)
-                ->with('items')
+                ->with(['items' => $this->getItemsOrdering()])
                 ->first();
 
             if ($ownList) {
@@ -185,9 +197,9 @@ class ShoppingListController
                 return $response->withHeader('Content-Type', 'application/json');
             }
 
-            // ✅ 2. Vérifier si c'est une liste partagée (avec eager loading corrigé)
+            // ✅ 2. Vérifier si c'est une liste partagée avec ordre cohérent des items
             $sharedList = SharedList::with([
-                'shoppingList.items', 
+                'shoppingList.items' => $this->getItemsOrdering(), 
                 'owner' => function($query) {
                     $query->select('id', 'first_name', 'last_name', 'email');
                 }
@@ -269,10 +281,10 @@ class ShoppingListController
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
             
-            // ✅ 1. Vérifier si c'est une liste propre
+            // ✅ 1. Vérifier si c'est une liste propre avec ordre cohérent des items
             $ownList = ShoppingList::where('user_id', $user_id)
                 ->where('id', $list_id)
-                ->with('items')
+                ->with(['items' => $this->getItemsOrdering()])
                 ->first();
 
             if ($ownList) {
@@ -288,8 +300,8 @@ class ShoppingListController
                 return $response->withHeader('Content-Type', 'application/json');
             }
 
-            // ✅ 2. Vérifier si c'est une liste partagée avec permissions d'édition
-            $sharedList = SharedList::with(['shoppingList.items'])
+            // ✅ 2. Vérifier si c'est une liste partagée avec permissions d'édition et ordre cohérent
+            $sharedList = SharedList::with(['shoppingList.items' => $this->getItemsOrdering()])
                 ->where('shared_with_user_id', $user_id)
                 ->whereHas('shoppingList', function($query) use ($list_id) {
                     $query->where('id', $list_id);
@@ -423,7 +435,7 @@ class ShoppingListController
     }
 
     /**
-     * ✅ Duplique une liste (avec vérification des permissions)
+     * ✅ Duplique une liste (avec vérification des permissions et ordre cohérent)
      */
     public function duplicate(Request $request, Response $response, array $args): Response
     {
@@ -431,15 +443,15 @@ class ShoppingListController
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
             
-            // ✅ 1. Essayer de récupérer comme liste propre
-            $originalList = ShoppingList::with('items')
+            // ✅ 1. Essayer de récupérer comme liste propre avec ordre cohérent
+            $originalList = ShoppingList::with(['items' => $this->getItemsOrdering()])
                 ->where('user_id', $user_id)
                 ->where('id', $list_id)
                 ->first();
 
-            // ✅ 2. Si pas trouvée, essayer comme liste partagée
+            // ✅ 2. Si pas trouvée, essayer comme liste partagée avec ordre cohérent
             if (!$originalList) {
-                $sharedList = SharedList::with(['shoppingList.items'])
+                $sharedList = SharedList::with(['shoppingList.items' => $this->getItemsOrdering()])
                     ->where('shared_with_user_id', $user_id)
                     ->whereHas('shoppingList', function($query) use ($list_id) {
                         $query->where('id', $list_id);
@@ -478,8 +490,9 @@ class ShoppingListController
                 ]);
             }
 
-            // Recharge la nouvelle liste avec ses items
-            $newListWithItems = ShoppingList::with('items')->find($newList->id);
+            // ✅ Recharge la nouvelle liste avec ses items dans l'ordre cohérent
+            $newListWithItems = ShoppingList::with(['items' => $this->getItemsOrdering()])
+                ->find($newList->id);
 
             $response->getBody()->write(json_encode([
                 'success' => true,

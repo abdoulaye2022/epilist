@@ -153,7 +153,7 @@ class User extends Model
     /**
      * Marque le compte comme demande de suppression
      */
-    public function requestDeletion(string $reason = null): void
+    public function requestDeletion(?string $reason = null): void
     {
         $this->update([
             'is_deletion_requested' => true,
