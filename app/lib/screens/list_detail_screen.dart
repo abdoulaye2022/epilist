@@ -1,12 +1,15 @@
-// screens/list_detail_screen.dart - VERSION AVEC CARTES BLANCHES
+// screens/list_detail_screen.dart - VERSION AVEC MENU MODERNE MAIS ICÔNES SIMPLES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/add_item_dialog.dart';
+import 'package:epilist/widgets/dialogs/edit_item_dialog.dart';
+import 'package:epilist/widgets/dialogs/delete_confirmation_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
+import 'package:epilist/widgets/list_detail/modern_dropdown_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -61,7 +64,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
       appBar: _buildAppBar(),
       body: BlocConsumer<ListItemBloc, ListItemState>(
         listener: (context, state) {
-          // Utiliser SmartSnackBarManager pour gérer les notifications
           SmartSnackBarManager.showForState(context, state);
         },
         builder: (context, state) => _buildBody(state),
@@ -77,7 +79,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         children: [
           Text(
             currentList.name,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           if (currentList.isShared) _buildSharingSubtitle(),
         ],
@@ -85,19 +87,46 @@ class _ListDetailViewState extends State<_ListDetailView> {
       backgroundColor: Colors.white,
       elevation: 1,
       actions: [
+        // ✅ Bouton d'ajout simple comme avant
         if (currentList.canManageItems)
           IconButton(
             onPressed: _addNewItem,
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             tooltip: 'Ajouter un article',
           )
         else
           IconButton(
             onPressed: () => _showPermissionDenied('ajouter des articles'),
-            icon: Icon(Icons.add, color: Colors.grey),
+            icon: const Icon(Icons.add, color: Colors.grey),
             tooltip: 'Permission insuffisante',
           ),
-        _buildOptionsMenu(),
+        // ✅ Menu déroulant moderne mais icône simple
+        ModernDropdownMenu(
+          shoppingList: currentList,
+          onEdit:
+              currentList.canEdit
+                  ? () {
+                    SmartSnackBarManager.showMessage(
+                      context,
+                      'Fonctionnalité d\'édition à venir',
+                      type: SnackBarType.info,
+                    );
+                  }
+                  : null,
+          onShare:
+              currentList.canShare
+                  ? () {
+                    SmartSnackBarManager.showMessage(
+                      context,
+                      'Fonctionnalité de partage à venir',
+                      type: SnackBarType.info,
+                    );
+                  }
+                  : null,
+          onInfo: _showListInfo,
+          onLeave: !currentList.isOwner ? _showLeaveConfirmation : null,
+          onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
+        ),
       ],
     );
   }
@@ -124,129 +153,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  Widget _buildOptionsMenu() {
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert),
-      onSelected: _handleMenuAction,
-      itemBuilder:
-          (context) => [
-            if (currentList.canEdit)
-              PopupMenuItem(
-                value: 'edit_list',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, size: 20, color: Colors.blue[600]),
-                    SizedBox(width: 8),
-                    Text('Modifier la liste'),
-                  ],
-                ),
-              ),
-            if (currentList.canShare)
-              PopupMenuItem(
-                value: 'share',
-                child: Row(
-                  children: [
-                    Icon(Icons.share, size: 20, color: Colors.green[600]),
-                    SizedBox(width: 8),
-                    Text('Partager'),
-                  ],
-                ),
-              ),
-            PopupMenuItem(
-              value: 'info',
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
-                  SizedBox(width: 8),
-                  Text('Informations'),
-                ],
-              ),
-            ),
-            if (!currentList.isOwner || currentList.canDelete)
-              PopupMenuDivider(),
-            if (!currentList.isOwner)
-              PopupMenuItem(
-                value: 'leave',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.exit_to_app,
-                      size: 20,
-                      color: Colors.orange[600],
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Quitter',
-                      style: TextStyle(color: Colors.orange[600]),
-                    ),
-                  ],
-                ),
-              ),
-            if (currentList.canDelete)
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, size: 20, color: Colors.red[600]),
-                    SizedBox(width: 8),
-                    Text('Supprimer', style: TextStyle(color: Colors.red[600])),
-                  ],
-                ),
-              ),
-          ],
-    );
-  }
-
-  void _handleMenuAction(String action) {
-    switch (action) {
-      case 'edit_list':
-        if (currentList.canEdit) {
-          // TODO: Naviguer vers l'écran d'édition de liste
-          SmartSnackBarManager.showMessage(
-            context,
-            'Fonctionnalité d\'édition à venir',
-            type: SnackBarType.info,
-          );
-        } else {
-          _showPermissionDenied('modifier cette liste');
-        }
-        break;
-      case 'share':
-        if (currentList.canShare) {
-          // TODO: Ouvrir le dialogue de partage
-          SmartSnackBarManager.showMessage(
-            context,
-            'Fonctionnalité de partage à venir',
-            type: SnackBarType.info,
-          );
-        } else {
-          _showPermissionDenied('partager cette liste');
-        }
-        break;
-      case 'info':
-        _showListInfo();
-        break;
-      case 'leave':
-        _showLeaveConfirmation();
-        break;
-      case 'delete':
-        if (currentList.canDelete) {
-          _showDeleteConfirmation();
-        } else {
-          _showPermissionDenied('supprimer cette liste');
-        }
-        break;
-    }
-  }
-
   Widget? _buildFloatingActionButton() {
     if (!currentList.canManageItems) return null;
 
     return FloatingActionButton(
       onPressed: _addNewItem,
       backgroundColor: Colors.green[600],
-      child: Icon(Icons.add, color: Colors.white),
       tooltip: 'Ajouter un article',
+      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
@@ -298,8 +212,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: bannerColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
@@ -308,7 +222,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       child: Row(
         children: [
           Icon(bannerIcon, size: 16, color: bannerColor),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               bannerText,
@@ -320,7 +234,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             ),
           ),
           if (currentList.sharedBy != null) ...[
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Par ${currentList.sharedBy!.name}',
               style: TextStyle(
@@ -356,7 +270,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         context.read<ListItemBloc>().add(LoadListItems(currentList.id));
       },
       child: ListView.builder(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         itemCount: items.length,
         itemBuilder: (context, index) {
           return _buildItemCard(items[index]);
@@ -366,40 +280,100 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildItemCard(ListItem item) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 8),
-      // CORRECTION: Fond blanc pour toutes les cartes
-      color: Colors.white,
-      // Bordure spéciale si lecture seule
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side:
-            currentList.isReadOnly
-                ? BorderSide(color: Colors.blue[200]!, width: 1)
-                : BorderSide.none,
-      ),
-      child: ListTile(
-        leading: _buildCheckbox(item),
-        title: Text(
-          item.productName,
-          style: TextStyle(
-            decoration: item.isPurchased ? TextDecoration.lineThrough : null,
-            color:
-                currentList.isReadOnly
-                    ? (item.isPurchased ? Colors.grey[500] : Colors.grey[700])
-                    : (item.isPurchased ? Colors.grey : Colors.black87),
-            fontWeight:
-                currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
-          ),
+    return Dismissible(
+      key: Key('item_${item.id}'),
+      direction:
+          currentList.canEdit
+              ? DismissDirection.horizontal
+              : DismissDirection.none,
+      background: _buildDismissBackground(isStartToEnd: true),
+      secondaryBackground: _buildDismissBackground(isStartToEnd: false),
+      confirmDismiss: (direction) async {
+        if (!currentList.canEdit) {
+          _showPermissionDenied('supprimer des articles');
+          return false;
+        }
+        return await _showQuickDeleteConfirmation(item);
+      },
+      onDismissed: (direction) {
+        context.read<ListItemBloc>().add(
+          DeleteListItem(listId: currentList.id, itemId: item.id),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 8),
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side:
+              currentList.isReadOnly
+                  ? BorderSide(color: Colors.blue[200]!, width: 1)
+                  : BorderSide.none,
         ),
-        subtitle: _buildItemSubtitle(item),
-        trailing: _buildItemTrailing(item),
+        child: ListTile(
+          leading: _buildCheckbox(item),
+          title: Text(
+            item.productName,
+            style: TextStyle(
+              decoration: item.isPurchased ? TextDecoration.lineThrough : null,
+              color:
+                  currentList.isReadOnly
+                      ? (item.isPurchased ? Colors.grey[500] : Colors.grey[700])
+                      : (item.isPurchased ? Colors.grey : Colors.black87),
+              fontWeight:
+                  currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
+            ),
+          ),
+          subtitle: _buildItemSubtitle(item),
+          trailing: _buildItemTrailing(item),
+          onTap: currentList.canEdit ? () => _editItem(item) : null,
+        ),
       ),
     );
   }
 
+  Widget _buildDismissBackground({required bool isStartToEnd}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.red[600],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: isStartToEnd ? Alignment.centerLeft : Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.delete_rounded, color: Colors.white, size: 32),
+          const SizedBox(height: 4),
+          const Text(
+            'Supprimer',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool> _showQuickDeleteConfirmation(ListItem item) async {
+    bool confirmed = false;
+
+    await DeleteConfirmationDialog.showDeleteItem(
+      context: context,
+      itemName: item.productName,
+      onConfirm: () {
+        confirmed = true;
+      },
+    );
+
+    return confirmed;
+  }
+
   Widget _buildCheckbox(ListItem item) {
-    // En mode lecture seule, afficher un indicateur visuel
     if (currentList.isReadOnly) {
       return Container(
         width: 24,
@@ -471,7 +445,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           ],
         ),
         if (item.storeName != null && item.storeName!.isNotEmpty) ...[
-          SizedBox(height: 2),
+          const SizedBox(height: 2),
           Row(
             children: [
               Icon(
@@ -482,7 +456,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                         ? Colors.grey[400]
                         : Colors.grey[600],
               ),
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   item.storeName!,
@@ -505,10 +479,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildItemTrailing(ListItem item) {
-    // En mode lecture seule, afficher un badge
     if (currentList.isReadOnly) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: Colors.blue[50],
           borderRadius: BorderRadius.circular(12),
@@ -518,7 +491,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               'Lecture seule',
               style: TextStyle(
@@ -533,19 +506,34 @@ class _ListDetailViewState extends State<_ListDetailView> {
     }
 
     return IconButton(
-      icon: Icon(Icons.delete, color: Colors.red[400]),
+      icon: Icon(Icons.edit, color: Colors.blue[600]),
       onPressed:
           currentList.canEdit
-              ? () => _confirmDeleteItem(item)
-              : () => _showPermissionDenied('supprimer des articles'),
+              ? () => _editItem(item)
+              : () => _showPermissionDenied('modifier des articles'),
       tooltip:
           currentList.canEdit
-              ? 'Supprimer l\'article'
+              ? 'Modifier l\'article'
               : 'Permission insuffisante',
     );
   }
 
-  // Méthodes de dialogue et d'action
+  void _editItem(ListItem item) {
+    if (!currentList.canEdit) {
+      _showPermissionDenied('modifier des articles');
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<ListItemBloc>(),
+            child: EditItemDialog(listId: currentList.id, item: item),
+          ),
+    );
+  }
+
   void _showPermissionDenied(String action) {
     String title;
     String message;
@@ -579,7 +567,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                         : Colors.orange[600],
                 size: 24,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(child: Text(title)),
             ],
           ),
@@ -588,7 +576,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(message),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               if (!currentList.isOwner && currentList.sharedBy != null) ...[
                 Text(
                   'Cette liste a été partagée par ${currentList.sharedBy!.name}',
@@ -604,7 +592,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Compris'),
+              child: const Text('Compris'),
             ),
           ],
         );
@@ -796,222 +784,33 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 80,
-          child: Text(
-            '$label:',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[700],
-            ),
-          ),
-        ),
-        Expanded(child: Text(value, style: TextStyle(color: Colors.black87))),
-      ],
-    );
-  }
-
   void _showLeaveConfirmation() {
-    showDialog(
+    DeleteConfirmationDialog.showLeaveList(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Quitter la liste'),
-            content: Text(
-              'Êtes-vous sûr de vouloir quitter "${currentList.name}" ?\n\n'
-              'Vous perdrez l\'accès à cette liste et ne pourrez plus voir son contenu.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Annuler'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  SmartSnackBarManager.showMessage(
-                    context,
-                    'Vous avez quitté la liste "${currentList.name}"',
-                    type: SnackBarType.warning,
-                  );
-                  Navigator.of(context).pop(); // Retour à l'écran précédent
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.orange),
-                child: Text('Quitter'),
-              ),
-            ],
-          ),
+      listName: currentList.name,
+      onConfirm: () {
+        SmartSnackBarManager.showMessage(
+          context,
+          'Vous avez quitté la liste "${currentList.name}"',
+          type: SnackBarType.warning,
+        );
+        Navigator.of(context).pop();
+      },
     );
   }
 
   void _showDeleteConfirmation() {
-    showDialog(
+    DeleteConfirmationDialog.showDeleteList(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Supprimer la liste'),
-            content: Text(
-              'Êtes-vous sûr de vouloir supprimer "${currentList.name}" ?\n\n'
-              'Cette action est irréversible et supprimera tous les articles.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Annuler'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  SmartSnackBarManager.showMessage(
-                    context,
-                    'Liste "${currentList.name}" supprimée',
-                    type: SnackBarType.success,
-                  );
-                  Navigator.of(context).pop(); // Retour à l'écran précédent
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: Text('Supprimer'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _confirmDeleteItem(ListItem item) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 10,
-            child: Container(
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: Icon(
-                      Icons.delete_rounded,
-                      size: 40,
-                      color: Colors.red[600],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Supprimer l\'article',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                        height: 1.4,
-                      ),
-                      children: [
-                        TextSpan(text: 'Êtes-vous sûr de vouloir supprimer '),
-                        TextSpan(
-                          text: '"${item.productName}"',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        TextSpan(text: ' de votre liste ?'),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Cette action est irréversible.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.red[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(dialogContext),
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Colors.grey[300]!),
-                            ),
-                          ),
-                          child: Text(
-                            'Annuler',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(dialogContext);
-                            context.read<ListItemBloc>().add(
-                              DeleteListItem(
-                                listId: currentList.id,
-                                itemId: item.id,
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red[600],
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                          ),
-                          child: Text(
-                            'Supprimer',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+      listName: currentList.name,
+      onConfirm: () {
+        SmartSnackBarManager.showMessage(
+          context,
+          'Liste "${currentList.name}" supprimée',
+          type: SnackBarType.success,
+        );
+        Navigator.of(context).pop();
+      },
     );
   }
 

@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/ListItemController.php - VERSION MISE À JOUR AVEC PERMISSIONS
+// app/Http/Controllers/ListItemController.php - VERSION AVEC ORDRE COHÉRENT
 
 namespace App\Controllers;
 
@@ -12,6 +12,17 @@ use Valitron\Validator;
 
 class ListItemController
 {
+    /**
+     * ✅ Méthode utilitaire pour l'ordre cohérent des items
+     */
+    private function getItemsOrdering()
+    {
+        return function($query) {
+            return $query->orderBy('is_purchased') // Articles non achetés en premier
+                        ->orderBy('created_at', 'desc'); // Plus récent en premier
+        };
+    }
+
     /**
      * ✅ Vérifier les permissions d'accès à une liste
      */
@@ -73,7 +84,7 @@ class ListItemController
     }
 
     /**
-     * ✅ Affiche tous les items d'une liste (avec permissions)
+     * ✅ Affiche tous les items d'une liste (avec permissions et ordre cohérent)
      */
     public function index(Request $request, Response $response, array $args): Response
     {
@@ -92,9 +103,10 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
+            // ✅ Utiliser l'ordre cohérent
             $items = ListItem::where('list_id', $listId)
                 ->orderBy('is_purchased') // Articles non achetés en premier
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at', 'desc') // Plus récent en premier
                 ->get();
 
             $response->getBody()->write(json_encode([
