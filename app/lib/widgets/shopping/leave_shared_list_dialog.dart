@@ -1,4 +1,4 @@
-// widgets/shopping/leave_shared_list_dialog.dart
+// widgets/shopping/leave_shared_list_dialog.dart - VERSION MISE À JOUR
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -17,8 +17,8 @@ class LeaveSharedListDialog extends StatelessWidget {
       title: Row(
         children: [
           Icon(Icons.exit_to_app, color: Colors.orange[600]),
-          SizedBox(width: 8),
-          Text('Quitter la liste'),
+          const SizedBox(width: 8),
+          const Text('Quitter la liste'),
         ],
       ),
       content: Column(
@@ -26,9 +26,9 @@ class LeaveSharedListDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Êtes-vous sûr de vouloir quitter "${list.name}" ?'),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.orange[50],
               borderRadius: BorderRadius.circular(8),
@@ -37,7 +37,7 @@ class LeaveSharedListDialog extends StatelessWidget {
             child: Row(
               children: [
                 Icon(Icons.info, color: Colors.orange[600], size: 16),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Vous perdrez l\'accès à cette liste et à tous ses éléments.',
@@ -52,15 +52,17 @@ class LeaveSharedListDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Annuler'),
+          child: const Text('Annuler'),
         ),
         ElevatedButton(
           onPressed: () {
+            // Déclencher l'événement pour quitter la liste
             context.read<SharedListBloc>().add(LeaveSharedList(list.id));
+            // Fermer le dialogue
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.orange[600]),
-          child: Text('Quitter', style: TextStyle(color: Colors.white)),
+          child: const Text('Quitter', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

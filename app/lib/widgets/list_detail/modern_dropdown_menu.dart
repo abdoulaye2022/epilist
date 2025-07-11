@@ -1,4 +1,4 @@
-// widgets/list_detail/modern_dropdown_menu.dart
+// widgets/list_detail/modern_dropdown_menu.dart - VERSION COMPLÈTE
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +7,7 @@ class ModernDropdownMenu extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onShare;
   final VoidCallback? onInfo;
+  final VoidCallback? onManageShares;
   final VoidCallback? onLeave;
   final VoidCallback? onDelete;
 
@@ -16,6 +17,7 @@ class ModernDropdownMenu extends StatelessWidget {
     this.onEdit,
     this.onShare,
     this.onInfo,
+    this.onManageShares,
     this.onLeave,
     this.onDelete,
   });
@@ -24,87 +26,99 @@ class ModernDropdownMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
-      onSelected: (value) => _handleMenuAction(value, context),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 8,
+      offset: const Offset(0, 8),
       itemBuilder: (context) => _buildMenuItems(),
+      onSelected: (value) => _handleMenuSelection(value, context),
     );
   }
 
   List<PopupMenuEntry<String>> _buildMenuItems() {
     List<PopupMenuEntry<String>> items = [];
 
-    if (shoppingList.canEdit && onEdit != null) {
+    // Section: Actions principales
+    if (onEdit != null) {
       items.add(
-        PopupMenuItem(
+        _buildMenuItem(
           value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
-              const SizedBox(width: 8),
-              const Text('Modifier la liste'),
-            ],
-          ),
+          icon: Icons.edit_rounded,
+          title: 'Modifier la liste',
+          subtitle: 'Changer le nom',
+          color: Colors.blue[600]!,
         ),
       );
     }
 
-    if (shoppingList.canShare && onShare != null) {
+    if (onShare != null) {
       items.add(
-        PopupMenuItem(
+        _buildMenuItem(
           value: 'share',
-          child: Row(
-            children: [
-              Icon(Icons.share, size: 20, color: Colors.green[600]),
-              const SizedBox(width: 8),
-              const Text('Partager'),
-            ],
-          ),
+          icon: Icons.share_rounded,
+          title: 'Partager',
+          subtitle: 'Inviter des collaborateurs',
+          color: Colors.green[600]!,
         ),
       );
     }
 
-    items.add(
-      PopupMenuItem(
-        value: 'info',
-        child: Row(
-          children: [
-            Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 8),
-            const Text('Informations'),
-          ],
-        ),
-      ),
-    );
+    // Section: Gestion des partages (si applicable)
+    if (onManageShares != null) {
+      if (items.isNotEmpty) items.add(const PopupMenuDivider());
 
-    if (!shoppingList.isOwner || (shoppingList.canDelete && onDelete != null)) {
-      items.add(const PopupMenuDivider());
+      items.add(
+        _buildMenuItem(
+          value: 'manage_shares',
+          icon: Icons.people_alt_rounded,
+          title: 'Gérer les partages',
+          subtitle: 'Permissions et collaborateurs',
+          color: Colors.purple[600]!,
+        ),
+      );
     }
 
-    if (!shoppingList.isOwner) {
+    // Section: Informations
+    if (onInfo != null) {
+      if (items.isNotEmpty) items.add(const PopupMenuDivider());
+
       items.add(
-        PopupMenuItem(
+        _buildMenuItem(
+          value: 'info',
+          icon: Icons.info_rounded,
+          title: 'Informations',
+          subtitle: 'Détails de la liste',
+          color: Colors.blue[600]!,
+        ),
+      );
+    }
+
+    // Section: Actions destructives
+    if (onLeave != null || onDelete != null) {
+      if (items.isNotEmpty) items.add(const PopupMenuDivider());
+    }
+
+    if (onLeave != null) {
+      items.add(
+        _buildMenuItem(
           value: 'leave',
-          child: Row(
-            children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
-              const SizedBox(width: 8),
-              Text('Quitter', style: TextStyle(color: Colors.orange[600])),
-            ],
-          ),
+          icon: Icons.exit_to_app_rounded,
+          title: 'Quitter la liste',
+          subtitle: 'Perdre l\'accès',
+          color: Colors.orange[600]!,
+          isDestructive: true,
         ),
       );
     }
 
-    if (shoppingList.canDelete && onDelete != null) {
+    if (onDelete != null) {
       items.add(
-        PopupMenuItem(
+        _buildMenuItem(
           value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 20, color: Colors.red[600]),
-              const SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
-            ],
-          ),
+          icon: Icons.delete_rounded,
+          title: 'Supprimer',
+          subtitle: 'Action irréversible',
+          color: Colors.red[600]!,
+          isDestructive: true,
         ),
       );
     }
@@ -112,13 +126,75 @@ class ModernDropdownMenu extends StatelessWidget {
     return items;
   }
 
-  void _handleMenuAction(String action, BuildContext context) {
-    switch (action) {
+  PopupMenuItem<String> _buildMenuItem({
+    required String value,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    bool isDestructive = false,
+  }) {
+    return PopupMenuItem<String>(
+      value: value,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color:
+                    isDestructive
+                        ? color.withOpacity(0.1)
+                        : color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isDestructive ? color : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color:
+                          isDestructive
+                              ? color.withOpacity(0.8)
+                              : Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleMenuSelection(String value, BuildContext context) {
+    switch (value) {
       case 'edit':
         onEdit?.call();
         break;
       case 'share':
         onShare?.call();
+        break;
+      case 'manage_shares':
+        onManageShares?.call();
         break;
       case 'info':
         onInfo?.call();
