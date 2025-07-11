@@ -1,4 +1,4 @@
-// services/deep_link_handler.dart - VERSION COMPLÈTE CORRIGÉE
+// services/deep_link_handler.dart - VERSION AVEC LIENS DIRECTS
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -23,7 +23,7 @@ class DeepLinkHandler {
   static const String playStoreUrl =
       'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
   static const String appStoreUrl =
-      'https://apps.apple.com/app/epilist/id123456789';
+      'https://apps.apple.com/ca/app/epilist/id6748285596';
 
   static void dispose() {
     _linkSubscription?.cancel();
@@ -55,26 +55,84 @@ class DeepLinkHandler {
 
       _linkSubscription = _appLinks!.uriLinkStream.listen(
         (Uri uri) {
+          print('🔗 Deep link reçu: ${uri.toString()}');
           _handleDeepLink(uri.toString());
         },
         onError: (err) {
-          // Gestion d'erreur silencieuse
+          print('❌ Erreur deep link: $err');
         },
         onDone: () {
-          // Écoute terminée
+          print('✅ Écoute deep link terminée');
         },
       );
 
       _getInitialLink();
     } catch (e) {
-      // Erreur silencieuse
+      print('❌ Erreur initialisation deep links: $e');
     }
   }
 
   static void _navigateToShareInvitation(String shareToken) {
-    if (_context == null) return;
+    if (_context == null) {
+      print('❌ Context non disponible pour navigation');
+      return;
+    }
 
     try {
+      print('🎯 Navigation vers ShareInvitationScreen avec token: $shareToken');
+
+      // Vérifier que le context est encore valide
+      if (!_context!.mounted) {
+        print('❌ Context non monté, navigation annulée');
+        return;
+      }
+
+      // Navigation sécurisée avec gestion d'erreur
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_context != null && _context!.mounted) {
+          try {
+            Navigator.of(_context!)
+                .pushNamed('/share', arguments: {'token': shareToken})
+                .then((_) {
+                  if (_context != null) {
+                    updateContext(_context!);
+                  }
+                })
+                .catchError((error) {
+                  print('❌ Erreur navigation pushNamed: $error');
+                  // Fallback: navigation directe
+                  _fallbackNavigation(shareToken);
+                });
+
+            // Message de succès différé
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              if (_context != null && _context!.mounted) {
+                SmartSnackBarManager.showSuccessSnackBar(
+                  _context!,
+                  'Invitation reçue !',
+                  duration: const Duration(seconds: 2),
+                );
+              }
+            });
+          } catch (e) {
+            print('❌ Erreur lors de la navigation: $e');
+            _fallbackNavigation(shareToken);
+          }
+        }
+      });
+    } catch (e) {
+      print('❌ Erreur navigation générale: $e');
+      _showError('Erreur lors de l\'ouverture de l\'invitation');
+    }
+  }
+
+  /// Navigation de fallback en cas d'échec de la route nommée
+  static void _fallbackNavigation(String shareToken) {
+    if (_context == null || !_context!.mounted) return;
+
+    try {
+      print('🔄 Tentative navigation fallback');
+
       Navigator.of(_context!)
           .push(
             MaterialPageRoute(
@@ -88,77 +146,104 @@ class DeepLinkHandler {
                   ),
             ),
           )
-          .then((_) {
-            if (_context != null) {
-              updateContext(_context!);
-            }
+          .catchError((error) {
+            print('❌ Erreur navigation fallback: $error');
+            _showError('Impossible d\'ouvrir l\'invitation');
           });
-
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (_context != null) {
-          SmartSnackBarManager.showSuccessSnackBar(
-            _context!,
-            'Invitation reçue !',
-            duration: const Duration(seconds: 2),
-          );
-        }
-      });
     } catch (e) {
+      print('❌ Erreur navigation fallback: $e');
       _showError('Erreur lors de l\'ouverture de l\'invitation');
     }
   }
 
   static void updateContext(BuildContext context) {
+    print('🔄 Mise à jour du contexte');
     _context = context;
-    _processPendingLink();
 
+    // Traiter les liens en attente seulement si le contexte est valide
+    if (context.mounted) {
+      _processPendingLink();
+    }
+
+    // Réinitialiser les liens si nécessaire
     if (_linkSubscription == null) {
+      print('🔄 Réinitialisation des liens');
       _initializeDeepLinks();
     }
   }
 
   static void _handleDeepLink(String link) {
-    final uri = Uri.parse(link);
+    print('🔄 Traitement du lien: $link');
 
-    if (_isShareLink(uri)) {
-      _handleShareLink(uri);
+    // Éviter les traitements multiples du même lien
+    if (_isProcessing) {
+      print('⏳ Traitement en cours, lien ignoré');
+      return;
+    }
+
+    _isProcessing = true;
+
+    try {
+      final uri = Uri.parse(link);
+
+      if (_isShareLink(uri)) {
+        print('✅ Lien de partage détecté');
+        _handleShareLink(uri);
+      } else {
+        print('⚠️ Lien non reconnu: ${uri.toString()}');
+      }
+    } catch (e) {
+      print('❌ Erreur parsing lien: $e');
+    } finally {
+      // Réinitialiser le flag après un délai
+      Future.delayed(const Duration(seconds: 2), () {
+        _isProcessing = false;
+      });
     }
   }
+
+  static bool _isProcessing = false;
 
   static bool _isShareLink(Uri uri) {
     bool isValidScheme = false;
     bool isValidPath = false;
 
+    // ✅ GESTION DES LIENS DIRECTS epilist://share/token
     if (uri.scheme == appScheme) {
       isValidScheme = true;
-      bool hostValid = uri.host == 'share';
-      bool pathNotEmpty = uri.pathSegments.isNotEmpty;
-      isValidPath = hostValid && pathNotEmpty;
-    } else if (uri.scheme == 'https' && uri.host == customDomain) {
+      if (uri.host == 'share' && uri.pathSegments.isNotEmpty) {
+        isValidPath = true;
+        print('📱 Lien direct app détecté: ${uri.toString()}');
+      }
+    }
+    // ✅ GESTION DES LIENS HTTPS https://epilist.app/share/token
+    else if (uri.scheme == 'https' && uri.host == customDomain) {
       isValidScheme = true;
-      isValidPath =
-          uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'share';
+      if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'share') {
+        isValidPath = true;
+        print('🌐 Lien web détecté: ${uri.toString()}');
+      }
     }
 
-    return isValidScheme && isValidPath;
+    final isValid = isValidScheme && isValidPath;
+    print(
+      '🔍 Validation lien: scheme=$isValidScheme, path=$isValidPath, result=$isValid',
+    );
+
+    return isValid;
   }
 
   static Future<void> _getInitialLink() async {
     try {
       final Uri? initialUri = await _appLinks!.getInitialLink();
       if (initialUri != null) {
+        print('🚀 Lien initial détecté: ${initialUri.toString()}');
         _handleDeepLink(initialUri.toString());
+      } else {
+        print('ℹ️ Aucun lien initial');
       }
     } catch (e) {
-      // Erreur silencieuse
-    }
-  }
-
-  static void ensureListening() {
-    if (_linkSubscription == null || _linkSubscription!.isPaused) {
-      forceReinitialize();
-    } else {
-      _testListening();
+      print('❌ Erreur récupération lien initial: $e');
     }
   }
 
@@ -166,39 +251,51 @@ class DeepLinkHandler {
     try {
       String? shareToken;
 
+      // Extraction du token selon le format du lien
       if (uri.scheme == appScheme) {
+        // Format: epilist://share/TOKEN
         if (uri.host == 'share' && uri.pathSegments.isNotEmpty) {
           shareToken = uri.pathSegments[0];
+          print('📱 Token extrait du lien direct: $shareToken');
         }
       } else if (uri.scheme == 'https' && uri.host == customDomain) {
+        // Format: https://epilist.app/share/TOKEN
         if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'share') {
           shareToken = uri.pathSegments[1];
+          print('🌐 Token extrait du lien web: $shareToken');
         }
       }
 
+      // Fallback: chercher dans les query parameters
       if ((shareToken == null || shareToken.isEmpty) &&
           uri.queryParameters.containsKey('token')) {
         shareToken = uri.queryParameters['token'];
+        print('🔍 Token extrait des paramètres: $shareToken');
       }
 
       if (shareToken == null || shareToken.isEmpty) {
+        print('❌ Token manquant dans le lien');
         _showError('Lien de partage invalide');
         return;
       }
 
       if (_context == null) {
+        print('⏳ Contexte non disponible, token en attente: $shareToken');
         _pendingShareToken = shareToken;
         return;
       }
 
+      print('✅ Token validé: $shareToken');
       _checkAuthAndNavigate(shareToken);
     } catch (e) {
+      print('❌ Erreur traitement lien de partage: $e');
       _showError('Erreur lors du traitement du lien de partage');
     }
   }
 
   static void _processPendingLink() {
     if (_pendingShareToken != null && _context != null) {
+      print('🔄 Traitement token en attente: $_pendingShareToken');
       final token = _pendingShareToken!;
       _pendingShareToken = null;
 
@@ -210,19 +307,24 @@ class DeepLinkHandler {
 
   static Future<void> _checkAuthAndNavigate(String shareToken) async {
     if (_context == null) {
+      print('❌ Contexte non disponible pour vérification auth');
       return;
     }
 
     try {
+      print('🔐 Vérification authentification...');
       final authService = _context!.read<AuthService>();
       final isAuthenticated = await authService.isAuthenticated();
 
       if (isAuthenticated) {
+        print('✅ Utilisateur authentifié, navigation directe');
         _navigateToShareInvitation(shareToken);
       } else {
+        print('🔒 Utilisateur non authentifié, redirection login');
         _redirectToLoginWithToken(shareToken);
       }
     } catch (e) {
+      print('❌ Erreur vérification auth: $e');
       _redirectToLoginWithToken(shareToken);
     }
   }
@@ -231,6 +333,7 @@ class DeepLinkHandler {
     if (_context == null) return;
 
     _pendingShareToken = shareToken;
+    print('🔄 Redirection vers login avec token: $shareToken');
 
     SmartSnackBarManager.showInfoSnackBar(
       _context!,
@@ -254,6 +357,7 @@ class DeepLinkHandler {
 
     authSubscription = authBloc.stream.listen((state) {
       if (state is AuthSuccess && _pendingShareToken != null) {
+        print('✅ Authentification réussie, navigation vers invitation');
         final token = _pendingShareToken!;
         _pendingShareToken = null;
 
@@ -266,20 +370,14 @@ class DeepLinkHandler {
     });
 
     Future.delayed(const Duration(minutes: 5), () {
+      print('⏰ Timeout écoute auth, nettoyage');
       authSubscription.cancel();
       _pendingShareToken = null;
     });
   }
 
-  static void _testListening() {
-    Timer(const Duration(seconds: 2), () {
-      if (_linkSubscription == null || _linkSubscription!.isPaused) {
-        forceReinitialize();
-      }
-    });
-  }
-
   static void forceReinitialize() {
+    print('🔄 Réinitialisation forcée des deep links');
     _linkSubscription?.cancel();
     _linkSubscription = null;
     _appLinks = null;
@@ -304,6 +402,7 @@ class DeepLinkHandler {
 
   static void processPendingTokenAfterLogin() {
     if (_pendingShareToken != null && _context != null) {
+      print('🎯 Traitement token après login: $_pendingShareToken');
       final token = _pendingShareToken!;
       _pendingShareToken = null;
 
@@ -313,32 +412,116 @@ class DeepLinkHandler {
     }
   }
 
-  // MÉTHODES UTILITAIRES
+  // ✅ MÉTHODES POUR LIENS DIRECTS (SOLUTION 1)
+
+  /// Génère un lien DIRECT qui ouvre automatiquement l'app
+  static String generateDirectAppUrl(String token) {
+    final directUrl = '$appScheme://share/$token';
+    print('📱 Lien direct généré: $directUrl');
+    return directUrl;
+  }
+
+  /// Génère un lien web (avec demande Safari)
   static String generateWebShareUrl(String token) {
-    return 'https://$customDomain/share/$token';
+    final webUrl = 'https://$customDomain/share/$token';
+    print('🌐 Lien web généré: $webUrl');
+    return webUrl;
   }
 
+  /// DEPRECATED: Utilisez generateDirectAppUrl() à la place
+  @deprecated
   static String generateAppShareUrl(String token) {
-    return '$appScheme://share/$token';
+    return generateDirectAppUrl(token);
   }
 
+  /// COMPATIBILITÉ: Méthode pour backward compatibility
   static Map<String, String> generateShareData(
     String token,
     String listName,
     String ownerName,
   ) {
-    final shareUrl = generateWebShareUrl(token);
+    return generateDirectShareData(token, listName, ownerName);
+  }
+
+  /// Génère les données de partage OPTIMISÉES pour ouverture directe
+  static Map<String, String> generateDirectShareData(
+    String token,
+    String listName,
+    String ownerName,
+  ) {
+    final directUrl = generateDirectAppUrl(token);
+    final webUrl = generateWebShareUrl(token);
 
     return {
-      'url': shareUrl,
+      'directUrl': directUrl, // Lien principal (direct)
+      'webUrl': webUrl, // Lien de fallback
       'title': 'Invitation EpiList - $listName',
-      'text':
-          '$ownerName vous invite à collaborer sur la liste "$listName".\n\n'
-          '🔗 Cliquez pour ouvrir dans EpiList :\n$shareUrl\n\n'
-          '📱 L\'app s\'ouvrira automatiquement ou vous pourrez la télécharger.',
+      'text': '''🛒 $ownerName vous invite sur "$listName"
+
+📱 Lien direct EpiList (recommandé) :
+$directUrl
+
+🌐 Ou via navigateur :
+$webUrl
+
+Le lien direct ouvrira automatiquement l'app !''',
       'subject': 'Invitation à partager une liste d\'épicerie - EpiList',
     };
   }
+
+  /// Méthode de partage optimisée (utilise le lien direct)
+  static String createOptimizedShareMessage(
+    String token,
+    String listName,
+    String ownerName,
+  ) {
+    final directUrl = generateDirectAppUrl(token);
+
+    return '''🛒 $ownerName vous invite sur "$listName"
+
+📱 Cliquez pour ouvrir EpiList :
+$directUrl
+
+L'app s'ouvrira automatiquement !''';
+  }
+
+  /// Ouvre directement l'app ou redirige vers le store
+  static Future<void> openAppOrStore(String shareToken) async {
+    final appUrl = generateDirectAppUrl(shareToken);
+    print('🚀 Tentative ouverture app: $appUrl');
+
+    try {
+      final bool launched = await launchUrl(
+        Uri.parse(appUrl),
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (launched) {
+        print('✅ App ouverte avec succès');
+      } else {
+        print('⚠️ App non ouverte, redirection store');
+        await _openStore();
+      }
+    } catch (e) {
+      print('❌ Erreur ouverture app: $e');
+      await _openStore();
+    }
+  }
+
+  static Future<void> _openStore() async {
+    try {
+      // Détection de la plateforme et ouverture du bon store
+      await launchUrl(
+        Uri.parse(playStoreUrl), // Adaptez selon la plateforme
+        mode: LaunchMode.externalApplication,
+      );
+      print('✅ Store ouvert');
+    } catch (e) {
+      print('❌ Erreur ouverture store: $e');
+    }
+  }
+
+  // MÉTHODES UTILITAIRES DE VALIDATION
 
   static bool isValidShareLink(String link) {
     try {
@@ -374,43 +557,20 @@ class DeepLinkHandler {
     }
   }
 
-  static String createOptimizedShareMessage(
-    String token,
-    String listName,
-    String ownerName,
-  ) {
-    final webUrl = generateWebShareUrl(token);
+  // MÉTHODES DE DEBUG
 
-    return '🛒 $ownerName vous invite sur "$listName"\n\n'
-        '📱 Cliquez pour ouvrir EpiList :\n$webUrl\n\n'
-        'L\'app s\'ouvrira automatiquement ou vous pourrez la télécharger gratuitement !';
+  static void debugPrintStatus() {
+    print('\n=== DEBUG DEEP LINK HANDLER ===');
+    print('Context available: ${_context != null}');
+    print('Pending token: $_pendingShareToken');
+    print('Subscription active: ${_linkSubscription != null}');
+    print('AppLinks initialized: ${_appLinks != null}');
+    print('================================\n');
   }
 
-  static Future<void> openAppOrStore(String shareToken) async {
-    final appUrl = generateAppShareUrl(shareToken);
-
-    try {
-      final bool launched = await launchUrl(
-        Uri.parse(appUrl),
-        mode: LaunchMode.externalApplication,
-      );
-
-      if (!launched) {
-        await _openStore();
-      }
-    } catch (e) {
-      await _openStore();
-    }
-  }
-
-  static Future<void> _openStore() async {
-    try {
-      await launchUrl(
-        Uri.parse(playStoreUrl),
-        mode: LaunchMode.externalApplication,
-      );
-    } catch (e) {
-      // Erreur silencieuse
-    }
+  static void testDirectLink(String token) {
+    final directUrl = generateDirectAppUrl(token);
+    print('🧪 Test lien direct: $directUrl');
+    _handleDeepLink(directUrl);
   }
 }
