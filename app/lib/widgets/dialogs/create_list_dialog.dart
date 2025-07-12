@@ -2,6 +2,7 @@
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({super.key});
@@ -21,6 +22,8 @@ class _CreateListDialogState extends State<CreateListDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
@@ -52,7 +55,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
 
             // Titre
             Text(
-              'Nouvelle Liste',
+              l10n.newList,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -64,7 +67,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
 
             // Message
             Text(
-              'Donnez un nom à votre nouvelle liste d\'épicerie',
+              l10n.giveNameToNewList,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -79,8 +82,8 @@ class _CreateListDialogState extends State<CreateListDialog> {
             TextField(
               controller: nameController,
               decoration: InputDecoration(
-                labelText: 'Nom de la liste',
-                hintText: 'Ex: Courses de la semaine',
+                labelText: l10n.listName,
+                hintText: l10n.listNameHint,
                 prefixIcon: Icon(Icons.list_alt, color: Colors.green[600]),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -117,7 +120,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                       ),
                     ),
                     child: Text(
-                      'Annuler',
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -159,7 +162,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                                   ),
                                 )
                                 : Text(
-                                  'Créer',
+                                  l10n.create,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

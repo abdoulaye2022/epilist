@@ -1,6 +1,8 @@
 // widgets/dialogs/security_settings_dialog.dart
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/dialogs/delete_account_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +16,8 @@ class SecuritySettingsDialog extends StatefulWidget {
 class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
@@ -28,13 +32,13 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
           children: [
             _buildIcon(),
             const SizedBox(height: 20),
-            _buildTitle(),
+            _buildTitle(l10n),
             const SizedBox(height: 12),
-            _buildDescription(),
+            _buildDescription(l10n),
             const SizedBox(height: 24),
-            _buildSecurityOptions(),
+            _buildSecurityOptions(l10n),
             const SizedBox(height: 24),
-            _buildCloseButton(),
+            _buildCloseButton(l10n),
           ],
         ),
       ),
@@ -53,10 +57,10 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     );
   }
 
-  Widget _buildTitle() {
-    return const Text(
-      'Sécurité',
-      style: TextStyle(
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.security,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -64,29 +68,29 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      'Gérez la sécurité de votre compte',
+      l10n.manageAccountSecurity,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildSecurityOptions() {
+  Widget _buildSecurityOptions(AppLocalizations l10n) {
     return Column(
       children: [
         _buildSecurityOptionTile(
           icon: Icons.lock_outline,
-          title: 'Changer le mot de passe',
-          description: 'Modifiez votre mot de passe actuel',
+          title: l10n.changePasswordTitle,
+          description: l10n.changePasswordDescription,
           color: Colors.blue,
           onTap: _showChangePasswordDialog,
         ),
         const SizedBox(height: 12),
         _buildSecurityOptionTile(
           icon: Icons.delete_forever_outlined,
-          title: 'Supprimer le compte',
-          description: 'Supprimez définitivement votre compte',
+          title: l10n.deleteAccountTitle,
+          description: l10n.deleteAccountDescription,
           color: Colors.red,
           onTap: _showDeleteAccountDialog,
         ),
@@ -149,7 +153,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     );
   }
 
-  Widget _buildCloseButton() {
+  Widget _buildCloseButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       child: TextButton(
@@ -162,7 +166,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
           ),
         ),
         child: Text(
-          'Fermer',
+          l10n.close,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -237,20 +241,22 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is PasswordChangeCodeSent) {
           setState(() => _showCodeStep = true);
           SmartSnackBarManager.showMessage(
             context,
-            'Code de vérification envoyé ! Vérifiez votre email.',
+            l10n.verificationCodeSentCheckEmail,
             type: SnackBarType.success,
           );
         } else if (state is PasswordChanged) {
           Navigator.pop(context);
           SmartSnackBarManager.showMessage(
             context,
-            'Mot de passe modifié avec succès !',
+            l10n.passwordChangedSuccessfully,
             type: SnackBarType.success,
           );
         } else {
@@ -276,15 +282,15 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               children: [
                 _buildIcon(),
                 const SizedBox(height: 20),
-                _buildTitle(),
+                _buildTitle(l10n),
                 const SizedBox(height: 12),
-                _buildDescription(),
+                _buildDescription(l10n),
                 const SizedBox(height: 24),
-                _buildForm(isLoading),
+                _buildForm(isLoading, l10n),
                 const SizedBox(height: 8),
-                _buildInfoNote(),
+                _buildInfoNote(l10n),
                 const SizedBox(height: 24),
-                _buildButtons(isLoading),
+                _buildButtons(isLoading, l10n),
               ],
             ),
           ),
@@ -309,9 +315,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      _showCodeStep ? 'Nouveau mot de passe' : 'Changer le mot de passe',
+      _showCodeStep ? l10n.newPasswordTitle : l10n.changePassword,
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -320,30 +326,30 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(AppLocalizations l10n) {
     return Text(
       _showCodeStep
-          ? 'Entrez le code et votre nouveau mot de passe'
-          : 'Un code de vérification sera envoyé par email',
+          ? l10n.enterCodeAndNewPassword
+          : l10n.verificationCodeWillBeSent,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildForm(bool isLoading) {
+  Widget _buildForm(bool isLoading, AppLocalizations l10n) {
     if (_showCodeStep) {
-      return _buildPasswordStep(isLoading);
+      return _buildPasswordStep(isLoading, l10n);
     } else {
-      return _buildEmailStep(isLoading);
+      return _buildEmailStep(isLoading, l10n);
     }
   }
 
-  Widget _buildEmailStep(bool isLoading) {
+  Widget _buildEmailStep(bool isLoading, AppLocalizations l10n) {
     return TextField(
       controller: emailController,
       enabled: !isLoading,
       decoration: InputDecoration(
-        labelText: 'Adresse email',
+        labelText: l10n.emailAddress,
         prefixIcon: Icon(Icons.email_outlined, color: Colors.blue[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -364,14 +370,14 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     );
   }
 
-  Widget _buildPasswordStep(bool isLoading) {
+  Widget _buildPasswordStep(bool isLoading, AppLocalizations l10n) {
     return Column(
       children: [
         TextField(
           controller: codeController,
           enabled: !isLoading,
           decoration: InputDecoration(
-            labelText: 'Code de vérification',
+            labelText: l10n.verificationCode,
             prefixIcon: Icon(Icons.security, color: Colors.green[600]),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -397,7 +403,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           obscureText: _obscurePassword,
           enabled: !isLoading,
           decoration: InputDecoration(
-            labelText: 'Nouveau mot de passe',
+            labelText: l10n.newPassword,
             prefixIcon: Icon(Icons.lock_outline, color: Colors.green[600]),
             suffixIcon: IconButton(
               icon: Icon(
@@ -429,7 +435,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           obscureText: _obscureConfirmPassword,
           enabled: !isLoading,
           decoration: InputDecoration(
-            labelText: 'Confirmer le mot de passe',
+            labelText: l10n.confirmPasswordLabel,
             prefixIcon: Icon(Icons.lock_outline, color: Colors.green[600]),
             suffixIcon: IconButton(
               icon: Icon(
@@ -463,7 +469,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     );
   }
 
-  Widget _buildInfoNote() {
+  Widget _buildInfoNote(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -485,8 +491,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           Expanded(
             child: Text(
               _showCodeStep
-                  ? 'Le mot de passe doit contenir au moins 6 caractères'
-                  : 'Vous recevrez un code de vérification à 6 chiffres',
+                  ? l10n.passwordMustBeSixCharacters
+                  : l10n.youWillReceiveVerificationCode,
               style: TextStyle(
                 fontSize: 12,
                 color: _showCodeStep ? Colors.green[700] : Colors.blue[700],
@@ -499,7 +505,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     );
   }
 
-  Widget _buildButtons(bool isLoading) {
+  Widget _buildButtons(bool isLoading, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -513,7 +519,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -549,7 +555,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                       ),
                     )
                     : Text(
-                      _showCodeStep ? 'Modifier' : 'Envoyer',
+                      _showCodeStep ? l10n.modify : l10n.send,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -570,12 +576,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   }
 
   void _requestCode() {
+    final l10n = AppLocalizations.of(context)!;
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
       SmartSnackBarManager.showMessage(
         context,
-        'L\'email est requis',
+        l10n.emailRequired,
         type: SnackBarType.warning,
       );
       return;
@@ -584,7 +591,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       SmartSnackBarManager.showMessage(
         context,
-        'Format d\'email invalide',
+        l10n.emailFormatInvalid,
         type: SnackBarType.warning,
       );
       return;
@@ -594,6 +601,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   }
 
   void _changePassword() {
+    final l10n = AppLocalizations.of(context)!;
     final code = codeController.text.trim();
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
@@ -601,7 +609,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (code.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       SmartSnackBarManager.showMessage(
         context,
-        'Tous les champs sont obligatoires',
+        l10n.allFieldsRequired,
         type: SnackBarType.warning,
       );
       return;
@@ -610,7 +618,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (code.length != 6) {
       SmartSnackBarManager.showMessage(
         context,
-        'Le code doit contenir 6 chiffres',
+        l10n.codeMustBeSixDigits,
         type: SnackBarType.warning,
       );
       return;
@@ -619,7 +627,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (password.length < 6) {
       SmartSnackBarManager.showMessage(
         context,
-        'Le mot de passe doit contenir au moins 6 caractères',
+        l10n.passwordMinSixChars,
         type: SnackBarType.warning,
       );
       return;
@@ -628,7 +636,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     if (password != confirmPassword) {
       SmartSnackBarManager.showMessage(
         context,
-        'Les mots de passe ne correspondent pas',
+        l10n.passwordsDoNotMatch,
         type: SnackBarType.warning,
       );
       return;
@@ -639,369 +647,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         email: emailController.text.trim(),
         code: code,
         newPassword: password,
-      ),
-    );
-  }
-}
-
-// Dialogue pour supprimer le compte - AVEC ÉTAPES
-class DeleteAccountDialog extends StatefulWidget {
-  const DeleteAccountDialog({super.key});
-
-  @override
-  State<DeleteAccountDialog> createState() => _DeleteAccountDialogState();
-}
-
-class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
-  late final TextEditingController reasonController;
-  late final TextEditingController codeController;
-
-  bool _showCodeStep = false;
-
-  @override
-  void initState() {
-    super.initState();
-    reasonController = TextEditingController();
-    codeController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    reasonController.dispose();
-    codeController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AccountDeletionCodeSent) {
-          setState(() => _showCodeStep = true);
-          SmartSnackBarManager.showMessage(
-            context,
-            'Code de suppression envoyé ! Vérifiez votre email.',
-            type: SnackBarType.success,
-          );
-        } else if (state is AccountDeletionConfirmed) {
-          Navigator.pop(context);
-          SmartSnackBarManager.showMessage(
-            context,
-            'Votre compte sera supprimé dans 30 jours. Vous pouvez annuler cette action.',
-            type: SnackBarType.info,
-          );
-        } else {
-          SmartSnackBarManager.showForState(context, state);
-        }
-      },
-      builder: (context, state) {
-        final isLoading = state is AuthLoading;
-
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildIcon(),
-                const SizedBox(height: 20),
-                _buildTitle(),
-                const SizedBox(height: 12),
-                _buildDescription(),
-                const SizedBox(height: 24),
-                _buildForm(isLoading),
-                const SizedBox(height: 8),
-                _buildWarningNote(),
-                const SizedBox(height: 24),
-                _buildButtons(isLoading),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: _showCodeStep ? Colors.orange[50] : Colors.red[50],
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(
-        _showCodeStep ? Icons.mail_outline : Icons.delete_forever,
-        size: 40,
-        color: _showCodeStep ? Colors.orange[600] : Colors.red[600],
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return Text(
-      _showCodeStep ? 'Confirmer la suppression' : 'Supprimer le compte',
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  Widget _buildDescription() {
-    return Text(
-      _showCodeStep
-          ? 'Entrez le code reçu par email pour confirmer'
-          : 'Cette action est irréversible. Toutes vos données seront supprimées.',
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
-    );
-  }
-
-  Widget _buildForm(bool isLoading) {
-    if (_showCodeStep) {
-      return _buildCodeStep(isLoading);
-    } else {
-      return _buildReasonStep(isLoading);
-    }
-  }
-
-  Widget _buildReasonStep(bool isLoading) {
-    return TextField(
-      controller: reasonController,
-      maxLines: 3,
-      enabled: !isLoading,
-      decoration: InputDecoration(
-        labelText: 'Raison de la suppression (optionnel)',
-        prefixIcon: Icon(Icons.comment_outlined, color: Colors.red[600]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.red[600]!, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
-      ),
-    );
-  }
-
-  Widget _buildCodeStep(bool isLoading) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.green[50],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.green[200]!),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.check_circle_outline,
-                color: Colors.green[600],
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Code envoyé ! Vérifiez votre boîte email.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: codeController,
-          enabled: !isLoading,
-          decoration: InputDecoration(
-            labelText: 'Code de suppression',
-            prefixIcon: Icon(Icons.security, color: Colors.orange[600]),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.orange[600]!, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-          ),
-          keyboardType: TextInputType.number,
-          maxLength: 6,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWarningNote() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: _showCodeStep ? Colors.orange[50] : Colors.red[50],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: _showCodeStep ? Colors.orange[200]! : Colors.red[200]!,
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.warning_amber,
-            color: _showCodeStep ? Colors.orange[700] : Colors.red[700],
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              _showCodeStep
-                  ? 'Cette action est définitive. Votre compte sera supprimé dans 30 jours.'
-                  : 'Votre compte sera supprimé dans 30 jours. Vous pouvez annuler cette action pendant cette période.',
-              style: TextStyle(
-                fontSize: 12,
-                color: _showCodeStep ? Colors.orange[700] : Colors.red[700],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildButtons(bool isLoading) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton(
-            onPressed: isLoading ? null : () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
-              ),
-            ),
-            child: Text(
-              'Annuler',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: isLoading ? null : _handleAction,
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  _showCodeStep ? Colors.orange[600] : Colors.red[600],
-              foregroundColor: Colors.white,
-              disabledBackgroundColor:
-                  _showCodeStep ? Colors.orange[300] : Colors.red[300],
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child:
-                isLoading
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                    : Text(
-                      _showCodeStep ? 'Confirmer' : 'Envoyer',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _handleAction() {
-    if (_showCodeStep) {
-      _confirmDeletion();
-    } else {
-      _requestDeletionCode();
-    }
-  }
-
-  void _requestDeletionCode() {
-    final reason = reasonController.text.trim();
-
-    context.read<AuthBloc>().add(
-      RequestAccountDeletion(reason: reason.isEmpty ? null : reason),
-    );
-  }
-
-  void _confirmDeletion() {
-    final code = codeController.text.trim();
-
-    if (code.isEmpty) {
-      SmartSnackBarManager.showMessage(
-        context,
-        'Le code est requis',
-        type: SnackBarType.warning,
-      );
-      return;
-    }
-
-    if (code.length != 6) {
-      SmartSnackBarManager.showMessage(
-        context,
-        'Le code doit contenir 6 chiffres',
-        type: SnackBarType.warning,
-      );
-      return;
-    }
-
-    final reason = reasonController.text.trim();
-
-    context.read<AuthBloc>().add(
-      ConfirmAccountDeletion(
-        deletionCode: code,
-        reason: reason.isEmpty ? null : reason,
       ),
     );
   }

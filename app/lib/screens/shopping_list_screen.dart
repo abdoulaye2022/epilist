@@ -1,8 +1,9 @@
-// screens/shopping_list_screen.dart - VERSION REFACTORISÉE
+// screens/shopping_list_screen.dart - VERSION REFACTORISÉE AVEC TRADUCTIONS
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -139,9 +140,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   Widget _buildFloatingActionButton() {
+    final l10n = AppLocalizations.of(context)!;
+
     return FloatingActionButton(
       onPressed: _showCreateListDialog,
       backgroundColor: Colors.green[600],
+      tooltip: l10n.createList,
       child: Icon(Icons.add, color: Colors.white),
     );
   }
@@ -157,24 +161,61 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _handleListAction(String action, ShoppingList list) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (action) {
       case 'edit':
-        if (list.canEdit) _showEditListDialog(list);
+        if (list.canEdit) {
+          _showEditListDialog(list);
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            l10n.cannotEditPermission,
+          );
+        }
         break;
       case 'duplicate':
         _duplicateList(list);
         break;
       case 'share':
-        if (list.canShare) _showShareDialog(list);
+        if (list.canShare) {
+          _showShareDialog(list);
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            l10n.cannotSharePermission,
+          );
+        }
         break;
       case 'manage_shares':
-        if (list.isOwner && list.isShared) _showManageSharesDialog(list);
+        if (list.isOwner && list.isShared) {
+          _showManageSharesDialog(list);
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            l10n.onlyOwnerManageShares,
+          );
+        }
         break;
       case 'leave':
-        if (!list.isOwner) _showLeaveSharedListDialog(list);
+        if (!list.isOwner) {
+          _showLeaveSharedListDialog(list);
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            l10n.cannotLeaveOwnList,
+          );
+        }
         break;
       case 'delete':
-        if (list.canDelete) _showDeleteListDialog(list);
+        if (list.canDelete) {
+          _showDeleteListDialog(list);
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(
+            context,
+            l10n.cannotDeletePermission,
+          );
+        }
         break;
     }
   }

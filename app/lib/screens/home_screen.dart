@@ -1,4 +1,4 @@
-// screens/home_screen.dart - VERSION MISE À JOUR AVEC PARTAGE
+// screens/home_screen.dart - VERSION SANS SÉLECTION DE LANGUE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
@@ -23,6 +23,7 @@ import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -71,6 +72,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: HomeAppBar(
@@ -82,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       body: MultiBlocListener(
         listeners: [
-          // Listener pour les opérations de liste de courses
           BlocListener<ShoppingListBloc, ShoppingListState>(
             listener: (context, state) {
               if (state is ShoppingListError) {
@@ -100,7 +102,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
             },
           ),
-          // Listener pour les opérations de partage
           BlocListener<SharedListBloc, SharedListState>(
             listener: (context, state) {
               if (state is SharedListError) {
@@ -111,7 +112,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   state.message,
                   duration: const Duration(seconds: 2),
                 );
-                // Recharger la liste après une opération de partage
                 context.read<ShoppingListBloc>().add(LoadShoppingLists());
               }
             },
@@ -122,24 +122,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             context.read<ShoppingListBloc>().add(LoadShoppingLists());
           },
           child: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const WelcomeCard(),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
+
+                // Section header sans sélecteur de langue
                 ListsSectionHeader(
                   onViewAll: () => _goToAllLists(context),
                   onCreateNew: () => _showCreateListDialog(context),
                 ),
-                SizedBox(height: 16),
+
+                const SizedBox(height: 16),
                 Expanded(
                   child: ShoppingListsContent(
                     onCreateNew: () => _showCreateListDialog(context),
                     onListTap: (list) => _openListDetails(context, list),
                     onListAction:
                         (action, list) =>
-                            _handleListAction(action, list, context),
+                            _handleListAction(action, list, context, l10n),
                     maxDisplayLists: 5,
                   ),
                 ),
@@ -254,11 +257,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Action handler - VERSION ÉTENDUE AVEC PARTAGE
+  // Action handler avec traductions
   void _handleListAction(
     String action,
     ShoppingList list,
     BuildContext context,
+    AppLocalizations l10n,
   ) {
     switch (action) {
       case 'edit':
@@ -267,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
-            'Vous n\'avez pas la permission de modifier cette liste',
+            l10n.cannotEditPermission,
           );
         }
         break;
@@ -282,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
-            'Vous n\'avez pas la permission de partager cette liste',
+            l10n.cannotSharePermission,
           );
         }
         break;
@@ -293,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
-            'Seul le propriétaire peut gérer les partages',
+            l10n.onlyOwnerManageShares,
           );
         }
         break;
@@ -304,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
-            'Impossible de quitter votre propre liste',
+            l10n.cannotLeaveOwnList,
           );
         }
         break;
@@ -315,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
-            'Vous n\'avez pas la permission de supprimer cette liste',
+            l10n.cannotDeletePermission,
           );
         }
         break;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class LogoutButton extends StatelessWidget {
   final VoidCallback onLogout;
@@ -7,12 +8,14 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: onLogout,
         icon: const Icon(Icons.logout),
-        label: const Text('Se déconnecter'),
+        label: Text(l10n.logoutButton),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red[50],
           foregroundColor: Colors.red[600],

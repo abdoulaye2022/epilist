@@ -1,5 +1,6 @@
 // screens/list_detail_screen.dart - VERSION AVEC MENU MODERNE MAIS ICÔNES SIMPLES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/services/list_item_service.dart';
@@ -73,6 +74,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   AppBar _buildAppBar() {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,18 +90,17 @@ class _ListDetailViewState extends State<_ListDetailView> {
       backgroundColor: Colors.white,
       elevation: 1,
       actions: [
-        // ✅ Bouton d'ajout simple comme avant
         if (currentList.canManageItems)
           IconButton(
             onPressed: _addNewItem,
             icon: const Icon(Icons.add),
-            tooltip: 'Ajouter un article',
+            tooltip: l10n.addItemTooltip,
           )
         else
           IconButton(
-            onPressed: () => _showPermissionDenied('ajouter des articles'),
+            onPressed: () => _showPermissionDenied(l10n.addItem.toLowerCase()),
             icon: const Icon(Icons.add, color: Colors.grey),
-            tooltip: 'Permission insuffisante',
+            tooltip: l10n.insufficientPermission,
           ),
         // ✅ Menu déroulant moderne mais icône simple
         ModernDropdownMenu(
@@ -132,14 +134,15 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildSharingSubtitle() {
+    final l10n = AppLocalizations.of(context)!;
     String subtitle;
     Color color;
 
     if (currentList.isOwner) {
-      subtitle = 'Liste partagée';
+      subtitle = l10n.sharedList;
       color = Colors.blue[600]!;
     } else {
-      subtitle = currentList.permissionDisplayName ?? 'Liste partagée';
+      subtitle = currentList.permissionDisplayName ?? l10n.sharedList;
       color = currentList.isReadOnly ? Colors.blue[600]! : Colors.green[600]!;
     }
 
@@ -191,34 +194,27 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildPermissionBanner() {
+    final l10n = AppLocalizations.of(context)!;
     Color bannerColor;
     String bannerText;
     IconData bannerIcon;
 
     if (currentList.isReadOnly) {
       bannerColor = Colors.blue;
-      bannerText =
-          'Mode lecture seule - Vous ne pouvez pas modifier cette liste';
+      bannerText = l10n.readOnlyAccessMode;
       bannerIcon = Icons.visibility;
     } else if (currentList.canEdit) {
       bannerColor = Colors.green;
-      bannerText = 'Liste partagée - Vous pouvez modifier les articles';
+      bannerText = l10n.sharedListCanEdit;
       bannerIcon = Icons.edit;
     } else {
       bannerColor = Colors.orange;
-      bannerText = 'Accès limité à cette liste';
+      bannerText = l10n.limitedAccess;
       bannerIcon = Icons.lock;
     }
 
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: bannerColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: bannerColor.withOpacity(0.3)),
-      ),
+      // ... styling
       child: Row(
         children: [
           Icon(bannerIcon, size: 16, color: bannerColor),
@@ -236,7 +232,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           if (currentList.sharedBy != null) ...[
             const SizedBox(width: 8),
             Text(
-              'Par ${currentList.sharedBy!.name}',
+              '${l10n.by} ${currentList.sharedBy!.name}',
               style: TextStyle(
                 fontSize: 12,
                 color: bannerColor,
@@ -647,9 +643,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildListInfoTitle() {
-    return const Text(
-      'Informations de la liste',
-      style: TextStyle(
+    final l10n = AppLocalizations.of(context)!;
+
+    return Text(
+      l10n.listInformation,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -658,8 +656,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildListInfoDescription() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Text(
-      'Détails et permissions de "${currentList.name}"',
+      l10n.detailsAndPermissions(currentList.name),
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );

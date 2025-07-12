@@ -1,4 +1,4 @@
-// screens/share_invitation_screen.dart - VERSION AVEC SMART SNACKBAR
+// screens/share_invitation_screen.dart - VERSION WITH SMART SNACKBAR
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/share_invitation.dart';
@@ -36,7 +36,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       child: Scaffold(
         backgroundColor: Colors.grey[50],
         appBar: AppBar(
-          title: const Text('Invitation de partage'),
+          title: const Text('Share Invitation'),
           backgroundColor: Colors.white,
           elevation: 0,
           foregroundColor: Colors.black87,
@@ -62,7 +62,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
               SmartSnackBarManager.showSuccessSnackBar(
                 context,
-                'Invitation acceptée avec succès !',
+                'Invitation accepted successfully!',
                 duration: const Duration(seconds: 2),
               );
 
@@ -75,7 +75,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
               SmartSnackBarManager.showInfoSnackBar(
                 context,
-                'Invitation refusée',
+                'Invitation declined',
                 duration: const Duration(seconds: 2),
               );
 
@@ -138,7 +138,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 24),
 
           Text(
-            'Validation de l\'invitation...',
+            'Validating invitation...',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -149,7 +149,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 8),
 
           Text(
-            'Vérification du token de partage',
+            'Verifying share token',
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
 
@@ -225,7 +225,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           Text(
             invitation.isExpired || !invitation.isPending
                 ? 'Invitation ${invitation.statusDisplayName.toLowerCase()}'
-                : 'Invitation de partage',
+                : 'Share Invitation',
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -266,19 +266,19 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     if (invitation.isExpired) {
       color = Colors.red;
       icon = Icons.access_time;
-      text = 'Expirée';
+      text = 'Expired';
     } else if (invitation.isAccepted) {
       color = Colors.green;
       icon = Icons.check_circle;
-      text = 'Acceptée';
+      text = 'Accepted';
     } else if (invitation.isDeclined) {
       color = Colors.orange;
       icon = Icons.cancel;
-      text = 'Refusée';
+      text = 'Declined';
     } else {
       color = Colors.blue;
       icon = Icons.pending;
-      text = 'En attente';
+      text = 'Pending';
     }
 
     return Container(
@@ -311,13 +311,13 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       return Column(
         children: [
           Text(
-            'Cette invitation a expiré le ${_formatDate(invitation.expiresAt)}',
+            'This invitation expired on ${_formatDate(invitation.expiresAt)}',
             style: TextStyle(fontSize: 16, color: Colors.red[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Contactez ${invitation.ownerName} pour recevoir une nouvelle invitation.',
+            'Contact ${invitation.ownerName} to receive a new invitation.',
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
@@ -327,7 +327,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     if (invitation.isAccepted) {
       return Text(
-        'Vous avez déjà accepté cette invitation pour la liste "${invitation.listName}".',
+        'You have already accepted this invitation for the list "${invitation.listName}".',
         style: TextStyle(fontSize: 16, color: Colors.grey[600]),
         textAlign: TextAlign.center,
       );
@@ -335,7 +335,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     if (invitation.isDeclined) {
       return Text(
-        'Vous avez refusé cette invitation pour la liste "${invitation.listName}".',
+        'You have declined this invitation for the list "${invitation.listName}".',
         style: TextStyle(fontSize: 16, color: Colors.grey[600]),
         textAlign: TextAlign.center,
       );
@@ -353,7 +353,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               color: Colors.black87,
             ),
           ),
-          const TextSpan(text: ' vous invite à accéder à la liste '),
+          const TextSpan(text: ' invites you to access the list '),
           TextSpan(
             text: '"${invitation.listName}"',
             style: TextStyle(
@@ -388,7 +388,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             ),
           ),
           child: Text(
-            invitation.isAccepted ? 'Aller à la liste' : 'Retour à l\'accueil',
+            invitation.isAccepted ? 'Go to list' : 'Back to home',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
@@ -408,7 +408,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               ),
             ),
             child: Text(
-              'Refuser',
+              'Decline',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -431,7 +431,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               elevation: 2,
             ),
             child: const Text(
-              'Accepter',
+              'Accept',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
@@ -455,7 +455,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Cette invitation expire le ${_formatDate(invitation.expiresAt)}.',
+                'This invitation expires on ${_formatDate(invitation.expiresAt)}.',
                 style: TextStyle(color: Colors.blue[700], fontSize: 14),
               ),
             ),
@@ -521,7 +521,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.person,
-            title: 'Partagé par',
+            title: 'Shared by',
             value:
                 '${invitation.ownerName}${invitation.ownerEmail.isNotEmpty ? ' (${invitation.ownerEmail})' : ''}',
           ),
@@ -539,7 +539,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.schedule,
-            title: 'Expire le',
+            title: 'Expires on',
             value: _formatDate(invitation.expiresAt),
             valueColor: invitation.isExpired ? Colors.red[600] : null,
           ),
@@ -548,7 +548,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.calendar_today,
-            title: 'Créé le',
+            title: 'Created on',
             value: _formatDate(invitation.createdAt),
           ),
 
@@ -558,7 +558,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             const SizedBox(height: 16),
 
             Text(
-              'Aperçu de la liste',
+              'List Preview',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -572,7 +572,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.list_alt,
-                    title: 'Articles',
+                    title: 'Items',
                     value: '${invitation.shoppingList!.apiItemsCount}',
                     color: Colors.blue,
                   ),
@@ -581,7 +581,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Expanded(
                   child: _buildStatCard(
                     icon: Icons.check_circle,
-                    title: 'Complétés',
+                    title: 'Completed',
                     value: '${invitation.shoppingList!.apiPurchasedItemsCount}',
                     color: Colors.green,
                   ),
@@ -593,9 +593,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               const SizedBox(height: 12),
               _buildStatCard(
                 icon: Icons.attach_money,
-                title: 'Budget estimé',
+                title: 'Estimated budget',
                 value:
-                    '${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} \$CAD',
+                    '\${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} CAD',
                 color: Colors.orange,
               ),
             ],
@@ -639,7 +639,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 const SizedBox(height: 20),
 
                 const Text(
-                  'Accepter l\'invitation',
+                  'Accept Invitation',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -658,7 +658,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Voulez-vous accepter l\'invitation de ',
+                        text: 'Do you want to accept the invitation from ',
                       ),
                       TextSpan(
                         text: invitation.ownerName,
@@ -667,7 +667,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           color: Colors.black87,
                         ),
                       ),
-                      const TextSpan(text: ' pour la liste '),
+                      const TextSpan(text: ' for the list '),
                       TextSpan(
                         text: '"${invitation.listName}"',
                         style: TextStyle(
@@ -675,7 +675,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           color: Colors.green[700],
                         ),
                       ),
-                      const TextSpan(text: ' ?'),
+                      const TextSpan(text: '?'),
                     ],
                   ),
                 ),
@@ -694,7 +694,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Permissions : ${invitation.permissionDisplayName}',
+                          'Permissions: ${invitation.permissionDisplayName}',
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.green[700],
@@ -720,7 +720,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           ),
                         ),
                         child: Text(
-                          'Annuler',
+                          'Cancel',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -742,7 +742,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           } catch (e) {
                             SmartSnackBarManager.showErrorSnackBar(
                               context,
-                              'Erreur lors de l\'acceptation de l\'invitation',
+                              'Error accepting invitation',
                             );
                           }
                         },
@@ -761,7 +761,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                             Icon(Icons.check, size: 18),
                             SizedBox(width: 6),
                             Text(
-                              'Accepter',
+                              'Accept',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -815,7 +815,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 const SizedBox(height: 20),
 
                 const Text(
-                  'Refuser l\'invitation',
+                  'Decline Invitation',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -834,7 +834,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Voulez-vous refuser l\'invitation de ',
+                        text: 'Do you want to decline the invitation from ',
                       ),
                       TextSpan(
                         text: invitation.ownerName,
@@ -843,7 +843,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           color: Colors.black87,
                         ),
                       ),
-                      const TextSpan(text: ' pour la liste '),
+                      const TextSpan(text: ' for the list '),
                       TextSpan(
                         text: '"${invitation.listName}"',
                         style: TextStyle(
@@ -851,7 +851,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           color: Colors.red[700],
                         ),
                       ),
-                      const TextSpan(text: ' ?'),
+                      const TextSpan(text: '?'),
                     ],
                   ),
                 ),
@@ -874,7 +874,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Vous devrez demander une nouvelle invitation pour accéder à cette liste.',
+                          'You will need to request a new invitation to access this list.',
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.orange[700],
@@ -900,7 +900,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           ),
                         ),
                         child: Text(
-                          'Annuler',
+                          'Cancel',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -922,7 +922,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           } catch (e) {
                             SmartSnackBarManager.showErrorSnackBar(
                               context,
-                              'Erreur lors du refus de l\'invitation',
+                              'Error declining invitation',
                             );
                           }
                         },
@@ -941,7 +941,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                             Icon(Icons.close, size: 18),
                             SizedBox(width: 6),
                             Text(
-                              'Refuser',
+                              'Decline',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -1043,31 +1043,31 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     switch (permission) {
       case SharePermission.readOnly:
-        title = 'Lecture seule';
-        description = 'Vous pourrez consulter la liste mais pas la modifier';
+        title = 'Read Only';
+        description = 'You can view the list but not modify it';
         abilities = [
-          'Voir les articles et leur statut',
-          'Consulter les prix et quantités',
+          'View items and their status',
+          'See prices and quantities',
         ];
         color = Colors.blue[600]!;
         break;
       case SharePermission.edit:
-        title = 'Modification';
-        description = 'Vous pourrez modifier la liste mais pas la supprimer';
+        title = 'Edit';
+        description = 'You can modify the list but not delete it';
         abilities = [
-          'Ajouter et modifier des articles',
-          'Marquer des articles comme achetés',
-          'Modifier les prix et quantités',
+          'Add and modify items',
+          'Mark items as purchased',
+          'Edit prices and quantities',
         ];
         color = Colors.green[600]!;
         break;
       case SharePermission.admin:
         title = 'Administration';
-        description = 'Vous aurez tous les droits sur cette liste';
+        description = 'You have full rights on this list';
         abilities = [
-          'Modifier et supprimer la liste',
-          'Gérer tous les articles',
-          'Partager avec d\'autres utilisateurs',
+          'Modify and delete the list',
+          'Manage all items',
+          'Share with other users',
         ];
         color = Colors.purple[600]!;
         break;
@@ -1140,7 +1140,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
             const SizedBox(height: 24),
             const Text(
-              'Invitation invalide',
+              'Invalid Invitation',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -1169,7 +1169,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   vertical: 12,
                 ),
               ),
-              child: const Text('Retour à l\'accueil'),
+              child: const Text('Back to home'),
             ),
           ],
         ),
@@ -1193,13 +1193,13 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     final difference = date.difference(now).inDays;
 
     if (difference < 0) {
-      return 'Expirée';
+      return 'Expired';
     } else if (difference == 0) {
-      return 'Aujourd\'hui';
+      return 'Today';
     } else if (difference == 1) {
-      return 'Demain';
+      return 'Tomorrow';
     } else if (difference < 7) {
-      return 'Dans $difference jours';
+      return 'In $difference days';
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

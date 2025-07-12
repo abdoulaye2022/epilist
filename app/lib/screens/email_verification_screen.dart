@@ -1,4 +1,4 @@
-// email_verification_screen.dart - VERSION COMPLÈTE CORRIGÉE
+// email_verification_screen.dart - COMPLETE CORRECTED VERSION
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
@@ -43,8 +43,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   void initState() {
     super.initState();
 
-    // Pour tous les cas, le code a déjà été envoyé par le AuthBloc
-    // On démarre juste le countdown
+    // For all cases, the code has already been sent by the AuthBloc
+    // We just start the countdown
     _startResendCountdown();
 
     setState(() {
@@ -90,7 +90,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   void _verifyCode() {
     if (_isCodeComplete && !_isLoading) {
-      // Fermer le clavier
+      // Close keyboard
       FocusScope.of(context).unfocus();
 
       setState(() => _isLoading = true);
@@ -119,7 +119,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (!_isRedirecting && mounted) {
       setState(() => _isRedirecting = true);
 
-      // Remplacer complètement la pile de navigation
+      // Completely replace the navigation stack
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -141,7 +141,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               _isLoading || _isRedirecting
                   ? null
                   : () {
-                    // Retourner vers LoginScreen
+                    // Return to LoginScreen
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -161,11 +161,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              '🎉 Email vérifié avec succès !',
+              '🎉 Email verified successfully!',
               duration: const Duration(seconds: 2),
             );
 
-            // Redirection immédiate vers HomeScreen
+            // Immediate redirect to HomeScreen
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted && !_isRedirecting) {
                 _redirectToHome();
@@ -178,11 +178,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              '🎉 Email vérifié ! Connexion automatique réussie !',
+              '🎉 Email verified! Automatic login successful!',
               duration: const Duration(seconds: 2),
             );
 
-            // Redirection immédiate vers HomeScreen
+            // Immediate redirect to HomeScreen
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted && !_isRedirecting) {
                 _redirectToHome();
@@ -195,14 +195,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              'Code de vérification renvoyé !',
+              'Verification code resent!',
               duration: const Duration(seconds: 2),
             );
             _clearCode();
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Utiliser SmartSnackBarManager pour les erreurs
+            // Use SmartSnackBarManager for errors
             final localizedError = AuthErrorMessages.getLocalizedError(
               state.error,
             );
@@ -228,7 +228,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 children: [
                   SizedBox(height: 20),
 
-                  // Icône email
+                  // Email icon
                   Container(
                     width: 100,
                     height: 100,
@@ -245,9 +245,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 24),
 
-                  // Titre
+                  // Title
                   Text(
-                    'Vérifiez votre email',
+                    'Verify your email',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -260,7 +260,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   // Description
                   Text(
-                    'Nous avons envoyé un code de vérification à',
+                    'We sent a verification code to',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
@@ -288,7 +288,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 32),
 
-                  // Indicateur de chargement amélioré
+                  // Enhanced loading indicator
                   if (_isLoading || _isRedirecting)
                     Container(
                       width: double.infinity,
@@ -321,8 +321,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           SizedBox(width: 12),
                           Text(
                             _isRedirecting
-                                ? 'Connexion réussie ! Redirection...'
-                                : 'Vérification en cours...',
+                                ? 'Login successful! Redirecting...'
+                                : 'Verification in progress...',
                             style: TextStyle(
                               color:
                                   _isRedirecting
@@ -336,9 +336,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                     ),
 
-                  // Champs de saisie du code
+                  // Code input fields
                   Text(
-                    'Entrez le code à 6 chiffres',
+                    'Enter the 6-digit code',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -411,7 +411,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 32),
 
-                  // Bouton de vérification
+                  // Verification button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -440,7 +440,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 ),
                               )
                               : Text(
-                                'Vérifier le code',
+                                'Verify code',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -451,11 +451,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 24),
 
-                  // Section renvoyer le code
+                  // Resend code section
                   Column(
                     children: [
                       Text(
-                        'Vous n\'avez pas reçu le code ?',
+                        'Didn\'t receive the code?',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
 
@@ -463,7 +463,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                       if (!_canResend)
                         Text(
-                          'Renvoyer dans ${_resendCountdown}s',
+                          'Resend in ${_resendCountdown}s',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[500],
@@ -477,7 +477,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                   ? null
                                   : _resendCode,
                           child: Text(
-                            'Renvoyer le code',
+                            'Resend code',
                             style: TextStyle(
                               color:
                                   (_isLoading || _isRedirecting)
@@ -493,7 +493,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 20),
 
-                  // Bouton effacer
+                  // Clear button
                   if (_verificationCode.isNotEmpty && !_isRedirecting)
                     TextButton.icon(
                       onPressed: _isLoading ? null : _clearCode,
@@ -503,7 +503,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         size: 18,
                       ),
                       label: Text(
-                        'Effacer le code',
+                        'Clear code',
                         style: TextStyle(
                           color:
                               _isLoading ? Colors.grey[400] : Colors.grey[600],
@@ -514,7 +514,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 20),
 
-                  // Message d'information
+                  // Information message
                   if (!_isRedirecting)
                     Container(
                       padding: EdgeInsets.all(16),
@@ -533,7 +533,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Vérifiez votre dossier de courrier indésirable si vous ne trouvez pas l\'email',
+                              'Check your spam folder if you can\'t find the email',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.blue[700],
@@ -547,7 +547,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   if (!_isRedirecting) SizedBox(height: 20),
 
-                  // Message informatif sur le flux
+                  // Informative message about the flow
                   if (!_isRedirecting)
                     Container(
                       padding: EdgeInsets.all(16),
@@ -562,7 +562,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Après vérification, vous serez automatiquement connecté et redirigé vers l\'accueil',
+                              'After verification, you will be automatically logged in and redirected to the home page',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.green[700],

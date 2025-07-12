@@ -1,4 +1,4 @@
-// screens/profile_screen.dart - VERSION CORRIGÉE
+// screens/profile_screen.dart - VERSION AVEC SÉLECTEUR DE LANGUE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
@@ -18,9 +18,11 @@ import 'package:epilist/widgets/profile/profile_error_state.dart';
 import 'package:epilist/widgets/profile/profile_header_card.dart';
 import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
+import 'package:epilist/widgets/profile/language_setting_tile.dart'; // NOUVEAU
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -60,8 +62,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocConsumer<AuthBloc, AuthState>(
-      listener: _handleAuthStateChanges,
+      listener:
+          (context, state) => _handleAuthStateChanges(context, state, l10n),
       buildWhen: (previous, current) {
         debugPrint(
           '🔍 ProfileScreen buildWhen: ${previous.runtimeType} → ${current.runtimeType}',
@@ -74,11 +79,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             current is AuthFailure ||
             current is Unauthenticated;
       },
-      builder: (context, state) => _buildContent(state),
+      builder: (context, state) => _buildContent(state, l10n),
     );
   }
 
-  void _handleAuthStateChanges(BuildContext context, AuthState state) {
+  void _handleAuthStateChanges(
+    BuildContext context,
+    AuthState state,
+    AppLocalizations l10n,
+  ) {
     debugPrint('🎧 ProfileScreen Listener - État: ${state.runtimeType}');
 
     if (state is Unauthenticated) {
@@ -100,25 +109,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     // ✅ Gérer les états de suppression de compte avec SnackBar
     if (state is AccountDeletionCodeSent) {
-      SmartSnackBarManager.showSuccessSnackBar(
-        context,
-        'Code de suppression envoyé ! Vérifiez votre email.',
-      );
+      SmartSnackBarManager.showSuccessSnackBar(context, l10n.deletionCodeSent);
     } else if (state is AccountDeletionConfirmed) {
       SmartSnackBarManager.showInfoSnackBar(
         context,
-        'Votre compte sera supprimé dans 30 jours. Vous pouvez annuler cette action.',
+        l10n.accountWillBeDeletedIn30Days,
         duration: const Duration(seconds: 5),
       );
     } else if (state is AccountDeletionCancelled) {
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Suppression de compte annulée avec succès !',
+        l10n.accountDeletionCancelled,
       );
     }
   }
 
-  Widget _buildContent(AuthState state) {
+  Widget _buildContent(AuthState state, AppLocalizations l10n) {
     debugPrint('🎨 ProfileScreen _buildContent - État: ${state.runtimeType}');
     debugPrint('👤 Utilisateur actuel: ${_currentUser?.email ?? 'null'}');
 
@@ -140,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (user != null) {
       debugPrint('✅ Affichage du profil pour: ${user.email}');
-      return _buildProfileView(user);
+      return _buildProfileView(user, l10n);
     }
 
     // ✅ État d'erreur seulement si vraiment en erreur ET pas d'utilisateur en backup
@@ -163,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       debugPrint(
         '✅ Affichage du profil en backup pour: ${_currentUser!.email}',
       );
-      return _buildProfileView(_currentUser!);
+      return _buildProfileView(_currentUser!, l10n);
     }
 
     // ✅ Fallback: état de chargement
@@ -171,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return const ProfileLoadingState();
   }
 
-  Widget _buildProfileView(User user) {
+  Widget _buildProfileView(User user, AppLocalizations l10n) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: const ProfileAppBar(),
@@ -188,11 +194,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // ✅ Widget de statut de suppression
             const AccountDeletionStatusWidget(),
 
-            _buildDataSection(),
+            _buildDataSection(l10n),
             const SizedBox(height: 16),
-            _buildSettingsSection(),
+
+            // ✅ NOUVELLE SECTION: Paramètres de l'application
+            _buildAppSettingsSection(l10n),
             const SizedBox(height: 16),
-            _buildInfoSection(),
+
+            _buildSettingsSection(l10n),
+            const SizedBox(height: 16),
+            _buildInfoSection(l10n),
             const SizedBox(height: 24),
             LogoutButton(onLogout: _showLogoutDialog),
             const SizedBox(height: 20),
@@ -202,49 +213,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDataSection() {
+  Widget _buildDataSection(AppLocalizations l10n) {
     return ProfileSection(
-      title: 'Mes données',
+      title: l10n.myData,
       children: [
         ProfileActionTile(
           icon: Icons.list_alt,
-          title: 'Mes listes de courses',
+          title: l10n.myShoppingLists,
           onTap: _navigateToShoppingLists,
         ),
       ],
     );
   }
 
-  Widget _buildSettingsSection() {
+  // ✅ NOUVELLE SECTION: Paramètres de l'application
+  Widget _buildAppSettingsSection(AppLocalizations l10n) {
     return ProfileSection(
-      title: 'Paramètres',
+      title: l10n.appSettings,
+      children: [
+        // Widget de sélection de langue
+        const LanguageSettingTile(),
+      ],
+    );
+  }
+
+  Widget _buildSettingsSection(AppLocalizations l10n) {
+    return ProfileSection(
+      title: l10n.security,
       children: [
         ProfileActionTile(
           icon: Icons.security_outlined,
-          title: 'Sécurité',
+          title: l10n.security,
           onTap: _showSecurityDialog,
         ),
       ],
     );
   }
 
-  Widget _buildInfoSection() {
+  Widget _buildInfoSection(AppLocalizations l10n) {
     return ProfileSection(
-      title: 'Informations',
+      title: l10n.information,
       children: [
         ProfileActionTile(
           icon: Icons.info_outline,
-          title: 'À propos d\'EpiList',
+          title: l10n.aboutEpiList,
           onTap: _navigateToAbout,
         ),
         ProfileActionTile(
           icon: Icons.privacy_tip_outlined,
-          title: 'Politique de confidentialité',
+          title: l10n.privacyPolicy,
           onTap: _navigateToPrivacyPolicy,
         ),
         ProfileActionTile(
           icon: Icons.article_outlined,
-          title: 'Conditions d\'utilisation',
+          title: l10n.termsOfService,
           onTap: _navigateToTerms,
         ),
       ],

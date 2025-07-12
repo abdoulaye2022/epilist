@@ -1,4 +1,5 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,6 +8,8 @@ class LogoutConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
@@ -16,11 +19,11 @@ class LogoutConfirmationDialog extends StatelessWidget {
           children: [
             _buildIcon(),
             const SizedBox(height: 20),
-            _buildTitle(),
+            _buildTitle(l10n),
             const SizedBox(height: 12),
-            _buildMessage(),
+            _buildMessage(l10n),
             const SizedBox(height: 24),
-            _buildButtons(context),
+            _buildButtons(context, l10n),
           ],
         ),
       ),
@@ -39,22 +42,22 @@ class LogoutConfirmationDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
-    return const Text(
-      'Déconnexion',
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.logout,
+      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
     );
   }
 
-  Widget _buildMessage() {
+  Widget _buildMessage(AppLocalizations l10n) {
     return Text(
-      'Voulez-vous vraiment vous déconnecter de votre compte ?',
+      l10n.confirmLogoutMessage,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildButtons(BuildContext context) {
+  Widget _buildButtons(BuildContext context, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -68,7 +71,7 @@ class LogoutConfirmationDialog extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -109,9 +112,9 @@ class LogoutConfirmationDialog extends StatelessWidget {
                             color: Colors.white,
                           ),
                         )
-                        : const Text(
-                          'Déconnecter',
-                          style: TextStyle(
+                        : Text(
+                          l10n.logoutButton,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),

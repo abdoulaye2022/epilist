@@ -1,9 +1,10 @@
-// widgets/profile/account_deletion_status_widget.dart
+// widgets/profile/account_deletion_status_widget.dart - VERSION I18N
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class AccountDeletionStatusWidget extends StatefulWidget {
   const AccountDeletionStatusWidget({super.key});
@@ -24,15 +25,18 @@ class _AccountDeletionStatusWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocConsumer<AuthBloc, AuthState>(
-      listener: _handleAuthStateChanges,
+      listener:
+          (context, state) => _handleAuthStateChanges(context, state, l10n),
       buildWhen: (previous, current) => current is AccountDeletionStatusLoaded,
       builder: (context, state) {
         if (state is AccountDeletionStatusLoaded) {
           final status = state.status;
 
           if (status.isDeletionRequested) {
-            return _buildDeletionScheduledCard(status);
+            return _buildDeletionScheduledCard(status, l10n);
           }
         }
 
@@ -42,7 +46,10 @@ class _AccountDeletionStatusWidgetState
     );
   }
 
-  Widget _buildDeletionScheduledCard(AccountDeletionStatus status) {
+  Widget _buildDeletionScheduledCard(
+    AccountDeletionStatus status,
+    AppLocalizations l10n,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -64,7 +71,7 @@ class _AccountDeletionStatusWidgetState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Suppression de compte programmée',
+                  l10n.accountDeletionScheduled,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -79,14 +86,17 @@ class _AccountDeletionStatusWidgetState
 
           if (status.deletionEffectiveDate != null) ...[
             Text(
-              'Votre compte sera définitivement supprimé le ${status.formattedDeletionDate}',
+              l10n.accountWillBeDeleted(status.formattedDeletionDate),
               style: TextStyle(color: Colors.orange[700], fontSize: 14),
             ),
 
             if (status.daysRemaining != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Temps restant : ${status.daysRemaining} jour${status.daysRemaining! > 1 ? 's' : ''}',
+                l10n.timeRemaining(
+                  status.daysRemaining!,
+                  status.daysRemaining! > 1 ? 's' : '',
+                ),
                 style: TextStyle(
                   color: Colors.orange[600],
                   fontSize: 14,
@@ -99,7 +109,7 @@ class _AccountDeletionStatusWidgetState
           if (status.deletionReason?.isNotEmpty == true) ...[
             const SizedBox(height: 8),
             Text(
-              'Raison : ${status.deletionReason}',
+              l10n.reason(status.deletionReason!),
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 12,
@@ -114,9 +124,9 @@ class _AccountDeletionStatusWidgetState
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _cancelDeletion,
+                onPressed: () => _cancelDeletion(l10n),
                 icon: const Icon(Icons.undo),
-                label: const Text('Annuler la suppression'),
+                label: Text(l10n.cancelDeletion),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
@@ -141,7 +151,7 @@ class _AccountDeletionStatusWidgetState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'La période d\'annulation de 30 jours est écoulée',
+                      l10n.cancellationPeriodExpired,
                       style: TextStyle(
                         color: Colors.red[700],
                         fontSize: 12,
@@ -158,11 +168,15 @@ class _AccountDeletionStatusWidgetState
     );
   }
 
-  void _handleAuthStateChanges(BuildContext context, AuthState state) {
+  void _handleAuthStateChanges(
+    BuildContext context,
+    AuthState state,
+    AppLocalizations l10n,
+  ) {
     if (state is AccountDeletionCancelled) {
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Suppression de compte annulée avec succès !',
+        l10n.accountDeletionCancelled,
       );
 
       // Recharger le statut
@@ -175,26 +189,23 @@ class _AccountDeletionStatusWidgetState
     }
   }
 
-  void _cancelDeletion() {
+  void _cancelDeletion(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.undo, color: Colors.green),
-                SizedBox(width: 12),
-                Text('Annuler la suppression'),
+                const Icon(Icons.undo, color: Colors.green),
+                const SizedBox(width: 12),
+                Text(l10n.confirmCancelDeletion),
               ],
             ),
-            content: const Text(
-              'Êtes-vous sûr de vouloir annuler la suppression de votre compte ? '
-              'Votre compte redeviendra actif immédiatement.',
-            ),
+            content: Text(l10n.confirmCancelDeletionText),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Non, garder la suppression'),
+                child: Text(l10n.noKeepDeletion),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -205,7 +216,7 @@ class _AccountDeletionStatusWidgetState
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Oui, annuler'),
+                child: Text(l10n.yesCancelDeletion),
               ),
             ],
           ),

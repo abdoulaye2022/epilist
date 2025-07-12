@@ -1,4 +1,5 @@
 // widgets/shopping/error_state.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ErrorState extends StatelessWidget {
@@ -9,6 +10,8 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -16,7 +19,7 @@ class ErrorState extends StatelessWidget {
           Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
           SizedBox(height: 16),
           Text(
-            'Erreur de chargement',
+            l10n.loadingError,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
@@ -29,7 +32,7 @@ class ErrorState extends StatelessWidget {
           ElevatedButton(
             onPressed: onRetry,
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green[600]),
-            child: Text('Réessayer'),
+            child: Text(l10n.retry),
           ),
         ],
       ),

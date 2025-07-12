@@ -1,19 +1,23 @@
+// widgets/profile/profile_loading_state.dart - VERSION I18N
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ProfileLoadingState extends StatelessWidget {
   const ProfileLoadingState({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(color: Colors.green),
-            SizedBox(height: 16),
-            Text('Chargement du profil...'),
+            const CircularProgressIndicator(color: Colors.green),
+            const SizedBox(height: 16),
+            Text(l10n.loadingProfile),
           ],
         ),
       ),

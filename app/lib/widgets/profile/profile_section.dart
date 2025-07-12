@@ -1,3 +1,4 @@
+// widgets/profile/profile_section.dart - PAS DE CHANGEMENT (titre passé en paramètre)
 import 'package:flutter/material.dart';
 
 class ProfileSection extends StatelessWidget {

@@ -1,4 +1,4 @@
-// widgets/profile/account_deletion_status_widget.dart - VERSION DEBUG
+// widgets/profile/account_deletion_status_widget.dart - DEBUG VERSION
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -19,7 +19,7 @@ class _AccountDeletionStatusWidgetState
   @override
   void initState() {
     super.initState();
-    // Charger le statut de suppression au démarrage
+    // Load deletion status on startup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthBloc>().add(GetAccountDeletionStatus());
     });
@@ -45,19 +45,19 @@ class _AccountDeletionStatusWidgetState
         if (state is AccountDeletionStatusLoaded) {
           final status = state.status;
           debugPrint(
-            '📊 Statut reçu: isDeletionRequested=${status.isDeletionRequested}',
+            '📊 Status received: isDeletionRequested=${status.isDeletionRequested}',
           );
 
           if (status.isDeletionRequested) {
-            debugPrint('✅ Affichage du widget de suppression programmée');
+            debugPrint('✅ Displaying scheduled deletion widget');
             return _buildDeletionScheduledCard(status);
           } else {
-            debugPrint('ℹ️ Pas de suppression programmée, widget caché');
+            debugPrint('ℹ️ No scheduled deletion, widget hidden');
           }
         }
 
         if (state is AuthLoading) {
-          debugPrint('⏳ État de chargement...');
+          debugPrint('⏳ Loading state...');
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
@@ -73,14 +73,14 @@ class _AccountDeletionStatusWidgetState
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
                 SizedBox(width: 12),
-                Text('Vérification du statut de suppression...'),
+                Text('Checking deletion status...'),
               ],
             ),
           );
         }
 
         if (state is AuthFailure) {
-          debugPrint('❌ Erreur lors du chargement du statut: ${state.error}');
+          debugPrint('❌ Error loading status: ${state.error}');
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
@@ -95,24 +95,24 @@ class _AccountDeletionStatusWidgetState
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Erreur de chargement du statut',
+                    'Error loading status',
                     style: TextStyle(color: Colors.red[700]),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
-                    debugPrint('🔄 Retry chargement statut...');
+                    debugPrint('🔄 Retry loading status...');
                     context.read<AuthBloc>().add(GetAccountDeletionStatus());
                   },
-                  child: const Text('Réessayer'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
           );
         }
 
-        // Ne rien afficher par défaut
-        debugPrint('🚫 Aucun widget à afficher');
+        // Display nothing by default
+        debugPrint('🚫 No widget to display');
         return const SizedBox.shrink();
       },
     );
@@ -140,7 +140,7 @@ class _AccountDeletionStatusWidgetState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Suppression de compte programmée',
+                  'Account deletion scheduled',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -155,14 +155,14 @@ class _AccountDeletionStatusWidgetState
 
           if (status.deletionEffectiveDate != null) ...[
             Text(
-              'Votre compte sera définitivement supprimé le ${status.formattedDeletionDate}',
+              'Your account will be permanently deleted on ${status.formattedDeletionDate}',
               style: TextStyle(color: Colors.orange[700], fontSize: 14),
             ),
 
             if (status.daysRemaining != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Temps restant : ${status.daysRemaining} jour${status.daysRemaining! > 1 ? 's' : ''}',
+                'Time remaining: ${status.daysRemaining} day${status.daysRemaining! > 1 ? 's' : ''}',
                 style: TextStyle(
                   color: Colors.orange[600],
                   fontSize: 14,
@@ -175,7 +175,7 @@ class _AccountDeletionStatusWidgetState
           if (status.deletionReason?.isNotEmpty == true) ...[
             const SizedBox(height: 8),
             Text(
-              'Raison : ${status.deletionReason}',
+              'Reason: ${status.deletionReason}',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 12,
@@ -192,7 +192,7 @@ class _AccountDeletionStatusWidgetState
               child: ElevatedButton.icon(
                 onPressed: _cancelDeletion,
                 icon: const Icon(Icons.undo),
-                label: const Text('Annuler la suppression'),
+                label: const Text('Cancel deletion'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
@@ -217,7 +217,7 @@ class _AccountDeletionStatusWidgetState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'La période d\'annulation de 30 jours est écoulée',
+                      'The 30-day cancellation period has expired',
                       style: TextStyle(
                         color: Colors.red[700],
                         fontSize: 12,
@@ -240,14 +240,14 @@ class _AccountDeletionStatusWidgetState
     if (state is AccountDeletionCancelled) {
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Suppression de compte annulée avec succès !',
+        'Account deletion cancelled successfully!',
       );
 
-      // Recharger le statut
+      // Reload status
       context.read<AuthBloc>().add(GetAccountDeletionStatus());
     } else if (state is AuthFailure) {
-      debugPrint('❌ Erreur dans AccountDeletionStatusWidget: ${state.error}');
-      // On affiche l'erreur dans le builder, pas ici
+      debugPrint('❌ Error in AccountDeletionStatusWidget: ${state.error}');
+      // We display the error in the builder, not here
     }
   }
 
@@ -260,29 +260,29 @@ class _AccountDeletionStatusWidgetState
               children: [
                 Icon(Icons.undo, color: Colors.green),
                 SizedBox(width: 12),
-                Text('Annuler la suppression'),
+                Text('Cancel deletion'),
               ],
             ),
             content: const Text(
-              'Êtes-vous sûr de vouloir annuler la suppression de votre compte ? '
-              'Votre compte redeviendra actif immédiatement.',
+              'Are you sure you want to cancel the deletion of your account? '
+              'Your account will become active immediately.',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Non, garder la suppression'),
+                child: const Text('No, keep deletion'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  debugPrint('🔄 Annulation de la suppression demandée...');
+                  debugPrint('🔄 Deletion cancellation requested...');
                   context.read<AuthBloc>().add(CancelAccountDeletion());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Oui, annuler'),
+                child: const Text('Yes, cancel'),
               ),
             ],
           ),

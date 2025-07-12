@@ -1,4 +1,5 @@
 // widgets/list_detail/list_stats_header.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ListStatsHeader extends StatelessWidget {
@@ -13,12 +14,14 @@ class ListStatsHeader extends StatelessWidget {
     required this.totalPrice,
   });
 
-  String _formatPrice(double price) {
-    return '${price.toStringAsFixed(2)} \$CAD';
+  String _formatPrice(BuildContext context, double price) {
+    final l10n = AppLocalizations.of(context)!;
+    return '${price.toStringAsFixed(2)}${l10n.cad}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final progressPercentage =
         totalItems > 0 ? ((purchasedItems / totalItems) * 100).round() : 0;
 
@@ -29,9 +32,9 @@ class ListStatsHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem('Articles', '$purchasedItems/$totalItems'),
-          _buildStatItem('Total', _formatPrice(totalPrice)),
-          _buildStatItem('Progression', '$progressPercentage%'),
+          _buildStatItem(l10n.articles, '$purchasedItems/$totalItems'),
+          _buildStatItem(l10n.total, _formatPrice(context, totalPrice)),
+          _buildStatItem(l10n.progress, '$progressPercentage%'),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 // widgets/dialogs/logout_dialog.dart
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,11 +10,13 @@ class LogoutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -36,23 +39,23 @@ class LogoutDialog extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Titre
             Text(
-              'Déconnexion',
-              style: TextStyle(
+              l10n.logout,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Message
             Text(
-              'Voulez-vous vraiment vous déconnecter de votre compte ?',
+              l10n.confirmLogoutMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -61,7 +64,7 @@ class LogoutDialog extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Boutons
             Row(
@@ -71,14 +74,14 @@ class LogoutDialog extends StatelessWidget {
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
                     child: Text(
-                      'Annuler',
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -88,7 +91,7 @@ class LogoutDialog extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
 
                 // Bouton Déconnecter
                 Expanded(
@@ -144,7 +147,7 @@ class LogoutDialog extends StatelessWidget {
                           backgroundColor: Colors.red[600],
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.red[300],
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -152,7 +155,7 @@ class LogoutDialog extends StatelessWidget {
                         ),
                         child:
                             isLoading
-                                ? SizedBox(
+                                ? const SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
@@ -163,8 +166,8 @@ class LogoutDialog extends StatelessWidget {
                                   ),
                                 )
                                 : Text(
-                                  'Déconnecter',
-                                  style: TextStyle(
+                                  l10n.logoutButton,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),

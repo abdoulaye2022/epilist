@@ -1,0 +1,645 @@
+{
+  "@@locale": "en",
+  "appTitle": "EpiList",
+  "welcome": "Welcome",
+  "hello": "Hello! 👋",
+  "manageGroceryLists": "Manage your grocery lists easily",
+  "myGroceryLists": "My Grocery Lists",
+  "viewAll": "View all",
+  "newList": "New",
+  "createList": "Create a list",
+  "noGroceryLists": "No grocery lists",
+  "createFirstList": "Create your first list",
+  "loadingError": "Loading error",
+  "retry": "Retry",
+  "refresh": "Refresh",
+  "allLists": "All lists",
+  "profile": "Profile",
+  "logout": "Logout",
+  "articles": "items",
+  "budget": "Budget",
+  "sharedList": "Shared list",
+  "collaborators": "collaborator(s)",
+  "sharedBy": "Shared by",
+  "completed": "✅ Completed",
+  "inProgress": "🛒 In progress",
+  "created": "Created",
+  "edit": "Edit",
+  "duplicate": "Duplicate",
+  "share": "Share",
+  "manageShares": "Manage shares",
+  "leave": "Leave",
+  "delete": "Delete",
+  "cannotEditPermission": "You don't have permission to edit this list",
+  "cannotSharePermission": "You don't have permission to share this list",
+  "onlyOwnerManageShares": "Only the owner can manage shares",
+  "cannotLeaveOwnList": "Cannot leave your own list",
+  "cannotDeletePermission": "You don't have permission to delete this list",
+  "readOnlyAccess": "Read only",
+  "editAccess": "Edit",
+  "adminAccess": "Admin",
+  "language": "Language",
+  "french": "Français",
+  "english": "English",
+  "selectLanguage": "Select language",
+  "languageSelection": "Language Selection",
+  "choosePreferredLanguage": "Choose your preferred language",
+  "continueButton": "Continue",
+  "getStarted": "Get Started",
+  "loginTitle": "Login",
+  "registerTitle": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "login": "Log In",
+  "register": "Sign Up",
+  "welcomeToEpiList": "Welcome to EpiList",
+  "groceryListApp": "Your grocery list application",
+  "alreadyHaveAccount": "Already have an account?",
+  "noAccount": "No account?",
+  "initialization": "Initialization...",
+  "checkingAuthentication": "Checking authentication...",
+  "invalidCredentials": "Invalid email or password",
+  "userNotFound": "No account found with this email",
+  "emailNotVerified": "Email not verified",
+  "sessionExpired": "Your session has expired. Please log in again.",
+  "emailConfirmedSuccess": "Email confirmed successfully! Welcome!",
+  "networkError": "Network error",
+  "unknownError": "An unexpected error occurred",
+  "initializationError": "Initialization error",
+  "cannotStartApp": "Cannot start the application",
+  "myProfile": "My Profile",
+  "myData": "My Data",
+  "myShoppingLists": "My shopping lists",
+  "settings": "Settings",
+  "appSettings": "App Settings",
+  "security": "Security",
+  "information": "Information",
+  "aboutEpiList": "About EpiList",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "logoutButton": "Log Out",
+  "editProfile": "Edit profile",
+  "emailVerified": "Email verified",
+  "emailNotVerifiedStatus": "Email not verified",
+  "loadingProfile": "Loading profile...",
+  "cannotLoadProfile": "Cannot load profile",
+  "accountDeletionScheduled": "Account deletion scheduled",
+  "accountWillBeDeleted": "Your account will be permanently deleted on {date}",
+  "@accountWillBeDeleted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "timeRemaining": "Time remaining: {days} day{plural}",
+  "@timeRemaining": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "reason": "Reason: {reason}",
+  "@reason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelDeletion": "Cancel deletion",
+  "cancellationPeriodExpired": "The 30-day cancellation period has expired",
+  "deletionCodeSent": "Deletion code sent! Check your email.",
+  "accountDeletionCancelled": "Account deletion cancelled successfully!",
+  "accountWillBeDeletedIn30Days": "Your account will be deleted in 30 days. You can cancel this action.",
+  "confirmCancelDeletion": "Cancel deletion",
+  "confirmCancelDeletionText": "Are you sure you want to cancel the deletion of your account? Your account will become active immediately.",
+  "noKeepDeletion": "No, keep deletion",
+  "yesCancelDeletion": "Yes, cancel",
+  "changePassword": "Change Password",
+  "enterYourCode": "Enter your code",
+  "enterCodeAndNewPassword": "Enter the code received by email and your new password",
+  "enterEmailForVerificationCode": "Enter your email to receive a verification code",
+  "verificationCodeSentTo": "Verification code sent to {email}",
+  "passwordChangedSuccessfully": "Password changed successfully!",
+  "email": "Email",
+  "pleaseEnterEmail": "Please enter your email",
+  "invalidEmail": "Invalid email",
+  "verificationCode": "Verification Code",
+  "enterSixDigitCode": "Enter the 6-digit code",
+  "pleaseEnterVerificationCode": "Please enter the verification code",
+  "codeMustBeSixDigits": "Code must contain 6 digits",
+  "newPassword": "New Password",
+  "pleaseEnterNewPassword": "Please enter your new password",
+  "passwordMinSixCharacters": "Password must contain at least 6 characters",
+  "confirmNewPassword": "Confirm New Password",
+  "pleaseConfirmNewPassword": "Please confirm your new password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "sendCode": "Send Code",
+  "resendCode": "Resend Code",
+  "codeExpiresInTwoHours": "The code expires in 2 hours. Check your emails and spam folder.",
+  "verificationCodeWillBeSent": "You will receive a verification code by email to change your password.",
+  "changingPassword": "Changing password...",
+  "sendingCode": "Sending code...",
+  "invalidVerificationCode": "The verification code is invalid",
+  "verificationCodeExpired": "The verification code has expired. Request a new code.",
+  "noAccountFoundWithEmail": "No account found with this email",
+  "emailNotVerifiedYet": "Your email is not yet verified",
+  "errorChangingPassword": "Error changing password",
+  "connectionProblemCheckNetwork": "Connection problem. Check your network.",
+  "enteredDataNotValid": "The entered data is not valid",
+  "unexpectedErrorOccurred": "An unexpected error occurred",
+  "manageGroceryListsEasily": "Manage your grocery lists easily",
+  "createListsBeforeShopping": "Create your lists before going shopping",
+  "checkPurchasesRealTime": "Check your purchases in real-time",
+  "trackGroceryExpenses": "Track your grocery expenses in CAD$",
+  "loginTitle": "Login",
+  "loggingIn": "Logging in...",
+  "pleaseEnterPassword": "Please enter your password",
+  "passwordMinThreeCharacters": "Password must contain at least 3 characters",
+  "forgotPassword": "Forgot password?",
+  "login": "Log In",
+  "or": "OR",
+  "createAccount": "Create Account",
+  "simplifyShoppingControlBudget": "Simplify your shopping and control your budget!",
+  "pleaseFixFormErrors": "Please fix the errors in the form",
+  "emailMustBeVerified": "Your email must be verified before continuing.",
+  "resetPasswordSecurely": "Reset your password securely.",
+  "cancel": "Cancel",
+  "reset": "Reset",
+  "joinEpiListToManage": "Join EpiList to manage your groceries easily",
+  "creatingAccount": "Creating account...",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "firstNameRequired": "First name required",
+  "lastNameRequired": "Last name required",
+  "tooShort": "Too short",
+  "atLeastSixCharacters": "At least 6 characters",
+  "confirmPassword": "Confirm Password",
+  "confirmYourPassword": "Confirm your password",
+  "passwordsDifferent": "Passwords are different",
+  "iAcceptThe": "I accept the ",
+  "termsOfService": "terms of service",
+  "andThe": " and the ",
+  "privacyPolicy": "privacy policy",
+  "createMyAccount": "Create My Account",
+  "afterRegistrationEmailVerification": "After registration, you will receive a verification code by email",
+  "alreadyHaveAccount": "Already have an account? ",
+  "accountCreatedSuccessfully": "Account created successfully! {firstName} {lastName}\nCheck your email to activate your account.",
+  "@accountCreatedSuccessfully": {
+    "placeholders": {
+      "firstName": {
+        "type": "String"
+      },
+      "lastName": {
+        "type": "String"
+      }
+    }
+  },
+  "emailAlreadyExists": "This email address is already in use",
+  "passwordTooWeak": "Password is too weak",
+  "networkError": "Network error. Check your connection.",
+  "validationError": "The entered data is not valid",
+  "noShoppingLists": "No shopping lists",
+  "createFirstListToStart": "Create your first list to get started",
+  "createList": "Create list",
+  
+  "loadingError": "Loading error",
+  "retry": "Retry",
+  
+  "leaveList": "Leave list",
+  "sureToLeave": "Are you sure you want to leave \"{listName}\"?",
+  "@sureToLeave": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "loseAccessWarning": "You will lose access to this list and all its items.",
+  "cancel": "Cancel",
+  "leave": "Leave",
+  
+  "myShoppingLists": "My Shopping Lists",
+  "refresh": "Refresh",
+  
+  "manageShares": "Manage shares",
+  "list": "List",
+  "noActiveShares": "No active shares",
+  "user": "User",
+  "modifyPermissions": "Modify permissions",
+  "revoke": "Revoke",
+  "createNewShare": "Create new share",
+  "close": "Close",
+
+  "today": "today",
+  "yesterday": "yesterday",
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "on": "on",
+  "cad": " CAD$",
+  "shareList": "Share list",
+  "createShareLinkFor": "Create a share link for \"{listName}\"",
+  "@createShareLinkFor": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "permissions": "Permissions",
+  "linkExpiration": "Link expiration",
+  "daysCount": "{count} days",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creating": "Creating...",
+  "generateShareLink": "Generate share link",
+  "linkCreatedSuccessfully": "Link created successfully",
+  "copy": "Copy",
+  "newLink": "New link",
+  "linkExpirationInfo": "The link expires after {days} days. You can revoke access at any time.",
+  "@linkExpirationInfo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shareLinkCreatedSuccessfully": "Share link created successfully!",
+  "linkCopiedToClipboard": "Link copied to clipboard!",
+  "you": "You",
+  "epilistInvitation": "EpiList Invitation - {listName}",
+  "@epilistInvitation": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "shareError": "Error sharing",
+  
+  "readOnlyDescription": "Can view the list but not modify it",
+  "editDescription": "Can add, edit and mark items",
+  "adminDescription": "Can do everything, including share and delete",
+  "total": "Total",
+  "progress": "Progress",
+  
+  "editList": "Edit list",
+  "information": "Information",
+  
+  "thisListIsEmpty": "This list is empty",
+  "yourListIsEmpty": "Your list is empty",
+  "noItemsReadOnlyDescription": "There are no items in this list yet.\nYou can only view its content.",
+  "noItemsNoPermissionDescription": "There are no items in this list yet.\nYou don't have permission to add items.",
+  "noItemsAddFirstDescription": "Start by adding your first item\nto organize your shopping.",
+  "addItem": "Add item",
+  "readOnlyMode": "Read-only mode",
+  "permissionRequiredToAdd": "Permission required to add",
+  
+  "addItemTooltip": "Add item",
+  "insufficientPermission": "Insufficient permission",
+  "sharedList": "Shared list",
+  "readOnlyAccessMode": "Read-only mode - You cannot modify this list",
+  "sharedListCanEdit": "Shared list - You can edit items",
+  "limitedAccess": "Limited access to this list",
+  "by": "By",
+  "quantity": "Qty",
+  "deleteItem": "Delete",
+  "editItem": "Edit item",
+  "listInformation": "List information",
+  "detailsAndPermissions": "Details and permissions for \"{listName}\"",
+  "@detailsAndPermissions": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "name": "Name",
+  "status": "Status",
+  "private": "Private",
+  "yourRole": "Your role",
+  "owner": "Owner",
+  "collaborator": "Collaborator",
+  "understood": "Understood",
+  "moreInfo": "More info",
+  "contactOwnerForPermissions": "Contact the owner to get more permissions",
+  "deleteItemConfirm": "Are you sure you want to delete \"{itemName}\" from the list?",
+  "@deleteItemConfirm": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveListConfirm": "Are you sure you want to leave \"{listName}\"?\n\nYou will lose access to this list and can no longer view its content.",
+  "@leaveListConfirm": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "leftList": "You left the list \"{listName}\"",
+  "@leftList": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "listDeleted": "List \"{listName}\" deleted",
+  "@listDeleted": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveList": "Leave list",
+  "editItems": "Edit items",
+  "shareList": "Share list", 
+  "deleteList": "Delete list",
+  
+  "readOnlyShort": "Read",
+  "quantityShort": "Qty",
+  "modification": "Modification",
+  "consultation": "Consultation",
+  "modifyThisList": "modify this list",
+  "modifyThisItem": "modify this item",
+  "deleteThisItem": "delete this item",
+  "readOnlyAccess": "Read-only access",
+  "limited": "Limited",
+  "cannotActionReadOnly": "You cannot {action} because this list is in read-only mode.\n\nYour current permission: {permission}",
+  "@cannotActionReadOnly": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "cannotActionPermission": "You don't have permission to {action}.\n\nYour current permission: {permission}",
+  "@cannotActionPermission": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "sharedByUser": "Shared by {userName}",
+  "@sharedByUser": {
+    "placeholders": {
+      "userName": {"type": "String"}
+    }
+  },
+  "deleteItemTitle": "Delete item",
+  
+  "deleteQuickConfirm": "Delete \"{itemName}\"?",
+  "@deleteQuickConfirm": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  },
+  "addItemTooltip": "Add item",
+  "editList": "Edit list",
+  "information": "Information", 
+  "listInformation": "List information",
+  "private": "Private",
+  "yourRole": "Your role",
+  "owner": "Owner",
+  "collaborator": "Collaborator",
+  "editItems": "Edit items",
+  "shareList": "Share list", 
+  "deleteList": "Delete list",
+  "leaveList": "Leave list",
+  "leaveListConfirm": "Are you sure you want to leave \"{listName}\"?\n\nYou will lose access to this list and can no longer view its content.",
+  "@leaveListConfirm": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "leftList": "You left the list \"{listName}\"",
+  "@leftList": {
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "readOnlyShort": "Read",
+  "quantityShort": "Qty", 
+  "modification": "Modification",
+  "consultation": "Consultation",
+  "modifyThisList": "modify this list",
+  "modifyThisItem": "modify this item",
+  "deleteThisItem": "delete this item",
+  "readOnlyAccess": "Read-only access",
+  "limited": "Limited",
+  "cannotActionReadOnly": "You cannot {action} because this list is in read-only mode.\n\nYour current permission: {permission}",
+  "@cannotActionReadOnly": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "cannotActionPermission": "You don't have permission to {action}.\n\nYour current permission: {permission}",
+  "@cannotActionPermission": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "sharedByUser": "Shared by {userName}",
+  "@sharedByUser": {
+    "placeholders": {
+      "userName": {"type": "String"}
+    }
+  },
+  "deleteItemTitle": "Delete item",
+  
+  "deleteQuickConfirm": "Delete \"{itemName}\"?",
+  "@deleteQuickConfirm": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  },
+  "editItem": "Edit item",
+
+  "newItem": "New Item",
+  "addNewItemToList": "Add a new item to your grocery list",
+  "productNameRequired": "Product name*",
+  "productNameRequiredMessage": "Product name is required",
+  "productNameHint": "Ex: Bananas, Bread, Milk...",
+  "quantity": "Quantity",
+  "priceCAD": "Price ($CAD)",
+  "storeOptional": "Store (optional)",
+  "storeHint": "Ex: IGA, Metro, Provigo...",
+  "add": "Add",
+  
+  "newList": "New List",
+  "giveNameToNewList": "Give a name to your new grocery list",
+  "listName": "List name",
+  "listNameHint": "Ex: Weekly groceries",
+  "create": "Create",
+  
+  "newPassword": "New password",
+  "changePassword": "Change password",
+  "processingInProgress": "Processing...",
+  "verificationCodeWillBeSent": "A verification code will be sent to your email address",
+  "emailAddressRequired": "Email address *",
+  "emailHint": "your@email.com",
+  "emailRequired": "Email is required",
+  "invalidEmailFormat": "Invalid email format",
+  "verificationCodeSent": "Verification code sent!",
+  "checkEmailAndEnterCode": "Check your email and enter the code below",
+  "verificationCodeRequired": "Verification code *",
+  "sixDigitCodeHint": "6-digit code",
+  "codeRequired": "Code is required",
+  "codeMustBeSixDigits": "Code must contain 6 digits",
+  "newPasswordRequired": "New password *",
+  "minimumSixCharacters": "Minimum 6 characters",
+  "passwordRequired": "Password is required",
+  "passwordMinSixChars": "Password must contain at least 6 characters",
+  "confirmNewPassword": "Confirm new password *",
+  "retypePassword": "Retype password",
+  "confirmationRequired": "Confirmation is required",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "sendCode": "Send code",
+  "changePasswordButton": "Change password",
+  "verificationCodeSentCheckEmail": "Verification code sent! Check your email.",
+  "passwordChangedSuccessfully": "Password changed successfully!",
+  
+  "confirmDeletion": "Confirm deletion",
+  "deleteAccount": "Delete account",
+  "attention": "⚠️ WARNING",
+  "actionDefinitiveIrreversible": "This action is final and irreversible!",
+  "whatWillBeDeleted": "What will be deleted:",
+  "profileAndPersonalInfo": "• Your profile and personal information",
+  "allPrivateGroceryLists": "• All your private grocery lists",
+  "preferencesAndSettings": "• Your preferences and settings",
+  "purchaseHistory": "• Your purchase history",
+  "whatWillBePreserved": "What will be preserved:",
+  "sharedListsAnonymized": "• Lists shared with other users (anonymized)",
+  "reasonOptional": "Reason (optional)",
+  "whyDeleteAccount": "Why are you deleting your account?",
+  "understandIrreversible": "I understand this action is irreversible",
+  "allDataWillBeDeleted": "All my data will be permanently deleted",
+  "verificationCodeSentToEmail": "A verification code has been sent to {email}",
+  "@verificationCodeSentToEmail": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "codeExpiresInTwoHours": "Code expires in 2 hours",
+  "requestDeletion": "Request deletion",
+  "confirmDeletionWithCode": "Confirm deletion",
+  "accountWillBeDeletedOn": "Your account will be deleted on {date}. You have 30 days to cancel this action.",
+  "@accountWillBeDeletedOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  
+  "deleteItemTitle": "Delete item",
+  "deleteListTitle": "Delete list",
+  "sureToDeleteItem": "Are you sure you want to delete",
+  "sureToDeleteList": "Are you sure you want to delete the list",
+  "actionIrreversible": "This action is irreversible.",
+  "actionIrreversibleDeletesAllItems": "This action is irreversible and will delete all items.",
+  "confirm": "Confirm",
+  
+  "sureToDeleteItemFromList": "Are you sure you want to delete \"{itemName}\" from your list?",
+  "@sureToDeleteItemFromList": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  },
+  "sureToLeaveQuestion": "Are you sure you want to leave",
+  "modifyItemInformation": "Modify your item information",
+  "save": "Save",
+  "modify": "Modify",
+  "fromYourList": "from your list",
+  
+  "processing": "Processing...",
+  "verificationCodeSentTitle": "Verification code sent",
+  "enterCodeReceived": "Enter the received code",
+  "codeExpiresIn": "Code expires in",
+  "hours": "hours",
+  "checkEmailsAndSpam": "Check your emails and spam folder",
+  
+  "areYouSure": "Are you sure",
+  "wantToDelete": "you want to delete",
+  "wantToLeave": "you want to leave",
+  "thisAction": "This action",
+  "isIrreversible": "is irreversible",
+  "andWillDelete": "and will delete",
+  "allItems": "all items",
+  
+  "codeIsRequired": "Code is required",
+  "invalidCode": "Invalid code",
+  "codeExpired": "Code expired",
+  "modifyItemInformation": "Modify your item information",
+  "save": "Save",
+  
+  "editListName": "Edit name",
+  "modifyListName": "Modify the name of your grocery list",
+  
+  "modifyPersonalInformation": "Modify your personal information",
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "emailCannotBeModified": "Email cannot be modified",
+  "firstNameAndLastNameRequired": "First name and last name are required",
+  
+  "confirmLogoutMessage": "Do you really want to log out of your account?",
+  "logoutButton": "Log Out",
+  
+  "security": "Security",
+  "manageAccountSecurity": "Manage your account security",
+  "changePasswordTitle": "Change password",
+  "changePasswordDescription": "Modify your current password",
+  "deleteAccountTitle": "Delete account",
+  "deleteAccountDescription": "Permanently delete your account",
+  
+  "newPasswordTitle": "New password",
+  "enterCodeAndNewPassword": "Enter the code and your new password",
+  "verificationCodeWillBeSent": "A verification code will be sent by email",
+  "emailAddress": "Email address",
+  "newPassword": "New password",
+  "confirmPasswordLabel": "Confirm password",
+  "passwordMustBeSixCharacters": "Password must contain at least 6 characters",
+  "youWillReceiveVerificationCode": "You will receive a 6-digit verification code",
+  "send": "Send",
+  "modify": "Modify",
+  "allFieldsRequired": "All fields are required",
+  "passwordChangedSuccessfully": "Password changed successfully!",
+  "emailFormatInvalid": "Invalid email format",
+  
+  "confirmDeletionTitle": "Confirm deletion",
+  "enterCodeToConfirm": "Enter the code received by email to confirm",
+  "actionIrreversibleAllDataDeleted": "This action is irreversible. All your data will be deleted.",
+  "reasonForDeletion": "Reason for deletion (optional)",
+  "codeSentCheckEmail": "Code sent! Check your email inbox.",
+  "deletionCode": "Deletion code",
+  "actionDefinitiveAccountDeleted30Days": "This action is final. Your account will be deleted in 30 days.",
+  "accountDeletedIn30DaysCanCancel": "Your account will be deleted in 30 days. You can cancel this action during this period.",
+  "accountDeletionCodeSent": "Deletion code sent! Check your email.",
+  "accountWillBeDeletedIn30Days": "Your account will be deleted in 30 days. You can cancel this action.",
+  "close": "Close"
+}

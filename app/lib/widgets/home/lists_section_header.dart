@@ -1,5 +1,5 @@
-// widgets/home/lists_section_header.dart
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ListsSectionHeader extends StatelessWidget {
   final VoidCallback onViewAll;
@@ -13,18 +13,19 @@ class ListsSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmallScreen = constraints.maxWidth < 400;
 
         if (isSmallScreen) {
-          // Layout vertical pour petits écrans
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Mes Listes d\'Épicerie',
-                style: TextStyle(
+                l10n.myGroceryLists,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -32,25 +33,25 @@ class ListsSectionHeader extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
                     onPressed: onViewAll,
                     child: Text(
-                      'Voir tout',
+                      l10n.viewAll,
                       style: TextStyle(color: Colors.blue[600]),
                     ),
                   ),
                   ElevatedButton.icon(
                     onPressed: onCreateNew,
-                    icon: Icon(Icons.add, size: 16),
-                    label: Text('Nouvelle'),
+                    icon: const Icon(Icons.add, size: 16),
+                    label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[600],
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
                       ),
@@ -62,14 +63,13 @@ class ListsSectionHeader extends StatelessWidget {
             ],
           );
         } else {
-          // Layout horizontal pour grands écrans
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
-                  'Mes Listes d\'Épicerie',
-                  style: TextStyle(
+                  l10n.myGroceryLists,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
@@ -83,19 +83,19 @@ class ListsSectionHeader extends StatelessWidget {
                   TextButton(
                     onPressed: onViewAll,
                     child: Text(
-                      'Voir tout',
+                      l10n.viewAll,
                       style: TextStyle(color: Colors.blue[600]),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   ElevatedButton.icon(
                     onPressed: onCreateNew,
-                    icon: Icon(Icons.add, size: 18),
-                    label: Text('Nouvelle'),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[600],
                       foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
                       ),

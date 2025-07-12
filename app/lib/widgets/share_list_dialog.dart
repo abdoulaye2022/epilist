@@ -1,4 +1,5 @@
-// widgets/share_list_dialog.dart - VERSION AVEC DESIGN COHÉRENT
+// widgets/share_list_dialog.dart - VERSION AVEC DESIGN COHÉRENT ET TRADUCTIONS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocListener<SharedListBloc, SharedListState>(
       listener: (context, state) {
         if (state is ShareLinkCreated) {
@@ -46,7 +49,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
 
           SmartSnackBarManager.showSuccessSnackBar(
             context,
-            'Lien de partage créé avec succès !',
+            l10n.shareLinkCreatedSuccessfully,
             duration: const Duration(seconds: 2),
           );
         } else if (state is SharedListError) {
@@ -62,9 +65,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 10,
         child: Container(
           padding: const EdgeInsets.all(24),
@@ -111,18 +112,16 @@ class _ShareListDialogState extends State<ShareListDialog> {
         color: Colors.blue[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(
-        Icons.share_rounded,
-        size: 40,
-        color: Colors.blue[600],
-      ),
+      child: Icon(Icons.share_rounded, size: 40, color: Colors.blue[600]),
     );
   }
 
   Widget _buildTitle() {
-    return const Text(
-      'Partager la liste',
-      style: TextStyle(
+    final l10n = AppLocalizations.of(context)!;
+
+    return Text(
+      l10n.shareList,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -131,23 +130,23 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildDescription() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Text(
-      'Créez un lien de partage pour "${widget.listName}"',
+      l10n.createShareLinkFor(widget.listName),
       textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 16,
-        color: Colors.grey[600],
-        height: 1.4,
-      ),
+      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
   Widget _buildPermissionsSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Permissions',
+          l10n.permissions,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -161,56 +160,58 @@ class _ShareListDialogState extends State<ShareListDialog> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
-            children: SharePermission.values.asMap().entries.map((entry) {
-              final index = entry.key;
-              final permission = entry.value;
-              final isSelected = _selectedPermission == permission;
-              
-              return Container(
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.blue[50] : Colors.transparent,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(index == 0 ? 12 : 0),
-                    topRight: Radius.circular(index == 0 ? 12 : 0),
-                    bottomLeft: Radius.circular(
-                      index == SharePermission.values.length - 1 ? 12 : 0,
+            children:
+                SharePermission.values.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final permission = entry.value;
+                  final isSelected = _selectedPermission == permission;
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.blue[50] : Colors.transparent,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(index == 0 ? 12 : 0),
+                        topRight: Radius.circular(index == 0 ? 12 : 0),
+                        bottomLeft: Radius.circular(
+                          index == SharePermission.values.length - 1 ? 12 : 0,
+                        ),
+                        bottomRight: Radius.circular(
+                          index == SharePermission.values.length - 1 ? 12 : 0,
+                        ),
+                      ),
                     ),
-                    bottomRight: Radius.circular(
-                      index == SharePermission.values.length - 1 ? 12 : 0,
+                    child: RadioListTile<SharePermission>(
+                      value: permission,
+                      groupValue: _selectedPermission,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedPermission = value!;
+                        });
+                      },
+                      title: Text(
+                        _getPermissionTitle(permission),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: isSelected ? Colors.blue[700] : Colors.black87,
+                        ),
+                      ),
+                      subtitle: Text(
+                        _getPermissionDescription(permission),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color:
+                              isSelected ? Colors.blue[600] : Colors.grey[600],
+                        ),
+                      ),
+                      activeColor: Colors.blue[600],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                     ),
-                  ),
-                ),
-                child: RadioListTile<SharePermission>(
-                  value: permission,
-                  groupValue: _selectedPermission,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPermission = value!;
-                    });
-                  },
-                  title: Text(
-                    _getPermissionTitle(permission),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: isSelected ? Colors.blue[700] : Colors.black87,
-                    ),
-                  ),
-                  subtitle: Text(
-                    _getPermissionDescription(permission),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isSelected ? Colors.blue[600] : Colors.grey[600],
-                    ),
-                  ),
-                  activeColor: Colors.blue[600],
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -218,11 +219,13 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildExpirationSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Expiration du lien',
+          l10n.linkExpiration,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -253,12 +256,13 @@ class _ShareListDialogState extends State<ShareListDialog> {
               vertical: 16,
             ),
           ),
-          items: _expirationOptions.map((days) {
-            return DropdownMenuItem(
-              value: days,
-              child: Text('$days jours'),
-            );
-          }).toList(),
+          items:
+              _expirationOptions.map((days) {
+                return DropdownMenuItem(
+                  value: days,
+                  child: Text(l10n.daysCount(days)),
+                );
+              }).toList(),
           onChanged: (value) {
             setState(() {
               _expirationDays = value!;
@@ -270,6 +274,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildGenerateLinkSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         SizedBox(
@@ -286,36 +292,37 @@ class _ShareListDialogState extends State<ShareListDialog> {
               ),
               elevation: 2,
             ),
-            child: _isGeneratingLink
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+            child:
+                _isGeneratingLink
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 12),
-                      Text(
-                        'Création...',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n.creating,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
+                      ],
+                    )
+                    : Text(
+                      l10n.generateShareLink,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  )
-                : const Text(
-                    'Générer le lien de partage',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
                     ),
-                  ),
           ),
         ),
       ],
@@ -323,6 +330,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildGeneratedLinkSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Container(
@@ -337,11 +346,14 @@ class _ShareListDialogState extends State<ShareListDialog> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.check_circle_outline, 
-                       color: Colors.green[600], size: 20),
+                  Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green[600],
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    'Lien créé avec succès',
+                    l10n.linkCreatedSuccessfully,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.green[700],
@@ -374,9 +386,12 @@ class _ShareListDialogState extends State<ShareListDialog> {
                     const SizedBox(width: 8),
                     IconButton(
                       onPressed: () => _copyToClipboard(_generatedLink!),
-                      icon: Icon(Icons.copy_outlined, 
-                                 color: Colors.grey[600], size: 18),
-                      tooltip: 'Copier',
+                      icon: Icon(
+                        Icons.copy_outlined,
+                        color: Colors.grey[600],
+                        size: 18,
+                      ),
+                      tooltip: l10n.copy,
                       constraints: const BoxConstraints(
                         minWidth: 32,
                         minHeight: 32,
@@ -395,7 +410,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               child: OutlinedButton.icon(
                 onPressed: () => _copyToClipboard(_generatedLink!),
                 icon: const Icon(Icons.copy_outlined, size: 18),
-                label: const Text('Copier'),
+                label: Text(l10n.copy),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: BorderSide(color: Colors.grey[400]!),
@@ -410,7 +425,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               child: ElevatedButton.icon(
                 onPressed: () => _shareLink(_generatedLink!),
                 icon: const Icon(Icons.share_outlined, size: 18),
-                label: const Text('Partager'),
+                label: Text(l10n.share),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
@@ -429,6 +444,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildInfoSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -442,7 +459,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Le lien expire après $_expirationDays jours. Vous pouvez révoquer l\'accès à tout moment.',
+              l10n.linkExpirationInfo(_expirationDays),
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.amber[700],
@@ -456,6 +473,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   Widget _buildButtons() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
@@ -469,7 +488,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               ),
             ),
             child: Text(
-              'Fermer',
+              l10n.close,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -497,9 +516,9 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 ),
                 elevation: 2,
               ),
-              child: const Text(
-                'Nouveau lien',
-                style: TextStyle(
+              child: Text(
+                l10n.newLink,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -512,24 +531,28 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   String _getPermissionTitle(SharePermission permission) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (permission) {
       case SharePermission.readOnly:
-        return 'Lecture seule';
+        return l10n.readOnlyAccess;
       case SharePermission.edit:
-        return 'Modification';
+        return l10n.editAccess;
       case SharePermission.admin:
-        return 'Administration';
+        return l10n.adminAccess;
     }
   }
 
   String _getPermissionDescription(SharePermission permission) {
+    final l10n = AppLocalizations.of(context)!;
+
     switch (permission) {
       case SharePermission.readOnly:
-        return 'Peut voir la liste mais pas la modifier';
+        return l10n.readOnlyDescription;
       case SharePermission.edit:
-        return 'Peut ajouter, modifier et marquer des articles';
+        return l10n.editDescription;
       case SharePermission.admin:
-        return 'Peut tout faire, y compris partager et supprimer';
+        return l10n.adminDescription;
     }
   }
 
@@ -548,33 +571,37 @@ class _ShareListDialogState extends State<ShareListDialog> {
   }
 
   void _copyToClipboard(String link) {
+    final l10n = AppLocalizations.of(context)!;
+
     Clipboard.setData(ClipboardData(text: link));
     SmartSnackBarManager.showSuccessSnackBar(
       context,
-      'Lien copié dans le presse-papiers !',
+      l10n.linkCopiedToClipboard,
       duration: const Duration(seconds: 2),
     );
   }
 
   void _shareLink(String link) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       if (_shareToken != null) {
         final shareData = DeepLinkHandler.generateShareData(
           _shareToken!,
           widget.listName,
-          'Vous',
+          l10n.you,
         );
         await Share.share(link, subject: shareData['subject']);
       } else {
         await Share.share(
           link,
-          subject: 'Invitation EpiList - ${widget.listName}',
+          subject: l10n.epilistInvitation(widget.listName),
         );
       }
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Erreur lors du partage',
+        l10n.shareError,
         duration: const Duration(seconds: 2),
       );
     }
