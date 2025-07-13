@@ -1,4 +1,4 @@
-// email_verification_screen.dart - COMPLETE CORRECTED VERSION
+// email_verification_screen.dart - VERSION CORRIGÉE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
@@ -202,16 +202,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Use SmartSnackBarManager for errors
-            final localizedError = AuthErrorMessages.getLocalizedError(
-              state.error,
-            );
-
-            SmartSnackBarManager.showErrorSnackBar(
-              context,
-              localizedError,
-              duration: const Duration(seconds: 5),
-            );
+            // ✅ CORRECTION : Plus d'utilisation de AuthErrorMessages
+            // L'erreur sera gérée par AuthBloc via main.dart
+            // Juste afficher l'erreur pour debug
+            print('🔍 Erreur de vérification email: ${state.error}');
 
             _clearCode();
           } else if (state is Unauthenticated) {

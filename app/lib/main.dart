@@ -409,18 +409,54 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
     );
   }
 
+  // ✅ FONCTION CORRIGÉE - Avec gestion des erreurs de traduction
   String _getLocalizedError(String error, AppLocalizations l10n) {
-    // Mapper les erreurs aux traductions
-    if (error.contains('Email ou mot de passe incorrect')) {
-      return l10n.invalidCredentials;
-    } else if (error.contains('Aucun compte trouvé')) {
-      return l10n.userNotFound;
-    } else if (error.contains('Email non vérifié')) {
-      return l10n.emailNotVerified;
-    } else if (error.contains('réseau') || error.contains('network')) {
-      return l10n.networkError;
+    try {
+      // ✅ CORRECTION : Mapper les codes d'erreur aux traductions appropriées
+
+      // Codes d'erreur spécifiques
+      if (error.contains('EMAIL_ALREADY_EXISTS') ||
+          error.contains('EMAIL_CONFLICT')) {
+        return l10n.emailAlreadyExists;
+      } else if (error.contains('INVALID_CREDENTIALS')) {
+        return l10n.invalidCredentials;
+      } else if (error.contains('USER_NOT_FOUND')) {
+        return l10n.userNotFound;
+      } else if (error.contains('EMAIL_NOT_VERIFIED')) {
+        return l10n.emailNotVerified;
+      } else if (error.contains('VALIDATION_ERROR')) {
+        return l10n.validationError;
+      } else if (error.contains('NETWORK_ERROR')) {
+        return l10n.networkError;
+      } else if (error.contains('SERVER_ERROR')) {
+        return 'Erreur du serveur. Veuillez réessayer plus tard.';
+      }
+      // Messages français legacy (au cas où)
+      else if (error.contains('Email ou mot de passe incorrect')) {
+        return l10n.invalidCredentials;
+      } else if (error.contains('Aucun compte trouvé')) {
+        return l10n.userNotFound;
+      } else if (error.contains('Email non vérifié')) {
+        return l10n.emailNotVerified;
+      } else if (error.contains('Un compte avec cet email existe déjà')) {
+        return l10n.emailAlreadyExists;
+      } else if (error.contains('réseau') || error.contains('network')) {
+        return l10n.networkError;
+      }
+      // Messages de session
+      else if (error.contains('Session expirée') ||
+          error.contains('token') ||
+          error.contains('unauthorized')) {
+        return l10n.sessionExpired;
+      }
+
+      // ✅ CORRECTION : Fallback sécurisé
+      return error.isNotEmpty ? error : 'Une erreur inattendue est survenue';
+    } catch (e) {
+      // En cas d'erreur de traduction, retourner un fallback sécurisé
+      print('⚠️ Erreur lors de la traduction: $e');
+      return error.isNotEmpty ? error : 'Une erreur est survenue';
     }
-    return l10n.unknownError;
   }
 }
 

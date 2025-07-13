@@ -1,4 +1,4 @@
-// login_screen.dart - VERSION MISE À JOUR AVEC LOCALISATION
+// login_screen.dart - VERSION FINALE CORRIGÉE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/home_screen.dart';
@@ -36,16 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            final localizedError = AuthErrorMessages.getLocalizedError(
-              state.error,
-            );
-            SnackBarManager.showErrorSnackBar(
-              context,
-              localizedError,
-              duration: const Duration(seconds: 5),
-            );
-
-            print('Erreur de connexion: ${state.error}');
+            // ✅ CORRECTION : Plus d'utilisation de AuthErrorMessages
+            // L'erreur sera gérée par AuthBloc via main.dart
+            // Juste afficher l'erreur pour debug
+            print('🔍 Erreur de connexion: ${state.error}');
           } else if (state is EmailVerificationRequired) {
             setState(() => _isLoading = false);
 

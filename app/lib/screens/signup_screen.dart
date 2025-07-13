@@ -1,4 +1,4 @@
-// signup_screen.dart - VERSION AMÉLIORÉE AVEC LOCALISATION
+// signup_screen.dart - VERSION CORRIGÉE : Plus de messages d'erreur en double
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
@@ -48,79 +48,10 @@ class _SignUpPageState extends State<SignUpPage> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Filtrer les erreurs - seulement afficher les erreurs spécifiques du serveur
-            final error = state.error.toLowerCase();
-
-            // Liste des erreurs spécifiques à afficher
-            bool shouldShowError = false;
-            String? errorMessage;
-
-            // Email déjà existant - patterns plus larges
-            if (error.contains('email already exists') ||
-                error.contains('email_already_exists') ||
-                error.contains('user already exists') ||
-                error.contains('account already exists') ||
-                error.contains('email existe déjà') ||
-                error.contains('compte avec cet email existe déjà') ||
-                error.contains('already registered') ||
-                error.contains('email is already registered')) {
-              shouldShowError = true;
-              errorMessage = l10n.emailAlreadyExists;
-            }
-            // Email invalide
-            else if (error.contains('email not valid') ||
-                error.contains('invalid email') ||
-                error.contains('email_invalid') ||
-                error.contains('format d\'email invalide') ||
-                error.contains('email invalide')) {
-              shouldShowError = true;
-              errorMessage = l10n.invalidEmail;
-            }
-            // Mot de passe trop faible
-            else if (error.contains('password too weak') ||
-                error.contains('weak password') ||
-                error.contains('password_too_weak') ||
-                error.contains('mot de passe trop faible')) {
-              shouldShowError = true;
-              errorMessage = l10n.passwordTooWeak;
-            }
-            // Erreurs réseau
-            else if (error.contains('network') ||
-                error.contains('connection') ||
-                error.contains('timeout') ||
-                error.contains('réseau') ||
-                error.contains('connexion')) {
-              shouldShowError = true;
-              errorMessage = l10n.networkError;
-            }
-            // Erreurs de validation
-            else if (error.contains('validation') ||
-                error.contains('données invalides') ||
-                error.contains('invalid data') ||
-                error.contains('bad syntax') ||
-                error.contains('bad request')) {
-              shouldShowError = true;
-              errorMessage = l10n.validationError;
-            }
-
-            // Afficher l'erreur seulement si c'est une erreur spécifique
-            if (shouldShowError && errorMessage != null) {
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                errorMessage,
-                duration: const Duration(seconds: 5),
-              );
-            }
-            // DEBUG: Afficher les erreurs non gérées en mode debug uniquement
-            else {
-              print('🔍 Erreur non gérée dans signup: "$error"');
-              // En mode debug, on pourrait afficher l'erreur pour debug
-              // SmartSnackBarManager.showErrorSnackBar(
-              //   context,
-              //   'Erreur: $error',
-              //   duration: const Duration(seconds: 3),
-              // );
-            }
+            // ✅ SUPPRIMÉ : Plus de gestion d'erreur ici
+            // L'erreur sera gérée uniquement par AuthBloc via main.dart
+            // Juste du debug
+            print('🔍 Erreur d\'inscription: ${state.error}');
           } else if (state is EmailConfirmationRequired) {
             setState(() => _isLoading = false);
 
