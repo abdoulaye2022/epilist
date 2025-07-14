@@ -1,4 +1,4 @@
-// widgets/dialogs/delete_account_dialog.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -30,24 +30,26 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: _handleAuthStateChanges,
       child: AlertDialog(
-        title: _buildTitle(),
-        content: _buildContent(),
-        actions: _buildActions(),
+        title: _buildTitle(l10n),
+        content: _buildContent(l10n),
+        actions: _buildActions(l10n),
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Row(
       children: [
         Icon(Icons.warning_rounded, color: Colors.red[600], size: 28),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            _showCodeStep ? 'Confirmer la suppression' : 'Supprimer le compte',
+            _showCodeStep ? l10n.confirmDeletion : l10n.deleteAccount,
             style: TextStyle(
               color: Colors.red[700],
               fontWeight: FontWeight.bold,
@@ -59,17 +61,17 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(AppLocalizations l10n) {
     if (_isLoading) {
-      return const SizedBox(
+      return SizedBox(
         height: 100,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Traitement en cours...'),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.processingInProgress),
             ],
           ),
         ),
@@ -83,15 +85,15 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!_showCodeStep) ..._buildFirstStep(),
-            if (_showCodeStep) ..._buildSecondStep(),
+            if (!_showCodeStep) ..._buildFirstStep(l10n),
+            if (_showCodeStep) ..._buildSecondStep(l10n),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildFirstStep() {
+  List<Widget> _buildFirstStep(AppLocalizations l10n) {
     return [
       Container(
         padding: const EdgeInsets.all(16),
@@ -104,7 +106,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '⚠️ ATTENTION',
+              l10n.attention,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.red[700],
@@ -113,7 +115,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Cette action est définitive et irréversible !',
+              l10n.actionDefinitiveIrreversible,
               style: TextStyle(
                 color: Colors.red[700],
                 fontWeight: FontWeight.w600,
@@ -126,26 +128,26 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       const SizedBox(height: 16),
 
       Text(
-        'Ce qui sera supprimé :',
+        l10n.whatWillBeDeleted,
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[800]),
       ),
       const SizedBox(height: 8),
 
-      _buildDeletionItem('• Votre profil et informations personnelles'),
-      _buildDeletionItem('• Toutes vos listes d\'épicerie privées'),
-      _buildDeletionItem('• Vos préférences et paramètres'),
-      _buildDeletionItem('• Votre historique d\'achats'),
+      _buildDeletionItem(l10n.profileAndPersonalInfo),
+      _buildDeletionItem(l10n.allPrivateGroceryLists),
+      _buildDeletionItem(l10n.preferencesAndSettings),
+      _buildDeletionItem(l10n.purchaseHistory),
 
       const SizedBox(height: 16),
 
       Text(
-        'Ce qui sera préservé :',
+        l10n.whatWillBePreserved,
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green[700]),
       ),
       const SizedBox(height: 8),
 
       Text(
-        '• Les listes partagées avec d\'autres utilisateurs (anonymisées)',
+        l10n.sharedListsAnonymized,
         style: TextStyle(color: Colors.green[600], fontSize: 14),
       ),
 
@@ -153,10 +155,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       TextFormField(
         controller: _reasonController,
-        decoration: const InputDecoration(
-          labelText: 'Raison (optionnelle)',
-          hintText: 'Pourquoi supprimez-vous votre compte ?',
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          labelText: l10n.reasonOptional,
+          hintText: l10n.whyDeleteAccount,
+          border: const OutlineInputBorder(),
         ),
         maxLines: 3,
         maxLength: 500,
@@ -167,17 +169,15 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       CheckboxListTile(
         value: _confirmDeletion,
         onChanged: (value) => setState(() => _confirmDeletion = value!),
-        title: const Text('Je comprends que cette action est irréversible'),
-        subtitle: const Text(
-          'Toutes mes données seront définitivement supprimées',
-        ),
+        title: Text(l10n.understandIrreversible),
+        subtitle: Text(l10n.allDataWillBeDeleted),
         controlAffinity: ListTileControlAffinity.leading,
         activeColor: Colors.red[600],
       ),
     ];
   }
 
-  List<Widget> _buildSecondStep() {
+  List<Widget> _buildSecondStep(AppLocalizations l10n) {
     return [
       Container(
         padding: const EdgeInsets.all(16),
@@ -190,13 +190,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           children: [
             Icon(Icons.mail_outline, size: 48, color: Colors.orange[600]),
             const SizedBox(height: 12),
-            const Text(
-              'Code de vérification envoyé',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              l10n.verificationCodeSent,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
             Text(
-              'Un code de vérification a été envoyé à $_userEmail',
+              l10n.verificationCodeSentToEmail(_userEmail ?? ''),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 14),
             ),
@@ -208,20 +208,20 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       TextFormField(
         controller: _codeController,
-        decoration: const InputDecoration(
-          labelText: 'Code de vérification *',
-          hintText: 'Entrez le code à 6 chiffres',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.security),
+        decoration: InputDecoration(
+          labelText: l10n.verificationCodeRequired,
+          hintText: l10n.sixDigitCodeHint,
+          border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.security),
         ),
         keyboardType: TextInputType.number,
         maxLength: 6,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Le code est requis';
+            return l10n.codeRequired;
           }
           if (value.length != 6) {
-            return 'Le code doit contenir 6 chiffres';
+            return l10n.codeMustBeSixDigits;
           }
           return null;
         },
@@ -242,7 +242,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Le code expire dans 2 heures',
+                l10n.codeExpiresInTwoHours,
                 style: TextStyle(color: Colors.blue[700], fontSize: 12),
               ),
             ),
@@ -259,11 +259,11 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
     );
   }
 
-  List<Widget> _buildActions() {
+  List<Widget> _buildActions(AppLocalizations l10n) {
     return [
       TextButton(
         onPressed: _isLoading ? null : () => Navigator.pop(context),
-        child: const Text('Annuler'),
+        child: Text(l10n.cancel),
       ),
 
       if (!_showCodeStep)
@@ -273,7 +273,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             backgroundColor: Colors.red[600],
             foregroundColor: Colors.white,
           ),
-          child: const Text('Demander la suppression'),
+          child: Text(l10n.requestDeletion),
         ),
 
       if (_showCodeStep)
@@ -283,12 +283,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             backgroundColor: Colors.red[600],
             foregroundColor: Colors.white,
           ),
-          child: const Text('Confirmer la suppression'),
+          child: Text(l10n.confirmDeletionWithCode),
         ),
     ];
   }
 
   void _handleAuthStateChanges(BuildContext context, AuthState state) {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = false);
 
     if (state is AccountDeletionCodeSent) {
@@ -299,15 +300,14 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Code de vérification envoyé ! Vérifiez votre email.',
+        l10n.verificationCodeSentCheckEmail,
       );
     } else if (state is AccountDeletionConfirmed) {
       Navigator.pop(context);
 
       SmartSnackBarManager.showInfoSnackBar(
         context,
-        'Votre compte sera supprimé le ${_formatDate(state.deletionEffectiveDate)}. '
-        'Vous avez 30 jours pour annuler cette action.',
+        l10n.accountWillBeDeletedOn(_formatDate(state.deletionEffectiveDate)),
         duration: const Duration(seconds: 5),
       );
     } else if (state is AuthFailure) {
@@ -340,7 +340,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-        '${date.month.toString().padLeft(2, '0')}/'
-        '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}'
+        '/${date.year}';
   }
 }

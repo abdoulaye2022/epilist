@@ -2,6 +2,7 @@ import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class AddItemDialog extends StatefulWidget {
   final int listId;
@@ -29,6 +30,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
@@ -55,13 +58,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   children: [
                     _buildIcon(),
                     const SizedBox(height: 20),
-                    _buildTitle(),
+                    _buildTitle(l10n),
                     const SizedBox(height: 12),
-                    _buildDescription(),
+                    _buildDescription(l10n),
                     const SizedBox(height: 24),
-                    _buildForm(),
+                    _buildForm(l10n),
                     const SizedBox(height: 24),
-                    _buildButtons(),
+                    _buildButtons(l10n),
                   ],
                 ),
               ),
@@ -88,10 +91,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildTitle() {
-    return const Text(
-      'Nouvel Article',
-      style: TextStyle(
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.newItem,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -99,32 +102,32 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      'Ajoutez un nouvel article à votre liste d\'épicerie',
+      l10n.addNewItemToList,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(AppLocalizations l10n) {
     return Column(
       children: [
-        _buildProductNameField(),
+        _buildProductNameField(l10n),
         const SizedBox(height: 16),
-        _buildQuantityAndPriceRow(),
+        _buildQuantityAndPriceRow(l10n),
         const SizedBox(height: 16),
-        _buildStoreField(),
+        _buildStoreField(l10n),
       ],
     );
   }
 
-  Widget _buildProductNameField() {
+  Widget _buildProductNameField(AppLocalizations l10n) {
     return TextField(
       controller: productController,
       decoration: InputDecoration(
-        labelText: 'Nom du produit*',
-        hintText: 'Ex: Bananes, Pain, Lait...',
+        labelText: l10n.productNameRequired,
+        hintText: l10n.productNameHint,
         prefixIcon: Icon(Icons.shopping_basket, color: Colors.green[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -146,7 +149,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildQuantityAndPriceRow() {
+  Widget _buildQuantityAndPriceRow(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -154,7 +157,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           child: TextField(
             controller: quantityController,
             decoration: InputDecoration(
-              labelText: 'Quantité',
+              labelText: l10n.quantity,
               hintText: '1',
               prefixIcon: Icon(Icons.numbers, color: Colors.blue[600]),
               border: OutlineInputBorder(
@@ -181,7 +184,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           child: TextField(
             controller: priceController,
             decoration: InputDecoration(
-              labelText: 'Prix (\$CAD)',
+              labelText: l10n.priceCAD,
               hintText: '0.00',
               prefixIcon: Icon(Icons.attach_money, color: Colors.amber[700]),
               border: OutlineInputBorder(
@@ -206,12 +209,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildStoreField() {
+  Widget _buildStoreField(AppLocalizations l10n) {
     return TextField(
       controller: storeController,
       decoration: InputDecoration(
-        labelText: 'Magasin (optionnel)',
-        hintText: 'Ex: IGA, Metro, Provigo...',
+        labelText: l10n.storeOptional,
+        hintText: l10n.storeHint,
         prefixIcon: Icon(Icons.store, color: Colors.purple[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -232,7 +235,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildButtons() {
+  Widget _buildButtons(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -246,7 +249,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -261,7 +264,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             builder: (context, state) {
               final isLoading = state is ListItemLoading;
               return ElevatedButton(
-                onPressed: isLoading ? null : _addItem,
+                onPressed: isLoading ? null : () => _addItem(l10n),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green[600],
                   foregroundColor: Colors.white,
@@ -284,14 +287,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
                             ),
                           ),
                         )
-                        : const Row(
+                        : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add, size: 18),
-                            SizedBox(width: 6),
+                            const Icon(Icons.add, size: 18),
+                            const SizedBox(width: 6),
                             Text(
-                              'Ajouter',
-                              style: TextStyle(
+                              l10n.add,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -306,11 +309,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  void _addItem() {
+  void _addItem(AppLocalizations l10n) {
     if (productController.text.trim().isEmpty) {
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        'Le nom du produit est obligatoire',
+        l10n.productNameRequired,
         duration: const Duration(seconds: 2),
       );
       return;

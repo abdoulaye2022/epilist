@@ -1,5 +1,5 @@
-// widgets/dialogs/edit_profile_dialog.dart
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
@@ -41,13 +41,15 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is ProfileUpdated) {
           Navigator.pop(context);
           SmartSnackBarManager.showMessage(
             context,
-            'Profil mis à jour avec succès',
+            l10n.profileUpdatedSuccessfully,
             type: SnackBarType.success,
           );
         } else {
@@ -79,7 +81,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Contenu scrollable
                 Flexible(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
@@ -88,15 +89,15 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                       children: [
                         _buildIcon(),
                         const SizedBox(height: 20),
-                        _buildTitle(),
+                        _buildTitle(l10n),
                         const SizedBox(height: 12),
-                        _buildDescription(),
+                        _buildDescription(l10n),
                         const SizedBox(height: 24),
-                        _buildForm(isLoading),
+                        _buildForm(l10n, isLoading),
                         const SizedBox(height: 8),
-                        _buildEmailNote(),
+                        _buildEmailNote(l10n),
                         const SizedBox(height: 24),
-                        _buildButtons(isLoading),
+                        _buildButtons(l10n, isLoading),
                       ],
                     ),
                   ),
@@ -121,10 +122,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
-  Widget _buildTitle() {
-    return const Text(
-      'Modifier le profil',
-      style: TextStyle(
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.editProfile,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -132,34 +133,37 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      'Modifiez vos informations personnelles',
+      l10n.modifyPersonalInformation,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildForm(bool isLoading) {
+  Widget _buildForm(AppLocalizations l10n, bool isLoading) {
     return Column(
       children: [
         _buildTextField(
+          l10n: l10n,
           controller: firstNameController,
-          label: 'Prénom',
+          label: l10n.firstName,
           icon: Icons.person_outline,
           enabled: !isLoading,
         ),
         const SizedBox(height: 16),
         _buildTextField(
+          l10n: l10n,
           controller: lastNameController,
-          label: 'Nom',
+          label: l10n.lastName,
           icon: Icons.badge_outlined,
           enabled: !isLoading,
         ),
         const SizedBox(height: 16),
         _buildTextField(
+          l10n: l10n,
           controller: emailController,
-          label: 'Email',
+          label: l10n.email,
           icon: Icons.email_outlined,
           enabled: false,
           isDisabled: true,
@@ -169,6 +173,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   }
 
   Widget _buildTextField({
+    required AppLocalizations l10n,
     required TextEditingController controller,
     required String label,
     required IconData icon,
@@ -206,7 +211,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
-  Widget _buildEmailNote() {
+  Widget _buildEmailNote(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -220,7 +225,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'L\'email ne peut pas être modifié',
+              l10n.emailCannotBeModified,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.amber[700],
@@ -233,7 +238,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
-  Widget _buildButtons(bool isLoading) {
+  Widget _buildButtons(AppLocalizations l10n, bool isLoading) {
     return Row(
       children: [
         Expanded(
@@ -247,7 +252,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -259,7 +264,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
-            onPressed: isLoading ? null : _saveProfile,
+            onPressed: isLoading ? null : () => _saveProfile(l10n),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green[600],
               foregroundColor: Colors.white,
@@ -280,9 +285,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                         color: Colors.white,
                       ),
                     )
-                    : const Text(
-                      'Sauvegarder',
-                      style: TextStyle(
+                    : Text(
+                      l10n.save,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -293,14 +298,14 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     );
   }
 
-  void _saveProfile() {
+  void _saveProfile(AppLocalizations l10n) {
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
 
     if (firstName.isEmpty || lastName.isEmpty) {
       SmartSnackBarManager.showMessage(
         context,
-        'Le prénom et le nom sont obligatoires',
+        l10n.firstNameAndLastNameRequired,
         type: SnackBarType.warning,
       );
       return;

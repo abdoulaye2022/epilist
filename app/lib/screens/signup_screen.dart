@@ -1,9 +1,9 @@
-// signup_screen.dart - VERSION AMÉLIORÉE AVEC GESTION D'ERREURS
+// signup_screen.dart - VERSION AVEC GESTION D'ERREURS LOCALE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,6 +28,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -45,29 +47,26 @@ class _SignUpPageState extends State<SignUpPage> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Utiliser SmartSnackBarManager pour les erreurs
-            final localizedError = AuthErrorMessages.getLocalizedError(
-              state.error,
-            );
+            // ✅ AJOUT: Afficher l'erreur localement avec SmartSnackBarManager
             SmartSnackBarManager.showErrorSnackBar(
               context,
-              localizedError,
-              duration: const Duration(seconds: 5),
+              state.error, // Le message est déjà traduit par AuthBloc
+              duration: const Duration(seconds: 4),
             );
           } else if (state is EmailConfirmationRequired) {
             setState(() => _isLoading = false);
 
-            // Effacer tous les SnackBars avant d'afficher le nouveau
             SmartSnackBarManager.clearAll(context);
 
-            // Afficher un message de succès d'inscription
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              'Compte créé avec succès ! ${_firstNameController.text.trim()} ${_lastNameController.text.trim()}\nVérifiez votre email pour activer votre compte.',
+              l10n.accountCreatedSuccessfully(
+                _firstNameController.text.trim(),
+                _lastNameController.text.trim(),
+              ),
               duration: const Duration(seconds: 4),
             );
 
-            // Redirection vers l'écran de vérification email
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
                 Navigator.pushReplacement(
@@ -107,7 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   // Titre et sous-titre
                   Text(
-                    'Créer un compte',
+                    l10n.createAccount,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -116,13 +115,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
 
                   Text(
-                    'Rejoignez EpiList pour gérer vos courses facilement',
+                    l10n.joinEpiListToManage,
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
 
                   SizedBox(height: 32),
 
-                  // INDICATEUR DE CHARGEMENT (comme dans login)
+                  // INDICATEUR DE CHARGEMENT
                   if (_isLoading)
                     Container(
                       width: double.infinity,
@@ -145,7 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(width: 12),
                           Text(
-                            'Création du compte en cours...',
+                            l10n.creatingAccount,
                             style: TextStyle(
                               color: Colors.blue[700],
                               fontSize: 14,
@@ -169,7 +168,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 controller: _firstNameController,
                                 enabled: !_isLoading,
                                 decoration: InputDecoration(
-                                  labelText: 'Prénom',
+                                  labelText: l10n.firstName,
                                   prefixIcon: Icon(Icons.person_outline),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -191,10 +190,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Prénom requis';
+                                    return l10n.firstNameRequired;
                                   }
                                   if (value.trim().length < 2) {
-                                    return 'Trop court';
+                                    return l10n.tooShort;
                                   }
                                   return null;
                                 },
@@ -209,7 +208,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 controller: _lastNameController,
                                 enabled: !_isLoading,
                                 decoration: InputDecoration(
-                                  labelText: 'Nom',
+                                  labelText: l10n.lastName,
                                   prefixIcon: Icon(Icons.person),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -231,10 +230,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Nom requis';
+                                    return l10n.lastNameRequired;
                                   }
                                   if (value.trim().length < 2) {
-                                    return 'Trop court';
+                                    return l10n.tooShort;
                                   }
                                   return null;
                                 },
@@ -251,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.emailAddress,
                           enabled: !_isLoading,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: l10n.email,
                             prefixIcon: Icon(Icons.email_outlined),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -269,12 +268,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Veuillez saisir votre email';
+                              return l10n.pleaseEnterEmail;
                             }
                             if (!RegExp(
                               r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                             ).hasMatch(value.trim())) {
-                              return 'Email invalide';
+                              return l10n.invalidEmail;
                             }
                             return null;
                           },
@@ -288,7 +287,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           obscureText: _isObscure,
                           enabled: !_isLoading,
                           decoration: InputDecoration(
-                            labelText: 'Mot de passe',
+                            labelText: l10n.password,
                             prefixIcon: Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -321,10 +320,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez saisir un mot de passe';
+                              return l10n.pleaseEnterPassword;
                             }
                             if (value.length < 6) {
-                              return 'Au moins 6 caractères';
+                              return l10n.atLeastSixCharacters;
                             }
                             return null;
                           },
@@ -338,7 +337,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           obscureText: _isConfirmObscure,
                           enabled: !_isLoading,
                           decoration: InputDecoration(
-                            labelText: 'Confirmer le mot de passe',
+                            labelText: l10n.confirmPassword,
                             prefixIcon: Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -372,10 +371,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Confirmez votre mot de passe';
+                              return l10n.confirmYourPassword;
                             }
                             if (value != _passwordController.text) {
-                              return 'Mots de passe différents';
+                              return l10n.passwordsDifferent;
                             }
                             return null;
                           },
@@ -421,9 +420,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 : Colors.black87,
                                       ),
                                       children: [
-                                        TextSpan(text: 'J\'accepte les '),
+                                        TextSpan(text: l10n.iAcceptThe),
                                         TextSpan(
-                                          text: 'conditions d\'utilisation',
+                                          text: l10n.termsOfService,
                                           style: TextStyle(
                                             color:
                                                 _isLoading
@@ -434,9 +433,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                                 TextDecoration.underline,
                                           ),
                                         ),
-                                        TextSpan(text: ' et la '),
+                                        TextSpan(text: l10n.andThe),
                                         TextSpan(
-                                          text: 'politique de confidentialité',
+                                          text: l10n.privacyPolicy,
                                           style: TextStyle(
                                             color:
                                                 _isLoading
@@ -485,7 +484,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ),
                                     )
                                     : Text(
-                                      'Créer mon compte',
+                                      l10n.createMyAccount,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -514,7 +513,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Après inscription, vous recevrez un code de vérification par email',
+                                  l10n.afterRegistrationEmailVerification,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.green[700],
@@ -534,7 +533,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Déjà un compte ? ',
+                                l10n.alreadyHaveAccount,
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                               TextButton(
@@ -543,7 +542,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                         ? null
                                         : () => Navigator.pop(context),
                                 child: Text(
-                                  'Se connecter',
+                                  l10n.login,
                                   style: TextStyle(
                                     color:
                                         _isLoading
@@ -569,9 +568,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _signUp() {
-    // Ferme le clavier
     FocusScope.of(context).unfocus();
-
     setState(() => _isLoading = true);
 
     if (_formKey.currentState!.validate()) {
@@ -588,7 +585,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Veuillez corriger les erreurs dans le formulaire',
+        AppLocalizations.of(context)!.pleaseFixFormErrors,
         duration: const Duration(seconds: 3),
       );
     }

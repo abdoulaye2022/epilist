@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
@@ -34,8 +35,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocListener<AuthBloc, AuthState>(
-      listener: _handleAuthStateChanges,
+      listener:
+          (context, state) => _handleAuthStateChanges(context, state, l10n),
       child: AlertDialog(
         title: Row(
           children: [
@@ -43,9 +47,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                _showCodeStep
-                    ? 'Nouveau mot de passe'
-                    : 'Changer le mot de passe',
+                _showCodeStep ? l10n.newPassword : l10n.changePassword,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -54,23 +56,23 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             ),
           ],
         ),
-        content: _buildContent(),
-        actions: _buildActions(),
+        content: _buildContent(l10n),
+        actions: _buildActions(l10n),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(AppLocalizations l10n) {
     if (_isLoading) {
-      return const SizedBox(
+      return SizedBox(
         height: 120,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Traitement en cours...'),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.processingInProgress),
             ],
           ),
         ),
@@ -83,15 +85,15 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!_showCodeStep) ..._buildEmailStep(),
-            if (_showCodeStep) ..._buildPasswordStep(),
+            if (!_showCodeStep) ..._buildEmailStep(l10n),
+            if (_showCodeStep) ..._buildPasswordStep(l10n),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildEmailStep() {
+  List<Widget> _buildEmailStep(AppLocalizations l10n) {
     return [
       Container(
         padding: const EdgeInsets.all(16),
@@ -104,32 +106,30 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           children: [
             Icon(Icons.info_outline, color: Colors.blue[600], size: 24),
             const SizedBox(height: 8),
-            const Text(
-              'Un code de vérification sera envoyé à votre adresse email',
+            Text(
+              l10n.verificationCodeWillBeSent,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
       ),
-
       const SizedBox(height: 20),
-
       TextFormField(
         controller: _emailController,
-        decoration: const InputDecoration(
-          labelText: 'Adresse email *',
-          hintText: 'votre@email.com',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.email_outlined),
+        decoration: InputDecoration(
+          labelText: l10n.emailAddressRequired,
+          hintText: l10n.emailHint,
+          border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.email_outlined),
         ),
         keyboardType: TextInputType.emailAddress,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'L\'email est requis';
+            return l10n.emailRequired;
           }
           if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-            return 'Format d\'email invalide';
+            return l10n.invalidEmailFormat;
           }
           return null;
         },
@@ -137,7 +137,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     ];
   }
 
-  List<Widget> _buildPasswordStep() {
+  List<Widget> _buildPasswordStep(AppLocalizations l10n) {
     return [
       Container(
         padding: const EdgeInsets.all(16),
@@ -150,50 +150,46 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           children: [
             Icon(Icons.mail_outline, color: Colors.green[600], size: 24),
             const SizedBox(height: 8),
-            const Text(
-              'Code de vérification envoyé !',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              l10n.verificationCodeSent,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Vérifiez votre boîte email et entrez le code ci-dessous',
+            Text(
+              l10n.checkEmailAndEnterCode,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         ),
       ),
-
       const SizedBox(height: 20),
-
       TextFormField(
         controller: _codeController,
-        decoration: const InputDecoration(
-          labelText: 'Code de vérification *',
-          hintText: 'Code à 6 chiffres',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.security),
+        decoration: InputDecoration(
+          labelText: l10n.verificationCodeRequired,
+          hintText: l10n.sixDigitCodeHint,
+          border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.security),
         ),
         keyboardType: TextInputType.number,
         maxLength: 6,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Le code est requis';
+            return l10n.codeRequired;
           }
           if (value.length != 6) {
-            return 'Le code doit contenir 6 chiffres';
+            return l10n.codeMustBeSixDigits;
           }
           return null;
         },
       ),
-
       const SizedBox(height: 16),
-
       TextFormField(
         controller: _passwordController,
         decoration: InputDecoration(
-          labelText: 'Nouveau mot de passe *',
-          hintText: 'Minimum 6 caractères',
+          labelText: l10n.newPasswordRequired,
+          hintText: l10n.minimumSixCharacters,
           border: const OutlineInputBorder(),
           prefixIcon: const Icon(Icons.lock_outline),
           suffixIcon: IconButton(
@@ -207,22 +203,20 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         obscureText: _obscurePassword,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Le mot de passe est requis';
+            return l10n.passwordRequired;
           }
           if (value.length < 6) {
-            return 'Le mot de passe doit contenir au moins 6 caractères';
+            return l10n.passwordMinSixChars;
           }
           return null;
         },
       ),
-
       const SizedBox(height: 16),
-
       TextFormField(
         controller: _confirmPasswordController,
         decoration: InputDecoration(
-          labelText: 'Confirmer le mot de passe *',
-          hintText: 'Retapez le mot de passe',
+          labelText: l10n.confirmNewPassword,
+          hintText: l10n.retypePassword,
           border: const OutlineInputBorder(),
           prefixIcon: const Icon(Icons.lock_outline),
           suffixIcon: IconButton(
@@ -238,10 +232,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         obscureText: _obscureConfirmPassword,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'La confirmation est requise';
+            return l10n.confirmationRequired;
           }
           if (value != _passwordController.text) {
-            return 'Les mots de passe ne correspondent pas';
+            return l10n.passwordsDoNotMatch;
           }
           return null;
         },
@@ -249,43 +243,43 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     ];
   }
 
-  List<Widget> _buildActions() {
+  List<Widget> _buildActions(AppLocalizations l10n) {
     return [
       TextButton(
         onPressed: _isLoading ? null : () => Navigator.pop(context),
-        child: const Text('Annuler'),
+        child: Text(l10n.cancel),
       ),
-
       if (!_showCodeStep)
         ElevatedButton(
           onPressed: _isLoading ? null : _requestCode,
-          child: const Text('Envoyer le code'),
+          child: Text(l10n.sendCode),
         ),
-
       if (_showCodeStep)
         ElevatedButton(
           onPressed: _isLoading ? null : _changePassword,
-          child: const Text('Changer le mot de passe'),
+          child: Text(l10n.changePasswordButton),
         ),
     ];
   }
 
-  void _handleAuthStateChanges(BuildContext context, AuthState state) {
+  void _handleAuthStateChanges(
+    BuildContext context,
+    AuthState state,
+    AppLocalizations l10n,
+  ) {
     setState(() => _isLoading = false);
 
     if (state is PasswordChangeCodeSent) {
       setState(() => _showCodeStep = true);
-
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Code de vérification envoyé ! Vérifiez votre email.',
+        l10n.verificationCodeSentCheckEmail,
       );
     } else if (state is PasswordChanged) {
       Navigator.pop(context);
-
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Mot de passe modifié avec succès !',
+        l10n.passwordChangedSuccessfully,
       );
     } else if (state is AuthFailure) {
       SmartSnackBarManager.showErrorSnackBar(context, state.error);

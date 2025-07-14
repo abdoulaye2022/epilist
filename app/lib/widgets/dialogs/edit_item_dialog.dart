@@ -1,5 +1,5 @@
-// widgets/dialogs/edit_item_dialog.dart
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +45,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
@@ -62,7 +64,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Contenu scrollable
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -71,13 +72,13 @@ class _EditItemDialogState extends State<EditItemDialog> {
                   children: [
                     _buildIcon(),
                     const SizedBox(height: 20),
-                    _buildTitle(),
+                    _buildTitle(l10n),
                     const SizedBox(height: 12),
-                    _buildDescription(),
+                    _buildDescription(l10n),
                     const SizedBox(height: 24),
-                    _buildForm(),
+                    _buildForm(l10n),
                     const SizedBox(height: 24),
-                    _buildButtons(),
+                    _buildButtons(l10n),
                   ],
                 ),
               ),
@@ -100,10 +101,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildTitle() {
-    return const Text(
-      'Modifier l\'article',
-      style: TextStyle(
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.editItem,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -111,32 +112,32 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      'Modifiez les informations de votre article',
+      l10n.modifyItemInformation,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(AppLocalizations l10n) {
     return Column(
       children: [
-        _buildProductNameField(),
+        _buildProductNameField(l10n),
         const SizedBox(height: 16),
-        _buildQuantityAndPriceRow(),
+        _buildQuantityAndPriceRow(l10n),
         const SizedBox(height: 16),
-        _buildStoreField(),
+        _buildStoreField(l10n),
       ],
     );
   }
 
-  Widget _buildProductNameField() {
+  Widget _buildProductNameField(AppLocalizations l10n) {
     return TextField(
       controller: productController,
       decoration: InputDecoration(
-        labelText: 'Nom du produit*',
-        hintText: 'Ex: Bananes, Pain, Lait...',
+        labelText: l10n.productNameRequired,
+        hintText: l10n.productNameHint,
         prefixIcon: Icon(Icons.shopping_basket, color: Colors.blue[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -158,7 +159,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildQuantityAndPriceRow() {
+  Widget _buildQuantityAndPriceRow(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -166,7 +167,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
           child: TextField(
             controller: quantityController,
             decoration: InputDecoration(
-              labelText: 'Quantité',
+              labelText: l10n.quantity,
               hintText: '1',
               prefixIcon: Icon(Icons.numbers, color: Colors.orange[600]),
               border: OutlineInputBorder(
@@ -193,7 +194,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
           child: TextField(
             controller: priceController,
             decoration: InputDecoration(
-              labelText: 'Prix (\$CAD)',
+              labelText: l10n.priceCAD,
               hintText: '0.00',
               prefixIcon: Icon(Icons.attach_money, color: Colors.amber[700]),
               border: OutlineInputBorder(
@@ -218,12 +219,12 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildStoreField() {
+  Widget _buildStoreField(AppLocalizations l10n) {
     return TextField(
       controller: storeController,
       decoration: InputDecoration(
-        labelText: 'Magasin (optionnel)',
-        hintText: 'Ex: IGA, Metro, Provigo...',
+        labelText: l10n.storeOptional,
+        hintText: l10n.storeHint,
         prefixIcon: Icon(Icons.store, color: Colors.purple[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -244,7 +245,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildButtons() {
+  Widget _buildButtons(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
@@ -258,7 +259,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -273,7 +274,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
             builder: (context, state) {
               final isLoading = state is ListItemLoading;
               return ElevatedButton(
-                onPressed: isLoading ? null : _updateItem,
+                onPressed: isLoading ? null : () => _updateItem(l10n),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[600],
                   foregroundColor: Colors.white,
@@ -296,14 +297,14 @@ class _EditItemDialogState extends State<EditItemDialog> {
                             ),
                           ),
                         )
-                        : const Row(
+                        : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.save, size: 18),
-                            SizedBox(width: 6),
+                            const Icon(Icons.save, size: 18),
+                            const SizedBox(width: 6),
                             Text(
-                              'Modifier',
-                              style: TextStyle(
+                              l10n.save,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -318,11 +319,11 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  void _updateItem() {
+  void _updateItem(AppLocalizations l10n) {
     if (productController.text.trim().isEmpty) {
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        'Le nom du produit est obligatoire',
+        l10n.productNameRequiredMessage,
         duration: const Duration(seconds: 2),
       );
       return;

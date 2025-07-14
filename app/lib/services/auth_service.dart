@@ -1,4 +1,4 @@
-// auth_service.dart - VERSION CORRIGÉE POUR JWT 1 AN
+// auth_service.dart - CORRECTION : Une seule source d'erreur
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
@@ -27,19 +27,14 @@ class AuthService {
 
   AuthService({required this.dio, required this.sharedPreferences});
 
-  // === GESTION DES TOKENS CORRIGÉE ===
+  // === GESTION DES TOKENS (INCHANGÉE) ===
 
-  /// Décoder le JWT pour extraire la vraie date d'expiration
   DateTime? _getTokenExpiration(String token) {
     try {
-      // Séparer le token JWT en parties
       final parts = token.split('.');
       if (parts.length != 3) return null;
 
-      // Décoder le payload (partie 2)
       String payload = parts[1];
-
-      // Ajouter le padding nécessaire pour base64
       switch (payload.length % 4) {
         case 2:
           payload += '==';
@@ -49,11 +44,9 @@ class AuthService {
           break;
       }
 
-      // Décoder le JSON
       final decoded = utf8.decode(base64Url.decode(payload));
       final Map<String, dynamic> payloadMap = json.decode(decoded);
 
-      // Récupérer 'exp' (expiration timestamp)
       final exp = payloadMap['exp'];
       if (exp != null) {
         return DateTime.fromMillisecondsSinceEpoch(exp * 1000);
@@ -66,13 +59,11 @@ class AuthService {
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
     try {
-      // Extraire la vraie date d'expiration du JWT
       final tokenExpiry = _getTokenExpiration(accessToken);
 
       await Future.wait([
         sharedPreferences.setString(_accessTokenKey, accessToken),
         sharedPreferences.setString(_refreshTokenKey, refreshToken),
-        // Sauvegarder la vraie date d'expiration du JWT ou par défaut 1 an
         sharedPreferences.setInt(
           _tokenExpiryKey,
           (tokenExpiry ?? DateTime.now().add(const Duration(days: 365)))
@@ -92,11 +83,9 @@ class AuthService {
     try {
       final token = sharedPreferences.getString(_accessTokenKey);
       if (token != null && token.isNotEmpty) {
-        // Vérifier si le token n'est pas expiré
         if (await isTokenExpired()) {
           print('Token expiré, tentative de refresh automatique');
 
-          // Essayer de rafraîchir automatiquement
           final refreshToken = await getRefreshToken();
           if (refreshToken != null && refreshToken.isNotEmpty) {
             try {
@@ -155,7 +144,6 @@ class AuthService {
     }
   }
 
-  /// Vérifier si le token expire bientôt (dans les 7 jours)
   Future<bool> shouldRefreshSoon() async {
     try {
       final expiry = sharedPreferences.getInt(_tokenExpiryKey);
@@ -164,13 +152,13 @@ class AuthService {
       final expiryDate = DateTime.fromMillisecondsSinceEpoch(expiry);
       final daysLeft = expiryDate.difference(DateTime.now()).inDays;
 
-      return daysLeft <= 7; // Refresh si moins de 7 jours
+      return daysLeft <= 7;
     } catch (e) {
       return true;
     }
   }
 
-  // === AUTHENTIFICATION ===
+  // === LOGIN (INCHANGÉ) ===
 
   Future<Map<String, String>> login(String email, String password) async {
     try {
@@ -193,7 +181,6 @@ class AuthService {
           );
         }
 
-        // Afficher l'expiration du token reçu
         final expiry = _getTokenExpiration(accessToken);
         print('Nouveau token reçu, expire le: $expiry');
 
@@ -202,7 +189,6 @@ class AuthService {
         throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
     } on DioException catch (e) {
-      // [Votre gestion d'erreur existante reste la même]
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
         if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
@@ -242,6 +228,86 @@ class AuthService {
     }
   }
 
+  // === REGISTER - MODIFIÉ POUR MAPPER LES CODES D'ERREUR CORRECTEMENT ===
+
+  // auth_service.dart - CORRECTION FINALE : Utiliser seulement les codes d'erreur
+
+  Future<void> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+  ) async {
+    try {
+      final response = await dio.post(
+        '/auth/register',
+        data: {
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if (response.statusCode != 201) {
+        throw AuthenticationException(
+          'REGISTRATION_FAILED',
+          'REGISTRATION_FAILED',
+        );
+      }
+    } on DioException catch (e) {
+      // Gestion spécifique des erreurs de votre API
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        if (errorData != null && errorData is Map) {
+          final errorCode = errorData['code'] as String?;
+          final errorMessage = errorData['message'] as String?;
+
+          // ✅ CORRECTION : Utiliser seulement les codes d'erreur, pas les messages français
+          switch (errorCode) {
+            case 'EMAIL_ALREADY_EXISTS':
+              throw AuthenticationException(
+                'EMAIL_ALREADY_EXISTS', // ← Code d'erreur seulement
+                'EMAIL_ALREADY_EXISTS',
+              );
+            case 'VALIDATION_ERROR':
+              throw AuthenticationException(
+                'VALIDATION_ERROR',
+                'VALIDATION_ERROR',
+              );
+            default:
+              throw AuthenticationException(
+                errorCode ?? 'REGISTRATION_ERROR',
+                errorCode ?? 'REGISTRATION_ERROR',
+              );
+          }
+        }
+      } else if (e.response?.statusCode == 409) {
+        // Code de conflit générique
+        throw AuthenticationException('EMAIL_CONFLICT', 'EMAIL_CONFLICT');
+      } else if (e.response?.statusCode == 422) {
+        // Erreurs de validation
+        throw AuthenticationException('VALIDATION_ERROR', 'VALIDATION_ERROR');
+      } else if (e.response?.statusCode == 500) {
+        // Erreur serveur
+        throw AuthenticationException('SERVER_ERROR', 'SERVER_ERROR');
+      } else {
+        // Autres erreurs réseau
+        throw AuthenticationException('NETWORK_ERROR', 'NETWORK_ERROR');
+      }
+    } catch (e) {
+      // Erreur inattendue (pas une DioException)
+      if (e is AuthenticationException) {
+        rethrow; // Relancer les AuthenticationException déjà créées
+      }
+
+      throw AuthenticationException('UNKNOWN_ERROR', 'UNKNOWN_ERROR');
+    }
+  }
+
+  // === AUTRES MÉTHODES (INCHANGÉES) ===
+
   Future<Map<String, String>> refreshToken(String refreshToken) async {
     try {
       print('Tentative de refresh du token...');
@@ -261,7 +327,6 @@ class AuthService {
           throw Exception('Nouveaux tokens manquants dans la réponse');
         }
 
-        // Afficher l'expiration du nouveau token
         final expiry = _getTokenExpiration(newAccessToken);
         print('Token refreshé avec succès, expire le: $expiry');
 
@@ -286,8 +351,7 @@ class AuthService {
 
   Future<bool> isAuthenticated() async {
     try {
-      final accessToken =
-          await getToken(); // getToken() gère déjà le refresh automatique
+      final accessToken = await getToken();
       return accessToken != null && accessToken.isNotEmpty;
     } catch (e) {
       print('Erreur lors de la vérification d\'authentification: $e');
@@ -295,7 +359,6 @@ class AuthService {
     }
   }
 
-  // [Le reste de votre code reste identique]
   Future<void> saveUserToCache(User user) async {
     try {
       await sharedPreferences.setString(_userKey, user.toJsonString());
@@ -306,15 +369,13 @@ class AuthService {
 
   Future<User?> getCurrentUser() async {
     try {
-      // D'abord vérifier si on a l'utilisateur en cache
       final cachedUserData = sharedPreferences.getString(_userKey);
       if (cachedUserData != null) {
         final userData = User.fromJsonString(cachedUserData);
         return userData;
       }
 
-      // Sinon, récupérer depuis l'API
-      final token = await getToken(); // getToken() gère le refresh automatique
+      final token = await getToken();
       if (token == null) {
         return null;
       }
@@ -382,72 +443,6 @@ class AuthService {
     }
   }
 
-  // === AUTRES MÉTHODES ===
-
-  Future<void> register(
-    String firstName,
-    String lastName,
-    String email,
-    String password,
-  ) async {
-    try {
-      final response = await dio.post(
-        '/auth/register',
-        data: {
-          'first_name': firstName,
-          'last_name': lastName,
-          'email': email,
-          'password': password,
-        },
-      );
-
-      if (response.statusCode != 201) {
-        throw AuthenticationException(
-          'Erreur lors de l\'inscription',
-          'REGISTRATION_FAILED',
-        );
-      }
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 409 || e.response?.statusCode == 400) {
-        final errorData = e.response?.data;
-
-        // Vérifier le code d'erreur spécifique
-        if (errorData != null && errorData['code'] == 'EMAIL_ALREADY_EXISTS') {
-          throw AuthenticationException(
-            'Un compte avec cet email existe déjà',
-            'EMAIL_ALREADY_EXISTS',
-          );
-        }
-
-        // Autres erreurs de conflit
-        throw AuthenticationException(
-          'Un compte avec cet email existe déjà',
-          'EMAIL_CONFLICT',
-        );
-      } else if (e.response?.statusCode == 422) {
-        // Erreurs de validation
-        final errorData = e.response?.data;
-        String errorMessage = 'Données invalides';
-
-        if (errorData != null && errorData['message'] != null) {
-          errorMessage = errorData['message'].toString();
-        }
-
-        throw AuthenticationException(errorMessage, 'VALIDATION_ERROR');
-      } else {
-        throw AuthenticationException(
-          'Erreur lors de l\'inscription: ${e.message}',
-          'NETWORK_ERROR',
-        );
-      }
-    } catch (e) {
-      throw AuthenticationException(
-        'Une erreur inattendue est survenue lors de l\'inscription',
-        'UNKNOWN_ERROR',
-      );
-    }
-  }
-
   Future<User> updateProfile({
     required String firstName,
     required String lastName,
@@ -461,8 +456,6 @@ class AuthService {
       );
 
       final updatedUser = User.fromMap(response.data);
-
-      // Mettre à jour le cache
       await sharedPreferences.setString(_userKey, updatedUser.toJsonString());
 
       return updatedUser;
@@ -485,12 +478,61 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      await dio.post(
+      final response = await dio.post(
         '/auth/verify-password-change-code',
         data: {'email': email, 'code': code, 'new_password': newPassword},
       );
+
+      if (response.statusCode != 200) {
+        throw AuthenticationException(
+          'PASSWORD_CHANGE_ERROR',
+          'PASSWORD_CHANGE_ERROR',
+        );
+      }
     } on DioException catch (e) {
-      throw Exception('Erreur lors de la vérification: ${e.message}');
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        if (errorData != null && errorData is Map) {
+          final errorCode = errorData['code'] as String?;
+
+          // ✅ CORRECTION: Gérer les codes d'erreur uniformes
+          switch (errorCode) {
+            case 'INVALID_CODE':
+              throw AuthenticationException('INVALID_CODE', 'INVALID_CODE');
+            case 'CODE_EXPIRED':
+              throw AuthenticationException('CODE_EXPIRED', 'CODE_EXPIRED');
+            case 'VALIDATION_ERROR':
+              throw AuthenticationException(
+                'VALIDATION_ERROR',
+                'VALIDATION_ERROR',
+              );
+            case 'USER_INACTIVE':
+              throw AuthenticationException('USER_INACTIVE', 'USER_INACTIVE');
+            default:
+              throw AuthenticationException(
+                'VERIFICATION_ERROR',
+                'VERIFICATION_ERROR',
+              );
+          }
+        } else {
+          throw AuthenticationException('INVALID_CODE', 'INVALID_CODE');
+        }
+      } else if (e.response?.statusCode == 404) {
+        throw AuthenticationException('USER_NOT_FOUND', 'USER_NOT_FOUND');
+      } else if (e.response?.statusCode == 422) {
+        throw AuthenticationException('VALIDATION_ERROR', 'VALIDATION_ERROR');
+      } else if (e.response?.statusCode == 500) {
+        throw AuthenticationException('SERVER_ERROR', 'SERVER_ERROR');
+      } else {
+        throw AuthenticationException('NETWORK_ERROR', 'NETWORK_ERROR');
+      }
+    } catch (e) {
+      if (e is AuthenticationException) {
+        rethrow;
+      }
+
+      throw AuthenticationException('UNKNOWN_ERROR', 'UNKNOWN_ERROR');
     }
   }
 
@@ -507,14 +549,12 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = response.data;
 
-        // Vérifier si la réponse contient des tokens (nouvelle API)
         final accessToken = data['access_token'] as String?;
         final refreshToken = data['refresh_token'] as String?;
 
         if (accessToken != null && refreshToken != null) {
           return {'access_token': accessToken, 'refresh_token': refreshToken};
         } else {
-          // Ancienne API - pas de tokens
           return null;
         }
       } else {
@@ -527,7 +567,6 @@ class AuthService {
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
 
-        // Vérifier les codes d'erreur spécifiques
         if (errorData != null && errorData is Map) {
           final errorCode = errorData['code'] as String?;
           final errorMessage = errorData['message'] as String?;
@@ -569,7 +608,6 @@ class AuthService {
           );
         }
       } else if (e.response?.statusCode == 422) {
-        // Erreurs de validation
         throw AuthenticationException(
           'Données de vérification invalides',
           'VALIDATION_ERROR',
@@ -611,7 +649,6 @@ class AuthService {
         final errorData = e.response?.data;
 
         if (errorData != null && errorData['errors'] != null) {
-          // Erreur de validation spécifique
           final errors = errorData['errors'] as Map<String, dynamic>;
           if (errors['code'] != null) {
             throw AuthenticationException(
@@ -627,7 +664,6 @@ class AuthService {
           }
         }
 
-        // Erreur générale de validation
         throw AuthenticationException(
           'Données de requête invalides',
           'VALIDATION_ERROR',

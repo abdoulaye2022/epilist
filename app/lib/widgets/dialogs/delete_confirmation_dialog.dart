@@ -1,5 +1,6 @@
 // widgets/dialogs/delete_confirmation_dialog.dart
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class DeleteConfirmationDialog extends StatelessWidget {
   final String title;
@@ -27,16 +28,18 @@ class DeleteConfirmationDialog extends StatelessWidget {
 
   // Factory pour supprimer un article
   factory DeleteConfirmationDialog.deleteItem({
+    required BuildContext context,
     required String itemName,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
     bool isLoading = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return DeleteConfirmationDialog(
-      title: 'Supprimer l\'article',
+      title: l10n.deleteItemTitle,
       itemName: itemName,
-      description: 'Êtes-vous sûr de vouloir supprimer',
-      warningText: 'Cette action est irréversible.',
+      description: l10n.sureToDeleteItem,
+      warningText: l10n.actionIrreversible,
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
@@ -47,17 +50,18 @@ class DeleteConfirmationDialog extends StatelessWidget {
 
   // Factory pour supprimer une liste
   factory DeleteConfirmationDialog.deleteList({
+    required BuildContext context,
     required String listName,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
     bool isLoading = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return DeleteConfirmationDialog(
-      title: 'Supprimer la liste',
+      title: l10n.deleteListTitle,
       itemName: listName,
-      description: 'Êtes-vous sûr de vouloir supprimer la liste',
-      warningText:
-          'Cette action est irréversible et supprimera tous les articles.',
+      description: l10n.sureToDeleteList,
+      warningText: l10n.actionIrreversibleDeletesAllItems,
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
@@ -68,17 +72,18 @@ class DeleteConfirmationDialog extends StatelessWidget {
 
   // Factory pour quitter une liste partagée
   factory DeleteConfirmationDialog.leaveList({
+    required BuildContext context,
     required String listName,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
     bool isLoading = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return DeleteConfirmationDialog(
-      title: 'Quitter la liste',
+      title: l10n.leaveList,
       itemName: listName,
-      description: 'Êtes-vous sûr de vouloir quitter',
-      warningText:
-          'Vous perdrez l\'accès à cette liste et ne pourrez plus voir son contenu.',
+      description: l10n.sureToLeaveQuestion, // Utiliser une clé différente
+      warningText: l10n.loseAccessWarning,
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
@@ -87,33 +92,9 @@ class DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 
-  // Factory générique pour d'autres actions destructives
-  factory DeleteConfirmationDialog.custom({
-    required String title,
-    required String itemName,
-    required VoidCallback onConfirm,
-    String? description,
-    String? warningText,
-    VoidCallback? onCancel,
-    bool isLoading = false,
-    Color? accentColor,
-    IconData? icon,
-  }) {
-    return DeleteConfirmationDialog(
-      title: title,
-      itemName: itemName,
-      description: description,
-      warningText: warningText,
-      onConfirm: onConfirm,
-      onCancel: onCancel,
-      isLoading: isLoading,
-      accentColor: accentColor ?? Colors.red[600],
-      icon: icon ?? Icons.warning_rounded,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final effectiveAccentColor = accentColor ?? Colors.red[600]!;
     final effectiveIcon = icon ?? Icons.delete_rounded;
 
@@ -139,7 +120,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
               _buildWarning(effectiveAccentColor),
             ],
             const SizedBox(height: 24),
-            _buildButtons(context, effectiveAccentColor),
+            _buildButtons(context, effectiveAccentColor, l10n),
           ],
         ),
       ),
@@ -205,7 +186,11 @@ class DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildButtons(BuildContext context, Color color) {
+  Widget _buildButtons(
+    BuildContext context,
+    Color color,
+    AppLocalizations l10n,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -220,7 +205,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -260,7 +245,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                       ),
                     )
                     : Text(
-                      _getConfirmButtonText(),
+                      _getConfirmButtonText(l10n),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -272,45 +257,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 
-  String _getConfirmButtonText() {
-    if (title.toLowerCase().contains('supprimer')) {
-      return 'Supprimer';
-    } else if (title.toLowerCase().contains('quitter')) {
-      return 'Quitter';
+  String _getConfirmButtonText(AppLocalizations l10n) {
+    if (title.toLowerCase().contains('supprimer') ||
+        title.toLowerCase().contains('delete')) {
+      return l10n.delete;
+    } else if (title.toLowerCase().contains('quitter') ||
+        title.toLowerCase().contains('leave')) {
+      return l10n.leave;
     } else {
-      return 'Confirmer';
+      return l10n.confirm;
     }
-  }
-
-  // Méthode statique pour afficher le dialog facilement
-  static Future<bool?> show({
-    required BuildContext context,
-    required String title,
-    required String itemName,
-    required VoidCallback onConfirm,
-    String? description,
-    String? warningText,
-    VoidCallback? onCancel,
-    bool isLoading = false,
-    Color? accentColor,
-    IconData? icon,
-  }) {
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: !isLoading,
-      builder:
-          (context) => DeleteConfirmationDialog(
-            title: title,
-            itemName: itemName,
-            description: description,
-            warningText: warningText,
-            onConfirm: onConfirm,
-            onCancel: onCancel,
-            isLoading: isLoading,
-            accentColor: accentColor,
-            icon: icon,
-          ),
-    );
   }
 
   // Méthodes statiques pour les cas d'usage courants
@@ -320,16 +276,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
     required VoidCallback onConfirm,
     bool isLoading = false,
   }) {
-    return show(
+    return showDialog<bool>(
       context: context,
-      title: 'Supprimer l\'article',
-      itemName: itemName,
-      description: 'Êtes-vous sûr de vouloir supprimer',
-      warningText: 'Cette action est irréversible.',
-      onConfirm: onConfirm,
-      isLoading: isLoading,
-      accentColor: Colors.red[600],
-      icon: Icons.delete_rounded,
+      barrierDismissible: !isLoading,
+      builder:
+          (context) => DeleteConfirmationDialog.deleteItem(
+            context: context,
+            itemName: itemName,
+            onConfirm: onConfirm,
+            isLoading: isLoading,
+          ),
     );
   }
 
@@ -339,17 +295,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
     required VoidCallback onConfirm,
     bool isLoading = false,
   }) {
-    return show(
+    return showDialog<bool>(
       context: context,
-      title: 'Supprimer la liste',
-      itemName: listName,
-      description: 'Êtes-vous sûr de vouloir supprimer la liste',
-      warningText:
-          'Cette action est irréversible et supprimera tous les articles.',
-      onConfirm: onConfirm,
-      isLoading: isLoading,
-      accentColor: Colors.red[600],
-      icon: Icons.delete_rounded,
+      barrierDismissible: !isLoading,
+      builder:
+          (context) => DeleteConfirmationDialog.deleteList(
+            context: context,
+            listName: listName,
+            onConfirm: onConfirm,
+            isLoading: isLoading,
+          ),
     );
   }
 
@@ -359,17 +314,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
     required VoidCallback onConfirm,
     bool isLoading = false,
   }) {
-    return show(
+    return showDialog<bool>(
       context: context,
-      title: 'Quitter la liste',
-      itemName: listName,
-      description: 'Êtes-vous sûr de vouloir quitter',
-      warningText:
-          'Vous perdrez l\'accès à cette liste et ne pourrez plus voir son contenu.',
-      onConfirm: onConfirm,
-      isLoading: isLoading,
-      accentColor: Colors.orange[600],
-      icon: Icons.exit_to_app,
+      barrierDismissible: !isLoading,
+      builder:
+          (context) => DeleteConfirmationDialog.leaveList(
+            context: context,
+            listName: listName,
+            onConfirm: onConfirm,
+            isLoading: isLoading,
+          ),
     );
   }
 }

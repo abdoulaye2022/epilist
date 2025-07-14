@@ -1,3 +1,4 @@
+// widgets/profile/profile_action_tile.dart - PAS DE CHANGEMENT (titre passé en paramètre)
 import 'package:flutter/material.dart';
 
 class ProfileActionTile extends StatelessWidget {

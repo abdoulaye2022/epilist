@@ -1,5 +1,5 @@
-// widgets/home/home_app_bar.dart
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onRefresh;
@@ -17,41 +17,39 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 1,
       title: Text(
-        'Bienvenue',
-        style: TextStyle(
+        l10n.welcome,
+        style: const TextStyle(
           color: Colors.black87,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
       ),
       actions: [
-        // Bouton refresh
         IconButton(
           onPressed: onRefresh,
           icon: Icon(Icons.refresh, color: Colors.grey[700]),
-          tooltip: 'Actualiser',
+          tooltip: l10n.refresh,
         ),
-        // Bouton Voir toutes les listes
         IconButton(
           onPressed: onViewAllLists,
           icon: Icon(Icons.list, color: Colors.grey[700]),
-          tooltip: 'Toutes les listes',
+          tooltip: l10n.allLists,
         ),
-        // Bouton Profile
         IconButton(
           onPressed: onProfile,
           icon: Icon(Icons.person, color: Colors.grey[700]),
-          tooltip: 'Profil',
+          tooltip: l10n.profile,
         ),
-        // Bouton Déconnexion
         IconButton(
           onPressed: onLogout,
           icon: Icon(Icons.logout, color: Colors.red[600]),
-          tooltip: 'Déconnexion',
+          tooltip: l10n.logout,
         ),
       ],
     );

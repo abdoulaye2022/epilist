@@ -1,4 +1,5 @@
-// widgets/shopping/shopping_list_card.dart - VERSION UNIFIÉE
+// widgets/shopping/shopping_list_card.dart - VERSION UNIFIÉE AVEC TRADUCTIONS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -52,19 +53,19 @@ class ShoppingListCard extends StatelessWidget {
             children: [
               _buildHeader(),
               const SizedBox(height: 12),
-              _buildListInfo(totalItems, totalPrice),
+              _buildListInfo(context, totalItems, totalPrice),
               if (list.isShared) ...[
                 const SizedBox(height: 8),
-                _buildSharingInfo(),
+                _buildSharingInfo(context),
               ],
               if (totalItems > 0) ...[
                 const SizedBox(height: 12),
                 _buildProgressSection(progress, completedItems, totalItems),
                 const SizedBox(height: 12),
-                _buildBottomRow(),
+                _buildBottomRow(context),
               ],
               const SizedBox(height: 8),
-              _buildDateInfo(),
+              _buildDateInfo(context),
             ],
           ),
         ),
@@ -104,7 +105,13 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildListInfo(int totalItems, double totalPrice) {
+  Widget _buildListInfo(
+    BuildContext context,
+    int totalItems,
+    double totalPrice,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmallScreen = constraints.maxWidth < 300;
@@ -119,7 +126,7 @@ class ShoppingListCard extends StatelessWidget {
                   Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 6),
                   Text(
-                    '$totalItems articles',
+                    '$totalItems ${l10n.articles}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
@@ -131,7 +138,7 @@ class ShoppingListCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                      '${l10n.budget}: ${totalPrice.toStringAsFixed(2)}${l10n.cad}',
                       style: TextStyle(
                         color: Colors.green[600],
                         fontSize: 14,
@@ -151,7 +158,7 @@ class ShoppingListCard extends StatelessWidget {
               Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
               Text(
-                '$totalItems articles',
+                '$totalItems ${l10n.articles}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
               if (totalPrice > 0) ...[
@@ -160,7 +167,7 @@ class ShoppingListCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                    '${l10n.budget}: ${totalPrice.toStringAsFixed(2)}${l10n.cad}',
                     style: TextStyle(
                       color: Colors.green[600],
                       fontSize: 14,
@@ -177,7 +184,9 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSharingInfo() {
+  Widget _buildSharingInfo(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!list.isShared) return const SizedBox.shrink();
 
     return Container(
@@ -200,8 +209,8 @@ class ShoppingListCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             list.isOwner
-                ? 'Liste partagée • ${list.sharedWithCount} collaborateur(s)'
-                : 'Partagée par ${list.sharedBy?.name ?? "un utilisateur"}',
+                ? '${l10n.sharedList} • ${list.sharedWithCount} ${l10n.collaborators}'
+                : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
             style: TextStyle(
               fontSize: 12,
               color: list.isOwner ? Colors.blue[600] : Colors.green[600],
@@ -241,17 +250,19 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow() {
+  Widget _buildBottomRow(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatusChip(),
-        if (!list.isOwner) _buildPermissionIndicator(),
+        _buildStatusChip(context),
+        if (!list.isOwner) _buildPermissionIndicator(context),
       ],
     );
   }
 
-  Widget _buildStatusChip() {
+  Widget _buildStatusChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -262,7 +273,7 @@ class ShoppingListCard extends StatelessWidget {
         ),
       ),
       child: Text(
-        list.isCompleted ? '✅ Terminée' : '🛒 En cours',
+        list.isCompleted ? l10n.completed : l10n.inProgress,
         style: TextStyle(
           fontSize: 12,
           color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
@@ -272,9 +283,11 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo() {
+  Widget _buildDateInfo(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Text(
-      'Créée ${_formatDate(list.createdAt)}',
+      '${l10n.created} ${_formatDate(context, list.createdAt)}',
       style: TextStyle(fontSize: 12, color: Colors.grey[500]),
     );
   }
@@ -313,7 +326,9 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPermissionIndicator() {
+  Widget _buildPermissionIndicator(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (list.isOwner) return const SizedBox.shrink();
 
     String text = list.permissionDisplayName ?? 'Accès';
@@ -323,12 +338,15 @@ class ShoppingListCard extends StatelessWidget {
     if (list.isReadOnly) {
       color = Colors.blue[600]!;
       icon = Icons.visibility;
+      text = l10n.readOnlyAccess;
     } else if (list.canEdit) {
       color = Colors.green[600]!;
       icon = Icons.edit;
+      text = l10n.editAccess;
     } else {
       color = Colors.purple[600]!;
       icon = Icons.admin_panel_settings;
+      text = l10n.adminAccess;
     }
 
     return Container(
@@ -359,24 +377,25 @@ class ShoppingListCard extends StatelessWidget {
   Widget _buildPopupMenu() {
     return PopupMenuButton(
       icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-      itemBuilder: (context) => _buildMenuItems(),
+      itemBuilder: (context) => _buildMenuItems(context),
       onSelected: (value) => onMenuAction(value.toString()),
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
     // Modifier (si permission d'édition)
     if (list.canEdit) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
               Icon(Icons.edit, size: 20),
               SizedBox(width: 8),
-              Text('Modifier'),
+              Text(l10n.edit),
             ],
           ),
         ),
@@ -385,13 +404,13 @@ class ShoppingListCard extends StatelessWidget {
 
     // Dupliquer (toujours disponible)
     items.add(
-      const PopupMenuItem(
+      PopupMenuItem(
         value: 'duplicate',
         child: Row(
           children: [
             Icon(Icons.copy, size: 20),
             SizedBox(width: 8),
-            Text('Dupliquer'),
+            Text(l10n.duplicate),
           ],
         ),
       ),
@@ -406,7 +425,7 @@ class ShoppingListCard extends StatelessWidget {
             children: [
               Icon(Icons.share, size: 20, color: Colors.blue[600]),
               const SizedBox(width: 8),
-              Text('Partager', style: TextStyle(color: Colors.blue[600])),
+              Text(l10n.share, style: TextStyle(color: Colors.blue[600])),
             ],
           ),
         ),
@@ -423,7 +442,7 @@ class ShoppingListCard extends StatelessWidget {
               Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
               const SizedBox(width: 8),
               Text(
-                'Gérer les partages',
+                l10n.manageShares,
                 style: TextStyle(color: Colors.purple[600]),
               ),
             ],
@@ -440,13 +459,13 @@ class ShoppingListCard extends StatelessWidget {
     // Quitter (si pas propriétaire)
     if (!list.isOwner) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'leave',
           child: Row(
             children: [
               Icon(Icons.exit_to_app, size: 20, color: Colors.orange),
               SizedBox(width: 8),
-              Text('Quitter', style: TextStyle(color: Colors.orange)),
+              Text(l10n.leave, style: TextStyle(color: Colors.orange)),
             ],
           ),
         ),
@@ -456,13 +475,13 @@ class ShoppingListCard extends StatelessWidget {
     // Supprimer (si permission)
     if (list.canDelete) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
               Icon(Icons.delete, size: 20, color: Colors.red),
               SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red)),
+              Text(l10n.delete, style: TextStyle(color: Colors.red)),
             ],
           ),
         ),
@@ -472,18 +491,19 @@ class ShoppingListCard extends StatelessWidget {
     return items;
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
 
     if (difference == 0) {
-      return 'aujourd\'hui';
+      return l10n.today;
     } else if (difference == 1) {
-      return 'hier';
+      return l10n.yesterday;
     } else if (difference < 7) {
-      return 'il y a $difference jours';
+      return l10n.daysAgo(difference);
     } else {
-      return 'le ${date.day}/${date.month}/${date.year}';
+      return '${l10n.on} ${date.day}/${date.month}/${date.year}';
     }
   }
 }

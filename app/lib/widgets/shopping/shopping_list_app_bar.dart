@@ -1,4 +1,5 @@
 // widgets/shopping/shopping_list_app_bar.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingListAppBar extends StatelessWidget
@@ -9,9 +10,11 @@ class ShoppingListAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return AppBar(
       title: Text(
-        'Mes Listes de Courses',
+        l10n.myShoppingLists,
         style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
       ),
       backgroundColor: Colors.white,
@@ -20,7 +23,7 @@ class ShoppingListAppBar extends StatelessWidget
         IconButton(
           icon: Icon(Icons.refresh, color: Colors.black87),
           onPressed: onRefresh,
-          tooltip: 'Actualiser',
+          tooltip: l10n.refresh,
         ),
       ],
     );

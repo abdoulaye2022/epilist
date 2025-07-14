@@ -1,10 +1,11 @@
-// login_screen.dart - VERSION MISE À JOUR AVEC SNACKBAR MANAGER
+// login_screen.dart - VERSION AVEC GESTION D'ERREURS LOCALE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/screens/password_change_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
-import 'package:epilist/utils/snackbar_manager.dart'; // Import du gestionnaire
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,6 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocListener<AuthBloc, AuthState>(
@@ -33,28 +36,21 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // Utiliser le gestionnaire de SnackBar avec message en français
-            final localizedError = AuthErrorMessages.getLocalizedError(
-              state.error,
-            );
-            SnackBarManager.showErrorSnackBar(
+            // ✅ AJOUT: Afficher l'erreur localement avec SmartSnackBarManager
+            SmartSnackBarManager.showErrorSnackBar(
               context,
-              localizedError,
-              duration: const Duration(seconds: 5), // 5 secondes
+              state.error, // Le message est déjà traduit par AuthBloc
+              duration: const Duration(seconds: 4),
             );
-
-            print('Erreur de connexion: ${state.error}');
           } else if (state is EmailVerificationRequired) {
             setState(() => _isLoading = false);
 
-            // Afficher un message informatif pour la vérification d'email
-            SnackBarManager.showErrorSnackBar(
+            SmartSnackBarManager.showErrorSnackBar(
               context,
-              'Votre email doit être vérifié avant de continuer.',
+              l10n.emailMustBeVerified,
               duration: const Duration(seconds: 4),
             );
 
-            // Naviguer après un court délai pour que l'utilisateur voie le message
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted) {
                 Navigator.push(
@@ -72,17 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 
-            // Effacer tous les SnackBars avant la navigation
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
-            // Optionnel: afficher un message de succès
-            // SnackBarManager.showSuccessSnackBar(
-            //   context,
-            //   'Connexion réussie ! Bienvenue ${state.user.firstName}.',
-            //   duration: const Duration(seconds: 2),
-            // );
-
-            // Naviguer après un court délai
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
                 Navigator.pushReplacement(
@@ -137,7 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 80,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
-                                // Fallback avec design amélioré si l'image n'est pas trouvée
                                 return Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
@@ -170,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Gérez vos courses facilement',
+                          l10n.manageGroceryListsEasily,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[600],
@@ -199,11 +185,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     size: 16,
                                   ),
                                   SizedBox(width: 6),
-                                  Text(
-                                    'Créez vos listes avant d\'aller faire vos courses',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.green[700],
+                                  Flexible(
+                                    child: Text(
+                                      l10n.createListsBeforeShopping,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.green[700],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -218,11 +206,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     size: 16,
                                   ),
                                   SizedBox(width: 6),
-                                  Text(
-                                    'Cochez vos achats en temps réel',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.green[700],
+                                  Flexible(
+                                    child: Text(
+                                      l10n.checkPurchasesRealTime,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.green[700],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -237,11 +227,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     size: 16,
                                   ),
                                   SizedBox(width: 6),
-                                  Text(
-                                    'Suivez vos dépenses d\'épicerie en CAD\$',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.green[700],
+                                  Flexible(
+                                    child: Text(
+                                      l10n.trackGroceryExpenses,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.green[700],
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -256,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 48),
 
                   Text(
-                    'Connexion',
+                    l10n.loginTitle,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -266,7 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // INDICATEUR DE CHARGEMENT (simplifié)
+                  // INDICATEUR DE CHARGEMENT
                   if (_isLoading)
                     Container(
                       width: double.infinity,
@@ -289,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           SizedBox(width: 12),
                           Text(
-                            'Connexion en cours...',
+                            l10n.loggingIn,
                             style: TextStyle(
                               color: Colors.blue[700],
                               fontSize: 14,
@@ -310,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           keyboardType: TextInputType.emailAddress,
                           enabled: !_isLoading,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: l10n.email,
                             prefixIcon: const Icon(Icons.email_outlined),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -328,12 +320,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Veuillez saisir votre email';
+                              return l10n.pleaseEnterEmail;
                             }
                             if (!RegExp(
                               r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                             ).hasMatch(value.trim())) {
-                              return 'Email invalide';
+                              return l10n.invalidEmail;
                             }
                             return null;
                           },
@@ -347,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: _isObscure,
                           enabled: !_isLoading,
                           decoration: InputDecoration(
-                            labelText: 'Mot de passe',
+                            labelText: l10n.password,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -377,10 +369,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez saisir votre mot de passe';
+                              return l10n.pleaseEnterPassword;
                             }
                             if (value.length < 3) {
-                              return 'Le mot de passe doit contenir au moins 3 caractères';
+                              return l10n.passwordMinThreeCharacters;
                             }
                             return null;
                           },
@@ -395,7 +387,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed:
                                 _isLoading ? null : _showForgotPasswordDialog,
                             child: Text(
-                              'Mot de passe oublié ?',
+                              l10n.forgotPassword,
                               style: TextStyle(
                                 color:
                                     _isLoading
@@ -434,7 +426,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     )
                                     : Text(
-                                      'Se connecter',
+                                      l10n.login,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -454,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 horizontal: 16,
                               ),
                               child: Text(
-                                'OU',
+                                l10n.or,
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ),
@@ -493,7 +485,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: Text(
-                              'Créer un compte',
+                              l10n.createAccount,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -526,7 +518,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Simplifiez vos courses et maîtrisez votre budget !',
+                                  l10n.simplifyShoppingControlBudget,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.blue[700],
@@ -550,9 +542,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
-    // Ferme le clavier
     FocusScope.of(context).unfocus();
-
     setState(() => _isLoading = true);
 
     if (_formKey.currentState!.validate()) {
@@ -565,15 +555,17 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       setState(() => _isLoading = false);
 
-      SnackBarManager.showErrorSnackBar(
+      SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Veuillez corriger les erreurs dans le formulaire',
+        AppLocalizations.of(context)!.pleaseFixFormErrors,
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   void _showForgotPasswordDialog() {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder:
@@ -581,14 +573,14 @@ class _LoginScreenState extends State<LoginScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: Text('Mot de passe oublié'),
+            title: Text(l10n.forgotPassword),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.lock_reset, size: 48, color: Colors.orange[600]),
                 SizedBox(height: 16),
                 Text(
-                  'Réinitialiser votre mot de passe en toute sécurité.',
+                  l10n.resetPasswordSecurely,
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
@@ -598,7 +590,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Annuler',
+                  l10n.cancel,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ),
@@ -622,7 +614,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundColor: Colors.orange[600],
                   foregroundColor: Colors.white,
                 ),
-                child: Text('Réinitialiser'),
+                child: Text(l10n.reset),
               ),
             ],
           ),

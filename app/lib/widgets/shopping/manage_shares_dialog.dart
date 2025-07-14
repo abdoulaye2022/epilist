@@ -1,6 +1,7 @@
 // widgets/shopping/manage_shares_dialog.dart
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,8 @@ class ManageSharesDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
@@ -25,7 +28,7 @@ class ManageSharesDialog extends StatelessWidget {
             _buildHeader(context),
             SizedBox(height: 16),
             Text(
-              'Liste: ${list.name}',
+              '${l10n.list}: ${list.name}',
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             SizedBox(height: 16),
@@ -39,26 +42,31 @@ class ManageSharesDialog extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Gérer les partages',
+          l10n.manageShares,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.close),
+          tooltip: l10n.close,
         ),
       ],
     );
   }
 
   Widget _buildSharesList(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (list.sharedWith.isEmpty) {
       return Center(
         child: Text(
-          'Aucun partage actif',
+          l10n.noActiveShares,
           style: TextStyle(color: Colors.grey[500]),
         ),
       );
@@ -75,7 +83,7 @@ class ManageSharesDialog extends StatelessWidget {
               backgroundColor: Colors.blue[100],
               child: Icon(Icons.person, color: Colors.blue[600]),
             ),
-            title: Text(share.sharedWithUser?.name ?? 'Utilisateur'),
+            title: Text(share.sharedWithUser?.name ?? l10n.user),
             subtitle: Text(share.sharedWithUser?.email ?? ''),
             trailing: PopupMenuButton(
               icon: Icon(Icons.more_vert),
@@ -83,12 +91,12 @@ class ManageSharesDialog extends StatelessWidget {
                   (context) => [
                     PopupMenuItem(
                       value: 'change_permission',
-                      child: Text('Modifier permissions'),
+                      child: Text(l10n.modifyPermissions),
                     ),
                     PopupMenuItem(
                       value: 'revoke',
                       child: Text(
-                        'Révoquer',
+                        l10n.revoke,
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -107,6 +115,8 @@ class ManageSharesDialog extends StatelessWidget {
   }
 
   Widget _buildCreateNewShareButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -115,10 +125,7 @@ class ManageSharesDialog extends StatelessWidget {
           _showShareDialog(context);
         },
         style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[600]),
-        child: Text(
-          'Créer un nouveau partage',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: Text(l10n.createNewShare, style: TextStyle(color: Colors.white)),
       ),
     );
   }

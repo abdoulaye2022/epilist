@@ -1,4 +1,4 @@
-// widgets/list_detail/modern_dropdown_menu.dart - VERSION COMPLÈTE
+// widgets/list_detail/modern_dropdown_menu.dart
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -26,15 +26,13 @@ class ModernDropdownMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 8,
-      offset: const Offset(0, 8),
+      onSelected: (value) => _handleMenuAction(value, context),
       itemBuilder: (context) => _buildMenuItems(),
-      onSelected: (value) => _handleMenuSelection(value, context),
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
     // Section: Actions principales
@@ -42,10 +40,13 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         _buildMenuItem(
           value: 'edit',
-          icon: Icons.edit_rounded,
-          title: 'Modifier la liste',
-          subtitle: 'Changer le nom',
-          color: Colors.blue[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              const SizedBox(width: 8),
+              const Text('Modifier la liste'),
+            ],
+          ),
         ),
       );
     }
@@ -54,25 +55,13 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         _buildMenuItem(
           value: 'share',
-          icon: Icons.share_rounded,
-          title: 'Partager',
-          subtitle: 'Inviter des collaborateurs',
-          color: Colors.green[600]!,
-        ),
-      );
-    }
-
-    // Section: Gestion des partages (si applicable)
-    if (onManageShares != null) {
-      if (items.isNotEmpty) items.add(const PopupMenuDivider());
-
-      items.add(
-        _buildMenuItem(
-          value: 'manage_shares',
-          icon: Icons.people_alt_rounded,
-          title: 'Gérer les partages',
-          subtitle: 'Permissions et collaborateurs',
-          color: Colors.purple[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.share, size: 20, color: Colors.green[600]),
+              const SizedBox(width: 8),
+              const Text('Partager'),
+            ],
+          ),
         ),
       );
     }
@@ -81,13 +70,15 @@ class ModernDropdownMenu extends StatelessWidget {
     if (onInfo != null) {
       if (items.isNotEmpty) items.add(const PopupMenuDivider());
 
-      items.add(
-        _buildMenuItem(
-          value: 'info',
-          icon: Icons.info_rounded,
-          title: 'Informations',
-          subtitle: 'Détails de la liste',
-          color: Colors.blue[600]!,
+    items.add(
+      PopupMenuItem(
+        value: 'info',
+        child: Row(
+          children: [
+            Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 8),
+            const Text('Informations'),
+          ],
         ),
       );
     }
@@ -101,11 +92,13 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         _buildMenuItem(
           value: 'leave',
-          icon: Icons.exit_to_app_rounded,
-          title: 'Quitter la liste',
-          subtitle: 'Perdre l\'accès',
-          color: Colors.orange[600]!,
-          isDestructive: true,
+          child: Row(
+            children: [
+              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              const SizedBox(width: 8),
+              Text('Quitter', style: TextStyle(color: Colors.orange[600])),
+            ],
+          ),
         ),
       );
     }
@@ -114,11 +107,13 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         _buildMenuItem(
           value: 'delete',
-          icon: Icons.delete_rounded,
-          title: 'Supprimer',
-          subtitle: 'Action irréversible',
-          color: Colors.red[600]!,
-          isDestructive: true,
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              const SizedBox(width: 8),
+              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+            ],
+          ),
         ),
       );
     }

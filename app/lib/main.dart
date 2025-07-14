@@ -1,4 +1,4 @@
-// main.dart - VERSION CORRIGÉE AVEC WELCOME SCREEN
+// main.dart - VERSION AVEC CONNECTIVITÉ GLOBALE ET BANNIÈRE DÉSACTIVÉE SUR HOME
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
@@ -7,16 +7,19 @@ import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
-import 'package:epilist/screens/welcome_screen.dart'; // AJOUT DU WELCOME SCREEN
+import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/utils/snackbar_manager.dart';
+import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -25,12 +28,18 @@ import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+// IMPORTS POUR I18N
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
     final sharedPreferences = await SharedPreferences.getInstance();
+
+    // ✅ Initialiser le service de connectivité dès le démarrage
+    await ConnectivityService().initialize();
 
     final dio = Dio(
       BaseOptions(
@@ -67,9 +76,14 @@ void main() async {
       authService: authService,
     );
 
+    final localizationBloc = LocalizationBloc(
+      sharedPreferences: sharedPreferences,
+    );
+
     final authBloc = AuthBloc(
       authService: authService,
       accountDeletionService: accountDeletionService,
+      localizationBloc: localizationBloc,
     );
 
     // Ajouter l'interceptor de refresh token
@@ -87,6 +101,9 @@ void main() async {
           RepositoryProvider<AuthService>.value(value: authService),
           RepositoryProvider<AccountDeletionService>.value(
             value: accountDeletionService,
+          ),
+          RepositoryProvider<ConnectivityService>.value(
+            value: ConnectivityService(),
           ),
           RepositoryProvider(
             create:
@@ -115,16 +132,21 @@ void main() async {
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
+            BlocProvider<LocalizationBloc>.value(
+              value: localizationBloc..add(LoadLanguage()),
+            ),
             BlocProvider(
               create:
                   (context) => ShoppingListBloc(
                     shoppingListService: context.read<ShoppingListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
             BlocProvider(
               create:
                   (context) => SharedListBloc(
                     sharedListService: context.read<SharedListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
           ],
@@ -142,45 +164,89 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'EpiList',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.green, useMaterial3: true),
-      routes: {
-        '/register': (context) => const SignUpPage(),
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/profil': (context) => const ProfileScreen(),
-        '/welcome':
-            (context) => const WelcomeScreen(), // AJOUT DE LA ROUTE WELCOME
-        '/email-verification': (context) {
-          final args =
-              ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>;
-          return EmailVerificationScreen(
-            email: args['email'],
-            fromRegistration: args['fromRegistration'] ?? false,
-          );
-        },
-        // Route pour les liens de partage
-        '/share': (context) {
-          final args =
-              ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>?;
-          final shareToken = args?['token'] as String?;
-          if (shareToken != null) {
-            return BlocProvider(
-              create:
-                  (context) => SharedListBloc(
-                    sharedListService: context.read<SharedListService>(),
+    return BlocBuilder<LocalizationBloc, LocalizationState>(
+      builder: (context, localizationState) {
+        Locale currentLocale = const Locale('fr'); // Par défaut
+
+        if (localizationState is LocalizationLoaded) {
+          currentLocale = localizationState.locale;
+        }
+
+        return MaterialApp(
+          title: 'EpiList',
+          debugShowCheckedModeBanner: false,
+
+          // CONFIGURATION I18N
+          locale: currentLocale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('fr', ''), Locale('en', '')],
+
+          theme: ThemeData(primarySwatch: Colors.green, useMaterial3: true),
+
+          routes: {
+            '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
+            '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
+            '/home':
+                (context) => _wrapWithConnectivity(
+                  const HomeScreen(),
+                  showBanner: false,
+                ), // ✅ Pas de bannière sur home
+            '/profil':
+                (context) => _wrapWithConnectivity(const ProfileScreen()),
+            '/welcome':
+                (context) =>
+                    const WelcomeScreen(), // Pas de connectivité requise
+            '/email-verification': (context) {
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>;
+              return _wrapWithConnectivity(
+                EmailVerificationScreen(
+                  email: args['email'],
+                  fromRegistration: args['fromRegistration'] ?? false,
+                ),
+              );
+            },
+            '/share': (context) {
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>?;
+              final shareToken = args?['token'] as String?;
+              if (shareToken != null) {
+                return _wrapWithConnectivity(
+                  BlocProvider(
+                    create:
+                        (context) => SharedListBloc(
+                          sharedListService: context.read<SharedListService>(),
+                          localizationBloc: context.read<LocalizationBloc>(),
+                        ),
+                    child: ShareInvitationScreen(shareToken: shareToken),
                   ),
-              child: ShareInvitationScreen(shareToken: shareToken),
-            );
-          }
-          return const HomeScreen();
-        },
+                );
+              }
+              return _wrapWithConnectivity(
+                const HomeScreen(),
+                showBanner: false,
+              );
+            },
+          },
+          home: const AuthWrapper(),
+        );
       },
-      home: const AuthWrapper(),
+    );
+  }
+
+  // ✅ MODIFIÉ: Méthode pour envelopper les écrans avec ConnectivityWrapper
+  Widget _wrapWithConnectivity(Widget child, {bool showBanner = true}) {
+    return ConnectivityWrapper(
+      showOfflineBanner: showBanner,
+      blockActionsWhenOffline: true,
+      child: child,
     );
   }
 }
@@ -195,19 +261,20 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _redirecting = false;
   bool _deepLinkInitialized = false;
-  bool _hasCheckedAuth = false; // AJOUT: Pour savoir si on a vérifié l'auth
+  bool _hasCheckedAuth = false;
+  bool _isInitializing = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeDeepLinks();
+    _initializeDeepLinksWithDelay();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // Nettoyer les deep links
+    ConnectivityService().dispose();
     DeepLinkHandler.dispose();
     super.dispose();
   }
@@ -216,40 +283,34 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.resumed) {
-      // Réactiver les deep links quand l'app revient au premier plan
-      if (mounted) {
-        DeepLinkHandler.updateContext(context);
-      }
+    if (state == AppLifecycleState.resumed && _deepLinkInitialized) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        if (mounted) {
+          DeepLinkHandler.updateContext(context);
+        }
+      });
     }
   }
 
-  /// Initialiser les deep links
-  Future<void> _initializeDeepLinks() async {
-    try {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (mounted && !_deepLinkInitialized) {
-          DeepLinkHandler.initialize(context);
+  Future<void> _initializeDeepLinksWithDelay() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-          setState(() {
-            _deepLinkInitialized = true;
-          });
-        }
+    if (mounted && !_deepLinkInitialized) {
+      print('🚀 Initialisation des deep links depuis AuthWrapper');
+      DeepLinkHandler.initialize(context);
+      setState(() {
+        _deepLinkInitialized = true;
+        _isInitializing = false;
       });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _deepLinkInitialized = true;
-        });
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        // AJOUT: Marquer qu'on a vérifié l'authentification
         if (!_hasCheckedAuth &&
             state is! AuthInitial &&
             state is! AuthLoading) {
@@ -258,12 +319,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           });
         }
 
-        // Ignorer les états de suppression de compte (ne pas les traiter ici)
+        // Ignorer les états de suppression de compte pour éviter les conflits
         if (state is AccountDeletionStatusLoaded ||
             state is AccountDeletionCodeSent ||
             state is AccountDeletionConfirmed ||
             state is AccountDeletionCancelled) {
-          return; // Ne rien faire, laisser ProfileScreen gérer ces états
+          return;
         }
 
         // Gérer la redirection vers la vérification d'email
@@ -276,9 +337,13 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
                 context,
                 MaterialPageRoute(
                   builder:
-                      (context) => EmailVerificationScreen(
-                        email: state.email,
-                        fromRegistration: false,
+                      (context) => ConnectivityWrapper(
+                        showOfflineBanner:
+                            false, // ✅ Pas de bannière sur EmailVerification
+                        child: EmailVerificationScreen(
+                          email: state.email,
+                          fromRegistration: false,
+                        ),
                       ),
                 ),
               ).then((_) {
@@ -290,38 +355,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           });
         }
 
-        // Gérer les erreurs d'authentification avec SnackBar
-        if (state is AuthFailure) {
-          if (mounted) {
-            // Utiliser SmartSnackBarManager pour les erreurs de session
-            if (state.error.contains('Session expirée') ||
-                state.error.contains('token') ||
-                state.error.contains('unauthorized')) {
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                'Votre session a expiré. Veuillez vous reconnecter.',
-                duration: const Duration(seconds: 4),
-              );
-            } else {
-              // Pour autres erreurs, utiliser le message localisé
-              final localizedError = AuthErrorMessages.getLocalizedError(
-                state.error,
-              );
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                localizedError,
-                duration: const Duration(seconds: 4),
-              );
-            }
-          }
-        }
-
         // Gérer la confirmation d'email réussie
         if (state is EmailConfirmationSuccess) {
           if (mounted) {
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              'Email confirmé avec succès ! Bienvenue !',
+              l10n.emailConfirmedSuccess,
               duration: const Duration(seconds: 3),
             );
           }
@@ -329,7 +368,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
-          // NE PAS reconstruire pour les états de suppression de compte
           if (current is AccountDeletionStatusLoaded ||
               current is AccountDeletionCodeSent ||
               current is AccountDeletionConfirmed ||
@@ -337,12 +375,10 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             return false;
           }
 
-          // Ne pas reconstruire pour EmailVerificationRequired si on redirige déjà
           if (current is EmailVerificationRequired && _redirecting) {
             return false;
           }
 
-          // Ne pas reconstruire pour TokensRefreshed
           if (current is TokensRefreshed) {
             return false;
           }
@@ -350,44 +386,50 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return true;
         },
         builder: (context, state) {
-          // Afficher l'écran de chargement jusqu'à l'initialisation
-          if (!_deepLinkInitialized ||
+          if (_isInitializing ||
+              !_deepLinkInitialized ||
               state is AuthInitial ||
               state is AuthLoading) {
-            String message = 'Initialisation...';
+            String message = l10n.initialization;
             if (state is AuthLoading) {
-              message = 'Vérification de l\'authentification...';
+              message = l10n.checkingAuthentication;
             }
 
             return LoadingScreen(message: message);
           }
 
-          // Confirmation d'email requise (après inscription)
           if (state is EmailConfirmationRequired) {
-            return EmailVerificationScreen(
-              email: state.email,
-              fromRegistration: true,
+            return ConnectivityWrapper(
+              showOfflineBanner:
+                  false, // ✅ Pas de bannière sur EmailVerification depuis AuthWrapper
+              child: EmailVerificationScreen(
+                email: state.email,
+                fromRegistration: true,
+              ),
             );
           }
 
-          // Utilisateur authentifié avec succès OU email confirmé
           if (state is AuthSuccess || state is EmailConfirmationSuccess) {
-            // Traiter les tokens de partage en attente après connexion
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              DeepLinkHandler.processPendingTokenAfterLogin();
+              if (_deepLinkInitialized) {
+                DeepLinkHandler.processPendingTokenAfterLogin();
+              }
             });
 
-            return const HomeScreen();
+            return ConnectivityWrapper(
+              showOfflineBanner:
+                  false, // ✅ Pas de bannière sur home depuis AuthWrapper
+              blockActionsWhenOffline: true,
+              child: const HomeScreen(),
+            );
           }
 
-          // MODIFICATION PRINCIPALE: Rediriger vers WelcomeScreen au lieu de LoginScreen
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
-            return const WelcomeScreen();
+            return const WelcomeScreen(); // Pas de wrapper pour l'écran de bienvenue
           }
 
-          // État par défaut: WelcomeScreen au lieu de LoginScreen
           return const WelcomeScreen();
         },
       ),
@@ -395,7 +437,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   }
 }
 
-// CONSERVATION COMPLÈTE DES CLASSES EXISTANTES
+// Classes LoadingScreen, LoadingDots et ErrorApp restent identiques...
 class LoadingScreen extends StatelessWidget {
   final String? message;
 
@@ -403,13 +445,14 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo ou icône de l'app
             Container(
               width: 80,
               height: 80,
@@ -424,18 +467,14 @@ class LoadingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Indicateur de chargement
             const CircularProgressIndicator(
               color: Colors.green,
               strokeWidth: 3,
             ),
             const SizedBox(height: 24),
-
-            // Nom de l'app
-            const Text(
-              'EpiList',
-              style: TextStyle(
+            Text(
+              l10n.appTitle,
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
@@ -443,10 +482,8 @@ class LoadingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-
-            // Message de chargement personnalisé
             Text(
-              message ?? 'Initialisation...',
+              message ?? l10n.initialization,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -454,10 +491,7 @@ class LoadingScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 40),
-
-            // Animation de points
             const LoadingDots(),
           ],
         ),

@@ -1,14 +1,16 @@
-// widgets/home/welcome_card.dart
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class WelcomeCard extends StatelessWidget {
   const WelcomeCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.blue[50],
         borderRadius: BorderRadius.circular(12),
@@ -18,16 +20,16 @@ class WelcomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Bonjour ! 👋',
+            l10n.hello,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.blue[800],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'Gérez vos listes d\'épicerie facilement',
+            l10n.manageGroceryLists,
             style: TextStyle(fontSize: 16, color: Colors.blue[700]),
           ),
         ],

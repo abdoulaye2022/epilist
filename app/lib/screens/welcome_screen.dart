@@ -1,15 +1,20 @@
-// screens/welcome_screen.dart - VERSION SIMPLIFIÉE POUR PAGES INFO UNIQUEMENT
+// screens/welcome_screen.dart - VERSION AVEC SÉLECTION DE LANGUE
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/screens/terms_of_service.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -18,7 +23,7 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 40),
 
               // Logo de votre app avec design amélioré
               Container(
@@ -36,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                       color: Colors.green.withOpacity(0.3),
                       spreadRadius: 2,
                       blurRadius: 8,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -48,7 +53,6 @@ class WelcomeScreen extends StatelessWidget {
                     height: 100,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      // Fallback avec design amélioré si l'image n'est pas trouvée
                       return Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -57,7 +61,7 @@ class WelcomeScreen extends StatelessWidget {
                             colors: [Colors.green[400]!, Colors.green[600]!],
                           ),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.shopping_cart_rounded,
                           size: 50,
                           color: Colors.white,
@@ -71,7 +75,7 @@ class WelcomeScreen extends StatelessWidget {
 
               // Titre
               Text(
-                'Bienvenue sur EpiList',
+                l10n.welcomeToEpiList,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.green[700],
@@ -82,13 +86,17 @@ class WelcomeScreen extends StatelessWidget {
 
               // Description
               Text(
-                'Gérez vos listes de courses facilement et efficacement',
+                l10n.groceryListApp,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
+
+              // NOUVEAU: Section sélection de langue
+              _buildLanguageSection(context, l10n),
+              const SizedBox(height: 32),
 
               // Message principal
               Container(
@@ -103,7 +111,7 @@ class WelcomeScreen extends StatelessWidget {
                     Icon(Icons.login, size: 48, color: Colors.blue[600]),
                     const SizedBox(height: 16),
                     Text(
-                      'Connectez-vous pour accéder à toutes les fonctionnalités',
+                      l10n.loginTitle,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -113,14 +121,14 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Créez et gérez vos listes de courses, suivez vos dépenses et bien plus encore !',
+                      l10n.manageGroceryLists,
                       style: TextStyle(fontSize: 14, color: Colors.blue[600]),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
               // Bouton de connexion principal
               SizedBox(
@@ -136,16 +144,19 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     elevation: 2,
                   ),
-                  child: const Text(
-                    'Se connecter / S\'inscrire',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    '${l10n.login} / ${l10n.register}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
               // Section des pages d'information accessibles
-              _buildInfoSection(context),
+              _buildInfoSection(context, l10n),
             ],
           ),
         ),
@@ -153,11 +164,138 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(BuildContext context) {
+  // NOUVEAU: Widget pour la sélection de langue
+  Widget _buildLanguageSection(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.language, color: Colors.grey[600], size: 20),
+              const SizedBox(width: 8),
+              Text(
+                l10n.language,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Sélecteurs de langue
+          BlocBuilder<LocalizationBloc, LocalizationState>(
+            builder: (context, state) {
+              String currentLanguage = 'fr';
+              if (state is LocalizationLoaded) {
+                currentLanguage = state.locale.languageCode;
+              }
+
+              return Row(
+                children: [
+                  Expanded(
+                    child: _buildLanguageOption(
+                      context,
+                      'fr',
+                      l10n.french,
+                      '🇫🇷',
+                      currentLanguage == 'fr',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildLanguageOption(
+                      context,
+                      'en',
+                      l10n.english,
+                      '🇺🇸',
+                      currentLanguage == 'en',
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(
+    BuildContext context,
+    String languageCode,
+    String languageName,
+    String flag,
+    bool isSelected,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        context.read<LocalizationBloc>().add(ChangeLanguage(languageCode));
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green[600] : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? Colors.green[600]! : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 18)),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                languageName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.check_circle, color: Colors.white, size: 16),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoSection(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
         Text(
-          'Informations',
+          'Informations', // TODO: Ajouter à l10n si nécessaire
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -177,21 +315,21 @@ class WelcomeScreen extends StatelessWidget {
               _buildInfoTile(
                 context,
                 icon: Icons.info_outline,
-                title: 'À propos d\'EpiList',
+                title: 'À propos d\'EpiList', // TODO: Ajouter à l10n
                 onTap: () => _navigateToAbout(context),
               ),
               const Divider(height: 1),
               _buildInfoTile(
                 context,
                 icon: Icons.privacy_tip_outlined,
-                title: 'Politique de confidentialité',
+                title: 'Politique de confidentialité', // TODO: Ajouter à l10n
                 onTap: () => _navigateToPrivacyPolicy(context),
               ),
               const Divider(height: 1),
               _buildInfoTile(
                 context,
                 icon: Icons.article_outlined,
-                title: 'Conditions d\'utilisation',
+                title: 'Conditions d\'utilisation', // TODO: Ajouter à l10n
                 onTap: () => _navigateToTerms(context),
               ),
             ],
@@ -201,7 +339,7 @@ class WelcomeScreen extends StatelessWidget {
 
         // Note informative
         Text(
-          'Ces informations sont disponibles sans connexion',
+          'Ces informations sont disponibles sans connexion', // TODO: Ajouter à l10n
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey[600],
@@ -272,10 +410,12 @@ class WelcomeScreen extends StatelessWidget {
           ),
     );
 
+    /* 
     // Décommentez cette partie quand vous aurez créé le fichier :
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => TermsOfServicePage()),
     );
+    */
   }
 }

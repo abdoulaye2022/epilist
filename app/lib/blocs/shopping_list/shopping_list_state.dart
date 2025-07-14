@@ -1,11 +1,11 @@
-// blocs/shopping_list/shopping_list_state.dart
+// shopping_list_state.dart
 part of 'shopping_list_bloc.dart';
 
 abstract class ShoppingListState extends Equatable {
   const ShoppingListState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ShoppingListInitial extends ShoppingListState {}
@@ -21,28 +21,20 @@ class ShoppingListLoaded extends ShoppingListState {
   List<Object> get props => [lists];
 }
 
-class ShoppingListCreated extends ShoppingListState {
-  final ShoppingList newList;
+class ShoppingListError extends ShoppingListState {
+  final String
+  message; // ✅ COHÉRENCE: Utilise 'message' au lieu de 'error' pour cohérence avec le screen
 
-  const ShoppingListCreated(this.newList);
+  const ShoppingListError(this.message);
 
   @override
-  List<Object> get props => [newList];
+  List<Object> get props => [message];
 }
 
 class ShoppingListOperationSuccess extends ShoppingListState {
   final String message;
 
   const ShoppingListOperationSuccess(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class ShoppingListError extends ShoppingListState {
-  final String message;
-
-  const ShoppingListError(this.message);
 
   @override
   List<Object> get props => [message];

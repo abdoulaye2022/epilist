@@ -1,4 +1,5 @@
 // widgets/list_detail/swipeable_item_card.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,9 @@ class SwipeableItemCard extends StatelessWidget {
     this.onPermissionDenied,
   });
 
-  String _formatPrice(double price) {
-    return '${price.toStringAsFixed(2)} \$CAD';
+  String _formatPrice(BuildContext context, double price) {
+    final l10n = AppLocalizations.of(context)!;
+    return '${price.toStringAsFixed(2)}${l10n.cad}';
   }
 
   @override
@@ -33,8 +35,11 @@ class SwipeableItemCard extends StatelessWidget {
           shoppingList.canEdit
               ? DismissDirection.horizontal
               : DismissDirection.none,
-      background: _buildDismissBackground(isStartToEnd: true),
-      secondaryBackground: _buildDismissBackground(isStartToEnd: false),
+      background: _buildDismissBackground(context, isStartToEnd: true),
+      secondaryBackground: _buildDismissBackground(
+        context,
+        isStartToEnd: false,
+      ),
       confirmDismiss: (direction) async {
         if (!shoppingList.canEdit) {
           onPermissionDenied?.call();
@@ -56,15 +61,20 @@ class SwipeableItemCard extends StatelessWidget {
         child: ListTile(
           leading: _buildCheckbox(),
           title: _buildTitle(),
-          subtitle: _buildSubtitle(),
-          trailing: _buildTrailing(),
+          subtitle: _buildSubtitle(context),
+          trailing: _buildTrailing(context),
           onTap: shoppingList.canEdit ? () => onEdit(item) : null,
         ),
       ),
     );
   }
 
-  Widget _buildDismissBackground({required bool isStartToEnd}) {
+  Widget _buildDismissBackground(
+    BuildContext context, {
+    required bool isStartToEnd,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -79,7 +89,7 @@ class SwipeableItemCard extends StatelessWidget {
           Icon(Icons.delete_rounded, color: Colors.white, size: 32),
           SizedBox(height: 4),
           Text(
-            'Supprimer',
+            l10n.delete,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -92,21 +102,23 @@ class SwipeableItemCard extends StatelessWidget {
   }
 
   Future<bool> _showQuickDeleteConfirmation(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+
     return await showDialog<bool>(
           context: context,
           builder:
               (context) => AlertDialog(
-                title: Text('Supprimer l\'article'),
-                content: Text('Supprimer "${item.productName}" ?'),
+                title: Text(l10n.deleteItemTitle),
+                content: Text(l10n.deleteQuickConfirm(item.productName)),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('Annuler'),
+                    child: Text(l10n.cancel),
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
                     style: TextButton.styleFrom(foregroundColor: Colors.red),
-                    child: Text('Supprimer'),
+                    child: Text(l10n.delete),
                   ),
                 ],
               ),
@@ -163,14 +175,16 @@ class SwipeableItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle() {
+  Widget _buildSubtitle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Qté: ${item.quantity}',
+              '${l10n.quantityShort}: ${item.quantity}',
               style: TextStyle(
                 color:
                     shoppingList.isReadOnly
@@ -180,7 +194,7 @@ class SwipeableItemCard extends StatelessWidget {
             ),
             if (item.price != null) ...[
               Text(
-                ' • ${_formatPrice(item.price!)}',
+                ' • ${_formatPrice(context, item.price!)}',
                 style: TextStyle(
                   color:
                       shoppingList.isReadOnly
@@ -225,7 +239,9 @@ class SwipeableItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTrailing() {
+  Widget _buildTrailing(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (shoppingList.isReadOnly) {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -240,7 +256,7 @@ class SwipeableItemCard extends StatelessWidget {
             Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
             SizedBox(width: 4),
             Text(
-              'Lecture seule',
+              l10n.readOnlyShort,
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.blue[600],
@@ -256,9 +272,7 @@ class SwipeableItemCard extends StatelessWidget {
       icon: Icon(Icons.edit, color: Colors.blue[600]),
       onPressed: shoppingList.canEdit ? () => onEdit(item) : onPermissionDenied,
       tooltip:
-          shoppingList.canEdit
-              ? 'Modifier l\'article'
-              : 'Permission insuffisante',
+          shoppingList.canEdit ? l10n.editItem : l10n.insufficientPermission,
     );
   }
 }

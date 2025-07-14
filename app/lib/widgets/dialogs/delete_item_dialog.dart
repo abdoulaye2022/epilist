@@ -1,4 +1,5 @@
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,11 +12,13 @@ class DeleteItemDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -24,14 +27,14 @@ class DeleteItemDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildIcon(),
-            SizedBox(height: 20),
-            _buildTitle(),
-            SizedBox(height: 12),
-            _buildMessage(),
-            SizedBox(height: 8),
-            _buildWarning(),
-            SizedBox(height: 24),
-            _buildButtons(context),
+            const SizedBox(height: 20),
+            _buildTitle(l10n),
+            const SizedBox(height: 12),
+            _buildMessage(l10n),
+            const SizedBox(height: 8),
+            _buildWarning(l10n),
+            const SizedBox(height: 24),
+            _buildButtons(context, l10n),
           ],
         ),
       ),
@@ -50,10 +53,10 @@ class DeleteItemDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      'Supprimer l\'article',
-      style: TextStyle(
+      l10n.deleteItemTitle,
+      style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: Colors.black87,
@@ -61,29 +64,29 @@ class DeleteItemDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildMessage() {
+  Widget _buildMessage(AppLocalizations l10n) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
         children: [
-          TextSpan(text: 'Êtes-vous sûr de vouloir supprimer '),
+          TextSpan(text: l10n.sureToDeleteItem),
           TextSpan(
-            text: '"${item.productName}"',
-            style: TextStyle(
+            text: ' "${item.productName}"',
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
-          TextSpan(text: ' de votre liste ?'),
+          TextSpan(text: ' ${l10n.sureToLeaveQuestion}?'),
         ],
       ),
     );
   }
 
-  Widget _buildWarning() {
+  Widget _buildWarning(AppLocalizations l10n) {
     return Text(
-      'Cette action est irréversible.',
+      l10n.actionIrreversible,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 14,
@@ -93,21 +96,21 @@ class DeleteItemDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildButtons(BuildContext context) {
+  Widget _buildButtons(BuildContext context, AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(
           child: TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: Colors.grey[300]!),
               ),
             ),
             child: Text(
-              'Annuler',
+              l10n.cancel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -116,7 +119,7 @@ class DeleteItemDialog extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: BlocBuilder<ListItemBloc, ListItemState>(
             builder: (context, state) {
@@ -127,7 +130,7 @@ class DeleteItemDialog extends StatelessWidget {
                   backgroundColor: Colors.red[600],
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.red[300],
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -135,7 +138,7 @@ class DeleteItemDialog extends StatelessWidget {
                 ),
                 child:
                     isLoading
-                        ? SizedBox(
+                        ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -144,8 +147,8 @@ class DeleteItemDialog extends StatelessWidget {
                           ),
                         )
                         : Text(
-                          'Supprimer',
-                          style: TextStyle(
+                          l10n.delete,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),

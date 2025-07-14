@@ -1,5 +1,5 @@
-// widgets/dialogs/delete_list_dialog.dart
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,11 +11,13 @@ class DeleteListDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -38,19 +40,19 @@ class DeleteListDialog extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Titre
             Text(
-              'Supprimer la liste',
-              style: TextStyle(
+              l10n.deleteListTitle,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Message
             RichText(
@@ -62,23 +64,23 @@ class DeleteListDialog extends StatelessWidget {
                   height: 1.4,
                 ),
                 children: [
-                  TextSpan(text: 'Êtes-vous sûr de vouloir supprimer '),
+                  TextSpan(text: l10n.sureToDeleteList),
                   TextSpan(
-                    text: '"${list.name}"',
-                    style: TextStyle(
+                    text: ' "${list.name}"',
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
-                  TextSpan(text: ' ?'),
+                  const TextSpan(text: ' ?'),
                 ],
               ),
             ),
 
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             Text(
-              'Cette action est irréversible.',
+              l10n.actionIrreversible,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -87,7 +89,7 @@ class DeleteListDialog extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Boutons
             Row(
@@ -97,14 +99,14 @@ class DeleteListDialog extends StatelessWidget {
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.grey[300]!),
                       ),
                     ),
                     child: Text(
-                      'Annuler',
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -114,7 +116,7 @@ class DeleteListDialog extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
 
                 // Bouton Supprimer
                 Expanded(
@@ -128,7 +130,7 @@ class DeleteListDialog extends StatelessWidget {
                           backgroundColor: Colors.red[600],
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.red[300],
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -136,7 +138,7 @@ class DeleteListDialog extends StatelessWidget {
                         ),
                         child:
                             isLoading
-                                ? SizedBox(
+                                ? const SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
@@ -145,8 +147,8 @@ class DeleteListDialog extends StatelessWidget {
                                   ),
                                 )
                                 : Text(
-                                  'Supprimer',
-                                  style: TextStyle(
+                                  l10n.delete,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),

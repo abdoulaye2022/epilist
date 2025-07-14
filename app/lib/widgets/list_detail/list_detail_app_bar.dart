@@ -1,4 +1,5 @@
-// widgets/list_detail/list_detail_app_bar.dart - VERSION AVEC PERMISSIONS
+// widgets/list_detail/list_detail_app_bar.dart - VERSION AVEC PERMISSIONS ET TRADUCTIONS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: Colors.white,
             ),
           ),
-          if (shoppingList.isShared) _buildSharingSubtitle(),
+          if (shoppingList.isShared) _buildSharingSubtitle(context),
         ],
       ),
       backgroundColor: Colors.green[600],
@@ -45,12 +46,14 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildSharingSubtitle() {
+  Widget _buildSharingSubtitle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String subtitle;
+
     if (shoppingList.isOwner) {
-      subtitle = 'Liste partagée';
+      subtitle = l10n.sharedList;
     } else {
-      subtitle = shoppingList.permissionDisplayName ?? 'Liste partagée';
+      subtitle = shoppingList.permissionDisplayName ?? l10n.sharedList;
     }
 
     return Text(
@@ -64,6 +67,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   List<Widget> _buildActions(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<Widget> actions = [];
 
     // Bouton d'ajout d'article (si permission)
@@ -72,7 +76,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           onPressed: onAddItem,
           icon: Icon(Icons.add),
-          tooltip: 'Ajouter un article',
+          tooltip: l10n.addItemTooltip,
         ),
       );
     }
@@ -87,11 +91,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert),
       onSelected: (value) => _handleMenuAction(value, context),
-      itemBuilder: (context) => _buildMenuItems(),
+      itemBuilder: (context) => _buildMenuItems(context),
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
     // Modifier la liste (si permission)
@@ -103,7 +108,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Icon(Icons.edit, size: 20, color: Colors.blue[600]),
               SizedBox(width: 8),
-              Text('Modifier la liste'),
+              Text(l10n.editList),
             ],
           ),
         ),
@@ -119,7 +124,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Icon(Icons.share, size: 20, color: Colors.green[600]),
               SizedBox(width: 8),
-              Text('Partager'),
+              Text(l10n.share),
             ],
           ),
         ),
@@ -134,7 +139,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
             SizedBox(width: 8),
-            Text('Informations'),
+            Text(l10n.information),
           ],
         ),
       ),
@@ -154,10 +159,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
               SizedBox(width: 8),
-              Text(
-                'Quitter la liste',
-                style: TextStyle(color: Colors.orange[600]),
-              ),
+              Text(l10n.leaveList, style: TextStyle(color: Colors.orange[600])),
             ],
           ),
         ),
@@ -173,7 +175,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Icon(Icons.delete, size: 20, color: Colors.red[600]),
               SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
             ],
           ),
         ),
@@ -204,6 +206,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _showPermissionsDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder:
@@ -212,42 +216,42 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Icon(Icons.info_outline, color: Colors.blue[600]),
                 SizedBox(width: 8),
-                Text('Informations de la liste'),
+                Text(l10n.listInformation),
               ],
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('Nom', shoppingList.name),
+                _buildInfoRow(l10n.name, shoppingList.name),
                 SizedBox(height: 8),
                 _buildInfoRow(
-                  'Statut',
-                  shoppingList.isShared ? 'Partagée' : 'Privée',
+                  l10n.status,
+                  shoppingList.isShared ? l10n.sharedList : l10n.private,
                 ),
                 if (shoppingList.isShared) ...[
                   SizedBox(height: 8),
                   _buildInfoRow(
-                    'Votre rôle',
+                    l10n.yourRole,
                     shoppingList.isOwner
-                        ? 'Propriétaire'
+                        ? l10n.owner
                         : (shoppingList.permissionDisplayName ??
-                            'Collaborateur'),
+                            l10n.collaborator),
                   ),
                   if (!shoppingList.isOwner &&
                       shoppingList.sharedBy != null) ...[
                     SizedBox(height: 8),
-                    _buildInfoRow('Partagée par', shoppingList.sharedBy!.name),
+                    _buildInfoRow(l10n.sharedBy, shoppingList.sharedBy!.name),
                   ],
                   SizedBox(height: 8),
-                  _buildPermissionsList(),
+                  _buildPermissionsList(context),
                 ],
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Fermer'),
+                child: Text(l10n.close),
               ),
             ],
           ),
@@ -273,32 +277,33 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildPermissionsList() {
+  Widget _buildPermissionsList(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<String> permissions = [];
 
     if (shoppingList.canEdit) {
-      permissions.add('✅ Modifier les articles');
+      permissions.add('✅ ${l10n.editItems}');
     } else {
-      permissions.add('❌ Modifier les articles');
+      permissions.add('❌ ${l10n.editItems}');
     }
 
     if (shoppingList.canShare) {
-      permissions.add('✅ Partager la liste');
+      permissions.add('✅ ${l10n.shareList}');
     } else {
-      permissions.add('❌ Partager la liste');
+      permissions.add('❌ ${l10n.shareList}');
     }
 
     if (shoppingList.canDelete) {
-      permissions.add('✅ Supprimer la liste');
+      permissions.add('✅ ${l10n.deleteList}');
     } else {
-      permissions.add('❌ Supprimer la liste');
+      permissions.add('❌ ${l10n.deleteList}');
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Permissions:',
+          '${l10n.permissions}:',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: Colors.grey[700],
@@ -319,19 +324,18 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _showLeaveDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Quitter la liste'),
-            content: Text(
-              'Êtes-vous sûr de vouloir quitter "${shoppingList.name}" ?\n\n'
-              'Vous perdrez l\'accès à cette liste et ne pourrez plus voir son contenu.',
-            ),
+            title: Text(l10n.leaveList),
+            content: Text(l10n.leaveListConfirm(shoppingList.name)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Annuler'),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () {
@@ -339,12 +343,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                   // TODO: Implémenter la logique de quitter la liste
                   SmartSnackBarManager.showWarningSnackBar(
                     context,
-                    'Vous avez quitté la liste "${shoppingList.name}"',
+                    l10n.leftList(shoppingList.name),
                     duration: const Duration(seconds: 3),
                   );
                 },
                 style: TextButton.styleFrom(foregroundColor: Colors.orange),
-                child: Text('Quitter'),
+                child: Text(l10n.leave),
               ),
             ],
           ),

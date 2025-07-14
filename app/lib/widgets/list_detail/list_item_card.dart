@@ -1,4 +1,5 @@
-// widgets/list_detail/list_item_card.dart - VERSION CORRIGÉE
+// widgets/list_detail/list_item_card.dart - VERSION CORRIGÉE AVEC TRADUCTIONS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -20,8 +21,9 @@ class ListItemCard extends StatelessWidget {
     this.onEdit,
   });
 
-  String _formatPrice(double price) {
-    return '${price.toStringAsFixed(2)} \$CAD';
+  String _formatPrice(BuildContext context, double price) {
+    final l10n = AppLocalizations.of(context)!;
+    return '${price.toStringAsFixed(2)}${l10n.cad}';
   }
 
   @override
@@ -65,12 +67,12 @@ class ListItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeader(),
+                      _buildHeader(context),
                       const SizedBox(height: 8),
-                      _buildDetails(),
+                      _buildDetails(context),
                       if (_shouldShowPermissionInfo()) ...[
                         const SizedBox(height: 8),
-                        _buildPermissionChip(),
+                        _buildPermissionChip(context),
                       ],
                     ],
                   ),
@@ -126,7 +128,7 @@ class ListItemCard extends StatelessWidget {
     return Colors.grey[500]!;
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -144,7 +146,7 @@ class ListItemCard extends StatelessWidget {
         ),
         if (shoppingList.isReadOnly) ...[
           const SizedBox(width: 8),
-          _buildReadOnlyBadge(),
+          _buildReadOnlyBadge(context),
         ],
       ],
     );
@@ -156,7 +158,9 @@ class ListItemCard extends StatelessWidget {
     return Colors.black87;
   }
 
-  Widget _buildReadOnlyBadge() {
+  Widget _buildReadOnlyBadge(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -170,7 +174,7 @@ class ListItemCard extends StatelessWidget {
           Icon(Icons.visibility, size: 10, color: Colors.blue[600]),
           const SizedBox(width: 2),
           Text(
-            'Lecture',
+            l10n.readOnlyShort,
             style: TextStyle(
               fontSize: 9,
               color: Colors.blue[600],
@@ -182,7 +186,9 @@ class ListItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetails() {
+  Widget _buildDetails(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmallScreen = constraints.maxWidth < 250;
@@ -194,13 +200,13 @@ class ListItemCard extends StatelessWidget {
             children: [
               _buildDetailChip(
                 icon: Icons.shopping_basket_outlined,
-                text: 'Qté: ${item.quantity}',
+                text: '${l10n.quantityShort}: ${item.quantity}',
                 color: Colors.grey[600]!,
               ),
               const SizedBox(height: 6),
               _buildDetailChip(
                 icon: Icons.attach_money,
-                text: _formatPrice(item.price!),
+                text: _formatPrice(context, item.price!),
                 color: Colors.green[600]!,
               ),
               if (item.storeName != null && item.storeName!.isNotEmpty) ...[
@@ -219,7 +225,7 @@ class ListItemCard extends StatelessWidget {
                 children: [
                   _buildDetailChip(
                     icon: Icons.shopping_basket_outlined,
-                    text: 'Qtédd: ${item.quantity}',
+                    text: '${l10n.quantityShort}: ${item.quantity}',
                     color: Colors.grey[600]!,
                   ),
                   if (item.price != null) ...[
@@ -227,7 +233,7 @@ class ListItemCard extends StatelessWidget {
                     Expanded(
                       child: _buildDetailChip(
                         icon: Icons.attach_money,
-                        text: _formatPrice(item.price!),
+                        text: _formatPrice(context, item.price!),
                         color: Colors.green[600]!,
                       ),
                     ),
@@ -313,21 +319,22 @@ class ListItemCard extends StatelessWidget {
     return !shoppingList.isOwner && !shoppingList.isReadOnly;
   }
 
-  Widget _buildPermissionChip() {
+  Widget _buildPermissionChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String permissionText;
     Color permissionColor;
     IconData permissionIcon;
 
     if (shoppingList.canEdit) {
-      permissionText = 'Modification';
+      permissionText = l10n.modification;
       permissionColor = Colors.green[600]!;
       permissionIcon = Icons.edit;
     } else if (!shoppingList.isReadOnly) {
-      permissionText = 'Consultation';
+      permissionText = l10n.consultation;
       permissionColor = Colors.blue[600]!;
       permissionIcon = Icons.check_circle_outline;
     } else {
-      permissionText = 'Accès limité';
+      permissionText = l10n.limitedAccess;
       permissionColor = Colors.orange[600]!;
       permissionIcon = Icons.lock;
     }
@@ -399,7 +406,7 @@ class ListItemCard extends StatelessWidget {
         ),
         onSelected: (value) => _handleMenuAction(value, context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        itemBuilder: (context) => _buildMenuItems(),
+        itemBuilder: (context) => _buildMenuItems(context),
       );
     }
 
@@ -407,7 +414,8 @@ class ListItemCard extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
     // Modifier
@@ -419,7 +427,7 @@ class ListItemCard extends StatelessWidget {
             children: [
               Icon(Icons.edit, size: 18, color: Colors.blue[600]),
               const SizedBox(width: 8),
-              const Text('Modifier'),
+              Text(l10n.edit),
             ],
           ),
         ),
@@ -435,7 +443,7 @@ class ListItemCard extends StatelessWidget {
             children: [
               Icon(Icons.delete, size: 18, color: Colors.red[600]),
               const SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
             ],
           ),
         ),
@@ -446,8 +454,10 @@ class ListItemCard extends StatelessWidget {
   }
 
   void _handleMenuAction(String action, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (shoppingList.isReadOnly) {
-      _showPermissionDenied(context, 'modifier cette liste');
+      _showPermissionDenied(context, l10n.modifyThisList);
       return;
     }
 
@@ -456,36 +466,33 @@ class ListItemCard extends StatelessWidget {
         if (shoppingList.canEdit) {
           onEdit?.call();
         } else {
-          _showPermissionDenied(context, 'modifier cet article');
+          _showPermissionDenied(context, l10n.modifyThisItem);
         }
         break;
       case 'delete':
         if (shoppingList.canEdit) {
           _showDeleteConfirmation(context);
         } else {
-          _showPermissionDenied(context, 'supprimer cet article');
+          _showPermissionDenied(context, l10n.deleteThisItem);
         }
         break;
     }
   }
 
   void _showPermissionDenied(BuildContext context, String action) {
+    final l10n = AppLocalizations.of(context)!;
     String title;
     String message;
     String permission;
 
     if (shoppingList.isReadOnly) {
-      title = 'Accès en lecture seule';
-      permission = shoppingList.permissionDisplayName ?? 'Lecture seule';
-      message =
-          'Vous ne pouvez pas $action car cette liste est en mode lecture seule.\n\n'
-          'Votre permission actuelle : $permission';
+      title = l10n.readOnlyAccess;
+      permission = shoppingList.permissionDisplayName ?? l10n.readOnlyAccess;
+      message = l10n.cannotActionReadOnly(action, permission);
     } else {
-      title = 'Permission insuffisante';
-      permission = shoppingList.permissionDisplayName ?? 'Limitée';
-      message =
-          'Vous n\'avez pas la permission de $action.\n\n'
-          'Votre permission actuelle : $permission';
+      title = l10n.insufficientPermission;
+      permission = shoppingList.permissionDisplayName ?? l10n.limited;
+      message = l10n.cannotActionPermission(action, permission);
     }
 
     showDialog(
@@ -547,7 +554,7 @@ class ListItemCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Partagée par ${shoppingList.sharedBy!.name}',
+                          l10n.sharedByUser(shoppingList.sharedBy!.name),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -564,7 +571,7 @@ class ListItemCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Compris'),
+              child: Text(l10n.understood),
             ),
             if (!shoppingList.isReadOnly)
               TextButton(
@@ -572,11 +579,11 @@ class ListItemCard extends StatelessWidget {
                   Navigator.of(context).pop();
                   SmartSnackBarManager.showMessage(
                     context,
-                    'Contactez le propriétaire pour obtenir plus de permissions',
+                    l10n.contactOwnerForPermissions,
                     type: SnackBarType.info,
                   );
                 },
-                child: const Text('Plus d\'infos'),
+                child: Text(l10n.moreInfo),
               ),
           ],
         );
@@ -585,6 +592,8 @@ class ListItemCard extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -603,21 +612,22 @@ class ListItemCard extends StatelessWidget {
                 child: Icon(Icons.delete, color: Colors.red[600], size: 20),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Supprimer l\'article',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  l10n.deleteItemTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-          content: Text(
-            'Êtes-vous sûr de vouloir supprimer "${item.productName}" de la liste ?',
-          ),
+          content: Text(l10n.deleteItemConfirm(item.productName)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Annuler'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -631,7 +641,7 @@ class ListItemCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Supprimer'),
+              child: Text(l10n.delete),
             ),
           ],
         );

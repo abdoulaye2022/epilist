@@ -1,5 +1,7 @@
+// widgets/profile/profile_header_card.dart - VERSION I18N
 import 'package:epilist/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
   final User user;
@@ -13,6 +15,8 @@ class ProfileHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -34,9 +38,9 @@ class ProfileHeaderCard extends StatelessWidget {
           const SizedBox(height: 16),
           _buildUserInfo(),
           const SizedBox(height: 8),
-          _buildEmailVerificationBadge(),
+          _buildEmailVerificationBadge(l10n),
           const SizedBox(height: 16),
-          _buildEditButton(),
+          _buildEditButton(l10n),
         ],
       ),
     );
@@ -78,7 +82,7 @@ class ProfileHeaderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildEmailVerificationBadge() {
+  Widget _buildEmailVerificationBadge(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
@@ -100,7 +104,9 @@ class ProfileHeaderCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            user.isEmailVerified ? 'Email vérifié' : 'Email non vérifié',
+            user.isEmailVerified
+                ? l10n.emailVerified
+                : l10n.emailNotVerifiedStatus,
             style: TextStyle(
               fontSize: 12,
               color:
@@ -113,11 +119,11 @@ class ProfileHeaderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildEditButton() {
+  Widget _buildEditButton(AppLocalizations l10n) {
     return ElevatedButton.icon(
       onPressed: onEditProfile,
       icon: const Icon(Icons.edit, size: 18),
-      label: const Text('Modifier le profil'),
+      label: Text(l10n.editProfile),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green[600],
         foregroundColor: Colors.white,

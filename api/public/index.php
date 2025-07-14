@@ -1,9 +1,8 @@
 <?php
-// public/index.php
+// public/index.php - VERSION FINALE CORRIGÉE
 
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+// ✅ SUPPRESSION DES WARNINGS DEPRECATED POUR BREVO
+error_reporting(E_ALL & ~E_DEPRECATED);
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -29,6 +28,15 @@ use Carbon\Carbon;
 // Charger les variables d'environnement
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
+
+// Configuration d'erreurs selon l'environnement
+if ($_ENV['APP_ENV'] === 'dev') {
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+} else {
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+}
 
 // Utiliser les variables d'environnement
 $dbConnection = $_ENV['DB_CONNECTION'];
@@ -63,7 +71,6 @@ date_default_timezone_set('UTC');
 Carbon::setLocale('fr');
 
 $app->add(new CorsMiddleware());
-
 
 if( $_ENV['APP_ENV'] != 'dev') {
     $app->setBasePath('/api.epilist/public');
@@ -108,6 +115,19 @@ $app->get('/test', function ($request, $response) {
     return $response->withHeader('Content-Type', 'text/plain');
 });
 
+// ✅ ENDPOINT DE TEST JSON
+$app->get('/test-json', function ($request, $response) {
+    $data = [
+        'success' => true,
+        'message' => 'API fonctionne correctement',
+        'timestamp' => time(),
+        'php_version' => PHP_VERSION
+    ];
+    
+    $response->getBody()->write(json_encode($data));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
 $app->group('', function ($group) {
     // Authentification
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
@@ -128,7 +148,6 @@ $app->group('', function ($group) {
     $group->delete('/shopping-lists/{id}', [ShoppingListController::class, 'destroy']);
     $group->post('/shopping-lists/{id}/restore', [ShoppingListController::class, 'restore']);
     $group->post('/shopping-lists/{id}/duplicate', [ShoppingListController::class, 'duplicate']);
-
 
     // Shared Lists Routes
     $group->post('/shopping-lists/{id}/share', [SharedListController::class, 'createShareLink']);

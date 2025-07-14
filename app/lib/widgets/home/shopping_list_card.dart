@@ -1,7 +1,8 @@
-// widgets/home/shopping_list_card.dart - VERSION CORRIGÉE
+// widgets/home/shopping_list_card.dart - VERSION I18N
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/date_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList list;
@@ -17,6 +18,7 @@ class ShoppingListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final totalItems = list.itemsCount;
     final completedItems = list.purchasedItemsCount;
     final progress = list.progress;
@@ -51,21 +53,21 @@ class ShoppingListCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(l10n),
               const SizedBox(height: 12),
-              _buildListInfo(totalItems, totalPrice),
+              _buildListInfo(totalItems, totalPrice, l10n),
               if (list.isShared) ...[
                 const SizedBox(height: 8),
-                _buildSharingInfo(),
+                _buildSharingInfo(l10n),
               ],
               if (totalItems > 0) ...[
                 const SizedBox(height: 12),
                 _buildProgressSection(progress, completedItems, totalItems),
                 const SizedBox(height: 12),
-                _buildBottomRow(),
+                _buildBottomRow(l10n),
               ],
               const SizedBox(height: 8),
-              _buildDateInfo(),
+              _buildDateInfo(l10n),
             ],
           ),
         ),
@@ -73,7 +75,7 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -100,18 +102,21 @@ class ShoppingListCard extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        _buildPopupMenu(),
+        _buildPopupMenu(l10n),
       ],
     );
   }
 
-  Widget _buildListInfo(int totalItems, double totalPrice) {
+  Widget _buildListInfo(
+    int totalItems,
+    double totalPrice,
+    AppLocalizations l10n,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmallScreen = constraints.maxWidth < 300;
 
         if (isSmallScreen && totalPrice > 0) {
-          // Layout vertical pour très petits écrans
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -120,7 +125,7 @@ class ShoppingListCard extends StatelessWidget {
                   Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 6),
                   Text(
-                    '$totalItems articles',
+                    '$totalItems ${l10n.articles}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
@@ -132,7 +137,7 @@ class ShoppingListCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                      '${l10n.budget}: ${totalPrice.toStringAsFixed(2)} \$CAD',
                       style: TextStyle(
                         color: Colors.green[600],
                         fontSize: 14,
@@ -146,13 +151,12 @@ class ShoppingListCard extends StatelessWidget {
             ],
           );
         } else {
-          // Layout horizontal pour écrans normaux
           return Row(
             children: [
               Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 6),
               Text(
-                '$totalItems articles',
+                '$totalItems ${l10n.articles}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
               if (totalPrice > 0) ...[
@@ -161,7 +165,7 @@ class ShoppingListCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    'Budget: ${totalPrice.toStringAsFixed(2)} \$CAD',
+                    '${l10n.budget}: ${totalPrice.toStringAsFixed(2)} \$CAD',
                     style: TextStyle(
                       color: Colors.green[600],
                       fontSize: 14,
@@ -178,7 +182,7 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSharingInfo() {
+  Widget _buildSharingInfo(AppLocalizations l10n) {
     if (!list.isShared) return const SizedBox.shrink();
 
     return Container(
@@ -201,8 +205,8 @@ class ShoppingListCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             list.isOwner
-                ? 'Liste partagée • ${list.sharedWithCount ?? 0} collaborateur(s)'
-                : 'Partagée par ${list.sharedBy?.name ?? "un utilisateur"}',
+                ? '${l10n.sharedList} • ${list.sharedWithCount ?? 0} ${l10n.collaborators}'
+                : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
             style: TextStyle(
               fontSize: 12,
               color: list.isOwner ? Colors.blue[600] : Colors.green[600],
@@ -242,17 +246,17 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomRow() {
+  Widget _buildBottomRow(AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatusChip(),
-        if (!list.isOwner) _buildPermissionIndicator(),
+        _buildStatusChip(l10n),
+        if (!list.isOwner) _buildPermissionIndicator(l10n),
       ],
     );
   }
 
-  Widget _buildStatusChip() {
+  Widget _buildStatusChip(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -263,7 +267,7 @@ class ShoppingListCard extends StatelessWidget {
         ),
       ),
       child: Text(
-        list.isCompleted ? '✅ Terminée' : '🛒 En cours',
+        list.isCompleted ? l10n.completed : l10n.inProgress,
         style: TextStyle(
           fontSize: 12,
           color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
@@ -273,9 +277,9 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo() {
+  Widget _buildDateInfo(AppLocalizations l10n) {
     return Text(
-      'Créée ${DateFormatter.formatDate(list.createdAt)}',
+      '${l10n.created} ${DateFormatter.formatDate(list.createdAt)}',
       style: TextStyle(fontSize: 12, color: Colors.grey[500]),
     );
   }
@@ -314,20 +318,23 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPermissionIndicator() {
+  Widget _buildPermissionIndicator(AppLocalizations l10n) {
     if (list.isOwner) return const SizedBox.shrink();
 
-    String text = list.permissionDisplayName ?? 'Accès';
+    String text;
     Color color;
     IconData icon;
 
     if (list.isReadOnly) {
+      text = l10n.readOnlyAccess;
       color = Colors.blue[600]!;
       icon = Icons.visibility;
     } else if (list.canEdit) {
+      text = l10n.editAccess;
       color = Colors.green[600]!;
       icon = Icons.edit;
     } else {
+      text = l10n.adminAccess;
       color = Colors.purple[600]!;
       icon = Icons.admin_panel_settings;
     }
@@ -357,27 +364,27 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPopupMenu() {
+  Widget _buildPopupMenu(AppLocalizations l10n) {
     return PopupMenuButton(
       icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-      itemBuilder: (context) => _buildMenuItems(),
+      itemBuilder: (context) => _buildMenuItems(l10n),
       onSelected: (value) => onAction(value.toString()),
     );
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(AppLocalizations l10n) {
     List<PopupMenuEntry<String>> items = [];
 
     // Modifier (si permission d'édition)
     if (list.canEdit) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 20),
-              SizedBox(width: 8),
-              Text('Modifier'),
+              const Icon(Icons.edit, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.edit),
             ],
           ),
         ),
@@ -386,13 +393,13 @@ class ShoppingListCard extends StatelessWidget {
 
     // Dupliquer (toujours disponible)
     items.add(
-      const PopupMenuItem(
+      PopupMenuItem(
         value: 'duplicate',
         child: Row(
           children: [
-            Icon(Icons.copy, size: 20),
-            SizedBox(width: 8),
-            Text('Dupliquer'),
+            const Icon(Icons.copy, size: 20),
+            const SizedBox(width: 8),
+            Text(l10n.duplicate),
           ],
         ),
       ),
@@ -407,7 +414,7 @@ class ShoppingListCard extends StatelessWidget {
             children: [
               Icon(Icons.share, size: 20, color: Colors.blue[600]),
               const SizedBox(width: 8),
-              Text('Partager', style: TextStyle(color: Colors.blue[600])),
+              Text(l10n.share, style: TextStyle(color: Colors.blue[600])),
             ],
           ),
         ),
@@ -424,7 +431,7 @@ class ShoppingListCard extends StatelessWidget {
               Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
               const SizedBox(width: 8),
               Text(
-                'Gérer les partages',
+                l10n.manageShares,
                 style: TextStyle(color: Colors.purple[600]),
               ),
             ],
@@ -441,13 +448,13 @@ class ShoppingListCard extends StatelessWidget {
     // Quitter (si pas propriétaire)
     if (!list.isOwner) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange),
-              SizedBox(width: 8),
-              Text('Quitter', style: TextStyle(color: Colors.orange)),
+              const Icon(Icons.exit_to_app, size: 20, color: Colors.orange),
+              const SizedBox(width: 8),
+              Text(l10n.leave, style: const TextStyle(color: Colors.orange)),
             ],
           ),
         ),
@@ -457,13 +464,13 @@ class ShoppingListCard extends StatelessWidget {
     // Supprimer (si permission)
     if (list.canDelete) {
       items.add(
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 20, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red)),
+              const Icon(Icons.delete, size: 20, color: Colors.red),
+              const SizedBox(width: 8),
+              Text(l10n.delete, style: const TextStyle(color: Colors.red)),
             ],
           ),
         ),

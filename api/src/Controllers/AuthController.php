@@ -577,6 +577,7 @@ class AuthController
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
+                'code' => 'VALIDATION_ERROR',
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ]));
@@ -589,16 +590,37 @@ class AuthController
             $user = User::findByEmail($data['email']);
             
             if (!$user) {
-                return $this->createErrorResponse('Invalid request', 400);
+                return $this->createErrorResponse(
+                    'User not found',
+                    404, // ✅ CHANGÉ: 404 au lieu de 400
+                    'USER_NOT_FOUND'
+                );
             }
 
-            // Vérifier le code et son expiration
+            // ✅ CORRECTION: Vérifier le code et son expiration avec les bons codes d'erreur
             if ($user->password_change_code !== $data['code']) {
-                return $this->createErrorResponse('Invalid code', 400);
+                return $this->createErrorResponse(
+                    'Invalid verification code',
+                    400,
+                    'INVALID_CODE' // ✅ CHANGÉ: Code uniforme avec les autres fonctions
+                );
             }
 
             if (Carbon::now()->gt($user->password_change_code_expires_at)) {
-                return $this->createErrorResponse('Code has expired', 400);
+                return $this->createErrorResponse(
+                    'Verification code has expired',
+                    400,
+                    'CODE_EXPIRED' // ✅ CHANGÉ: Code uniforme avec les autres fonctions
+                );
+            }
+
+            // ✅ AJOUT: Vérifier si l'utilisateur existe toujours et est actif
+            if (!$user->is_active) {
+                return $this->createErrorResponse(
+                    'User account is not active',
+                    400,
+                    'USER_INACTIVE'
+                );
             }
 
             // Mettre à jour le mot de passe
@@ -617,7 +639,12 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Error changing password: ' . $e->getMessage(), 500);
+            // ✅ CHANGÉ: Code d'erreur plus spécifique
+            return $this->createErrorResponse(
+                'Server error occurred while changing password',
+                500,
+                'SERVER_ERROR' // ✅ Code uniforme avec les autres fonctions
+            );
         }
     }
 

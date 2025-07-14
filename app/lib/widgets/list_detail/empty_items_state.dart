@@ -1,4 +1,5 @@
-// widgets/list_detail/empty_items_state.dart - VERSION AVEC PERMISSIONS
+// widgets/list_detail/empty_items_state.dart - VERSION AVEC PERMISSIONS ET TRADUCTIONS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -22,11 +23,11 @@ class EmptyItemsState extends StatelessWidget {
           children: [
             _buildIcon(),
             SizedBox(height: 24),
-            _buildTitle(),
+            _buildTitle(context),
             SizedBox(height: 12),
-            _buildDescription(),
+            _buildDescription(context),
             SizedBox(height: 32),
-            _buildActionButton(),
+            _buildActionButton(context),
           ],
         ),
       ),
@@ -50,12 +51,14 @@ class EmptyItemsState extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String title;
+
     if (shoppingList.isReadOnly) {
-      title = 'Cette liste est vide';
+      title = l10n.thisListIsEmpty;
     } else {
-      title = 'Votre liste est vide';
+      title = l10n.yourListIsEmpty;
     }
 
     return Text(
@@ -69,20 +72,16 @@ class EmptyItemsState extends StatelessWidget {
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String description;
+
     if (shoppingList.isReadOnly) {
-      description =
-          'Il n\'y a pas encore d\'articles dans cette liste.\n'
-          'Vous pouvez seulement consulter son contenu.';
+      description = l10n.noItemsReadOnlyDescription;
     } else if (!shoppingList.canManageItems) {
-      description =
-          'Il n\'y a pas encore d\'articles dans cette liste.\n'
-          'Vous n\'avez pas la permission d\'ajouter des articles.';
+      description = l10n.noItemsNoPermissionDescription;
     } else {
-      description =
-          'Commencez par ajouter votre premier article\n'
-          'pour organiser vos courses.';
+      description = l10n.noItemsAddFirstDescription;
     }
 
     return Text(
@@ -92,10 +91,12 @@ class EmptyItemsState extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Si aucune permission d'ajout, afficher un message informatif
     if (!shoppingList.canManageItems) {
-      return _buildPermissionInfo();
+      return _buildPermissionInfo(context);
     }
 
     // Si permission d'ajout mais pas de callback, ne rien afficher
@@ -108,7 +109,7 @@ class EmptyItemsState extends StatelessWidget {
       onPressed: onAddItem,
       icon: Icon(Icons.add, color: Colors.white),
       label: Text(
-        'Ajouter un article',
+        l10n.addItem,
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -124,17 +125,18 @@ class EmptyItemsState extends StatelessWidget {
     );
   }
 
-  Widget _buildPermissionInfo() {
+  Widget _buildPermissionInfo(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String infoText;
     Color infoColor;
     IconData infoIcon;
 
     if (shoppingList.isReadOnly) {
-      infoText = 'Mode lecture seule';
+      infoText = l10n.readOnlyMode;
       infoColor = Colors.blue[600]!;
       infoIcon = Icons.visibility;
     } else {
-      infoText = 'Permission requise pour ajouter';
+      infoText = l10n.permissionRequiredToAdd;
       infoColor = Colors.orange[600]!;
       infoIcon = Icons.lock;
     }
