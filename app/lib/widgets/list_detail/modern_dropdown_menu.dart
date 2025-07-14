@@ -1,4 +1,5 @@
 // widgets/list_detail/modern_dropdown_menu.dart
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,6 @@ class ModernDropdownMenu extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onShare;
   final VoidCallback? onInfo;
-  final VoidCallback? onManageShares;
   final VoidCallback? onLeave;
   final VoidCallback? onDelete;
 
@@ -17,7 +17,6 @@ class ModernDropdownMenu extends StatelessWidget {
     this.onEdit,
     this.onShare,
     this.onInfo,
-    this.onManageShares,
     this.onLeave,
     this.onDelete,
   });
@@ -27,7 +26,7 @@ class ModernDropdownMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
       onSelected: (value) => _handleMenuAction(value, context),
-      itemBuilder: (context) => _buildMenuItems(),
+      itemBuilder: (context) => _buildMenuItems(context),
     );
   }
 
@@ -35,40 +34,35 @@ class ModernDropdownMenu extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
-    // Section: Actions principales
-    if (onEdit != null) {
+    if (shoppingList.canEdit && onEdit != null) {
       items.add(
-        _buildMenuItem(
+        PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
               Icon(Icons.edit, size: 20, color: Colors.blue[600]),
               const SizedBox(width: 8),
-              const Text('Modifier la liste'),
+              Text(l10n.editList),
             ],
           ),
         ),
       );
     }
 
-    if (onShare != null) {
+    if (shoppingList.canShare && onShare != null) {
       items.add(
-        _buildMenuItem(
+        PopupMenuItem(
           value: 'share',
           child: Row(
             children: [
               Icon(Icons.share, size: 20, color: Colors.green[600]),
               const SizedBox(width: 8),
-              const Text('Partager'),
+              Text(l10n.share),
             ],
           ),
         ),
       );
     }
-
-    // Section: Informations
-    if (onInfo != null) {
-      if (items.isNotEmpty) items.add(const PopupMenuDivider());
 
     items.add(
       PopupMenuItem(
@@ -77,41 +71,40 @@ class ModernDropdownMenu extends StatelessWidget {
           children: [
             Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
             const SizedBox(width: 8),
-            const Text('Informations'),
+            Text(l10n.information),
           ],
         ),
-      );
+      ),
+    );
+
+    if (!shoppingList.isOwner || (shoppingList.canDelete && onDelete != null)) {
+      items.add(const PopupMenuDivider());
     }
 
-    // Section: Actions destructives
-    if (onLeave != null || onDelete != null) {
-      if (items.isNotEmpty) items.add(const PopupMenuDivider());
-    }
-
-    if (onLeave != null) {
+    if (!shoppingList.isOwner) {
       items.add(
-        _buildMenuItem(
+        PopupMenuItem(
           value: 'leave',
           child: Row(
             children: [
               Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
               const SizedBox(width: 8),
-              Text('Quitter', style: TextStyle(color: Colors.orange[600])),
+              Text(l10n.leave, style: TextStyle(color: Colors.orange[600])),
             ],
           ),
         ),
       );
     }
 
-    if (onDelete != null) {
+    if (shoppingList.canDelete && onDelete != null) {
       items.add(
-        _buildMenuItem(
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
               Icon(Icons.delete, size: 20, color: Colors.red[600]),
               const SizedBox(width: 8),
-              Text('Supprimer', style: TextStyle(color: Colors.red[600])),
+              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
             ],
           ),
         ),
@@ -121,75 +114,13 @@ class ModernDropdownMenu extends StatelessWidget {
     return items;
   }
 
-  PopupMenuItem<String> _buildMenuItem({
-    required String value,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    bool isDestructive = false,
-  }) {
-    return PopupMenuItem<String>(
-      value: value,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color:
-                    isDestructive
-                        ? color.withOpacity(0.1)
-                        : color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDestructive ? color : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color:
-                          isDestructive
-                              ? color.withOpacity(0.8)
-                              : Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _handleMenuSelection(String value, BuildContext context) {
-    switch (value) {
+  void _handleMenuAction(String action, BuildContext context) {
+    switch (action) {
       case 'edit':
         onEdit?.call();
         break;
       case 'share':
         onShare?.call();
-        break;
-      case 'manage_shares':
-        onManageShares?.call();
         break;
       case 'info':
         onInfo?.call();

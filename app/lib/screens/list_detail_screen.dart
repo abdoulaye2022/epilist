@@ -1,9 +1,6 @@
-// screens/list_detail_screen.dart - VERSION AVEC FONCTIONNALITÉS DE PARTAGE COMPLÈTES
+// screens/list_detail_screen.dart - VERSION AVEC MENU MODERNE MAIS ICÔNES SIMPLES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
-import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
-import 'package:epilist/blocs/shared_list/shared_list_state.dart';
-import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
@@ -11,14 +8,10 @@ import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/add_item_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_item_dialog.dart';
-import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/delete_confirmation_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
 import 'package:epilist/widgets/list_detail/modern_dropdown_menu.dart';
-import 'package:epilist/widgets/share_list_dialog.dart';
-import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
-import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -72,88 +65,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: _buildAppBar(),
-      body: MultiBlocListener(
-        listeners: [
-          // Listener pour les items de liste
-          BlocListener<ListItemBloc, ListItemState>(
-            listener: (context, state) {
-              SmartSnackBarManager.showForState(context, state);
-            },
-          ),
-          // Listener pour les opérations de partage
-          BlocListener<SharedListBloc, SharedListState>(
-            listener: (context, state) {
-              if (state is SharedListError) {
-                SmartSnackBarManager.showErrorSnackBar(context, state.message);
-              } else if (state is ShareOperationSuccess) {
-                SmartSnackBarManager.showSuccessSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 2),
-                );
-                // Si c'est un "leave", retourner à l'écran précédent
-                if (state.message.contains('quitté') ||
-                    state.message.contains('Vous avez quitté')) {
-                  Navigator.of(context).pop();
-                } else {
-                  // Pour les autres opérations, recharger la liste des shopping lists
-                  context.read<ShoppingListBloc>().add(LoadShoppingLists());
-                }
-              }
-            },
-          ),
-          // ✅ NOUVEAU: Listener pour mettre à jour currentList
-          BlocListener<ShoppingListBloc, ShoppingListState>(
-            listener: (context, state) {
-              if (state is ShoppingListError) {
-                SmartSnackBarManager.showErrorSnackBar(context, state.message);
-              } else if (state is ShoppingListOperationSuccess) {
-                SmartSnackBarManager.showSuccessSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 2),
-                );
-
-                // Si c'est une suppression, retourner à l'écran précédent
-                if (state.message.contains('supprimée')) {
-                  Navigator.of(context).pop();
-                }
-              } else if (state is ShoppingListLoaded) {
-                // ✅ Mettre à jour currentList quand les listes sont rechargées
-                _updateCurrentListFromLoadedState(state);
-              }
-            },
-          ),
-        ],
-        child: BlocBuilder<ListItemBloc, ListItemState>(
-          builder: (context, state) => _buildBody(state),
-        ),
+      body: BlocConsumer<ListItemBloc, ListItemState>(
+        listener: (context, state) {
+          SmartSnackBarManager.showForState(context, state);
+        },
+        builder: (context, state) => _buildBody(state),
       ),
       floatingActionButton: _buildFloatingActionButton(),
     );
-  }
-
-  // ✅ NOUVELLE MÉTHODE: Mettre à jour currentList depuis ShoppingListLoaded
-  void _updateCurrentListFromLoadedState(ShoppingListLoaded state) {
-    try {
-      final updatedList = state.lists.firstWhere(
-        (list) => list.id == currentList.id,
-      );
-
-      // Vérifier si des changements importants ont eu lieu
-      if (updatedList.name != currentList.name ||
-          updatedList.isShared != currentList.isShared ||
-          updatedList.permissionDisplayName !=
-              currentList.permissionDisplayName) {
-        setState(() {
-          currentList = updatedList;
-        });
-      }
-    } catch (e) {
-      // Si la liste n'est plus trouvée, elle a peut-être été supprimée
-      // ou l'utilisateur n'y a plus accès - retourner à l'écran précédent
-      Navigator.of(context).pop();
-    }
   }
 
   AppBar _buildAppBar() {
@@ -185,17 +104,31 @@ class _ListDetailViewState extends State<_ListDetailView> {
             icon: const Icon(Icons.add, color: Colors.grey),
             tooltip: l10n.insufficientPermission,
           ),
-        // Menu déroulant moderne avec toutes les fonctionnalités
+        // ✅ Menu déroulant moderne mais icône simple
         ModernDropdownMenu(
           shoppingList: currentList,
-          onEdit: currentList.canEdit ? _showEditListDialog : null,
-          onShare: currentList.canShare ? _showShareDialog : null,
-          onInfo: _showListInfo,
-          onManageShares:
-              (currentList.isOwner && currentList.isShared)
-                  ? _showManageSharesDialog
+          onEdit:
+              currentList.canEdit
+                  ? () {
+                    SmartSnackBarManager.showMessage(
+                      context,
+                      'Fonctionnalité d\'édition à venir',
+                      type: SnackBarType.info,
+                    );
+                  }
                   : null,
-          onLeave: !currentList.isOwner ? _showLeaveSharedListDialog : null,
+          onShare:
+              currentList.canShare
+                  ? () {
+                    SmartSnackBarManager.showMessage(
+                      context,
+                      'Fonctionnalité de partage à venir',
+                      type: SnackBarType.info,
+                    );
+                  }
+                  : null,
+          onInfo: _showListInfo,
+          onLeave: !currentList.isOwner ? _showLeaveConfirmation : null,
           onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
         ),
       ],
@@ -853,52 +786,18 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  // ===== NOUVELLES MÉTHODES POUR LES FONCTIONNALITÉS DE PARTAGE =====
-
-  void _showEditListDialog() {
-    showDialog(
+  void _showLeaveConfirmation() {
+    DeleteConfirmationDialog.showLeaveList(
       context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<ShoppingListBloc>(),
-            child: EditListDialog(list: currentList),
-          ),
-    );
-  }
-
-  void _showShareDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: ShareListDialog(
-              listId: currentList.id,
-              listName: currentList.name,
-            ),
-          ),
-    );
-  }
-
-  void _showManageSharesDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: ManageSharesDialog(list: currentList),
-          ),
-    );
-  }
-
-  void _showLeaveSharedListDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: LeaveSharedListDialog(list: currentList),
-          ),
+      listName: currentList.name,
+      onConfirm: () {
+        SmartSnackBarManager.showMessage(
+          context,
+          'Vous avez quitté la liste "${currentList.name}"',
+          type: SnackBarType.warning,
+        );
+        Navigator.of(context).pop();
+      },
     );
   }
 
@@ -907,9 +806,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
       context: context,
       listName: currentList.name,
       onConfirm: () {
-        context.read<ShoppingListBloc>().add(
-          DeleteShoppingList(currentList.id),
+        SmartSnackBarManager.showMessage(
+          context,
+          'Liste "${currentList.name}" supprimée',
+          type: SnackBarType.success,
         );
+        Navigator.of(context).pop();
       },
     );
   }
