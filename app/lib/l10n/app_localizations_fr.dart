@@ -327,7 +327,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get enterCodeAndNewPassword =>
-      'Entrez le code et votre nouveau mot de passe';
+      'Saisissez le code reçu par email et votre nouveau mot de passe';
 
   @override
   String get enterEmailForVerificationCode =>
@@ -339,8 +339,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get passwordChangedSuccessfully =>
-      'Mot de passe modifié avec succès !';
+  String get passwordChangedSuccessfully => 'Mot de passe changé avec succès !';
 
   @override
   String get pleaseEnterEmail => 'Veuillez saisir votre email';
@@ -373,7 +372,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le mot de passe doit contenir au moins 6 caractères';
 
   @override
-  String get confirmNewPassword => 'Confirmer le nouveau mot de passe *';
+  String get confirmNewPassword => 'Confirmer le nouveau mot de passe';
 
   @override
   String get pleaseConfirmNewPassword =>
@@ -389,11 +388,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resendCode => 'Renvoyer le code';
 
   @override
-  String get codeExpiresInTwoHours => 'Le code expire dans 2 heures';
+  String get codeExpiresInTwoHours =>
+      'Le code expire dans 2 heures. Vérifiez vos emails et vos spams.';
 
   @override
   String get verificationCodeWillBeSent =>
-      'Un code de vérification sera envoyé par email';
+      'Vous recevrez un code de vérification par email pour changer votre mot de passe.';
 
   @override
   String get changingPassword => 'Changement en cours...';
@@ -631,8 +631,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get shareLinkCreatedSuccessfully =>
-      'Lien de partage créé avec succès !';
+  String get shareLinkCreatedSuccessfully => 'Lien de partage créé avec succès';
 
   @override
   String get linkCopiedToClipboard => 'Lien copié dans le presse-papiers !';
@@ -716,7 +715,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get by => 'Par';
 
   @override
-  String get quantity => 'Quantité';
+  String get quantity => 'Qté';
 
   @override
   String get deleteItem => 'Supprimer';
@@ -1186,4 +1185,211 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get accountDeletionCodeSent =>
       'Code de suppression envoyé ! Vérifiez votre email.';
+
+  @override
+  String get listCreatedSuccessfully => 'Liste créée avec succès';
+
+  @override
+  String get listUpdatedSuccessfully => 'Liste modifiée avec succès';
+
+  @override
+  String get listDeletedSuccessfully => 'Liste supprimée avec succès';
+
+  @override
+  String get listDuplicatedSuccessfully => 'Liste dupliquée avec succès';
+
+  @override
+  String get listsLoadedSuccessfully => 'Listes chargées avec succès';
+
+  @override
+  String get operationSuccess => 'Opération réussie';
+
+  @override
+  String get listNotFound => 'Liste non trouvée';
+
+  @override
+  String get serverError => 'Erreur du serveur';
+
+  @override
+  String get itemAddedSuccessfully => 'Article ajouté avec succès';
+
+  @override
+  String get itemUpdatedSuccessfully => 'Article mis à jour avec succès';
+
+  @override
+  String get itemDeletedSuccessfully => 'Article supprimé avec succès';
+
+  @override
+  String get itemStatusUpdatedSuccessfully => 'Statut mis à jour avec succès';
+
+  @override
+  String get itemsLoadedSuccessfully => 'Articles chargés avec succès';
+
+  @override
+  String get errorLoadingItems => 'Erreur lors du chargement des articles';
+
+  @override
+  String get errorAddingItem => 'Erreur lors de l\'ajout de l\'article';
+
+  @override
+  String get errorUpdatingItem => 'Erreur lors de la mise à jour de l\'article';
+
+  @override
+  String get errorDeletingItem => 'Erreur lors de la suppression de l\'article';
+
+  @override
+  String get errorUpdatingStatus => 'Erreur lors de la mise à jour du statut';
+
+  @override
+  String get invitationReceived => 'Invitation reçue !';
+
+  @override
+  String get loginRequiredForInvitation =>
+      'Connexion requise pour accéder à l\'invitation';
+
+  @override
+  String get invalidShareLink => 'Lien de partage invalide';
+
+  @override
+  String get errorOpeningInvitation =>
+      'Erreur lors de l\'ouverture de l\'invitation';
+
+  @override
+  String get cannotOpenInvitation => 'Impossible d\'ouvrir l\'invitation';
+
+  @override
+  String get authSuccessNavigation =>
+      'Authentification réussie, navigation vers l\'invitation';
+
+  @override
+  String get invitationEpiList => 'Invitation EpiList';
+
+  @override
+  String get invitationSubject =>
+      'Invitation à partager une liste d\'épicerie - EpiList';
+
+  @override
+  String invitationMessage(String owner, String listName) {
+    return '$owner vous invite sur \"$listName\"';
+  }
+
+  @override
+  String get directLinkRecommended => 'Lien direct EpiList (recommandé)';
+
+  @override
+  String get orViaBrowser => 'Ou via navigateur';
+
+  @override
+  String get directLinkAutoOpen =>
+      'Le lien direct ouvrira automatiquement l\'app !';
+
+  @override
+  String get clickToOpenEpiList => 'Cliquez pour ouvrir EpiList';
+
+  @override
+  String get appWillOpenAutomatically => 'L\'app s\'ouvrira automatiquement !';
+
+  @override
+  String get sharedListsLoadedSuccessfully =>
+      'Listes partagées chargées avec succès';
+
+  @override
+  String get sharesLoadedSuccessfully => 'Partages chargés avec succès';
+
+  @override
+  String get invitationLoadedSuccessfully => 'Invitation chargée avec succès';
+
+  @override
+  String get invitationAcceptedSuccessfully =>
+      'Invitation acceptée avec succès';
+
+  @override
+  String get invitationDeclinedSuccessfully => 'Invitation refusée avec succès';
+
+  @override
+  String get permissionsUpdatedSuccessfully =>
+      'Permissions mises à jour avec succès';
+
+  @override
+  String get shareRevokedSuccessfully => 'Partage révoqué avec succès';
+
+  @override
+  String get leftSharedListSuccessfully => 'Vous avez quitté la liste partagée';
+
+  @override
+  String get allShareLinksRevokedSuccessfully =>
+      'Tous les liens de partage ont été révoqués';
+
+  @override
+  String get errorLoadingSharedLists =>
+      'Erreur lors du chargement des listes partagées';
+
+  @override
+  String get errorLoadingShares => 'Erreur lors du chargement des partages';
+
+  @override
+  String get errorCreatingShareLink =>
+      'Erreur lors de la création du lien de partage';
+
+  @override
+  String get invalidOrExpiredInvitation => 'Invitation invalide ou expirée';
+
+  @override
+  String get errorAcceptingInvitation =>
+      'Erreur lors de l\'acceptation de l\'invitation';
+
+  @override
+  String get errorDecliningInvitation =>
+      'Erreur lors du refus de l\'invitation';
+
+  @override
+  String get errorUpdatingPermissions =>
+      'Erreur lors de la mise à jour des permissions';
+
+  @override
+  String get errorRevokingShare => 'Erreur lors de la révocation du partage';
+
+  @override
+  String get errorLeavingList => 'Erreur lors de la sortie de la liste';
+
+  @override
+  String get errorRevokingLinks => 'Erreur lors de la révocation des liens';
+
+  @override
+  String get operationSuccessful => 'Opération réussie';
+
+  @override
+  String get anErrorOccurred => 'Une erreur est survenue';
+
+  @override
+  String get noInternetConnection => 'Aucune connexion Internet';
+
+  @override
+  String get noInternetMessage =>
+      'Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.';
+
+  @override
+  String get connectionTips => 'Conseils :';
+
+  @override
+  String get checkWifiConnection => 'Vérifiez votre connexion Wi-Fi';
+
+  @override
+  String get checkMobileData => 'Activez vos données mobiles';
+
+  @override
+  String get restartRouter => 'Redémarrez votre routeur si nécessaire';
+
+  @override
+  String get offlineMode => 'Mode hors ligne - Connexion requise';
+
+  @override
+  String get backOnline => 'Connexion rétablie !';
+
+  @override
+  String get connectionRequired => 'Connexion Internet requise';
+
+  @override
+  String get connectionRequiredForInvitation =>
+      'Connexion Internet requise pour ouvrir l\'invitation';
 }

@@ -1,4 +1,4 @@
-// utils/smart_snackbar_manager.dart - Gestionnaire intelligent pour les états Bloc
+// utils/smart_snackbar_manager.dart - VERSION CORRIGÉE
 import 'package:flutter/material.dart';
 
 class SmartSnackBarManager {
@@ -43,8 +43,6 @@ class SmartSnackBarManager {
     );
   }
 
-  // ✅ NOUVELLES MÉTHODES AJOUTÉES
-
   /// Affiche un SnackBar de succès
   static void showSuccessSnackBar(
     BuildContext context,
@@ -83,6 +81,8 @@ class SmartSnackBarManager {
     String message, {
     Duration? duration,
     bool forceShow = false,
+    bool showCloseIcon =
+        true, // ✅ CORRIGÉ: Paramètre optionnel avec valeur par défaut
   }) {
     _showSnackBar(
       context,
@@ -90,6 +90,7 @@ class SmartSnackBarManager {
       type: SnackBarType.warning,
       duration: duration ?? const Duration(seconds: 4),
       forceShow: forceShow,
+      showCloseIcon: showCloseIcon, // ✅ NOUVEAU: Passer le paramètre
     );
   }
 
@@ -184,6 +185,7 @@ class SmartSnackBarManager {
     required SnackBarType type,
     required Duration duration,
     bool forceShow = false,
+    bool? showCloseIcon, // ✅ NOUVEAU: Paramètre optionnel
   }) {
     // Si un SnackBar est déjà visible et qu'on ne force pas l'affichage
     if (_isSnackBarVisible && !forceShow) {
@@ -199,6 +201,9 @@ class SmartSnackBarManager {
     final messenger = ScaffoldMessenger.of(context);
     _currentMessenger = messenger;
     _isSnackBarVisible = true;
+
+    // ✅ NOUVEAU: Utiliser showCloseIcon si fourni, sinon la config par défaut
+    final shouldShowCloseAction = showCloseIcon ?? config.showCloseAction;
 
     messenger
         .showSnackBar(
@@ -228,7 +233,7 @@ class SmartSnackBarManager {
             ),
             elevation: 6,
             action:
-                config.showCloseAction
+                shouldShowCloseAction // ✅ CORRIGÉ: Utiliser la variable
                     ? SnackBarAction(
                       label: 'Fermer',
                       textColor: Colors.white70,

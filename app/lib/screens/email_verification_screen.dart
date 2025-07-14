@@ -1,9 +1,9 @@
-// email_verification_screen.dart - VERSION CORRIGÉE
+// email_verification_screen.dart - VERSION SANS DOUBLE REDIRECTION
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +20,6 @@ class EmailVerificationScreen extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _EmailVerificationScreenState createState() =>
       _EmailVerificationScreenState();
 }
@@ -115,21 +114,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     _focusNodes[0].requestFocus();
   }
 
-  void _redirectToHome() {
-    if (!_isRedirecting && mounted) {
-      setState(() => _isRedirecting = true);
-
-      // Completely replace the navigation stack
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -161,16 +149,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              '🎉 Email verified successfully!',
+              l10n.emailConfirmedSuccess,
               duration: const Duration(seconds: 2),
             );
 
-            // Immediate redirect to HomeScreen
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mounted && !_isRedirecting) {
-                _redirectToHome();
-              }
-            });
+            // ✅ SUPPRESSION: Plus de redirection manuelle ici
+            // AuthWrapper dans main.dart gèrera automatiquement la navigation
+            // vers HomeScreen quand AuthSuccess sera émis
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 
@@ -178,16 +163,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              '🎉 Email verified! Automatic login successful!',
+              l10n.emailConfirmedSuccess,
               duration: const Duration(seconds: 2),
             );
 
-            // Immediate redirect to HomeScreen
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mounted && !_isRedirecting) {
-                _redirectToHome();
-              }
-            });
+            // ✅ SUPPRESSION: Plus de redirection manuelle ici
+            // AuthWrapper dans main.dart gèrera automatiquement la navigation
+            // vers HomeScreen
           } else if (state is VerificationCodeResent) {
             setState(() => _isLoading = false);
 
@@ -195,17 +177,19 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
             SmartSnackBarManager.showSuccessSnackBar(
               context,
-              'Verification code resent!',
+              l10n.verificationCodeSent,
               duration: const Duration(seconds: 2),
             );
             _clearCode();
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // ✅ CORRECTION : Plus d'utilisation de AuthErrorMessages
-            // L'erreur sera gérée par AuthBloc via main.dart
-            // Juste afficher l'erreur pour debug
-            print('🔍 Erreur de vérification email: ${state.error}');
+            // Afficher l'erreur localement avec SmartSnackBarManager
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.error, // Le message est déjà traduit par AuthBloc
+              duration: const Duration(seconds: 4),
+            );
 
             _clearCode();
           } else if (state is Unauthenticated) {
@@ -241,7 +225,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   // Title
                   Text(
-                    'Verify your email',
+                    l10n.emailVerified,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -254,7 +238,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   // Description
                   Text(
-                    'We sent a verification code to',
+                    l10n.verificationCodeSentTo(widget.email),
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
@@ -282,22 +266,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   SizedBox(height: 32),
 
-                  // Enhanced loading indicator
-                  if (_isLoading || _isRedirecting)
+                  // ✅ SIMPLIFICATION: Indicateur de chargement plus simple
+                  if (_isLoading)
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(12),
                       margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color:
-                            _isRedirecting ? Colors.green[50] : Colors.blue[50],
+                        color: Colors.blue[50],
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color:
-                              _isRedirecting
-                                  ? Colors.green[200]!
-                                  : Colors.blue[200]!,
-                        ),
+                        border: Border.all(color: Colors.blue[200]!),
                       ),
                       child: Row(
                         children: [
@@ -305,23 +283,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color:
-                                  _isRedirecting
-                                      ? Colors.green[600]
-                                      : Colors.blue[600],
+                              color: Colors.blue[600],
                               strokeWidth: 2,
                             ),
                           ),
                           SizedBox(width: 12),
                           Text(
-                            _isRedirecting
-                                ? 'Login successful! Redirecting...'
-                                : 'Verification in progress...',
+                            l10n.processing,
                             style: TextStyle(
-                              color:
-                                  _isRedirecting
-                                      ? Colors.green[700]
-                                      : Colors.blue[700],
+                              color: Colors.blue[700],
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -332,7 +302,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                   // Code input fields
                   Text(
-                    'Enter the 6-digit code',
+                    l10n.enterSixDigitCode,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -366,7 +336,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         child: TextFormField(
                           controller: _controllers[index],
                           focusNode: _focusNodes[index],
-                          enabled: !_isLoading && !_isRedirecting,
+                          enabled: !_isLoading,
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
                           maxLength: 1,
@@ -392,9 +362,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             );
                           },
                           onEditingComplete: () {
-                            if (_isCodeComplete &&
-                                !_isLoading &&
-                                !_isRedirecting) {
+                            if (_isCodeComplete && !_isLoading) {
                               _verifyCode();
                             }
                           },
@@ -411,9 +379,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed:
-                          (_isLoading || _isRedirecting || !_isCodeComplete)
-                              ? null
-                              : _verifyCode,
+                          (_isLoading || !_isCodeComplete) ? null : _verifyCode,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[600],
                         foregroundColor: Colors.white,
@@ -424,7 +390,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         elevation: 2,
                       ),
                       child:
-                          (_isLoading || _isRedirecting)
+                          _isLoading
                               ? SizedBox(
                                 height: 20,
                                 width: 20,
@@ -434,7 +400,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 ),
                               )
                               : Text(
-                                'Verify code',
+                                l10n.verificationCode,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -449,7 +415,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   Column(
                     children: [
                       Text(
-                        'Didn\'t receive the code?',
+                        l10n.verificationCodeSent,
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
 
@@ -457,7 +423,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
                       if (!_canResend)
                         Text(
-                          'Resend in ${_resendCountdown}s',
+                          '${l10n.resendCode} ${_resendCountdown}s',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[500],
@@ -466,15 +432,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         )
                       else
                         TextButton(
-                          onPressed:
-                              (_isLoading || _isRedirecting)
-                                  ? null
-                                  : _resendCode,
+                          onPressed: _isLoading ? null : _resendCode,
                           child: Text(
-                            'Resend code',
+                            l10n.resendCode,
                             style: TextStyle(
                               color:
-                                  (_isLoading || _isRedirecting)
+                                  _isLoading
                                       ? Colors.grey[400]
                                       : Colors.green[600],
                               fontWeight: FontWeight.bold,
@@ -488,7 +451,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   SizedBox(height: 20),
 
                   // Clear button
-                  if (_verificationCode.isNotEmpty && !_isRedirecting)
+                  if (_verificationCode.isNotEmpty)
                     TextButton.icon(
                       onPressed: _isLoading ? null : _clearCode,
                       icon: Icon(
@@ -497,7 +460,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         size: 18,
                       ),
                       label: Text(
-                        'Clear code',
+                        l10n.delete,
                         style: TextStyle(
                           color:
                               _isLoading ? Colors.grey[400] : Colors.grey[600],
@@ -509,64 +472,62 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   SizedBox(height: 20),
 
                   // Information message
-                  if (!_isRedirecting)
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: Colors.blue[600],
-                            size: 20,
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Check your spam folder if you can\'t find the email',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.blue[700],
-                                fontWeight: FontWeight.w500,
-                              ),
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue[600],
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.checkEmailsAndSpam,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.blue[700],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                  if (!_isRedirecting) SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                  // Informative message about the flow
-                  if (!_isRedirecting)
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green[200]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.home, color: Colors.green[600], size: 20),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'After verification, you will be automatically logged in and redirected to the home page',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.green[700],
-                                fontWeight: FontWeight.w500,
-                              ),
+                  // ✅ NOUVEAU: Message informatif sur la redirection automatique
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.home, color: Colors.green[600], size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.afterRegistrationEmailVerification,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.green[700],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
                 ],
               ),
             ),

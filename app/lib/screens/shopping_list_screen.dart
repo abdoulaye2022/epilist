@@ -1,4 +1,4 @@
-// screens/shopping_list_screen.dart - VERSION REFACTORISÉE AVEC TRADUCTIONS
+// screens/shopping_list_screen.dart - VERSION AVEC CONTEXT POUR TRADUCTIONS
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
@@ -35,7 +35,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _loadShoppingLists() {
-    context.read<ShoppingListBloc>().add(LoadShoppingLists());
+    // ✅ NOUVEAU: Passer le context pour les traductions
+    context.read<ShoppingListBloc>().add(const LoadShoppingLists());
   }
 
   @override
@@ -59,7 +60,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         if (state is ShoppingListError) {
           SmartSnackBarManager.showErrorSnackBar(
             context,
-            state.message,
+            state.message, // ✅ COHÉRENCE: Utilise 'message' au lieu de 'error'
             duration: const Duration(seconds: 3),
           );
         } else if (state is ShoppingListOperationSuccess) {
@@ -221,6 +222,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   void _duplicateList(ShoppingList list) {
+    // ✅ NOUVEAU: Passer le context pour les traductions
     context.read<ShoppingListBloc>().add(DuplicateShoppingList(list.id));
   }
 

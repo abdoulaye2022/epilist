@@ -701,7 +701,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterCodeAndNewPassword.
   ///
   /// In fr, this message translates to:
-  /// **'Entrez le code et votre nouveau mot de passe'**
+  /// **'Saisissez le code reçu par email et votre nouveau mot de passe'**
   String get enterCodeAndNewPassword;
 
   /// No description provided for @enterEmailForVerificationCode.
@@ -719,7 +719,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordChangedSuccessfully.
   ///
   /// In fr, this message translates to:
-  /// **'Mot de passe modifié avec succès !'**
+  /// **'Mot de passe changé avec succès !'**
   String get passwordChangedSuccessfully;
 
   /// No description provided for @pleaseEnterEmail.
@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmNewPassword.
   ///
   /// In fr, this message translates to:
-  /// **'Confirmer le nouveau mot de passe *'**
+  /// **'Confirmer le nouveau mot de passe'**
   String get confirmNewPassword;
 
   /// No description provided for @pleaseConfirmNewPassword.
@@ -809,13 +809,13 @@ abstract class AppLocalizations {
   /// No description provided for @codeExpiresInTwoHours.
   ///
   /// In fr, this message translates to:
-  /// **'Le code expire dans 2 heures'**
+  /// **'Le code expire dans 2 heures. Vérifiez vos emails et vos spams.'**
   String get codeExpiresInTwoHours;
 
   /// No description provided for @verificationCodeWillBeSent.
   ///
   /// In fr, this message translates to:
-  /// **'Un code de vérification sera envoyé par email'**
+  /// **'Vous recevrez un code de vérification par email pour changer votre mot de passe.'**
   String get verificationCodeWillBeSent;
 
   /// No description provided for @changingPassword.
@@ -1241,7 +1241,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareLinkCreatedSuccessfully.
   ///
   /// In fr, this message translates to:
-  /// **'Lien de partage créé avec succès !'**
+  /// **'Lien de partage créé avec succès'**
   String get shareLinkCreatedSuccessfully;
 
   /// No description provided for @linkCopiedToClipboard.
@@ -1391,7 +1391,7 @@ abstract class AppLocalizations {
   /// No description provided for @quantity.
   ///
   /// In fr, this message translates to:
-  /// **'Quantité'**
+  /// **'Qté'**
   String get quantity;
 
   /// No description provided for @deleteItem.
@@ -2233,6 +2233,384 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Code de suppression envoyé ! Vérifiez votre email.'**
   String get accountDeletionCodeSent;
+
+  /// No description provided for @listCreatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste créée avec succès'**
+  String get listCreatedSuccessfully;
+
+  /// No description provided for @listUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste modifiée avec succès'**
+  String get listUpdatedSuccessfully;
+
+  /// No description provided for @listDeletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste supprimée avec succès'**
+  String get listDeletedSuccessfully;
+
+  /// No description provided for @listDuplicatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste dupliquée avec succès'**
+  String get listDuplicatedSuccessfully;
+
+  /// No description provided for @listsLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes chargées avec succès'**
+  String get listsLoadedSuccessfully;
+
+  /// No description provided for @operationSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opération réussie'**
+  String get operationSuccess;
+
+  /// No description provided for @listNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste non trouvée'**
+  String get listNotFound;
+
+  /// No description provided for @serverError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur du serveur'**
+  String get serverError;
+
+  /// No description provided for @itemAddedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article ajouté avec succès'**
+  String get itemAddedSuccessfully;
+
+  /// No description provided for @itemUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article mis à jour avec succès'**
+  String get itemUpdatedSuccessfully;
+
+  /// No description provided for @itemDeletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article supprimé avec succès'**
+  String get itemDeletedSuccessfully;
+
+  /// No description provided for @itemStatusUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut mis à jour avec succès'**
+  String get itemStatusUpdatedSuccessfully;
+
+  /// No description provided for @itemsLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles chargés avec succès'**
+  String get itemsLoadedSuccessfully;
+
+  /// No description provided for @errorLoadingItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des articles'**
+  String get errorLoadingItems;
+
+  /// No description provided for @errorAddingItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'ajout de l\'article'**
+  String get errorAddingItem;
+
+  /// No description provided for @errorUpdatingItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour de l\'article'**
+  String get errorUpdatingItem;
+
+  /// No description provided for @errorDeletingItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression de l\'article'**
+  String get errorDeletingItem;
+
+  /// No description provided for @errorUpdatingStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour du statut'**
+  String get errorUpdatingStatus;
+
+  /// No description provided for @invitationReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation reçue !'**
+  String get invitationReceived;
+
+  /// No description provided for @loginRequiredForInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion requise pour accéder à l\'invitation'**
+  String get loginRequiredForInvitation;
+
+  /// No description provided for @invalidShareLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien de partage invalide'**
+  String get invalidShareLink;
+
+  /// No description provided for @errorOpeningInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'ouverture de l\'invitation'**
+  String get errorOpeningInvitation;
+
+  /// No description provided for @cannotOpenInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir l\'invitation'**
+  String get cannotOpenInvitation;
+
+  /// No description provided for @authSuccessNavigation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Authentification réussie, navigation vers l\'invitation'**
+  String get authSuccessNavigation;
+
+  /// No description provided for @invitationEpiList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation EpiList'**
+  String get invitationEpiList;
+
+  /// No description provided for @invitationSubject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation à partager une liste d\'épicerie - EpiList'**
+  String get invitationSubject;
+
+  /// No description provided for @invitationMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'{owner} vous invite sur \"{listName}\"'**
+  String invitationMessage(String owner, String listName);
+
+  /// No description provided for @directLinkRecommended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien direct EpiList (recommandé)'**
+  String get directLinkRecommended;
+
+  /// No description provided for @orViaBrowser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ou via navigateur'**
+  String get orViaBrowser;
+
+  /// No description provided for @directLinkAutoOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le lien direct ouvrira automatiquement l\'app !'**
+  String get directLinkAutoOpen;
+
+  /// No description provided for @clickToOpenEpiList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cliquez pour ouvrir EpiList'**
+  String get clickToOpenEpiList;
+
+  /// No description provided for @appWillOpenAutomatically.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'app s\'ouvrira automatiquement !'**
+  String get appWillOpenAutomatically;
+
+  /// No description provided for @sharedListsLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes partagées chargées avec succès'**
+  String get sharedListsLoadedSuccessfully;
+
+  /// No description provided for @sharesLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partages chargés avec succès'**
+  String get sharesLoadedSuccessfully;
+
+  /// No description provided for @invitationLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation chargée avec succès'**
+  String get invitationLoadedSuccessfully;
+
+  /// No description provided for @invitationAcceptedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation acceptée avec succès'**
+  String get invitationAcceptedSuccessfully;
+
+  /// No description provided for @invitationDeclinedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation refusée avec succès'**
+  String get invitationDeclinedSuccessfully;
+
+  /// No description provided for @permissionsUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Permissions mises à jour avec succès'**
+  String get permissionsUpdatedSuccessfully;
+
+  /// No description provided for @shareRevokedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage révoqué avec succès'**
+  String get shareRevokedSuccessfully;
+
+  /// No description provided for @leftSharedListSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez quitté la liste partagée'**
+  String get leftSharedListSuccessfully;
+
+  /// No description provided for @allShareLinksRevokedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les liens de partage ont été révoqués'**
+  String get allShareLinksRevokedSuccessfully;
+
+  /// No description provided for @errorLoadingSharedLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des listes partagées'**
+  String get errorLoadingSharedLists;
+
+  /// No description provided for @errorLoadingShares.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des partages'**
+  String get errorLoadingShares;
+
+  /// No description provided for @errorCreatingShareLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création du lien de partage'**
+  String get errorCreatingShareLink;
+
+  /// No description provided for @invalidOrExpiredInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation invalide ou expirée'**
+  String get invalidOrExpiredInvitation;
+
+  /// No description provided for @errorAcceptingInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'acceptation de l\'invitation'**
+  String get errorAcceptingInvitation;
+
+  /// No description provided for @errorDecliningInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du refus de l\'invitation'**
+  String get errorDecliningInvitation;
+
+  /// No description provided for @errorUpdatingPermissions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour des permissions'**
+  String get errorUpdatingPermissions;
+
+  /// No description provided for @errorRevokingShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la révocation du partage'**
+  String get errorRevokingShare;
+
+  /// No description provided for @errorLeavingList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la sortie de la liste'**
+  String get errorLeavingList;
+
+  /// No description provided for @errorRevokingLinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la révocation des liens'**
+  String get errorRevokingLinks;
+
+  /// No description provided for @operationSuccessful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opération réussie'**
+  String get operationSuccessful;
+
+  /// No description provided for @anErrorOccurred.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue'**
+  String get anErrorOccurred;
+
+  /// No description provided for @noInternetConnection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune connexion Internet'**
+  String get noInternetConnection;
+
+  /// No description provided for @noInternetMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.'**
+  String get noInternetMessage;
+
+  /// No description provided for @connectionTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseils :'**
+  String get connectionTips;
+
+  /// No description provided for @checkWifiConnection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez votre connexion Wi-Fi'**
+  String get checkWifiConnection;
+
+  /// No description provided for @checkMobileData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activez vos données mobiles'**
+  String get checkMobileData;
+
+  /// No description provided for @restartRouter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Redémarrez votre routeur si nécessaire'**
+  String get restartRouter;
+
+  /// No description provided for @offlineMode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode hors ligne - Connexion requise'**
+  String get offlineMode;
+
+  /// No description provided for @backOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion rétablie !'**
+  String get backOnline;
+
+  /// No description provided for @connectionRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Internet requise'**
+  String get connectionRequired;
+
+  /// No description provided for @connectionRequiredForInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Internet requise pour ouvrir l\'invitation'**
+  String get connectionRequiredForInvitation;
 }
 
 class _AppLocalizationsDelegate

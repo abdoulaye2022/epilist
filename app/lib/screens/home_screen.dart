@@ -1,4 +1,4 @@
-// screens/home_screen.dart - VERSION SANS SÉLECTION DE LANGUE
+// screens/home_screen.dart - VERSION SIMPLIFIÉE AVEC WIDGETS CONNECTÉS
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
@@ -21,6 +21,8 @@ import 'package:epilist/widgets/dialogs/logout_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
+import 'package:epilist/widgets/connectivity/connected_action_widgets.dart'; // ✅ NOUVEAU
+import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart'; // ✅ NOUVEAU
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -33,34 +35,69 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  // Variables pour contrôler les initialisations et éviter les redondances
+  bool _deepLinkInitialized = false;
+  bool _isResuming = false;
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addObserver(this);
-    context.read<ShoppingListBloc>().add(LoadShoppingLists());
 
+    // ✅ SIMPLIFIÉ: Plus de gestion manuelle de connectivité
+    _loadShoppingLists();
+
+    // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      DeepLinkHandler.updateContext(context);
+      _initializeDeepLinksOnce();
     });
+  }
+
+  // ✅ SIMPLIFIÉ: Plus besoin de vérifier la connectivité ici
+  void _loadShoppingLists() {
+    context.read<ShoppingListBloc>().add(LoadShoppingLists());
+  }
+
+  // Méthode pour initialiser les deep links une seule fois
+  void _initializeDeepLinksOnce() {
+    if (!_deepLinkInitialized && mounted) {
+      print('🚀 Initialisation unique des deep links depuis HomeScreen');
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          DeepLinkHandler.updateContext(context);
+          _deepLinkInitialized = true;
+        }
+      });
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    DeepLinkHandler.updateContext(context);
+    if (_deepLinkInitialized && !_isResuming && mounted) {
+      DeepLinkHandler.updateContext(context);
+    }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      context.read<ShoppingListBloc>().add(LoadShoppingLists());
+      _isResuming = true;
 
-      DeepLinkHandler.forceReinitialize();
+      // ✅ SIMPLIFIÉ: Juste recharger les listes, la connectivité est gérée automatiquement
+      _loadShoppingLists();
 
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        DeepLinkHandler.updateContext(context);
-      });
+      if (_deepLinkInitialized) {
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted && _isResuming) {
+            print('📱 App resumed - mise à jour contexte deep links');
+            DeepLinkHandler.updateContext(context);
+            _isResuming = false;
+          }
+        });
+      }
+    } else if (state == AppLifecycleState.paused) {
+      _isResuming = false;
     }
   }
 
@@ -78,7 +115,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       backgroundColor: Colors.grey[100],
       appBar: HomeAppBar(
         onRefresh:
-            () => context.read<ShoppingListBloc>().add(LoadShoppingLists()),
+            () =>
+                _loadShoppingLists(), // ✅ ConnectivityWrapper gère la vérification
         onViewAllLists: () => _goToAllLists(context),
         onProfile: () => _goToProfile(context),
         onLogout: () => _showLogoutDialog(context),
@@ -112,15 +150,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   state.message,
                   duration: const Duration(seconds: 2),
                 );
-                context.read<ShoppingListBloc>().add(LoadShoppingLists());
+                _loadShoppingLists();
               }
             },
           ),
         ],
-        child: RefreshIndicator(
-          onRefresh: () async {
-            context.read<ShoppingListBloc>().add(LoadShoppingLists());
-          },
+        child: ConnectedRefreshIndicator(
+          // ✅ NOUVEAU: RefreshIndicator connecté
+          onRefresh: () async => _loadShoppingLists(),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -129,10 +166,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 
-                // Section header sans sélecteur de langue
+                // Section header
                 ListsSectionHeader(
                   onViewAll: () => _goToAllLists(context),
-                  onCreateNew: () => _showCreateListDialog(context),
+                  onCreateNew:
+                      () => _showCreateListDialog(
+                        context,
+                      ), // ✅ Gestion automatique
                 ),
 
                 const SizedBox(height: 16),
@@ -151,28 +191,39 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
+      floatingActionButton: ConnectedFloatingActionButton(
+        // ✅ NOUVEAU: FAB connecté
+        onPressed: () => _showCreateListDialog(context),
+        backgroundColor: Colors.green[600],
+        tooltip: l10n.createList,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 
-  // Navigation methods
+  // ✅ SIMPLIFIÉ: Plus de vérification manuelle de connectivité
   void _openListDetails(BuildContext context, ShoppingList list) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListDetailScreen(shoppingList: list),
-      ),
-    ).then((_) {
-      context.read<ShoppingListBloc>().add(LoadShoppingLists());
-    });
+    context.requireConnection(
+      onConnected: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ListDetailScreen(shoppingList: list),
+          ),
+        ).then((_) => _loadShoppingLists());
+      },
+    );
   }
 
   void _goToAllLists(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ShoppingListScreen()),
-    ).then((_) {
-      context.read<ShoppingListBloc>().add(LoadShoppingLists());
-    });
+    context.requireConnection(
+      onConnected: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ShoppingListScreen()),
+        ).then((_) => _loadShoppingLists());
+      },
+    );
   }
 
   void _goToProfile(BuildContext context) {
@@ -182,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Dialog methods
+  // Dialog methods (inchangées)
   void _showCreateListDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -257,17 +308,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Action handler avec traductions
+  // Action handler avec traductions (simplifié)
   void _handleListAction(
     String action,
     ShoppingList list,
     BuildContext context,
     AppLocalizations l10n,
   ) {
+    // ✅ SIMPLIFIÉ: Plus de vérification manuelle, utilise requireConnection
     switch (action) {
       case 'edit':
         if (list.canEdit) {
-          _showEditListDialog(list, context);
+          context.requireConnection(
+            onConnected: () => _showEditListDialog(list, context),
+          );
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -277,12 +331,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         break;
 
       case 'duplicate':
-        context.read<ShoppingListBloc>().add(DuplicateShoppingList(list.id));
+        context.requireConnection(
+          onConnected:
+              () => context.read<ShoppingListBloc>().add(
+                DuplicateShoppingList(list.id),
+              ),
+        );
         break;
 
       case 'share':
         if (list.canShare) {
-          _showShareDialog(list, context);
+          context.requireConnection(
+            onConnected: () => _showShareDialog(list, context),
+          );
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -293,7 +354,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'manage_shares':
         if (list.isOwner && list.isShared) {
-          _showManageSharesDialog(list, context);
+          context.requireConnection(
+            onConnected: () => _showManageSharesDialog(list, context),
+          );
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -304,7 +367,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'leave':
         if (!list.isOwner) {
-          _showLeaveSharedListDialog(list, context);
+          context.requireConnection(
+            onConnected: () => _showLeaveSharedListDialog(list, context),
+          );
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -315,7 +380,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'delete':
         if (list.canDelete) {
-          _showDeleteListDialog(list, context);
+          context.requireConnection(
+            onConnected: () => _showDeleteListDialog(list, context),
+          );
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,

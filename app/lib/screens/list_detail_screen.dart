@@ -1,5 +1,6 @@
 // screens/list_detail_screen.dart - VERSION AVEC MENU MODERNE MAIS ICÔNES SIMPLES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
@@ -28,9 +29,10 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<ListItemBloc>(
       create:
-          (context) =>
-              ListItemBloc(listItemService: context.read<ListItemService>())
-                ..add(LoadListItems(widget.shoppingList.id)),
+          (context) => ListItemBloc(
+            listItemService: context.read<ListItemService>(),
+            localizationBloc: context.read<LocalizationBloc>(),
+          )..add(LoadListItems(widget.shoppingList.id)),
       child: _ListDetailView(shoppingList: widget.shoppingList),
     );
   }

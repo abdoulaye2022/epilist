@@ -1,10 +1,9 @@
-// screens/password_change_screen.dart
+// screens/password_change_screen.dart - VERSION CORRIGÉE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   final String? initialEmail;
@@ -25,7 +24,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
   bool _hasRequestedCode = false;
-  String? _errorMessage;
   bool _isLoading = false;
 
   @override
@@ -50,41 +48,29 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          debugPrint('🔍 BlocListener - État reçu: ${state.runtimeType}');
-
           if (state is AuthLoading) {
-            debugPrint('⏳ AuthLoading détecté');
             setState(() {
               _isLoading = true;
-              _errorMessage = null;
             });
           } else if (state is PasswordChangeCodeSent) {
-            debugPrint(
-              '📧 PasswordChangeCodeSent détecté pour: ${state.email}',
-            );
             setState(() {
               _isLoading = false;
               _hasRequestedCode = true;
-              _errorMessage = null;
             });
 
-            SmartSnackBarManager.showMessage(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               l10n.verificationCodeSentTo(state.email),
-              type: SnackBarType.success,
               duration: const Duration(seconds: 3),
             );
           } else if (state is PasswordChanged) {
-            debugPrint('✅ PasswordChanged détecté');
             setState(() {
               _isLoading = false;
-              _errorMessage = null;
             });
 
-            SmartSnackBarManager.showMessage(
+            SmartSnackBarManager.showSuccessSnackBar(
               context,
               l10n.passwordChangedSuccessfully,
-              type: SnackBarType.success,
               duration: const Duration(seconds: 2),
             );
 
@@ -96,23 +82,20 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               }
             });
           } else if (state is AuthFailure) {
-            debugPrint('❌ AuthFailure détecté avec erreur: ${state.error}');
             setState(() {
               _isLoading = false;
-              _errorMessage = _getLocalizedErrorMessage(state.error, l10n);
             });
 
-            SmartSnackBarManager.showMessage(
+            // ✅ AJOUT: Afficher l'erreur localement avec SmartSnackBarManager
+            SmartSnackBarManager.showErrorSnackBar(
               context,
-              _getLocalizedErrorMessage(state.error, l10n),
-              type: SnackBarType.error,
+              state.error, // Le message est déjà traduit par AuthBloc
               duration: const Duration(seconds: 4),
             );
           } else {
             setState(() {
               _isLoading = false;
             });
-            debugPrint('❓ État non géré: ${state.runtimeType}');
           }
         },
         child: SingleChildScrollView(
@@ -120,7 +103,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // En-tête avec icône - Style similaire à AboutPage
+              // En-tête avec icône
               Container(
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -193,65 +176,43 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
               SizedBox(height: 24),
 
-              // Message d'erreur - Style similaire
-              if (_errorMessage != null)
+              // ✅ INDICATEUR DE CHARGEMENT VISIBLE
+              if (_isLoading)
                 Container(
                   width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 20),
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(12),
+                  margin: EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.red[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red[200]!),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue[200]!),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: Colors.red[600],
-                        size: 20,
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.blue[600],
+                          strokeWidth: 2,
+                        ),
                       ),
                       SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _errorMessage!,
-                          style: TextStyle(
-                            color: Colors.red[700],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          size: 18,
-                          color: Colors.red[600],
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _errorMessage = null;
-                          });
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(
-                          minWidth: 24,
-                          minHeight: 24,
+                      Text(
+                        _hasRequestedCode
+                            ? l10n.changingPassword
+                            : l10n.sendingCode,
+                        style: TextStyle(
+                          color: Colors.blue[700],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
                 ),
 
-              // Formulaire - Style de section
+              // Formulaire
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
@@ -380,7 +341,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
               SizedBox(height: 24),
 
-              // Boutons d'action - Style similaire à AboutPage
+              // Boutons d'action
               Column(
                 children: [
                   _buildActionButton(
@@ -403,7 +364,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
               SizedBox(height: 24),
 
-              // Information - Style de section
+              // Information
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
@@ -440,44 +401,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   ],
                 ),
               ),
-
-              // Loading overlay
-              if (_isLoading)
-                Container(
-                  margin: EdgeInsets.only(top: 24),
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(
-                        color: Colors.green[600],
-                        strokeWidth: 3,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        _hasRequestedCode
-                            ? l10n.changingPassword
-                            : l10n.sendingCode,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         ),
@@ -518,13 +441,6 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         filled: true,
         fillColor: enabled ? Colors.grey[50] : Colors.grey[100],
       ),
-      onChanged: (value) {
-        if (_errorMessage != null) {
-          setState(() {
-            _errorMessage = null;
-          });
-        }
-      },
       validator: validator,
     );
   }
@@ -566,21 +482,15 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
   }
 
   void _handleAction() {
-    debugPrint('🚀 Tentative d\'action...');
-
     if (_formKey.currentState!.validate()) {
-      debugPrint('✅ Validation réussie');
-
       if (!_hasRequestedCode) {
         final email = _emailController.text.trim();
-        debugPrint('📤 Envoi RequestPasswordChangeCode pour: $email');
         context.read<AuthBloc>().add(RequestPasswordChangeCode(email));
       } else {
         final email = _emailController.text.trim();
         final code = _codeController.text.trim();
         final newPassword = _newPasswordController.text;
 
-        debugPrint('📤 Envoi VerifyPasswordChangeCode pour: $email');
         context.read<AuthBloc>().add(
           VerifyPasswordChangeCode(
             email: email,
@@ -590,55 +500,19 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         );
       }
     } else {
-      debugPrint('❌ Validation échouée');
+      SmartSnackBarManager.showErrorSnackBar(
+        context,
+        AppLocalizations.of(context)!.pleaseFixFormErrors,
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 
   void _resendCode() {
     final email = _emailController.text.trim();
     if (email.isNotEmpty) {
-      debugPrint('📤 Renvoi du code pour: $email');
       context.read<AuthBloc>().add(RequestPasswordChangeCode(email));
     }
-  }
-
-  String _getLocalizedErrorMessage(String error, AppLocalizations l10n) {
-    if (error.toLowerCase().contains('code invalid') ||
-        error.toLowerCase().contains('invalid code') ||
-        error.toLowerCase().contains('code_invalid')) {
-      return l10n.invalidVerificationCode;
-    }
-
-    if (error.toLowerCase().contains('code expired') ||
-        error.toLowerCase().contains('expired code') ||
-        error.toLowerCase().contains('code_expired')) {
-      return l10n.verificationCodeExpired;
-    }
-
-    if (error.toLowerCase().contains('user not found') ||
-        error.toLowerCase().contains('email not found')) {
-      return l10n.noAccountFoundWithEmail;
-    }
-
-    if (error.toLowerCase().contains('email not verified')) {
-      return l10n.emailNotVerifiedYet;
-    }
-
-    if (error.toLowerCase().contains('password')) {
-      return l10n.errorChangingPassword;
-    }
-
-    if (error.toLowerCase().contains('network') ||
-        error.toLowerCase().contains('connection') ||
-        error.toLowerCase().contains('timeout')) {
-      return l10n.connectionProblemCheckNetwork;
-    }
-
-    if (error.toLowerCase().contains('validation')) {
-      return l10n.enteredDataNotValid;
-    }
-
-    return error.isNotEmpty ? error : l10n.unexpectedErrorOccurred;
   }
 
   @override

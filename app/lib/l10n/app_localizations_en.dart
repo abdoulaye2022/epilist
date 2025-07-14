@@ -27,10 +27,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewAll => 'View all';
 
   @override
-  String get newList => 'New List';
+  String get newList => 'New';
 
   @override
-  String get createList => 'Create list';
+  String get createList => 'Create a list';
 
   @override
   String get noGroceryLists => 'No grocery lists';
@@ -117,7 +117,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You don\'t have permission to delete this list';
 
   @override
-  String get readOnlyAccess => 'Read-only access';
+  String get readOnlyAccess => 'Read only';
 
   @override
   String get editAccess => 'Edit';
@@ -180,7 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groceryListApp => 'Your grocery list application';
 
   @override
-  String get alreadyHaveAccount => 'Already have an account? ';
+  String get alreadyHaveAccount => 'Already have an account?';
 
   @override
   String get noAccount => 'No account?';
@@ -207,7 +207,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailConfirmedSuccess => 'Email confirmed successfully! Welcome!';
 
   @override
-  String get networkError => 'Network error. Check your connection.';
+  String get networkError => 'Network error';
 
   @override
   String get unknownError => 'An unexpected error occurred';
@@ -225,7 +225,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myData => 'My Data';
 
   @override
-  String get myShoppingLists => 'My Shopping Lists';
+  String get myShoppingLists => 'My shopping lists';
 
   @override
   String get settings => 'Settings';
@@ -243,10 +243,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutEpiList => 'About EpiList';
 
   @override
-  String get privacyPolicy => 'privacy policy';
+  String get privacyPolicy => 'Privacy Policy';
 
   @override
-  String get termsOfService => 'terms of service';
+  String get termsOfService => 'Terms of Service';
 
   @override
   String get logoutButton => 'Log Out';
@@ -316,13 +316,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesCancelDeletion => 'Yes, cancel';
 
   @override
-  String get changePassword => 'Change password';
+  String get changePassword => 'Change Password';
 
   @override
   String get enterYourCode => 'Enter your code';
 
   @override
-  String get enterCodeAndNewPassword => 'Enter the code and your new password';
+  String get enterCodeAndNewPassword =>
+      'Enter the code received by email and your new password';
 
   @override
   String get enterEmailForVerificationCode =>
@@ -356,7 +357,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get codeMustBeSixDigits => 'Code must contain 6 digits';
 
   @override
-  String get newPassword => 'New password';
+  String get newPassword => 'New Password';
 
   @override
   String get pleaseEnterNewPassword => 'Please enter your new password';
@@ -366,7 +367,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password must contain at least 6 characters';
 
   @override
-  String get confirmNewPassword => 'Confirm new password *';
+  String get confirmNewPassword => 'Confirm New Password';
 
   @override
   String get pleaseConfirmNewPassword => 'Please confirm your new password';
@@ -375,17 +376,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDoNotMatch => 'Passwords do not match';
 
   @override
-  String get sendCode => 'Send code';
+  String get sendCode => 'Send Code';
 
   @override
   String get resendCode => 'Resend Code';
 
   @override
-  String get codeExpiresInTwoHours => 'Code expires in 2 hours';
+  String get codeExpiresInTwoHours =>
+      'The code expires in 2 hours. Check your emails and spam folder.';
 
   @override
   String get verificationCodeWillBeSent =>
-      'A verification code will be sent by email';
+      'You will receive a verification code by email to change your password.';
 
   @override
   String get changingPassword => 'Changing password...';
@@ -619,7 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get shareLinkCreatedSuccessfully => 'Share link created successfully!';
+  String get shareLinkCreatedSuccessfully => 'Share link created successfully';
 
   @override
   String get linkCopiedToClipboard => 'Link copied to clipboard!';
@@ -701,7 +703,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get by => 'By';
 
   @override
-  String get quantity => 'Quantity';
+  String get quantity => 'Qty';
 
   @override
   String get deleteItem => 'Delete';
@@ -1163,4 +1165,206 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDeletionCodeSent => 'Deletion code sent! Check your email.';
+
+  @override
+  String get listCreatedSuccessfully => 'List created successfully';
+
+  @override
+  String get listUpdatedSuccessfully => 'List updated successfully';
+
+  @override
+  String get listDeletedSuccessfully => 'List deleted successfully';
+
+  @override
+  String get listDuplicatedSuccessfully => 'List duplicated successfully';
+
+  @override
+  String get listsLoadedSuccessfully => 'Lists loaded successfully';
+
+  @override
+  String get operationSuccess => 'Operation successful';
+
+  @override
+  String get listNotFound => 'List not found';
+
+  @override
+  String get serverError => 'Server error';
+
+  @override
+  String get itemAddedSuccessfully => 'Item added successfully';
+
+  @override
+  String get itemUpdatedSuccessfully => 'Item updated successfully';
+
+  @override
+  String get itemDeletedSuccessfully => 'Item deleted successfully';
+
+  @override
+  String get itemStatusUpdatedSuccessfully => 'Status updated successfully';
+
+  @override
+  String get itemsLoadedSuccessfully => 'Items loaded successfully';
+
+  @override
+  String get errorLoadingItems => 'Error loading items';
+
+  @override
+  String get errorAddingItem => 'Error adding item';
+
+  @override
+  String get errorUpdatingItem => 'Error updating item';
+
+  @override
+  String get errorDeletingItem => 'Error deleting item';
+
+  @override
+  String get errorUpdatingStatus => 'Error updating status';
+
+  @override
+  String get invitationReceived => 'Invitation received!';
+
+  @override
+  String get loginRequiredForInvitation =>
+      'Login required to access invitation';
+
+  @override
+  String get invalidShareLink => 'Invalid share link';
+
+  @override
+  String get errorOpeningInvitation => 'Error opening invitation';
+
+  @override
+  String get cannotOpenInvitation => 'Cannot open invitation';
+
+  @override
+  String get authSuccessNavigation =>
+      'Authentication successful, navigating to invitation';
+
+  @override
+  String get invitationEpiList => 'EpiList Invitation';
+
+  @override
+  String get invitationSubject =>
+      'Invitation to share a grocery list - EpiList';
+
+  @override
+  String invitationMessage(String owner, String listName) {
+    return '$owner invites you to \"$listName\"';
+  }
+
+  @override
+  String get directLinkRecommended => 'Direct EpiList link (recommended)';
+
+  @override
+  String get orViaBrowser => 'Or via browser';
+
+  @override
+  String get directLinkAutoOpen =>
+      'The direct link will automatically open the app!';
+
+  @override
+  String get clickToOpenEpiList => 'Click to open EpiList';
+
+  @override
+  String get appWillOpenAutomatically => 'The app will open automatically!';
+
+  @override
+  String get sharedListsLoadedSuccessfully =>
+      'Shared lists loaded successfully';
+
+  @override
+  String get sharesLoadedSuccessfully => 'Shares loaded successfully';
+
+  @override
+  String get invitationLoadedSuccessfully => 'Invitation loaded successfully';
+
+  @override
+  String get invitationAcceptedSuccessfully =>
+      'Invitation accepted successfully';
+
+  @override
+  String get invitationDeclinedSuccessfully =>
+      'Invitation declined successfully';
+
+  @override
+  String get permissionsUpdatedSuccessfully =>
+      'Permissions updated successfully';
+
+  @override
+  String get shareRevokedSuccessfully => 'Share revoked successfully';
+
+  @override
+  String get leftSharedListSuccessfully => 'You left the shared list';
+
+  @override
+  String get allShareLinksRevokedSuccessfully =>
+      'All share links have been revoked';
+
+  @override
+  String get errorLoadingSharedLists => 'Error loading shared lists';
+
+  @override
+  String get errorLoadingShares => 'Error loading shares';
+
+  @override
+  String get errorCreatingShareLink => 'Error creating share link';
+
+  @override
+  String get invalidOrExpiredInvitation => 'Invalid or expired invitation';
+
+  @override
+  String get errorAcceptingInvitation => 'Error accepting invitation';
+
+  @override
+  String get errorDecliningInvitation => 'Error declining invitation';
+
+  @override
+  String get errorUpdatingPermissions => 'Error updating permissions';
+
+  @override
+  String get errorRevokingShare => 'Error revoking share';
+
+  @override
+  String get errorLeavingList => 'Error leaving list';
+
+  @override
+  String get errorRevokingLinks => 'Error revoking links';
+
+  @override
+  String get operationSuccessful => 'Operation successful';
+
+  @override
+  String get anErrorOccurred => 'An error occurred';
+
+  @override
+  String get noInternetConnection => 'No Internet Connection';
+
+  @override
+  String get noInternetMessage =>
+      'You need to be connected to the Internet to use this application. Please check your connection and try again.';
+
+  @override
+  String get connectionTips => 'Tips:';
+
+  @override
+  String get checkWifiConnection => 'Check your Wi-Fi connection';
+
+  @override
+  String get checkMobileData => 'Enable your mobile data';
+
+  @override
+  String get restartRouter => 'Restart your router if necessary';
+
+  @override
+  String get offlineMode => 'Offline mode - Connection required';
+
+  @override
+  String get backOnline => 'Connection restored!';
+
+  @override
+  String get connectionRequired => 'Internet connection required';
+
+  @override
+  String get connectionRequiredForInvitation =>
+      'Internet connection required to open invitation';
 }

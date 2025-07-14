@@ -1,10 +1,9 @@
-// signup_screen.dart - VERSION CORRIGÉE : Plus de messages d'erreur en double
+// signup_screen.dart - VERSION AVEC GESTION D'ERREURS LOCALE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,10 +47,12 @@ class _SignUpPageState extends State<SignUpPage> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // ✅ SUPPRIMÉ : Plus de gestion d'erreur ici
-            // L'erreur sera gérée uniquement par AuthBloc via main.dart
-            // Juste du debug
-            print('🔍 Erreur d\'inscription: ${state.error}');
+            // ✅ AJOUT: Afficher l'erreur localement avec SmartSnackBarManager
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.error, // Le message est déjà traduit par AuthBloc
+              duration: const Duration(seconds: 4),
+            );
           } else if (state is EmailConfirmationRequired) {
             setState(() => _isLoading = false);
 

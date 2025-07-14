@@ -1,11 +1,11 @@
-// login_screen.dart - VERSION FINALE CORRIGÉE
+// login_screen.dart - VERSION AVEC GESTION D'ERREURS LOCALE
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/screens/password_change_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
-import 'package:epilist/utils/snackbar_manager.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,14 +36,16 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthFailure) {
             setState(() => _isLoading = false);
 
-            // ✅ CORRECTION : Plus d'utilisation de AuthErrorMessages
-            // L'erreur sera gérée par AuthBloc via main.dart
-            // Juste afficher l'erreur pour debug
-            print('🔍 Erreur de connexion: ${state.error}');
+            // ✅ AJOUT: Afficher l'erreur localement avec SmartSnackBarManager
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.error, // Le message est déjà traduit par AuthBloc
+              duration: const Duration(seconds: 4),
+            );
           } else if (state is EmailVerificationRequired) {
             setState(() => _isLoading = false);
 
-            SnackBarManager.showErrorSnackBar(
+            SmartSnackBarManager.showErrorSnackBar(
               context,
               l10n.emailMustBeVerified,
               duration: const Duration(seconds: 4),
@@ -66,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is AuthSuccess) {
             setState(() => _isLoading = false);
 
-            SnackBarManager.clearAll(context);
+            SmartSnackBarManager.clearAll(context);
 
             Future.delayed(const Duration(milliseconds: 800), () {
               if (mounted) {
@@ -553,7 +555,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       setState(() => _isLoading = false);
 
-      SnackBarManager.showErrorSnackBar(
+      SmartSnackBarManager.showErrorSnackBar(
         context,
         AppLocalizations.of(context)!.pleaseFixFormErrors,
         duration: const Duration(seconds: 3),

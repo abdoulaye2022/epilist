@@ -1,6 +1,7 @@
-// auth_bloc.dart - VERSION CORRIGÉE POUR JWT 1 AN
+// auth_bloc.dart - VERSION CORRIGÉE AVEC LOCALISATION
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart'; // ✅ NOUVEAU
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
@@ -13,10 +14,14 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
   final AccountDeletionService accountDeletionService;
+  final LocalizationBloc localizationBloc; // ✅ NOUVEAU
   Timer? _tokenRefreshTimer;
 
-  AuthBloc({required this.authService, required this.accountDeletionService})
-    : super(AuthInitial()) {
+  AuthBloc({
+    required this.authService,
+    required this.accountDeletionService,
+    required this.localizationBloc, // ✅ NOUVEAU
+  }) : super(AuthInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthentication>(_onCheckAuthentication);
@@ -39,6 +44,155 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> close() {
     _tokenRefreshTimer?.cancel();
     return super.close();
+  }
+
+  /// ✅ NOUVEAU: Méthode pour obtenir les messages d'erreur traduits
+  String _getTranslatedErrorMessage(String errorCode, String errorMessage) {
+    // Messages en français
+    const Map<String, String> frenchMessages = {
+      'INVALID_CREDENTIALS': 'Email ou mot de passe incorrect',
+      'USER_NOT_FOUND': 'Aucun compte trouvé avec cet email',
+      'EMAIL_NOT_VERIFIED': 'Email non vérifié',
+      'EMAIL_ALREADY_EXISTS': 'Cette adresse email est déjà utilisée',
+      'NETWORK_ERROR': 'Erreur de réseau',
+      'SERVER_ERROR': 'Erreur du serveur',
+      'VALIDATION_ERROR': 'Les données saisies ne sont pas valides',
+      'UNKNOWN_ERROR': 'Une erreur inattendue est survenue',
+      'AUTH_ERROR': 'Une erreur est survenue lors de la connexion',
+      'SESSION_EXPIRED': 'Session expirée - Veuillez vous reconnecter',
+      'CONNECTION_ERROR': 'Erreur de connexion - Vérifiez votre réseau',
+      'USER_INFO_ERROR': 'Impossible de récupérer les informations utilisateur',
+      'AUTH_CHECK_ERROR': 'Échec de la vérification d\'authentification',
+      'LOGOUT_ERROR': 'Erreur lors de la déconnexion',
+      'INVALID_CODE': 'Le code de vérification est invalide',
+      'CODE_EXPIRED': 'Le code de vérification a expiré',
+      'VERIFICATION_ERROR': 'Erreur lors de la vérification',
+      'PASSWORD_CHANGE_ERROR': 'Erreur lors du changement de mot de passe',
+      'USER_INACTIVE': 'Ce compte utilisateur n\'est pas actif',
+      'INVALID_VERIFICATION_CODE': 'Le code de vérification est invalide',
+      'EXPIRED_VERIFICATION_CODE': 'Le code de vérification a expiré',
+      'EMAIL_ALREADY_VERIFIED': 'Cet email est déjà vérifié',
+      'SERVICE_UNAVAILABLE': 'Service temporairement indisponible',
+      'RESEND_FAILED': 'Erreur lors du renvoi du code',
+      'SERVER_CONFIG_ERROR': 'Erreur de configuration du serveur',
+      'INVALID_EMAIL_FORMAT': 'Format d\'email invalide',
+    };
+
+    // Messages en anglais
+    const Map<String, String> englishMessages = {
+      'INVALID_CREDENTIALS': 'Invalid email or password',
+      'USER_NOT_FOUND': 'No account found with this email',
+      'EMAIL_NOT_VERIFIED': 'Email not verified',
+      'EMAIL_ALREADY_EXISTS': 'This email address is already in use',
+      'NETWORK_ERROR': 'Network error',
+      'SERVER_ERROR': 'Server error',
+      'VALIDATION_ERROR': 'The entered data is not valid',
+      'UNKNOWN_ERROR': 'An unexpected error occurred',
+      'AUTH_ERROR': 'An error occurred during login',
+      'SESSION_EXPIRED': 'Session expired - Please log in again',
+      'CONNECTION_ERROR': 'Connection error - Check your network',
+      'USER_INFO_ERROR': 'Unable to retrieve user information',
+      'AUTH_CHECK_ERROR': 'Authentication check failed',
+      'LOGOUT_ERROR': 'Error during logout',
+      'INVALID_CODE': 'The verification code is invalid',
+      'CODE_EXPIRED': 'The verification code has expired',
+      'VERIFICATION_ERROR': 'Verification error occurred',
+      'PASSWORD_CHANGE_ERROR': 'Error changing password',
+      'USER_INACTIVE': 'This user account is not active',
+      'INVALID_VERIFICATION_CODE': 'The verification code is invalid',
+      'EXPIRED_VERIFICATION_CODE': 'The verification code has expired',
+      'EMAIL_ALREADY_VERIFIED': 'This email is already verified',
+      'SERVICE_UNAVAILABLE': 'Service temporarily unavailable',
+      'RESEND_FAILED': 'Error sending code',
+      'SERVER_CONFIG_ERROR': 'Server configuration error',
+      'INVALID_EMAIL_FORMAT': 'Invalid email format',
+    };
+
+    // Déterminer la langue
+    final isEnglish =
+        localizationBloc.state is LocalizationLoaded &&
+        (localizationBloc.state as LocalizationLoaded).locale.languageCode ==
+            'en';
+
+    // Retourner le message traduit ou le message original en fallback
+    if (isEnglish) {
+      return englishMessages[errorCode] ?? englishMessages['UNKNOWN_ERROR']!;
+    } else {
+      return frenchMessages[errorCode] ?? frenchMessages['UNKNOWN_ERROR']!;
+    }
+  }
+
+  /// ✅ NOUVEAU: Méthode pour analyser l'exception et extraire le code d'erreur
+  String _extractErrorCode(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+
+    // Codes d'erreur basés sur le contenu du message
+    if (errorString.contains('invalid') &&
+        errorString.contains('credentials')) {
+      return 'INVALID_CREDENTIALS';
+    } else if (errorString.contains('user') &&
+        errorString.contains('not found')) {
+      return 'USER_NOT_FOUND';
+    } else if (errorString.contains('email') &&
+        errorString.contains('not verified')) {
+      return 'EMAIL_NOT_VERIFIED';
+    } else if (errorString.contains('email') &&
+        (errorString.contains('exists') || errorString.contains('conflict'))) {
+      return 'EMAIL_ALREADY_EXISTS';
+    } else if (errorString.contains('network') ||
+        errorString.contains('réseau') ||
+        errorString.contains('connection')) {
+      return 'NETWORK_ERROR';
+    } else if (errorString.contains('server') ||
+        errorString.contains('serveur')) {
+      return 'SERVER_ERROR';
+    } else if (errorString.contains('validation') ||
+        errorString.contains('invalid data')) {
+      return 'VALIDATION_ERROR';
+    } else if (errorString.contains('session') &&
+        errorString.contains('expired')) {
+      return 'SESSION_EXPIRED';
+    } else if (errorString.contains('failed to check authentication')) {
+      return 'AUTH_CHECK_ERROR';
+    } else if (errorString.contains('impossible de récupérer') ||
+        errorString.contains('unable to retrieve')) {
+      return 'USER_INFO_ERROR';
+    } else if (errorString.contains('déconnexion') ||
+        errorString.contains('logout')) {
+      return 'LOGOUT_ERROR';
+    } else if (errorString.contains('invalid') &&
+        errorString.contains('code')) {
+      return 'INVALID_CODE';
+    } else if (errorString.contains('code') &&
+        (errorString.contains('expired') || errorString.contains('expiré'))) {
+      return 'CODE_EXPIRED';
+    } else if (errorString.contains('verification') &&
+        errorString.contains('error')) {
+      return 'VERIFICATION_ERROR';
+    } else if (errorString.contains('password') &&
+        errorString.contains('change')) {
+      return 'PASSWORD_CHANGE_ERROR';
+    } else if (errorString.contains('user') &&
+        errorString.contains('inactive')) {
+      return 'USER_INACTIVE';
+    } else if (errorString.contains('email') &&
+        errorString.contains('already verified')) {
+      return 'EMAIL_ALREADY_VERIFIED';
+    } else if (errorString.contains('service') &&
+        errorString.contains('unavailable')) {
+      return 'SERVICE_UNAVAILABLE';
+    } else if (errorString.contains('resend') &&
+        errorString.contains('failed')) {
+      return 'RESEND_FAILED';
+    } else if (errorString.contains('server') &&
+        errorString.contains('config')) {
+      return 'SERVER_CONFIG_ERROR';
+    } else if (errorString.contains('invalid') &&
+        errorString.contains('email')) {
+      return 'INVALID_EMAIL_FORMAT';
+    }
+
+    return 'UNKNOWN_ERROR';
   }
 
   Future<void> _onLoginButtonPressed(
@@ -65,20 +219,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _scheduleTokenRefresh(); // Programmer le refresh adaptatif
         emit(AuthSuccess(user: user));
       } else {
-        emit(
-          AuthFailure(
-            error: 'Impossible de récupérer les informations utilisateur',
-          ),
-        );
+        // ✅ UTILISER la traduction pour ce message d'erreur
+        final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
+        emit(AuthFailure(error: errorMessage));
       }
     } on AuthenticationException catch (e) {
-      String errorMessage;
+      // ✅ GÉRER les exceptions d'authentification avec traduction
+      String errorCode;
       switch (e.code) {
         case 'INVALID_CREDENTIALS':
-          errorMessage = 'Email ou mot de passe incorrect';
+          errorCode = 'INVALID_CREDENTIALS';
           break;
         case 'USER_NOT_FOUND':
-          errorMessage = 'Aucun compte trouvé avec cet email';
+          errorCode = 'USER_NOT_FOUND';
           break;
         case 'EMAIL_NOT_VERIFIED':
           final email = e.email?.isNotEmpty == true ? e.email! : event.email;
@@ -91,11 +244,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
           return;
         default:
-          errorMessage = e.message;
+          errorCode = 'AUTH_ERROR';
       }
+
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.message);
       emit(AuthFailure(error: errorMessage));
     } catch (e) {
-      emit(AuthFailure(error: 'Une erreur est survenue lors de la connexion'));
+      // ✅ GÉRER les autres erreurs avec traduction
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -120,7 +278,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      emit(AuthFailure(error: 'Failed to check authentication'));
+      // ✅ UTILISER la traduction pour l'erreur de vérification
+      final errorMessage = _getTranslatedErrorMessage(
+        'AUTH_CHECK_ERROR',
+        e.toString(),
+      );
+      emit(AuthFailure(error: errorMessage));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
     }
@@ -145,7 +308,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Émettre l'état de succès avec les tokens mis à jour
       emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
     } catch (e) {
-      emit(AuthFailure(error: 'Session expirée - Veuillez vous reconnecter'));
+      // ✅ UTILISER la traduction pour l'erreur de session expirée
+      final errorMessage = _getTranslatedErrorMessage(
+        'SESSION_EXPIRED',
+        e.toString(),
+      );
+      emit(AuthFailure(error: errorMessage));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
     }
@@ -176,14 +344,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await authService.clearUserData();
         emit(Unauthenticated());
       } catch (clearError) {
-        emit(AuthFailure(error: 'Erreur lors de la déconnexion: $e'));
+        // ✅ UTILISER la traduction pour l'erreur de déconnexion
+        final errorMessage = _getTranslatedErrorMessage(
+          'LOGOUT_ERROR',
+          e.toString(),
+        );
+        emit(AuthFailure(error: errorMessage));
         await Future.delayed(const Duration(seconds: 2));
         emit(Unauthenticated());
       }
     }
   }
 
-  // [Vos autres méthodes existantes restent identiques]
   Future<void> _onRegisterRequested(
     RegisterRequested event,
     Emitter<AuthState> emit,
@@ -199,7 +371,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs d'inscription
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -217,7 +392,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      emit(AuthFailure(error: 'Failed to get current user'));
+      // ✅ UTILISER la traduction pour l'erreur de récupération utilisateur
+      final errorMessage = _getTranslatedErrorMessage(
+        'USER_INFO_ERROR',
+        e.toString(),
+      );
+      emit(AuthFailure(error: errorMessage));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
     }
@@ -238,7 +418,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(ProfileUpdated(updatedUser));
       emit(AuthSuccess(user: updatedUser));
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de mise à jour profil
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
 
       try {
         final currentUser = await authService.getCurrentUser();
@@ -269,7 +452,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.requestPasswordChangeCode(event.email);
       emit(PasswordChangeCodeSent(event.email));
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de demande de code
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -287,7 +473,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(PasswordChanged());
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de vérification de code
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -314,17 +503,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _scheduleTokenRefresh();
           emit(AuthSuccess(user: user));
         } else {
-          emit(
-            AuthFailure(
-              error: 'Impossible de récupérer les informations utilisateur',
-            ),
+          // ✅ UTILISER la traduction pour l'erreur d'informations utilisateur
+          final errorMessage = _getTranslatedErrorMessage(
+            'USER_INFO_ERROR',
+            '',
           );
+          emit(AuthFailure(error: errorMessage));
         }
       } else {
         emit(EmailConfirmationSuccess());
       }
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de confirmation d'email
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -341,11 +534,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await Future.delayed(const Duration(milliseconds: 500));
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de renvoi de code
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
-  // ⭐ NOUVELLE MÉTHODE: Programmer le rafraîchissement adaptatif du token
+  // ⭐ MÉTHODE INCHANGÉE: Programmer le rafraîchissement adaptatif du token
   void _scheduleTokenRefresh() async {
     _tokenRefreshTimer?.cancel();
 
@@ -398,7 +594,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // [Vos méthodes de suppression de compte restent identiques]
+  // [Les méthodes de suppression de compte avec traductions]
   Future<void> _onRequestAccountDeletion(
     RequestAccountDeletion event,
     Emitter<AuthState> emit,
@@ -417,7 +613,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de suppression de compte
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -448,7 +647,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.clearUserData();
       emit(Unauthenticated());
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de confirmation de suppression
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -470,7 +672,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs d'annulation de suppression
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 
@@ -482,7 +687,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final status = await accountDeletionService.getAccountDeletionStatus();
       emit(AccountDeletionStatusLoaded(status));
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      // ✅ UTILISER la traduction pour les erreurs de statut de suppression
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
     }
   }
 }

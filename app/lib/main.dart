@@ -1,4 +1,4 @@
-// main.dart - VERSION AVEC INTERNATIONALISATION
+// main.dart - VERSION AVEC CONNECTIVITÉ GLOBALE ET BANNIÈRE DÉSACTIVÉE SUR HOME
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/config/app_config.dart';
@@ -13,11 +13,13 @@ import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
-import 'package:epilist/blocs/localization/localization_bloc.dart'; // NOUVEAU
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/utils/snackbar_manager.dart';
+import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -26,7 +28,7 @@ import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
-// NOUVEAUX IMPORTS POUR I18N
+// IMPORTS POUR I18N
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -35,6 +37,9 @@ void main() async {
 
   try {
     final sharedPreferences = await SharedPreferences.getInstance();
+
+    // ✅ Initialiser le service de connectivité dès le démarrage
+    await ConnectivityService().initialize();
 
     final dio = Dio(
       BaseOptions(
@@ -71,14 +76,14 @@ void main() async {
       authService: authService,
     );
 
+    final localizationBloc = LocalizationBloc(
+      sharedPreferences: sharedPreferences,
+    );
+
     final authBloc = AuthBloc(
       authService: authService,
       accountDeletionService: accountDeletionService,
-    );
-
-    // NOUVEAU: Créer le bloc de localisation
-    final localizationBloc = LocalizationBloc(
-      sharedPreferences: sharedPreferences,
+      localizationBloc: localizationBloc,
     );
 
     // Ajouter l'interceptor de refresh token
@@ -96,6 +101,9 @@ void main() async {
           RepositoryProvider<AuthService>.value(value: authService),
           RepositoryProvider<AccountDeletionService>.value(
             value: accountDeletionService,
+          ),
+          RepositoryProvider<ConnectivityService>.value(
+            value: ConnectivityService(),
           ),
           RepositoryProvider(
             create:
@@ -131,12 +139,14 @@ void main() async {
               create:
                   (context) => ShoppingListBloc(
                     shoppingListService: context.read<ShoppingListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
             BlocProvider(
               create:
                   (context) => SharedListBloc(
                     sharedListService: context.read<SharedListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
           ],
@@ -179,18 +189,27 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(primarySwatch: Colors.green, useMaterial3: true),
 
           routes: {
-            '/register': (context) => const SignUpPage(),
-            '/login': (context) => const LoginScreen(),
-            '/home': (context) => const HomeScreen(),
-            '/profil': (context) => const ProfileScreen(),
-            '/welcome': (context) => const WelcomeScreen(),
+            '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
+            '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
+            '/home':
+                (context) => _wrapWithConnectivity(
+                  const HomeScreen(),
+                  showBanner: false,
+                ), // ✅ Pas de bannière sur home
+            '/profil':
+                (context) => _wrapWithConnectivity(const ProfileScreen()),
+            '/welcome':
+                (context) =>
+                    const WelcomeScreen(), // Pas de connectivité requise
             '/email-verification': (context) {
               final args =
                   ModalRoute.of(context)!.settings.arguments
                       as Map<String, dynamic>;
-              return EmailVerificationScreen(
-                email: args['email'],
-                fromRegistration: args['fromRegistration'] ?? false,
+              return _wrapWithConnectivity(
+                EmailVerificationScreen(
+                  email: args['email'],
+                  fromRegistration: args['fromRegistration'] ?? false,
+                ),
               );
             },
             '/share': (context) {
@@ -199,20 +218,35 @@ class MyApp extends StatelessWidget {
                       as Map<String, dynamic>?;
               final shareToken = args?['token'] as String?;
               if (shareToken != null) {
-                return BlocProvider(
-                  create:
-                      (context) => SharedListBloc(
-                        sharedListService: context.read<SharedListService>(),
-                      ),
-                  child: ShareInvitationScreen(shareToken: shareToken),
+                return _wrapWithConnectivity(
+                  BlocProvider(
+                    create:
+                        (context) => SharedListBloc(
+                          sharedListService: context.read<SharedListService>(),
+                          localizationBloc: context.read<LocalizationBloc>(),
+                        ),
+                    child: ShareInvitationScreen(shareToken: shareToken),
+                  ),
                 );
               }
-              return const HomeScreen();
+              return _wrapWithConnectivity(
+                const HomeScreen(),
+                showBanner: false,
+              );
             },
           },
           home: const AuthWrapper(),
         );
       },
+    );
+  }
+
+  // ✅ MODIFIÉ: Méthode pour envelopper les écrans avec ConnectivityWrapper
+  Widget _wrapWithConnectivity(Widget child, {bool showBanner = true}) {
+    return ConnectivityWrapper(
+      showOfflineBanner: showBanner,
+      blockActionsWhenOffline: true,
+      child: child,
     );
   }
 }
@@ -228,17 +262,19 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   bool _redirecting = false;
   bool _deepLinkInitialized = false;
   bool _hasCheckedAuth = false;
+  bool _isInitializing = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeDeepLinks();
+    _initializeDeepLinksWithDelay();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    ConnectivityService().dispose();
     DeepLinkHandler.dispose();
     super.dispose();
   }
@@ -247,29 +283,25 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.resumed) {
-      if (mounted) {
-        DeepLinkHandler.updateContext(context);
-      }
+    if (state == AppLifecycleState.resumed && _deepLinkInitialized) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        if (mounted) {
+          DeepLinkHandler.updateContext(context);
+        }
+      });
     }
   }
 
-  Future<void> _initializeDeepLinks() async {
-    try {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (mounted && !_deepLinkInitialized) {
-          DeepLinkHandler.initialize(context);
-          setState(() {
-            _deepLinkInitialized = true;
-          });
-        }
+  Future<void> _initializeDeepLinksWithDelay() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (mounted && !_deepLinkInitialized) {
+      print('🚀 Initialisation des deep links depuis AuthWrapper');
+      DeepLinkHandler.initialize(context);
+      setState(() {
+        _deepLinkInitialized = true;
+        _isInitializing = false;
       });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _deepLinkInitialized = true;
-        });
-      }
     }
   }
 
@@ -287,7 +319,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           });
         }
 
-        // Ignorer les états de suppression de compte
+        // Ignorer les états de suppression de compte pour éviter les conflits
         if (state is AccountDeletionStatusLoaded ||
             state is AccountDeletionCodeSent ||
             state is AccountDeletionConfirmed ||
@@ -305,9 +337,13 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
                 context,
                 MaterialPageRoute(
                   builder:
-                      (context) => EmailVerificationScreen(
-                        email: state.email,
-                        fromRegistration: false,
+                      (context) => ConnectivityWrapper(
+                        showOfflineBanner:
+                            false, // ✅ Pas de bannière sur EmailVerification
+                        child: EmailVerificationScreen(
+                          email: state.email,
+                          fromRegistration: false,
+                        ),
                       ),
                 ),
               ).then((_) {
@@ -317,27 +353,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
               });
             }
           });
-        }
-
-        // Gérer les erreurs d'authentification avec SnackBar
-        if (state is AuthFailure) {
-          if (mounted) {
-            if (state.error.contains('Session expirée') ||
-                state.error.contains('token') ||
-                state.error.contains('unauthorized')) {
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                l10n.sessionExpired,
-                duration: const Duration(seconds: 4),
-              );
-            } else {
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                _getLocalizedError(state.error, l10n),
-                duration: const Duration(seconds: 4),
-              );
-            }
-          }
         }
 
         // Gérer la confirmation d'email réussie
@@ -371,7 +386,8 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return true;
         },
         builder: (context, state) {
-          if (!_deepLinkInitialized ||
+          if (_isInitializing ||
+              !_deepLinkInitialized ||
               state is AuthInitial ||
               state is AuthLoading) {
             String message = l10n.initialization;
@@ -383,24 +399,35 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           }
 
           if (state is EmailConfirmationRequired) {
-            return EmailVerificationScreen(
-              email: state.email,
-              fromRegistration: true,
+            return ConnectivityWrapper(
+              showOfflineBanner:
+                  false, // ✅ Pas de bannière sur EmailVerification depuis AuthWrapper
+              child: EmailVerificationScreen(
+                email: state.email,
+                fromRegistration: true,
+              ),
             );
           }
 
           if (state is AuthSuccess || state is EmailConfirmationSuccess) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              DeepLinkHandler.processPendingTokenAfterLogin();
+              if (_deepLinkInitialized) {
+                DeepLinkHandler.processPendingTokenAfterLogin();
+              }
             });
 
-            return const HomeScreen();
+            return ConnectivityWrapper(
+              showOfflineBanner:
+                  false, // ✅ Pas de bannière sur home depuis AuthWrapper
+              blockActionsWhenOffline: true,
+              child: const HomeScreen(),
+            );
           }
 
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
-            return const WelcomeScreen();
+            return const WelcomeScreen(); // Pas de wrapper pour l'écran de bienvenue
           }
 
           return const WelcomeScreen();
@@ -408,58 +435,9 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
       ),
     );
   }
-
-  // ✅ FONCTION CORRIGÉE - Avec gestion des erreurs de traduction
-  String _getLocalizedError(String error, AppLocalizations l10n) {
-    try {
-      // ✅ CORRECTION : Mapper les codes d'erreur aux traductions appropriées
-
-      // Codes d'erreur spécifiques
-      if (error.contains('EMAIL_ALREADY_EXISTS') ||
-          error.contains('EMAIL_CONFLICT')) {
-        return l10n.emailAlreadyExists;
-      } else if (error.contains('INVALID_CREDENTIALS')) {
-        return l10n.invalidCredentials;
-      } else if (error.contains('USER_NOT_FOUND')) {
-        return l10n.userNotFound;
-      } else if (error.contains('EMAIL_NOT_VERIFIED')) {
-        return l10n.emailNotVerified;
-      } else if (error.contains('VALIDATION_ERROR')) {
-        return l10n.validationError;
-      } else if (error.contains('NETWORK_ERROR')) {
-        return l10n.networkError;
-      } else if (error.contains('SERVER_ERROR')) {
-        return 'Erreur du serveur. Veuillez réessayer plus tard.';
-      }
-      // Messages français legacy (au cas où)
-      else if (error.contains('Email ou mot de passe incorrect')) {
-        return l10n.invalidCredentials;
-      } else if (error.contains('Aucun compte trouvé')) {
-        return l10n.userNotFound;
-      } else if (error.contains('Email non vérifié')) {
-        return l10n.emailNotVerified;
-      } else if (error.contains('Un compte avec cet email existe déjà')) {
-        return l10n.emailAlreadyExists;
-      } else if (error.contains('réseau') || error.contains('network')) {
-        return l10n.networkError;
-      }
-      // Messages de session
-      else if (error.contains('Session expirée') ||
-          error.contains('token') ||
-          error.contains('unauthorized')) {
-        return l10n.sessionExpired;
-      }
-
-      // ✅ CORRECTION : Fallback sécurisé
-      return error.isNotEmpty ? error : 'Une erreur inattendue est survenue';
-    } catch (e) {
-      // En cas d'erreur de traduction, retourner un fallback sécurisé
-      print('⚠️ Erreur lors de la traduction: $e');
-      return error.isNotEmpty ? error : 'Une erreur est survenue';
-    }
-  }
 }
 
+// Classes LoadingScreen, LoadingDots et ErrorApp restent identiques...
 class LoadingScreen extends StatelessWidget {
   final String? message;
 
@@ -489,13 +467,11 @@ class LoadingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-
             const CircularProgressIndicator(
               color: Colors.green,
               strokeWidth: 3,
             ),
             const SizedBox(height: 24),
-
             Text(
               l10n.appTitle,
               style: const TextStyle(
@@ -506,7 +482,6 @@ class LoadingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-
             Text(
               message ?? l10n.initialization,
               style: TextStyle(
@@ -516,7 +491,6 @@ class LoadingScreen extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 40),
             const LoadingDots(),
           ],

@@ -1,4 +1,4 @@
-// screens/share_invitation_screen.dart - VERSION WITH SMART SNACKBAR
+// screens/share_invitation_screen.dart - VERSION WITH MINIMAL SNACKBARS
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/share_invitation.dart';
@@ -87,12 +87,6 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   );
                 }
               });
-            } else if (state is SharedListError) {
-              SmartSnackBarManager.showErrorSnackBar(
-                context,
-                state.message,
-                duration: const Duration(seconds: 4),
-              );
             }
           },
           builder: (context, state) {
@@ -734,17 +728,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(dialogContext).pop();
-
-                          try {
-                            context.read<SharedListBloc>().add(
-                              AcceptShareInvitation(invitation.token),
-                            );
-                          } catch (e) {
-                            SmartSnackBarManager.showErrorSnackBar(
-                              context,
-                              'Error accepting invitation',
-                            );
-                          }
+                          context.read<SharedListBloc>().add(
+                            AcceptShareInvitation(invitation.token),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[600],
@@ -914,17 +900,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(dialogContext).pop();
-
-                          try {
-                            context.read<SharedListBloc>().add(
-                              DeclineShareInvitation(invitation.token),
-                            );
-                          } catch (e) {
-                            SmartSnackBarManager.showErrorSnackBar(
-                              context,
-                              'Error declining invitation',
-                            );
-                          }
+                          context.read<SharedListBloc>().add(
+                            DeclineShareInvitation(invitation.token),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red[600],

@@ -478,12 +478,61 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      await dio.post(
+      final response = await dio.post(
         '/auth/verify-password-change-code',
         data: {'email': email, 'code': code, 'new_password': newPassword},
       );
+
+      if (response.statusCode != 200) {
+        throw AuthenticationException(
+          'PASSWORD_CHANGE_ERROR',
+          'PASSWORD_CHANGE_ERROR',
+        );
+      }
     } on DioException catch (e) {
-      throw Exception('Erreur lors de la vérification: ${e.message}');
+      if (e.response?.statusCode == 400) {
+        final errorData = e.response?.data;
+
+        if (errorData != null && errorData is Map) {
+          final errorCode = errorData['code'] as String?;
+
+          // ✅ CORRECTION: Gérer les codes d'erreur uniformes
+          switch (errorCode) {
+            case 'INVALID_CODE':
+              throw AuthenticationException('INVALID_CODE', 'INVALID_CODE');
+            case 'CODE_EXPIRED':
+              throw AuthenticationException('CODE_EXPIRED', 'CODE_EXPIRED');
+            case 'VALIDATION_ERROR':
+              throw AuthenticationException(
+                'VALIDATION_ERROR',
+                'VALIDATION_ERROR',
+              );
+            case 'USER_INACTIVE':
+              throw AuthenticationException('USER_INACTIVE', 'USER_INACTIVE');
+            default:
+              throw AuthenticationException(
+                'VERIFICATION_ERROR',
+                'VERIFICATION_ERROR',
+              );
+          }
+        } else {
+          throw AuthenticationException('INVALID_CODE', 'INVALID_CODE');
+        }
+      } else if (e.response?.statusCode == 404) {
+        throw AuthenticationException('USER_NOT_FOUND', 'USER_NOT_FOUND');
+      } else if (e.response?.statusCode == 422) {
+        throw AuthenticationException('VALIDATION_ERROR', 'VALIDATION_ERROR');
+      } else if (e.response?.statusCode == 500) {
+        throw AuthenticationException('SERVER_ERROR', 'SERVER_ERROR');
+      } else {
+        throw AuthenticationException('NETWORK_ERROR', 'NETWORK_ERROR');
+      }
+    } catch (e) {
+      if (e is AuthenticationException) {
+        rethrow;
+      }
+
+      throw AuthenticationException('UNKNOWN_ERROR', 'UNKNOWN_ERROR');
     }
   }
 
