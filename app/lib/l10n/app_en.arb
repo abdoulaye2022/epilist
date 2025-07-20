@@ -577,6 +577,7 @@
   "offlineMode": "Offline mode - Connection required",
   "backOnline": "Connection restored!",
   "connectionRequired": "Internet connection required",
-  "connectionRequiredForInvitation": "Internet connection required to open invitation"
-  
+  "connectionRequiredForInvitation": "Internet connection required to open invitation",
+  "shareList": "Share list",
+  "manageShares": "Manage shares"
 }

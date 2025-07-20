@@ -580,5 +580,7 @@
   "offlineMode": "Mode hors ligne - Connexion requise",
   "backOnline": "Connexion rétablie !",
   "connectionRequired": "Connexion Internet requise",
-   "connectionRequiredForInvitation": "Connexion Internet requise pour ouvrir l'invitation"
+  "connectionRequiredForInvitation": "Connexion Internet requise pour ouvrir l'invitation",
+  "shareList": "Partager la liste",
+  "manageShares": "Gérer les partages"
 }
