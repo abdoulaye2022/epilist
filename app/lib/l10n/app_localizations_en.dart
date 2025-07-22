@@ -1367,4 +1367,214 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get connectionRequiredForInvitation =>
       'Internet connection required to open invitation';
+
+  @override
+  String get productSuggestions => 'Product suggestions';
+
+  @override
+  String get noSuggestionsFound => 'No suggestions found';
+
+  @override
+  String get searchingSuggestions => 'Searching suggestions...';
+
+  @override
+  String get usedOnce => 'Used 1 time';
+
+  @override
+  String usedXTimes(int count) {
+    return 'Used $count times';
+  }
+
+  @override
+  String weeksAgo(int weeks, String plural) {
+    return '$weeks week$plural ago';
+  }
+
+  @override
+  String monthsAgo(int months, Object plural) {
+    return '$months month$plural ago';
+  }
+
+  @override
+  String suggestionWithDate(String usage, String date) {
+    return '$usage • $date';
+  }
+
+  @override
+  String get suggestionSelected => 'Suggestion selected';
+
+  @override
+  String get clearSuggestion => 'Clear suggestion';
+
+  @override
+  String get popularSuggestions => 'Popular suggestions';
+
+  @override
+  String get recentSuggestions => 'Recent suggestions';
+
+  @override
+  String get manageSuggestions => 'Manage suggestions';
+
+  @override
+  String get deleteSuggestion => 'Delete suggestion';
+
+  @override
+  String get deleteSuggestionConfirm =>
+      'Are you sure you want to delete this suggestion?';
+
+  @override
+  String get clearAllSuggestions => 'Clear all suggestions';
+
+  @override
+  String get clearAllSuggestionsConfirm =>
+      'Are you sure you want to delete all your suggestions? This action is irreversible.';
+
+  @override
+  String get suggestionsCleared => 'All suggestions have been cleared';
+
+  @override
+  String get errorLoadingSuggestions => 'Error loading suggestions';
+
+  @override
+  String get errorSavingSuggestion => 'Error saving suggestion';
+
+  @override
+  String get suggestionSaved => 'Suggestion saved';
+
+  @override
+  String get noSuggestionsYet => 'No suggestions yet';
+
+  @override
+  String get startTypingForSuggestions =>
+      'Start typing to see your suggestions';
+
+  @override
+  String get basedOnHistory => 'Based on your history';
+
+  @override
+  String get autoComplete => 'Auto-complete';
+
+  @override
+  String get suggestionHelper => 'Your frequent products will appear here';
+
+  @override
+  String get lastUsed => 'Last used';
+
+  @override
+  String get suggestionDeleted => 'Suggestion deleted';
+
+  @override
+  String get totalSuggestions => 'Total suggestions';
+
+  @override
+  String get mostUsedSuggestion => 'Most used suggestion';
+
+  @override
+  String get recentlyAdded => 'Recently added';
+
+  @override
+  String get neverUsed => 'Never used';
+
+  @override
+  String get usageStatistics => 'Usage statistics';
+
+  @override
+  String get averageUsage => 'Average usage';
+
+  @override
+  String get oldestSuggestion => 'Oldest suggestion';
+
+  @override
+  String get newestSuggestion => 'Newest suggestion';
+
+  @override
+  String get exportSuggestions => 'Export suggestions';
+
+  @override
+  String get importSuggestions => 'Import suggestions';
+
+  @override
+  String get suggestionSettings => 'Suggestion settings';
+
+  @override
+  String get enableAutoSuggestions => 'Enable auto suggestions';
+
+  @override
+  String get suggestionThreshold => 'Suggestion threshold';
+
+  @override
+  String get maxSuggestions => 'Maximum suggestions';
+
+  @override
+  String get clearOldSuggestions => 'Clear old suggestions';
+
+  @override
+  String get suggestionsOlderThan => 'Suggestions older than';
+
+  @override
+  String get oneMonth => '1 month';
+
+  @override
+  String get threeMonths => '3 months';
+
+  @override
+  String get sixMonths => '6 months';
+
+  @override
+  String get oneYear => '1 year';
+
+  @override
+  String get cleanupCompleted => 'Cleanup completed';
+
+  @override
+  String get suggestionsOptimized => 'Suggestions optimized';
+
+  @override
+  String get backupSuggestions => 'Backup suggestions';
+
+  @override
+  String get restoreSuggestions => 'Restore suggestions';
+
+  @override
+  String get suggestionBackupCreated => 'Backup created successfully';
+
+  @override
+  String get suggestionBackupRestored => 'Suggestions restored successfully';
+
+  @override
+  String get noBackupFound => 'No backup found';
+
+  @override
+  String get suggestionTips => 'Suggestion tips';
+
+  @override
+  String get tipMoreUsage =>
+      'The more you use the app, the better the suggestions';
+
+  @override
+  String get tipRegularUpdates => 'Suggestions update automatically';
+
+  @override
+  String get tipPersonalized => 'Your suggestions are unique and personalized';
+
+  @override
+  String priceFormat(String price) {
+    return '$price \$CAD';
+  }
+
+  @override
+  String get noStoreSpecified => 'No store specified';
+
+  @override
+  String get noPriceSet => 'No price set';
+
+  @override
+  String suggestionDescription(
+    String name,
+    String usage,
+    String price,
+    String store,
+  ) {
+    return '$name - $usage - $price - $store';
+  }
 }

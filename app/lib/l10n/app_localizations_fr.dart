@@ -1392,4 +1392,218 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get connectionRequiredForInvitation =>
       'Connexion Internet requise pour ouvrir l\'invitation';
+
+  @override
+  String get productSuggestions => 'Suggestions de produits';
+
+  @override
+  String get noSuggestionsFound => 'Aucune suggestion trouvée';
+
+  @override
+  String get searchingSuggestions => 'Recherche de suggestions...';
+
+  @override
+  String get usedOnce => 'Utilisé 1 fois';
+
+  @override
+  String usedXTimes(int count) {
+    return 'Utilisé $count fois';
+  }
+
+  @override
+  String weeksAgo(int weeks, String plural) {
+    return 'Il y a $weeks semaine$plural';
+  }
+
+  @override
+  String monthsAgo(int months, Object plural) {
+    return 'Il y a $months mois';
+  }
+
+  @override
+  String suggestionWithDate(String usage, String date) {
+    return '$usage • $date';
+  }
+
+  @override
+  String get suggestionSelected => 'Suggestion sélectionnée';
+
+  @override
+  String get clearSuggestion => 'Effacer la suggestion';
+
+  @override
+  String get popularSuggestions => 'Suggestions populaires';
+
+  @override
+  String get recentSuggestions => 'Suggestions récentes';
+
+  @override
+  String get manageSuggestions => 'Gérer les suggestions';
+
+  @override
+  String get deleteSuggestion => 'Supprimer la suggestion';
+
+  @override
+  String get deleteSuggestionConfirm =>
+      'Êtes-vous sûr de vouloir supprimer cette suggestion ?';
+
+  @override
+  String get clearAllSuggestions => 'Supprimer toutes les suggestions';
+
+  @override
+  String get clearAllSuggestionsConfirm =>
+      'Êtes-vous sûr de vouloir supprimer toutes vos suggestions ? Cette action est irréversible.';
+
+  @override
+  String get suggestionsCleared => 'Toutes les suggestions ont été supprimées';
+
+  @override
+  String get errorLoadingSuggestions =>
+      'Erreur lors du chargement des suggestions';
+
+  @override
+  String get errorSavingSuggestion =>
+      'Erreur lors de la sauvegarde de la suggestion';
+
+  @override
+  String get suggestionSaved => 'Suggestion sauvegardée';
+
+  @override
+  String get noSuggestionsYet => 'Aucune suggestion pour le moment';
+
+  @override
+  String get startTypingForSuggestions =>
+      'Commencez à taper pour voir vos suggestions';
+
+  @override
+  String get basedOnHistory => 'Basé sur votre historique';
+
+  @override
+  String get autoComplete => 'Saisie automatique';
+
+  @override
+  String get suggestionHelper => 'Vos produits fréquents apparaîtront ici';
+
+  @override
+  String get lastUsed => 'Dernière utilisation';
+
+  @override
+  String get suggestionDeleted => 'Suggestion supprimée';
+
+  @override
+  String get totalSuggestions => 'Total des suggestions';
+
+  @override
+  String get mostUsedSuggestion => 'Suggestion la plus utilisée';
+
+  @override
+  String get recentlyAdded => 'Récemment ajouté';
+
+  @override
+  String get neverUsed => 'Jamais utilisé';
+
+  @override
+  String get usageStatistics => 'Statistiques d\'utilisation';
+
+  @override
+  String get averageUsage => 'Utilisation moyenne';
+
+  @override
+  String get oldestSuggestion => 'Suggestion la plus ancienne';
+
+  @override
+  String get newestSuggestion => 'Suggestion la plus récente';
+
+  @override
+  String get exportSuggestions => 'Exporter les suggestions';
+
+  @override
+  String get importSuggestions => 'Importer les suggestions';
+
+  @override
+  String get suggestionSettings => 'Paramètres des suggestions';
+
+  @override
+  String get enableAutoSuggestions => 'Activer les suggestions automatiques';
+
+  @override
+  String get suggestionThreshold => 'Seuil de suggestions';
+
+  @override
+  String get maxSuggestions => 'Nombre maximum de suggestions';
+
+  @override
+  String get clearOldSuggestions => 'Nettoyer les anciennes suggestions';
+
+  @override
+  String get suggestionsOlderThan => 'Suggestions plus anciennes que';
+
+  @override
+  String get oneMonth => '1 mois';
+
+  @override
+  String get threeMonths => '3 mois';
+
+  @override
+  String get sixMonths => '6 mois';
+
+  @override
+  String get oneYear => '1 an';
+
+  @override
+  String get cleanupCompleted => 'Nettoyage terminé';
+
+  @override
+  String get suggestionsOptimized => 'Suggestions optimisées';
+
+  @override
+  String get backupSuggestions => 'Sauvegarder les suggestions';
+
+  @override
+  String get restoreSuggestions => 'Restaurer les suggestions';
+
+  @override
+  String get suggestionBackupCreated => 'Sauvegarde créée avec succès';
+
+  @override
+  String get suggestionBackupRestored => 'Suggestions restaurées avec succès';
+
+  @override
+  String get noBackupFound => 'Aucune sauvegarde trouvée';
+
+  @override
+  String get suggestionTips => 'Conseils pour les suggestions';
+
+  @override
+  String get tipMoreUsage =>
+      'Plus vous utilisez l\'app, meilleures sont les suggestions';
+
+  @override
+  String get tipRegularUpdates =>
+      'Les suggestions se mettent à jour automatiquement';
+
+  @override
+  String get tipPersonalized =>
+      'Vos suggestions sont uniques et personnalisées';
+
+  @override
+  String priceFormat(String price) {
+    return '$price \$CAD';
+  }
+
+  @override
+  String get noStoreSpecified => 'Aucun magasin spécifié';
+
+  @override
+  String get noPriceSet => 'Prix non défini';
+
+  @override
+  String suggestionDescription(
+    String name,
+    String usage,
+    String price,
+    String store,
+  ) {
+    return '$name - $usage - $price - $store';
+  }
 }

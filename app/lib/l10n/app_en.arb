@@ -579,5 +579,128 @@
   "connectionRequired": "Internet connection required",
   "connectionRequiredForInvitation": "Internet connection required to open invitation",
   "shareList": "Share list",
-  "manageShares": "Manage shares"
+  "manageShares": "Manage shares",
+   "productSuggestions": "Product suggestions",
+  "noSuggestionsFound": "No suggestions found",
+  "searchingSuggestions": "Searching suggestions...",
+  "usedOnce": "Used 1 time",
+  "usedXTimes": "Used {count} times",
+  "@usedXTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "{weeks} week{plural} ago",
+  "@weeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "monthsAgo": "{months} month{plural} ago",
+  "@monthsAgo": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestionWithDate": "{usage} • {date}",
+  "@suggestionWithDate": {
+    "placeholders": {
+      "usage": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestionSelected": "Suggestion selected",
+  "clearSuggestion": "Clear suggestion",
+  "popularSuggestions": "Popular suggestions",
+  "recentSuggestions": "Recent suggestions",
+  "manageSuggestions": "Manage suggestions",
+  "deleteSuggestion": "Delete suggestion",
+  "deleteSuggestionConfirm": "Are you sure you want to delete this suggestion?",
+  "clearAllSuggestions": "Clear all suggestions",
+  "clearAllSuggestionsConfirm": "Are you sure you want to delete all your suggestions? This action is irreversible.",
+  "suggestionsCleared": "All suggestions have been cleared",
+  "errorLoadingSuggestions": "Error loading suggestions",
+  "errorSavingSuggestion": "Error saving suggestion",
+  "suggestionSaved": "Suggestion saved",
+  "noSuggestionsYet": "No suggestions yet",
+  "startTypingForSuggestions": "Start typing to see your suggestions",
+  "basedOnHistory": "Based on your history",
+  "autoComplete": "Auto-complete",
+  "suggestionHelper": "Your frequent products will appear here",
+  "lastUsed": "Last used",
+  "suggestionDeleted": "Suggestion deleted",
+  "totalSuggestions": "Total suggestions",
+  "mostUsedSuggestion": "Most used suggestion",
+  "recentlyAdded": "Recently added",
+  "neverUsed": "Never used",
+  "usageStatistics": "Usage statistics",
+  "averageUsage": "Average usage",
+  "oldestSuggestion": "Oldest suggestion",
+  "newestSuggestion": "Newest suggestion",
+  "exportSuggestions": "Export suggestions",
+  "importSuggestions": "Import suggestions",
+  "suggestionSettings": "Suggestion settings",
+  "enableAutoSuggestions": "Enable auto suggestions",
+  "suggestionThreshold": "Suggestion threshold",
+  "maxSuggestions": "Maximum suggestions",
+  "clearOldSuggestions": "Clear old suggestions",
+  "suggestionsOlderThan": "Suggestions older than",
+  "oneMonth": "1 month",
+  "threeMonths": "3 months",
+  "sixMonths": "6 months",
+  "oneYear": "1 year",
+  "cleanupCompleted": "Cleanup completed",
+  "suggestionsOptimized": "Suggestions optimized",
+  "backupSuggestions": "Backup suggestions",
+  "restoreSuggestions": "Restore suggestions",
+  "suggestionBackupCreated": "Backup created successfully",
+  "suggestionBackupRestored": "Suggestions restored successfully",
+  "noBackupFound": "No backup found",
+  "suggestionTips": "Suggestion tips",
+  "tipMoreUsage": "The more you use the app, the better the suggestions",
+  "tipRegularUpdates": "Suggestions update automatically",
+  "tipPersonalized": "Your suggestions are unique and personalized",
+  "priceFormat": "{price} $CAD",
+  "@priceFormat": {
+    "description": "Price display format",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "noStoreSpecified": "No store specified",
+  "@noStoreSpecified": {
+    "description": "Text displayed when no store is specified"
+  },
+  
+  "noPriceSet": "No price set",
+  "@noPriceSet": {
+    "description": "Text displayed when no price is set"
+  },
+  
+  "suggestionDescription": "{name} - {usage} - {price} - {store}",
+  "@suggestionDescription": {
+    "description": "Complete suggestion description",
+    "placeholders": {
+      "name": {"type": "String"},
+      "usage": {"type": "String"},
+      "price": {"type": "String"},
+      "store": {"type": "String"}
+    }
+  }
 }

@@ -1,4 +1,4 @@
-// screens/profile_screen.dart - VERSION AVEC SÉLECTEUR DE LANGUE
+// screens/profile_screen.dart - VERSION AVEC GESTION DES SUGGESTIONS
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
@@ -18,7 +18,9 @@ import 'package:epilist/widgets/profile/profile_error_state.dart';
 import 'package:epilist/widgets/profile/profile_header_card.dart';
 import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
-import 'package:epilist/widgets/profile/language_setting_tile.dart'; // NOUVEAU
+import 'package:epilist/widgets/profile/language_setting_tile.dart';
+// ✅ NOUVEAU: Import du widget de gestion des suggestions
+import 'package:epilist/widgets/suggestion_management_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -213,6 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // ✅ MODIFIÉ: Section "Mes données" avec gestion des suggestions
   Widget _buildDataSection(AppLocalizations l10n) {
     return ProfileSection(
       title: l10n.myData,
@@ -221,6 +224,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: Icons.list_alt,
           title: l10n.myShoppingLists,
           onTap: _navigateToShoppingLists,
+        ),
+        // ✅ NOUVEAU: Gestion des suggestions
+        ProfileActionTile(
+          icon: Icons.auto_awesome,
+          title: l10n.manageSuggestions,
+          onTap: _navigateToSuggestionManagement,
         ),
       ],
     );
@@ -278,6 +287,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
+    );
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Navigation vers la gestion des suggestions
+  void _navigateToSuggestionManagement() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SuggestionManagementWidget(),
+      ),
     );
   }
 

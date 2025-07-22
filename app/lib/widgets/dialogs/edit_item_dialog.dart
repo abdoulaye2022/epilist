@@ -1,6 +1,9 @@
+// widgets/dialogs/edit_item_dialog.dart - VERSION AVEC SUGGESTIONS
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
+import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
+import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +24,14 @@ class _EditItemDialogState extends State<EditItemDialog> {
   late final TextEditingController priceController;
   late final TextEditingController storeController;
 
+  bool _showSuggestions = false;
+  ProductSuggestion? _selectedSuggestion;
+  late String _originalProductName;
+
   @override
   void initState() {
     super.initState();
+    _originalProductName = widget.item.productName;
     productController = TextEditingController(text: widget.item.productName);
     quantityController = TextEditingController(
       text: widget.item.quantity.toString(),
@@ -77,6 +85,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     _buildDescription(l10n),
                     const SizedBox(height: 24),
                     _buildForm(l10n),
+                    if (_showSuggestions) ...[
+                      const SizedBox(height: 16),
+                      _buildSuggestions(l10n),
+                    ],
                     const SizedBox(height: 24),
                     _buildButtons(l10n),
                   ],
@@ -123,7 +135,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
   Widget _buildForm(AppLocalizations l10n) {
     return Column(
       children: [
-        _buildProductNameField(l10n),
+        _buildProductNameFieldWithSuggestions(l10n),
         const SizedBox(height: 16),
         _buildQuantityAndPriceRow(l10n),
         const SizedBox(height: 16),
@@ -132,30 +144,165 @@ class _EditItemDialogState extends State<EditItemDialog> {
     );
   }
 
-  Widget _buildProductNameField(AppLocalizations l10n) {
-    return TextField(
-      controller: productController,
-      decoration: InputDecoration(
-        labelText: l10n.productNameRequired,
-        hintText: l10n.productNameHint,
-        prefixIcon: Icon(Icons.shopping_basket, color: Colors.blue[600]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+  Widget _buildProductNameFieldWithSuggestions(AppLocalizations l10n) {
+    return Column(
+      children: [
+        TextField(
+          controller: productController,
+          decoration: InputDecoration(
+            labelText: l10n.productNameRequired,
+            hintText: l10n.productNameHint,
+            prefixIcon: Icon(Icons.shopping_basket, color: Colors.blue[600]),
+            suffixIcon:
+                _selectedSuggestion != null
+                    ? IconButton(
+                      icon: Icon(Icons.clear, color: Colors.grey[600]),
+                      onPressed: _clearSelectedSuggestion,
+                    )
+                    : (productController.text != _originalProductName &&
+                        productController.text.isNotEmpty)
+                    ? IconButton(
+                      icon: Icon(Icons.refresh, color: Colors.orange[600]),
+                      onPressed: _resetToOriginal,
+                      tooltip: 'Restaurer le nom original',
+                    )
+                    : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            filled: true,
+            fillColor:
+                _selectedSuggestion != null ? Colors.blue[50] : Colors.grey[50],
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          onChanged: _onProductNameChanged,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
+        if (_selectedSuggestion != null) _buildSelectedSuggestionInfo(l10n),
+      ],
+    );
+  }
+
+  Widget _buildSelectedSuggestionInfo(AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue[200]!),
       ),
-      autofocus: true,
-      textCapitalization: TextCapitalization.words,
+      child: Row(
+        children: [
+          Icon(Icons.auto_awesome, color: Colors.blue[600], size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Suggestion sélectionnée • ${_selectedSuggestion!.usageInfo}',
+              style: TextStyle(
+                color: Colors.blue[700],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestions(AppLocalizations l10n) {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 200),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
+        builder: (context, state) {
+          if (state is ProductSuggestionLoading) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (state is ProductSuggestionLoaded) {
+            return ListView.separated(
+              shrinkWrap: true,
+              itemCount: state.suggestions.length,
+              separatorBuilder:
+                  (context, index) =>
+                      Divider(height: 1, color: Colors.grey[200]),
+              itemBuilder: (context, index) {
+                final suggestion = state.suggestions[index];
+                return _buildSuggestionItem(suggestion, l10n);
+              },
+            );
+          }
+
+          if (state is ProductSuggestionEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Aucune suggestion trouvée',
+                style: TextStyle(color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+
+  Widget _buildSuggestionItem(
+    ProductSuggestion suggestion,
+    AppLocalizations l10n,
+  ) {
+    return ListTile(
+      dense: true,
+      leading: CircleAvatar(
+        backgroundColor: Colors.blue[50],
+        child: Icon(Icons.history, color: Colors.blue[600], size: 16),
+      ),
+      title: Text(
+        suggestion.productName,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Row(
+        children: [
+          if (suggestion.price != null) ...[
+            Text(
+              suggestion.formattedPrice,
+              style: TextStyle(
+                color: Colors.green[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (suggestion.storeName != null)
+              Text(' • ${suggestion.storeName}'),
+          ] else if (suggestion.storeName != null)
+            Text(suggestion.storeName!),
+          const Spacer(),
+          Text(
+            suggestion.usageInfo,
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
+        ],
+      ),
+      onTap: () => _selectSuggestion(suggestion),
     );
   }
 
@@ -317,6 +464,61 @@ class _EditItemDialogState extends State<EditItemDialog> {
         ),
       ],
     );
+  }
+
+  void _onProductNameChanged(String value) {
+    // Ne montrer les suggestions que si le nom a changé par rapport à l'original
+    if (value.trim().length >= 2 && value.trim() != _originalProductName) {
+      if (!_showSuggestions) {
+        setState(() {
+          _showSuggestions = true;
+        });
+      }
+      context.read<ProductSuggestionBloc>().add(
+        SearchProductSuggestions(value.trim()),
+      );
+    } else {
+      if (_showSuggestions) {
+        setState(() {
+          _showSuggestions = false;
+        });
+      }
+      context.read<ProductSuggestionBloc>().add(const ResetSuggestions());
+    }
+  }
+
+  void _selectSuggestion(ProductSuggestion suggestion) {
+    setState(() {
+      _selectedSuggestion = suggestion;
+      productController.text = suggestion.productName;
+      if (suggestion.price != null) {
+        priceController.text = suggestion.price!.toStringAsFixed(2);
+      }
+      if (suggestion.storeName != null) {
+        storeController.text = suggestion.storeName!;
+      }
+      _showSuggestions = false;
+    });
+    context.read<ProductSuggestionBloc>().add(const ResetSuggestions());
+  }
+
+  void _clearSelectedSuggestion() {
+    setState(() {
+      _selectedSuggestion = null;
+      productController.clear();
+    });
+  }
+
+  void _resetToOriginal() {
+    setState(() {
+      _selectedSuggestion = null;
+      productController.text = _originalProductName;
+      quantityController.text = widget.item.quantity.toString();
+      priceController.text = widget.item.price?.toStringAsFixed(2) ?? '';
+      storeController.text = widget.item.storeName ?? '';
+      _showSuggestions = false;
+    });
+    context.read<ProductSuggestionBloc>().add(const ResetSuggestions());
   }
 
   void _updateItem(AppLocalizations l10n) {

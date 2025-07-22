@@ -1,11 +1,12 @@
 <?php
-// app/Http/Controllers/ListItemController.php - VERSION AVEC ORDRE COHÉRENT
+// app/Controllers/ListItemController.php - VERSION AVEC SUGGESTIONS
 
 namespace App\Controllers;
 
 use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Models\SharedList;
+use App\Models\ProductSuggestion; // ✅ NOUVELLE IMPORT
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Valitron\Validator;
@@ -84,6 +85,19 @@ class ListItemController
     }
 
     /**
+     * ✅ NOUVELLE MÉTHODE : Ajouter ou mettre à jour une suggestion
+     */
+    private function updateProductSuggestion(int $user_id, array $productData): void
+    {
+        try {
+            ProductSuggestion::createOrUpdate($user_id, $productData);
+        } catch (\Exception $e) {
+            // Log l'erreur mais ne pas faire échouer la création de l'item
+            error_log("Erreur lors de la mise à jour des suggestions: " . $e->getMessage());
+        }
+    }
+
+    /**
      * ✅ Affiche tous les items d'une liste (avec permissions et ordre cohérent)
      */
     public function index(Request $request, Response $response, array $args): Response
@@ -132,7 +146,7 @@ class ListItemController
     }
 
     /**
-     * ✅ Crée un nouvel item dans une liste (avec permissions)
+     * ✅ Crée un nouvel item dans une liste (AVEC GESTION DES SUGGESTIONS)
      */
     public function store(Request $request, Response $response, array $args): Response
     {
@@ -171,6 +185,7 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
+            // Créer l'item
             $item = ListItem::create([
                 'list_id' => $listId,
                 'product_name' => $data['product_name'],
@@ -178,6 +193,13 @@ class ListItemController
                 'price' => $data['price'] ?? null,
                 'store_name' => $data['store_name'] ?? null,
                 'is_purchased' => $data['is_purchased'] ?? false
+            ]);
+
+            // ✅ NOUVEAU : Mettre à jour les suggestions de produits
+            $this->updateProductSuggestion($user_id, [
+                'product_name' => $data['product_name'],
+                'price' => $data['price'] ?? null,
+                'store_name' => $data['store_name'] ?? null
             ]);
 
             $response->getBody()->write(json_encode([
@@ -197,7 +219,7 @@ class ListItemController
     }
 
     /**
-     * ✅ Met à jour un item (avec permissions)
+     * ✅ Met à jour un item (AVEC GESTION DES SUGGESTIONS)
      */
     public function update(Request $request, Response $response, array $args): Response
     {
@@ -239,6 +261,8 @@ class ListItemController
             $item = ListItem::where('list_id', $listId)
                 ->findOrFail($itemId);
 
+            $oldData = $item->toArray();
+
             $item->update([
                 'product_name' => $data['product_name'] ?? $item->product_name,
                 'quantity' => $data['quantity'] ?? $item->quantity,
@@ -246,6 +270,15 @@ class ListItemController
                 'store_name' => $data['store_name'] ?? $item->store_name,
                 'is_purchased' => $data['is_purchased'] ?? $item->is_purchased
             ]);
+
+            // ✅ NOUVEAU : Mettre à jour les suggestions si le nom du produit a changé
+            if (isset($data['product_name']) && $data['product_name'] !== $oldData['product_name']) {
+                $this->updateProductSuggestion($user_id, [
+                    'product_name' => $data['product_name'],
+                    'price' => $data['price'] ?? $item->price,
+                    'store_name' => $data['store_name'] ?? $item->store_name
+                ]);
+            }
 
             $response->getBody()->write(json_encode([
                 'success' => true,

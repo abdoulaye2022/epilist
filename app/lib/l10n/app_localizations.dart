@@ -2611,6 +2611,389 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Connexion Internet requise pour ouvrir l\'invitation'**
   String get connectionRequiredForInvitation;
+
+  /// No description provided for @productSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions de produits'**
+  String get productSuggestions;
+
+  /// No description provided for @noSuggestionsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune suggestion trouvée'**
+  String get noSuggestionsFound;
+
+  /// No description provided for @searchingSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche de suggestions...'**
+  String get searchingSuggestions;
+
+  /// No description provided for @usedOnce.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisé 1 fois'**
+  String get usedOnce;
+
+  /// No description provided for @usedXTimes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisé {count} fois'**
+  String usedXTimes(int count);
+
+  /// No description provided for @weeksAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il y a {weeks} semaine{plural}'**
+  String weeksAgo(int weeks, String plural);
+
+  /// No description provided for @monthsAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il y a {months} mois'**
+  String monthsAgo(int months, Object plural);
+
+  /// No description provided for @suggestionWithDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'{usage} • {date}'**
+  String suggestionWithDate(String usage, String date);
+
+  /// No description provided for @suggestionSelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion sélectionnée'**
+  String get suggestionSelected;
+
+  /// No description provided for @clearSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer la suggestion'**
+  String get clearSuggestion;
+
+  /// No description provided for @popularSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions populaires'**
+  String get popularSuggestions;
+
+  /// No description provided for @recentSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions récentes'**
+  String get recentSuggestions;
+
+  /// No description provided for @manageSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les suggestions'**
+  String get manageSuggestions;
+
+  /// No description provided for @deleteSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la suggestion'**
+  String get deleteSuggestion;
+
+  /// No description provided for @deleteSuggestionConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer cette suggestion ?'**
+  String get deleteSuggestionConfirm;
+
+  /// No description provided for @clearAllSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer toutes les suggestions'**
+  String get clearAllSuggestions;
+
+  /// No description provided for @clearAllSuggestionsConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer toutes vos suggestions ? Cette action est irréversible.'**
+  String get clearAllSuggestionsConfirm;
+
+  /// No description provided for @suggestionsCleared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les suggestions ont été supprimées'**
+  String get suggestionsCleared;
+
+  /// No description provided for @errorLoadingSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des suggestions'**
+  String get errorLoadingSuggestions;
+
+  /// No description provided for @errorSavingSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la sauvegarde de la suggestion'**
+  String get errorSavingSuggestion;
+
+  /// No description provided for @suggestionSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion sauvegardée'**
+  String get suggestionSaved;
+
+  /// No description provided for @noSuggestionsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune suggestion pour le moment'**
+  String get noSuggestionsYet;
+
+  /// No description provided for @startTypingForSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencez à taper pour voir vos suggestions'**
+  String get startTypingForSuggestions;
+
+  /// No description provided for @basedOnHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basé sur votre historique'**
+  String get basedOnHistory;
+
+  /// No description provided for @autoComplete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie automatique'**
+  String get autoComplete;
+
+  /// No description provided for @suggestionHelper.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos produits fréquents apparaîtront ici'**
+  String get suggestionHelper;
+
+  /// No description provided for @lastUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière utilisation'**
+  String get lastUsed;
+
+  /// No description provided for @suggestionDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion supprimée'**
+  String get suggestionDeleted;
+
+  /// No description provided for @totalSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total des suggestions'**
+  String get totalSuggestions;
+
+  /// No description provided for @mostUsedSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion la plus utilisée'**
+  String get mostUsedSuggestion;
+
+  /// No description provided for @recentlyAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récemment ajouté'**
+  String get recentlyAdded;
+
+  /// No description provided for @neverUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jamais utilisé'**
+  String get neverUsed;
+
+  /// No description provided for @usageStatistics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques d\'utilisation'**
+  String get usageStatistics;
+
+  /// No description provided for @averageUsage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisation moyenne'**
+  String get averageUsage;
+
+  /// No description provided for @oldestSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion la plus ancienne'**
+  String get oldestSuggestion;
+
+  /// No description provided for @newestSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion la plus récente'**
+  String get newestSuggestion;
+
+  /// No description provided for @exportSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter les suggestions'**
+  String get exportSuggestions;
+
+  /// No description provided for @importSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Importer les suggestions'**
+  String get importSuggestions;
+
+  /// No description provided for @suggestionSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres des suggestions'**
+  String get suggestionSettings;
+
+  /// No description provided for @enableAutoSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer les suggestions automatiques'**
+  String get enableAutoSuggestions;
+
+  /// No description provided for @suggestionThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil de suggestions'**
+  String get suggestionThreshold;
+
+  /// No description provided for @maxSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre maximum de suggestions'**
+  String get maxSuggestions;
+
+  /// No description provided for @clearOldSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nettoyer les anciennes suggestions'**
+  String get clearOldSuggestions;
+
+  /// No description provided for @suggestionsOlderThan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions plus anciennes que'**
+  String get suggestionsOlderThan;
+
+  /// No description provided for @oneMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 mois'**
+  String get oneMonth;
+
+  /// No description provided for @threeMonths.
+  ///
+  /// In fr, this message translates to:
+  /// **'3 mois'**
+  String get threeMonths;
+
+  /// No description provided for @sixMonths.
+  ///
+  /// In fr, this message translates to:
+  /// **'6 mois'**
+  String get sixMonths;
+
+  /// No description provided for @oneYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 an'**
+  String get oneYear;
+
+  /// No description provided for @cleanupCompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nettoyage terminé'**
+  String get cleanupCompleted;
+
+  /// No description provided for @suggestionsOptimized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions optimisées'**
+  String get suggestionsOptimized;
+
+  /// No description provided for @backupSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarder les suggestions'**
+  String get backupSuggestions;
+
+  /// No description provided for @restoreSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurer les suggestions'**
+  String get restoreSuggestions;
+
+  /// No description provided for @suggestionBackupCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde créée avec succès'**
+  String get suggestionBackupCreated;
+
+  /// No description provided for @suggestionBackupRestored.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions restaurées avec succès'**
+  String get suggestionBackupRestored;
+
+  /// No description provided for @noBackupFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune sauvegarde trouvée'**
+  String get noBackupFound;
+
+  /// No description provided for @suggestionTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseils pour les suggestions'**
+  String get suggestionTips;
+
+  /// No description provided for @tipMoreUsage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus vous utilisez l\'app, meilleures sont les suggestions'**
+  String get tipMoreUsage;
+
+  /// No description provided for @tipRegularUpdates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les suggestions se mettent à jour automatiquement'**
+  String get tipRegularUpdates;
+
+  /// No description provided for @tipPersonalized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos suggestions sont uniques et personnalisées'**
+  String get tipPersonalized;
+
+  /// Format d'affichage du prix
+  ///
+  /// In fr, this message translates to:
+  /// **'{price} \$CAD'**
+  String priceFormat(String price);
+
+  /// Texte affiché quand aucun magasin n'est spécifié
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun magasin spécifié'**
+  String get noStoreSpecified;
+
+  /// Texte affiché quand aucun prix n'est défini
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix non défini'**
+  String get noPriceSet;
+
+  /// Description complète d'une suggestion
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} - {usage} - {price} - {store}'**
+  String suggestionDescription(
+    String name,
+    String usage,
+    String price,
+    String store,
+  );
 }
 
 class _AppLocalizationsDelegate

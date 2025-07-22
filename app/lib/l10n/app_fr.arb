@@ -582,5 +582,128 @@
   "connectionRequired": "Connexion Internet requise",
   "connectionRequiredForInvitation": "Connexion Internet requise pour ouvrir l'invitation",
   "shareList": "Partager la liste",
-  "manageShares": "Gérer les partages"
+  "manageShares": "Gérer les partages",
+  "productSuggestions": "Suggestions de produits",
+  "noSuggestionsFound": "Aucune suggestion trouvée",
+  "searchingSuggestions": "Recherche de suggestions...",
+  "usedOnce": "Utilisé 1 fois",
+  "usedXTimes": "Utilisé {count} fois",
+  "@usedXTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weeksAgo": "Il y a {weeks} semaine{plural}",
+  "@weeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "monthsAgo": "Il y a {months} mois",
+  "@monthsAgo": {
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestionWithDate": "{usage} • {date}",
+  "@suggestionWithDate": {
+    "placeholders": {
+      "usage": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestionSelected": "Suggestion sélectionnée",
+  "clearSuggestion": "Effacer la suggestion",
+  "popularSuggestions": "Suggestions populaires",
+  "recentSuggestions": "Suggestions récentes",
+  "manageSuggestions": "Gérer les suggestions",
+  "deleteSuggestion": "Supprimer la suggestion",
+  "deleteSuggestionConfirm": "Êtes-vous sûr de vouloir supprimer cette suggestion ?",
+  "clearAllSuggestions": "Supprimer toutes les suggestions",
+  "clearAllSuggestionsConfirm": "Êtes-vous sûr de vouloir supprimer toutes vos suggestions ? Cette action est irréversible.",
+  "suggestionsCleared": "Toutes les suggestions ont été supprimées",
+  "errorLoadingSuggestions": "Erreur lors du chargement des suggestions",
+  "errorSavingSuggestion": "Erreur lors de la sauvegarde de la suggestion",
+  "suggestionSaved": "Suggestion sauvegardée",
+  "noSuggestionsYet": "Aucune suggestion pour le moment",
+  "startTypingForSuggestions": "Commencez à taper pour voir vos suggestions",
+  "basedOnHistory": "Basé sur votre historique",
+  "autoComplete": "Saisie automatique",
+  "suggestionHelper": "Vos produits fréquents apparaîtront ici",
+  "lastUsed": "Dernière utilisation",
+  "suggestionDeleted": "Suggestion supprimée",
+  "totalSuggestions": "Total des suggestions",
+  "mostUsedSuggestion": "Suggestion la plus utilisée",
+  "recentlyAdded": "Récemment ajouté",
+  "neverUsed": "Jamais utilisé",
+  "usageStatistics": "Statistiques d'utilisation",
+  "averageUsage": "Utilisation moyenne",
+  "oldestSuggestion": "Suggestion la plus ancienne",
+  "newestSuggestion": "Suggestion la plus récente",
+  "exportSuggestions": "Exporter les suggestions",
+  "importSuggestions": "Importer les suggestions",
+  "suggestionSettings": "Paramètres des suggestions",
+  "enableAutoSuggestions": "Activer les suggestions automatiques",
+  "suggestionThreshold": "Seuil de suggestions",
+  "maxSuggestions": "Nombre maximum de suggestions",
+  "clearOldSuggestions": "Nettoyer les anciennes suggestions",
+  "suggestionsOlderThan": "Suggestions plus anciennes que",
+  "oneMonth": "1 mois",
+  "threeMonths": "3 mois",
+  "sixMonths": "6 mois",
+  "oneYear": "1 an",
+  "cleanupCompleted": "Nettoyage terminé",
+  "suggestionsOptimized": "Suggestions optimisées",
+  "backupSuggestions": "Sauvegarder les suggestions",
+  "restoreSuggestions": "Restaurer les suggestions",
+  "suggestionBackupCreated": "Sauvegarde créée avec succès",
+  "suggestionBackupRestored": "Suggestions restaurées avec succès",
+  "noBackupFound": "Aucune sauvegarde trouvée",
+  "suggestionTips": "Conseils pour les suggestions",
+  "tipMoreUsage": "Plus vous utilisez l'app, meilleures sont les suggestions",
+  "tipRegularUpdates": "Les suggestions se mettent à jour automatiquement",
+  "tipPersonalized": "Vos suggestions sont uniques et personnalisées",
+    "priceFormat": "{price} $CAD",
+  "@priceFormat": {
+    "description": "Format d'affichage du prix",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "noStoreSpecified": "Aucun magasin spécifié",
+  "@noStoreSpecified": {
+    "description": "Texte affiché quand aucun magasin n'est spécifié"
+  },
+  
+  "noPriceSet": "Prix non défini",
+  "@noPriceSet": {
+    "description": "Texte affiché quand aucun prix n'est défini"
+  },
+  
+  "suggestionDescription": "{name} - {usage} - {price} - {store}",
+  "@suggestionDescription": {
+    "description": "Description complète d'une suggestion",
+    "placeholders": {
+      "name": {"type": "String"},
+      "usage": {"type": "String"},
+      "price": {"type": "String"},
+      "store": {"type": "String"}
+    }
+  }
 }

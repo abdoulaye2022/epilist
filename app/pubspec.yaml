@@ -47,6 +47,7 @@ dependencies:
   intl: ^0.20.2
   flutter_gen: ^5.10.0
   connectivity_plus: ^6.1.4
+  json_annotation: ^4.9.0
   
 
 dev_dependencies:
@@ -59,6 +60,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  json_serializable: ^6.10.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

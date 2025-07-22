@@ -11,7 +11,8 @@ use App\Controllers\{
     AuthController,
     ShoppingListController,
     ListItemController,
-    SharedListController
+    SharedListController,
+    ProductSuggestionController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -139,6 +140,14 @@ $app->group('', function ($group) {
     $group->post('/auth/confirm-account-deletion', [AuthController::class, 'confirmAccountDeletion']);
     $group->post('/auth/cancel-account-deletion', [AuthController::class, 'cancelAccountDeletion']);
     $group->get('/auth/account-deletion-status', [AuthController::class, 'getAccountDeletionStatus']);
+
+    // ✅ NOUVELLES ROUTES POUR LES SUGGESTIONS DE PRODUITS
+    $group->get('/product-suggestions/search', [ProductSuggestionController::class, 'search']);
+    $group->get('/product-suggestions/popular', [ProductSuggestionController::class, 'getPopular']);
+    $group->get('/product-suggestions/stats', [ProductSuggestionController::class, 'getStats']);
+    $group->put('/product-suggestions/{id}', [ProductSuggestionController::class, 'update']);
+    $group->delete('/product-suggestions/{id}', [ProductSuggestionController::class, 'delete']);
+    $group->delete('/product-suggestions', [ProductSuggestionController::class, 'clear']);
 
     // Shopping Lists Routes
     $group->get('/shopping-lists', [ShoppingListController::class, 'index']);

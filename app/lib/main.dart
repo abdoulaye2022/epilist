@@ -1,6 +1,7 @@
 // main.dart - VERSION AVEC CONNECTIVITÉ GLOBALE ET BANNIÈRE DÉSACTIVÉE SUR HOME
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -10,6 +11,7 @@ import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/services/product_suggestion_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
@@ -126,6 +128,13 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          RepositoryProvider<ProductSuggestionService>(
+            create:
+                (context) => ProductSuggestionService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -147,6 +156,12 @@ void main() async {
                   (context) => SharedListBloc(
                     sharedListService: context.read<SharedListService>(),
                     localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+            ),
+            BlocProvider<ProductSuggestionBloc>(
+              create:
+                  (context) => ProductSuggestionBloc(
+                    suggestionService: context.read<ProductSuggestionService>(),
                   ),
             ),
           ],
@@ -437,7 +452,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   }
 }
 
-// Classes LoadingScreen, LoadingDots et ErrorApp restent identiques...
+// ✅ MODIFIÉ: LoadingScreen avec logo professionnel
 class LoadingScreen extends StatelessWidget {
   final String? message;
 
@@ -453,20 +468,55 @@ class LoadingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // ✅ NOUVEAU: Logo professionnel comme dans About et AppBar
             Container(
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               decoration: BoxDecoration(
-                color: Colors.green.shade100,
                 borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.green[400]!, Colors.green[600]!],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: const Icon(
-                Icons.shopping_cart,
-                size: 40,
-                color: Colors.green,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/app_logo.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback avec design amélioré si l'image n'est pas trouvée
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.green[400]!, Colors.green[600]!],
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.shopping_cart_rounded,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             const CircularProgressIndicator(
               color: Colors.green,
               strokeWidth: 3,
@@ -474,10 +524,10 @@ class LoadingScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               l10n.appTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: Colors.green[700],
                 letterSpacing: 1.2,
               ),
             ),
