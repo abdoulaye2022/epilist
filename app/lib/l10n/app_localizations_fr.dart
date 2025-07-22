@@ -1606,4 +1606,35 @@ class AppLocalizationsFr extends AppLocalizations {
   ) {
     return '$name - $usage - $price - $store';
   }
+
+  @override
+  String get similarItemDetected => 'Article similaire détecté';
+
+  @override
+  String get itemToAdd => 'Article à ajouter';
+
+  @override
+  String get product => 'Produit';
+
+  @override
+  String get store => 'Magasin';
+
+  @override
+  String get similarItemsFound => 'Articles similaires trouvés';
+
+  @override
+  String get identical => 'Identique';
+
+  @override
+  String get similar => 'Similaire';
+
+  @override
+  String get mergeWithExisting => 'Fusionner avec l\'existant';
+
+  @override
+  String get addAnyway => 'Ajouter quand même';
+
+  @override
+  String get duplicateDetectedMessage =>
+      'Nous avons trouvé des articles similaires dans votre liste.';
 }

@@ -2994,6 +2994,66 @@ abstract class AppLocalizations {
     String price,
     String store,
   );
+
+  /// No description provided for @similarItemDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article similaire détecté'**
+  String get similarItemDetected;
+
+  /// No description provided for @itemToAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article à ajouter'**
+  String get itemToAdd;
+
+  /// No description provided for @product.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit'**
+  String get product;
+
+  /// No description provided for @store.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin'**
+  String get store;
+
+  /// No description provided for @similarItemsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles similaires trouvés'**
+  String get similarItemsFound;
+
+  /// No description provided for @identical.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identique'**
+  String get identical;
+
+  /// No description provided for @similar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Similaire'**
+  String get similar;
+
+  /// No description provided for @mergeWithExisting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fusionner avec l\'existant'**
+  String get mergeWithExisting;
+
+  /// No description provided for @addAnyway.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter quand même'**
+  String get addAnyway;
+
+  /// No description provided for @duplicateDetectedMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous avons trouvé des articles similaires dans votre liste.'**
+  String get duplicateDetectedMessage;
 }
 
 class _AppLocalizationsDelegate

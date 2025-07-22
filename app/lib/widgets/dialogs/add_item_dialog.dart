@@ -1,8 +1,9 @@
-// widgets/dialogs/add_item_dialog.dart - VERSION AVEC SUGGESTIONS
+// widgets/dialogs/add_item_dialog.dart - VERSION CORRIGÉE AVEC SAUVEGARDE BLOC
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/dialogs/duplicate_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -24,6 +25,16 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
   bool _showSuggestions = false;
   ProductSuggestion? _selectedSuggestion;
+
+  // ✅ CORRECTION: Sauvegarder le BLoC pour éviter les erreurs de contexte
+  late ListItemBloc _listItemBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ Sauvegarder une référence au BLoC au moment de l'initialisation
+    _listItemBloc = context.read<ListItemBloc>();
+  }
 
   @override
   void dispose() {
@@ -55,33 +66,114 @@ class _AddItemDialogState extends State<AddItemDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Contenu scrollable
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildIcon(),
-                    const SizedBox(height: 20),
-                    _buildTitle(l10n),
-                    const SizedBox(height: 12),
-                    _buildDescription(l10n),
-                    const SizedBox(height: 24),
-                    _buildForm(l10n),
-                    if (_showSuggestions) ...[
-                      const SizedBox(height: 16),
-                      _buildSuggestions(l10n),
+            // ✅ LISTENER CORRIGÉ
+            BlocListener<ListItemBloc, ListItemState>(
+              listener: (context, state) {
+                print('🎯 AddItemDialog - State changé: ${state.runtimeType}');
+
+                if (state is ListItemDuplicateDetected) {
+                  print('🔍 Doublon détecté dans le dialog!');
+
+                  // ✅ CORRECTION: Fermer le dialog avec un délai pour éviter les conflits
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      Navigator.pop(context);
+                      _showDuplicateDialog(context, state);
+                    }
+                  });
+                } else if (state is ListItemOperationSuccess) {
+                  // Succès - fermer le dialog seulement si c'est un ajout réussi
+                  if (state.message.contains('ajouté') ||
+                      state.message.contains('added') ||
+                      state.message.contains('fusionné') ||
+                      state.message.contains('merged')) {
+                    print('✅ Opération réussie: ${state.message}');
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  }
+                } else if (state is ListItemValidationError) {
+                  // Afficher les erreurs de validation
+                  SmartSnackBarManager.showErrorSnackBar(
+                    context,
+                    state.message,
+                    duration: const Duration(seconds: 3),
+                  );
+                }
+              },
+              child: Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildIcon(),
+                      const SizedBox(height: 20),
+                      _buildTitle(l10n),
+                      const SizedBox(height: 12),
+                      _buildDescription(l10n),
+                      const SizedBox(height: 24),
+                      _buildForm(l10n),
+                      if (_showSuggestions) ...[
+                        const SizedBox(height: 16),
+                        _buildSuggestions(l10n),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildButtons(l10n),
                     ],
-                    const SizedBox(height: 24),
-                    _buildButtons(l10n),
-                  ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Afficher le dialog de doublon avec le BLoC sauvegardé
+  void _showDuplicateDialog(
+    BuildContext parentContext,
+    ListItemDuplicateDetected state,
+  ) {
+    showDialog(
+      context: parentContext,
+      barrierDismissible: false,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            // ✅ Utiliser le BLoC sauvegardé au lieu de context.read
+            value: _listItemBloc,
+            child: DuplicateConfirmationDialog(
+              message: state.message,
+              duplicates: state.duplicates,
+              productName: state.productName,
+              quantity: state.quantity,
+              price: state.price,
+              storeName: state.storeName,
+              listId: state.listId,
+              onActionSelected: (action, {existingItemId}) {
+                print('🎯 Action sélectionnée: $action');
+
+                // ✅ CORRECTION: Fermer le dialog de doublon d'abord
+                Navigator.pop(dialogContext);
+
+                // ✅ Utiliser le BLoC sauvegardé pour éviter les erreurs de contexte
+                _listItemBloc.add(
+                  HandleDuplicateAction(
+                    action: action,
+                    listId: state.listId,
+                    productName: state.productName,
+                    quantity: state.quantity,
+                    price: state.price,
+                    storeName: state.storeName,
+                    existingItemId: existingItemId,
+                  ),
+                );
+              },
+            ),
+          ),
     );
   }
 
@@ -495,6 +587,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   void _addItem(AppLocalizations l10n) {
+    // Validation côté client
     if (productController.text.trim().isEmpty) {
       SmartSnackBarManager.showWarningSnackBar(
         context,
@@ -504,18 +597,44 @@ class _AddItemDialogState extends State<AddItemDialog> {
       return;
     }
 
-    context.read<ListItemBloc>().add(
+    final quantity = int.tryParse(quantityController.text);
+    if (quantity == null || quantity < 1) {
+      SmartSnackBarManager.showWarningSnackBar(
+        context,
+        'La quantité doit être un nombre valide (minimum 1)',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    final price =
+        priceController.text.isNotEmpty
+            ? double.tryParse(priceController.text)
+            : null;
+
+    if (priceController.text.isNotEmpty && price == null) {
+      SmartSnackBarManager.showWarningSnackBar(
+        context,
+        'Le prix doit être un nombre valide',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    print('🚀 Tentative d\'ajout: ${productController.text.trim()}');
+
+    // ✅ Utiliser le BLoC sauvegardé pour éviter les erreurs
+    _listItemBloc.add(
       AddListItem(
         listId: widget.listId,
         productName: productController.text.trim(),
-        quantity: int.tryParse(quantityController.text) ?? 1,
-        price: double.tryParse(priceController.text),
+        quantity: quantity,
+        price: price,
         storeName:
             storeController.text.trim().isEmpty
                 ? null
                 : storeController.text.trim(),
       ),
     );
-    Navigator.pop(context);
   }
 }

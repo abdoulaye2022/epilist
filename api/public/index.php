@@ -179,6 +179,23 @@ $app->group('', function ($group) {
     $group->delete('/shopping-lists/{listId}/items/{itemId}', [ListItemController::class, 'destroy']);
     $group->post('/shopping-lists/{listId}/items/{itemId}/restore', [ListItemController::class, 'restore']);
 
+    // Route pour forcer l'ajout malgré les doublons
+    $group->post('/shopping-lists/{listId}/items/force', [ListItemController::class, 'forceStore']);
+    
+    // Route pour fusionner avec un item existant
+    $group->put('/shopping-lists/{listId}/items/{itemId}/merge', [ListItemController::class, 'mergeWithExisting']);
+    
+    // Route pour obtenir des suggestions de produits similaires
+    $group->get('/shopping-lists/{listId}/items/suggestions', [ListItemController::class, 'getSimilarItems']);
+    
+    // Route pour marquer tous les articles comme achetés/non achetés
+    $group->patch('/shopping-lists/{listId}/items/mark-all', [ListItemController::class, 'markAllPurchased']);
+    
+    // Route pour supprimer tous les articles achetés
+    $group->delete('/shopping-lists/{listId}/items/clear-purchased', [ListItemController::class, 'clearPurchased']);
+    
+    // Route pour obtenir les statistiques d'une liste
+    $group->get('/shopping-lists/{listId}/stats', [ListItemController::class, 'getListStats']);
 })->add($jwtMiddleware);
 
 $app->run();

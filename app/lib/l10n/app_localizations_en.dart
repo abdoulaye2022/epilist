@@ -1577,4 +1577,34 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return '$name - $usage - $price - $store';
   }
+
+  @override
+  String get similarItemDetected => 'Similar item detected';
+
+  @override
+  String get itemToAdd => 'Item to add';
+
+  @override
+  String get product => 'Product';
+
+  @override
+  String get store => 'Store';
+
+  @override
+  String get similarItemsFound => 'Similar items found';
+
+  @override
+  String get identical => 'Identical';
+
+  @override
+  String get similar => 'Similar';
+
+  @override
+  String get mergeWithExisting => 'Merge with existing';
+
+  @override
+  String get addAnyway => 'Add anyway';
+
+  @override
+  String get duplicateDetectedMessage => 'We found similar items in your list.';
 }

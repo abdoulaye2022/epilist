@@ -705,5 +705,15 @@
       "price": {"type": "String"},
       "store": {"type": "String"}
     }
-  }
+  },
+  "similarItemDetected": "Article similaire détecté",
+"itemToAdd": "Article à ajouter", 
+"product": "Produit",
+"store": "Magasin",
+"similarItemsFound": "Articles similaires trouvés",
+"identical": "Identique", 
+"similar": "Similaire",
+"mergeWithExisting": "Fusionner avec l'existant",
+"addAnyway": "Ajouter quand même",
+"duplicateDetectedMessage": "Nous avons trouvé des articles similaires dans votre liste."
 }
