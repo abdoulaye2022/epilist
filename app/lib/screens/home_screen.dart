@@ -1,10 +1,13 @@
 // screens/home_screen.dart - VERSION SIMPLIFIÉE AVEC WIDGETS CONNECTÉS
+import 'dart:io';
+
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/notifications/notification_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
@@ -163,6 +166,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    print('🧪 Lancement des tests de notifications...');
+
+                    // Test notification immédiate
+                    await EpiListNotifications.testNotification();
+
+                    // Test notification programmée (dans 10 secondes)
+                    await EpiListNotifications.testScheduled();
+
+                    // Vérifier les permissions
+                    final hasPerms = await NotificationService.hasPermissions();
+                    print('🔐 Permissions: $hasPerms');
+
+                    // Afficher les notifications en attente
+                    final pending =
+                        await NotificationService.getPendingNotifications();
+                    print('📋 Notifications programmées: ${pending.length}');
+
+                    // Message selon la plateforme
+                    if (Platform.isIOS) {
+                      print(
+                        '📱 iOS: Si vous êtes sur émulateur, les notifications ne s\'afficheront pas',
+                      );
+                      print(
+                        '💡 Utilisez un iPhone physique pour voir les notifications',
+                      );
+                    } else {
+                      print(
+                        '📱 Android: Les notifications devraient s\'afficher',
+                      );
+                    }
+
+                    print('✅ Tests terminés - Vérifiez vos notifications !');
+                  },
+                  child: Text('Test Notifications'),
+                ),
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
+import 'package:epilist/notifications/notification_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
@@ -96,6 +97,8 @@ void main() async {
         dio: dio,
       ),
     );
+
+    await NotificationService.initialize();
 
     runApp(
       MultiRepositoryProvider(

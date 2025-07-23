@@ -44,7 +44,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME_EL }}
           password: ${{ secrets.FTP_PASSWORD_EL }}
           local-dir: ./api/
-          server-dir: /public_html/api.epilist/
+          server-dir: /www/api.epilist/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
