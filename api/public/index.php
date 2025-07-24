@@ -93,13 +93,14 @@ $app->addBodyParsingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
 $app->post('/auth/login', [AuthController::class, 'login']);
-$app->post('/auth/refresh-token', [AuthController::class, 'refresh_token']);
+$app->post('/auth/refresh', [AuthController::class, 'refresh_token']);
 $app->post('/auth/register', [AuthController::class, 'register']);
 $app->post('/auth/reset-link', [AuthController::class, 'resetLink']);
 $app->post('/auth/validate-reset-token', [AuthController::class, 'validateResetToken']);
 $app->post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 $app->post('/auth/confirm-email', [AuthController::class, 'confirmEmail']);
 $app->post('/auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
+$app->post('/auth/logout', [AuthController::class, 'logout']);
 
 $app->post('/auth/request-password-change', [AuthController::class, 'requestPasswordChange']);
 $app->post('/auth/verify-password-change-code', [AuthController::class, 'verifyPasswordChangeCode']);
