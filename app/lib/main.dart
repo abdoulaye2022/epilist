@@ -56,19 +56,6 @@ void main() async {
       ),
     );
 
-    // Ajouter les interceptors de logging en mode debug
-    if (kDebugMode) {
-      dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-          error: true,
-          requestHeader: false,
-          responseHeader: false,
-        ),
-      );
-    }
-
     final authService = AuthService(
       dio: dio,
       sharedPreferences: sharedPreferences,
@@ -97,6 +84,19 @@ void main() async {
         dio: dio,
       ),
     );
+
+    // Ajouter les interceptors de logging en mode debug
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          error: true,
+          requestHeader: true, // ← ACTIVÉ pour voir les headers !
+          responseHeader: false,
+        ),
+      );
+    }
 
     await NotificationService.initialize();
 
