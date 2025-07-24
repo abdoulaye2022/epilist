@@ -130,6 +130,8 @@ $app->get('/test-json', function ($request, $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+$app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
+
 $app->group('', function ($group) {
     // Authentification
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);

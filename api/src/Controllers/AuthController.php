@@ -1063,4 +1063,40 @@ class AuthController
             );
         }
     }
+
+    public function debugAuth(Request $request, Response $response)
+    {
+        $serverParams = $request->getServerParams();
+        
+        $debug = [
+            'method' => $request->getMethod(),
+            'uri' => (string) $request->getUri(),
+            'timestamp' => date('c'),
+            
+            // Test de récupération Authorization
+            'auth_tests' => [
+                'getHeaderLine' => $request->getHeaderLine('Authorization') ?: 'EMPTY',
+                'getHeader' => $request->getHeader('Authorization') ?: 'EMPTY',
+                'server_HTTP_AUTHORIZATION' => $serverParams['HTTP_AUTHORIZATION'] ?? 'NOT_SET',
+                'server_REDIRECT_HTTP_AUTHORIZATION' => $serverParams['REDIRECT_HTTP_AUTHORIZATION'] ?? 'NOT_SET',
+                'global_SERVER_HTTP_AUTHORIZATION' => $_SERVER['HTTP_AUTHORIZATION'] ?? 'NOT_SET',
+            ],
+            
+            // Toutes les headers reçues
+            'all_headers' => $request->getHeaders(),
+            
+            // Variables serveur liées à l'auth
+            'server_auth_vars' => array_filter($serverParams, function($key) {
+                return stripos($key, 'auth') !== false || stripos($key, 'http_') === 0;
+            }, ARRAY_FILTER_USE_KEY)
+        ];
+
+        // Apache headers si disponible
+        if (function_exists('apache_request_headers')) {
+            $debug['apache_headers'] = apache_request_headers();
+        }
+
+        $response->getBody()->write(json_encode($debug, JSON_PRETTY_PRINT));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }
