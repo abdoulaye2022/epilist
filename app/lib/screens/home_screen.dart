@@ -166,43 +166,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    print('🧪 Lancement des tests de notifications...');
-
-                    // Test notification immédiate
-                    await EpiListNotifications.testNotification();
-
-                    // Test notification programmée (dans 10 secondes)
-                    await EpiListNotifications.testScheduled();
-
-                    // Vérifier les permissions
-                    final hasPerms = await NotificationService.hasPermissions();
-                    print('🔐 Permissions: $hasPerms');
-
-                    // Afficher les notifications en attente
-                    final pending =
-                        await NotificationService.getPendingNotifications();
-                    print('📋 Notifications programmées: ${pending.length}');
-
-                    // Message selon la plateforme
-                    if (Platform.isIOS) {
-                      print(
-                        '📱 iOS: Si vous êtes sur émulateur, les notifications ne s\'afficheront pas',
-                      );
-                      print(
-                        '💡 Utilisez un iPhone physique pour voir les notifications',
-                      );
-                    } else {
-                      print(
-                        '📱 Android: Les notifications devraient s\'afficher',
-                      );
-                    }
-
-                    print('✅ Tests terminés - Vérifiez vos notifications !');
-                  },
-                  child: Text('Test Notifications'),
-                ),
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 
