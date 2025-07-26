@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Privacy Policy'),
+        title: Text(l10n.privacyPolicy),
         backgroundColor: Colors.white,
         elevation: 1,
         foregroundColor: Colors.black87,
@@ -19,7 +22,7 @@ class PrivacyPolicyPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Privacy Policy',
+              l10n.privacyPolicy,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -28,118 +31,131 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'Last updated: July 5, 2025',
+              l10n.privacyLastUpdated ??
+                  'Dernière mise à jour : 5 juillet 2025',
               style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
             SizedBox(height: 24),
 
             _buildPolicySection(
-              '1. Information Collection',
-              'EpiList collects the following information for its operation:\n\n'
-                  '• Account information: first name, last name, email, password (encrypted)\n'
-                  '• Grocery list data: list names, items, quantities, prices, stores (optional)\n'
-                  '• Sharing data: sharing links, access permissions (read, edit, administration)\n'
-                  '• Usage data: item purchase status, totals and percentage calculations\n'
-                  '• Technical data: error logs, application performance\n\n'
-                  'We do not collect any sensitive personal information beyond what is necessary for operation.',
+              l10n.privacyCollectionTitle ?? '1. Collecte d\'informations',
+              l10n.privacyCollectionText ??
+                  'EpiList collecte les informations suivantes pour son fonctionnement :\n\n'
+                      '• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n'
+                      '• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n'
+                      '• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n'
+                      '• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n'
+                      '• Données techniques : journaux d\'erreurs, performance de l\'application\n\n'
+                      'Nous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.',
             ),
 
             _buildPolicySection(
-              '2. Data Usage',
-              'Your data is used exclusively to:\n\n'
-                  '• Create and manage your user account\n'
-                  '• Create, edit and delete your grocery lists\n'
-                  '• Calculate totals and percentages of purchased items\n'
-                  '• Duplicate your existing lists\n'
-                  '• Share your lists with family members or friends via secure links\n'
-                  '• Manage access permissions (read, edit, administration)\n'
-                  '• Synchronize your data across your devices\n'
-                  '• Provide technical support\n\n'
-                  'We do not sell or rent your personal data to third parties.',
+              l10n.privacyUsageTitle ?? '2. Utilisation des données',
+              l10n.privacyUsageText ??
+                  'Vos données sont utilisées exclusivement pour :\n\n'
+                      '• Créer et gérer votre compte utilisateur\n'
+                      '• Créer, modifier et supprimer vos listes d\'épicerie\n'
+                      '• Calculer les totaux et pourcentages d\'articles achetés\n'
+                      '• Dupliquer vos listes existantes\n'
+                      '• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n'
+                      '• Gérer les permissions d\'accès (lecture, édition, administration)\n'
+                      '• Synchroniser vos données sur tous vos appareils\n'
+                      '• Fournir un support technique\n\n'
+                      'Nous ne vendons ni ne louons vos données personnelles à des tiers.',
             ),
 
             _buildPolicySection(
-              '3. Storage and Security',
-              'Your data is protected by:\n\n'
-                  '• Secure storage on our servers with encryption\n'
-                  '• Password encryption with secure algorithms\n'
-                  '• Data protection during transit and at rest\n'
-                  '• Secure sharing links with access control\n'
-                  '• Regular backup of your lists and data\n'
-                  '• Security measures compliant with industry standards\n\n'
-                  'We apply security best practices to protect your information.',
+              l10n.privacyStorageTitle ?? '3. Stockage et sécurité',
+              l10n.privacyStorageText ??
+                  'Vos données sont protégées par :\n\n'
+                      '• Stockage sécurisé sur nos serveurs avec chiffrement\n'
+                      '• Chiffrement des mots de passe avec des algorithmes sécurisés\n'
+                      '• Protection des données en transit et au repos\n'
+                      '• Liens de partage sécurisés avec contrôle d\'accès\n'
+                      '• Sauvegarde régulière de vos listes et données\n'
+                      '• Mesures de sécurité conformes aux standards de l\'industrie\n\n'
+                      'Nous appliquons les meilleures pratiques de sécurité pour protéger vos informations.',
             ),
 
             _buildPolicySection(
-              '4. Data Sharing',
-              'Your personal data is only shared in the following cases:\n\n'
-                  '• With people you authorize via list sharing links\n'
-                  '• With our technical service providers (hosting, support)\n'
-                  '• With legal authorities if required by law\n\n'
-                  'List sharing is done according to the permissions you define:\n'
-                  '• Read-only: viewing lists without modification\n'
-                  '• Edit: adding, deleting and modifying items\n'
-                  '• Administration: complete management including list deletion\n\n'
-                  'No commercial sharing of your data is performed.',
+              l10n.privacySharingTitle ?? '4. Partage des données',
+              l10n.privacySharingText ??
+                  'Vos données personnelles ne sont partagées que dans les cas suivants :\n\n'
+                      '• Avec les personnes que vous autorisez via les liens de partage de listes\n'
+                      '• Avec nos prestataires de services techniques (hébergement, support)\n'
+                      '• Avec les autorités légales si requis par la loi\n\n'
+                      'Le partage de listes se fait selon les permissions que vous définissez :\n'
+                      '• Lecture seule : consultation des listes sans modification\n'
+                      '• Édition : ajout, suppression et modification d\'articles\n'
+                      '• Administration : gestion complète incluant suppression de listes\n\n'
+                      'Aucun partage commercial de vos données n\'est effectué.',
             ),
 
             _buildPolicySection(
-              '5. Your Rights',
-              'You have the right to:\n\n'
-                  '• Access all your personal data\n'
-                  '• Modify your account information (first name, last name, email)\n'
-                  '• Delete your account and all associated data\n'
-                  '• Export your grocery lists\n'
-                  '• Revoke sharing links at any time\n'
-                  '• Modify access permissions for invited users\n'
-                  '• Delete your lists or items individually\n\n'
-                  'Contact us to exercise these rights.',
+              l10n.privacyRightsTitle ?? '5. Vos droits',
+              l10n.privacyRightsText ??
+                  'Vous avez le droit de :\n\n'
+                      '• Accéder à toutes vos données personnelles\n'
+                      '• Modifier vos informations de compte (prénom, nom, email)\n'
+                      '• Supprimer votre compte et toutes les données associées\n'
+                      '• Exporter vos listes d\'épicerie\n'
+                      '• Révoquer les liens de partage à tout moment\n'
+                      '• Modifier les permissions d\'accès pour les utilisateurs invités\n'
+                      '• Supprimer vos listes ou articles individuellement\n\n'
+                      'Contactez-nous pour exercer ces droits.',
             ),
 
             _buildPolicySection(
-              '6. Application Features',
-              'EpiList processes your data to offer the following features:\n\n'
-                  '• Creation and management of user accounts\n'
-                  '• Creation, duplication, modification and deletion of lists\n'
-                  '• Adding items with name, quantity, price and store (optional)\n'
-                  '• Marking items as purchased or deleting items\n'
-                  '• Automatic calculation of totals and purchase percentages\n'
-                  '• Generation of secure sharing links\n'
-                  '• Management of collaborative access permissions\n\n'
-                  'All this data remains under your control.',
+              l10n.privacyFeaturesTitle ??
+                  '6. Fonctionnalités de l\'application',
+              l10n.privacyFeaturesText ??
+                  'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n'
+                      '• Création et gestion de comptes utilisateurs\n'
+                      '• Création, duplication, modification et suppression de listes\n'
+                      '• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n'
+                      '• Marquage d\'articles comme achetés ou suppression d\'articles\n'
+                      '• Calcul automatique des totaux et pourcentages d\'achats\n'
+                      '• Génération de liens de partage sécurisés\n'
+                      '• Gestion des permissions d\'accès collaboratif\n\n'
+                      'Toutes ces données restent sous votre contrôle.',
             ),
 
             _buildPolicySection(
-              '7. Cookies and Similar Technologies',
-              'EpiList uses tracking technologies to:\n\n'
-                  '• Maintain your active session\n'
-                  '• Remember your usage preferences\n'
-                  '• Analyze application usage (anonymous data)\n'
-                  '• Optimize application performance\n\n'
-                  'You can disable these functions in the application settings.',
+              l10n.privacyCookiesTitle ??
+                  '7. Cookies et technologies similaires',
+              l10n.privacyCookiesText ??
+                  'EpiList utilise des technologies de suivi pour :\n\n'
+                      '• Maintenir votre session active\n'
+                      '• Mémoriser vos préférences d\'utilisation\n'
+                      '• Analyser l\'usage de l\'application (données anonymes)\n'
+                      '• Optimiser les performances de l\'application\n\n'
+                      'Vous pouvez désactiver ces fonctions dans les paramètres de l\'application.',
             ),
 
             _buildPolicySection(
-              '8. Changes',
-              'This policy may be updated to reflect application developments. '
-                  'We will inform you of important changes by:\n\n'
-                  '• Email to the address associated with your account\n'
-                  '• Updating the date at the top of this policy\n\n'
-                  'Your continued use of the application after changes constitutes your acceptance.',
+              l10n.privacyChangesTitle ?? '8. Modifications',
+              l10n.privacyChangesText ??
+                  'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. '
+                      'Nous vous informerons des changements importants par :\n\n'
+                      '• Email à l\'adresse associée à votre compte\n'
+                      '• Mise à jour de la date en haut de cette politique\n\n'
+                      'Votre utilisation continue de l\'application après les changements constitue votre acceptation.',
             ),
 
             _buildContactSection(
               context,
-              '9. Contact',
-              'For any questions regarding this privacy policy or your data, '
-                  'please contact us through our website.\n\n'
-                  'We are committed to responding within 48 business hours.',
+              l10n.privacyContactTitle ?? '9. Contact',
+              l10n.privacyContactText ??
+                  'Pour toute question concernant cette politique de confidentialité ou vos données, '
+                      'veuillez nous contacter via notre site web.\n\n'
+                      'Nous nous engageons à répondre dans les 48 heures ouvrables.',
+              l10n,
             ),
 
             SizedBox(height: 32),
             Center(
               child: Text(
-                '© 2025 EpiList - All rights reserved',
+                '© 2025 EpiList - ${l10n.aboutRightsReserved ?? "Tous droits réservés"}',
                 style: TextStyle(color: Colors.grey[500], fontSize: 12),
               ),
             ),
@@ -153,6 +169,7 @@ class PrivacyPolicyPage extends StatelessWidget {
     BuildContext context,
     String title,
     String content,
+    AppLocalizations l10n,
   ) {
     return Container(
       width: double.infinity,
@@ -187,16 +204,23 @@ class PrivacyPolicyPage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               final Uri url = Uri.parse('https://epilist.app/contact');
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              } else {
-                // Fallback if URL cannot be opened
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Unable to open link. Visit https://epilist.app/contact',
-                    ),
-                  ),
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                } else {
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    l10n.aboutContactError ??
+                        'Impossible d\'ouvrir le lien. Visitez https://epilist.app/contact',
+                    type: SnackBarType.error,
+                  );
+                }
+              } catch (e) {
+                SmartSnackBarManager.showMessage(
+                  context,
+                  l10n.aboutContactError ??
+                      'Erreur lors de l\'ouverture du lien de contact',
+                  type: SnackBarType.error,
                 );
               }
             },
@@ -207,7 +231,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text('Contact us'),
+            child: Text(l10n.aboutContact ?? 'Nous contacter'),
           ),
         ],
       ),

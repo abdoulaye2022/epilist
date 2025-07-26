@@ -1,4 +1,4 @@
-// widgets/suggestion/suggestion_card.dart
+// widgets/suggestion/suggestion_card.dart - VERSION CORRIGÉE
 import 'package:flutter/material.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -65,6 +65,8 @@ class SuggestionCard extends StatelessWidget {
         fontSize: 16,
         color: Colors.black87,
       ),
+      overflow: TextOverflow.ellipsis, // Correction pour éviter l'overflow
+      maxLines: 1,
     );
   }
 
@@ -81,23 +83,23 @@ class SuggestionCard extends StatelessWidget {
   }
 
   Widget _buildBadges() {
-    return Row(
+    // Utilisation de Wrap au lieu de Row pour éviter l'overflow
+    return Wrap(
+      spacing: 8, // Espacement horizontal entre les badges
+      runSpacing: 4, // Espacement vertical si ça passe à la ligne
       children: [
-        if (suggestion.hasPrice) ...[
+        if (suggestion.hasPrice)
           _buildBadge(
             text: suggestion.formattedPrice,
             color: Colors.green,
             icon: Icons.attach_money,
           ),
-          const SizedBox(width: 8),
-        ],
-        if (suggestion.hasStore) ...[
+        if (suggestion.hasStore)
           _buildBadge(
             text: suggestion.storeName!,
             color: Colors.purple,
             icon: Icons.store,
           ),
-        ],
       ],
     );
   }
@@ -119,12 +121,18 @@ class SuggestionCard extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: color[700]),
           const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              color: color[700],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          // Limitation de la largeur du texte du badge
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 80), // Largeur max
+            child: Text(
+              text,
+              style: TextStyle(
+                color: color[700],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
@@ -135,33 +143,50 @@ class SuggestionCard extends StatelessWidget {
   Widget _buildUsageInfo(BuildContext context, AppLocalizations l10n) {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.orange[50],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.trending_up, size: 12, color: Colors.orange[600]),
-              const SizedBox(width: 4),
-              Text(
-                suggestion.getUsageInfo(context),
-                style: TextStyle(
-                  color: Colors.orange[700],
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+        // Conteneur d'usage flexible
+        Flexible(
+          flex: 2,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.orange[50],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.trending_up, size: 12, color: Colors.orange[600]),
+                const SizedBox(width: 4),
+                Flexible(
+                  // Permet au texte de s'adapter
+                  child: Text(
+                    suggestion.getUsageInfo(context),
+                    style: TextStyle(
+                      color: Colors.orange[700],
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        const Spacer(),
+
+        const SizedBox(width: 8), // Espacement fixe
+        // Date de dernière utilisation flexible
         if (suggestion.lastUsedAt != null)
-          Text(
-            '${l10n.lastUsed}: ${suggestion.getLastUsedFormatted(context)}',
-            style: TextStyle(color: Colors.grey[500], fontSize: 11),
+          Flexible(
+            flex: 1,
+            child: Text(
+              '${l10n.lastUsed}: ${suggestion.getLastUsedFormatted(context)}',
+              style: TextStyle(color: Colors.grey[500], fontSize: 11),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              textAlign: TextAlign.end,
+            ),
           ),
       ],
     );
@@ -180,12 +205,18 @@ class SuggestionCard extends StatelessWidget {
             PopupMenuItem(
               value: 'delete',
               child: Row(
+                mainAxisSize: MainAxisSize.min, // Évite l'expansion complète
                 children: [
                   Icon(Icons.delete_outline, color: Colors.red[600], size: 20),
                   const SizedBox(width: 12),
-                  Text(
-                    l10n.deleteSuggestion,
-                    style: TextStyle(color: Colors.red[600]),
+                  Flexible(
+                    // Permet au texte de s'adapter
+                    child: Text(
+                      l10n.deleteSuggestion,
+                      style: TextStyle(color: Colors.red[600]),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 ],
               ),

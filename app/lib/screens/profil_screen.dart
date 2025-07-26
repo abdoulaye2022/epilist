@@ -7,7 +7,7 @@ import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/terms_of_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/widgets/dialogs/edit_profile_dialog.dart';
+import 'package:epilist/widgets/profile/edit_profile_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:epilist/widgets/dialogs/security_settings_dialog.dart';
 import 'package:epilist/widgets/profile/account_deletion_status_widget.dart';
@@ -20,7 +20,7 @@ import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
 import 'package:epilist/widgets/profile/language_setting_tile.dart';
 // ✅ NOUVEAU: Import du widget de gestion des suggestions
-import 'package:epilist/widgets/suggestion_management_widget.dart';
+import 'package:epilist/screens/suggestion_management_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';

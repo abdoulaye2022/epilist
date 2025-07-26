@@ -1,4 +1,4 @@
-// widgets/suggestion_management_widget.dart - VERSION REFACTORISÉE
+// widgets/suggestion_management_widget.dart - CORRECTION POUR L'ÉTAT VIDE
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/widgets/suggestion/suggestion_app_bar.dart';
@@ -53,19 +53,33 @@ class _SuggestionManagementWidgetState
             );
           }
 
+          // ✅ CORRECTION: Gestion correcte de l'état vide
+          if (state is ProductSuggestionEmpty) {
+            return SuggestionEmptyState(
+              query: state.query.isNotEmpty ? state.query : null,
+            );
+          }
+
           if (state is ProductSuggestionPopularLoaded) {
             if (state.suggestions.isEmpty) {
               return const SuggestionEmptyState();
             }
-
             return _buildSuggestionsList(state.suggestions, l10n);
           }
 
-          return Center(
-            child: Text(
-              l10n.anErrorOccurred,
-              style: TextStyle(color: Colors.grey[600], fontSize: 16),
-            ),
+          // ✅ CORRECTION: Gestion de l'état initial et autres états
+          if (state is ProductSuggestionInitial) {
+            return const SuggestionEmptyState();
+          }
+
+          // État par défaut - ne devrait jamais arriver
+          return SuggestionErrorState(
+            message: l10n.anErrorOccurred,
+            onRetry: () {
+              context.read<ProductSuggestionBloc>().add(
+                const LoadPopularSuggestions(),
+              );
+            },
           );
         },
       ),
@@ -105,10 +119,17 @@ class _SuggestionManagementWidgetState
               borderRadius: BorderRadius.circular(16),
             ),
             title: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.delete_outline, color: Colors.red[600]),
                 const SizedBox(width: 8),
-                Text(l10n.deleteSuggestion),
+                Expanded(
+                  child: Text(
+                    l10n.deleteSuggestion,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               ],
             ),
             content: Text(l10n.deleteSuggestionConfirm),
@@ -127,10 +148,17 @@ class _SuggestionManagementWidgetState
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.check_circle, color: Colors.white),
                           const SizedBox(width: 8),
-                          Text(l10n.suggestionDeleted),
+                          Expanded(
+                            child: Text(
+                              l10n.suggestionDeleted,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
                         ],
                       ),
                       backgroundColor: Colors.green[600],
@@ -164,10 +192,17 @@ class _SuggestionManagementWidgetState
               borderRadius: BorderRadius.circular(16),
             ),
             title: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.delete_sweep, color: Colors.orange[600]),
                 const SizedBox(width: 8),
-                Text(l10n.clearAllSuggestions),
+                Expanded(
+                  child: Text(
+                    l10n.clearAllSuggestions,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               ],
             ),
             content: Column(
@@ -184,6 +219,7 @@ class _SuggestionManagementWidgetState
                     border: Border.all(color: Colors.orange[200]!),
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
                         Icons.warning_amber,
@@ -193,7 +229,9 @@ class _SuggestionManagementWidgetState
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          "Cette action est irréversible",
+                          l10n.localeName == 'fr'
+                              ? "Cette action est irréversible"
+                              : "This action is irreversible",
                           style: TextStyle(
                             color: Colors.orange[700],
                             fontSize: 12,
@@ -221,10 +259,17 @@ class _SuggestionManagementWidgetState
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.check_circle, color: Colors.white),
                           const SizedBox(width: 8),
-                          Text(l10n.suggestionsCleared),
+                          Expanded(
+                            child: Text(
+                              l10n.suggestionsCleared,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
                         ],
                       ),
                       backgroundColor: Colors.green[600],

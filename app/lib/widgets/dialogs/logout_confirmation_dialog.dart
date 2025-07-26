@@ -85,7 +85,9 @@ class LogoutConfirmationDialog extends StatelessWidget {
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               final isLoading = state is AuthLoading;
-              return ElevatedButton(
+
+              // ✅ CORRECTION: Remplacement par ElevatedButton.icon
+              return ElevatedButton.icon(
                 onPressed:
                     isLoading
                         ? null
@@ -97,28 +99,36 @@ class LogoutConfirmationDialog extends StatelessWidget {
                   backgroundColor: Colors.red[600],
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.red[300],
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child:
+                icon:
                     isLoading
                         ? const SizedBox(
-                          width: 20,
-                          height: 20,
+                          width: 16,
+                          height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: Colors.white,
                           ),
                         )
-                        : Text(
-                          l10n.logoutButton,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        : const Icon(Icons.logout, size: 18),
+                label: Flexible(
+                  child: Text(
+                    l10n.logout,
+                    style: const TextStyle(
+                      fontSize: 13, // ✅ Plus petit avec icône
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               );
             },
           ),

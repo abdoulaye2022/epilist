@@ -1,4 +1,4 @@
-// widgets/shopping/shopping_list_card.dart - VERSION UNIFIÉE AVEC TRADUCTIONS
+// widgets/shopping/shopping_list_card.dart - VERSION CORRIGÉE AVEC RAPPELS
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -207,14 +207,18 @@ class ShoppingListCard extends StatelessWidget {
             color: list.isOwner ? Colors.blue[600] : Colors.green[600],
           ),
           const SizedBox(width: 4),
-          Text(
-            list.isOwner
-                ? '${l10n.sharedList} • ${list.sharedWithCount} ${l10n.collaborators}'
-                : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
-            style: TextStyle(
-              fontSize: 12,
-              color: list.isOwner ? Colors.blue[600] : Colors.green[600],
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: Text(
+              list.isOwner
+                  ? '${l10n.sharedList} • ${list.sharedWithCount} ${l10n.collaborators}'
+                  : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
+              style: TextStyle(
+                fontSize: 12,
+                color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
@@ -361,12 +365,16 @@ class ShoppingListCard extends StatelessWidget {
         children: [
           Icon(icon, size: 10, color: color),
           const SizedBox(width: 2),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 9,
-              color: color,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 9,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
@@ -386,6 +394,7 @@ class ShoppingListCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     List<PopupMenuEntry<String>> items = [];
 
+    // ===== SECTION ÉDITION =====
     // Modifier (si permission d'édition)
     if (list.canEdit) {
       items.add(
@@ -393,9 +402,15 @@ class ShoppingListCard extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 20),
-              SizedBox(width: 8),
-              Text(l10n.edit),
+              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.edit,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
         ),
@@ -408,13 +423,131 @@ class ShoppingListCard extends StatelessWidget {
         value: 'duplicate',
         child: Row(
           children: [
-            Icon(Icons.copy, size: 20),
-            SizedBox(width: 8),
-            Text(l10n.duplicate),
+            Icon(Icons.copy, size: 20, color: Colors.green[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.duplicate,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
           ],
         ),
       ),
     );
+
+    // ===== SECTION RAPPELS =====
+    items.add(const PopupMenuDivider());
+
+    // Programmer un rappel
+    items.add(
+      PopupMenuItem(
+        value: 'schedule_reminder',
+        child: Row(
+          children: [
+            Icon(Icons.schedule, size: 20, color: Colors.orange[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.scheduleReminder,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Rappel rapide dans 2h
+    items.add(
+      PopupMenuItem(
+        value: 'quick_reminder_2h',
+        child: Row(
+          children: [
+            Icon(Icons.access_time, size: 20, color: Colors.amber[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.remindIn2Hours,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Rappel pour demain
+    items.add(
+      PopupMenuItem(
+        value: 'quick_reminder_tomorrow',
+        child: Row(
+          children: [
+            Icon(Icons.today, size: 20, color: Colors.indigo[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.remindTomorrow,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Voir les rappels
+    items.add(
+      PopupMenuItem(
+        value: 'view_reminders',
+        child: Row(
+          children: [
+            Icon(
+              Icons.notifications_active,
+              size: 20,
+              color: Colors.purple[600],
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.viewReminders,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Annuler les rappels
+    items.add(
+      PopupMenuItem(
+        value: 'cancel_reminders',
+        child: Row(
+          children: [
+            Icon(Icons.notifications_off, size: 20, color: Colors.grey[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.cancelReminders,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // ===== SECTION PARTAGE =====
+    if (list.canShare || (list.isOwner && list.isShared)) {
+      items.add(const PopupMenuDivider());
+    }
 
     // Partager (si propriétaire ou admin)
     if (list.canShare) {
@@ -424,8 +557,15 @@ class ShoppingListCard extends StatelessWidget {
           child: Row(
             children: [
               Icon(Icons.share, size: 20, color: Colors.blue[600]),
-              const SizedBox(width: 8),
-              Text(l10n.share, style: TextStyle(color: Colors.blue[600])),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.share,
+                  style: TextStyle(color: Colors.blue[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
         ),
@@ -440,10 +580,14 @@ class ShoppingListCard extends StatelessWidget {
           child: Row(
             children: [
               Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
-              const SizedBox(width: 8),
-              Text(
-                l10n.manageShares,
-                style: TextStyle(color: Colors.purple[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.manageShares,
+                  style: TextStyle(color: Colors.purple[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ),
             ],
           ),
@@ -451,7 +595,7 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
-    // Séparateur si actions de suppression/quitter
+    // ===== SECTION ACTIONS DESTRUCTIVES =====
     if (list.canDelete || !list.isOwner) {
       items.add(const PopupMenuDivider());
     }
@@ -463,9 +607,16 @@ class ShoppingListCard extends StatelessWidget {
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange),
-              SizedBox(width: 8),
-              Text(l10n.leave, style: TextStyle(color: Colors.orange)),
+              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.leave,
+                  style: TextStyle(color: Colors.orange[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
         ),
@@ -479,9 +630,16 @@ class ShoppingListCard extends StatelessWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 20, color: Colors.red),
-              SizedBox(width: 8),
-              Text(l10n.delete, style: TextStyle(color: Colors.red)),
+              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.delete,
+                  style: TextStyle(color: Colors.red[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
         ),

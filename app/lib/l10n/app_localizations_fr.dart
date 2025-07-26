@@ -1637,4 +1637,369 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get duplicateDetectedMessage =>
       'Nous avons trouvé des articles similaires dans votre liste.';
+
+  @override
+  String get noSearchResults => 'Aucun résultat trouvé';
+
+  @override
+  String get tryDifferentKeywords => 'Essayez avec d\'autres mots-clés';
+
+  @override
+  String get suggestionsWillAppearAfterShopping =>
+      'Les suggestions apparaîtront après vos achats';
+
+  @override
+  String get startShopping => 'Commencer mes achats';
+
+  @override
+  String get searchTips =>
+      'Essayez des termes plus généraux ou vérifiez l\'orthographe';
+
+  @override
+  String get suggestionsBasedOnUsage =>
+      'Les suggestions se basent sur vos habitudes d\'achat';
+
+  @override
+  String get scheduleReminder => 'Programmer un rappel';
+
+  @override
+  String get remindIn2Hours => 'Rappel dans 2h';
+
+  @override
+  String get remindTomorrow => 'Rappel demain';
+
+  @override
+  String get viewReminders => 'Voir les rappels';
+
+  @override
+  String get cancelReminders => 'Annuler les rappels';
+
+  @override
+  String get scheduledReminders => 'Rappels programmés';
+
+  @override
+  String get noRemindersScheduled => 'Aucun rappel programmé';
+
+  @override
+  String get reminderScheduled => 'Rappel programmé avec succès';
+
+  @override
+  String get reminderScheduledFor => 'Rappel programmé pour';
+
+  @override
+  String get reminderCancelled => 'Rappel annulé';
+
+  @override
+  String get allRemindersCancelled => 'Tous les rappels annulés';
+
+  @override
+  String get errorSchedulingReminder =>
+      'Erreur lors de la programmation du rappel';
+
+  @override
+  String get errorLoadingReminders => 'Erreur lors du chargement des rappels';
+
+  @override
+  String get errorCancellingReminder =>
+      'Erreur lors de l\'annulation du rappel';
+
+  @override
+  String get errorCancellingReminders =>
+      'Erreur lors de l\'annulation des rappels';
+
+  @override
+  String get cancelAllReminders => 'Annuler tous les rappels';
+
+  @override
+  String get cancelAllRemindersConfirm =>
+      'Voulez-vous vraiment annuler tous les rappels pour cette liste ?';
+
+  @override
+  String get cancelAll => 'Tout annuler';
+
+  @override
+  String get addReminder => 'Ajouter un rappel';
+
+  @override
+  String get quickOptions => 'Options rapides';
+
+  @override
+  String get customDateTime => 'Date et heure personnalisées';
+
+  @override
+  String get storeName => 'Nom du magasin';
+
+  @override
+  String get storeNameHint => 'Ex: Provigo, IGA, Metro...';
+
+  @override
+  String get customMessage => 'Message personnalisé';
+
+  @override
+  String get customMessageHint => 'Message personnalisé pour le rappel';
+
+  @override
+  String get selectDateTime => 'Sélectionner date et heure';
+
+  @override
+  String get in2Hours => 'Dans 2h';
+
+  @override
+  String get tomorrow => 'Demain';
+
+  @override
+  String get thisWeekend => 'Ce weekend';
+
+  @override
+  String get allOfAbove => 'Tous les ci-dessus';
+
+  @override
+  String inHours(int hours) {
+    return 'Dans $hours heures';
+  }
+
+  @override
+  String showingXOfY(int x, int y) {
+    return 'Affichage de $x sur $y listes';
+  }
+
+  @override
+  String get optionalFields => 'Champs optionnels';
+
+  @override
+  String get aboutMission => 'Notre Mission';
+
+  @override
+  String get aboutMissionText =>
+      'EpiList révolutionne la façon dont vous gérez vos courses. Créez des listes intelligentes, suivez vos dépenses en temps réel, partagez avec votre famille et ne manquez plus jamais un article important grâce à notre système de gestion collaborative.';
+
+  @override
+  String get aboutFeatures => 'Fonctionnalités principales';
+
+  @override
+  String get aboutFeaturesText =>
+      '• Création de compte sécurisée (prénom, nom, email)\n• Listes d\'épicerie personnalisées et intelligentes\n• Ajout d\'articles avec quantité, prix et magasin\n• Calcul automatique des totaux et pourcentages\n• Marquage en temps réel des articles achetés\n• Duplication rapide des listes existantes\n• Partage sécurisé via liens avec permissions\n• Gestion des droits (lecture, édition, administration)\n• Synchronisation sur tous vos appareils\n• Interface moderne et intuitive';
+
+  @override
+  String get aboutCollaboration => 'Collaboration familiale';
+
+  @override
+  String get aboutCollaborationText =>
+      'EpiList facilite les courses en famille avec son système de partage avancé. Partagez vos listes d\'un simple lien, définissez qui peut voir, modifier ou administrer chaque liste. Tout le monde reste synchronisé en temps réel!';
+
+  @override
+  String get aboutDevelopment => 'Développement';
+
+  @override
+  String get aboutDevelopmentText =>
+      'EpiList est développé avec passion par M2atech Solutions Inc. pour vous offrir la meilleure expérience de gestion d\'épicerie. Nous sommes constamment à l\'écoute de vos retours pour améliorer l\'app et ajouter de nouvelles fonctionnalités innovantes.';
+
+  @override
+  String get aboutContact => 'Nous contacter';
+
+  @override
+  String get aboutRateApp => 'Évaluer l\'app';
+
+  @override
+  String get aboutShareApp => 'Partager EpiList';
+
+  @override
+  String get aboutWebsite => 'Site web';
+
+  @override
+  String get aboutRightsReserved => 'Tous droits réservés.';
+
+  @override
+  String get aboutDevelopedWith => 'Développé avec';
+
+  @override
+  String get aboutByCompany => 'par M2atech Solutions Inc.';
+
+  @override
+  String get aboutContactError => 'Impossible d\'ouvrir le lien de contact';
+
+  @override
+  String get aboutWebsiteError => 'Impossible d\'ouvrir le site web';
+
+  @override
+  String get aboutStoreUnavailable =>
+      'Magasin indisponible. Évaluez EpiList sur votre magasin habituel!';
+
+  @override
+  String get aboutStoreError =>
+      'Impossible d\'ouvrir le magasin pour le moment';
+
+  @override
+  String get aboutShareDescription =>
+      'Organisez vos courses en famille avec EpiList! Listes partagées, calculs automatiques, synchronisation temps réel.';
+
+  @override
+  String get aboutDiscoverApp => 'Découvrez l\'app';
+
+  @override
+  String get aboutShareSubject =>
+      'Découvrez EpiList - Votre assistant épicerie familial!';
+
+  @override
+  String get aboutShareError => 'Impossible de partager pour le moment';
+
+  @override
+  String get termsLastUpdated => 'Dernière mise à jour : 5 juillet 2025';
+
+  @override
+  String get termsAcceptanceTitle => '1. Acceptation des conditions';
+
+  @override
+  String get termsAcceptanceText =>
+      'En utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions dans leur intégralité, veuillez ne pas utiliser l\'application.';
+
+  @override
+  String get termsServiceTitle => '2. Description du service';
+
+  @override
+  String get termsServiceText =>
+      'EpiList est une application mobile de gestion de listes d\'épicerie qui permet :\n\n• Créer un compte avec prénom, nom, email et mot de passe\n• Créer, modifier et supprimer des listes d\'épicerie\n• Ajouter des articles avec nom, quantité, prix et magasin (optionnel)\n• Marquer les articles comme achetés ou les supprimer\n• Calculer automatiquement les totaux et pourcentages d\'achats\n• Dupliquer les listes existantes\n• Partager les listes avec des liens sécurisés\n• Gérer les permissions d\'accès (lecture, édition, administration)\n\nLe service est fourni \"en l\'état\" et \"selon disponibilité\".';
+
+  @override
+  String get termsAccountTitle => '3. Compte utilisateur et sécurité';
+
+  @override
+  String get termsAccountText =>
+      'Pour utiliser EpiList, vous devez :\n\n• Créer un compte avec des informations exactes (prénom, nom, email)\n• Choisir un mot de passe sécurisé et le garder confidentiel\n• Être responsable de toutes les activités effectuées sous votre compte\n• Nous notifier immédiatement de toute utilisation non autorisée\n• Mettre à jour vos informations personnelles si nécessaire\n\nVous êtes seul responsable de la sécurité de vos identifiants de connexion.';
+
+  @override
+  String get termsUsageTitle => '4. Utilisation des listes et partage';
+
+  @override
+  String get termsUsageText =>
+      'Concernant l\'utilisation des fonctionnalités de l\'application :\n\n• Vous pouvez créer des listes d\'épicerie illimitées\n• Les liens de partage sont de votre responsabilité\n• Vous contrôlez les permissions d\'accès que vous accordez\n• Les personnes invitées doivent respecter les permissions définies\n• Vous pouvez révoquer l\'accès à tout moment\n• Le contenu partagé doit rester approprié et légal\n\nVous êtes responsable de la gestion de vos listes partagées.';
+
+  @override
+  String get termsAcceptableTitle => '5. Utilisation acceptable';
+
+  @override
+  String get termsAcceptableText =>
+      'Vous acceptez de :\n\n• Utiliser l\'application uniquement pour la gestion de listes d\'épicerie\n• Ne pas tenter de perturber le fonctionnement du service\n• Ne pas accéder illégalement aux données d\'autres utilisateurs\n• Respecter les droits de propriété intellectuelle\n• Ne pas utiliser l\'application à des fins commerciales sans autorisation\n• Ne pas partager de contenu offensant ou illégal\n\nToute utilisation abusive peut entraîner une suspension immédiate du compte.';
+
+  @override
+  String get termsOwnershipTitle => '6. Propriété du contenu';
+
+  @override
+  String get termsOwnershipText =>
+      'Concernant le contenu que vous créez dans EpiList :\n\n• Vous conservez la propriété de vos listes et données personnelles\n• Vous nous accordez une licence limitée pour fournir le service\n• Vous êtes responsable de l\'exactitude de vos informations\n• Nous ne revendiquons aucun droit sur vos données personnelles\n• Vous pouvez exporter vos données à tout moment\n\nVos données vous appartiennent et restent sous votre contrôle.';
+
+  @override
+  String get termsCalculationsTitle => '7. Calculs et prix';
+
+  @override
+  String get termsCalculationsText =>
+      'Concernant les fonctionnalités de calcul :\n\n• Les totaux et pourcentages sont calculés automatiquement\n• Nous ne garantissons pas l\'exactitude absolue des calculs\n• Les prix saisis sont de votre responsabilité\n• Vérifiez toujours les calculs pour vos achats importants\n• Nous ne sommes pas responsables des erreurs de prix\n\nUtilisez les calculs comme aide, pas comme référence absolue.';
+
+  @override
+  String get termsAvailabilityTitle => '8. Disponibilité du service';
+
+  @override
+  String get termsAvailabilityText =>
+      'Nous nous efforçons d\'assurer une disponibilité continue du service, mais nous ne garantissons pas :\n\n• Un accès ininterrompu 24h/24\n• L\'absence complète de bugs ou d\'erreurs\n• La compatibilité avec tous les appareils\n• La sauvegarde permanente de toutes les données\n\nDes maintenances programmées peuvent causer des interruptions temporaires.';
+
+  @override
+  String get termsLiabilityTitle => '9. Limitation de responsabilité';
+
+  @override
+  String get termsLiabilityText =>
+      'EpiList et ses développeurs ne peuvent être tenus responsables de :\n\n• Dommages indirects ou consécutifs\n• Perte de données due à des problèmes techniques\n• Erreurs dans les calculs de prix ou totaux\n• Utilisation incorrecte des informations fournies\n• Problèmes liés au partage de listes\n• Achats effectués basés sur les listes créées\n\nVotre utilisation de l\'application se fait à vos propres risques.';
+
+  @override
+  String get termsTerminationTitle => '10. Suspension et résiliation';
+
+  @override
+  String get termsTerminationText =>
+      'Nous nous réservons le droit de suspendre ou résilier votre accès :\n\n• En cas de violation de ces conditions d\'utilisation\n• Pour des raisons de sécurité ou de maintenance\n• Si le compte est inactif depuis plus de 24 mois\n• En cas d\'utilisation abusive des fonctionnalités de partage\n\nVous pouvez supprimer votre compte à tout moment depuis les paramètres de l\'application.';
+
+  @override
+  String get termsModificationsTitle => '11. Modifications';
+
+  @override
+  String get termsModificationsText =>
+      'Nous nous réservons le droit de :\n\n• Modifier ou améliorer les fonctionnalités de l\'application\n• Mettre à jour ces conditions d\'utilisation\n• Suspendre temporairement le service pour maintenance\n• Discontinuer définitivement le service avec préavis de 60 jours\n\nLes changements importants vous seront notifiés par email ou dans l\'application.';
+
+  @override
+  String get termsJurisdictionTitle => '12. Loi applicable et juridiction';
+
+  @override
+  String get termsJurisdictionText =>
+      'Ces conditions d\'utilisation sont régies par la loi canadienne. Tout litige relatif à l\'utilisation d\'EpiList sera soumis à la juridiction des tribunaux compétents du Nouveau-Brunswick, Canada.';
+
+  @override
+  String get termsContactTitle => '13. Contact et support';
+
+  @override
+  String get termsContactText =>
+      'Pour toute question concernant ces conditions d\'utilisation ou pour de l\'assistance, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre le plus rapidement possible.';
+
+  @override
+  String get privacyLastUpdated => 'Dernière mise à jour : 5 juillet 2025';
+
+  @override
+  String get privacyCollectionTitle => '1. Collecte d\'informations';
+
+  @override
+  String get privacyCollectionText =>
+      'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.';
+
+  @override
+  String get privacyUsageTitle => '2. Utilisation des données';
+
+  @override
+  String get privacyUsageText =>
+      'Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d\'épicerie\n• Calculer les totaux et pourcentages d\'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d\'accès (lecture, édition, administration)\n• Synchroniser vos données sur tous vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.';
+
+  @override
+  String get privacyStorageTitle => '3. Stockage et sécurité';
+
+  @override
+  String get privacyStorageText =>
+      'Vos données sont protégées par :\n\n• Stockage sécurisé sur nos serveurs avec chiffrement\n• Chiffrement des mots de passe avec des algorithmes sécurisés\n• Protection des données en transit et au repos\n• Liens de partage sécurisés avec contrôle d\'accès\n• Sauvegarde régulière de vos listes et données\n• Mesures de sécurité conformes aux standards de l\'industrie\n\nNous appliquons les meilleures pratiques de sécurité pour protéger vos informations.';
+
+  @override
+  String get privacySharingTitle => '4. Partage des données';
+
+  @override
+  String get privacySharingText =>
+      'Vos données personnelles ne sont partagées que dans les cas suivants :\n\n• Avec les personnes que vous autorisez via les liens de partage de listes\n• Avec nos prestataires de services techniques (hébergement, support)\n• Avec les autorités légales si requis par la loi\n\nLe partage de listes se fait selon les permissions que vous définissez :\n• Lecture seule : consultation des listes sans modification\n• Édition : ajout, suppression et modification d\'articles\n• Administration : gestion complète incluant suppression de listes\n\nAucun partage commercial de vos données n\'est effectué.';
+
+  @override
+  String get privacyRightsTitle => '5. Vos droits';
+
+  @override
+  String get privacyRightsText =>
+      'Vous avez le droit de :\n\n• Accéder à toutes vos données personnelles\n• Modifier vos informations de compte (prénom, nom, email)\n• Supprimer votre compte et toutes les données associées\n• Exporter vos listes d\'épicerie\n• Révoquer les liens de partage à tout moment\n• Modifier les permissions d\'accès pour les utilisateurs invités\n• Supprimer vos listes ou articles individuellement\n\nContactez-nous pour exercer ces droits.';
+
+  @override
+  String get privacyFeaturesTitle => '6. Fonctionnalités de l\'application';
+
+  @override
+  String get privacyFeaturesText =>
+      'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n• Création et gestion de comptes utilisateurs\n• Création, duplication, modification et suppression de listes\n• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n• Marquage d\'articles comme achetés ou suppression d\'articles\n• Calcul automatique des totaux et pourcentages d\'achats\n• Génération de liens de partage sécurisés\n• Gestion des permissions d\'accès collaboratif\n\nToutes ces données restent sous votre contrôle.';
+
+  @override
+  String get privacyCookiesTitle => '7. Cookies et technologies similaires';
+
+  @override
+  String get privacyCookiesText =>
+      'EpiList utilise des technologies de suivi pour :\n\n• Maintenir votre session active\n• Mémoriser vos préférences d\'utilisation\n• Analyser l\'usage de l\'application (données anonymes)\n• Optimiser les performances de l\'application\n\nVous pouvez désactiver ces fonctions dans les paramètres de l\'application.';
+
+  @override
+  String get privacyChangesTitle => '8. Modifications';
+
+  @override
+  String get privacyChangesText =>
+      'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Email à l\'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l\'application après les changements constitue votre acceptation.';
+
+  @override
+  String get privacyContactTitle => '9. Contact';
+
+  @override
+  String get privacyContactText =>
+      'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables.';
 }

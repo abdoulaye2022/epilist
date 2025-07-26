@@ -2,7 +2,7 @@
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/widgets/dialogs/delete_account_dialog.dart';
+import 'package:epilist/widgets/profile/delete_account_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

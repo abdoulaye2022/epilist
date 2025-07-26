@@ -3054,6 +3054,654 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Nous avons trouvé des articles similaires dans votre liste.'**
   String get duplicateDetectedMessage;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat trouvé'**
+  String get noSearchResults;
+
+  /// No description provided for @tryDifferentKeywords.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez avec d\'autres mots-clés'**
+  String get tryDifferentKeywords;
+
+  /// No description provided for @suggestionsWillAppearAfterShopping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les suggestions apparaîtront après vos achats'**
+  String get suggestionsWillAppearAfterShopping;
+
+  /// No description provided for @startShopping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer mes achats'**
+  String get startShopping;
+
+  /// No description provided for @searchTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez des termes plus généraux ou vérifiez l\'orthographe'**
+  String get searchTips;
+
+  /// No description provided for @suggestionsBasedOnUsage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les suggestions se basent sur vos habitudes d\'achat'**
+  String get suggestionsBasedOnUsage;
+
+  /// No description provided for @scheduleReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Programmer un rappel'**
+  String get scheduleReminder;
+
+  /// No description provided for @remindIn2Hours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel dans 2h'**
+  String get remindIn2Hours;
+
+  /// No description provided for @remindTomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel demain'**
+  String get remindTomorrow;
+
+  /// No description provided for @viewReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les rappels'**
+  String get viewReminders;
+
+  /// No description provided for @cancelReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler les rappels'**
+  String get cancelReminders;
+
+  /// No description provided for @scheduledReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappels programmés'**
+  String get scheduledReminders;
+
+  /// No description provided for @noRemindersScheduled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun rappel programmé'**
+  String get noRemindersScheduled;
+
+  /// No description provided for @reminderScheduled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel programmé avec succès'**
+  String get reminderScheduled;
+
+  /// No description provided for @reminderScheduledFor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel programmé pour'**
+  String get reminderScheduledFor;
+
+  /// No description provided for @reminderCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel annulé'**
+  String get reminderCancelled;
+
+  /// No description provided for @allRemindersCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les rappels annulés'**
+  String get allRemindersCancelled;
+
+  /// No description provided for @errorSchedulingReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la programmation du rappel'**
+  String get errorSchedulingReminder;
+
+  /// No description provided for @errorLoadingReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des rappels'**
+  String get errorLoadingReminders;
+
+  /// No description provided for @errorCancellingReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'annulation du rappel'**
+  String get errorCancellingReminder;
+
+  /// No description provided for @errorCancellingReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'annulation des rappels'**
+  String get errorCancellingReminders;
+
+  /// No description provided for @cancelAllReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler tous les rappels'**
+  String get cancelAllReminders;
+
+  /// No description provided for @cancelAllRemindersConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous vraiment annuler tous les rappels pour cette liste ?'**
+  String get cancelAllRemindersConfirm;
+
+  /// No description provided for @cancelAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout annuler'**
+  String get cancelAll;
+
+  /// No description provided for @addReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un rappel'**
+  String get addReminder;
+
+  /// No description provided for @quickOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Options rapides'**
+  String get quickOptions;
+
+  /// No description provided for @customDateTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date et heure personnalisées'**
+  String get customDateTime;
+
+  /// No description provided for @storeName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du magasin'**
+  String get storeName;
+
+  /// No description provided for @storeNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex: Provigo, IGA, Metro...'**
+  String get storeNameHint;
+
+  /// No description provided for @customMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message personnalisé'**
+  String get customMessage;
+
+  /// No description provided for @customMessageHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message personnalisé pour le rappel'**
+  String get customMessageHint;
+
+  /// No description provided for @selectDateTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner date et heure'**
+  String get selectDateTime;
+
+  /// No description provided for @in2Hours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans 2h'**
+  String get in2Hours;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get tomorrow;
+
+  /// No description provided for @thisWeekend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce weekend'**
+  String get thisWeekend;
+
+  /// No description provided for @allOfAbove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les ci-dessus'**
+  String get allOfAbove;
+
+  /// No description provided for @inHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans {hours} heures'**
+  String inHours(int hours);
+
+  /// No description provided for @showingXOfY.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affichage de {x} sur {y} listes'**
+  String showingXOfY(int x, int y);
+
+  /// No description provided for @optionalFields.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champs optionnels'**
+  String get optionalFields;
+
+  /// No description provided for @aboutMission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notre Mission'**
+  String get aboutMission;
+
+  /// No description provided for @aboutMissionText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList révolutionne la façon dont vous gérez vos courses. Créez des listes intelligentes, suivez vos dépenses en temps réel, partagez avec votre famille et ne manquez plus jamais un article important grâce à notre système de gestion collaborative.'**
+  String get aboutMissionText;
+
+  /// No description provided for @aboutFeatures.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fonctionnalités principales'**
+  String get aboutFeatures;
+
+  /// No description provided for @aboutFeaturesText.
+  ///
+  /// In fr, this message translates to:
+  /// **'• Création de compte sécurisée (prénom, nom, email)\n• Listes d\'épicerie personnalisées et intelligentes\n• Ajout d\'articles avec quantité, prix et magasin\n• Calcul automatique des totaux et pourcentages\n• Marquage en temps réel des articles achetés\n• Duplication rapide des listes existantes\n• Partage sécurisé via liens avec permissions\n• Gestion des droits (lecture, édition, administration)\n• Synchronisation sur tous vos appareils\n• Interface moderne et intuitive'**
+  String get aboutFeaturesText;
+
+  /// No description provided for @aboutCollaboration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Collaboration familiale'**
+  String get aboutCollaboration;
+
+  /// No description provided for @aboutCollaborationText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList facilite les courses en famille avec son système de partage avancé. Partagez vos listes d\'un simple lien, définissez qui peut voir, modifier ou administrer chaque liste. Tout le monde reste synchronisé en temps réel!'**
+  String get aboutCollaborationText;
+
+  /// No description provided for @aboutDevelopment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Développement'**
+  String get aboutDevelopment;
+
+  /// No description provided for @aboutDevelopmentText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList est développé avec passion par M2atech Solutions Inc. pour vous offrir la meilleure expérience de gestion d\'épicerie. Nous sommes constamment à l\'écoute de vos retours pour améliorer l\'app et ajouter de nouvelles fonctionnalités innovantes.'**
+  String get aboutDevelopmentText;
+
+  /// No description provided for @aboutContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous contacter'**
+  String get aboutContact;
+
+  /// No description provided for @aboutRateApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évaluer l\'app'**
+  String get aboutRateApp;
+
+  /// No description provided for @aboutShareApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager EpiList'**
+  String get aboutShareApp;
+
+  /// No description provided for @aboutWebsite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Site web'**
+  String get aboutWebsite;
+
+  /// No description provided for @aboutRightsReserved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous droits réservés.'**
+  String get aboutRightsReserved;
+
+  /// No description provided for @aboutDevelopedWith.
+  ///
+  /// In fr, this message translates to:
+  /// **'Développé avec'**
+  String get aboutDevelopedWith;
+
+  /// No description provided for @aboutByCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'par M2atech Solutions Inc.'**
+  String get aboutByCompany;
+
+  /// No description provided for @aboutContactError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir le lien de contact'**
+  String get aboutContactError;
+
+  /// No description provided for @aboutWebsiteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir le site web'**
+  String get aboutWebsiteError;
+
+  /// No description provided for @aboutStoreUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin indisponible. Évaluez EpiList sur votre magasin habituel!'**
+  String get aboutStoreUnavailable;
+
+  /// No description provided for @aboutStoreError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir le magasin pour le moment'**
+  String get aboutStoreError;
+
+  /// No description provided for @aboutShareDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Organisez vos courses en famille avec EpiList! Listes partagées, calculs automatiques, synchronisation temps réel.'**
+  String get aboutShareDescription;
+
+  /// No description provided for @aboutDiscoverApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Découvrez l\'app'**
+  String get aboutDiscoverApp;
+
+  /// No description provided for @aboutShareSubject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Découvrez EpiList - Votre assistant épicerie familial!'**
+  String get aboutShareSubject;
+
+  /// No description provided for @aboutShareError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de partager pour le moment'**
+  String get aboutShareError;
+
+  /// No description provided for @termsLastUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière mise à jour : 5 juillet 2025'**
+  String get termsLastUpdated;
+
+  /// No description provided for @termsAcceptanceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'1. Acceptation des conditions'**
+  String get termsAcceptanceTitle;
+
+  /// No description provided for @termsAcceptanceText.
+  ///
+  /// In fr, this message translates to:
+  /// **'En utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions dans leur intégralité, veuillez ne pas utiliser l\'application.'**
+  String get termsAcceptanceText;
+
+  /// No description provided for @termsServiceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'2. Description du service'**
+  String get termsServiceTitle;
+
+  /// No description provided for @termsServiceText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList est une application mobile de gestion de listes d\'épicerie qui permet :\n\n• Créer un compte avec prénom, nom, email et mot de passe\n• Créer, modifier et supprimer des listes d\'épicerie\n• Ajouter des articles avec nom, quantité, prix et magasin (optionnel)\n• Marquer les articles comme achetés ou les supprimer\n• Calculer automatiquement les totaux et pourcentages d\'achats\n• Dupliquer les listes existantes\n• Partager les listes avec des liens sécurisés\n• Gérer les permissions d\'accès (lecture, édition, administration)\n\nLe service est fourni \"en l\'état\" et \"selon disponibilité\".'**
+  String get termsServiceText;
+
+  /// No description provided for @termsAccountTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'3. Compte utilisateur et sécurité'**
+  String get termsAccountTitle;
+
+  /// No description provided for @termsAccountText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour utiliser EpiList, vous devez :\n\n• Créer un compte avec des informations exactes (prénom, nom, email)\n• Choisir un mot de passe sécurisé et le garder confidentiel\n• Être responsable de toutes les activités effectuées sous votre compte\n• Nous notifier immédiatement de toute utilisation non autorisée\n• Mettre à jour vos informations personnelles si nécessaire\n\nVous êtes seul responsable de la sécurité de vos identifiants de connexion.'**
+  String get termsAccountText;
+
+  /// No description provided for @termsUsageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'4. Utilisation des listes et partage'**
+  String get termsUsageTitle;
+
+  /// No description provided for @termsUsageText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Concernant l\'utilisation des fonctionnalités de l\'application :\n\n• Vous pouvez créer des listes d\'épicerie illimitées\n• Les liens de partage sont de votre responsabilité\n• Vous contrôlez les permissions d\'accès que vous accordez\n• Les personnes invitées doivent respecter les permissions définies\n• Vous pouvez révoquer l\'accès à tout moment\n• Le contenu partagé doit rester approprié et légal\n\nVous êtes responsable de la gestion de vos listes partagées.'**
+  String get termsUsageText;
+
+  /// No description provided for @termsAcceptableTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'5. Utilisation acceptable'**
+  String get termsAcceptableTitle;
+
+  /// No description provided for @termsAcceptableText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous acceptez de :\n\n• Utiliser l\'application uniquement pour la gestion de listes d\'épicerie\n• Ne pas tenter de perturber le fonctionnement du service\n• Ne pas accéder illégalement aux données d\'autres utilisateurs\n• Respecter les droits de propriété intellectuelle\n• Ne pas utiliser l\'application à des fins commerciales sans autorisation\n• Ne pas partager de contenu offensant ou illégal\n\nToute utilisation abusive peut entraîner une suspension immédiate du compte.'**
+  String get termsAcceptableText;
+
+  /// No description provided for @termsOwnershipTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'6. Propriété du contenu'**
+  String get termsOwnershipTitle;
+
+  /// No description provided for @termsOwnershipText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Concernant le contenu que vous créez dans EpiList :\n\n• Vous conservez la propriété de vos listes et données personnelles\n• Vous nous accordez une licence limitée pour fournir le service\n• Vous êtes responsable de l\'exactitude de vos informations\n• Nous ne revendiquons aucun droit sur vos données personnelles\n• Vous pouvez exporter vos données à tout moment\n\nVos données vous appartiennent et restent sous votre contrôle.'**
+  String get termsOwnershipText;
+
+  /// No description provided for @termsCalculationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'7. Calculs et prix'**
+  String get termsCalculationsTitle;
+
+  /// No description provided for @termsCalculationsText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Concernant les fonctionnalités de calcul :\n\n• Les totaux et pourcentages sont calculés automatiquement\n• Nous ne garantissons pas l\'exactitude absolue des calculs\n• Les prix saisis sont de votre responsabilité\n• Vérifiez toujours les calculs pour vos achats importants\n• Nous ne sommes pas responsables des erreurs de prix\n\nUtilisez les calculs comme aide, pas comme référence absolue.'**
+  String get termsCalculationsText;
+
+  /// No description provided for @termsAvailabilityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'8. Disponibilité du service'**
+  String get termsAvailabilityTitle;
+
+  /// No description provided for @termsAvailabilityText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous nous efforçons d\'assurer une disponibilité continue du service, mais nous ne garantissons pas :\n\n• Un accès ininterrompu 24h/24\n• L\'absence complète de bugs ou d\'erreurs\n• La compatibilité avec tous les appareils\n• La sauvegarde permanente de toutes les données\n\nDes maintenances programmées peuvent causer des interruptions temporaires.'**
+  String get termsAvailabilityText;
+
+  /// No description provided for @termsLiabilityTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'9. Limitation de responsabilité'**
+  String get termsLiabilityTitle;
+
+  /// No description provided for @termsLiabilityText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList et ses développeurs ne peuvent être tenus responsables de :\n\n• Dommages indirects ou consécutifs\n• Perte de données due à des problèmes techniques\n• Erreurs dans les calculs de prix ou totaux\n• Utilisation incorrecte des informations fournies\n• Problèmes liés au partage de listes\n• Achats effectués basés sur les listes créées\n\nVotre utilisation de l\'application se fait à vos propres risques.'**
+  String get termsLiabilityText;
+
+  /// No description provided for @termsTerminationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'10. Suspension et résiliation'**
+  String get termsTerminationTitle;
+
+  /// No description provided for @termsTerminationText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous nous réservons le droit de suspendre ou résilier votre accès :\n\n• En cas de violation de ces conditions d\'utilisation\n• Pour des raisons de sécurité ou de maintenance\n• Si le compte est inactif depuis plus de 24 mois\n• En cas d\'utilisation abusive des fonctionnalités de partage\n\nVous pouvez supprimer votre compte à tout moment depuis les paramètres de l\'application.'**
+  String get termsTerminationText;
+
+  /// No description provided for @termsModificationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'11. Modifications'**
+  String get termsModificationsTitle;
+
+  /// No description provided for @termsModificationsText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous nous réservons le droit de :\n\n• Modifier ou améliorer les fonctionnalités de l\'application\n• Mettre à jour ces conditions d\'utilisation\n• Suspendre temporairement le service pour maintenance\n• Discontinuer définitivement le service avec préavis de 60 jours\n\nLes changements importants vous seront notifiés par email ou dans l\'application.'**
+  String get termsModificationsText;
+
+  /// No description provided for @termsJurisdictionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'12. Loi applicable et juridiction'**
+  String get termsJurisdictionTitle;
+
+  /// No description provided for @termsJurisdictionText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces conditions d\'utilisation sont régies par la loi canadienne. Tout litige relatif à l\'utilisation d\'EpiList sera soumis à la juridiction des tribunaux compétents du Nouveau-Brunswick, Canada.'**
+  String get termsJurisdictionText;
+
+  /// No description provided for @termsContactTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'13. Contact et support'**
+  String get termsContactTitle;
+
+  /// No description provided for @termsContactText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour toute question concernant ces conditions d\'utilisation ou pour de l\'assistance, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre le plus rapidement possible.'**
+  String get termsContactText;
+
+  /// No description provided for @privacyLastUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière mise à jour : 5 juillet 2025'**
+  String get privacyLastUpdated;
+
+  /// No description provided for @privacyCollectionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'1. Collecte d\'informations'**
+  String get privacyCollectionTitle;
+
+  /// No description provided for @privacyCollectionText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.'**
+  String get privacyCollectionText;
+
+  /// No description provided for @privacyUsageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'2. Utilisation des données'**
+  String get privacyUsageTitle;
+
+  /// No description provided for @privacyUsageText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d\'épicerie\n• Calculer les totaux et pourcentages d\'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d\'accès (lecture, édition, administration)\n• Synchroniser vos données sur tous vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.'**
+  String get privacyUsageText;
+
+  /// No description provided for @privacyStorageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'3. Stockage et sécurité'**
+  String get privacyStorageTitle;
+
+  /// No description provided for @privacyStorageText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données sont protégées par :\n\n• Stockage sécurisé sur nos serveurs avec chiffrement\n• Chiffrement des mots de passe avec des algorithmes sécurisés\n• Protection des données en transit et au repos\n• Liens de partage sécurisés avec contrôle d\'accès\n• Sauvegarde régulière de vos listes et données\n• Mesures de sécurité conformes aux standards de l\'industrie\n\nNous appliquons les meilleures pratiques de sécurité pour protéger vos informations.'**
+  String get privacyStorageText;
+
+  /// No description provided for @privacySharingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'4. Partage des données'**
+  String get privacySharingTitle;
+
+  /// No description provided for @privacySharingText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données personnelles ne sont partagées que dans les cas suivants :\n\n• Avec les personnes que vous autorisez via les liens de partage de listes\n• Avec nos prestataires de services techniques (hébergement, support)\n• Avec les autorités légales si requis par la loi\n\nLe partage de listes se fait selon les permissions que vous définissez :\n• Lecture seule : consultation des listes sans modification\n• Édition : ajout, suppression et modification d\'articles\n• Administration : gestion complète incluant suppression de listes\n\nAucun partage commercial de vos données n\'est effectué.'**
+  String get privacySharingText;
+
+  /// No description provided for @privacyRightsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'5. Vos droits'**
+  String get privacyRightsTitle;
+
+  /// No description provided for @privacyRightsText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez le droit de :\n\n• Accéder à toutes vos données personnelles\n• Modifier vos informations de compte (prénom, nom, email)\n• Supprimer votre compte et toutes les données associées\n• Exporter vos listes d\'épicerie\n• Révoquer les liens de partage à tout moment\n• Modifier les permissions d\'accès pour les utilisateurs invités\n• Supprimer vos listes ou articles individuellement\n\nContactez-nous pour exercer ces droits.'**
+  String get privacyRightsText;
+
+  /// No description provided for @privacyFeaturesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'6. Fonctionnalités de l\'application'**
+  String get privacyFeaturesTitle;
+
+  /// No description provided for @privacyFeaturesText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n• Création et gestion de comptes utilisateurs\n• Création, duplication, modification et suppression de listes\n• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n• Marquage d\'articles comme achetés ou suppression d\'articles\n• Calcul automatique des totaux et pourcentages d\'achats\n• Génération de liens de partage sécurisés\n• Gestion des permissions d\'accès collaboratif\n\nToutes ces données restent sous votre contrôle.'**
+  String get privacyFeaturesText;
+
+  /// No description provided for @privacyCookiesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'7. Cookies et technologies similaires'**
+  String get privacyCookiesTitle;
+
+  /// No description provided for @privacyCookiesText.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList utilise des technologies de suivi pour :\n\n• Maintenir votre session active\n• Mémoriser vos préférences d\'utilisation\n• Analyser l\'usage de l\'application (données anonymes)\n• Optimiser les performances de l\'application\n\nVous pouvez désactiver ces fonctions dans les paramètres de l\'application.'**
+  String get privacyCookiesText;
+
+  /// No description provided for @privacyChangesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'8. Modifications'**
+  String get privacyChangesTitle;
+
+  /// No description provided for @privacyChangesText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Email à l\'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l\'application après les changements constitue votre acceptation.'**
+  String get privacyChangesText;
+
+  /// No description provided for @privacyContactTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'9. Contact'**
+  String get privacyContactTitle;
+
+  /// No description provided for @privacyContactText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables.'**
+  String get privacyContactText;
 }
 
 class _AppLocalizationsDelegate
