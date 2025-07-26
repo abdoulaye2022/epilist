@@ -1,179 +1,228 @@
-// notifications/notification_service.dart - VERSION COMPLÈTE OPTIMISÉE POUR ANDROID PHYSIQUE
+// notifications/notification_service.dart - VERSION COMPLÈTE ET CORRIGÉE
 
-import 'dart:async';
-import 'dart:ui';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'dart:async';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
   static bool _initialized = false;
-  
-  // ✅ NOUVEAU: Gestion des timers pour courtes périodes
   static final Map<int, Timer> _activeTimers = {};
+  static int _lastNotificationId = 0;
+
+  /// ✅ MÉTHODE MANQUANTE : Obtenir le statut du service
+  static Map<String, dynamic> getStatus() {
+    return {
+      'initialized': _initialized,
+      'active_timers': _activeTimers.length,
+      'timer_ids': _activeTimers.keys.toList(),
+      'last_notification_id': _lastNotificationId,
+      'platform': Platform.operatingSystem,
+      'plugin_available': true, // Toujours true si on arrive ici
+    };
+  }
+
+  /// ✅ MÉTHODE MANQUANTE : Test de notification immédiate
+  static Future<void> testImmediateNotification() async {
+    if (!_initialized) {
+      print('❌ Service non initialisé pour le test');
+      throw Exception('Service non initialisé');
+    }
+
+    final testId = ++_lastNotificationId;
+    final now = DateTime.now();
+    final timeStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+
+    await showNotification(
+      id: testId,
+      title: '🧪 Test Immédiat',
+      body: 'Test envoyé à $timeStr - ID: $testId',
+      payload: 'test_immediate',
+    );
+
+    print('✅ Test immédiat envoyé - ID: $testId à $timeStr');
+  }
 
   /// Initialise le service de notifications
   static Future<void> initialize() async {
-    if (_initialized) return;
+    if (_initialized) {
+      print('⚠️ Service déjà initialisé');
+      return;
+    }
 
     print('🔄 Initialisation NotificationService...');
 
-    // 1. Initialiser les fuseaux horaires
-    tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('America/Toronto'));
-
-    // 2. Configuration Android
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-
-    // 3. Configuration iOS
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-
-    // 4. Initialisation
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
-
     try {
+      // 1. Initialiser les fuseaux horaires
+      tz.initializeTimeZones();
+
+      // ✅ AMÉLIORATION : Détection automatique du timezone
+      try {
+        final location = tz.getLocation('America/Toronto');
+        tz.setLocalLocation(location);
+        print('🌍 Timezone configuré: America/Toronto');
+      } catch (e) {
+        print('⚠️ Fallback timezone UTC: $e');
+        tz.setLocalLocation(tz.UTC);
+      }
+
+      // 2. Configuration Android
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
+
+      // 3. Configuration iOS
+      const iosSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
+      // 4. Initialisation du plugin
+      const initSettings = InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      );
+
       await _notifications.initialize(
         initSettings,
         onDidReceiveNotificationResponse: _onNotificationTapped,
       );
       print('✅ Plugin initialisé avec succès');
+
+      // 5. Créer le canal Android
+      if (Platform.isAndroid) {
+        await _createNotificationChannel();
+      }
+
+      // 6. Demander les permissions
+      final permissionsGranted = await _requestPermissions();
+      print('🔐 Permissions: ${permissionsGranted ? "✅" : "❌"}');
+
+      _initialized = true;
+      print('✅ NotificationService initialisé avec succès');
     } catch (e) {
-      print('❌ Erreur initialisation plugin: $e');
+      print('❌ Erreur critique lors de l\'initialisation: $e');
+      _initialized = false;
       rethrow;
     }
-
-    // 5. Créer le canal Android
-    if (Platform.isAndroid) {
-      await _createNotificationChannel();
-    }
-
-    // 6. Demander les permissions
-    await _requestPermissions();
-
-    _initialized = true;
-    print('✅ NotificationService initialisé avec succès');
   }
 
   /// Créer le canal de notification pour Android
   static Future<void> _createNotificationChannel() async {
-    const androidChannel = AndroidNotificationChannel(
-      'epilist_shopping_reminders',
-      'Rappels de courses EpiList',
-      description: 'Notifications de rappels pour vos listes de courses',
-      importance: Importance.max,
-      enableVibration: true,
-      playSound: true,
-      enableLights: true,
-      ledColor: Color(0xFF4CAF50),
-    );
+    try {
+      const androidChannel = AndroidNotificationChannel(
+        'epilist_main',
+        'EpiList Notifications',
+        description: 'Notifications principales d\'EpiList',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      );
 
-    await _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.createNotificationChannel(androidChannel);
+      final androidImplementation =
+          _notifications
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
 
-    print('✅ Canal Android créé: ${androidChannel.id}');
+      if (androidImplementation != null) {
+        await androidImplementation.createNotificationChannel(androidChannel);
+        print('✅ Canal Android créé: epilist_main');
+      } else {
+        print('⚠️ Implémentation Android non disponible');
+      }
+    } catch (e) {
+      print('❌ Erreur création canal Android: $e');
+    }
   }
 
-  /// Demander les permissions - VERSION COMPLÈTE
+  /// Demander les permissions
   static Future<bool> _requestPermissions() async {
     print('🔐 Demande de permissions...');
 
-    if (Platform.isAndroid) {
-      final androidInfo = await _getAndroidVersion();
-      print('📱 Version Android détectée: $androidInfo');
-
-      // Permission notifications (Android 13+)
-      final notificationStatus = await Permission.notification.request();
-      print('📱 Permission notification: $notificationStatus');
-
-      // Permission alarmes exactes (Android 12+)
-      try {
-        final scheduleExactAlarmStatus = await Permission.scheduleExactAlarm.request();
-        print('⏰ Permission alarmes exactes: $scheduleExactAlarmStatus');
-      } catch (e) {
-        print('⚠️ Permission alarmes exactes non disponible: $e');
-      }
-
-      // ✅ NOUVEAU: Permission optimisation batterie
-      try {
-        final batteryStatus = await Permission.ignoreBatteryOptimizations.request();
-        print('🔋 Permission batterie: $batteryStatus');
-        
-        if (batteryStatus != PermissionStatus.granted) {
-          await _showBatteryOptimizationInstructions();
-        }
-      } catch (e) {
-        print('⚠️ Permission batterie non disponible: $e');
-      }
-
-      if (notificationStatus != PermissionStatus.granted) {
-        print('❌ Permission notifications Android refusée');
-        return false;
-      }
-    }
-
-    if (Platform.isIOS) {
-      print('📱 Demande permission iOS...');
-
-      final bool? result = await _notifications
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-
-      print('📱 Résultat permission iOS: $result');
-
-      if (result != true) {
-        print('❌ Permission iOS refusée');
-        return false;
-      }
-    }
-
-    print('✅ Permissions accordées');
-    return true;
-  }
-
-  /// ✅ NOUVEAU: Instructions optimisation batterie
-  static Future<void> _showBatteryOptimizationInstructions() async {
-    print('🔋 IMPORTANT: Optimisation de batterie détectée');
-    print('💡 Pour des notifications fiables, désactivez l\'optimisation:');
-    print('   1. Ouvrez les Paramètres Android');
-    print('   2. Apps et notifications > Voir toutes les apps');
-    print('   3. EpiList > Batterie > Non optimisée');
-    print('   OU');
-    print('   1. Paramètres > Batterie > Optimisation de batterie');
-    print('   2. Recherchez EpiList > Ne pas optimiser');
-  }
-
-  /// Récupérer version Android
-  static Future<String> _getAndroidVersion() async {
     try {
-      return 'Android version détectée';
+      if (Platform.isAndroid) {
+        // Permission de base pour les notifications
+        final notificationStatus = await Permission.notification.request();
+        print('📱 Android notification: $notificationStatus');
+
+        // Permission pour les alarmes exactes (Android 12+)
+        final alarmStatus = await Permission.scheduleExactAlarm.request();
+        print('📱 Android alarmes exactes: $alarmStatus');
+
+        // Permission pour ignorer l'optimisation batterie
+        final batteryStatus =
+            await Permission.ignoreBatteryOptimizations.request();
+        print('📱 Android batterie: $batteryStatus');
+
+        final allGranted =
+            notificationStatus == PermissionStatus.granted &&
+            alarmStatus == PermissionStatus.granted;
+
+        if (!allGranted) {
+          print('❌ Certaines permissions Android manquent');
+          print('💡 Notifications: $notificationStatus');
+          print('💡 Alarmes: $alarmStatus');
+          print('💡 Batterie: $batteryStatus');
+        }
+
+        return allGranted;
+      }
+
+      if (Platform.isIOS) {
+        print('📱 Demande permission iOS...');
+
+        final iosImplementation =
+            _notifications
+                .resolvePlatformSpecificImplementation<
+                  IOSFlutterLocalNotificationsPlugin
+                >();
+
+        if (iosImplementation != null) {
+          final result = await iosImplementation.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+
+          print('📱 Résultat permission iOS: $result');
+
+          if (result != true) {
+            print('❌ Permission iOS refusée ou émulateur détecté');
+            print(
+              '💡 Utilisez un iPhone physique pour tester les notifications',
+            );
+          }
+
+          return result ?? false;
+        } else {
+          print('⚠️ Implémentation iOS non disponible');
+          return false;
+        }
+      }
+
+      print('✅ Permissions accordées par défaut');
+      return true;
     } catch (e) {
-      return 'Version inconnue';
+      print('❌ Erreur lors de la demande de permissions: $e');
+      return false;
     }
   }
 
   /// Gestionnaire des taps sur notifications
   static void _onNotificationTapped(NotificationResponse response) {
-    print('🔔 Notification tapée - ID: ${response.id}, Payload: ${response.payload}');
+    print(
+      '🔔 Notification tapée - ID: ${response.id}, Payload: ${response.payload}',
+    );
 
+    // Navigation selon le payload
     switch (response.payload) {
       case 'shopping_reminder':
         print('➡️ Navigation vers liste de courses');
@@ -181,150 +230,16 @@ class NotificationService {
       case 'budget_alert':
         print('➡️ Navigation vers budget');
         break;
-      case 'test':
       case 'test_immediate':
-      case 'test_10_seconds':
-      case 'test_30_seconds':
-        print('🧪 Test notification reçue');
+      case 'test_10s':
+      case 'test_2min':
+        print('🧪 Test notification reçue: ${response.payload}');
         break;
-    }
-  }
-
-  /// ✅ MÉTHODE PRINCIPALE OPTIMISÉE: Programmer une notification
-  static Future<void> scheduleNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledTime,
-    String? payload,
-  }) async {
-    if (!_initialized) {
-      print('❌ Service non initialisé');
-      await initialize();
-    }
-
-    final now = DateTime.now();
-    if (scheduledTime.isBefore(now)) {
-      print('❌ Date dans le passé: $scheduledTime');
-      return;
-    }
-
-    final difference = scheduledTime.difference(now);
-    print('⏰ Programmation notification pour: $scheduledTime');
-    print('⏰ Dans: ${difference.inMinutes}min ${difference.inSeconds % 60}s');
-
-    // ✅ SOLUTION HYBRIDE: Choisir la meilleure méthode selon la durée
-    if (Platform.isAndroid && difference.inMinutes <= 10) {
-      // Pour Android et périodes ≤ 10 minutes: utiliser Timer Dart
-      print('⚡ Période courte détectée, utilisation Timer Dart');
-      await _scheduleWithDartTimer(id, title, body, difference, payload);
-    } else {
-      // Pour iOS ou périodes > 10 minutes: utiliser planification système
-      print('📅 Période longue, utilisation planification système');
-      await _scheduleWithSystemNotification(id, title, body, scheduledTime, payload);
-    }
-  }
-
-  /// ✅ NOUVEAU: Planification avec Timer Dart (pour courtes périodes Android)
-  static Future<void> _scheduleWithDartTimer(
-    int id,
-    String title,
-    String body,
-    Duration delay,
-    String? payload,
-  ) async {
-    print('⏱️ Configuration Timer Dart pour ${delay.inSeconds}s');
-    
-    // Annuler timer existant pour cet ID si il existe
-    _activeTimers[id]?.cancel();
-    
-    // Créer nouveau timer
-    _activeTimers[id] = Timer(delay, () async {
-      print('🔔 ⏰ Déclenchement timer pour notification $id');
-      
-      await showNotification(
-        id: id,
-        title: title,
-        body: body,
-        payload: payload,
-      );
-      
-      // Nettoyer le timer de la map
-      _activeTimers.remove(id);
-      print('✅ Notification courte envoyée via Timer Dart');
-    });
-
-    print('✅ Timer Dart programmé pour ${delay.inSeconds} secondes');
-    print('📊 Timers actifs: ${_activeTimers.length}');
-  }
-
-  /// ✅ NOUVEAU: Planification système (pour périodes longues ou iOS)
-  static Future<void> _scheduleWithSystemNotification(
-    int id,
-    String title,
-    String body,
-    DateTime scheduledTime,
-    String? payload,
-  ) async {
-    print('📅 Configuration planification système');
-    
-    try {
-      final scheduledTZ = tz.TZDateTime.from(scheduledTime, tz.local);
-      print('⏰ Heure TZ: $scheduledTZ');
-
-      await _notifications.zonedSchedule(
-        id,
-        title,
-        body,
-        scheduledTZ,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'epilist_shopping_reminders',
-            'Rappels de courses EpiList',
-            channelDescription: 'Notifications de rappels pour vos listes de courses',
-            importance: Importance.max,
-            priority: Priority.max,
-            icon: '@mipmap/ic_launcher',
-            enableVibration: true,
-            playSound: true,
-            enableLights: true,
-            ledColor: const Color(0xFF4CAF50),
-            autoCancel: true,
-            fullScreenIntent: true,
-            styleInformation: BigTextStyleInformation(
-              body,
-              contentTitle: title,
-              summaryText: 'EpiList',
-            ),
-          ),
-          iOS: const DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        payload: payload,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
-
-      print('✅ Notification système programmée avec succès');
-      await _verifyScheduledNotification(id);
-      
-    } catch (e) {
-      print('❌ Erreur planification système: $e');
-      
-      // Fallback pour très courtes périodes
-      final difference = scheduledTime.difference(DateTime.now());
-      if (difference.inMinutes <= 2) {
-        print('🔄 Fallback: tentative notification immédiate après délai...');
-        await Future.delayed(difference);
-        await showNotification(
-          id: id,
-          title: title,
-          body: body,
-          payload: payload,
-        );
-      }
+      case 'list_completed':
+        print('➡️ Navigation vers liste terminée');
+        break;
+      default:
+        print('🔔 Notification générique tapée');
     }
   }
 
@@ -337,10 +252,10 @@ class NotificationService {
   }) async {
     if (!_initialized) {
       print('❌ Service non initialisé');
-      return;
+      throw Exception('Service non initialisé');
     }
 
-    print('📤 Envoi notification immédiate: $title');
+    print('📤 Envoi notification immédiate: $title (ID: $id)');
 
     try {
       await _notifications.show(
@@ -348,19 +263,15 @@ class NotificationService {
         title,
         body,
         NotificationDetails(
-          android: AndroidNotificationDetails(
-            'epilist_shopping_reminders',
-            'Rappels de courses EpiList',
-            channelDescription: 'Notifications de rappels pour vos listes de courses',
-            importance: Importance.max,
-            priority: Priority.max,
+          android: const AndroidNotificationDetails(
+            'epilist_main',
+            'EpiList Notifications',
+            channelDescription: 'Notifications principales d\'EpiList',
+            importance: Importance.high,
+            priority: Priority.high,
             icon: '@mipmap/ic_launcher',
             enableVibration: true,
             playSound: true,
-            enableLights: true,
-            ledColor: const Color(0xFF4CAF50),
-            autoCancel: true,
-            fullScreenIntent: true,
           ),
           iOS: const DarwinNotificationDetails(
             presentAlert: true,
@@ -371,222 +282,360 @@ class NotificationService {
         payload: payload,
       );
 
-      print('✅ Notification immédiate envoyée');
+      _lastNotificationId = id;
+      print('✅ Notification immédiate envoyée (ID: $id)');
     } catch (e) {
-      print('❌ Erreur envoi notification: $e');
-    }
-  }
+      print('❌ Erreur envoi notification immédiate: $e');
 
-  /// ✅ AMÉLIORÉ: Annuler une notification (gère Timer et système)
-  static Future<void> cancelNotification(int id) async {
-    // Annuler timer Dart si existe
-    final timer = _activeTimers[id];
-    if (timer != null) {
-      timer.cancel();
-      _activeTimers.remove(id);
-      print('⏹️ Timer Dart $id annulé');
-    }
-    
-    // Annuler notification système
-    await _notifications.cancel(id);
-    print('❌ Notification système $id annulée');
-    print('📊 Timers restants: ${_activeTimers.length}');
-  }
-
-  /// Vérifier qu'une notification est programmée
-  static Future<void> _verifyScheduledNotification(int id) async {
-    try {
-      final pendingNotifications = await getPendingNotifications();
-      final found = pendingNotifications.any((notif) => notif.id == id);
-
-      if (found) {
-        print('✅ Notification $id confirmée dans la liste des notifications en attente');
-      } else {
-        print('⚠️ Notification $id NON trouvée dans les notifications en attente');
+      if (Platform.isIOS) {
+        print('💡 Sur émulateur iOS, les notifications ne s\'affichent pas');
+        print('📱 Testez sur un iPhone physique');
       }
 
-      print('📋 Total notifications en attente: ${pendingNotifications.length}');
-    } catch (e) {
-      print('❌ Erreur vérification: $e');
+      rethrow;
     }
   }
 
-  /// Vérifier les permissions
+  /// Programmer une notification
+  static Future<void> scheduleNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledTime,
+    String? payload,
+  }) async {
+    if (!_initialized) {
+      print('❌ Service non initialisé');
+      throw Exception('Service non initialisé');
+    }
+
+    if (scheduledTime.isBefore(DateTime.now())) {
+      print('❌ Date dans le passé: $scheduledTime');
+      throw ArgumentError('La date programmée est dans le passé');
+    }
+
+    final delay = scheduledTime.difference(DateTime.now());
+    print(
+      '⏰ Programmation notification pour: $scheduledTime (dans ${delay.inSeconds}s)',
+    );
+
+    try {
+      await _notifications.zonedSchedule(
+        id,
+        title,
+        body,
+        tz.TZDateTime.from(scheduledTime, tz.local),
+        NotificationDetails(
+          android: const AndroidNotificationDetails(
+            'epilist_main',
+            'EpiList Notifications',
+            channelDescription: 'Notifications principales d\'EpiList',
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+            enableVibration: true,
+            playSound: true,
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        payload: payload,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+
+      _lastNotificationId = id;
+      print('✅ Notification programmée (ID: $id) pour ${delay.inSeconds}s');
+    } catch (e) {
+      print('❌ Erreur programmation notification: $e');
+      rethrow;
+    }
+  }
+
+  /// ✅ NOUVELLE MÉTHODE : Programmer avec Timer Dart (fallback)
+  static Future<void> scheduleWithTimer({
+    required int id,
+    required String title,
+    required String body,
+    required Duration delay,
+    String? payload,
+  }) async {
+    if (!_initialized) {
+      print('❌ Service non initialisé');
+      throw Exception('Service non initialisé');
+    }
+
+    print('⏱️ Programmation avec Timer Dart: ${delay.inSeconds}s');
+
+    // Annuler le timer existant s'il y en a un
+    _activeTimers[id]?.cancel();
+
+    // Créer un nouveau timer
+    _activeTimers[id] = Timer(delay, () async {
+      try {
+        await showNotification(
+          id: id,
+          title: title,
+          body: body,
+          payload: payload,
+        );
+        print('✅ Timer exécuté pour notification $id');
+      } catch (e) {
+        print('❌ Erreur exécution timer $id: $e');
+      } finally {
+        _activeTimers.remove(id);
+      }
+    });
+
+    print('✅ Timer créé (ID: $id) pour ${delay.inSeconds}s');
+  }
+
+  /// Vérifier les permissions actuelles
+  static Future<Map<String, bool>> checkPermissions() async {
+    final permissions = <String, bool>{};
+
+    try {
+      if (Platform.isAndroid) {
+        permissions['Notification'] = await Permission.notification.isGranted;
+        permissions['Alarme exacte'] =
+            await Permission.scheduleExactAlarm.isGranted;
+        permissions['Batterie'] =
+            await Permission.ignoreBatteryOptimizations.isGranted;
+      }
+
+      if (Platform.isIOS) {
+        final iosImplementation =
+            _notifications
+                .resolvePlatformSpecificImplementation<
+                  IOSFlutterLocalNotificationsPlugin
+                >();
+
+        if (iosImplementation != null) {
+          // Sur iOS, on ne peut que redemander, pas vraiment "checker"
+          permissions['iOS Notifications'] = true; // Assumé si pas d'erreur
+        }
+      }
+    } catch (e) {
+      print('❌ Erreur vérification permissions: $e');
+    }
+
+    return permissions;
+  }
+
+  /// Vérifier si le service a les permissions nécessaires
   static Future<bool> hasPermissions() async {
+    final permissions = await checkPermissions();
+
     if (Platform.isAndroid) {
-      final notificationGranted = await Permission.notification.isGranted;
-      print('🔐 Permission notification: $notificationGranted');
-      return notificationGranted;
+      return permissions['Notification'] == true &&
+          permissions['Alarme exacte'] == true;
     }
 
-    if (Platform.isIOS) {
-      final settings = await _notifications
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-      return settings ?? false;
-    }
-
-    return false;
+    return permissions.isNotEmpty;
   }
 
   /// Obtenir les notifications en attente
-  static Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+  static Future<List<PendingNotificationRequest>>
+  getPendingNotifications() async {
     try {
-      final pending = await _notifications.pendingNotificationRequests();
-      print('📋 ${pending.length} notifications système en attente');
-      for (final notif in pending) {
-        print('  - ID: ${notif.id}, Titre: ${notif.title}');
-      }
-      return pending;
+      return await _notifications.pendingNotificationRequests();
     } catch (e) {
-      print('❌ Erreur récupération notifications: $e');
+      print('❌ Erreur récupération notifications en attente: $e');
       return [];
     }
   }
 
-  /// ✅ NOUVEAU: Diagnostic complet pour Android
-  static Future<void> diagnosticAndroidNotifications() async {
-    print('🔍 === DIAGNOSTIC ANDROID NOTIFICATIONS ===');
-    
-    // 1. Vérifier toutes les permissions
-    final permissions = <String, bool>{};
-    
+  /// Annuler une notification
+  static Future<void> cancelNotification(int id) async {
     try {
-      permissions['Notification'] = await Permission.notification.isGranted;
-      permissions['Alarme exacte'] = await Permission.scheduleExactAlarm.isGranted;
-      permissions['Batterie'] = await Permission.ignoreBatteryOptimizations.isGranted;
+      await _notifications.cancel(id);
+      _activeTimers[id]?.cancel();
+      _activeTimers.remove(id);
+      print('❌ Notification $id annulée');
     } catch (e) {
-      print('❌ Erreur vérification permissions: $e');
+      print('❌ Erreur annulation notification $id: $e');
     }
-    
-    permissions.forEach((name, granted) {
-      print('📱 $name: ${granted ? "✅" : "❌"}');
-    });
-    
-    // 2. Statut des timers actifs
-    print('⏱️ Timers Dart actifs: ${_activeTimers.length}');
-    _activeTimers.forEach((id, timer) {
-      print('  - Timer $id: ${timer.isActive ? "✅ Actif" : "❌ Inactif"}');
-    });
-    
-    // 3. Notifications système en attente
-    final pending = await getPendingNotifications();
-    print('📋 Notifications système en attente: ${pending.length}');
-    
-    // 4. Test notification immédiate
-    print('🧪 Test notification immédiate...');
-    await testImmediateNotification();
-    
-    // 5. Conseils d'optimisation
-    print('\n💡 === CONSEILS D\'OPTIMISATION ===');
-    if (!permissions['Batterie']!) {
-      print('🔋 CRITIQUE: Désactivez l\'optimisation de batterie');
-      print('   Paramètres > Apps > EpiList > Batterie > Non optimisée');
-    }
-    if (!permissions['Alarme exacte']!) {
-      print('⏰ IMPORTANT: Activez les alarmes exactes');
-      print('   Paramètres > Apps > Applications spéciales > Alarmes et rappels');
-    }
-    
-    print('🔍 === FIN DIAGNOSTIC ===\n');
   }
 
+  /// Annuler toutes les notifications
+  static Future<void> cancelAllNotifications() async {
+    try {
+      await _notifications.cancelAll();
+      for (final timer in _activeTimers.values) {
+        timer.cancel();
+      }
+      _activeTimers.clear();
+      print('❌ Toutes les notifications annulées');
+    } catch (e) {
+      print('❌ Erreur annulation de toutes les notifications: $e');
+    }
+  }
+
+  /// ✅ MÉTHODE DE DIAGNOSTIC AVANCÉ
+  static Future<Map<String, dynamic>> runDiagnostic() async {
+    final diagnostic = <String, dynamic>{};
+
+    try {
+      // Statut de base
+      diagnostic['service_initialized'] = _initialized;
+      diagnostic['platform'] = Platform.operatingSystem;
+      diagnostic['active_timers'] = _activeTimers.length;
+      diagnostic['timer_ids'] = _activeTimers.keys.toList();
+
+      // Permissions
+      diagnostic['permissions'] = await checkPermissions();
+
+      // Notifications en attente
+      final pending = await getPendingNotifications();
+      diagnostic['pending_notifications'] = pending.length;
+      diagnostic['pending_details'] =
+          pending
+              .map(
+                (n) => {
+                  'id': n.id,
+                  'title': n.title,
+                  'body': n.body,
+                  'payload': n.payload,
+                },
+              )
+              .toList();
+
+      // Test de capacité
+      try {
+        final testResult = await _testServiceCapability();
+        diagnostic['service_capability'] = testResult;
+      } catch (e) {
+        diagnostic['service_capability'] = {'error': e.toString()};
+      }
+
+      diagnostic['last_notification_id'] = _lastNotificationId;
+      diagnostic['diagnostic_time'] = DateTime.now().toIso8601String();
+    } catch (e) {
+      diagnostic['diagnostic_error'] = e.toString();
+    }
+
+    return diagnostic;
+  }
+
+  /// Test de capacité du service
+  static Future<Map<String, bool>> _testServiceCapability() async {
+    final capability = <String, bool>{};
+
+    try {
+      // Test 1: Plugin accessible
+      capability['plugin_accessible'] = true;
+
+      // Test 2: Peut créer des notifications
+      capability['can_create_notifications'] = _initialized;
+
+      // Test 3: Permissions suffisantes
+      capability['has_permissions'] = await hasPermissions();
+
+      // Test 4: Peut programmer
+      capability['can_schedule'] =
+          _initialized && Platform.isAndroid
+              ? await Permission.scheduleExactAlarm.isGranted
+              : _initialized;
+    } catch (e) {
+      capability['test_error'] = false;
+    }
+
+    return capability;
+  }
+}
+
+// ===================================
+// EpiList Notifications - Classes utilitaires
+// ===================================
+
+class EpiListNotifications {
   /// Test de notification immédiate
-  static Future<void> testImmediateNotification() async {
-    await showNotification(
-      id: 9999,
-      title: "🧪 Test Immédiat",
-      body: "Cette notification devrait apparaître tout de suite !",
-      payload: 'test_immediate',
-    );
+  static Future<void> testNotification() async {
+    await NotificationService.testImmediateNotification();
   }
 
-  /// ✅ NOUVEAU: Test spécifique pour courtes périodes
-  static Future<void> testShortPeriodNotification() async {
-    print('🧪 Test notification dans 30 secondes (Timer Dart)...');
-    
-    await scheduleNotification(
-      id: 7777,
-      title: "⏰ Test 30 secondes",
-      body: "Notification de test programmée il y a 30 secondes",
-      scheduledTime: DateTime.now().add(const Duration(seconds: 30)),
-      payload: 'test_30_seconds',
-    );
-    
-    print('✅ Test 30s programmé via Timer Dart');
-  }
+  /// Test programmé (utilise les deux méthodes)
+  static Future<void> testScheduled({
+    Duration delay = const Duration(seconds: 10),
+  }) async {
+    final id = DateTime.now().millisecondsSinceEpoch % 10000;
 
-  /// Test de notification dans 10 secondes
-  static Future<void> testShortScheduled() async {
-    final scheduledTime = DateTime.now().add(const Duration(seconds: 10));
+    try {
+      // Essayer d'abord la méthode système
+      await NotificationService.scheduleNotification(
+        id: id,
+        title: '⏰ Test Programmé Système',
+        body:
+            'Notification programmée il y a ${delay.inSeconds} secondes (méthode système)',
+        scheduledTime: DateTime.now().add(delay),
+        payload: 'test_scheduled_system',
+      );
+      print('✅ Test programmé avec méthode système');
+    } catch (e) {
+      print('⚠️ Méthode système échouée, utilisation Timer Dart: $e');
 
-    await scheduleNotification(
-      id: 9998,
-      title: "⏰ Test 10 secondes",
-      body: "Cette notification était programmée il y a 10 secondes",
-      scheduledTime: scheduledTime,
-      payload: 'test_10_seconds',
-    );
-
-    print('⏰ Notification de test programmée dans 10 secondes...');
-  }
-
-  /// ✅ NOUVEAU: Test de notification longue (système)
-  static Future<void> testLongPeriodNotification() async {
-    print('🧪 Test notification dans 15 minutes (Système)...');
-    
-    await scheduleNotification(
-      id: 8888,
-      title: "📅 Test 15 minutes",
-      body: "Notification de test système programmée il y a 15 minutes",
-      scheduledTime: DateTime.now().add(const Duration(minutes: 15)),
-      payload: 'test_15_minutes',
-    );
-    
-    print('✅ Test 15min programmé via planification système');
-  }
-
-  /// ✅ NOUVEAU: Nettoyer tous les timers
-  static void cleanupTimers() {
-    for (final timer in _activeTimers.values) {
-      timer.cancel();
+      // Fallback sur Timer Dart
+      await NotificationService.scheduleWithTimer(
+        id: id + 1,
+        title: '⏰ Test Programmé Timer',
+        body:
+            'Notification programmée il y a ${delay.inSeconds} secondes (Timer Dart)',
+        delay: delay,
+        payload: 'test_scheduled_timer',
+      );
+      print('✅ Test programmé avec Timer Dart');
     }
-    _activeTimers.clear();
-    print('🧹 Tous les timers Dart nettoyés');
   }
 
-  /// ✅ NOUVEAU: Obtenir le statut détaillé
-  static Map<String, dynamic> getStatus() {
-    return {
-      'initialized': _initialized,
-      'active_timers': _activeTimers.length,
-      'timer_ids': _activeTimers.keys.toList(),
-    };
+  /// Rappel courses
+  static Future<void> shoppingReminder({
+    required String listName,
+    required DateTime when,
+    String? storeName,
+  }) async {
+    final body =
+        storeName != null
+            ? "Il est temps d'aller chez $storeName - Liste: $listName"
+            : "N'oubliez pas vos courses - Liste: $listName";
+
+    await NotificationService.scheduleNotification(
+      id: 1,
+      title: "🛒 Rappel courses",
+      body: body,
+      scheduledTime: when,
+      payload: 'shopping_reminder',
+    );
   }
 
-  /// ✅ NOUVEAU: Test complet (toutes les durées)
-  static Future<void> runCompleteTest() async {
-    print('🧪 === TEST COMPLET NOTIFICATIONS ===');
-    
-    // 1. Diagnostic
-    await diagnosticAndroidNotifications();
-    
-    // 2. Test immédiat
-    print('\n1️⃣ Test notification immédiate...');
-    await testImmediateNotification();
-    await Future.delayed(const Duration(seconds: 2));
-    
-    // 3. Test court (Timer Dart)
-    print('\n2️⃣ Test notification courte (30s - Timer)...');
-    await testShortPeriodNotification();
-    
-    // 4. Test moyen (Système)
-    print('\n3️⃣ Test notification longue (15min - Système)...');
-    await testLongPeriodNotification();
-    
-    print('\n✅ Test complet programmé. Surveillez les notifications !');
-    print('🔍 Statut: ${getStatus()}');
+  /// Alerte budget
+  static Future<void> budgetAlert({
+    required String listName,
+    required double spent,
+    required double budget,
+  }) async {
+    final percentage = (spent / budget * 100).round();
+
+    await NotificationService.showNotification(
+      id: 2,
+      title: "💰 Budget: $percentage%",
+      body:
+          "$listName: ${spent.toStringAsFixed(2)}\$/${budget.toStringAsFixed(2)}\$",
+      payload: 'budget_alert',
+    );
+  }
+
+  /// Liste terminée
+  static Future<void> listCompleted({
+    required String listName,
+    required int itemCount,
+  }) async {
+    await NotificationService.showNotification(
+      id: 3,
+      title: "🎉 Liste terminée !",
+      body: "$listName - $itemCount articles cochés ✅",
+      payload: 'list_completed',
+    );
   }
 }

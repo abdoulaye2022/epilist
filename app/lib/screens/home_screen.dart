@@ -8,6 +8,7 @@ import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/notifications/notification_service.dart';
+import 'package:epilist/screens/diagnostic_screen.dart';
 import 'package:epilist/services/shopping_reminder_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
