@@ -1,9 +1,10 @@
 <?php
-// src/Controllers/AuthController.php
+// src/Controllers/AuthController.php - VERSION COMPLÈTE AVEC SUPPORT DEVISE
 
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Models\Currency;
 use App\Services\JwtService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -30,11 +31,40 @@ class AuthController
     }
 
     /**
+     * ✅ MÉTHODE UTILITAIRE POUR FORMATER LES DONNÉES UTILISATEUR AVEC DEVISE
+     */
+    private function formatUserData(User $user): array
+    {
+        // S'assurer que la devise est chargée
+        if (!$user->relationLoaded('currency')) {
+            $user->load('currency');
+        }
+
+        $currency = $user->getPreferredCurrency();
+
+        return [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'full_name' => trim($user->first_name . ' ' . $user->last_name),
+            'email' => $user->email,
+            'email_verified' => $user->email_verified,
+            'email_verified_at' => $user->email_verified_at?->toISOString(),
+            'currency' => [
+                'id' => $currency->id,
+                'code' => $currency->code,
+                'name' => $currency->name,
+                'symbol' => $currency->symbol,
+                'display_name' => $currency->name . ' (' . $currency->code . ')'
+            ],
+            'is_active' => $user->is_active,
+            'created_at' => $user->created_at->toISOString(),
+            'updated_at' => $user->updated_at->toISOString()
+        ];
+    }
+
+    /**
      * Crée une réponse d'erreur JSON.
-     *
-     * @param string $message
-     * @param int $statusCode
-     * @return JsonResponse
      */
     private function createErrorResponse(string $message, int $statusCode, string $code = ''): JsonResponse
     {
@@ -72,8 +102,8 @@ class AuthController
                 return $this->createErrorResponse('Refresh token expiré', 401);
             }
 
-            // Récupérer l'employé associé au refresh_token
-            $user = User::find($decoded['data']->auth_id);
+            // Récupérer l'utilisateur avec sa devise
+            $user = User::with('currency')->find($decoded['data']->auth_id);
 
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
@@ -94,17 +124,11 @@ class AuthController
                 new Headers(['Content-Type' => 'application/json']),
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
-                'message' => 'Login successful',
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken,
-                'data' => [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'email_verified' => $user->email_verified,
-                    'email_verified_at' => $user->email_verified_at
-                ]]))
+                    'message' => 'Token refreshed successfully',
+                    'access_token' => $accessToken,
+                    'refresh_token' => $newRefreshToken,
+                    'data' => $this->formatUserData($user)
+                ]))
             );
 
         } catch (\Exception $e) {
@@ -144,8 +168,8 @@ class AuthController
         }
 
         try {
-            // Find user by email
-            $user = User::findByEmail($data['email']);
+            // Find user by email with currency
+            $user = User::with('currency')->where('email', $data['email'])->first();
             
             if (!$user) {
                 return $this->createErrorResponse(
@@ -190,20 +214,13 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            // Success response
+            // Success response with currency support
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Login successful',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
-                'data' => [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'email_verified' => $user->email_verified,
-                    'email_verified_at' => $user->email_verified_at
-                ]
+                'data' => $this->formatUserData($user)
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -242,6 +259,14 @@ class AuthController
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
 
+        // ✅ NOUVELLE VALIDATION POUR LA DEVISE (OPTIONNELLE)
+        if (isset($data['currency_id'])) {
+            $validator->rule('integer', 'currency_id')
+                ->message('Currency ID must be an integer');
+            $validator->rule('min', 'currency_id', 1)
+                ->message('Currency ID must be at least 1');
+        }
+
         // Validate
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
@@ -265,22 +290,35 @@ class AuthController
                 );
             }
 
+            // ✅ GÉRER LA DEVISE SÉLECTIONNÉE
+            $currencyId = 1; // CAD par défaut
+            if (isset($data['currency_id'])) {
+                $currency = Currency::active()->find($data['currency_id']);
+                if ($currency) {
+                    $currencyId = $currency->id;
+                }
+            }
+
             // Generate verification code
             $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
-            // Create user
+            // Create user with currency
             $user = User::create([
                 'first_name' => trim($data['first_name']),
                 'last_name' => trim($data['last_name']),
                 'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
                 'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'terms_accepted' => true,
+                'currency_id' => $currencyId, // ✅ ASSIGNATION DE LA DEVISE
                 'email_verification_code' => $verificationCode,
                 'email_verification_code_expires_at' => $expiration,
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()
             ]);
+
+            // Charger la devise pour la réponse
+            $user->load('currency');
 
             // In dev environment, override email for testing
             if(Config::get('APP_ENV') == 'dev') {
@@ -291,16 +329,11 @@ class AuthController
             $mailSender = new MailSender();
             $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
 
-            // Success response
+            // Success response with currency support
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Account created successfully. Please check your email for verification code.',
-                'data' => [
-                    'id' => $user->id,
-                    'email' => $user->email,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'email_verified' => $user->email_verified,
+                'data' => $this->formatUserData($user) + [
                     'verification_required' => true
                 ]
             ]));
@@ -345,7 +378,7 @@ class AuthController
         }
 
         try {
-            $user = User::findByEmail($data['email']);
+            $user = User::with('currency')->where('email', $data['email'])->first();
             
             if (!$user) {
                 return $this->createErrorResponse(
@@ -402,21 +435,13 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            // Success response (même structure que login)
+            // Success response with currency support
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Email verified successfully. You are now logged in.',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
-                'data' => [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'email_verified' => $user->email_verified,
-                    'email_verified_at' => $user->email_verified_at ? 
-                        $user->email_verified_at->format('Y-m-d H:i:s') : null
-                ]
+                'data' => $this->formatUserData($user)
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -538,7 +563,6 @@ class AuthController
             $user->password_change_code_expires_at = $expiration;
             $user->save();
 
-
             if(Config::get('APP_ENV')=='dev') {
                 $user->email = 'm2atodev@gmail.com';
             }
@@ -592,17 +616,17 @@ class AuthController
             if (!$user) {
                 return $this->createErrorResponse(
                     'User not found',
-                    404, // ✅ CHANGÉ: 404 au lieu de 400
+                    404,
                     'USER_NOT_FOUND'
                 );
             }
 
-            // ✅ CORRECTION: Vérifier le code et son expiration avec les bons codes d'erreur
+            // Vérifier le code et son expiration
             if ($user->password_change_code !== $data['code']) {
                 return $this->createErrorResponse(
                     'Invalid verification code',
                     400,
-                    'INVALID_CODE' // ✅ CHANGÉ: Code uniforme avec les autres fonctions
+                    'INVALID_CODE'
                 );
             }
 
@@ -610,11 +634,11 @@ class AuthController
                 return $this->createErrorResponse(
                     'Verification code has expired',
                     400,
-                    'CODE_EXPIRED' // ✅ CHANGÉ: Code uniforme avec les autres fonctions
+                    'CODE_EXPIRED'
                 );
             }
 
-            // ✅ AJOUT: Vérifier si l'utilisateur existe toujours et est actif
+            // Vérifier si l'utilisateur existe toujours et est actif
             if (!$user->is_active) {
                 return $this->createErrorResponse(
                     'User account is not active',
@@ -639,11 +663,10 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            // ✅ CHANGÉ: Code d'erreur plus spécifique
             return $this->createErrorResponse(
                 'Server error occurred while changing password',
                 500,
-                'SERVER_ERROR' // ✅ Code uniforme avec les autres fonctions
+                'SERVER_ERROR'
             );
         }
     }
@@ -658,7 +681,7 @@ class AuthController
         }
 
         try {
-            $user = User::find($authId);
+            $user = User::with('currency')->find($authId);
             
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
@@ -669,14 +692,7 @@ class AuthController
                 new Headers(['Content-Type' => 'application/json']),
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
-                    'data' => [
-                        'id' => $user->id,
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'email' => $user->email,
-                        'email_verified' => $user->email_verified,
-                        'email_verified_at' => $user->email_verified_at
-                    ]
+                    'data' => $this->formatUserData($user)
                 ]))
             );
 
@@ -703,6 +719,14 @@ class AuthController
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
 
+        // ✅ NOUVELLE VALIDATION POUR LA DEVISE (OPTIONNELLE)
+        if (isset($data['currency_id'])) {
+            $validator->rule('integer', 'currency_id')
+                ->message('Currency ID must be an integer');
+            $validator->rule('min', 'currency_id', 1)
+                ->message('Currency ID must be at least 1');
+        }
+
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -715,17 +739,34 @@ class AuthController
         }
 
         try {
-            $user = User::find($authId);
+            $user = User::with('currency')->find($authId);
             
             if (!$user) {
                 return $this->createErrorResponse('User not found', 404);
             }
 
-            // Update ONLY first name and last name fields
-            $user->first_name = $data['first_name'];
-            $user->last_name = $data['last_name'];
-            $user->updated_at = new \DateTime();
-            $user->save();
+            // Mise à jour des champs de base
+            $updateData = [
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'updated_at' => new \DateTime()
+            ];
+
+            // ✅ MISE À JOUR DE LA DEVISE SI FOURNIE
+            if (isset($data['currency_id'])) {
+                $currency = Currency::active()->find($data['currency_id']);
+                if ($currency) {
+                    $updateData['currency_id'] = $currency->id;
+                } else {
+                    return $this->createErrorResponse('Invalid currency selected', 400, 'INVALID_CURRENCY');
+                }
+            }
+
+            $user->update($updateData);
+            
+            // Recharger avec la devise mise à jour
+            $user->refresh();
+            $user->load('currency');
 
             return new JsonResponse(
                 200,
@@ -733,14 +774,7 @@ class AuthController
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
                     'message' => 'Profile updated successfully',
-                    'data' => [
-                        'id' => $user->id,
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'email' => $user->email,
-                        'email_verified' => $user->email_verified,
-                        'email_verified_at' => $user->email_verified_at
-                    ]
+                    'data' => $this->formatUserData($user)
                 ]))
             );
 
@@ -751,25 +785,17 @@ class AuthController
 
     private function genererResetToken(): string {
         do {
-            // Génère un nombre aléatoire de 6 chiffres
             $resetToken = bin2hex(random_bytes(32));
-    
-            // Vérifie si le numéro existe déjà dans la base de données
             $ad = User::where('reset_token', $resetToken)->first();
-        } while ($ad); // Répète si le numéro existe déjà
-    
+        } while ($ad);
         return $resetToken;
     }
 
     private function genererNumeroReference(): string {
         do {
-            // Génère un nombre aléatoire de 6 chiffres
             $numero = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    
-            // Vérifie si le numéro existe déjà dans la base de données
             $user = User::where('number', $numero)->first();
-        } while ($user); // Répète si le numéro existe déjà
-    
+        } while ($user);
         return $numero;
     }
 

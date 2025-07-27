@@ -1289,7 +1289,7 @@ abstract class AppLocalizations {
   /// No description provided for @total.
   ///
   /// In fr, this message translates to:
-  /// **'Total'**
+  /// **'total'**
   String get total;
 
   /// No description provided for @progress.
@@ -3702,6 +3702,444 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables.'**
   String get privacyContactText;
+
+  /// No description provided for @currency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise'**
+  String get currency;
+
+  /// No description provided for @currencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devises'**
+  String get currencies;
+
+  /// No description provided for @selectCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner la devise'**
+  String get selectCurrency;
+
+  /// No description provided for @changeCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la devise'**
+  String get changeCurrency;
+
+  /// No description provided for @currencySettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres de devise'**
+  String get currencySettings;
+
+  /// No description provided for @currencyCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de devise'**
+  String get currencyCode;
+
+  /// No description provided for @currencySymbol.
+  ///
+  /// In fr, this message translates to:
+  /// **'Symbole de devise'**
+  String get currencySymbol;
+
+  /// No description provided for @exchangeRate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de change'**
+  String get exchangeRate;
+
+  /// No description provided for @defaultCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise par défaut'**
+  String get defaultCurrency;
+
+  /// No description provided for @preferredCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise préférée'**
+  String get preferredCurrency;
+
+  /// No description provided for @currentCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise actuelle'**
+  String get currentCurrency;
+
+  /// No description provided for @noCurrencySet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune devise définie'**
+  String get noCurrencySet;
+
+  /// No description provided for @chooseCurrencyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez votre devise d\'affichage préférée'**
+  String get chooseCurrencyDescription;
+
+  /// No description provided for @manageCurrencyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez vos préférences de devise'**
+  String get manageCurrencyDescription;
+
+  /// No description provided for @currencyConversionInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les prix seront automatiquement convertis dans votre devise'**
+  String get currencyConversionInfo;
+
+  /// No description provided for @showPopularOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher seulement les devises populaires'**
+  String get showPopularOnly;
+
+  /// No description provided for @convertPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir les prix'**
+  String get convertPrices;
+
+  /// No description provided for @viewInLocalCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir en devise locale'**
+  String get viewInLocalCurrency;
+
+  /// No description provided for @formatUserAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formater le montant'**
+  String get formatUserAmount;
+
+  /// No description provided for @updateCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour la devise'**
+  String get updateCurrency;
+
+  /// No description provided for @select.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner'**
+  String get select;
+
+  /// No description provided for @each.
+  ///
+  /// In fr, this message translates to:
+  /// **'chacun'**
+  String get each;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix unitaire'**
+  String get unitPrice;
+
+  /// No description provided for @totalPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix total'**
+  String get totalPrice;
+
+  /// No description provided for @formattedPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix formaté'**
+  String get formattedPrice;
+
+  /// No description provided for @originalAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant original'**
+  String get originalAmount;
+
+  /// No description provided for @convertedAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant converti'**
+  String get convertedAmount;
+
+  /// No description provided for @exchangeRateToCAD.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de change vers CAD'**
+  String get exchangeRateToCAD;
+
+  /// No description provided for @popularCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devises populaires'**
+  String get popularCurrencies;
+
+  /// No description provided for @allCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les devises'**
+  String get allCurrencies;
+
+  /// No description provided for @supportedCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devises supportées'**
+  String get supportedCurrencies;
+
+  /// No description provided for @currencyNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise non trouvée'**
+  String get currencyNotFound;
+
+  /// No description provided for @invalidCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise invalide'**
+  String get invalidCurrency;
+
+  /// No description provided for @currencyUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la mise à jour de la devise'**
+  String get currencyUpdateFailed;
+
+  /// No description provided for @conversionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la conversion de devise'**
+  String get conversionFailed;
+
+  /// No description provided for @exchangeRateNotAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de change non disponible'**
+  String get exchangeRateNotAvailable;
+
+  /// No description provided for @currencyUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise mise à jour avec succès'**
+  String get currencyUpdatedSuccessfully;
+
+  /// No description provided for @currencySelectedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise sélectionnée avec succès'**
+  String get currencySelectedSuccessfully;
+
+  /// No description provided for @conversionSuccessful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversion réussie'**
+  String get conversionSuccessful;
+
+  /// No description provided for @currencyInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations de devise'**
+  String get currencyInfo;
+
+  /// No description provided for @rateLastUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux mis à jour le'**
+  String get rateLastUpdated;
+
+  /// No description provided for @basedOnCAD.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basé sur le Dollar Canadien (CAD)'**
+  String get basedOnCAD;
+
+  /// No description provided for @exchangeRateDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les taux de change sont donnés à titre indicatif'**
+  String get exchangeRateDisclaimer;
+
+  /// No description provided for @priceInCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix en {currency}'**
+  String priceInCurrency(String currency);
+
+  /// No description provided for @amountInCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant en {currency}'**
+  String amountInCurrency(String currency);
+
+  /// No description provided for @convertTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir en {currency}'**
+  String convertTo(String currency);
+
+  /// No description provided for @oneXEqualsYCAD.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 {currency} = {rate} CAD'**
+  String oneXEqualsYCAD(String currency, String rate);
+
+  /// No description provided for @price.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix'**
+  String get price;
+
+  /// No description provided for @currencySelectionDialog.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dialogue de sélection de devise'**
+  String get currencySelectionDialog;
+
+  /// No description provided for @chooseCurrencyPreference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez votre préférence de devise'**
+  String get chooseCurrencyPreference;
+
+  /// No description provided for @currencyDisplayOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette devise sera utilisée pour l\'affichage uniquement. Les prix ne sont pas convertis.'**
+  String get currencyDisplayOnly;
+
+  /// No description provided for @pricesNotConverted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les prix ne sont pas convertis automatiquement'**
+  String get pricesNotConverted;
+
+  /// No description provided for @currentSelectedCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise actuellement sélectionnée'**
+  String get currentSelectedCurrency;
+
+  /// No description provided for @loadingCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des devises...'**
+  String get loadingCurrencies;
+
+  /// No description provided for @noCurrenciesAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune devise disponible'**
+  String get noCurrenciesAvailable;
+
+  /// No description provided for @cannotLoadCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les devises depuis le serveur'**
+  String get cannotLoadCurrencies;
+
+  /// No description provided for @currencyUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre devise a été mise à jour avec succès'**
+  String get currencyUpdated;
+
+  /// No description provided for @confirmCurrencyChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le changement de devise'**
+  String get confirmCurrencyChange;
+
+  /// No description provided for @currencySettingsTile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres de devise'**
+  String get currencySettingsTile;
+
+  /// No description provided for @manageCurrencySettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les paramètres de devise'**
+  String get manageCurrencySettings;
+
+  /// No description provided for @defaultCurrencyCAD.
+  ///
+  /// In fr, this message translates to:
+  /// **'CAD (par défaut)'**
+  String get defaultCurrencyCAD;
+
+  /// No description provided for @selectPreferredCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner la devise préférée'**
+  String get selectPreferredCurrency;
+
+  /// No description provided for @currencySettingsUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres de devise mis à jour'**
+  String get currencySettingsUpdated;
+
+  /// No description provided for @selectYourCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez votre devise'**
+  String get selectYourCurrency;
+
+  /// No description provided for @chooseDisplayCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez votre devise d\'affichage'**
+  String get chooseDisplayCurrency;
+
+  /// No description provided for @currencyForPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette devise sera utilisée pour afficher les prix'**
+  String get currencyForPrices;
+
+  /// No description provided for @noCurrencySelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune devise sélectionnée'**
+  String get noCurrencySelected;
+
+  /// No description provided for @popularCurrenciesOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devises populaires uniquement'**
+  String get popularCurrenciesOnly;
+
+  /// No description provided for @allAvailableCurrencies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les devises disponibles'**
+  String get allAvailableCurrencies;
+
+  /// No description provided for @currencySelectionComplete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélection de devise terminée'**
+  String get currencySelectionComplete;
+
+  /// No description provided for @applyChanges.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appliquer les modifications'**
+  String get applyChanges;
+
+  /// No description provided for @discardChanges.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler les modifications'**
+  String get discardChanges;
+
+  /// No description provided for @popular.
+  ///
+  /// In fr, this message translates to:
+  /// **'Populaire'**
+  String get popular;
 }
 
 class _AppLocalizationsDelegate

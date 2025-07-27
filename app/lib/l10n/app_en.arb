@@ -841,5 +841,118 @@
 "privacyChangesTitle": "8. Changes",
 "privacyChangesText": "This policy may be updated to reflect application developments. We will inform you of important changes by:\n\n• Email to the address associated with your account\n• Updating the date at the top of this policy\n\nYour continued use of the application after changes constitutes your acceptance.",
 "privacyContactTitle": "9. Contact",
-"privacyContactText": "For any questions regarding this privacy policy or your data, please contact us through our website.\n\nWe are committed to responding within 48 business hours."
+"privacyContactText": "For any questions regarding this privacy policy or your data, please contact us through our website.\n\nWe are committed to responding within 48 business hours.",
+"currency": "Currency",
+  "currencies": "Currencies",
+  "selectCurrency": "Select Currency",
+  "changeCurrency": "Change Currency",
+  "currencySettings": "Currency Settings",
+  "currencyCode": "Currency Code",
+  "currencySymbol": "Currency Symbol",
+  "exchangeRate": "Exchange Rate",
+  "defaultCurrency": "Default Currency",
+  "preferredCurrency": "Preferred Currency",
+  "currentCurrency": "Current Currency",
+  "noCurrencySet": "No currency set",
+  "chooseCurrencyDescription": "Choose your preferred currency for prices",
+  "manageCurrencyDescription": "Manage your currency preferences",
+  "currencyConversionInfo": "Prices will be automatically converted to your currency",
+  "showPopularOnly": "Show popular currencies only",
+  "convertPrices": "Convert Prices",
+  "viewInLocalCurrency": "View in Local Currency",
+  "formatUserAmount": "Format Amount",
+  "updateCurrency": "Update Currency",
+  "select": "Select",
+  "each": "each",
+  "total": "total",
+  "unitPrice": "Unit Price",
+  "totalPrice": "Total Price",
+  "formattedPrice": "Formatted Price",
+  "originalAmount": "Original Amount",
+  "convertedAmount": "Converted Amount",
+  "exchangeRateToCAD": "Exchange Rate to CAD",
+  "popularCurrencies": "Popular Currencies",
+  "allCurrencies": "All Currencies",
+  "supportedCurrencies": "Supported Currencies",
+  "currencyNotFound": "Currency not found",
+  "invalidCurrency": "Invalid currency",
+  "currencyUpdateFailed": "Failed to update currency",
+  "conversionFailed": "Currency conversion failed",
+  "exchangeRateNotAvailable": "Exchange rate not available",
+  "currencyUpdatedSuccessfully": "Currency updated successfully",
+  "currencySelectedSuccessfully": "Currency selected successfully",
+  "conversionSuccessful": "Conversion successful",
+  "currencyInfo": "Currency Information",
+  "rateLastUpdated": "Rate last updated",
+  "basedOnCAD": "Based on Canadian Dollar (CAD)",
+  "exchangeRateDisclaimer": "Exchange rates are for reference only",
+  "priceInCurrency": "Price in {currency}",
+  "@priceInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountInCurrency": "Amount in {currency}",
+  "@amountInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "convertTo": "Convert to {currency}",
+  "@convertTo": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "oneXEqualsYCAD": "1 {currency} = {rate} CAD",
+  "@oneXEqualsYCAD": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "price": "Price",
+  "currencySelectionDialog": "Currency Selection Dialog",
+  "chooseCurrencyPreference": "Choose your currency preference",
+  "currencyDisplayOnly": "Display only",
+  "pricesNotConverted": "Prices are not automatically converted",
+  "currentSelectedCurrency": "Currently selected currency",
+  "loadingCurrencies": "Loading available currencies...",
+  "noCurrenciesAvailable": "No currencies available at the moment",
+  "cannotLoadCurrencies": "Unable to load currency list",
+  "currencyUpdated": "Your currency has been updated successfully",
+  "confirmCurrencyChange": "Confirm currency change",
+  "currencySettingsTile": "Currency Settings",
+  "manageCurrencySettings": "Manage currency settings",
+  "defaultCurrencyCAD": "CAD (default)",
+  "selectPreferredCurrency": "Select preferred currency",
+  "currencySettingsUpdated": "Currency settings updated",
+  "selectYourCurrency": "Select Your Currency",
+  "chooseDisplayCurrency": "Choose your display currency",
+  "currencyForPrices": "This currency will be used to display prices",
+  "noCurrencySelected": "No currency selected",
+  "popularCurrenciesOnly": "Popular currencies only",
+  "allAvailableCurrencies": "All available currencies",
+  "currencySelectionComplete": "Currency selection complete",
+  "applyChanges": "Apply changes",
+  "discardChanges": "Discard changes",
+  "defaultCurrencyCAD": "CAD (default)",
+  "chooseCurrencyDescription": "Choose your preferred display currency",
+  "loadingCurrencies": "Loading currencies...",
+  "noCurrenciesAvailable": "No currencies available",
+  "cannotLoadCurrencies": "Unable to load currencies from server",
+  "currencyDisplayOnly": "This currency will be used for display only. Prices are not converted.",
+  "popular": "Popular",
+  "currencyUpdatedSuccessfully": "Currency updated successfully",
+  "noSuggestionsYet": "No suggestions yet"
 }

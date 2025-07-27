@@ -1,4 +1,4 @@
-// auth_state.dart - VERSION CORRIGÉE
+// blocs/auth/auth_state.dart - VERSION COMPLÈTE CORRIGÉE
 part of 'auth_bloc.dart';
 
 abstract class AuthState extends Equatable {
@@ -14,8 +14,9 @@ class AuthLoading extends AuthState {}
 
 class AuthSuccess extends AuthState {
   final User user;
+  final String? message;
 
-  const AuthSuccess({required this.user});
+  const AuthSuccess({required this.user, this.message});
 
   @override
   List<Object> get props => [user];
@@ -73,7 +74,7 @@ class EmailConfirmationRequired extends AuthState {
   List<Object> get props => [email];
 }
 
-// NOUVEAU: État spécifique pour email non vérifié lors du login
+// État spécifique pour email non vérifié lors du login
 class EmailVerificationRequired extends AuthState {
   final String email;
 

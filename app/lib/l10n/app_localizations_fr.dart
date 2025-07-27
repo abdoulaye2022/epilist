@@ -659,7 +659,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Peut tout faire, y compris partager et supprimer';
 
   @override
-  String get total => 'Total';
+  String get total => 'total';
 
   @override
   String get progress => 'Progression';
@@ -2002,4 +2002,239 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get privacyContactText =>
       'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables.';
+
+  @override
+  String get currency => 'Devise';
+
+  @override
+  String get currencies => 'Devises';
+
+  @override
+  String get selectCurrency => 'Sélectionner la devise';
+
+  @override
+  String get changeCurrency => 'Changer la devise';
+
+  @override
+  String get currencySettings => 'Paramètres de devise';
+
+  @override
+  String get currencyCode => 'Code de devise';
+
+  @override
+  String get currencySymbol => 'Symbole de devise';
+
+  @override
+  String get exchangeRate => 'Taux de change';
+
+  @override
+  String get defaultCurrency => 'Devise par défaut';
+
+  @override
+  String get preferredCurrency => 'Devise préférée';
+
+  @override
+  String get currentCurrency => 'Devise actuelle';
+
+  @override
+  String get noCurrencySet => 'Aucune devise définie';
+
+  @override
+  String get chooseCurrencyDescription =>
+      'Choisissez votre devise d\'affichage préférée';
+
+  @override
+  String get manageCurrencyDescription => 'Gérez vos préférences de devise';
+
+  @override
+  String get currencyConversionInfo =>
+      'Les prix seront automatiquement convertis dans votre devise';
+
+  @override
+  String get showPopularOnly => 'Afficher seulement les devises populaires';
+
+  @override
+  String get convertPrices => 'Convertir les prix';
+
+  @override
+  String get viewInLocalCurrency => 'Voir en devise locale';
+
+  @override
+  String get formatUserAmount => 'Formater le montant';
+
+  @override
+  String get updateCurrency => 'Mettre à jour la devise';
+
+  @override
+  String get select => 'Sélectionner';
+
+  @override
+  String get each => 'chacun';
+
+  @override
+  String get unitPrice => 'Prix unitaire';
+
+  @override
+  String get totalPrice => 'Prix total';
+
+  @override
+  String get formattedPrice => 'Prix formaté';
+
+  @override
+  String get originalAmount => 'Montant original';
+
+  @override
+  String get convertedAmount => 'Montant converti';
+
+  @override
+  String get exchangeRateToCAD => 'Taux de change vers CAD';
+
+  @override
+  String get popularCurrencies => 'Devises populaires';
+
+  @override
+  String get allCurrencies => 'Toutes les devises';
+
+  @override
+  String get supportedCurrencies => 'Devises supportées';
+
+  @override
+  String get currencyNotFound => 'Devise non trouvée';
+
+  @override
+  String get invalidCurrency => 'Devise invalide';
+
+  @override
+  String get currencyUpdateFailed => 'Échec de la mise à jour de la devise';
+
+  @override
+  String get conversionFailed => 'Échec de la conversion de devise';
+
+  @override
+  String get exchangeRateNotAvailable => 'Taux de change non disponible';
+
+  @override
+  String get currencyUpdatedSuccessfully => 'Devise mise à jour avec succès';
+
+  @override
+  String get currencySelectedSuccessfully => 'Devise sélectionnée avec succès';
+
+  @override
+  String get conversionSuccessful => 'Conversion réussie';
+
+  @override
+  String get currencyInfo => 'Informations de devise';
+
+  @override
+  String get rateLastUpdated => 'Taux mis à jour le';
+
+  @override
+  String get basedOnCAD => 'Basé sur le Dollar Canadien (CAD)';
+
+  @override
+  String get exchangeRateDisclaimer =>
+      'Les taux de change sont donnés à titre indicatif';
+
+  @override
+  String priceInCurrency(String currency) {
+    return 'Prix en $currency';
+  }
+
+  @override
+  String amountInCurrency(String currency) {
+    return 'Montant en $currency';
+  }
+
+  @override
+  String convertTo(String currency) {
+    return 'Convertir en $currency';
+  }
+
+  @override
+  String oneXEqualsYCAD(String currency, String rate) {
+    return '1 $currency = $rate CAD';
+  }
+
+  @override
+  String get price => 'Prix';
+
+  @override
+  String get currencySelectionDialog => 'Dialogue de sélection de devise';
+
+  @override
+  String get chooseCurrencyPreference =>
+      'Choisissez votre préférence de devise';
+
+  @override
+  String get currencyDisplayOnly =>
+      'Cette devise sera utilisée pour l\'affichage uniquement. Les prix ne sont pas convertis.';
+
+  @override
+  String get pricesNotConverted =>
+      'Les prix ne sont pas convertis automatiquement';
+
+  @override
+  String get currentSelectedCurrency => 'Devise actuellement sélectionnée';
+
+  @override
+  String get loadingCurrencies => 'Chargement des devises...';
+
+  @override
+  String get noCurrenciesAvailable => 'Aucune devise disponible';
+
+  @override
+  String get cannotLoadCurrencies =>
+      'Impossible de charger les devises depuis le serveur';
+
+  @override
+  String get currencyUpdated => 'Votre devise a été mise à jour avec succès';
+
+  @override
+  String get confirmCurrencyChange => 'Confirmer le changement de devise';
+
+  @override
+  String get currencySettingsTile => 'Paramètres de devise';
+
+  @override
+  String get manageCurrencySettings => 'Gérer les paramètres de devise';
+
+  @override
+  String get defaultCurrencyCAD => 'CAD (par défaut)';
+
+  @override
+  String get selectPreferredCurrency => 'Sélectionner la devise préférée';
+
+  @override
+  String get currencySettingsUpdated => 'Paramètres de devise mis à jour';
+
+  @override
+  String get selectYourCurrency => 'Sélectionnez votre devise';
+
+  @override
+  String get chooseDisplayCurrency => 'Choisissez votre devise d\'affichage';
+
+  @override
+  String get currencyForPrices =>
+      'Cette devise sera utilisée pour afficher les prix';
+
+  @override
+  String get noCurrencySelected => 'Aucune devise sélectionnée';
+
+  @override
+  String get popularCurrenciesOnly => 'Devises populaires uniquement';
+
+  @override
+  String get allAvailableCurrencies => 'Toutes les devises disponibles';
+
+  @override
+  String get currencySelectionComplete => 'Sélection de devise terminée';
+
+  @override
+  String get applyChanges => 'Appliquer les modifications';
+
+  @override
+  String get discardChanges => 'Annuler les modifications';
+
+  @override
+  String get popular => 'Populaire';
 }

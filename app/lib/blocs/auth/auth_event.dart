@@ -1,4 +1,4 @@
-// auth_event.dart - VERSION CORRIGÉE
+// blocs/auth/auth_event.dart - VERSION COMPLÈTE CORRIGÉE
 part of 'auth_bloc.dart';
 
 abstract class AuthEvent extends Equatable {
@@ -86,7 +86,7 @@ class VerifyPasswordChangeCode extends AuthEvent {
   List<Object> get props => [email, code, newPassword];
 }
 
-// AJOUT: Événements manquants pour la confirmation d'email
+// Événements pour la confirmation d'email
 class ConfirmEmailRequested extends AuthEvent {
   final String email;
   final String code;
@@ -97,7 +97,6 @@ class ConfirmEmailRequested extends AuthEvent {
   List<Object> get props => [email, code];
 }
 
-// Dans votre auth_event.dart
 class ResendVerificationCode extends AuthEvent {
   final String email;
   final bool isFromRegistration;
@@ -131,3 +130,13 @@ class ConfirmAccountDeletion extends AuthEvent {
 class CancelAccountDeletion extends AuthEvent {}
 
 class GetAccountDeletionStatus extends AuthEvent {}
+
+// ✅ NOUVEL ÉVÉNEMENT pour mettre à jour les données utilisateur
+class UpdateUserData extends AuthEvent {
+  final User user;
+
+  const UpdateUserData(this.user);
+
+  @override
+  List<Object> get props => [user];
+}

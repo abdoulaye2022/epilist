@@ -1,4 +1,4 @@
-// widgets/profile/language_setting_tile.dart - VERSION AMÉLIORÉE
+// widgets/profile/language_setting_tile.dart - DIALOGUE SIMPLIFIÉ
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -180,109 +180,100 @@ class LanguageSettingTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.white,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Header
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ✅ EN-TÊTE SIMPLIFIÉ (comme add_item_dialog)
+                    _buildIcon(),
+                    const SizedBox(height: 20),
+                    _buildTitle(l10n),
+                    const SizedBox(height: 12),
+                    _buildDescription(l10n),
+                    const SizedBox(height: 24),
+
+                    // Options de langue
+                    _buildLanguageOption(
+                      context,
+                      'fr',
+                      l10n.french,
+                      '🇫🇷',
+                      'Français',
+                      currentLanguage == 'fr',
                     ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.green[100],
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Icon(
-                            Icons.language_rounded,
-                            color: Colors.green[600],
-                            size: 28,
+                    const SizedBox(height: 12),
+                    _buildLanguageOption(
+                      context,
+                      'en',
+                      l10n.english,
+                      '🇺🇸',
+                      'English',
+                      currentLanguage == 'en',
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Bouton fermer
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: Colors.grey[300]!),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.selectLanguage,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.choosePreferredLanguage,
+                        child: Text(
+                          l10n.continueButton,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                             color: Colors.grey[600],
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        _buildLanguageOption(
-                          context,
-                          'fr',
-                          l10n.french,
-                          '🇫🇷',
-                          'Français',
-                          currentLanguage == 'fr',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildLanguageOption(
-                          context,
-                          'en',
-                          l10n.english,
-                          '🇺🇸',
-                          'English',
-                          currentLanguage == 'en',
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Bouton fermer
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.grey[300]!),
-                              ),
-                            ),
-                            child: Text(
-                              l10n.continueButton,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
+    );
+  }
+
+  // ✅ NOUVEAU: Icône simple comme add_item_dialog
+  Widget _buildIcon() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Icon(Icons.language_rounded, size: 40, color: Colors.green[600]),
+    );
+  }
+
+  // ✅ NOUVEAU: Titre simple
+  Widget _buildTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.selectLanguage,
+      style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+    );
+  }
+
+  // ✅ NOUVEAU: Description simple
+  Widget _buildDescription(AppLocalizations l10n) {
+    return Text(
+      l10n.choosePreferredLanguage,
+      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      textAlign: TextAlign.center,
     );
   }
 

@@ -1,5 +1,9 @@
-// screens/profile_screen.dart - VERSION AVEC GESTION DES SUGGESTIONS
+// screens/profile_screen.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/blocs/currency/currency_bloc.dart';
+import 'package:epilist/blocs/currency/currency_event.dart';
+import 'package:epilist/blocs/currency/currency_state.dart';
+import 'package:epilist/models/currency.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/login_screen.dart';
@@ -7,6 +11,7 @@ import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/terms_of_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/currency/currency_selector_dialog.dart';
 import 'package:epilist/widgets/profile/edit_profile_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:epilist/widgets/dialogs/security_settings_dialog.dart';
@@ -19,11 +24,9 @@ import 'package:epilist/widgets/profile/profile_header_card.dart';
 import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
 import 'package:epilist/widgets/profile/language_setting_tile.dart';
-// ✅ NOUVEAU: Import du widget de gestion des suggestions
 import 'package:epilist/screens/suggestion_management_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -34,7 +37,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  User? _currentUser; // ✅ Stocker l'utilisateur localement
+  User? _currentUser;
 
   @override
   void initState() {
@@ -45,18 +48,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _loadUserProfile() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = context.read<AuthBloc>().state;
-      debugPrint('🔍 ProfileScreen initState - État: ${authState.runtimeType}');
 
       if (authState is AuthSuccess) {
         _currentUser = authState.user;
-        debugPrint('✅ Utilisateur déjà disponible: ${_currentUser?.email}');
       } else if (authState is ProfileUpdated) {
         _currentUser = authState.user;
-        debugPrint(
-          '✅ Utilisateur mis à jour disponible: ${_currentUser?.email}',
-        );
       } else {
-        debugPrint('🔄 Chargement de l\'utilisateur...');
         context.read<AuthBloc>().add(GetCurrentUser());
       }
     });
@@ -70,11 +67,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listener:
           (context, state) => _handleAuthStateChanges(context, state, l10n),
       buildWhen: (previous, current) {
-        debugPrint(
-          '🔍 ProfileScreen buildWhen: ${previous.runtimeType} → ${current.runtimeType}',
-        );
-
-        // ✅ Reconstruire seulement pour les états d'authentification principaux
         return current is AuthLoading ||
             current is AuthSuccess ||
             current is ProfileUpdated ||
@@ -90,26 +82,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     AuthState state,
     AppLocalizations l10n,
   ) {
-    debugPrint('🎧 ProfileScreen Listener - État: ${state.runtimeType}');
-
     if (state is Unauthenticated) {
-      debugPrint('🔴 Utilisateur déconnecté, redirection vers login');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
 
-    // ✅ Mettre à jour l'utilisateur local quand nécessaire
     if (state is AuthSuccess) {
       _currentUser = state.user;
-      debugPrint('✅ Utilisateur mis à jour: ${_currentUser?.email}');
     } else if (state is ProfileUpdated) {
       _currentUser = state.user;
-      debugPrint('✅ Profil mis à jour: ${_currentUser?.email}');
     }
 
-    // ✅ Gérer les états de suppression de compte avec SnackBar
     if (state is AccountDeletionCodeSent) {
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.deletionCodeSent);
     } else if (state is AccountDeletionConfirmed) {
@@ -127,55 +112,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildContent(AuthState state, AppLocalizations l10n) {
-    debugPrint('🎨 ProfileScreen _buildContent - État: ${state.runtimeType}');
-    debugPrint('👤 Utilisateur actuel: ${_currentUser?.email ?? 'null'}');
-
-    // ✅ État de chargement SEULEMENT si on n'a pas d'utilisateur
     if (state is AuthLoading && _currentUser == null) {
-      debugPrint('⏳ Affichage du loading (pas d\'utilisateur)');
       return const ProfileLoadingState();
     }
 
-    // ✅ Utilisateur disponible (soit dans l'état, soit stocké localement)
     User? user;
     if (state is AuthSuccess) {
       user = state.user;
     } else if (state is ProfileUpdated) {
       user = state.user;
     } else if (_currentUser != null) {
-      user = _currentUser; // Utiliser l'utilisateur stocké
+      user = _currentUser;
     }
 
     if (user != null) {
-      debugPrint('✅ Affichage du profil pour: ${user.email}');
       return _buildProfileView(user, l10n);
     }
 
-    // ✅ État d'erreur seulement si vraiment en erreur ET pas d'utilisateur en backup
     if (state is AuthFailure && _currentUser == null) {
-      debugPrint('❌ Affichage de l\'erreur: ${state.error}');
       return ProfileErrorState(
         onRetry: () {
-          debugPrint('🔄 Retry demandé...');
           context.read<AuthBloc>().add(GetCurrentUser());
         },
         onLogout: () {
-          debugPrint('🔴 Logout demandé...');
           context.read<AuthBloc>().add(LogoutRequested());
         },
       );
     }
 
-    // ✅ Si on a un utilisateur en backup, l'afficher même en cas d'erreur temporaire
     if (_currentUser != null) {
-      debugPrint(
-        '✅ Affichage du profil en backup pour: ${_currentUser!.email}',
-      );
       return _buildProfileView(_currentUser!, l10n);
     }
 
-    // ✅ Fallback: état de chargement
-    debugPrint('⏳ Fallback vers loading');
     return const ProfileLoadingState();
   }
 
@@ -193,14 +161,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
 
-            // ✅ Widget de statut de suppression
             const AccountDeletionStatusWidget(),
 
             _buildDataSection(l10n),
             const SizedBox(height: 16),
 
-            // ✅ NOUVELLE SECTION: Paramètres de l'application
-            _buildAppSettingsSection(l10n),
+            _buildAppSettingsSection(l10n, user),
             const SizedBox(height: 16),
 
             _buildSettingsSection(l10n),
@@ -215,7 +181,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ✅ MODIFIÉ: Section "Mes données" avec gestion des suggestions
   Widget _buildDataSection(AppLocalizations l10n) {
     return ProfileSection(
       title: l10n.myData,
@@ -225,7 +190,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: l10n.myShoppingLists,
           onTap: _navigateToShoppingLists,
         ),
-        // ✅ NOUVEAU: Gestion des suggestions
         ProfileActionTile(
           icon: Icons.auto_awesome,
           title: l10n.manageSuggestions,
@@ -235,14 +199,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ✅ NOUVELLE SECTION: Paramètres de l'application
-  Widget _buildAppSettingsSection(AppLocalizations l10n) {
+  Widget _buildAppSettingsSection(AppLocalizations l10n, User user) {
     return ProfileSection(
       title: l10n.appSettings,
       children: [
-        // Widget de sélection de langue
+        _buildCurrencySettingTile(l10n),
+        const SizedBox(height: 12),
         const LanguageSettingTile(),
       ],
+    );
+  }
+
+  Widget _buildCurrencySettingTile(AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _showCurrencySelectionDialog,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: BlocBuilder<CurrencyBloc, CurrencyState>(
+              builder: (context, state) {
+                Currency? currentCurrency;
+
+                if (state is UserCurrencyLoaded) {
+                  currentCurrency = state.userCurrency.currency;
+                } else if (state is UserCurrencyUpdated) {
+                  currentCurrency = state.userCurrency.currency;
+                } else if (state is CurrenciesLoaded &&
+                    state.userCurrency != null) {
+                  currentCurrency = state.userCurrency!.currency;
+                }
+
+                if (currentCurrency == null && _currentUser?.currency != null) {
+                  currentCurrency = _currentUser!.currency;
+                }
+
+                currentCurrency ??= Currency.cad;
+
+                return Row(
+                  children: [
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.green[400]!, Colors.green[600]!],
+                        ),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Center(
+                        child: Text(
+                          currentCurrency.symbol,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.currency,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${currentCurrency.name} (${currentCurrency.code.toUpperCase()})',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey[400],
+                      size: 24,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCurrencySelectionDialog() {
+    context.read<CurrencyBloc>().add(const LoadCurrencies());
+    context.read<CurrencyBloc>().add(const LoadUserCurrency());
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (dialogContext) => MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: context.read<CurrencyBloc>()),
+              BlocProvider.value(value: context.read<AuthBloc>()),
+            ],
+            child: CurrencySelectionDialog(
+              currentCurrency: _currentUser?.currency,
+              onCurrencySelected: (Currency selectedCurrency) {
+                setState(() {
+                  if (_currentUser != null) {
+                    _currentUser = _currentUser!.copyWith(
+                      currency: selectedCurrency,
+                    );
+                  }
+                });
+              },
+            ),
+          ),
     );
   }
 
@@ -282,7 +382,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Actions de navigation
   void _navigateToShoppingLists() {
     Navigator.push(
       context,
@@ -290,7 +389,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ✅ NOUVELLE MÉTHODE: Navigation vers la gestion des suggestions
   void _navigateToSuggestionManagement() {
     Navigator.push(
       context,
@@ -321,7 +419,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Dialogues
   void _showEditProfileDialog(User user) {
     showDialog(
       context: context,

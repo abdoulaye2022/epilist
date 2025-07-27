@@ -1,4 +1,4 @@
-// screens/list_detail_screen.dart - VERSION CORRIGÉE AVEC TOUTES LES FONCTIONNALITÉS
+// screens/list_detail_screen.dart - VERSION CORRIGÉE AVEC FormattedAmount
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -19,6 +19,7 @@ import 'package:epilist/widgets/list_detail/modern_dropdown_menu.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -56,10 +57,6 @@ class _ListDetailView extends StatefulWidget {
 
 class _ListDetailViewState extends State<_ListDetailView> {
   late ShoppingList currentList;
-
-  String _formatPrice(double price) {
-    return '${price.toStringAsFixed(2)} \$CAD';
-  }
 
   @override
   void initState() {
@@ -492,15 +489,26 @@ class _ListDetailViewState extends State<_ListDetailView> {
                         : Colors.grey[600],
               ),
             ),
-            if (item.price != null) ...[
+            // ✅ CORRECTION CRITIQUE: Utiliser FormattedAmount au lieu de _formatPrice
+            if (item.price != null && item.price! > 0) ...[
               Text(
-                ' • ${_formatPrice(item.price!)}',
+                ' • ',
                 style: TextStyle(
                   color:
                       currentList.isReadOnly
                           ? Colors.grey[500]
                           : Colors.grey[600],
                 ),
+              ),
+              FormattedAmount(
+                amount: item.price!,
+                style: TextStyle(
+                  color:
+                      currentList.isReadOnly
+                          ? Colors.grey[500]
+                          : Colors.grey[600],
+                ),
+                showCode: false,
               ),
             ],
           ],

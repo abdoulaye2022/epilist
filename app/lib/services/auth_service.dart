@@ -1,4 +1,4 @@
-// auth_service.dart - CORRECTION : Une seule source d'erreur
+// auth_service.dart - CORRECTION : Gestion correcte de la réponse de login
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
@@ -158,7 +158,7 @@ class AuthService {
     }
   }
 
-  // === LOGIN (INCHANGÉ) ===
+  // === LOGIN - CORRIGÉ POUR GÉRER LA STRUCTURE DE RÉPONSE ===
 
   Future<Map<String, String>> login(String email, String password) async {
     try {
@@ -169,7 +169,9 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final user = User.fromLoginResponse(response.data);
+
+        // ✅ CORRECTION : Vérifier que nous avons la bonne structure
+        print('Réponse complète de login: $data');
 
         final accessToken = data['access_token'] as String?;
         final refreshToken = data['refresh_token'] as String?;
@@ -181,6 +183,27 @@ class AuthService {
           );
         }
 
+        // ✅ CORRECTION CRITIQUE : Créer l'utilisateur avec les tokens ET les données
+        final user = User.fromLoginResponse({
+          'access_token': accessToken,
+          'refresh_token': refreshToken,
+          'data': data['data'], // ✅ IMPORTANT: Passer les données utilisateur
+        });
+
+        // ✅ DEBUG: Vérifier que la devise est bien parsée
+        print('Utilisateur créé: ${user.fullName} (${user.email})');
+        print(
+          'Devise utilisateur: ${user.currency?.code ?? 'null'} - ${user.currency?.symbol ?? 'null'}',
+        );
+        if (user.currency != null) {
+          print(
+            'Devise complète: ${user.currency!.name} (${user.currency!.symbol})',
+          );
+        }
+
+        // ✅ NOUVEAU : Sauvegarder l'utilisateur en cache immédiatement
+        await saveUserToCache(user);
+
         final expiry = _getTokenExpiration(accessToken);
         print('Nouveau token reçu, expire le: $expiry');
 
@@ -189,6 +212,10 @@ class AuthService {
         throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
     } on DioException catch (e) {
+      print(
+        'DioException lors du login: ${e.response?.statusCode} - ${e.response?.data}',
+      );
+
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
         if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
@@ -221,6 +248,7 @@ class AuthService {
         );
       }
     } catch (e) {
+      print('Erreur inattendue lors du login: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue',
         'UNKNOWN_ERROR',
@@ -228,9 +256,7 @@ class AuthService {
     }
   }
 
-  // === REGISTER - MODIFIÉ POUR MAPPER LES CODES D'ERREUR CORRECTEMENT ===
-
-  // auth_service.dart - CORRECTION FINALE : Utiliser seulement les codes d'erreur
+  // === REGISTER (INCHANGÉ) ===
 
   Future<void> register(
     String firstName,
@@ -256,19 +282,16 @@ class AuthService {
         );
       }
     } on DioException catch (e) {
-      // Gestion spécifique des erreurs de votre API
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
 
         if (errorData != null && errorData is Map) {
           final errorCode = errorData['code'] as String?;
-          final errorMessage = errorData['message'] as String?;
 
-          // ✅ CORRECTION : Utiliser seulement les codes d'erreur, pas les messages français
           switch (errorCode) {
             case 'EMAIL_ALREADY_EXISTS':
               throw AuthenticationException(
-                'EMAIL_ALREADY_EXISTS', // ← Code d'erreur seulement
+                'EMAIL_ALREADY_EXISTS',
                 'EMAIL_ALREADY_EXISTS',
               );
             case 'VALIDATION_ERROR':
@@ -284,22 +307,17 @@ class AuthService {
           }
         }
       } else if (e.response?.statusCode == 409) {
-        // Code de conflit générique
         throw AuthenticationException('EMAIL_CONFLICT', 'EMAIL_CONFLICT');
       } else if (e.response?.statusCode == 422) {
-        // Erreurs de validation
         throw AuthenticationException('VALIDATION_ERROR', 'VALIDATION_ERROR');
       } else if (e.response?.statusCode == 500) {
-        // Erreur serveur
         throw AuthenticationException('SERVER_ERROR', 'SERVER_ERROR');
       } else {
-        // Autres erreurs réseau
         throw AuthenticationException('NETWORK_ERROR', 'NETWORK_ERROR');
       }
     } catch (e) {
-      // Erreur inattendue (pas une DioException)
       if (e is AuthenticationException) {
-        rethrow; // Relancer les AuthenticationException déjà créées
+        rethrow;
       }
 
       throw AuthenticationException('UNKNOWN_ERROR', 'UNKNOWN_ERROR');
@@ -362,43 +380,66 @@ class AuthService {
   Future<void> saveUserToCache(User user) async {
     try {
       await sharedPreferences.setString(_userKey, user.toJsonString());
+      print('Utilisateur sauvegardé en cache: ${user.fullName}');
     } catch (e) {
       print('Erreur lors de la sauvegarde utilisateur: $e');
     }
   }
 
+  // ✅ CORRECTION : getCurrentUser amélioré pour gérer le cache et les appels API
   Future<User?> getCurrentUser() async {
     try {
+      // D'abord, essayer de récupérer depuis le cache
       final cachedUserData = sharedPreferences.getString(_userKey);
-      if (cachedUserData != null) {
-        final userData = User.fromJsonString(cachedUserData);
-        return userData;
+      if (cachedUserData != null && cachedUserData.isNotEmpty) {
+        try {
+          final userData = User.fromJsonString(cachedUserData);
+          print('Utilisateur récupéré depuis le cache: ${userData.fullName}');
+          return userData;
+        } catch (e) {
+          print('Erreur lors de la lecture du cache utilisateur: $e');
+          // Si le cache est corrompu, continuer avec l'appel API
+        }
       }
 
+      // Si pas de cache ou cache corrompu, faire un appel API
       final token = await getToken();
       if (token == null) {
+        print('Aucun token disponible pour getCurrentUser');
         return null;
       }
 
+      print('Récupération des informations utilisateur depuis l\'API...');
       final response = await dio.get(
         '/auth/me',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200) {
+        print('Réponse /auth/me: ${response.data}');
         final user = User.fromMap(response.data);
-        await sharedPreferences.setString(_userKey, user.toJsonString());
+
+        // Sauvegarder en cache
+        await saveUserToCache(user);
+
+        print('Utilisateur récupéré depuis l\'API: ${user.fullName}');
         return user;
       }
 
+      print('Réponse inattendue de /auth/me: ${response.statusCode}');
       return null;
     } on DioException catch (e) {
+      print(
+        'Erreur DioException dans getCurrentUser: ${e.response?.statusCode} - ${e.message}',
+      );
+
       if (e.response?.statusCode == 401) {
+        print('Token expiré, nettoyage des données utilisateur');
         await clearUserData();
       }
       return null;
     } catch (e) {
-      print('Erreur lors de la récupération utilisateur: $e');
+      print('Erreur inattendue lors de la récupération utilisateur: $e');
       return null;
     }
   }
@@ -456,7 +497,7 @@ class AuthService {
       );
 
       final updatedUser = User.fromMap(response.data);
-      await sharedPreferences.setString(_userKey, updatedUser.toJsonString());
+      await saveUserToCache(updatedUser);
 
       return updatedUser;
     } on DioException catch (e) {
@@ -496,7 +537,6 @@ class AuthService {
         if (errorData != null && errorData is Map) {
           final errorCode = errorData['code'] as String?;
 
-          // ✅ CORRECTION: Gérer les codes d'erreur uniformes
           switch (errorCode) {
             case 'INVALID_CODE':
               throw AuthenticationException('INVALID_CODE', 'INVALID_CODE');

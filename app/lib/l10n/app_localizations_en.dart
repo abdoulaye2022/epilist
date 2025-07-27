@@ -648,7 +648,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Can do everything, including share and delete';
 
   @override
-  String get total => 'Total';
+  String get total => 'total';
 
   @override
   String get progress => 'Progress';
@@ -1967,4 +1967,235 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyContactText =>
       'For any questions regarding this privacy policy or your data, please contact us through our website.\n\nWe are committed to responding within 48 business hours.';
+
+  @override
+  String get currency => 'Currency';
+
+  @override
+  String get currencies => 'Currencies';
+
+  @override
+  String get selectCurrency => 'Select Currency';
+
+  @override
+  String get changeCurrency => 'Change Currency';
+
+  @override
+  String get currencySettings => 'Currency Settings';
+
+  @override
+  String get currencyCode => 'Currency Code';
+
+  @override
+  String get currencySymbol => 'Currency Symbol';
+
+  @override
+  String get exchangeRate => 'Exchange Rate';
+
+  @override
+  String get defaultCurrency => 'Default Currency';
+
+  @override
+  String get preferredCurrency => 'Preferred Currency';
+
+  @override
+  String get currentCurrency => 'Current Currency';
+
+  @override
+  String get noCurrencySet => 'No currency set';
+
+  @override
+  String get chooseCurrencyDescription =>
+      'Choose your preferred display currency';
+
+  @override
+  String get manageCurrencyDescription => 'Manage your currency preferences';
+
+  @override
+  String get currencyConversionInfo =>
+      'Prices will be automatically converted to your currency';
+
+  @override
+  String get showPopularOnly => 'Show popular currencies only';
+
+  @override
+  String get convertPrices => 'Convert Prices';
+
+  @override
+  String get viewInLocalCurrency => 'View in Local Currency';
+
+  @override
+  String get formatUserAmount => 'Format Amount';
+
+  @override
+  String get updateCurrency => 'Update Currency';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get each => 'each';
+
+  @override
+  String get unitPrice => 'Unit Price';
+
+  @override
+  String get totalPrice => 'Total Price';
+
+  @override
+  String get formattedPrice => 'Formatted Price';
+
+  @override
+  String get originalAmount => 'Original Amount';
+
+  @override
+  String get convertedAmount => 'Converted Amount';
+
+  @override
+  String get exchangeRateToCAD => 'Exchange Rate to CAD';
+
+  @override
+  String get popularCurrencies => 'Popular Currencies';
+
+  @override
+  String get allCurrencies => 'All Currencies';
+
+  @override
+  String get supportedCurrencies => 'Supported Currencies';
+
+  @override
+  String get currencyNotFound => 'Currency not found';
+
+  @override
+  String get invalidCurrency => 'Invalid currency';
+
+  @override
+  String get currencyUpdateFailed => 'Failed to update currency';
+
+  @override
+  String get conversionFailed => 'Currency conversion failed';
+
+  @override
+  String get exchangeRateNotAvailable => 'Exchange rate not available';
+
+  @override
+  String get currencyUpdatedSuccessfully => 'Currency updated successfully';
+
+  @override
+  String get currencySelectedSuccessfully => 'Currency selected successfully';
+
+  @override
+  String get conversionSuccessful => 'Conversion successful';
+
+  @override
+  String get currencyInfo => 'Currency Information';
+
+  @override
+  String get rateLastUpdated => 'Rate last updated';
+
+  @override
+  String get basedOnCAD => 'Based on Canadian Dollar (CAD)';
+
+  @override
+  String get exchangeRateDisclaimer => 'Exchange rates are for reference only';
+
+  @override
+  String priceInCurrency(String currency) {
+    return 'Price in $currency';
+  }
+
+  @override
+  String amountInCurrency(String currency) {
+    return 'Amount in $currency';
+  }
+
+  @override
+  String convertTo(String currency) {
+    return 'Convert to $currency';
+  }
+
+  @override
+  String oneXEqualsYCAD(String currency, String rate) {
+    return '1 $currency = $rate CAD';
+  }
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get currencySelectionDialog => 'Currency Selection Dialog';
+
+  @override
+  String get chooseCurrencyPreference => 'Choose your currency preference';
+
+  @override
+  String get currencyDisplayOnly =>
+      'This currency will be used for display only. Prices are not converted.';
+
+  @override
+  String get pricesNotConverted => 'Prices are not automatically converted';
+
+  @override
+  String get currentSelectedCurrency => 'Currently selected currency';
+
+  @override
+  String get loadingCurrencies => 'Loading currencies...';
+
+  @override
+  String get noCurrenciesAvailable => 'No currencies available';
+
+  @override
+  String get cannotLoadCurrencies => 'Unable to load currencies from server';
+
+  @override
+  String get currencyUpdated => 'Your currency has been updated successfully';
+
+  @override
+  String get confirmCurrencyChange => 'Confirm currency change';
+
+  @override
+  String get currencySettingsTile => 'Currency Settings';
+
+  @override
+  String get manageCurrencySettings => 'Manage currency settings';
+
+  @override
+  String get defaultCurrencyCAD => 'CAD (default)';
+
+  @override
+  String get selectPreferredCurrency => 'Select preferred currency';
+
+  @override
+  String get currencySettingsUpdated => 'Currency settings updated';
+
+  @override
+  String get selectYourCurrency => 'Select Your Currency';
+
+  @override
+  String get chooseDisplayCurrency => 'Choose your display currency';
+
+  @override
+  String get currencyForPrices =>
+      'This currency will be used to display prices';
+
+  @override
+  String get noCurrencySelected => 'No currency selected';
+
+  @override
+  String get popularCurrenciesOnly => 'Popular currencies only';
+
+  @override
+  String get allAvailableCurrencies => 'All available currencies';
+
+  @override
+  String get currencySelectionComplete => 'Currency selection complete';
+
+  @override
+  String get applyChanges => 'Apply changes';
+
+  @override
+  String get discardChanges => 'Discard changes';
+
+  @override
+  String get popular => 'Popular';
 }

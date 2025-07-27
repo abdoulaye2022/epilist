@@ -1,6 +1,7 @@
-// widgets/shopping/shopping_list_card.dart - VERSION CORRIGÉE AVEC RAPPELS
+// widgets/shopping/shopping_list_card.dart - VERSION SANS SIGNE DOLLAR
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingListCard extends StatelessWidget {
@@ -134,17 +135,35 @@ class ShoppingListCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
-                  const SizedBox(width: 4),
+                  // ✅ CHANGEMENT: Icône de budget au lieu du signe dollar
+                  Icon(
+                    Icons.account_balance_wallet,
+                    size: 16,
+                    color: Colors.green[600],
+                  ),
+                  const SizedBox(width: 6),
                   Expanded(
-                    child: Text(
-                      '${l10n.budget}: ${totalPrice.toStringAsFixed(2)}${l10n.cad}',
-                      style: TextStyle(
-                        color: Colors.green[600],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      children: [
+                        Text(
+                          '${l10n.budget}: ',
+                          style: TextStyle(
+                            color: Colors.green[600],
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Flexible(
+                          child: FormattedAmount(
+                            amount: totalPrice,
+                            style: TextStyle(
+                              color: Colors.green[600],
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -163,17 +182,29 @@ class ShoppingListCard extends StatelessWidget {
               ),
               if (totalPrice > 0) ...[
                 const SizedBox(width: 16),
-                Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    '${l10n.budget}: ${totalPrice.toStringAsFixed(2)}${l10n.cad}',
+                // ✅ CHANGEMENT: Icône de budget au lieu du signe dollar
+                Icon(
+                  Icons.account_balance_wallet,
+                  size: 16,
+                  color: Colors.green[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '${l10n.budget}: ',
+                  style: TextStyle(
+                    color: Colors.green[600],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Flexible(
+                  child: FormattedAmount(
+                    amount: totalPrice,
                     style: TextStyle(
                       color: Colors.green[600],
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

@@ -1,10 +1,12 @@
 <?php
-// src/Models/User.php - VERSION AVEC SUPPRESSION DE COMPTE
+// src/Models/User.php - VERSION MISE À JOUR AVEC SUPPORT DEVISE
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 
 class User extends Model
@@ -28,7 +30,8 @@ class User extends Model
         'email_verification_code_expires_at',
         'email_verified_at',
         'email_verified',
-        // ✅ Nouveaux champs pour la suppression
+        'currency_id', // ✅ Nouveau champ pour la devise
+        // Champs pour la suppression
         'account_deletion_code',
         'account_deletion_code_expires_at',
         'deletion_reason',
@@ -41,24 +44,73 @@ class User extends Model
         'password_hash',
         'email_verification_code',
         'password_change_code',
-        'account_deletion_code', // ✅ Cacher le code de suppression
+        'account_deletion_code',
         'deleted_at'
     ];
 
     protected $casts = [
         'terms_accepted' => 'boolean',
         'email_verified' => 'boolean',
-        'is_deletion_requested' => 'boolean', // ✅ Nouveau cast
-        'is_active' => 'boolean', // ✅ Nouveau cast
+        'is_deletion_requested' => 'boolean',
+        'is_active' => 'boolean',
+        'currency_id' => 'integer', // ✅ Nouveau cast
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'email_verified_at' => 'datetime',
         'password_change_code_expires_at' => 'datetime',
         'email_verification_code_expires_at' => 'datetime',
-        'account_deletion_code_expires_at' => 'datetime', // ✅ Nouveau cast
-        'deletion_requested_at' => 'datetime' // ✅ Nouveau cast
+        'account_deletion_code_expires_at' => 'datetime',
+        'deletion_requested_at' => 'datetime'
     ];
+
+    protected $attributes = [
+        'currency_id' => 1, // ✅ CAD par défaut
+        'is_active' => true,
+        'email_verified' => false,
+        'terms_accepted' => false,
+        'is_deletion_requested' => false
+    ];
+
+    /**
+     * ✅ NOUVELLE RELATION: Devise préférée de l'utilisateur
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * Relation avec les listes de courses
+     */
+    public function shoppingLists(): HasMany
+    {
+        return $this->hasMany(ShoppingList::class);
+    }
+
+    /**
+     * Relation avec les suggestions de produits
+     */
+    public function productSuggestions(): HasMany
+    {
+        return $this->hasMany(ProductSuggestion::class);
+    }
+
+    /**
+     * Relation avec les listes partagées (en tant que propriétaire)
+     */
+    public function ownedSharedLists(): HasMany
+    {
+        return $this->hasMany(SharedList::class, 'owner_id');
+    }
+
+    /**
+     * Relation avec les listes partagées (en tant qu'invité)
+     */
+    public function receivedSharedLists(): HasMany
+    {
+        return $this->hasMany(SharedList::class, 'shared_with_user_id');
+    }
 
     /**
      * Trouve un utilisateur par email
@@ -68,17 +120,12 @@ class User extends Model
         return static::where('email', $email)->first();
     }
 
-    /**
-     * Vérifie si l'email est vérifié (vérifie les deux systèmes pour compatibilité)
-     */
+    // ✅ MÉTHODES EXISTANTES (inchangées)
     public function isEmailVerified(): bool
     {
         return $this->email_verified || $this->email_verified_at !== null;
     }
 
-    /**
-     * Marque l'email comme vérifié
-     */
     public function markEmailAsVerified(): void
     {
         $this->update([
@@ -89,58 +136,39 @@ class User extends Model
         ]);
     }
 
-    /**
-     * Vérifie si le code de vérification est valide
-     */
     public function isVerificationCodeValid(string $code): bool
     {
         return $this->email_verification_code === $code && 
                $this->email_verification_code_expires_at > now();
     }
 
-    /**
-     * Vérifie si le code de changement de mot de passe est valide
-     */
     public function isPasswordChangeCodeValid(string $code): bool
     {
         return $this->password_change_code === $code && 
                $this->password_change_code_expires_at > now();
     }
 
-    // ✅ NOUVELLES MÉTHODES POUR LA SUPPRESSION DE COMPTE
-
-    /**
-     * Vérifie si le code de suppression de compte est valide
-     */
+    // ✅ MÉTHODES DE SUPPRESSION (inchangées)
     public function isAccountDeletionCodeValid(string $code): bool
     {
         return $this->account_deletion_code === $code && 
                $this->account_deletion_code_expires_at > Carbon::now();
     }
 
-    /**
-     * Vérifie si une suppression de compte est en cours
-     */
     public function isDeletionRequested(): bool
     {
         return $this->is_deletion_requested;
     }
 
-    /**
-     * Vérifie si le compte est actif
-     */
     public function isActive(): bool
     {
         return $this->is_active && !$this->isDeletionRequested();
     }
 
-    /**
-     * Génère un code de suppression de compte
-     */
     public function generateDeletionCode(): string
     {
         $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
-        $expiration = Carbon::now()->addHours(2); // Code valide 2 heures
+        $expiration = Carbon::now()->addHours(2);
 
         $this->update([
             'account_deletion_code' => $code,
@@ -150,24 +178,18 @@ class User extends Model
         return $code;
     }
 
-    /**
-     * Marque le compte comme demande de suppression
-     */
     public function requestDeletion(?string $reason = null): void
     {
         $this->update([
             'is_deletion_requested' => true,
             'deletion_requested_at' => Carbon::now(),
             'deletion_reason' => $reason,
-            'is_active' => false, // Désactiver immédiatement
+            'is_active' => false,
             'account_deletion_code' => null,
             'account_deletion_code_expires_at' => null
         ]);
     }
 
-    /**
-     * Annule la demande de suppression
-     */
     public function cancelDeletionRequest(): void
     {
         $this->update([
@@ -180,9 +202,6 @@ class User extends Model
         ]);
     }
 
-    /**
-     * Anonymise les données de l'utilisateur (pour RGPD)
-     */
     public function anonymizeData(): void
     {
         $anonymizedEmail = "deleted_user_{$this->id}@deleted.local";
@@ -202,30 +221,154 @@ class User extends Model
         ]);
     }
 
-    // ✅ SCOPES UTILES
+    // ✅ NOUVELLES MÉTHODES POUR LES DEVISES
 
     /**
-     * Scope pour les utilisateurs actifs
+     * Obtenir la devise de l'utilisateur ou la devise par défaut
      */
+    public function getPreferredCurrency(): Currency
+    {
+        if ($this->currency) {
+            return $this->currency;
+        }
+
+        // Si pas de devise assignée, utiliser CAD par défaut et sauvegarder
+        $defaultCurrency = Currency::getDefault();
+        $this->update(['currency_id' => $defaultCurrency->id]);
+        
+        return $defaultCurrency;
+    }
+
+    /**
+     * Changer la devise préférée de l'utilisateur
+     */
+    public function setCurrency(int $currencyId): bool
+    {
+        $currency = Currency::active()->find($currencyId);
+        
+        if (!$currency) {
+            throw new \InvalidArgumentException('Invalid currency ID');
+        }
+
+        return $this->update(['currency_id' => $currencyId]);
+    }
+
+    /**
+     * Changer la devise par code
+     */
+    public function setCurrencyByCode(string $currencyCode): bool
+    {
+        $currency = Currency::findByCode($currencyCode);
+        
+        if (!$currency) {
+            throw new \InvalidArgumentException('Invalid currency code: ' . $currencyCode);
+        }
+
+        return $this->setCurrency($currency->id);
+    }
+
+    /**
+     * Formater un montant dans la devise de l'utilisateur
+     */
+    public function formatAmount(float $amount, bool $showCode = false): string
+    {
+        $currency = $this->getPreferredCurrency();
+        return $currency->formatAmount($amount, $showCode);
+    }
+
+    /**
+     * Convertir un montant vers la devise de l'utilisateur
+     */
+    public function convertToCurrency(float $amount, string $fromCurrencyCode): float
+    {
+        $userCurrency = $this->getPreferredCurrency();
+        return Currency::convert($amount, $fromCurrencyCode, $userCurrency->code);
+    }
+
+    /**
+     * Convertir un montant depuis la devise de l'utilisateur
+     */
+    public function convertFromCurrency(float $amount, string $toCurrencyCode): float
+    {
+        $userCurrency = $this->getPreferredCurrency();
+        return Currency::convert($amount, $userCurrency->code, $toCurrencyCode);
+    }
+
+    // ✅ SCOPES EXISTANTS (inchangés)
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
                     ->where('is_deletion_requested', false);
     }
 
-    /**
-     * Scope pour les utilisateurs avec demande de suppression
-     */
     public function scopeDeletionRequested($query)
     {
         return $query->where('is_deletion_requested', true);
     }
 
-    /**
-     * Scope pour les utilisateurs inactifs
-     */
     public function scopeInactive($query)
     {
         return $query->where('is_active', false);
+    }
+
+    // ✅ NOUVEAUX SCOPES POUR LES DEVISES
+    public function scopeWithCurrency($query, string $currencyCode)
+    {
+        return $query->whereHas('currency', function($q) use ($currencyCode) {
+            $q->where('code', $currencyCode);
+        });
+    }
+
+    public function scopeWithPopularCurrency($query)
+    {
+        return $query->whereHas('currency', function($q) {
+            $q->where('is_popular', true);
+        });
+    }
+
+    /**
+     * ✅ BOOT METHOD pour assigner la devise par défaut
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Assigner automatiquement la devise par défaut lors de la création
+        static::creating(function ($user) {
+            if (!$user->currency_id) {
+                $defaultCurrency = Currency::getDefault();
+                $user->currency_id = $defaultCurrency->id;
+            }
+        });
+    }
+
+    /**
+     * ✅ ACCESSEUR pour obtenir le nom complet
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
+
+    /**
+     * ✅ ACCESSEUR pour les données API avec devise
+     */
+    public function getApiDataAttribute(): array
+    {
+        $currency = $this->getPreferredCurrency();
+        
+        return [
+            'id' => $this->id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'full_name' => $this->full_name,
+            'email' => $this->email,
+            'email_verified' => $this->email_verified,
+            'email_verified_at' => $this->email_verified_at?->toISOString(),
+            'currency' => $currency->getApiFormatAttribute(),
+            'is_active' => $this->is_active,
+            'created_at' => $this->created_at->toISOString(),
+            'updated_at' => $this->updated_at->toISOString()
+        ];
     }
 }

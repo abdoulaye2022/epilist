@@ -1,9 +1,10 @@
-// widgets/dialogs/add_item_dialog.dart - VERSION CORRIGÉE AVEC SAUVEGARDE BLOC
+// widgets/dialogs/add_item_dialog.dart - VERSION CORRIGÉE SANS CAD
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/duplicate_confirmation_dialog.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -359,12 +360,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
       subtitle: Row(
         children: [
           if (suggestion.price != null) ...[
-            Text(
-              suggestion.formattedPrice,
+            // ✅ CORRECTION: Utiliser FormattedAmount au lieu de suggestion.formattedPrice
+            FormattedAmount(
+              amount: suggestion.price!,
               style: TextStyle(
                 color: Colors.green[600],
                 fontWeight: FontWeight.w500,
               ),
+              showCode: false,
             ),
             if (suggestion.storeName != null)
               Text(' • ${suggestion.storeName}'),
@@ -416,9 +419,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
           child: TextField(
             controller: priceController,
             decoration: InputDecoration(
-              labelText: l10n.priceCAD,
+              // ✅ CORRECTION: Remplacer l10n.priceCAD par l10n.price
+              labelText: l10n.price, // Plus de référence à CAD
               hintText: '0.00',
               prefixIcon: Icon(Icons.attach_money, color: Colors.amber[700]),
+              // ✅ CORRECTION: Afficher uniquement l'indicateur de devise
+              suffixIcon: _buildCurrencyIndicator(),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey[300]!),
@@ -438,6 +444,27 @@ class _AddItemDialogState extends State<AddItemDialog> {
           ),
         ),
       ],
+    );
+  }
+
+  // ✅ CORRECTION: Widget pour afficher uniquement la devise sans montant
+  Widget _buildCurrencyIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.amber[50],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.amber[200]!),
+      ),
+      child: Text(
+        'CAD', // Temporaire - sera remplacé par la devise dynamique
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.amber[700],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 

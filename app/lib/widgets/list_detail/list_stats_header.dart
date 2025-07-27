@@ -1,5 +1,6 @@
-// widgets/list_detail/list_stats_header.dart
+// widgets/list_detail/list_stats_header.dart - VERSION CORRIGÉE
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
 import 'package:flutter/material.dart';
 
 class ListStatsHeader extends StatelessWidget {
@@ -14,11 +15,6 @@ class ListStatsHeader extends StatelessWidget {
     required this.totalPrice,
   });
 
-  String _formatPrice(BuildContext context, double price) {
-    final l10n = AppLocalizations.of(context)!;
-    return '${price.toStringAsFixed(2)}${l10n.cad}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -27,13 +23,14 @@ class ListStatsHeader extends StatelessWidget {
 
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem(l10n.articles, '$purchasedItems/$totalItems'),
-          _buildStatItem(l10n.total, _formatPrice(context, totalPrice)),
+          // ✅ CORRECTION: Utiliser FormattedAmount pour le total
+          _buildStatItemWithAmount(l10n.total, totalPrice),
           _buildStatItem(l10n.progress, '$progressPercentage%'),
         ],
       ),
@@ -50,6 +47,24 @@ class ListStatsHeader extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: Colors.green[600],
           ),
+        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+      ],
+    );
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Pour afficher les montants avec FormattedAmount
+  Widget _buildStatItemWithAmount(String label, double amount) {
+    return Column(
+      children: [
+        FormattedAmount(
+          amount: amount,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green[600],
+          ),
+          showCode: false,
         ),
         Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],

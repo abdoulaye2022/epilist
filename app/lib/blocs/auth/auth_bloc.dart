@@ -1,26 +1,42 @@
-// auth_bloc.dart - VERSION CORRIGÉE AVEC LOCALISATION
+// blocs/auth/auth_bloc.dart - VERSION COMPLÈTE AVEC UpdateUserData
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
-import 'package:epilist/blocs/localization/localization_bloc.dart'; // ✅ NOUVEAU
+import 'package:epilist/blocs/localization/localization_bloc.dart';
+import 'package:epilist/services/auth_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/models/user.dart';
 import 'dart:async';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+// Exception personnalisée pour l'authentification
+class AuthenticationException implements Exception {
+  final String code;
+  final String message;
+  final String? email;
+
+  AuthenticationException({
+    required this.code,
+    required this.message,
+    this.email,
+  });
+
+  @override
+  String toString() => 'AuthenticationException: $code - $message';
+}
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
   final AccountDeletionService accountDeletionService;
-  final LocalizationBloc localizationBloc; // ✅ NOUVEAU
+  final LocalizationBloc localizationBloc;
   Timer? _tokenRefreshTimer;
 
   AuthBloc({
     required this.authService,
     required this.accountDeletionService,
-    required this.localizationBloc, // ✅ NOUVEAU
+    required this.localizationBloc,
   }) : super(AuthInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);
@@ -38,6 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ConfirmAccountDeletion>(_onConfirmAccountDeletion);
     on<CancelAccountDeletion>(_onCancelAccountDeletion);
     on<GetAccountDeletionStatus>(_onGetAccountDeletionStatus);
+    on<UpdateUserData>(_onUpdateUserData); // ✅ AJOUT
   }
 
   @override
@@ -46,7 +63,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 
-  /// ✅ NOUVEAU: Méthode pour obtenir les messages d'erreur traduits
+  /// ✅ NOUVEAU GESTIONNAIRE: Mettre à jour les données utilisateur
+  Future<void> _onUpdateUserData(
+    UpdateUserData event,
+    Emitter<AuthState> emit,
+  ) async {
+    // Vérifier que nous sommes dans un état d'authentification réussie
+    if (state is AuthSuccess) {
+      final currentState = state as AuthSuccess;
+
+      // Émettre un nouvel état avec les données utilisateur mises à jour
+      emit(AuthSuccess(user: event.user, message: currentState.message));
+
+      // Optionnel: Sauvegarder les nouvelles données utilisateur dans le cache local
+      try {
+        await authService.saveUserToCache(event.user);
+      } catch (e) {
+        print('Erreur lors de la sauvegarde en cache: $e');
+        // Ne pas émettre d'erreur car la mise à jour en mémoire a réussi
+      }
+    }
+  }
+
+  /// Méthode pour obtenir les messages d'erreur traduits
   String _getTranslatedErrorMessage(String errorCode, String errorMessage) {
     // Messages en français
     const Map<String, String> frenchMessages = {
@@ -122,7 +161,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ NOUVEAU: Méthode pour analyser l'exception et extraire le code d'erreur
+  /// Méthode pour analyser l'exception et extraire le code d'erreur
   String _extractErrorCode(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
@@ -216,15 +255,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Récupérer l'utilisateur
       final user = await authService.getCurrentUser();
       if (user != null) {
-        _scheduleTokenRefresh(); // Programmer le refresh adaptatif
+        _scheduleTokenRefresh();
         emit(AuthSuccess(user: user));
       } else {
-        // ✅ UTILISER la traduction pour ce message d'erreur
         final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
         emit(AuthFailure(error: errorMessage));
       }
     } on AuthenticationException catch (e) {
-      // ✅ GÉRER les exceptions d'authentification avec traduction
       String errorCode;
       switch (e.code) {
         case 'INVALID_CREDENTIALS':
@@ -250,7 +287,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.message);
       emit(AuthFailure(error: errorMessage));
     } catch (e) {
-      // ✅ GÉRER les autres erreurs avec traduction
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -268,7 +304,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
         if (user != null) {
-          _scheduleTokenRefresh(); // Programmer le refresh adaptatif
+          _scheduleTokenRefresh();
           emit(AuthSuccess(user: user));
         } else {
           await authService.clearUserData();
@@ -278,7 +314,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      // ✅ UTILISER la traduction pour l'erreur de vérification
       final errorMessage = _getTranslatedErrorMessage(
         'AUTH_CHECK_ERROR',
         e.toString(),
@@ -296,19 +331,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final tokens = await authService.refreshToken(event.refreshToken);
 
-      // Sauvegarder les nouveaux tokens
       await authService.saveTokens(
         tokens['access_token']!,
         tokens['refresh_token']!,
       );
 
-      // Programmer le prochain refresh
       _scheduleTokenRefresh();
 
-      // Émettre l'état de succès avec les tokens mis à jour
       emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
     } catch (e) {
-      // ✅ UTILISER la traduction pour l'erreur de session expirée
       final errorMessage = _getTranslatedErrorMessage(
         'SESSION_EXPIRED',
         e.toString(),
@@ -326,25 +357,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      // Annuler le timer de refresh
       _tokenRefreshTimer?.cancel();
-
-      // Effectuer la déconnexion côté serveur
       await authService.logout();
-
-      // Nettoyer toutes les données locales
       await authService.clearUserData();
-
       await Future.delayed(const Duration(milliseconds: 100));
       emit(Unauthenticated());
     } catch (e) {
-      // Forcer la déconnexion locale même en cas d'erreur
       try {
         _tokenRefreshTimer?.cancel();
         await authService.clearUserData();
         emit(Unauthenticated());
       } catch (clearError) {
-        // ✅ UTILISER la traduction pour l'erreur de déconnexion
         final errorMessage = _getTranslatedErrorMessage(
           'LOGOUT_ERROR',
           e.toString(),
@@ -371,7 +394,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs d'inscription
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -392,7 +414,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      // ✅ UTILISER la traduction pour l'erreur de récupération utilisateur
       final errorMessage = _getTranslatedErrorMessage(
         'USER_INFO_ERROR',
         e.toString(),
@@ -418,7 +439,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(ProfileUpdated(updatedUser));
       emit(AuthSuccess(user: updatedUser));
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de mise à jour profil
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -452,7 +472,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.requestPasswordChangeCode(event.email);
       emit(PasswordChangeCodeSent(event.email));
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de demande de code
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -473,7 +492,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       emit(PasswordChanged());
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de vérification de code
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -503,7 +521,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           _scheduleTokenRefresh();
           emit(AuthSuccess(user: user));
         } else {
-          // ✅ UTILISER la traduction pour l'erreur d'informations utilisateur
           final errorMessage = _getTranslatedErrorMessage(
             'USER_INFO_ERROR',
             '',
@@ -514,7 +531,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(EmailConfirmationSuccess());
       }
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de confirmation d'email
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -534,23 +550,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await Future.delayed(const Duration(milliseconds: 500));
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de renvoi de code
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
     }
   }
 
-  // ⭐ MÉTHODE INCHANGÉE: Programmer le rafraîchissement adaptatif du token
   void _scheduleTokenRefresh() async {
     _tokenRefreshTimer?.cancel();
 
     try {
-      // Vérifier si le token doit être rafraîchi bientôt
       final shouldRefresh = await authService.shouldRefreshSoon();
 
       if (shouldRefresh) {
-        // Si le token expire dans moins de 7 jours, programmer un refresh dans 1 jour
         _tokenRefreshTimer = Timer(const Duration(days: 1), () async {
           try {
             final refreshToken = await authService.getRefreshToken();
@@ -561,10 +573,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             print('Erreur lors du refresh programmé: $e');
           }
         });
-
-        print('Refresh programmé dans 1 jour (token expire bientôt)');
       } else {
-        // Si le token a encore plus de 7 jours, programmer un refresh dans 7 jours
         _tokenRefreshTimer = Timer(const Duration(days: 7), () async {
           try {
             final refreshToken = await authService.getRefreshToken();
@@ -575,12 +584,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             print('Erreur lors du refresh programmé: $e');
           }
         });
-
-        print('Refresh programmé dans 7 jours');
       }
     } catch (e) {
-      print('Erreur lors de la programmation du refresh: $e');
-      // En cas d'erreur, programmer un refresh dans 1 jour par sécurité
       _tokenRefreshTimer = Timer(const Duration(days: 1), () async {
         try {
           final refreshToken = await authService.getRefreshToken();
@@ -594,7 +599,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // [Les méthodes de suppression de compte avec traductions]
+  // Méthodes pour la suppression de compte
   Future<void> _onRequestAccountDeletion(
     RequestAccountDeletion event,
     Emitter<AuthState> emit,
@@ -613,7 +618,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de suppression de compte
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -647,7 +651,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authService.clearUserData();
       emit(Unauthenticated());
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de confirmation de suppression
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -672,7 +675,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs d'annulation de suppression
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
@@ -687,7 +689,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final status = await accountDeletionService.getAccountDeletionStatus();
       emit(AccountDeletionStatusLoaded(status));
     } catch (e) {
-      // ✅ UTILISER la traduction pour les erreurs de statut de suppression
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));

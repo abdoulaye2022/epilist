@@ -844,5 +844,119 @@
 "privacyChangesTitle": "8. Modifications",
 "privacyChangesText": "Cette politique peut être mise à jour pour refléter les évolutions de l'application. Nous vous informerons des changements importants par :\n\n• Email à l'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l'application après les changements constitue votre acceptation.",
 "privacyContactTitle": "9. Contact",
-"privacyContactText": "Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables."
+"privacyContactText": "Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre dans les 48 heures ouvrables.",
+"currency": "Devise",
+  "currencies": "Devises",
+  "selectCurrency": "Sélectionner la devise",
+  "changeCurrency": "Changer la devise",
+  "currencySettings": "Paramètres de devise",
+  "currencyCode": "Code de devise",
+  "currencySymbol": "Symbole de devise",
+  "exchangeRate": "Taux de change",
+  "defaultCurrency": "Devise par défaut",
+  "preferredCurrency": "Devise préférée",
+  "currentCurrency": "Devise actuelle",
+  "noCurrencySet": "Aucune devise définie",
+  "chooseCurrencyDescription": "Choisissez votre devise préférée pour les prix",
+  "manageCurrencyDescription": "Gérez vos préférences de devise",
+  "currencyConversionInfo": "Les prix seront automatiquement convertis dans votre devise",
+  "showPopularOnly": "Afficher seulement les devises populaires",
+  "convertPrices": "Convertir les prix",
+  "viewInLocalCurrency": "Voir en devise locale",
+  "formatUserAmount": "Formater le montant",
+  "updateCurrency": "Mettre à jour la devise",
+  "select": "Sélectionner",
+  "each": "chacun",
+  "total": "total",
+  "unitPrice": "Prix unitaire",
+  "totalPrice": "Prix total",
+  "formattedPrice": "Prix formaté",
+  "originalAmount": "Montant original",
+  "convertedAmount": "Montant converti",
+  "exchangeRateToCAD": "Taux de change vers CAD",
+  "popularCurrencies": "Devises populaires",
+  "allCurrencies": "Toutes les devises",
+  "supportedCurrencies": "Devises supportées",
+  "currencyNotFound": "Devise non trouvée",
+  "invalidCurrency": "Devise invalide",
+  "currencyUpdateFailed": "Échec de la mise à jour de la devise",
+  "conversionFailed": "Échec de la conversion de devise",
+  "exchangeRateNotAvailable": "Taux de change non disponible",
+  "currencyUpdatedSuccessfully": "Devise mise à jour avec succès",
+  "currencySelectedSuccessfully": "Devise sélectionnée avec succès",
+  "conversionSuccessful": "Conversion réussie",
+  "currencyInfo": "Informations de devise",
+  "rateLastUpdated": "Taux mis à jour le",
+  "basedOnCAD": "Basé sur le Dollar Canadien (CAD)",
+  "exchangeRateDisclaimer": "Les taux de change sont donnés à titre indicatif",
+  "priceInCurrency": "Prix en {currency}",
+  "@priceInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountInCurrency": "Montant en {currency}",
+  "@amountInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "convertTo": "Convertir en {currency}",
+  "@convertTo": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "oneXEqualsYCAD": "1 {currency} = {rate} CAD",
+  "@oneXEqualsYCAD": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "price": "Prix",
+  "currencySelectionDialog": "Dialogue de sélection de devise",
+  "chooseCurrencyPreference": "Choisissez votre préférence de devise",
+  "currencyDisplayOnly": "Affichage uniquement",
+  "pricesNotConverted": "Les prix ne sont pas convertis automatiquement",
+  "currentSelectedCurrency": "Devise actuellement sélectionnée",
+  "loadingCurrencies": "Chargement des devises disponibles...",
+  "noCurrenciesAvailable": "Aucune devise disponible pour le moment",
+  "cannotLoadCurrencies": "Impossible de charger la liste des devises",
+  "currencyUpdated": "Votre devise a été mise à jour avec succès",
+  "confirmCurrencyChange": "Confirmer le changement de devise",
+  
+  "currencySettingsTile": "Paramètres de devise",
+  "manageCurrencySettings": "Gérer les paramètres de devise",
+  "defaultCurrencyCAD": "CAD (par défaut)",
+  "selectPreferredCurrency": "Sélectionner la devise préférée",
+  "currencySettingsUpdated": "Paramètres de devise mis à jour",
+  
+  "selectYourCurrency": "Sélectionnez votre devise",
+  "chooseDisplayCurrency": "Choisissez votre devise d'affichage",
+  "currencyForPrices": "Cette devise sera utilisée pour afficher les prix",
+  "noCurrencySelected": "Aucune devise sélectionnée",
+  "popularCurrenciesOnly": "Devises populaires uniquement",
+  "allAvailableCurrencies": "Toutes les devises disponibles",
+  "currencySelectionComplete": "Sélection de devise terminée",
+  "applyChanges": "Appliquer les modifications",
+  "discardChanges": "Annuler les modifications",
+  "defaultCurrencyCAD": "CAD (par défaut)",
+  "chooseCurrencyDescription": "Choisissez votre devise d'affichage préférée",
+  "loadingCurrencies": "Chargement des devises...",
+  "noCurrenciesAvailable": "Aucune devise disponible",
+  "cannotLoadCurrencies": "Impossible de charger les devises depuis le serveur",
+  "currencyDisplayOnly": "Cette devise sera utilisée pour l'affichage uniquement. Les prix ne sont pas convertis.",
+  "popular": "Populaire",
+  "currencyUpdatedSuccessfully": "Devise mise à jour avec succès"
 }

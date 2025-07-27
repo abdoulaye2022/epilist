@@ -1,7 +1,8 @@
-// widgets/list_detail/swipeable_item_card.dart
+// widgets/list_detail/swipeable_item_card.dart - VERSION CORRIGÉE
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
 import 'package:flutter/material.dart';
 
 class SwipeableItemCard extends StatelessWidget {
@@ -21,11 +22,6 @@ class SwipeableItemCard extends StatelessWidget {
     required this.onTogglePurchased,
     this.onPermissionDenied,
   });
-
-  String _formatPrice(BuildContext context, double price) {
-    final l10n = AppLocalizations.of(context)!;
-    return '${price.toStringAsFixed(2)}${l10n.cad}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +45,7 @@ class SwipeableItemCard extends StatelessWidget {
       },
       onDismissed: (direction) => onDelete(item),
       child: Card(
-        margin: EdgeInsets.only(bottom: 8),
+        margin: const EdgeInsets.only(bottom: 8),
         color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -76,21 +72,21 @@ class SwipeableItemCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.red[600],
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: isStartToEnd ? Alignment.centerLeft : Alignment.centerRight,
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.delete_rounded, color: Colors.white, size: 32),
-          SizedBox(height: 4),
+          const Icon(Icons.delete_rounded, color: Colors.white, size: 32),
+          const SizedBox(height: 4),
           Text(
             l10n.delete,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 12,
@@ -192,9 +188,10 @@ class SwipeableItemCard extends StatelessWidget {
                         : Colors.grey[600],
               ),
             ),
-            if (item.price != null) ...[
+            // ✅ CORRECTION: Utiliser FormattedAmount au lieu de _formatPrice
+            if (item.price != null && item.price! > 0) ...[
               Text(
-                ' • ${_formatPrice(context, item.price!)}',
+                ' • ',
                 style: TextStyle(
                   color:
                       shoppingList.isReadOnly
@@ -202,11 +199,21 @@ class SwipeableItemCard extends StatelessWidget {
                           : Colors.grey[600],
                 ),
               ),
+              FormattedAmount(
+                amount: item.price!,
+                style: TextStyle(
+                  color:
+                      shoppingList.isReadOnly
+                          ? Colors.grey[500]
+                          : Colors.grey[600],
+                ),
+                showCode: false,
+              ),
             ],
           ],
         ),
         if (item.storeName != null && item.storeName!.isNotEmpty) ...[
-          SizedBox(height: 2),
+          const SizedBox(height: 2),
           Row(
             children: [
               Icon(
@@ -217,7 +224,7 @@ class SwipeableItemCard extends StatelessWidget {
                         ? Colors.grey[400]
                         : Colors.grey[600],
               ),
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   item.storeName!,
@@ -244,7 +251,7 @@ class SwipeableItemCard extends StatelessWidget {
 
     if (shoppingList.isReadOnly) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: Colors.blue[50],
           borderRadius: BorderRadius.circular(12),
@@ -254,7 +261,7 @@ class SwipeableItemCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               l10n.readOnlyShort,
               style: TextStyle(

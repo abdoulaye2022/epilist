@@ -1,5 +1,5 @@
 <?php
-// app/Models/ListItem.php - VERSION MULTILINGUE AVEC SUPPORT EN/FR
+// app/Models/ListItem.php - VERSION MISE À JOUR AVEC SUPPORT DEVISE
 
 namespace App\Models;
 
@@ -37,7 +37,7 @@ class ListItem extends Model
     ];
 
     /**
-     * ✅ VALIDATION RULES WITH ENGLISH MESSAGES
+     * ✅ VALIDATION RULES WITH ENGLISH MESSAGES (inchangé)
      */
     public static function getValidationRules(): array
     {
@@ -63,19 +63,15 @@ class ListItem extends Model
         ];
     }
 
-    /**
-     * ✅ MULTILINGUAL PRODUCT NAME NORMALIZATION (EN/FR)
-     */
+    // ✅ TOUTES LES MÉTHODES EXISTANTES RESTENT IDENTIQUES
+    // (normalizeProductName, normalizeStoreName, validatePrice, validateQuantity, etc.)
+    
     public static function normalizeProductName(string $name): string
     {
-        // 1. Basic cleanup
         $name = trim($name);
         $name = preg_replace('/\s+/', ' ', $name);
-        
-        // 2. Proper capitalization
         $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
         
-        // 3. Multilingual corrections for common food products
         $corrections = [
             // English plurals to singular
             'Apples' => 'Apple',
@@ -133,9 +129,6 @@ class ListItem extends Model
         return $name;
     }
 
-    /**
-     * ✅ MULTILINGUAL STORE NAME NORMALIZATION
-     */
     public static function normalizeStoreName(?string $store): ?string
     {
         if (empty($store)) {
@@ -145,7 +138,6 @@ class ListItem extends Model
         $store = trim($store);
         $store = mb_convert_case($store, MB_CASE_TITLE, 'UTF-8');
         
-        // Store corrections for major Canadian chains
         $storeCorrections = [
             // Quebec/French Canada
             'Iga' => 'IGA',
@@ -199,19 +191,14 @@ class ListItem extends Model
         return $store;
     }
 
-    /**
-     * ✅ ENHANCED PRICE VALIDATION
-     */
     public static function validatePrice(?float $price): ?float
     {
         if ($price === null) {
             return null;
         }
         
-        // Round to 2 decimals
         $price = round($price, 2);
         
-        // Check limits
         if ($price < 0) {
             throw new \InvalidArgumentException('Price cannot be negative');
         }
@@ -223,13 +210,10 @@ class ListItem extends Model
         return $price;
     }
 
-    /**
-     * ✅ ENHANCED QUANTITY VALIDATION
-     */
     public static function validateQuantity(?int $quantity): int
     {
         if ($quantity === null) {
-            return 1; // Default value
+            return 1;
         }
         
         if ($quantity < 1) {
@@ -243,9 +227,6 @@ class ListItem extends Model
         return $quantity;
     }
 
-    /**
-     * ✅ CLEAN CREATION METHOD
-     */
     public static function createClean(array $data): self
     {
         $cleanData = [
@@ -260,9 +241,6 @@ class ListItem extends Model
         return self::create($cleanData);
     }
 
-    /**
-     * ✅ CLEAN UPDATE METHOD
-     */
     public function updateClean(array $data): bool
     {
         $cleanData = [];
@@ -290,19 +268,13 @@ class ListItem extends Model
         return $this->update($cleanData);
     }
 
-    /**
-     * ✅ ENHANCED DUPLICATE DETECTION (MULTILINGUAL)
-     */
     public static function findPotentialDuplicates(int $listId, string $productName, ?string $storeName = null): array
     {
         $normalizedName = self::normalizeProductName($productName);
         
-        // Create variations for better matching
         $searchVariations = [
             $normalizedName,
-            // Remove common words for better matching
             preg_replace('/\b(de|du|des|the|a|an|of)\b/i', '', $normalizedName),
-            // First word only for partial matches
             explode(' ', $normalizedName)[0]
         ];
         
@@ -317,7 +289,6 @@ class ListItem extends Model
             }
         });
         
-        // If store specified, filter by same store
         if ($storeName) {
             $normalizedStore = self::normalizeStoreName($storeName);
             $query->where('store_name', $normalizedStore);
@@ -326,9 +297,6 @@ class ListItem extends Model
         return $query->get()->toArray();
     }
 
-    /**
-     * ✅ MODEL EVENTS FOR AUTO-CLEANING
-     */
     protected static function boot()
     {
         parent::boot();
@@ -352,23 +320,107 @@ class ListItem extends Model
         });
     }
 
-    /**
-     * ✅ MULTILINGUAL SEARCH SCOPE
-     */
     public function scopeSearchByName($query, string $search)
     {
         $normalizedSearch = self::normalizeProductName($search);
         
-        // Search in both original and normalized forms
         return $query->where(function($q) use ($search, $normalizedSearch) {
             $q->where('product_name', 'LIKE', "%{$search}%")
               ->orWhere('product_name', 'LIKE', "%{$normalizedSearch}%");
         });
     }
 
+    // ✅ NOUVELLES MÉTHODES POUR LE FORMATAGE AVEC DEVISE
+
     /**
-     * ✅ FORMATTED ACCESSORS
+     * Obtenir le prix formaté dans une devise spécifique
      */
+    public function getFormattedPriceInCurrency(?Currency $currency = null): string
+    {
+        if ($this->price === null) {
+            return '';
+        }
+
+        if ($currency) {
+            return $currency->formatAmount($this->price);
+        }
+
+        // Format par défaut en CAD
+        return '$' . number_format($this->price, 2);
+    }
+
+    /**
+     * Obtenir le prix formaté selon la devise de l'utilisateur
+     */
+    public function getFormattedPriceForUser(?User $user = null): string
+    {
+        if ($this->price === null) {
+            return '';
+        }
+
+        if ($user) {
+            $currency = $user->getPreferredCurrency();
+            return $currency->formatAmount($this->price);
+        }
+
+        return $this->getFormattedPriceInCurrency();
+    }
+
+    /**
+     * Obtenir le prix total formaté (prix × quantité)
+     */
+    public function getFormattedTotalPriceInCurrency(?Currency $currency = null): string
+    {
+        if ($this->price === null) {
+            return '';
+        }
+
+        $totalPrice = $this->price * $this->quantity;
+
+        if ($currency) {
+            return $currency->formatAmount($totalPrice);
+        }
+
+        return '$' . number_format($totalPrice, 2);
+    }
+
+    /**
+     * Obtenir le prix total formaté selon la devise de l'utilisateur
+     */
+    public function getFormattedTotalPriceForUser(?User $user = null): string
+    {
+        if ($this->price === null) {
+            return '';
+        }
+
+        $totalPrice = $this->price * $this->quantity;
+
+        if ($user) {
+            $currency = $user->getPreferredCurrency();
+            return $currency->formatAmount($totalPrice);
+        }
+
+        return '$' . number_format($totalPrice, 2);
+    }
+
+    /**
+     * Convertir le prix vers une autre devise
+     */
+    public function convertPriceTo(string $toCurrencyCode): ?float
+    {
+        if ($this->price === null) {
+            return null;
+        }
+
+        try {
+            return Currency::convert($this->price, 'CAD', $toCurrencyCode);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    // ✅ ACCESSEURS EXISTANTS AMÉLIORÉS
+
     public function getFormattedNameAttribute(): string
     {
         $name = $this->product_name;
@@ -382,11 +434,54 @@ class ListItem extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        if ($this->price === null) {
-            return '';
+        return $this->getFormattedPriceInCurrency();
+    }
+
+    public function getFormattedTotalPriceAttribute(): string
+    {
+        return $this->getFormattedTotalPriceInCurrency();
+    }
+
+    /**
+     * ✅ NOUVEAUX ACCESSEURS POUR LES DONNÉES API
+     */
+    public function getApiDataAttribute(): array
+    {
+        return [
+            'id' => $this->id,
+            'list_id' => $this->list_id,
+            'product_name' => $this->product_name,
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+            'store_name' => $this->store_name,
+            'is_purchased' => $this->is_purchased,
+            'formatted_name' => $this->formatted_name,
+            'formatted_price' => $this->formatted_price,
+            'formatted_total_price' => $this->formatted_total_price,
+            'total_price' => $this->price ? $this->price * $this->quantity : null,
+            'created_at' => $this->created_at->toISOString(),
+            'updated_at' => $this->updated_at->toISOString()
+        ];
+    }
+
+    /**
+     * Obtenir les données API formatées selon la devise de l'utilisateur
+     */
+    public function getApiDataForUser(?User $user = null): array
+    {
+        $data = $this->getApiDataAttribute();
+        
+        if ($user && $this->price !== null) {
+            $currency = $user->getPreferredCurrency();
+            $data['formatted_price'] = $currency->formatAmount($this->price);
+            $data['formatted_total_price'] = $currency->formatAmount($this->price * $this->quantity);
+            $data['currency'] = [
+                'code' => $currency->code,
+                'symbol' => $currency->symbol
+            ];
         }
         
-        return '$' . number_format($this->price, 2);
+        return $data;
     }
 
     /**

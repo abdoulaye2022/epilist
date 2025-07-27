@@ -1,6 +1,8 @@
-// main.dart - VERSION AVEC CONNECTIVITÉ GLOBALE ET BANNIÈRE DÉSACTIVÉE SUR HOME
+// main.dart - VERSION CORRIGÉE AVEC SYNC AUTH + CURRENCY
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:epilist/blocs/currency/currency_bloc.dart';
+import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
@@ -11,6 +13,7 @@ import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
+import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
@@ -66,6 +69,8 @@ void main() async {
       authService: authService,
     );
 
+    final currencyService = CurrencyService(dio: dio, authService: authService);
+
     final localizationBloc = LocalizationBloc(
       sharedPreferences: sharedPreferences,
     );
@@ -92,7 +97,7 @@ void main() async {
           requestBody: true,
           responseBody: true,
           error: true,
-          requestHeader: true, // ← ACTIVÉ pour voir les headers !
+          requestHeader: true,
           responseHeader: false,
         ),
       );
@@ -110,62 +115,72 @@ void main() async {
           RepositoryProvider<ConnectivityService>.value(
             value: ConnectivityService(),
           ),
-          RepositoryProvider(
-            create:
-                (context) => ShoppingListService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+          RepositoryProvider<CurrencyService>.value(
+            value: currencyService,
           ),
           RepositoryProvider(
-            create:
-                (context) => ListItemService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+            create: (context) => ShoppingListService(
+              dio: dio,
+              authService: context.read<AuthService>(),
+            ),
           ),
           RepositoryProvider(
-            create:
-                (context) => SharedListService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+            create: (context) => ListItemService(
+              dio: dio,
+              authService: context.read<AuthService>(),
+            ),
+          ),
+          RepositoryProvider(
+            create: (context) => SharedListService(
+              dio: dio,
+              authService: context.read<AuthService>(),
+            ),
           ),
           RepositoryProvider<ProductSuggestionService>(
-            create:
-                (context) => ProductSuggestionService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+            create: (context) => ProductSuggestionService(
+              dio: dio,
+              authService: context.read<AuthService>(),
+            ),
           ),
         ],
         child: MultiBlocProvider(
           providers: [
-            BlocProvider<AuthBloc>.value(
-              value: authBloc..add(CheckAuthentication()),
-            ),
+            // 1. LocalizationBloc en premier (pas de dépendances)
             BlocProvider<LocalizationBloc>.value(
               value: localizationBloc..add(LoadLanguage()),
             ),
+            
+            // 2. AuthBloc (dépend de LocalizationBloc)
+            BlocProvider<AuthBloc>.value(
+              value: authBloc..add(CheckAuthentication()),
+            ),
+            
+            // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
             BlocProvider(
-              create:
-                  (context) => ShoppingListBloc(
-                    shoppingListService: context.read<ShoppingListService>(),
-                    localizationBloc: context.read<LocalizationBloc>(),
-                  ),
+              create: (context) => CurrencyBloc(
+                currencyService: context.read<CurrencyService>(),
+                localizationBloc: context.read<LocalizationBloc>(),
+                authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
+              ),
+            ),
+            
+            // 4. Autres BLoCs
+            BlocProvider(
+              create: (context) => ShoppingListBloc(
+                shoppingListService: context.read<ShoppingListService>(),
+                localizationBloc: context.read<LocalizationBloc>(),
+              ),
             ),
             BlocProvider(
-              create:
-                  (context) => SharedListBloc(
-                    sharedListService: context.read<SharedListService>(),
-                    localizationBloc: context.read<LocalizationBloc>(),
-                  ),
+              create: (context) => SharedListBloc(
+                sharedListService: context.read<SharedListService>(),
+                localizationBloc: context.read<LocalizationBloc>(),
+              ),
             ),
             BlocProvider<ProductSuggestionBloc>(
-              create:
-                  (context) => ProductSuggestionBloc(
-                    suggestionService: context.read<ProductSuggestionService>(),
-                  ),
+              create: (context) => ProductSuggestionBloc(
+                suggestionService: context.read<ProductSuggestionService>(),
+              ),
             ),
           ],
           child: const MyApp(),
@@ -209,20 +224,15 @@ class MyApp extends StatelessWidget {
           routes: {
             '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
-            '/home':
-                (context) => _wrapWithConnectivity(
+            '/home': (context) => _wrapWithConnectivity(
                   const HomeScreen(),
                   showBanner: false,
-                ), // ✅ Pas de bannière sur home
-            '/profil':
-                (context) => _wrapWithConnectivity(const ProfileScreen()),
-            '/welcome':
-                (context) =>
-                    const WelcomeScreen(), // Pas de connectivité requise
+                ),
+            '/profil': (context) => _wrapWithConnectivity(const ProfileScreen()),
+            '/welcome': (context) => const WelcomeScreen(),
             '/email-verification': (context) {
-              final args =
-                  ModalRoute.of(context)!.settings.arguments
-                      as Map<String, dynamic>;
+              final args = ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
               return _wrapWithConnectivity(
                 EmailVerificationScreen(
                   email: args['email'],
@@ -231,18 +241,16 @@ class MyApp extends StatelessWidget {
               );
             },
             '/share': (context) {
-              final args =
-                  ModalRoute.of(context)!.settings.arguments
-                      as Map<String, dynamic>?;
+              final args = ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>?;
               final shareToken = args?['token'] as String?;
               if (shareToken != null) {
                 return _wrapWithConnectivity(
                   BlocProvider(
-                    create:
-                        (context) => SharedListBloc(
-                          sharedListService: context.read<SharedListService>(),
-                          localizationBloc: context.read<LocalizationBloc>(),
-                        ),
+                    create: (context) => SharedListBloc(
+                      sharedListService: context.read<SharedListService>(),
+                      localizationBloc: context.read<LocalizationBloc>(),
+                    ),
                     child: ShareInvitationScreen(shareToken: shareToken),
                   ),
                 );
@@ -259,7 +267,6 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  // ✅ MODIFIÉ: Méthode pour envelopper les écrans avec ConnectivityWrapper
   Widget _wrapWithConnectivity(Widget child, {bool showBanner = true}) {
     return ConnectivityWrapper(
       showOfflineBanner: showBanner,
@@ -354,15 +361,13 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder:
-                      (context) => ConnectivityWrapper(
-                        showOfflineBanner:
-                            false, // ✅ Pas de bannière sur EmailVerification
-                        child: EmailVerificationScreen(
-                          email: state.email,
-                          fromRegistration: false,
-                        ),
-                      ),
+                  builder: (context) => ConnectivityWrapper(
+                    showOfflineBanner: false,
+                    child: EmailVerificationScreen(
+                      email: state.email,
+                      fromRegistration: false,
+                    ),
+                  ),
                 ),
               ).then((_) {
                 if (mounted) {
@@ -382,6 +387,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
               duration: const Duration(seconds: 3),
             );
           }
+        }
+
+        // ✅ NOUVEAU: Charger la devise utilisateur après authentification réussie
+        if (state is AuthSuccess) {
+          // Charger la devise utilisateur après connexion
+          context.read<CurrencyBloc>().add(const LoadUserCurrency());
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -418,8 +429,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
           if (state is EmailConfirmationRequired) {
             return ConnectivityWrapper(
-              showOfflineBanner:
-                  false, // ✅ Pas de bannière sur EmailVerification depuis AuthWrapper
+              showOfflineBanner: false,
               child: EmailVerificationScreen(
                 email: state.email,
                 fromRegistration: true,
@@ -435,8 +445,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             });
 
             return ConnectivityWrapper(
-              showOfflineBanner:
-                  false, // ✅ Pas de bannière sur home depuis AuthWrapper
+              showOfflineBanner: false,
               blockActionsWhenOffline: true,
               child: const HomeScreen(),
             );
@@ -445,7 +454,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
-            return const WelcomeScreen(); // Pas de wrapper pour l'écran de bienvenue
+            return const WelcomeScreen();
           }
 
           return const WelcomeScreen();
@@ -455,7 +464,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   }
 }
 
-// ✅ MODIFIÉ: LoadingScreen avec logo professionnel
 class LoadingScreen extends StatelessWidget {
   final String? message;
 
@@ -471,7 +479,6 @@ class LoadingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ✅ NOUVEAU: Logo professionnel comme dans About et AppBar
             Container(
               width: 100,
               height: 100,
@@ -499,7 +506,6 @@ class LoadingScreen extends StatelessWidget {
                   height: 100,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    // Fallback avec design amélioré si l'image n'est pas trouvée
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
