@@ -1,20 +1,23 @@
-// screens/home_screen.dart - VERSION AVEC SHOPPING_LIST_CARD INTÉGRÉ
+// screens/home_screen.dart - VERSION CORRIGÉE AVEC LES VRAIES PROPRIÉTÉS
 import 'dart:io';
 
+import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/notifications/notification_service.dart';
+import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/diagnostic_screen.dart';
+import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/shopping_reminder_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
-import 'package:epilist/services/shopping_reminder_service.dart'; // ✅ AJOUT: Import du service de rappels
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/home/welcome_card.dart';
 import 'package:epilist/widgets/home/home_app_bar.dart';
@@ -23,13 +26,13 @@ import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/delete_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_dialog.dart';
-import 'package:epilist/widgets/dialogs/schedule_reminder_dialog.dart'; // ✅ AJOUT: Import du dialog de rappels
+import 'package:epilist/widgets/dialogs/schedule_reminder_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/empty_list_state.dart';
 import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
-import 'package:epilist/widgets/dialogs/shopping_list_card.dart'; // ✅ AJOUT: Import du ShoppingListCard
+import 'package:epilist/widgets/dialogs/shopping_list_card.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     _loadShoppingLists();
-    _cleanExpiredReminders(); // ✅ AJOUT: Nettoyage des rappels expirés
+    _cleanExpiredReminders();
 
     // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -66,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     context.read<ShoppingListBloc>().add(LoadShoppingLists());
   }
 
-  /// ✅ AJOUT: Nettoyer les rappels expirés au démarrage
   void _cleanExpiredReminders() {
     ShoppingReminderService.cleanExpiredReminders();
   }
@@ -166,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ],
         child: ConnectedRefreshIndicator(
           onRefresh: () async => _loadShoppingLists(),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +176,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 
-                // Section header
+                // Section Actions rapides
+                _buildQuickActionsSection(context, l10n),
+                const SizedBox(height: 24),
+
+                // Section header des listes
                 ListsSectionHeader(
                   onViewAll: () => _goToAllLists(context),
                   onCreateNew: () => _showCreateListDialog(context),
@@ -182,8 +188,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                 const SizedBox(height: 16),
 
-                // ✅ REMPLACEMENT: Utilisation du BlocBuilder avec ShoppingListCard
-                Expanded(child: _buildShoppingListsContent(context, l10n)),
+                // Listes avec scroll horizontal
+                _buildShoppingListsContent(context, l10n),
               ],
             ),
           ),
@@ -198,7 +204,112 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // ✅ NOUVEAU: Widget pour afficher les listes avec ShoppingListCard
+  // Section d'actions rapides avec bouton Analytics
+  Widget _buildQuickActionsSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.quickActions,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            // Bouton Analytics
+            Expanded(
+              child: _buildQuickActionCard(
+                icon: Icons.analytics,
+                title: l10n.analytics,
+                subtitle: l10n.viewSpendingReports,
+                color: Colors.blue[600]!,
+                onTap: () => _goToAnalytics(context),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Bouton Toutes les listes
+            Expanded(
+              child: _buildQuickActionCard(
+                icon: Icons.list_alt,
+                title: l10n.allLists,
+                subtitle: l10n.manageAllLists,
+                color: Colors.green[600]!,
+                onTap: () => _goToAllLists(context),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon, color: color, size: 24),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey[400],
+                    size: 16,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget pour afficher les listes avec scroll horizontal
   Widget _buildShoppingListsContent(
     BuildContext context,
     AppLocalizations l10n,
@@ -206,60 +317,72 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return BlocBuilder<ShoppingListBloc, ShoppingListState>(
       builder: (context, state) {
         if (state is ShoppingListLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
+          return Container(
+            height: 200,
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.green),
+            ),
           );
         }
 
         if (state is ShoppingListError) {
-          return ErrorState(
-            message: state.message,
-            onRetry: _loadShoppingLists,
+          return Container(
+            height: 200,
+            child: ErrorState(
+              message: state.message,
+              onRetry: _loadShoppingLists,
+            ),
           );
         }
 
         if (state is ShoppingListLoaded) {
           if (state.lists.isEmpty) {
-            return EmptyListState(
-              onCreateList: () => _showCreateListDialog(context),
+            return Container(
+              height: 200,
+              child: EmptyListState(
+                onCreateList: () => _showCreateListDialog(context),
+              ),
             );
           }
 
-          // ✅ AJOUT: Afficher seulement les 5 premières listes sur l'accueil
-          final displayLists = state.lists.take(5).toList();
-
+          // Affichage horizontal des listes
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header avec nombre total et bouton "Voir tout"
-              if (state.lists.length > 5) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.showingXOfY(displayLists.length, state.lists.length),
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              // Header avec compte et bouton "Voir tout"
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.recentLists('${state.lists.length}'),
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
+                  ),
+                  if (state.lists.length > 3)
                     TextButton(
                       onPressed: () => _goToAllLists(context),
                       child: Text(l10n.viewAll),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
+                ],
+              ),
+              const SizedBox(height: 8),
 
-              // Liste des cartes
-              Expanded(
+              // ScrollView horizontal pour les listes
+              SizedBox(
+                height: 180, // Hauteur fixe pour les cartes
                 child: ListView.builder(
-                  itemCount: displayLists.length,
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  itemCount: state.lists.length > 5 ? 5 : state.lists.length,
                   itemBuilder: (context, index) {
-                    final list = displayLists[index];
-                    return ShoppingListCard(
-                      list: list,
-                      onTap: () => _openListDetails(context, list),
-                      onMenuAction:
-                          (action) =>
-                              _handleListAction(action, list, context, l10n),
+                    final list = state.lists[index];
+                    return Container(
+                      width: 280, // Largeur fixe pour chaque carte
+                      margin: const EdgeInsets.only(right: 16),
+                      child: _buildHorizontalListCard(list, context, l10n),
                     );
                   },
                 ),
@@ -268,8 +391,218 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         }
 
-        return EmptyListState(
-          onCreateList: () => _showCreateListDialog(context),
+        return Container(
+          height: 200,
+          child: EmptyListState(
+            onCreateList: () => _showCreateListDialog(context),
+          ),
+        );
+      },
+    );
+  }
+
+  // ✅ CORRIGÉ: Carte de liste avec les vraies propriétés du modèle
+  Widget _buildHorizontalListCard(
+    ShoppingList list,
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: () => _openListDetails(context, list),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header avec nom et menu
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      list.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected:
+                        (action) =>
+                            _handleListAction(action, list, context, l10n),
+                    itemBuilder: (context) => _buildMenuItems(list, l10n),
+                    child: Icon(Icons.more_vert, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Informations de la liste
+              if (list.isShared) ...[
+                Row(
+                  children: [
+                    Icon(Icons.people, size: 16, color: Colors.blue[600]),
+                    const SizedBox(width: 4),
+                    Text(
+                      list.isOwner ? l10n.shared : l10n.sharedWithYou,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+
+              // ✅ CORRIGÉ: Statistiques avec les vraies propriétés
+              Row(
+                children: [
+                  _buildStatChip(
+                    Icons.shopping_cart,
+                    '${list.itemsCount}', // ✅ Vraie propriété
+                    l10n.items,
+                    Colors.green,
+                  ),
+                  const SizedBox(width: 8),
+                  _buildStatChip(
+                    Icons.check_circle,
+                    '${list.purchasedItemsCount}', // ✅ Vraie propriété
+                    l10n.done,
+                    Colors.blue,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // ✅ CORRIGÉ: Barre de progression avec la vraie propriété
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.progress,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '${list.progressPercentage}%', // ✅ Vraie propriété
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  LinearProgressIndicator(
+                    value: list.progress, // ✅ Vraie propriété (0.0 à 1.0)
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      list
+                              .isCompleted // ✅ Vraie propriété
+                          ? Colors.green[600]!
+                          : Colors.blue[600]!,
+                    ),
+                  ),
+                ],
+              ),
+
+              const Spacer(),
+
+              // Footer avec date
+              Text(
+                _formatDate(list.updatedAt),
+                style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatChip(
+    IconData icon,
+    String value,
+    String label,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 2),
+          Text(
+            label,
+            style: TextStyle(fontSize: 10, color: color.withOpacity(0.8)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Aujourd\'hui';
+    } else if (difference.inDays == 1) {
+      return 'Hier';
+    } else if (difference.inDays < 7) {
+      return 'Il y a ${difference.inDays} jours';
+    } else {
+      return '${date.day}/${date.month}/${date.year}';
+    }
+  }
+
+  // Navigation vers la page Analytics
+  void _goToAnalytics(BuildContext context) {
+    context.requireConnection(
+      onConnected: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => BlocProvider(
+                  create:
+                      (context) => AnalyticsBloc(
+                        analyticsService: context.read<AnalyticsService>(),
+                        localizationBloc: context.read<LocalizationBloc>(),
+                      ),
+                  child: const AnalyticsScreen(),
+                ),
+          ),
         );
       },
     );
@@ -306,7 +639,150 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // ✅ AJOUT: Gestion complète des actions avec rappels
+  // Menu items pour les listes
+  List<PopupMenuEntry<String>> _buildMenuItems(
+    ShoppingList list,
+    AppLocalizations l10n,
+  ) {
+    final items = <PopupMenuEntry<String>>[];
+
+    // Voir/Modifier
+    if (list.canEdit) {
+      items.add(
+        PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              const Icon(Icons.edit, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.edit),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Dupliquer
+    items.add(
+      PopupMenuItem(
+        value: 'duplicate',
+        child: Row(
+          children: [
+            const Icon(Icons.copy, size: 20),
+            const SizedBox(width: 8),
+            Text(l10n.duplicate),
+          ],
+        ),
+      ),
+    );
+
+    // Rappels
+    items.add(const PopupMenuDivider());
+    items.add(
+      PopupMenuItem(
+        value: 'schedule_reminder',
+        child: Row(
+          children: [
+            Icon(Icons.schedule, size: 20, color: Colors.blue[600]),
+            const SizedBox(width: 8),
+            Text(l10n.scheduleReminder),
+          ],
+        ),
+      ),
+    );
+
+    items.add(
+      PopupMenuItem(
+        value: 'quick_reminder_2h',
+        child: Row(
+          children: [
+            Icon(Icons.alarm, size: 20, color: Colors.orange[600]),
+            const SizedBox(width: 8),
+            Text(l10n.remindIn2Hours),
+          ],
+        ),
+      ),
+    );
+
+    items.add(
+      PopupMenuItem(
+        value: 'view_reminders',
+        child: Row(
+          children: [
+            Icon(Icons.list_alt, size: 20, color: Colors.green[600]),
+            const SizedBox(width: 8),
+            Text(l10n.viewReminders),
+          ],
+        ),
+      ),
+    );
+
+    // Partager
+    if (list.canShare) {
+      items.add(const PopupMenuDivider());
+      items.add(
+        PopupMenuItem(
+          value: 'share',
+          child: Row(
+            children: [
+              const Icon(Icons.share, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.share),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (list.isOwner && list.isShared) {
+      items.add(
+        PopupMenuItem(
+          value: 'manage_shares',
+          child: Row(
+            children: [
+              const Icon(Icons.people, size: 20),
+              const SizedBox(width: 8),
+              Text(l10n.manageShares),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Supprimer/Quitter
+    items.add(const PopupMenuDivider());
+    if (list.canDelete) {
+      items.add(
+        PopupMenuItem(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              const SizedBox(width: 8),
+              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+            ],
+          ),
+        ),
+      );
+    } else if (!list.isOwner) {
+      items.add(
+        PopupMenuItem(
+          value: 'leave',
+          child: Row(
+            children: [
+              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              const SizedBox(width: 8),
+              Text(l10n.leave, style: TextStyle(color: Colors.orange[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return items;
+  }
+
+  // Gestion des actions
   void _handleListAction(
     String action,
     ShoppingList list,
@@ -336,7 +812,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
         break;
 
-      // ✅ AJOUT: Gestion des rappels de courses
+      // Gestion des rappels de courses
       case 'schedule_reminder':
         _showScheduleReminderDialog(list);
         break;
@@ -411,7 +887,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // ✅ AJOUT: Méthodes de gestion des rappels
+  // Méthodes de gestion des rappels
   void _showScheduleReminderDialog(ShoppingList list) {
     showDialog(
       context: context,
@@ -648,7 +1124,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Dialog methods (inchangées)
+  // Dialog methods
   void _showCreateListDialog(BuildContext context) {
     showDialog(
       context: context,

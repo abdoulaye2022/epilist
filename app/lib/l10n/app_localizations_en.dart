@@ -2198,4 +2198,114 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get popular => 'Popular';
+
+  @override
+  String get analytics => 'Analytics';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get trends => 'Trends';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get topProducts => 'Top Products';
+
+  @override
+  String get userCurrency => 'My Currency';
+
+  @override
+  String get noAnalyticsData => 'No analytics data available';
+
+  @override
+  String get loadData => 'Load Data';
+
+  @override
+  String get noDataAvailable => 'No data available';
+
+  @override
+  String get monthlyOverview => 'Monthly Overview';
+
+  @override
+  String get totalSpent => 'Total Spent';
+
+  @override
+  String get itemsPurchased => 'Items Purchased';
+
+  @override
+  String get uniqueProducts => 'Unique Products';
+
+  @override
+  String get shoppingSessions => 'Shopping Sessions';
+
+  @override
+  String get quickStats => 'Quick Stats';
+
+  @override
+  String get averageDailySpending => 'Average Daily Spending';
+
+  @override
+  String get busiestDay => 'Busiest Day';
+
+  @override
+  String get comparisonWithLastMonth => 'Comparison with Last Month';
+
+  @override
+  String get spendingIncreased => 'Spending Increased';
+
+  @override
+  String get spendingDecreased => 'Spending Decreased';
+
+  @override
+  String get spendingStable => 'Spending Stable';
+
+  @override
+  String get spendingByCategory => 'Spending by Category';
+
+  @override
+  String get noCategoriesData => 'No category data';
+
+  @override
+  String get monthlyTrends => 'Monthly Trends';
+
+  @override
+  String get monthlyAverage => 'Monthly Average';
+
+  @override
+  String get totalProducts => 'Total Products';
+
+  @override
+  String get showing => 'Showing';
+
+  @override
+  String get noProductsData => 'No product data';
+
+  @override
+  String get quickActions => 'Quick Actions';
+
+  @override
+  String get viewSpendingReports => 'View spending reports';
+
+  @override
+  String get manageAllLists => 'Manage all lists';
+
+  @override
+  String recentLists(Object count) {
+    return 'Recent lists ($count)';
+  }
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get done => 'done';
+
+  @override
+  String get shared => 'Shared';
+
+  @override
+  String get sharedWithYou => 'Shared with you';
 }

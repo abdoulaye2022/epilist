@@ -4140,6 +4140,222 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Populaire'**
   String get popular;
+
+  /// No description provided for @analytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyses'**
+  String get analytics;
+
+  /// No description provided for @overview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble'**
+  String get overview;
+
+  /// No description provided for @trends.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances'**
+  String get trends;
+
+  /// No description provided for @categories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories'**
+  String get categories;
+
+  /// No description provided for @topProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Top produits'**
+  String get topProducts;
+
+  /// No description provided for @userCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma devise'**
+  String get userCurrency;
+
+  /// No description provided for @noAnalyticsData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée d\'analyse disponible'**
+  String get noAnalyticsData;
+
+  /// No description provided for @loadData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Charger les données'**
+  String get loadData;
+
+  /// No description provided for @noDataAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée disponible'**
+  String get noDataAvailable;
+
+  /// No description provided for @monthlyOverview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble mensuelle'**
+  String get monthlyOverview;
+
+  /// No description provided for @totalSpent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total dépensé'**
+  String get totalSpent;
+
+  /// No description provided for @itemsPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles achetés'**
+  String get itemsPurchased;
+
+  /// No description provided for @uniqueProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits uniques'**
+  String get uniqueProducts;
+
+  /// No description provided for @shoppingSessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions d\'achat'**
+  String get shoppingSessions;
+
+  /// No description provided for @quickStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques rapides'**
+  String get quickStats;
+
+  /// No description provided for @averageDailySpending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépense quotidienne moyenne'**
+  String get averageDailySpending;
+
+  /// No description provided for @busiestDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour le plus actif'**
+  String get busiestDay;
+
+  /// No description provided for @comparisonWithLastMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparaison avec le mois dernier'**
+  String get comparisonWithLastMonth;
+
+  /// No description provided for @spendingIncreased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses augmentées'**
+  String get spendingIncreased;
+
+  /// No description provided for @spendingDecreased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses diminuées'**
+  String get spendingDecreased;
+
+  /// No description provided for @spendingStable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses stables'**
+  String get spendingStable;
+
+  /// No description provided for @spendingByCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses par catégorie'**
+  String get spendingByCategory;
+
+  /// No description provided for @noCategoriesData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée de catégorie'**
+  String get noCategoriesData;
+
+  /// No description provided for @monthlyTrends.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances mensuelles'**
+  String get monthlyTrends;
+
+  /// No description provided for @monthlyAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne mensuelle'**
+  String get monthlyAverage;
+
+  /// No description provided for @totalProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total produits'**
+  String get totalProducts;
+
+  /// No description provided for @showing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affichage'**
+  String get showing;
+
+  /// No description provided for @noProductsData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée de produit'**
+  String get noProductsData;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions rapides'**
+  String get quickActions;
+
+  /// No description provided for @viewSpendingReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les rapports de dépenses'**
+  String get viewSpendingReports;
+
+  /// No description provided for @manageAllLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer toutes les listes'**
+  String get manageAllLists;
+
+  /// No description provided for @recentLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes récentes ({count})'**
+  String recentLists(Object count);
+
+  /// No description provided for @items.
+  ///
+  /// In fr, this message translates to:
+  /// **'articles'**
+  String get items;
+
+  /// No description provided for @done.
+  ///
+  /// In fr, this message translates to:
+  /// **'fini'**
+  String get done;
+
+  /// No description provided for @shared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagée'**
+  String get shared;
+
+  /// No description provided for @sharedWithYou.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagée avec vous'**
+  String get sharedWithYou;
 }
 
 class _AppLocalizationsDelegate

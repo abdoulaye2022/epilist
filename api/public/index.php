@@ -13,7 +13,8 @@ use App\Controllers\{
     ListItemController,
     SharedListController,
     ProductSuggestionController,
-    CurrencyController
+    CurrencyController,
+    AnalyticsController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -205,6 +206,14 @@ $app->group('', function ($group) {
     $group->delete('/shopping-lists/{listId}/items/{itemId}', [ListItemController::class, 'destroy']);
     $group->post('/shopping-lists/{listId}/items/{itemId}/restore', [ListItemController::class, 'restore']);
     $group->put('/shopping-lists/{listId}/items/{itemId}/merge', [ListItemController::class, 'mergeWithExisting']);
+
+    // ✅ ROUTES D'ANALYTICS ET STATISTIQUES
+    $group->get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
+    $group->get('/analytics/spending/monthly', [AnalyticsController::class, 'monthlySpendingHistory']);
+    $group->get('/analytics/spending/trends', [AnalyticsController::class, 'spendingTrends']);
+    $group->get('/analytics/spending/comparison', [AnalyticsController::class, 'periodComparison']);
+    $group->get('/analytics/spending/categories', [AnalyticsController::class, 'spendingByCategory']);
+    $group->get('/analytics/products/top', [AnalyticsController::class, 'topProducts']);
 
 })->add($jwtMiddleware);
 

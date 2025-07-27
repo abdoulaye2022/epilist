@@ -13,6 +13,7 @@ import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
+import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
@@ -71,6 +72,11 @@ void main() async {
 
     final currencyService = CurrencyService(dio: dio, authService: authService);
 
+    final analyticsService = AnalyticsService(
+      dio: dio,
+      authService: authService,
+    );
+
     final localizationBloc = LocalizationBloc(
       sharedPreferences: sharedPreferences,
     );
@@ -115,32 +121,35 @@ void main() async {
           RepositoryProvider<ConnectivityService>.value(
             value: ConnectivityService(),
           ),
-          RepositoryProvider<CurrencyService>.value(
-            value: currencyService,
+          RepositoryProvider<CurrencyService>.value(value: currencyService),
+          RepositoryProvider<AnalyticsService>.value(value: analyticsService),
+          RepositoryProvider(
+            create:
+                (context) => ShoppingListService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
           ),
           RepositoryProvider(
-            create: (context) => ShoppingListService(
-              dio: dio,
-              authService: context.read<AuthService>(),
-            ),
+            create:
+                (context) => ListItemService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
           ),
           RepositoryProvider(
-            create: (context) => ListItemService(
-              dio: dio,
-              authService: context.read<AuthService>(),
-            ),
-          ),
-          RepositoryProvider(
-            create: (context) => SharedListService(
-              dio: dio,
-              authService: context.read<AuthService>(),
-            ),
+            create:
+                (context) => SharedListService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
           ),
           RepositoryProvider<ProductSuggestionService>(
-            create: (context) => ProductSuggestionService(
-              dio: dio,
-              authService: context.read<AuthService>(),
-            ),
+            create:
+                (context) => ProductSuggestionService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
           ),
         ],
         child: MultiBlocProvider(
@@ -149,38 +158,42 @@ void main() async {
             BlocProvider<LocalizationBloc>.value(
               value: localizationBloc..add(LoadLanguage()),
             ),
-            
+
             // 2. AuthBloc (dépend de LocalizationBloc)
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
-            
+
             // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
             BlocProvider(
-              create: (context) => CurrencyBloc(
-                currencyService: context.read<CurrencyService>(),
-                localizationBloc: context.read<LocalizationBloc>(),
-                authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
-              ),
+              create:
+                  (context) => CurrencyBloc(
+                    currencyService: context.read<CurrencyService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                    authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
+                  ),
             ),
-            
+
             // 4. Autres BLoCs
             BlocProvider(
-              create: (context) => ShoppingListBloc(
-                shoppingListService: context.read<ShoppingListService>(),
-                localizationBloc: context.read<LocalizationBloc>(),
-              ),
+              create:
+                  (context) => ShoppingListBloc(
+                    shoppingListService: context.read<ShoppingListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
             ),
             BlocProvider(
-              create: (context) => SharedListBloc(
-                sharedListService: context.read<SharedListService>(),
-                localizationBloc: context.read<LocalizationBloc>(),
-              ),
+              create:
+                  (context) => SharedListBloc(
+                    sharedListService: context.read<SharedListService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
             ),
             BlocProvider<ProductSuggestionBloc>(
-              create: (context) => ProductSuggestionBloc(
-                suggestionService: context.read<ProductSuggestionService>(),
-              ),
+              create:
+                  (context) => ProductSuggestionBloc(
+                    suggestionService: context.read<ProductSuggestionService>(),
+                  ),
             ),
           ],
           child: const MyApp(),
@@ -224,15 +237,18 @@ class MyApp extends StatelessWidget {
           routes: {
             '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
-            '/home': (context) => _wrapWithConnectivity(
+            '/home':
+                (context) => _wrapWithConnectivity(
                   const HomeScreen(),
                   showBanner: false,
                 ),
-            '/profil': (context) => _wrapWithConnectivity(const ProfileScreen()),
+            '/profil':
+                (context) => _wrapWithConnectivity(const ProfileScreen()),
             '/welcome': (context) => const WelcomeScreen(),
             '/email-verification': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>;
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>;
               return _wrapWithConnectivity(
                 EmailVerificationScreen(
                   email: args['email'],
@@ -241,16 +257,18 @@ class MyApp extends StatelessWidget {
               );
             },
             '/share': (context) {
-              final args = ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>?;
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>?;
               final shareToken = args?['token'] as String?;
               if (shareToken != null) {
                 return _wrapWithConnectivity(
                   BlocProvider(
-                    create: (context) => SharedListBloc(
-                      sharedListService: context.read<SharedListService>(),
-                      localizationBloc: context.read<LocalizationBloc>(),
-                    ),
+                    create:
+                        (context) => SharedListBloc(
+                          sharedListService: context.read<SharedListService>(),
+                          localizationBloc: context.read<LocalizationBloc>(),
+                        ),
                     child: ShareInvitationScreen(shareToken: shareToken),
                   ),
                 );
@@ -361,13 +379,14 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ConnectivityWrapper(
-                    showOfflineBanner: false,
-                    child: EmailVerificationScreen(
-                      email: state.email,
-                      fromRegistration: false,
-                    ),
-                  ),
+                  builder:
+                      (context) => ConnectivityWrapper(
+                        showOfflineBanner: false,
+                        child: EmailVerificationScreen(
+                          email: state.email,
+                          fromRegistration: false,
+                        ),
+                      ),
                 ),
               ).then((_) {
                 if (mounted) {

@@ -954,5 +954,47 @@
   "currencyDisplayOnly": "This currency will be used for display only. Prices are not converted.",
   "popular": "Popular",
   "currencyUpdatedSuccessfully": "Currency updated successfully",
-  "noSuggestionsYet": "No suggestions yet"
+  "noSuggestionsYet": "No suggestions yet",
+  "analytics": "Analytics",
+  "overview": "Overview",
+  "trends": "Trends",
+  "categories": "Categories",
+  "topProducts": "Top Products",
+  "userCurrency": "My Currency",
+  "noAnalyticsData": "No analytics data available",
+  "loadData": "Load Data",
+  "noDataAvailable": "No data available",
+  
+  "monthlyOverview": "Monthly Overview",
+  "totalSpent": "Total Spent",
+  "itemsPurchased": "Items Purchased",
+  "uniqueProducts": "Unique Products",
+  "shoppingSessions": "Shopping Sessions",
+  "quickStats": "Quick Stats",
+  "averageDailySpending": "Average Daily Spending",
+  "busiestDay": "Busiest Day",
+  
+  "comparisonWithLastMonth": "Comparison with Last Month",
+  "spendingIncreased": "Spending Increased",
+  "spendingDecreased": "Spending Decreased",
+  "spendingStable": "Spending Stable",
+  
+  "spendingByCategory": "Spending by Category",
+  "noCategoriesData": "No category data",
+  
+  "monthlyTrends": "Monthly Trends",
+  "monthlyAverage": "Monthly Average",
+  
+  "totalProducts": "Total Products",
+  "showing": "Showing",
+  "noProductsData": "No product data",
+  
+  "quickActions": "Quick Actions",
+  "viewSpendingReports": "View spending reports",
+  "manageAllLists": "Manage all lists",
+  "recentLists": "Recent lists ({count})",
+  "items": "items",
+  "done": "done",
+    "shared": "Shared", 
+  "sharedWithYou": "Shared with you"
 }

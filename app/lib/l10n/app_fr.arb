@@ -958,5 +958,47 @@
   "cannotLoadCurrencies": "Impossible de charger les devises depuis le serveur",
   "currencyDisplayOnly": "Cette devise sera utilisée pour l'affichage uniquement. Les prix ne sont pas convertis.",
   "popular": "Populaire",
-  "currencyUpdatedSuccessfully": "Devise mise à jour avec succès"
+  "currencyUpdatedSuccessfully": "Devise mise à jour avec succès",
+  "analytics": "Analyses",
+  "overview": "Vue d'ensemble",
+  "trends": "Tendances",
+  "categories": "Catégories",
+  "topProducts": "Top produits",
+  "userCurrency": "Ma devise",
+  "noAnalyticsData": "Aucune donnée d'analyse disponible",
+  "loadData": "Charger les données",
+  "noDataAvailable": "Aucune donnée disponible",
+  
+  "monthlyOverview": "Vue d'ensemble mensuelle",
+  "totalSpent": "Total dépensé",
+  "itemsPurchased": "Articles achetés",
+  "uniqueProducts": "Produits uniques",
+  "shoppingSessions": "Sessions d'achat",
+  "quickStats": "Statistiques rapides",
+  "averageDailySpending": "Dépense quotidienne moyenne",
+  "busiestDay": "Jour le plus actif",
+  
+  "comparisonWithLastMonth": "Comparaison avec le mois dernier",
+  "spendingIncreased": "Dépenses augmentées",
+  "spendingDecreased": "Dépenses diminuées",
+  "spendingStable": "Dépenses stables",
+  
+  "spendingByCategory": "Dépenses par catégorie",
+  "noCategoriesData": "Aucune donnée de catégorie",
+  
+  "monthlyTrends": "Tendances mensuelles",
+  "monthlyAverage": "Moyenne mensuelle",
+  
+  "totalProducts": "Total produits",
+  "showing": "Affichage",
+  "noProductsData": "Aucune donnée de produit",
+  
+  "quickActions": "Actions rapides",
+  "viewSpendingReports": "Voir les rapports de dépenses",
+  "manageAllLists": "Gérer toutes les listes",
+  "recentLists": "Listes récentes ({count})",
+  "items": "articles",
+  "done": "fini",
+    "shared": "Partagée",
+  "sharedWithYou": "Partagée avec vous"
 }

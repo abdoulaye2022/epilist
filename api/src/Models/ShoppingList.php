@@ -1,5 +1,5 @@
 <?php
-// src/Models/ShoppingList.php - VERSION AVEC ORDRE PAR DÉFAUT
+// app/Models/ShoppingList.php - VERSION AVEC RELATIONS CORRIGÉES
 
 namespace App\Models;
 
@@ -56,5 +56,80 @@ class ShoppingList extends Model
     public function itemsRaw(): HasMany
     {
         return $this->hasMany(ListItem::class, 'list_id');
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Get the shared lists where this list is shared
+     */
+    public function sharedLists(): HasMany
+    {
+        return $this->hasMany(SharedList::class, 'list_id');
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Get active shared lists only
+     */
+    public function activeSharedLists(): HasMany
+    {
+        return $this->hasMany(SharedList::class, 'list_id')
+                   ->where('status', SharedList::STATUS_ACCEPTED)
+                   ->where('is_active', true);
+    }
+
+    /**
+     * ✅ MÉTHODE UTILITAIRE: Check if this list is shared with a specific user
+     */
+    public function isSharedWith(int $userId): bool
+    {
+        return $this->activeSharedLists()
+                   ->where('shared_with_user_id', $userId)
+                   ->exists();
+    }
+
+    /**
+     * ✅ MÉTHODE UTILITAIRE: Get all users who have access to this list
+     */
+    public function getAllAccessUsers(): array
+    {
+        $users = [$this->user_id]; // Owner always has access
+        
+        $sharedUsers = $this->activeSharedLists()
+                           ->pluck('shared_with_user_id')
+                           ->toArray();
+        
+        return array_unique(array_merge($users, $sharedUsers));
+    }
+
+    /**
+     * ✅ SCOPE: Lists accessible by a specific user (own + shared)
+     */
+    public function scopeAccessibleBy($query, int $userId)
+    {
+        return $query->where(function($q) use ($userId) {
+            // Own lists
+            $q->where('user_id', $userId)
+              // OR shared lists
+              ->orWhereHas('activeSharedLists', function($sq) use ($userId) {
+                  $sq->where('shared_with_user_id', $userId);
+              });
+        });
+    }
+
+    /**
+     * ✅ SCOPE: Only own lists (not shared)
+     */
+    public function scopeOwnedBy($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * ✅ SCOPE: Only shared lists for a user
+     */
+    public function scopeSharedWith($query, int $userId)
+    {
+        return $query->whereHas('activeSharedLists', function($sq) use ($userId) {
+            $sq->where('shared_with_user_id', $userId);
+        });
     }
 }

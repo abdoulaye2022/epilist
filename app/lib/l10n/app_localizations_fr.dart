@@ -2237,4 +2237,114 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get popular => 'Populaire';
+
+  @override
+  String get analytics => 'Analyses';
+
+  @override
+  String get overview => 'Vue d\'ensemble';
+
+  @override
+  String get trends => 'Tendances';
+
+  @override
+  String get categories => 'Catégories';
+
+  @override
+  String get topProducts => 'Top produits';
+
+  @override
+  String get userCurrency => 'Ma devise';
+
+  @override
+  String get noAnalyticsData => 'Aucune donnée d\'analyse disponible';
+
+  @override
+  String get loadData => 'Charger les données';
+
+  @override
+  String get noDataAvailable => 'Aucune donnée disponible';
+
+  @override
+  String get monthlyOverview => 'Vue d\'ensemble mensuelle';
+
+  @override
+  String get totalSpent => 'Total dépensé';
+
+  @override
+  String get itemsPurchased => 'Articles achetés';
+
+  @override
+  String get uniqueProducts => 'Produits uniques';
+
+  @override
+  String get shoppingSessions => 'Sessions d\'achat';
+
+  @override
+  String get quickStats => 'Statistiques rapides';
+
+  @override
+  String get averageDailySpending => 'Dépense quotidienne moyenne';
+
+  @override
+  String get busiestDay => 'Jour le plus actif';
+
+  @override
+  String get comparisonWithLastMonth => 'Comparaison avec le mois dernier';
+
+  @override
+  String get spendingIncreased => 'Dépenses augmentées';
+
+  @override
+  String get spendingDecreased => 'Dépenses diminuées';
+
+  @override
+  String get spendingStable => 'Dépenses stables';
+
+  @override
+  String get spendingByCategory => 'Dépenses par catégorie';
+
+  @override
+  String get noCategoriesData => 'Aucune donnée de catégorie';
+
+  @override
+  String get monthlyTrends => 'Tendances mensuelles';
+
+  @override
+  String get monthlyAverage => 'Moyenne mensuelle';
+
+  @override
+  String get totalProducts => 'Total produits';
+
+  @override
+  String get showing => 'Affichage';
+
+  @override
+  String get noProductsData => 'Aucune donnée de produit';
+
+  @override
+  String get quickActions => 'Actions rapides';
+
+  @override
+  String get viewSpendingReports => 'Voir les rapports de dépenses';
+
+  @override
+  String get manageAllLists => 'Gérer toutes les listes';
+
+  @override
+  String recentLists(Object count) {
+    return 'Listes récentes ($count)';
+  }
+
+  @override
+  String get items => 'articles';
+
+  @override
+  String get done => 'fini';
+
+  @override
+  String get shared => 'Partagée';
+
+  @override
+  String get sharedWithYou => 'Partagée avec vous';
 }
