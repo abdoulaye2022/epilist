@@ -1,4 +1,4 @@
-// blocs/analytics/analytics_state.dart
+// blocs/analytics/analytics_state.dart - VERSION MISE À JOUR AVEC NOUVEAUX ÉTATS
 import 'package:equatable/equatable.dart';
 
 abstract class AnalyticsState extends Equatable {
@@ -30,6 +30,37 @@ class MonthlySpendingLoaded extends AnalyticsState {
   List<Object> get props => [monthlyData];
 }
 
+/// ✅ NOUVEAU: État pour les dépenses quotidiennes
+class DailySpendingLoaded extends AnalyticsState {
+  final Map<String, dynamic> dailyData;
+
+  const DailySpendingLoaded(this.dailyData);
+
+  @override
+  List<Object> get props => [dailyData];
+}
+
+/// ✅ NOUVEAU: État pour les dépenses hebdomadaires
+class WeeklySpendingLoaded extends AnalyticsState {
+  final Map<String, dynamic> weeklyData;
+
+  const WeeklySpendingLoaded(this.weeklyData);
+
+  @override
+  List<Object> get props => [weeklyData];
+}
+
+/// ✅ NOUVEAU: État pour les dépenses annuelles
+class YearlySpendingLoaded extends AnalyticsState {
+  final Map<String, dynamic> yearlyData;
+
+  const YearlySpendingLoaded(this.yearlyData);
+
+  @override
+  List<Object> get props => [yearlyData];
+}
+
+/// ✅ CONSERVÉ: État générique pour les tendances (compatibilité)
 class SpendingTrendsLoaded extends AnalyticsState {
   final Map<String, dynamic> trendsData;
 

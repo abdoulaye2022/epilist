@@ -1,7 +1,7 @@
-// blocs/analytics/analytics_bloc.dart
+// blocs/analytics/analytics_bloc.dart - VERSION MISE À JOUR
 import 'package:bloc/bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
-import 'package:epilist/blocs/analytics/analytics_state.dart' hide LoadMonthlySpending;
+import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 
@@ -21,6 +21,63 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     on<LoadSpendingCategories>(_onLoadSpendingCategories);
     on<LoadTopProducts>(_onLoadTopProducts);
     on<LoadPeriodComparison>(_onLoadPeriodComparison);
+    on<ChangeTopProductsSort>(_onChangeTopProductsSort);
+
+    // ✅ NOUVEAUX HANDLERS POUR LES ENDPOINTS SPÉCIFIQUES
+    on<LoadDailySpending>(_onLoadDailySpending);
+    on<LoadWeeklySpending>(_onLoadWeeklySpending);
+    on<LoadYearlySpending>(_onLoadYearlySpending);
+  }
+
+  /// ✅ NOUVEAU: Handler pour les dépenses quotidiennes
+  Future<void> _onLoadDailySpending(
+    LoadDailySpending event,
+    Emitter<AnalyticsState> emit,
+  ) async {
+    emit(AnalyticsLoading());
+    try {
+      final data = await _analyticsService.getDailySpending(
+        days: event.days,
+        currencyCode: event.currencyCode,
+      );
+      emit(DailySpendingLoaded(data));
+    } catch (e) {
+      emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+    }
+  }
+
+  /// ✅ NOUVEAU: Handler pour les dépenses hebdomadaires
+  Future<void> _onLoadWeeklySpending(
+    LoadWeeklySpending event,
+    Emitter<AnalyticsState> emit,
+  ) async {
+    emit(AnalyticsLoading());
+    try {
+      final data = await _analyticsService.getWeeklySpending(
+        weeks: event.weeks,
+        currencyCode: event.currencyCode,
+      );
+      emit(WeeklySpendingLoaded(data));
+    } catch (e) {
+      emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+    }
+  }
+
+  /// ✅ NOUVEAU: Handler pour les dépenses annuelles
+  Future<void> _onLoadYearlySpending(
+    LoadYearlySpending event,
+    Emitter<AnalyticsState> emit,
+  ) async {
+    emit(AnalyticsLoading());
+    try {
+      final data = await _analyticsService.getYearlySpending(
+        years: event.years,
+        currencyCode: event.currencyCode,
+      );
+      emit(YearlySpendingLoaded(data));
+    } catch (e) {
+      emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+    }
   }
 
   String _getTranslatedErrorMessage(dynamic error) {
@@ -82,6 +139,7 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     }
   }
 
+  /// ✅ MODIFIÉ: Handler pour les tendances génériques (garde la compatibilité)
   Future<void> _onLoadSpendingTrends(
     LoadSpendingTrends event,
     Emitter<AnalyticsState> emit,
@@ -92,7 +150,23 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         period: event.period,
         currencyCode: event.currencyCode,
       );
-      emit(SpendingTrendsLoaded(data));
+
+      // ✅ Émettre le bon état selon la période
+      switch (event.period) {
+        case 'day':
+          emit(DailySpendingLoaded(data));
+          break;
+        case 'week':
+          emit(WeeklySpendingLoaded(data));
+          break;
+        case 'year':
+          emit(YearlySpendingLoaded(data));
+          break;
+        case 'month':
+        default:
+          emit(MonthlySpendingLoaded(data));
+          break;
+      }
     } catch (e) {
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
@@ -145,6 +219,31 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
       );
       emit(PeriodComparisonLoaded(data));
     } catch (e) {
+      emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+    }
+  }
+
+  /// Handler pour le changement de tri des produits
+  Future<void> _onChangeTopProductsSort(
+    ChangeTopProductsSort event,
+    Emitter<AnalyticsState> emit,
+  ) async {
+    // Indiquer le chargement
+    emit(AnalyticsLoading());
+
+    try {
+      // Charger les données avec le nouveau tri
+      final data = await _analyticsService.getTopProducts(
+        period: event.period ?? 'month',
+        sortBy: event.sortBy,
+        limit: event.limit ?? 10,
+        currencyCode: event.currencyCode,
+      );
+
+      // Émettre les nouvelles données
+      emit(TopProductsLoaded(data));
+    } catch (e) {
+      // En cas d'erreur
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
   }

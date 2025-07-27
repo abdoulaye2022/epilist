@@ -1,11 +1,15 @@
-// widgets/analytics/top_products_card.dart
+// widgets/analytics/top_products_card.dart - VERSION FONCTIONNELLE
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/blocs/analytics/analytics_bloc.dart';
+import 'package:epilist/blocs/analytics/analytics_event.dart';
 
 class TopProductsCard extends StatelessWidget {
   final Map<String, dynamic> data;
+  final String? selectedCurrency;
 
-  const TopProductsCard({super.key, required this.data});
+  const TopProductsCard({super.key, required this.data, this.selectedCurrency});
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +144,18 @@ class TopProductsCard extends StatelessWidget {
   Widget _buildSortButton(BuildContext context, String currentSort) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.sort, color: Colors.grey[600]),
-      onSelected: (sort) {
-        // Ici vous pourriez déclencher un event pour changer le tri
-        // context.read<AnalyticsBloc>().add(LoadTopProducts(sortBy: sort));
+      tooltip: 'Trier par',
+      onSelected: (sortBy) {
+        // ✅ CORRECTION : Déclencher l'événement ChangeTopProductsSort
+        print('Changement de tri vers: $sortBy'); // Debug
+        context.read<AnalyticsBloc>().add(
+          ChangeTopProductsSort(
+            sortBy: sortBy,
+            currencyCode: selectedCurrency,
+            period: 'month',
+            limit: 10,
+          ),
+        );
       },
       itemBuilder:
           (context) => [
@@ -150,12 +163,31 @@ class TopProductsCard extends StatelessWidget {
               value: 'total_spent',
               child: Row(
                 children: [
-                  Icon(Icons.attach_money, size: 20),
+                  Icon(
+                    Icons.attach_money,
+                    size: 20,
+                    color:
+                        currentSort == 'total_spent'
+                            ? Colors.green[600]
+                            : Colors.grey[600],
+                  ),
                   const SizedBox(width: 8),
-                  Text('Par montant'),
-                  if (currentSort == 'total_spent') Spacer(),
+                  Text(
+                    'Par montant',
+                    style: TextStyle(
+                      fontWeight:
+                          currentSort == 'total_spent'
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                      color:
+                          currentSort == 'total_spent'
+                              ? Colors.green[600]
+                              : Colors.black87,
+                    ),
+                  ),
+                  const Spacer(),
                   if (currentSort == 'total_spent')
-                    Icon(Icons.check, color: Colors.green),
+                    Icon(Icons.check, color: Colors.green[600], size: 18),
                 ],
               ),
             ),
@@ -163,12 +195,31 @@ class TopProductsCard extends StatelessWidget {
               value: 'quantity',
               child: Row(
                 children: [
-                  Icon(Icons.numbers, size: 20),
+                  Icon(
+                    Icons.numbers,
+                    size: 20,
+                    color:
+                        currentSort == 'quantity'
+                            ? Colors.green[600]
+                            : Colors.grey[600],
+                  ),
                   const SizedBox(width: 8),
-                  Text('Par quantité'),
-                  if (currentSort == 'quantity') Spacer(),
+                  Text(
+                    'Par quantité',
+                    style: TextStyle(
+                      fontWeight:
+                          currentSort == 'quantity'
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                      color:
+                          currentSort == 'quantity'
+                              ? Colors.green[600]
+                              : Colors.black87,
+                    ),
+                  ),
+                  const Spacer(),
                   if (currentSort == 'quantity')
-                    Icon(Icons.check, color: Colors.green),
+                    Icon(Icons.check, color: Colors.green[600], size: 18),
                 ],
               ),
             ),
@@ -176,12 +227,31 @@ class TopProductsCard extends StatelessWidget {
               value: 'frequency',
               child: Row(
                 children: [
-                  Icon(Icons.repeat, size: 20),
+                  Icon(
+                    Icons.repeat,
+                    size: 20,
+                    color:
+                        currentSort == 'frequency'
+                            ? Colors.green[600]
+                            : Colors.grey[600],
+                  ),
                   const SizedBox(width: 8),
-                  Text('Par fréquence'),
-                  if (currentSort == 'frequency') Spacer(),
+                  Text(
+                    'Par fréquence',
+                    style: TextStyle(
+                      fontWeight:
+                          currentSort == 'frequency'
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                      color:
+                          currentSort == 'frequency'
+                              ? Colors.green[600]
+                              : Colors.black87,
+                    ),
+                  ),
+                  const Spacer(),
                   if (currentSort == 'frequency')
-                    Icon(Icons.check, color: Colors.green),
+                    Icon(Icons.check, color: Colors.green[600], size: 18),
                 ],
               ),
             ),

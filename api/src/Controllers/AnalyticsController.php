@@ -1,5 +1,5 @@
 <?php
-// app/Controllers/AnalyticsController.php - VERSION COMPLÈTE CORRIGÉE
+// app/Controllers/AnalyticsController.php - VERSION COMPLÈTE AVEC I18N
 
 namespace App\Controllers;
 
@@ -15,6 +15,101 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AnalyticsController
 {
+    /**
+     * ✅ DICTIONNAIRE DE TRADUCTIONS POUR LES CATÉGORIES
+     */
+    private function getCategoryTranslations(): array
+    {
+        return [
+            'fruits_vegetables' => [
+                'en' => 'Fruits & Vegetables',
+                'fr' => 'Fruits & Légumes'
+            ],
+            'meat_fish' => [
+                'en' => 'Meat & Fish',
+                'fr' => 'Viandes & Poissons'
+            ],
+            'dairy' => [
+                'en' => 'Dairy Products',
+                'fr' => 'Produits Laitiers'
+            ],
+            'grains_bread' => [
+                'en' => 'Grains & Bread',
+                'fr' => 'Céréales & Pain'
+            ],
+            'beverages' => [
+                'en' => 'Beverages',
+                'fr' => 'Boissons'
+            ],
+            'cleaning_products' => [
+                'en' => 'Cleaning Products',
+                'fr' => 'Produits d\'entretien'
+            ],
+            'snacks_sweets' => [
+                'en' => 'Snacks & Sweets',
+                'fr' => 'Snacks & Sucreries'
+            ],
+            'household' => [
+                'en' => 'Household Items',
+                'fr' => 'Articles ménagers'
+            ],
+            'health_beauty' => [
+                'en' => 'Health & Beauty',
+                'fr' => 'Santé & Beauté'
+            ],
+            'frozen' => [
+                'en' => 'Frozen Foods',
+                'fr' => 'Produits surgelés'
+            ],
+            'condiments_spices' => [
+                'en' => 'Condiments & Spices',
+                'fr' => 'Condiments & Épices'
+            ],
+            'baby_products' => [
+                'en' => 'Baby Products',
+                'fr' => 'Produits pour bébé'
+            ],
+            'pet_supplies' => [
+                'en' => 'Pet Supplies',
+                'fr' => 'Produits pour animaux'
+            ],
+            'other' => [
+                'en' => 'Other',
+                'fr' => 'Autres'
+            ]
+        ];
+    }
+
+    /**
+     * ✅ DÉTECTION DE LA LANGUE UTILISATEUR
+     */
+    private function getUserLanguage(Request $request): string
+    {
+        // Essayer de récupérer la langue depuis les headers
+        $acceptLanguage = $request->getHeaderLine('Accept-Language');
+        
+        // Ou depuis les paramètres de requête
+        $params = $request->getQueryParams();
+        $langParam = $params['lang'] ?? null;
+        
+        if ($langParam && in_array($langParam, ['en', 'fr'])) {
+            return $langParam;
+        }
+        
+        // Parser Accept-Language header
+        if ($acceptLanguage) {
+            if (strpos($acceptLanguage, 'fr') !== false) {
+                return 'fr';
+            }
+            if (strpos($acceptLanguage, 'en') !== false) {
+                return 'en';
+            }
+        }
+        
+        // Défaut : français
+        return 'fr';
+    }
+
     /**
      * ✅ VÉRIFICATION D'ACCÈS À UNE LISTE (SIMPLIFIÉE)
      */
@@ -88,6 +183,7 @@ class AnalyticsController
             // Paramètres avec valeurs par défaut
             $months = min((int)($params['months'] ?? 12), 24); // Max 24 mois
             $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur avec sa devise
             $user = User::with('currency')->find($user_id);
@@ -196,6 +292,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
+                    'language' => $language,
                     'monthly_data' => $sortedMonthlyData, // ✅ Données triées
                     'summary' => [
                         'total_spent' => round($totalSpent, 2),
@@ -244,6 +341,7 @@ class AnalyticsController
             
             $period = $params['period'] ?? 'month'; // week, month, year
             $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur avec sa devise
             $user = User::with('currency')->find($user_id);
@@ -348,6 +446,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
+                    'language' => $language,
                     'period_type' => $period,
                     'currency' => $targetCurrency->code,
                     'trends' => $sortedTrendData,
@@ -382,6 +481,7 @@ class AnalyticsController
             $params = $request->getQueryParams();
             
             $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur
             $user = User::with('currency')->find($user_id);
@@ -430,6 +530,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
+                    'language' => $language,
                     'currency' => $targetCurrency->code,
                     'current_month' => [
                         'total_spent' => round($currentTotal, 2),
@@ -470,6 +571,7 @@ class AnalyticsController
             
             $period_type = $params['period_type'] ?? 'month'; // month, quarter, year
             $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur
             $user = User::with('currency')->find($user_id);
@@ -546,6 +648,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
+                    'language' => $language,
                     'period_type' => $period_type,
                     'currency' => $targetCurrency->code,
                     'current_period' => [
@@ -584,7 +687,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ DÉPENSES PAR CATÉGORIE (SIMPLIFIÉ)
+     * ✅ DÉPENSES PAR CATÉGORIE (AVEC SUPPORT I18N)
      */
     public function spendingByCategory(Request $request, Response $response): Response
     {
@@ -595,6 +698,9 @@ class AnalyticsController
             $period = $params['period'] ?? 'month'; // week, month, quarter, year, all
             $currency_code = $params['currency'] ?? null;
             $limit = min((int)($params['limit'] ?? 20), 50);
+            
+            // ✅ Détecter la langue
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur
             $user = User::with('currency')->find($user_id);
@@ -622,8 +728,8 @@ class AnalyticsController
 
             $items = $query->get();
 
-            // Catégoriser les produits
-            $categories = $this->categorizeProducts($items);
+            // Catégoriser les produits avec la langue
+            $categories = $this->categorizeProducts($items, $language);
 
             // Trier par dépenses totales
             uasort($categories, function($a, $b) {
@@ -643,6 +749,7 @@ class AnalyticsController
                 
                 $formattedCategories[] = [
                     'category' => $categoryName,
+                    'category_key' => $data['category_key'], // ✅ Clé pour identification côté client
                     'total_spent' => round($data['total_spent'], 2),
                     'total_items' => $data['total_items'],
                     'unique_products' => $data['unique_products'],
@@ -658,6 +765,7 @@ class AnalyticsController
                 'success' => true,
                 'data' => [
                     'period' => $period,
+                    'language' => $language, // ✅ Indiquer la langue utilisée
                     'currency' => $targetCurrency->code,
                     'categories' => $formattedCategories,
                     'summary' => [
@@ -684,7 +792,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ TOP PRODUITS (SIMPLIFIÉ)
+     * ✅ TOP PRODUITS (AVEC SUPPORT I18N)
      */
     public function topProducts(Request $request, Response $response): Response
     {
@@ -696,6 +804,7 @@ class AnalyticsController
             $sort_by = $params['sort_by'] ?? 'total_spent'; // total_spent, quantity, frequency
             $currency_code = $params['currency'] ?? null;
             $limit = min((int)($params['limit'] ?? 10), 50);
+            $language = $this->getUserLanguage($request);
             
             // Récupérer l'utilisateur
             $user = User::with('currency')->find($user_id);
@@ -785,6 +894,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
+                    'language' => $language,
                     'period' => $period,
                     'sort_by' => $sort_by,
                     'currency' => $targetCurrency->code,
@@ -812,42 +922,80 @@ class AnalyticsController
     }
 
     /**
-     * ✅ MÉTHODE PRIVÉE POUR CATÉGORISER LES PRODUITS
+     * ✅ MÉTHODE PRIVÉE POUR CATÉGORISER LES PRODUITS (AVEC I18N)
      */
-    private function categorizeProducts($items): array
+    private function categorizeProducts($items, string $language = 'fr'): array
     {
         $categories = [];
+        $translations = $this->getCategoryTranslations();
         
         // Définition des catégories avec mots-clés (en français et anglais)
         $categoryKeywords = [
-            'Fruits & Légumes' => [
+            'fruits_vegetables' => [
                 'pomme', 'banana', 'orange', 'tomate', 'carotte', 'oignon', 'pommes de terre',
                 'apple', 'tomato', 'potato', 'onion', 'carrot', 'lettuce', 'spinach',
-                'fruit', 'légume', 'vegetable', 'avocado', 'avocat'
+                'fruit', 'légume', 'vegetable', 'avocado', 'avocat', 'broccoli', 'brocoli',
+                'concombre', 'cucumber', 'poivron', 'pepper', 'celery', 'céleri', 'corn', 'maïs',
+                'cabbage', 'chou', 'radish', 'radis', 'turnip', 'navet', 'beet', 'betterave'
             ],
-            'Viandes & Poissons' => [
+            'meat_fish' => [
                 'poulet', 'boeuf', 'porc', 'saumon', 'thon', 'chicken', 'beef', 'pork',
-                'fish', 'meat', 'viande', 'poisson', 'steak', 'bacon', 'ham', 'jambon'
+                'fish', 'meat', 'viande', 'poisson', 'steak', 'bacon', 'ham', 'jambon',
+                'turkey', 'dinde', 'lamb', 'agneau', 'shrimp', 'crevette', 'cod', 'morue',
+                'trout', 'truite', 'sardine', 'mackerel', 'maquereau'
             ],
-            'Produits Laitiers' => [
+            'dairy' => [
                 'lait', 'fromage', 'yaourt', 'beurre', 'milk', 'cheese', 'yogurt',
-                'butter', 'cream', 'crème', 'dairy', 'laitier'
+                'butter', 'cream', 'crème', 'dairy', 'laitier', 'mozzarella', 'cheddar',
+                'goat cheese', 'fromage de chèvre', 'feta', 'parmesan'
             ],
-            'Céréales & Pain' => [
+            'grains_bread' => [
                 'pain', 'pâtes', 'riz', 'bread', 'pasta', 'rice', 'cereal', 'céréales',
-                'flour', 'farine', 'oats', 'avoine', 'quinoa'
+                'flour', 'farine', 'oats', 'avoine', 'quinoa', 'bagel', 'croissant',
+                'noodles', 'nouilles', 'crackers', 'biscuits salés', 'tortilla'
             ],
-            'Boissons' => [
+            'beverages' => [
                 'eau', 'jus', 'café', 'thé', 'water', 'juice', 'coffee', 'tea',
-                'soda', 'beer', 'bière', 'vin', 'wine', 'beverage', 'boisson'
+                'soda', 'beer', 'bière', 'vin', 'wine', 'beverage', 'boisson',
+                'sprite', 'coca', 'pepsi', 'sparkling water', 'eau pétillante'
             ],
-            'Produits d\'entretien' => [
+            'cleaning_products' => [
                 'détergent', 'savon', 'shampoing', 'soap', 'detergent', 'shampoo',
-                'cleaning', 'nettoyage', 'toilet paper', 'papier toilette'
+                'cleaning', 'nettoyage', 'toilet paper', 'papier toilette', 'bleach',
+                'javel', 'dishwasher', 'lave-vaisselle', 'sponge', 'éponge'
             ],
-            'Snacks & Sucreries' => [
+            'snacks_sweets' => [
                 'chocolat', 'biscuit', 'chips', 'chocolate', 'cookie', 'candy',
-                'bonbon', 'gâteau', 'cake', 'ice cream', 'glace'
+                'bonbon', 'gâteau', 'cake', 'ice cream', 'glace', 'nuts', 'noix',
+                'popcorn', 'maïs soufflé', 'pretzel', 'crackers'
+            ],
+            'household' => [
+                'batteries', 'piles', 'aluminum foil', 'papier aluminium', 'plastic wrap',
+                'pellicule plastique', 'napkins', 'serviettes', 'candles', 'bougies',
+                'light bulb', 'ampoule', 'garbage bags', 'sacs poubelle'
+            ],
+            'health_beauty' => [
+                'toothpaste', 'dentifrice', 'deodorant', 'déodorant', 'vitamins',
+                'vitamines', 'band-aid', 'pansement', 'moisturizer', 'hydratant',
+                'sunscreen', 'crème solaire', 'makeup', 'maquillage'
+            ],
+            'frozen' => [
+                'frozen', 'surgelé', 'ice', 'glace', 'frozen pizza', 'pizza surgelée',
+                'frozen vegetables', 'légumes surgelés', 'frozen fruits', 'fruits surgelés',
+                'ice cream', 'crème glacée'
+            ],
+            'condiments_spices' => [
+                'salt', 'sel', 'pepper', 'poivre', 'ketchup', 'mustard', 'moutarde',
+                'mayonnaise', 'vinegar', 'vinaigre', 'spice', 'épice', 'garlic', 'ail',
+                'onion powder', 'poudre d\'oignon', 'paprika', 'oregano', 'origan'
+            ],
+            'baby_products' => [
+                'diapers', 'couches', 'baby food', 'nourriture bébé', 'formula',
+                'lait maternisé', 'baby', 'bébé', 'baby wipes', 'lingettes bébé'
+            ],
+            'pet_supplies' => [
+                'dog food', 'nourriture chien', 'cat food', 'nourriture chat',
+                'pet', 'animal', 'litter', 'litière', 'dog treats', 'gâteries chien'
             ]
         ];
 
@@ -856,11 +1004,15 @@ class AnalyticsController
             $categorized = false;
             
             // Essayer de catégoriser
-            foreach ($categoryKeywords as $categoryName => $keywords) {
+            foreach ($categoryKeywords as $categoryKey => $keywords) {
                 foreach ($keywords as $keyword) {
                     if (strpos($productName, strtolower($keyword)) !== false) {
+                        // ✅ Utiliser le nom traduit selon la langue
+                        $categoryName = $translations[$categoryKey][$language];
+                        
                         if (!isset($categories[$categoryName])) {
                             $categories[$categoryName] = [
+                                'category_key' => $categoryKey, // ✅ Clé pour identification
                                 'total_spent' => 0,
                                 'total_items' => 0,
                                 'unique_products' => 0,
@@ -887,8 +1039,11 @@ class AnalyticsController
             
             // Si pas catégorisé, mettre dans "Autres"
             if (!$categorized) {
-                if (!isset($categories['Autres'])) {
-                    $categories['Autres'] = [
+                $otherCategoryName = $translations['other'][$language];
+                
+                if (!isset($categories[$otherCategoryName])) {
+                    $categories[$otherCategoryName] = [
+                        'category_key' => 'other',
                         'total_spent' => 0,
                         'total_items' => 0,
                         'unique_products' => 0,
@@ -898,13 +1053,13 @@ class AnalyticsController
                 }
                 
                 $itemTotal = ($item->price ?? 0) * $item->quantity;
-                $categories['Autres']['total_spent'] += $itemTotal;
-                $categories['Autres']['total_items'] += $item->quantity;
+                $categories[$otherCategoryName]['total_spent'] += $itemTotal;
+                $categories[$otherCategoryName]['total_items'] += $item->quantity;
                 
-                if (!isset($categories['Autres']['top_products'][$item->product_name])) {
-                    $categories['Autres']['top_products'][$item->product_name] = 0;
+                if (!isset($categories[$otherCategoryName]['top_products'][$item->product_name])) {
+                    $categories[$otherCategoryName]['top_products'][$item->product_name] = 0;
                 }
-                $categories['Autres']['top_products'][$item->product_name] += $itemTotal;
+                $categories[$otherCategoryName]['top_products'][$item->product_name] += $itemTotal;
             }
         }
 
@@ -920,5 +1075,481 @@ class AnalyticsController
         }
 
         return $categories;
+    }
+
+    /**
+     * ✅ HISTORIQUE DES DÉPENSES PAR JOUR (7-30 derniers jours)
+     */
+    public function dailySpendingHistory(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            // Paramètres avec valeurs par défaut
+            $days = min((int)($params['days'] ?? 30), 90); // Max 90 jours
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            
+            // Récupérer l'utilisateur avec sa devise
+            $user = User::with('currency')->find($user_id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            // Déterminer la devise cible
+            if ($currency_code) {
+                $targetCurrency = Currency::findByCode($currency_code);
+                if (!$targetCurrency) {
+                    throw new \Exception('Invalid currency code');
+                }
+            } else {
+                $targetCurrency = $user->currency ?? Currency::getDefault();
+            }
+
+            // Calculer les dates
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
+
+            // Query pour les items achetés avec prix
+            $items = $this->getUserAccessibleItemsQuery($user_id)
+                ->where('is_purchased', true)
+                ->whereNotNull('price')
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->get();
+
+            // Créer les données par jour
+            $dailyData = [];
+            $currentDate = $startDate->copy();
+            
+            while ($currentDate->lte($endDate)) {
+                $dateKey = $currentDate->format('Y-m-d');
+                $dailyData[$dateKey] = [
+                    'date' => $dateKey,
+                    'day_name' => $currentDate->format('l'),
+                    'day_short' => $currentDate->format('D'),
+                    'day_number' => $currentDate->day,
+                    'month_name' => $currentDate->format('F'),
+                    'total_spent' => 0,
+                    'total_items' => 0,
+                    'shopping_sessions' => 0,
+                    'average_item_price' => 0,
+                    'currency' => $targetCurrency->code
+                ];
+                $currentDate->addDay();
+            }
+
+            // Calculer les totaux par jour
+            $sessionsByDay = [];
+            foreach ($items as $item) {
+                $dateKey = $item->updated_at->format('Y-m-d');
+                if (isset($dailyData[$dateKey])) {
+                    $totalPrice = $item->price * $item->quantity;
+                    $dailyData[$dateKey]['total_spent'] += $totalPrice;
+                    $dailyData[$dateKey]['total_items'] += $item->quantity;
+                    
+                    // Compter les sessions (groupées par liste et heure)
+                    $sessionKey = $dateKey . '-' . $item->list_id . '-' . $item->updated_at->format('H');
+                    $sessionsByDay[$dateKey][$sessionKey] = true;
+                }
+            }
+
+            // Finaliser les calculs et formater
+            foreach ($dailyData as $dateKey => &$day) {
+                $day['shopping_sessions'] = count($sessionsByDay[$dateKey] ?? []);
+                if ($day['total_items'] > 0) {
+                    $day['average_item_price'] = round($day['total_spent'] / $day['total_items'], 2);
+                }
+                $day['total_spent'] = round($day['total_spent'], 2);
+                $day['formatted_total'] = $targetCurrency->formatAmountDisplay($day['total_spent']);
+                $day['formatted_average'] = $targetCurrency->formatAmountDisplay($day['average_item_price']);
+            }
+
+            // Trier par date
+            $sortedDailyData = array_values($dailyData);
+            usort($sortedDailyData, function($a, $b) {
+                return $a['date'] <=> $b['date'];
+            });
+
+            // Calculs de tendance
+            $values = array_column($sortedDailyData, 'total_spent');
+            $totalSpent = array_sum($values);
+            $averageDaily = count($values) > 0 ? $totalSpent / count($values) : 0;
+            
+            // Tendance (comparaison des 7 derniers jours vs 7 précédents)
+            $recentDays = array_slice($values, -7);
+            $previousDays = array_slice($values, -14, 7);
+            $recentAvg = count($recentDays) > 0 ? array_sum($recentDays) / count($recentDays) : 0;
+            $previousAvg = count($previousDays) > 0 ? array_sum($previousDays) / count($previousDays) : 0;
+            
+            $trendPercentage = $previousAvg > 0 ? 
+                round((($recentAvg - $previousAvg) / $previousAvg) * 100, 1) : 0;
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'daily_data' => $sortedDailyData,
+                    'summary' => [
+                        'total_spent' => round($totalSpent, 2),
+                        'average_daily' => round($averageDaily, 2),
+                        'currency' => $targetCurrency->code,
+                        'period' => [
+                            'start' => $startDate->toDateString(),
+                            'end' => $endDate->toDateString(),
+                            'days' => $days
+                        ],
+                        'trend' => [
+                            'percentage' => $trendPercentage,
+                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
+                            'recent_average' => round($recentAvg, 2),
+                            'previous_average' => round($previousAvg, 2)
+                        ],
+                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
+                        'formatted_average_daily' => $targetCurrency->formatAmountDisplay($averageDaily)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'DAILY_ANALYTICS_ERROR',
+                    'message' => 'Error retrieving daily spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ HISTORIQUE DES DÉPENSES PAR SEMAINE (12-52 dernières semaines)
+     */
+    public function weeklySpendingHistory(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            // Paramètres avec valeurs par défaut
+            $weeks = min((int)($params['weeks'] ?? 12), 52); // Max 52 semaines
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            
+            // Récupérer l'utilisateur avec sa devise
+            $user = User::with('currency')->find($user_id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            // Déterminer la devise cible
+            if ($currency_code) {
+                $targetCurrency = Currency::findByCode($currency_code);
+                if (!$targetCurrency) {
+                    throw new \Exception('Invalid currency code');
+                }
+            } else {
+                $targetCurrency = $user->currency ?? Currency::getDefault();
+            }
+
+            // Calculer les dates (commencer par le début de la semaine actuelle)
+            $endDate = Carbon::now()->endOfWeek();
+            $startDate = Carbon::now()->subWeeks($weeks - 1)->startOfWeek();
+
+            // Query pour les items achetés avec prix
+            $items = $this->getUserAccessibleItemsQuery($user_id)
+                ->where('is_purchased', true)
+                ->whereNotNull('price')
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->get();
+
+            // Créer les données par semaine
+            $weeklyData = [];
+            $currentDate = $startDate->copy();
+            
+            while ($currentDate->lte($endDate)) {
+                $weekKey = $currentDate->format('Y-W');
+                $weekStart = $currentDate->copy()->startOfWeek();
+                $weekEnd = $currentDate->copy()->endOfWeek();
+                
+                $weeklyData[$weekKey] = [
+                    'week' => $weekKey,
+                    'week_number' => $currentDate->week,
+                    'year' => $currentDate->year,
+                    'week_start' => $weekStart->toDateString(),
+                    'week_end' => $weekEnd->toDateString(),
+                    'week_label' => $weekStart->format('M j') . ' - ' . $weekEnd->format('M j, Y'),
+                    'total_spent' => 0,
+                    'total_items' => 0,
+                    'shopping_days' => 0,
+                    'average_item_price' => 0,
+                    'currency' => $targetCurrency->code
+                ];
+                $currentDate->addWeek();
+            }
+
+            // Calculer les totaux par semaine
+            $daysByWeek = [];
+            foreach ($items as $item) {
+                $weekKey = $item->updated_at->format('Y-W');
+                if (isset($weeklyData[$weekKey])) {
+                    $totalPrice = $item->price * $item->quantity;
+                    $weeklyData[$weekKey]['total_spent'] += $totalPrice;
+                    $weeklyData[$weekKey]['total_items'] += $item->quantity;
+                    
+                    // Compter les jours de shopping uniques
+                    $dayKey = $item->updated_at->format('Y-m-d');
+                    $daysByWeek[$weekKey][$dayKey] = true;
+                }
+            }
+
+            // Finaliser les calculs et formater
+            foreach ($weeklyData as $weekKey => &$week) {
+                $week['shopping_days'] = count($daysByWeek[$weekKey] ?? []);
+                if ($week['total_items'] > 0) {
+                    $week['average_item_price'] = round($week['total_spent'] / $week['total_items'], 2);
+                }
+                $week['total_spent'] = round($week['total_spent'], 2);
+                $week['formatted_total'] = $targetCurrency->formatAmountDisplay($week['total_spent']);
+                $week['formatted_average'] = $targetCurrency->formatAmountDisplay($week['average_item_price']);
+            }
+
+            // Trier par semaine
+            $sortedWeeklyData = array_values($weeklyData);
+            usort($sortedWeeklyData, function($a, $b) {
+                if ($a['year'] !== $b['year']) {
+                    return $a['year'] <=> $b['year'];
+                }
+                return $a['week_number'] <=> $b['week_number'];
+            });
+
+            // Calculs de tendance
+            $values = array_column($sortedWeeklyData, 'total_spent');
+            $totalSpent = array_sum($values);
+            $averageWeekly = count($values) > 0 ? $totalSpent / count($values) : 0;
+            
+            // Tendance (comparaison des 4 dernières semaines vs 4 précédentes)
+            $recentWeeks = array_slice($values, -4);
+            $previousWeeks = array_slice($values, -8, 4);
+            $recentAvg = count($recentWeeks) > 0 ? array_sum($recentWeeks) / count($recentWeeks) : 0;
+            $previousAvg = count($previousWeeks) > 0 ? array_sum($previousWeeks) / count($previousWeeks) : 0;
+            
+            $trendPercentage = $previousAvg > 0 ? 
+                round((($recentAvg - $previousAvg) / $previousAvg) * 100, 1) : 0;
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'weekly_data' => $sortedWeeklyData,
+                    'summary' => [
+                        'total_spent' => round($totalSpent, 2),
+                        'average_weekly' => round($averageWeekly, 2),
+                        'currency' => $targetCurrency->code,
+                        'period' => [
+                            'start' => $startDate->toDateString(),
+                            'end' => $endDate->toDateString(),
+                            'weeks' => $weeks
+                        ],
+                        'trend' => [
+                            'percentage' => $trendPercentage,
+                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
+                            'recent_average' => round($recentAvg, 2),
+                            'previous_average' => round($previousAvg, 2)
+                        ],
+                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
+                        'formatted_average_weekly' => $targetCurrency->formatAmountDisplay($averageWeekly)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'WEEKLY_ANALYTICS_ERROR',
+                    'message' => 'Error retrieving weekly spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ HISTORIQUE DES DÉPENSES PAR ANNÉE (5-10 dernières années)
+     */
+    public function yearlySpendingHistory(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            // Paramètres avec valeurs par défaut
+            $years = min((int)($params['years'] ?? 5), 10); // Max 10 ans
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            
+            // Récupérer l'utilisateur avec sa devise
+            $user = User::with('currency')->find($user_id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            // Déterminer la devise cible
+            if ($currency_code) {
+                $targetCurrency = Currency::findByCode($currency_code);
+                if (!$targetCurrency) {
+                    throw new \Exception('Invalid currency code');
+                }
+            } else {
+                $targetCurrency = $user->currency ?? Currency::getDefault();
+            }
+
+            // Calculer les dates
+            $currentYear = Carbon::now()->year;
+            $startYear = $currentYear - $years + 1;
+            $endYear = $currentYear;
+
+            $startDate = Carbon::create($startYear, 1, 1)->startOfYear();
+            $endDate = Carbon::create($endYear, 12, 31)->endOfYear();
+
+            // Query pour les items achetés avec prix
+            $items = $this->getUserAccessibleItemsQuery($user_id)
+                ->where('is_purchased', true)
+                ->whereNotNull('price')
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->get();
+
+            // Créer les données par année
+            $yearlyData = [];
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                $yearlyData[$year] = [
+                    'year' => $year,
+                    'year_label' => (string)$year,
+                    'is_current_year' => $year === $currentYear,
+                    'total_spent' => 0,
+                    'total_items' => 0,
+                    'shopping_months' => 0,
+                    'shopping_days' => 0,
+                    'average_item_price' => 0,
+                    'average_monthly' => 0,
+                    'currency' => $targetCurrency->code
+                ];
+            }
+
+            // Calculer les totaux par année
+            $monthsByYear = [];
+            $daysByYear = [];
+            
+            foreach ($items as $item) {
+                $year = $item->updated_at->year;
+                if (isset($yearlyData[$year])) {
+                    $totalPrice = $item->price * $item->quantity;
+                    $yearlyData[$year]['total_spent'] += $totalPrice;
+                    $yearlyData[$year]['total_items'] += $item->quantity;
+                    
+                    // Compter les mois et jours de shopping uniques
+                    $monthKey = $item->updated_at->format('Y-m');
+                    $dayKey = $item->updated_at->format('Y-m-d');
+                    $monthsByYear[$year][$monthKey] = true;
+                    $daysByYear[$year][$dayKey] = true;
+                }
+            }
+
+            // Finaliser les calculs et formater
+            foreach ($yearlyData as $year => &$data) {
+                $data['shopping_months'] = count($monthsByYear[$year] ?? []);
+                $data['shopping_days'] = count($daysByYear[$year] ?? []);
+                
+                if ($data['total_items'] > 0) {
+                    $data['average_item_price'] = round($data['total_spent'] / $data['total_items'], 2);
+                }
+                
+                if ($data['shopping_months'] > 0) {
+                    $data['average_monthly'] = round($data['total_spent'] / $data['shopping_months'], 2);
+                }
+                
+                $data['total_spent'] = round($data['total_spent'], 2);
+                $data['formatted_total'] = $targetCurrency->formatAmountDisplay($data['total_spent']);
+                $data['formatted_average_item'] = $targetCurrency->formatAmountDisplay($data['average_item_price']);
+                $data['formatted_average_monthly'] = $targetCurrency->formatAmountDisplay($data['average_monthly']);
+            }
+
+            // Trier par année
+            $sortedYearlyData = array_values($yearlyData);
+            usort($sortedYearlyData, function($a, $b) {
+                return $a['year'] <=> $b['year'];
+            });
+
+            // Calculs de tendance
+            $values = array_column($sortedYearlyData, 'total_spent');
+            $totalSpent = array_sum($values);
+            $averageYearly = count($values) > 0 ? $totalSpent / count($values) : 0;
+            
+            // Tendance (comparaison année actuelle vs précédente)
+            $currentYearSpending = end($values);
+            $previousYearSpending = count($values) > 1 ? $values[count($values) - 2] : 0;
+            
+            $trendPercentage = $previousYearSpending > 0 ? 
+                round((($currentYearSpending - $previousYearSpending) / $previousYearSpending) * 100, 1) : 0;
+
+            // Année avec le plus de dépenses
+            $maxSpendingYear = null;
+            $maxSpending = 0;
+            foreach ($sortedYearlyData as $yearData) {
+                if ($yearData['total_spent'] > $maxSpending) {
+                    $maxSpending = $yearData['total_spent'];
+                    $maxSpendingYear = $yearData['year'];
+                }
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'yearly_data' => $sortedYearlyData,
+                    'summary' => [
+                        'total_spent' => round($totalSpent, 2),
+                        'average_yearly' => round($averageYearly, 2),
+                        'currency' => $targetCurrency->code,
+                        'period' => [
+                            'start_year' => $startYear,
+                            'end_year' => $endYear,
+                            'years' => $years
+                        ],
+                        'trend' => [
+                            'percentage' => $trendPercentage,
+                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
+                            'current_year_spending' => round($currentYearSpending, 2),
+                            'previous_year_spending' => round($previousYearSpending, 2)
+                        ],
+                        'insights' => [
+                            'highest_spending_year' => $maxSpendingYear,
+                            'highest_spending_amount' => round($maxSpending, 2),
+                            'formatted_highest' => $targetCurrency->formatAmountDisplay($maxSpending)
+                        ],
+                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
+                        'formatted_average_yearly' => $targetCurrency->formatAmountDisplay($averageYearly)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'YEARLY_ANALYTICS_ERROR',
+                    'message' => 'Error retrieving yearly spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 }

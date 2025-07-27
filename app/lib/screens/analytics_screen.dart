@@ -1,6 +1,7 @@
-// screens/analytics_screen.dart
+// screens/analytics_screen.dart - VERSION MISE À JOUR
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
+import 'package:epilist/widgets/analytics/period_chart_card.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,7 +99,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          // ✅ CORRECTION: Sélecteur de devise simplifié sans CurrencyBloc
+          // ✅ Sélecteur de devise simplifié
           PopupMenuButton<String>(
             icon: const Icon(Icons.currency_exchange, color: Colors.white),
             tooltip: 'Choisir la devise',
@@ -378,6 +379,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     );
   }
 
+  /// ✅ ONGLET TENDANCES MISE À JOUR - Support des nouveaux états
   Widget _buildTrendsTab(BuildContext context, AppLocalizations l10n) {
     return BlocBuilder<AnalyticsBloc, AnalyticsState>(
       builder: (context, state) {
@@ -387,14 +389,56 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           );
         }
 
+        // ✅ Gérer tous les types de données de tendances
+        Map<String, dynamic> chartData = {};
+
         if (state is MonthlySpendingLoaded) {
+          chartData = {
+            'monthly_data': state.monthlyData['monthly_data'] ?? [],
+            'summary': state.monthlyData['summary'] ?? {},
+            'period': 'month',
+          };
+        } else if (state is DailySpendingLoaded) {
+          chartData = {
+            'daily_data': state.dailyData['daily_data'] ?? [],
+            'summary': state.dailyData['summary'] ?? {},
+            'period': 'day',
+          };
+        } else if (state is WeeklySpendingLoaded) {
+          chartData = {
+            'weekly_data': state.weeklyData['weekly_data'] ?? [],
+            'summary': state.weeklyData['summary'] ?? {},
+            'period': 'week',
+          };
+        } else if (state is YearlySpendingLoaded) {
+          chartData = {
+            'yearly_data': state.yearlyData['yearly_data'] ?? [],
+            'summary': state.yearlyData['summary'] ?? {},
+            'period': 'year',
+          };
+        } else if (state is SpendingTrendsLoaded) {
+          // ✅ Compatibilité avec l'ancien état générique
+          final trendsData = state.trendsData;
+          final period = trendsData['period_type'] ?? 'month';
+
+          chartData = {
+            'period_data': _extractPeriodData(trendsData, period),
+            'summary': trendsData['summary'] ?? {},
+            'period': period,
+          };
+        }
+
+        if (chartData.isNotEmpty) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                MonthlyChartCard(data: state.monthlyData),
+                PeriodChartCard(
+                  data: chartData,
+                  selectedCurrency: _selectedCurrency,
+                ),
                 const SizedBox(height: 16),
-                // Ajouter d'autres widgets de tendances ici
+                // Vous pouvez ajouter d'autres widgets de tendances ici
               ],
             ),
           );
@@ -407,6 +451,24 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         });
       },
     );
+  }
+
+  /// ✅ MÉTHODE UTILITAIRE MISE À JOUR pour extraire les données selon la période
+  List<dynamic> _extractPeriodData(
+    Map<String, dynamic> trendsData,
+    String period,
+  ) {
+    switch (period) {
+      case 'day':
+        return trendsData['daily_data'] ?? [];
+      case 'week':
+        return trendsData['weekly_data'] ?? [];
+      case 'year':
+        return trendsData['yearly_data'] ?? [];
+      case 'month':
+      default:
+        return trendsData['monthly_data'] ?? [];
+    }
   }
 
   Widget _buildCategoriesTab(BuildContext context, AppLocalizations l10n) {

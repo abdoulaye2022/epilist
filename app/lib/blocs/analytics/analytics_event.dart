@@ -78,3 +78,60 @@ class LoadPeriodComparison extends AnalyticsEvent {
   @override
   List<Object?> get props => [periodType, currencyCode];
 }
+
+// ✅ AJOUT DE L'ÉVÉNEMENT MANQUANT POUR LE CHANGEMENT DE TRI
+class ChangeTopProductsSort extends AnalyticsEvent {
+  final String sortBy;
+  final String? period;
+  final int? limit;
+  final String? currencyCode;
+
+  const ChangeTopProductsSort({
+    required this.sortBy,
+    this.period,
+    this.limit,
+    this.currencyCode,
+  });
+
+  @override
+  List<Object?> get props => [sortBy, period, limit, currencyCode];
+}
+
+class LoadDailySpending extends AnalyticsEvent {
+  final int days;
+  final String? currencyCode;
+
+  const LoadDailySpending({
+    this.days = 30, // Dernier 30 jours par défaut
+    this.currencyCode,
+  });
+
+  @override
+  List<Object?> get props => [days, currencyCode];
+}
+
+class LoadWeeklySpending extends AnalyticsEvent {
+  final int weeks;
+  final String? currencyCode;
+
+  const LoadWeeklySpending({
+    this.weeks = 12, // Dernières 12 semaines par défaut
+    this.currencyCode,
+  });
+
+  @override
+  List<Object?> get props => [weeks, currencyCode];
+}
+
+class LoadYearlySpending extends AnalyticsEvent {
+  final int years;
+  final String? currencyCode;
+
+  const LoadYearlySpending({
+    this.years = 5, // Dernières 5 années par défaut
+    this.currencyCode,
+  });
+
+  @override
+  List<Object?> get props => [years, currencyCode];
+}

@@ -214,6 +214,9 @@ $app->group('', function ($group) {
     $group->get('/analytics/spending/comparison', [AnalyticsController::class, 'periodComparison']);
     $group->get('/analytics/spending/categories', [AnalyticsController::class, 'spendingByCategory']);
     $group->get('/analytics/products/top', [AnalyticsController::class, 'topProducts']);
+    $group->get('/analytics/spending/daily', [AnalyticsController::class, 'dailySpendingHistory']);
+$group->get('/analytics/spending/weekly', [AnalyticsController::class, 'weeklySpendingHistory']);
+$group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
 
 })->add($jwtMiddleware);
 
