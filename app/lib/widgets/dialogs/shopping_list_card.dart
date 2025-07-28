@@ -112,13 +112,14 @@ class ShoppingListCard extends StatelessWidget {
     double totalPrice,
   ) {
     final l10n = AppLocalizations.of(context)!;
+    // ✅ CORRECTION : Utiliser la nouvelle propriété hasReceipts
+    final hasReceipts = list.hasReceipts; // Au lieu de list.receiptsCount > 0
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmallScreen = constraints.maxWidth < 300;
 
-        if (isSmallScreen && totalPrice > 0) {
-          // Layout vertical pour très petits écrans
+        if (isSmallScreen) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -130,48 +131,52 @@ class ShoppingListCard extends StatelessWidget {
                     '$totalItems ${l10n.articles}',
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
+                  if (hasReceipts) ...[
+                    const SizedBox(width: 12),
+                    _buildReceiptsBadge(context),
+                  ],
                 ],
               ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  // ✅ CHANGEMENT: Icône de budget au lieu du signe dollar
-                  Icon(
-                    Icons.account_balance_wallet,
-                    size: 16,
-                    color: Colors.green[600],
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Text(
-                          '${l10n.budget}: ',
-                          style: TextStyle(
-                            color: Colors.green[600],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Flexible(
-                          child: FormattedAmount(
-                            amount: totalPrice,
+              if (totalPrice > 0) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet,
+                      size: 16,
+                      color: Colors.green[600],
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text(
+                            '${l10n.budget}: ',
                             style: TextStyle(
                               color: Colors.green[600],
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
+                          Flexible(
+                            child: FormattedAmount(
+                              amount: totalPrice,
+                              style: TextStyle(
+                                color: Colors.green[600],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ],
           );
         } else {
-          // Layout horizontal pour écrans normaux
           return Row(
             children: [
               Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
@@ -180,9 +185,12 @@ class ShoppingListCard extends StatelessWidget {
                 '$totalItems ${l10n.articles}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
+              if (hasReceipts) ...[
+                const SizedBox(width: 12),
+                _buildReceiptsBadge(context),
+              ],
               if (totalPrice > 0) ...[
                 const SizedBox(width: 16),
-                // ✅ CHANGEMENT: Icône de budget au lieu du signe dollar
                 Icon(
                   Icons.account_balance_wallet,
                   size: 16,
@@ -212,6 +220,34 @@ class ShoppingListCard extends StatelessWidget {
           );
         }
       },
+    );
+  }
+
+  Widget _buildReceiptsBadge(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.blue[200]!),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.receipt_long, size: 12, color: Colors.blue[600]),
+          const SizedBox(width: 2),
+          Text(
+            '${list.receiptsCount}',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.blue[600],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -459,6 +495,25 @@ class ShoppingListCard extends StatelessWidget {
             Expanded(
               child: Text(
                 l10n.duplicate,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    items.add(
+      PopupMenuItem(
+        value: 'receipts',
+        child: Row(
+          children: [
+            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.receipts,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),

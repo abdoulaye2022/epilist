@@ -1121,5 +1121,145 @@
         "type": "int"
       }
     }
-  }
+  },
+  "receipts": "Factures",
+  "allReceipts": "Toutes",
+  "byStore": "Par magasin",
+  "statistics": "Statistiques",
+  "addReceipt": "Ajouter une facture",
+  "editReceipt": "Modifier la facture",
+  "deleteReceipt": "Supprimer la facture",
+  "deleteReceiptConfirm": "Êtes-vous sûr de vouloir supprimer cette facture ?",
+  "noReceipts": "Aucune facture",
+  "addFirstReceipt": "Ajoutez votre première facture pour suivre vos dépenses réelles",
+  "storeName": "Nom du magasin",
+  "enterStoreName": "Entrez le nom du magasin",
+  "totalAmount": "Montant total",
+  "enterAmount": "Entrez le montant",
+  "purchaseDate": "Date d'achat",
+  "selectDate": "Sélectionner la date",
+  "notes": "Notes",
+  "optionalNotes": "Notes optionnelles",
+  "storeNameRequired": "Le nom du magasin est requis",
+  "storeNameTooShort": "Le nom doit contenir au moins 2 caractères",
+  "amountRequired": "Le montant est requis",
+  "invalidAmount": "Montant invalide",
+  "amountMustBePositive": "Le montant doit être positif",
+  "amountTooHigh": "Le montant est trop élevé",
+  "spendingSummary": "Résumé des dépenses",
+  "totalExpensesSummary": "Vue d'ensemble de vos dépenses",
+  "totalFromReceipts": "Total des factures",
+  "totalFromItems": "Total des articles",
+  "bestEstimate": "Meilleure estimation",
+  "dataComparison": "Comparaison des données",
+  "receiptVsItemComparison": "Factures vs prix des articles",
+  "dataQuality": "Qualité des données",
+  "dataQualityExcellent": "Excellente",
+  "dataQualityGood": "Bonne",
+  "dataQualityFair": "Correcte",
+  "dataQualityPoor": "Faible",
+  "dataQualityUnknown": "Inconnue",
+  "addReceiptsRecommendation": "Ajoutez des factures pour des données plus précises",
+  "addItemPricesRecommendation": "Ajoutez des prix aux articles pour plus de détails",
+  "significantVarianceDetected": "Écart significatif détecté ({percentage}%)",
+  "@significantVarianceDetected": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "lastVisit": "Dernière visite",
+  "added": "Ajouté",
+  "receiptAddedSuccessfully": "Facture ajoutée avec succès",
+  "receiptUpdatedSuccessfully": "Facture mise à jour avec succès",
+  "receiptDeletedSuccessfully": "Facture supprimée avec succès", 
+  "receiptsLoadedSuccessfully": "Factures chargées avec succès",
+  "errorLoadingReceipts": "Erreur lors du chargement des factures",
+  "errorAddingReceipt": "Erreur lors de l'ajout de la facture",
+  "errorUpdatingReceipt": "Erreur lors de la mise à jour de la facture",
+  "errorDeletingReceipt": "Erreur lors de la suppression de la facture",
+  
+  "receiptValidationError": "Données de facture invalides",
+  "storeNameInvalid": "Nom de magasin invalide",
+  "amountTooLow": "Montant trop faible",
+  "dateInFuture": "La date ne peut pas être dans le futur",
+  "dateTooOld": "La date ne peut pas être antérieure à 2 ans",
+  "notesTooLong": "Notes trop longues (max 1000 caractères)",
+  
+  "receiptDetails": "Détails de la facture",
+  "receiptInformation": "Informations de la facture",
+  "manageReceipts": "Gérer les factures",
+  "viewReceipts": "Voir les factures",
+  "receiptHistory": "Historique des factures",
+  "totalReceipts": "Total des factures",
+  "averageReceiptAmount": "Montant moyen par facture",
+  "largestReceipt": "Plus grande facture",
+  "smallestReceipt": "Plus petite facture",
+  "mostFrequentStore": "Magasin le plus fréquenté",
+  
+  "comparisonResults": "Résultats de comparaison",
+  "dataAccuracy": "Précision des données",
+  "recommendationsTitle": "Recommandations",
+  "improvementsNeeded": "Améliorations nécessaires",
+  "wellDoneMessage": "Bravo ! Vos données sont précises",
+  "addMoreReceiptsAdvice": "Ajoutez plus de factures pour améliorer la précision",
+  "priceItemsAdvice": "Ajoutez des prix à vos articles pour de meilleures estimations",
+  
+  "loadingReceiptStats": "Chargement des statistiques de factures...",
+  "noReceiptStats": "Aucune statistique de facture disponible",
+  "receiptStatsUnavailable": "Statistiques de factures indisponibles",
+  "refreshReceiptStats": "Actualiser les statistiques",
+  "receiptOperationFailed": "Opération de facture échouée",
+  
+  "backToReceipts": "Retour aux factures",
+  "addNewReceipt": "Ajouter une nouvelle facture",
+  "editReceiptInfo": "Modifier les informations de la facture",
+  "duplicateReceipt": "Dupliquer la facture",
+  "shareReceipt": "Partager la facture",
+  "exportReceipts": "Exporter les factures",
+  "importReceipts": "Importer les factures",
+  
+  "filterByStore": "Filtrer par magasin",
+  "filterByDate": "Filtrer par date",
+  "filterByAmount": "Filtrer par montant",
+  "sortByDate": "Trier par date",
+  "sortByStore": "Trier par magasin",
+  "sortByAmount": "Trier par montant",
+  "newestFirst": "Plus récent en premier",
+  "oldestFirst": "Plus ancien en premier",
+  "highestFirst": "Montant le plus élevé en premier",
+  "lowestFirst": "Montant le plus faible en premier",
+  
+  "cannotAddReceipt": "Impossible d'ajouter une facture",
+  "cannotEditReceipt": "Impossible de modifier la facture",
+  "cannotDeleteReceipt": "Impossible de supprimer la facture",
+  "receiptPermissionDenied": "Permission refusée pour les opérations de facture",
+  "receiptReadOnlyAccess": "Accès en lecture seule aux factures",
+  
+  "receiptDateFormat": "Format de date de facture",
+  "amountDisplayFormat": "Format d'affichage du montant",
+  "receiptNumberFormat": "Facture n°{number}",
+  "@receiptNumberFormat": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "receiptSavedSuccessfully": "Facture sauvegardée avec succès",
+  "receiptDeletedPermanently": "Facture supprimée définitivement",
+  "allReceiptsCleared": "Toutes les factures supprimées",
+  "receiptDataExported": "Données de factures exportées",
+  "receiptDataImported": "Données de factures importées",
+  
+  "receiptHelpTitle": "À propos des factures",
+  "receiptHelpDescription": "Ajoutez vos vraies factures d'achat pour suivre les dépenses réelles versus les coûts estimés",
+  "receiptBenefits": "Avantages d'ajouter des factures",
+  "accurateSpendingData": "• Données de dépenses précises",
+  "betterBudgetTracking": "• Meilleur suivi du budget",
+  "spendingComparisons": "• Comparer estimations vs coûts réels",
+  "storeSpendingAnalysis": "• Analyser les dépenses par magasin",
+  "error": "Erreur"
 }

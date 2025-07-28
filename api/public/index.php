@@ -14,7 +14,8 @@ use App\Controllers\{
     SharedListController,
     ProductSuggestionController,
     CurrencyController,
-    AnalyticsController
+    AnalyticsController,
+    ListReceiptsController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -207,16 +208,27 @@ $app->group('', function ($group) {
     $group->post('/shopping-lists/{listId}/items/{itemId}/restore', [ListItemController::class, 'restore']);
     $group->put('/shopping-lists/{listId}/items/{itemId}/merge', [ListItemController::class, 'mergeWithExisting']);
 
-    // ✅ ROUTES D'ANALYTICS ET STATISTIQUES
+    // ✅ NOUVELLES ROUTES POUR LES FACTURES DE LISTES
+    $group->get('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'index']);
+    $group->post('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'store']);
+    $group->get('/shopping-lists/{listId}/receipts/by-store', [ListReceiptsController::class, 'byStore']);
+    $group->get('/shopping-lists/{listId}/receipts/stats', [ListReceiptsController::class, 'stats']);
+    $group->get('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'show']);
+    $group->put('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'update']);
+    $group->delete('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'destroy']);
+
+    // ✅ ROUTES D'ANALYTICS MISES À JOUR
     $group->get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
     $group->get('/analytics/spending/monthly', [AnalyticsController::class, 'monthlySpendingHistory']);
     $group->get('/analytics/spending/trends', [AnalyticsController::class, 'spendingTrends']);
     $group->get('/analytics/spending/comparison', [AnalyticsController::class, 'periodComparison']);
     $group->get('/analytics/spending/categories', [AnalyticsController::class, 'spendingByCategory']);
+    $group->get('/analytics/spending/stores', [AnalyticsController::class, 'spendingByStore']); // ✅ NOUVELLE
     $group->get('/analytics/products/top', [AnalyticsController::class, 'topProducts']);
     $group->get('/analytics/spending/daily', [AnalyticsController::class, 'dailySpendingHistory']);
-$group->get('/analytics/spending/weekly', [AnalyticsController::class, 'weeklySpendingHistory']);
-$group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
+    $group->get('/analytics/spending/weekly', [AnalyticsController::class, 'weeklySpendingHistory']);
+    $group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
+    $group->get('/analytics/data-quality', [AnalyticsController::class, 'dataQualityReport']); // ✅ NOUVELLE
 
 })->add($jwtMiddleware);
 

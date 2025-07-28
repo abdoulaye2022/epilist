@@ -1,4 +1,4 @@
-// models/shopping_list.dart - VERSION COMPATIBLE AVEC NOUVELLE API
+// models/shopping_list.dart - VERSION COMPATIBLE AVEC NOUVELLE API + FACTURES
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/models/shared_list.dart';
@@ -23,6 +23,11 @@ class ShoppingList {
   final bool canEdit;
   final bool canDelete;
 
+  // CHAMPS POUR LES FACTURES
+  final int receiptsCount;
+  final double receiptsTotal;
+  final bool hasReceiptData;
+
   // ANCIENS CHAMPS POUR COMPATIBILITÉ
   final List<SharedList> sharedWith;
   final User? owner;
@@ -45,6 +50,10 @@ class ShoppingList {
     this.sharedAt,
     this.canEdit = true,
     this.canDelete = true,
+    // Champs pour les factures
+    this.receiptsCount = 0,
+    this.receiptsTotal = 0.0,
+    this.hasReceiptData = false,
     // Anciens champs avec valeurs par défaut pour compatibilité
     this.sharedWith = const [],
     this.owner,
@@ -103,6 +112,35 @@ class ShoppingList {
 
   /// Vérifie si la liste a des articles
   bool get hasItems => items.isNotEmpty;
+
+  // GETTERS POUR LES FACTURES
+
+  /// Vérifie si la liste a des factures associées
+  bool get hasReceipts => receiptsCount > 0;
+
+  /// Obtient le montant moyen par facture
+  double get averageReceiptAmount {
+    if (receiptsCount == 0) return 0.0;
+    return receiptsTotal / receiptsCount;
+  }
+
+  /// Compare le total des factures avec le budget estimé des articles
+  double get budgetVariance {
+    if (receiptsTotal == 0.0 || totalPrice == 0.0) return 0.0;
+    return receiptsTotal - totalPrice;
+  }
+
+  /// Pourcentage de variance entre factures et budget
+  double get budgetVariancePercentage {
+    if (totalPrice == 0.0) return 0.0;
+    return (budgetVariance / totalPrice) * 100;
+  }
+
+  /// Indique si le budget a été dépassé
+  bool get isOverBudget => budgetVariance > 0;
+
+  /// Indique si le budget a été respecté
+  bool get isUnderBudget => budgetVariance < 0;
 
   // GETTERS POUR LE PARTAGE (NOUVELLE API)
 
@@ -329,6 +367,10 @@ class ShoppingList {
               : null,
       canEdit: json['can_edit'] ?? true,
       canDelete: json['can_delete'] ?? true,
+      // Champs pour les factures
+      receiptsCount: json['receipts_count'] ?? 0,
+      receiptsTotal: (json['receipts_total'] as num?)?.toDouble() ?? 0.0,
+      hasReceiptData: (json['receipts_count'] ?? 0) > 0,
       // Anciens champs pour compatibilité
       sharedWith: sharedWithList,
       owner: owner,
@@ -354,6 +396,10 @@ class ShoppingList {
       'shared_at': sharedAt?.toIso8601String(),
       'can_edit': canEdit,
       'can_delete': canDelete,
+      // Champs pour les factures
+      'receipts_count': receiptsCount,
+      'receipts_total': receiptsTotal,
+      'has_receipt_data': hasReceiptData,
       // Anciens champs pour compatibilité
       'shared_with': sharedWith.map((share) => share.toJson()).toList(),
       'owner': owner?.toJson(),
@@ -377,6 +423,9 @@ class ShoppingList {
     DateTime? sharedAt,
     bool? canEdit,
     bool? canDelete,
+    int? receiptsCount,
+    double? receiptsTotal,
+    bool? hasReceiptData,
     List<SharedList>? sharedWith,
     User? owner,
     SharePermission? userPermission,
@@ -398,6 +447,9 @@ class ShoppingList {
       sharedAt: sharedAt ?? this.sharedAt,
       canEdit: canEdit ?? this.canEdit,
       canDelete: canDelete ?? this.canDelete,
+      receiptsCount: receiptsCount ?? this.receiptsCount,
+      receiptsTotal: receiptsTotal ?? this.receiptsTotal,
+      hasReceiptData: hasReceiptData ?? this.hasReceiptData,
       sharedWith: sharedWith ?? this.sharedWith,
       owner: owner ?? this.owner,
       userPermission: userPermission ?? this.userPermission,
@@ -408,7 +460,8 @@ class ShoppingList {
   String toString() {
     return 'ShoppingList{id: $id, name: $name, itemsCount: ${items.length}, '
         'isShared: $isShared, isOwner: $isOwner, '
-        'sharePermission: $sharePermission, canEdit: $canEdit, canDelete: $canDelete}';
+        'sharePermission: $sharePermission, canEdit: $canEdit, canDelete: $canDelete, '
+        'receiptsCount: $receiptsCount, receiptsTotal: $receiptsTotal}';
   }
 
   @override
@@ -427,7 +480,10 @@ class ShoppingList {
           isOwner == other.isOwner &&
           sharePermission == other.sharePermission &&
           canEdit == other.canEdit &&
-          canDelete == other.canDelete;
+          canDelete == other.canDelete &&
+          receiptsCount == other.receiptsCount &&
+          receiptsTotal == other.receiptsTotal &&
+          hasReceiptData == other.hasReceiptData;
 
   @override
   int get hashCode =>
@@ -442,7 +498,10 @@ class ShoppingList {
       isOwner.hashCode ^
       sharePermission.hashCode ^
       canEdit.hashCode ^
-      canDelete.hashCode;
+      canDelete.hashCode ^
+      receiptsCount.hashCode ^
+      receiptsTotal.hashCode ^
+      hasReceiptData.hashCode;
 
   // MÉTHODES POUR COMPATIBILITÉ AVEC L'ANCIENNE API DE PARTAGE
   factory ShoppingList.fromShareApiJson(Map<String, dynamic> json) {
@@ -458,6 +517,9 @@ class ShoppingList {
       sharePermission: 'edit',
       canEdit: true,
       canDelete: false,
+      receiptsCount: json['receipts_count'] ?? 0,
+      receiptsTotal: (json['receipts_total'] as num?)?.toDouble() ?? 0.0,
+      hasReceiptData: (json['receipts_count'] ?? 0) > 0,
     );
   }
 

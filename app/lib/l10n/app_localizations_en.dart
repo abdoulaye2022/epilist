@@ -2313,7 +2313,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortBy => 'Sort by';
 
   @override
-  String get sortByAmount => 'By amount';
+  String get sortByAmount => 'Sort by amount';
 
   @override
   String get sortByQuantity => 'By quantity';
@@ -2579,4 +2579,352 @@ class AppLocalizationsEn extends AppLocalizations {
   String weekLabel(int number) {
     return 'W$number';
   }
+
+  @override
+  String get receipts => 'Receipts';
+
+  @override
+  String get allReceipts => 'All';
+
+  @override
+  String get byStore => 'By Store';
+
+  @override
+  String get addReceipt => 'Add Receipt';
+
+  @override
+  String get editReceipt => 'Edit Receipt';
+
+  @override
+  String get deleteReceipt => 'Delete Receipt';
+
+  @override
+  String get deleteReceiptConfirm =>
+      'Are you sure you want to delete this receipt?';
+
+  @override
+  String get noReceipts => 'No receipts';
+
+  @override
+  String get addFirstReceipt =>
+      'Add your first receipt to track your actual spending';
+
+  @override
+  String get enterStoreName => 'Enter store name';
+
+  @override
+  String get totalAmount => 'Total Amount';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
+  String get purchaseDate => 'Purchase Date';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get optionalNotes => 'Optional notes';
+
+  @override
+  String get storeNameRequired => 'Store name is required';
+
+  @override
+  String get storeNameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String get amountRequired => 'Amount is required';
+
+  @override
+  String get invalidAmount => 'Invalid amount';
+
+  @override
+  String get amountMustBePositive => 'Amount must be positive';
+
+  @override
+  String get amountTooHigh => 'Amount is too high';
+
+  @override
+  String get spendingSummary => 'Spending Summary';
+
+  @override
+  String get totalExpensesSummary => 'Overview of your expenses';
+
+  @override
+  String get totalFromReceipts => 'Total from receipts';
+
+  @override
+  String get totalFromItems => 'Total from items';
+
+  @override
+  String get bestEstimate => 'Best estimate';
+
+  @override
+  String get dataComparison => 'Data Comparison';
+
+  @override
+  String get receiptVsItemComparison => 'Receipts vs item prices';
+
+  @override
+  String get dataQuality => 'Data Quality';
+
+  @override
+  String get dataQualityExcellent => 'Excellent';
+
+  @override
+  String get dataQualityGood => 'Good';
+
+  @override
+  String get dataQualityFair => 'Fair';
+
+  @override
+  String get dataQualityPoor => 'Poor';
+
+  @override
+  String get dataQualityUnknown => 'Unknown';
+
+  @override
+  String get addReceiptsRecommendation => 'Add receipts for more accurate data';
+
+  @override
+  String get addItemPricesRecommendation => 'Add item prices for more details';
+
+  @override
+  String significantVarianceDetected(String percentage) {
+    return 'Significant variance detected ($percentage%)';
+  }
+
+  @override
+  String get lastVisit => 'Last visit';
+
+  @override
+  String get added => 'Added';
+
+  @override
+  String get receiptAddedSuccessfully => 'Receipt added successfully';
+
+  @override
+  String get receiptUpdatedSuccessfully => 'Receipt updated successfully';
+
+  @override
+  String get receiptDeletedSuccessfully => 'Receipt deleted successfully';
+
+  @override
+  String get receiptsLoadedSuccessfully => 'Receipts loaded successfully';
+
+  @override
+  String get errorLoadingReceipts => 'Error loading receipts';
+
+  @override
+  String get errorAddingReceipt => 'Error adding receipt';
+
+  @override
+  String get errorUpdatingReceipt => 'Error updating receipt';
+
+  @override
+  String get errorDeletingReceipt => 'Error deleting receipt';
+
+  @override
+  String get receiptValidationError => 'Invalid receipt data';
+
+  @override
+  String get storeNameInvalid => 'Invalid store name';
+
+  @override
+  String get amountTooLow => 'Amount too low';
+
+  @override
+  String get dateInFuture => 'Date cannot be in the future';
+
+  @override
+  String get dateTooOld => 'Date cannot be more than 2 years ago';
+
+  @override
+  String get notesTooLong => 'Notes too long (max 1000 characters)';
+
+  @override
+  String get receiptDetails => 'Receipt Details';
+
+  @override
+  String get receiptInformation => 'Receipt Information';
+
+  @override
+  String get manageReceipts => 'Manage Receipts';
+
+  @override
+  String get viewReceipts => 'View Receipts';
+
+  @override
+  String get receiptHistory => 'Receipt History';
+
+  @override
+  String get totalReceipts => 'Total Receipts';
+
+  @override
+  String get averageReceiptAmount => 'Average Receipt Amount';
+
+  @override
+  String get largestReceipt => 'Largest Receipt';
+
+  @override
+  String get smallestReceipt => 'Smallest Receipt';
+
+  @override
+  String get mostFrequentStore => 'Most Frequent Store';
+
+  @override
+  String get comparisonResults => 'Comparison Results';
+
+  @override
+  String get dataAccuracy => 'Data Accuracy';
+
+  @override
+  String get recommendationsTitle => 'Recommendations';
+
+  @override
+  String get improvementsNeeded => 'Improvements Needed';
+
+  @override
+  String get wellDoneMessage => 'Well done! Your data is accurate';
+
+  @override
+  String get addMoreReceiptsAdvice => 'Add more receipts to improve accuracy';
+
+  @override
+  String get priceItemsAdvice =>
+      'Add prices to your items for better estimates';
+
+  @override
+  String get loadingReceiptStats => 'Loading receipt statistics...';
+
+  @override
+  String get noReceiptStats => 'No receipt statistics available';
+
+  @override
+  String get receiptStatsUnavailable => 'Receipt statistics unavailable';
+
+  @override
+  String get refreshReceiptStats => 'Refresh statistics';
+
+  @override
+  String get receiptOperationFailed => 'Receipt operation failed';
+
+  @override
+  String get backToReceipts => 'Back to receipts';
+
+  @override
+  String get addNewReceipt => 'Add new receipt';
+
+  @override
+  String get editReceiptInfo => 'Edit receipt information';
+
+  @override
+  String get duplicateReceipt => 'Duplicate receipt';
+
+  @override
+  String get shareReceipt => 'Share receipt';
+
+  @override
+  String get exportReceipts => 'Export receipts';
+
+  @override
+  String get importReceipts => 'Import receipts';
+
+  @override
+  String get filterByStore => 'Filter by store';
+
+  @override
+  String get filterByDate => 'Filter by date';
+
+  @override
+  String get filterByAmount => 'Filter by amount';
+
+  @override
+  String get sortByDate => 'Sort by date';
+
+  @override
+  String get sortByStore => 'Sort by store';
+
+  @override
+  String get newestFirst => 'Newest first';
+
+  @override
+  String get oldestFirst => 'Oldest first';
+
+  @override
+  String get highestFirst => 'Highest amount first';
+
+  @override
+  String get lowestFirst => 'Lowest amount first';
+
+  @override
+  String get cannotAddReceipt => 'Cannot add receipt';
+
+  @override
+  String get cannotEditReceipt => 'Cannot edit receipt';
+
+  @override
+  String get cannotDeleteReceipt => 'Cannot delete receipt';
+
+  @override
+  String get receiptPermissionDenied =>
+      'Permission denied for receipt operations';
+
+  @override
+  String get receiptReadOnlyAccess => 'Read-only access to receipts';
+
+  @override
+  String get receiptDateFormat => 'Receipt date format';
+
+  @override
+  String get amountDisplayFormat => 'Amount display format';
+
+  @override
+  String receiptNumberFormat(int number) {
+    return 'Receipt #$number';
+  }
+
+  @override
+  String get receiptSavedSuccessfully => 'Receipt saved successfully';
+
+  @override
+  String get receiptDeletedPermanently => 'Receipt deleted permanently';
+
+  @override
+  String get allReceiptsCleared => 'All receipts cleared';
+
+  @override
+  String get receiptDataExported => 'Receipt data exported';
+
+  @override
+  String get receiptDataImported => 'Receipt data imported';
+
+  @override
+  String get receiptHelpTitle => 'About Receipts';
+
+  @override
+  String get receiptHelpDescription =>
+      'Add your actual shopping receipts to track real spending versus estimated costs';
+
+  @override
+  String get receiptBenefits => 'Benefits of adding receipts';
+
+  @override
+  String get accurateSpendingData => '• Accurate spending data';
+
+  @override
+  String get betterBudgetTracking => '• Better budget tracking';
+
+  @override
+  String get spendingComparisons => '• Compare estimates vs actual costs';
+
+  @override
+  String get storeSpendingAnalysis => '• Analyze spending by store';
+
+  @override
+  String get error => 'Error';
 }

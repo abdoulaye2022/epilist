@@ -4366,7 +4366,7 @@ abstract class AppLocalizations {
   /// No description provided for @sortByAmount.
   ///
   /// In fr, this message translates to:
-  /// **'Par montant'**
+  /// **'Trier par montant'**
   String get sortByAmount;
 
   /// No description provided for @sortByQuantity.
@@ -4890,6 +4890,684 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'S{number}'**
   String weekLabel(int number);
+
+  /// No description provided for @receipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Factures'**
+  String get receipts;
+
+  /// No description provided for @allReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get allReceipts;
+
+  /// No description provided for @byStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par magasin'**
+  String get byStore;
+
+  /// No description provided for @addReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une facture'**
+  String get addReceipt;
+
+  /// No description provided for @editReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la facture'**
+  String get editReceipt;
+
+  /// No description provided for @deleteReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la facture'**
+  String get deleteReceipt;
+
+  /// No description provided for @deleteReceiptConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer cette facture ?'**
+  String get deleteReceiptConfirm;
+
+  /// No description provided for @noReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune facture'**
+  String get noReceipts;
+
+  /// No description provided for @addFirstReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez votre première facture pour suivre vos dépenses réelles'**
+  String get addFirstReceipt;
+
+  /// No description provided for @enterStoreName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le nom du magasin'**
+  String get enterStoreName;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant total'**
+  String get totalAmount;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le montant'**
+  String get enterAmount;
+
+  /// No description provided for @purchaseDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date d\'achat'**
+  String get purchaseDate;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner la date'**
+  String get selectDate;
+
+  /// No description provided for @notes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @optionalNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes optionnelles'**
+  String get optionalNotes;
+
+  /// No description provided for @storeNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du magasin est requis'**
+  String get storeNameRequired;
+
+  /// No description provided for @storeNameTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom doit contenir au moins 2 caractères'**
+  String get storeNameTooShort;
+
+  /// No description provided for @amountRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant est requis'**
+  String get amountRequired;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant invalide'**
+  String get invalidAmount;
+
+  /// No description provided for @amountMustBePositive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant doit être positif'**
+  String get amountMustBePositive;
+
+  /// No description provided for @amountTooHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant est trop élevé'**
+  String get amountTooHigh;
+
+  /// No description provided for @spendingSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé des dépenses'**
+  String get spendingSummary;
+
+  /// No description provided for @totalExpensesSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble de vos dépenses'**
+  String get totalExpensesSummary;
+
+  /// No description provided for @totalFromReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total des factures'**
+  String get totalFromReceipts;
+
+  /// No description provided for @totalFromItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total des articles'**
+  String get totalFromItems;
+
+  /// No description provided for @bestEstimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Meilleure estimation'**
+  String get bestEstimate;
+
+  /// No description provided for @dataComparison.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparaison des données'**
+  String get dataComparison;
+
+  /// No description provided for @receiptVsItemComparison.
+  ///
+  /// In fr, this message translates to:
+  /// **'Factures vs prix des articles'**
+  String get receiptVsItemComparison;
+
+  /// No description provided for @dataQuality.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qualité des données'**
+  String get dataQuality;
+
+  /// No description provided for @dataQualityExcellent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excellente'**
+  String get dataQualityExcellent;
+
+  /// No description provided for @dataQualityGood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonne'**
+  String get dataQualityGood;
+
+  /// No description provided for @dataQualityFair.
+  ///
+  /// In fr, this message translates to:
+  /// **'Correcte'**
+  String get dataQualityFair;
+
+  /// No description provided for @dataQualityPoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faible'**
+  String get dataQualityPoor;
+
+  /// No description provided for @dataQualityUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inconnue'**
+  String get dataQualityUnknown;
+
+  /// No description provided for @addReceiptsRecommendation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez des factures pour des données plus précises'**
+  String get addReceiptsRecommendation;
+
+  /// No description provided for @addItemPricesRecommendation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez des prix aux articles pour plus de détails'**
+  String get addItemPricesRecommendation;
+
+  /// No description provided for @significantVarianceDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écart significatif détecté ({percentage}%)'**
+  String significantVarianceDetected(String percentage);
+
+  /// No description provided for @lastVisit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière visite'**
+  String get lastVisit;
+
+  /// No description provided for @added.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouté'**
+  String get added;
+
+  /// No description provided for @receiptAddedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture ajoutée avec succès'**
+  String get receiptAddedSuccessfully;
+
+  /// No description provided for @receiptUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture mise à jour avec succès'**
+  String get receiptUpdatedSuccessfully;
+
+  /// No description provided for @receiptDeletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture supprimée avec succès'**
+  String get receiptDeletedSuccessfully;
+
+  /// No description provided for @receiptsLoadedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Factures chargées avec succès'**
+  String get receiptsLoadedSuccessfully;
+
+  /// No description provided for @errorLoadingReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des factures'**
+  String get errorLoadingReceipts;
+
+  /// No description provided for @errorAddingReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'ajout de la facture'**
+  String get errorAddingReceipt;
+
+  /// No description provided for @errorUpdatingReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour de la facture'**
+  String get errorUpdatingReceipt;
+
+  /// No description provided for @errorDeletingReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression de la facture'**
+  String get errorDeletingReceipt;
+
+  /// No description provided for @receiptValidationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de facture invalides'**
+  String get receiptValidationError;
+
+  /// No description provided for @storeNameInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de magasin invalide'**
+  String get storeNameInvalid;
+
+  /// No description provided for @amountTooLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant trop faible'**
+  String get amountTooLow;
+
+  /// No description provided for @dateInFuture.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date ne peut pas être dans le futur'**
+  String get dateInFuture;
+
+  /// No description provided for @dateTooOld.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date ne peut pas être antérieure à 2 ans'**
+  String get dateTooOld;
+
+  /// No description provided for @notesTooLong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes trop longues (max 1000 caractères)'**
+  String get notesTooLong;
+
+  /// No description provided for @receiptDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails de la facture'**
+  String get receiptDetails;
+
+  /// No description provided for @receiptInformation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations de la facture'**
+  String get receiptInformation;
+
+  /// No description provided for @manageReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les factures'**
+  String get manageReceipts;
+
+  /// No description provided for @viewReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les factures'**
+  String get viewReceipts;
+
+  /// No description provided for @receiptHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des factures'**
+  String get receiptHistory;
+
+  /// No description provided for @totalReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total des factures'**
+  String get totalReceipts;
+
+  /// No description provided for @averageReceiptAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant moyen par facture'**
+  String get averageReceiptAmount;
+
+  /// No description provided for @largestReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus grande facture'**
+  String get largestReceipt;
+
+  /// No description provided for @smallestReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus petite facture'**
+  String get smallestReceipt;
+
+  /// No description provided for @mostFrequentStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin le plus fréquenté'**
+  String get mostFrequentStore;
+
+  /// No description provided for @comparisonResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultats de comparaison'**
+  String get comparisonResults;
+
+  /// No description provided for @dataAccuracy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précision des données'**
+  String get dataAccuracy;
+
+  /// No description provided for @recommendationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandations'**
+  String get recommendationsTitle;
+
+  /// No description provided for @improvementsNeeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Améliorations nécessaires'**
+  String get improvementsNeeded;
+
+  /// No description provided for @wellDoneMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bravo ! Vos données sont précises'**
+  String get wellDoneMessage;
+
+  /// No description provided for @addMoreReceiptsAdvice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez plus de factures pour améliorer la précision'**
+  String get addMoreReceiptsAdvice;
+
+  /// No description provided for @priceItemsAdvice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez des prix à vos articles pour de meilleures estimations'**
+  String get priceItemsAdvice;
+
+  /// No description provided for @loadingReceiptStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des statistiques de factures...'**
+  String get loadingReceiptStats;
+
+  /// No description provided for @noReceiptStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune statistique de facture disponible'**
+  String get noReceiptStats;
+
+  /// No description provided for @receiptStatsUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques de factures indisponibles'**
+  String get receiptStatsUnavailable;
+
+  /// No description provided for @refreshReceiptStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser les statistiques'**
+  String get refreshReceiptStats;
+
+  /// No description provided for @receiptOperationFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opération de facture échouée'**
+  String get receiptOperationFailed;
+
+  /// No description provided for @backToReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour aux factures'**
+  String get backToReceipts;
+
+  /// No description provided for @addNewReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une nouvelle facture'**
+  String get addNewReceipt;
+
+  /// No description provided for @editReceiptInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier les informations de la facture'**
+  String get editReceiptInfo;
+
+  /// No description provided for @duplicateReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dupliquer la facture'**
+  String get duplicateReceipt;
+
+  /// No description provided for @shareReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager la facture'**
+  String get shareReceipt;
+
+  /// No description provided for @exportReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter les factures'**
+  String get exportReceipts;
+
+  /// No description provided for @importReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Importer les factures'**
+  String get importReceipts;
+
+  /// No description provided for @filterByStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par magasin'**
+  String get filterByStore;
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par date'**
+  String get filterByDate;
+
+  /// No description provided for @filterByAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par montant'**
+  String get filterByAmount;
+
+  /// No description provided for @sortByDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trier par date'**
+  String get sortByDate;
+
+  /// No description provided for @sortByStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trier par magasin'**
+  String get sortByStore;
+
+  /// No description provided for @newestFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus récent en premier'**
+  String get newestFirst;
+
+  /// No description provided for @oldestFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus ancien en premier'**
+  String get oldestFirst;
+
+  /// No description provided for @highestFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant le plus élevé en premier'**
+  String get highestFirst;
+
+  /// No description provided for @lowestFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant le plus faible en premier'**
+  String get lowestFirst;
+
+  /// No description provided for @cannotAddReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ajouter une facture'**
+  String get cannotAddReceipt;
+
+  /// No description provided for @cannotEditReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de modifier la facture'**
+  String get cannotEditReceipt;
+
+  /// No description provided for @cannotDeleteReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de supprimer la facture'**
+  String get cannotDeleteReceipt;
+
+  /// No description provided for @receiptPermissionDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Permission refusée pour les opérations de facture'**
+  String get receiptPermissionDenied;
+
+  /// No description provided for @receiptReadOnlyAccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès en lecture seule aux factures'**
+  String get receiptReadOnlyAccess;
+
+  /// No description provided for @receiptDateFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format de date de facture'**
+  String get receiptDateFormat;
+
+  /// No description provided for @amountDisplayFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format d\'affichage du montant'**
+  String get amountDisplayFormat;
+
+  /// No description provided for @receiptNumberFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture n°{number}'**
+  String receiptNumberFormat(int number);
+
+  /// No description provided for @receiptSavedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture sauvegardée avec succès'**
+  String get receiptSavedSuccessfully;
+
+  /// No description provided for @receiptDeletedPermanently.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture supprimée définitivement'**
+  String get receiptDeletedPermanently;
+
+  /// No description provided for @allReceiptsCleared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les factures supprimées'**
+  String get allReceiptsCleared;
+
+  /// No description provided for @receiptDataExported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de factures exportées'**
+  String get receiptDataExported;
+
+  /// No description provided for @receiptDataImported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de factures importées'**
+  String get receiptDataImported;
+
+  /// No description provided for @receiptHelpTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À propos des factures'**
+  String get receiptHelpTitle;
+
+  /// No description provided for @receiptHelpDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos vraies factures d\'achat pour suivre les dépenses réelles versus les coûts estimés'**
+  String get receiptHelpDescription;
+
+  /// No description provided for @receiptBenefits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avantages d\'ajouter des factures'**
+  String get receiptBenefits;
+
+  /// No description provided for @accurateSpendingData.
+  ///
+  /// In fr, this message translates to:
+  /// **'• Données de dépenses précises'**
+  String get accurateSpendingData;
+
+  /// No description provided for @betterBudgetTracking.
+  ///
+  /// In fr, this message translates to:
+  /// **'• Meilleur suivi du budget'**
+  String get betterBudgetTracking;
+
+  /// No description provided for @spendingComparisons.
+  ///
+  /// In fr, this message translates to:
+  /// **'• Comparer estimations vs coûts réels'**
+  String get spendingComparisons;
+
+  /// No description provided for @storeSpendingAnalysis.
+  ///
+  /// In fr, this message translates to:
+  /// **'• Analyser les dépenses par magasin'**
+  String get storeSpendingAnalysis;
+
+  /// No description provided for @error.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur'**
+  String get error;
 }
 
 class _AppLocalizationsDelegate

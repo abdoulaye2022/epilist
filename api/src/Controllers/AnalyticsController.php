@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 use App\Models\ListItem;
+use App\Models\ListReceipt; // ✅ AJOUT DE L'IMPORT MANQUANT
 use App\Models\ShoppingList;
 use App\Models\SharedList;
 use App\Models\User;
@@ -172,162 +173,83 @@ class AnalyticsController
     }
 
     /**
-     * ✅ HISTORIQUE MENSUEL DES DÉPENSES (CORRIGÉ POUR L'ORDRE)
+     * ✅ NOUVELLE MÉTHODE: Obtenir les données de dépenses combinées (items + factures)
      */
-    public function monthlySpendingHistory(Request $request, Response $response): Response
+    private function getCombinedSpendingData(int $user_id, Carbon $startDate, Carbon $endDate): array
     {
-        try {
-            $user_id = $request->getAttribute('auth_id');
-            $params = $request->getQueryParams();
-            
-            // Paramètres avec valeurs par défaut
-            $months = min((int)($params['months'] ?? 12), 24); // Max 24 mois
-            $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request);
-            
-            // Récupérer l'utilisateur avec sa devise
-            $user = User::with('currency')->find($user_id);
-            if (!$user) {
-                throw new \Exception('User not found');
-            }
+        $accessibleListIds = $this->getUserAccessibleListIds($user_id);
+        
+        if (empty($accessibleListIds)) {
+            return [];
+        }
 
-            // Déterminer la devise cible (AFFICHAGE SEULEMENT)
-            if ($currency_code) {
-                $targetCurrency = Currency::findByCode($currency_code);
-                if (!$targetCurrency) {
-                    throw new \Exception('Invalid currency code');
-                }
-            } else {
-                $targetCurrency = $user->currency ?? Currency::getDefault();
-            }
+        $spendingData = [];
 
-            if (!$targetCurrency) {
-                throw new \Exception('Currency not found');
-            }
+        // 1. Données depuis les factures (priorité)
+        $receipts = ListReceipt::whereIn('list_id', $accessibleListIds)
+            ->whereBetween('purchase_date', [$startDate, $endDate])
+            ->get();
 
-            // ✅ CORRECTION: Calculer les dates pour commencer par janvier
-            $currentYear = Carbon::now()->year;
-            $currentMonth = Carbon::now()->month;
-            
-            // Si on demande 12 mois, commencer par janvier de l'année actuelle
-            // Sinon, prendre les X derniers mois complets
-            if ($months == 12) {
-                $startDate = Carbon::create($currentYear, 1, 1)->startOfMonth();
-                $endDate = Carbon::create($currentYear, 12, 31)->endOfMonth();
-            } else {
-                $endDate = Carbon::now()->endOfMonth();
-                $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
-            }
+        foreach ($receipts as $receipt) {
+            $key = $receipt->purchase_date->format('Y-m-d') . '|' . $receipt->list_id . '|receipt';
+            $spendingData[$key] = [
+                'date' => $receipt->purchase_date,
+                'amount' => $receipt->total_amount,
+                'source' => 'receipt',
+                'store_name' => $receipt->store_name,
+                'list_id' => $receipt->list_id,
+                'details' => [
+                    'receipt_id' => $receipt->id,
+                    'notes' => $receipt->notes
+                ]
+            ];
+        }
 
-            // Query pour les items achetés avec prix
-            $items = $this->getUserAccessibleItemsQuery($user_id)
+        // 2. Listes qui ont des factures (pour éviter double comptage)
+        $listsWithReceipts = $receipts->pluck('list_id')->unique()->toArray();
+
+        // 3. Données depuis les items (seulement pour les listes sans factures)
+        $listsForItemsData = array_diff($accessibleListIds, $listsWithReceipts);
+        
+        if (!empty($listsForItemsData)) {
+            $items = ListItem::whereIn('list_id', $listsForItemsData)
                 ->where('is_purchased', true)
                 ->whereNotNull('price')
                 ->whereBetween('updated_at', [$startDate, $endDate])
                 ->get();
 
-            // ✅ CORRECTION: Créer les mois dans l'ordre chronologique
-            $monthlyData = [];
-            $currentDate = $startDate->copy();
-            
-            while ($currentDate->lte($endDate)) {
-                $monthKey = $currentDate->format('Y-m');
-                $monthlyData[$monthKey] = [
-                    'year' => $currentDate->year,
-                    'month' => $currentDate->month,
-                    'month_name' => $currentDate->translatedFormat('F Y'),
-                    'month_short' => $currentDate->translatedFormat('M'),
-                    'total_spent' => 0,
-                    'total_items' => 0,
-                    'average_item_price' => 0,
-                    'currency' => $targetCurrency->code,
-                    'sort_order' => $currentDate->month // ✅ Ajout pour le tri côté client
-                ];
-                $currentDate->addMonth();
-            }
-
-            // Calculer les totaux
+            // Grouper les items par date et liste
             foreach ($items as $item) {
-                $monthKey = $item->updated_at->format('Y-m');
-                if (isset($monthlyData[$monthKey])) {
-                    $totalPrice = $item->price * $item->quantity;
-                    $monthlyData[$monthKey]['total_spent'] += $totalPrice;
-                    $monthlyData[$monthKey]['total_items'] += $item->quantity;
+                $date = $item->updated_at->toDateString();
+                $key = $date . '|' . $item->list_id . '|items';
+                
+                if (!isset($spendingData[$key])) {
+                    $spendingData[$key] = [
+                        'date' => $item->updated_at,
+                        'amount' => 0,
+                        'source' => 'items',
+                        'store_name' => $item->store_name,
+                        'list_id' => $item->list_id,
+                        'details' => [
+                            'items_count' => 0,
+                            'items' => []
+                        ]
+                    ];
                 }
+                
+                $itemTotal = $item->price * $item->quantity;
+                $spendingData[$key]['amount'] += $itemTotal;
+                $spendingData[$key]['details']['items_count']++;
+                $spendingData[$key]['details']['items'][] = [
+                    'product_name' => $item->product_name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'total' => $itemTotal
+                ];
             }
-
-            // Calculer les moyennes et formater
-            foreach ($monthlyData as &$month) {
-                if ($month['total_items'] > 0) {
-                    $month['average_item_price'] = round($month['total_spent'] / $month['total_items'], 2);
-                }
-                $month['total_spent'] = round($month['total_spent'], 2);
-                $month['formatted_total'] = $targetCurrency->formatAmountDisplay($month['total_spent']);
-                $month['formatted_average'] = $targetCurrency->formatAmountDisplay($month['average_item_price']);
-            }
-
-            // ✅ CORRECTION: Trier les données par année puis par mois
-            $sortedMonthlyData = array_values($monthlyData);
-            usort($sortedMonthlyData, function($a, $b) {
-                if ($a['year'] !== $b['year']) {
-                    return $a['year'] <=> $b['year'];
-                }
-                return $a['month'] <=> $b['month'];
-            });
-
-            // Calculs de tendance
-            $values = array_column($sortedMonthlyData, 'total_spent');
-            $totalSpent = array_sum($values);
-            $averageMonthly = count($values) > 0 ? $totalSpent / count($values) : 0;
-            
-            // Tendance (comparaison des 3 derniers mois vs 3 précédents)
-            $recentMonths = array_slice($values, -3);
-            $previousMonths = array_slice($values, -6, 3);
-            $recentAvg = count($recentMonths) > 0 ? array_sum($recentMonths) / count($recentMonths) : 0;
-            $previousAvg = count($previousMonths) > 0 ? array_sum($previousMonths) / count($previousMonths) : 0;
-            
-            $trendPercentage = $previousAvg > 0 ? 
-                round((($recentAvg - $previousAvg) / $previousAvg) * 100, 1) : 0;
-
-            $response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => [
-                    'language' => $language,
-                    'monthly_data' => $sortedMonthlyData, // ✅ Données triées
-                    'summary' => [
-                        'total_spent' => round($totalSpent, 2),
-                        'average_monthly' => round($averageMonthly, 2),
-                        'currency' => $targetCurrency->code,
-                        'period' => [
-                            'start' => $startDate->toDateString(),
-                            'end' => $endDate->toDateString(),
-                            'months' => $months,
-                            'year_based' => $months == 12 // ✅ Indicateur pour le client
-                        ],
-                        'trend' => [
-                            'percentage' => $trendPercentage,
-                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
-                            'recent_average' => round($recentAvg, 2),
-                            'previous_average' => round($previousAvg, 2)
-                        ],
-                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
-                        'formatted_average_monthly' => $targetCurrency->formatAmountDisplay($averageMonthly)
-                    ]
-                ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
-
-        } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'error' => [
-                    'code' => 'ANALYTICS_ERROR',
-                    'message' => 'Error retrieving monthly spending data',
-                    'details' => $e->getMessage()
-                ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+
+        return array_values($spendingData);
     }
 
     /**
@@ -1546,6 +1468,408 @@ class AnalyticsController
                 'error' => [
                     'code' => 'YEARLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving yearly spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ DÉPENSES PAR MAGASIN (AVEC FACTURES PRIORITAIRES)
+     */
+    public function spendingByStore(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            $period = $params['period'] ?? 'month';
+            $currency_code = $params['currency'] ?? null;
+            $limit = min((int)($params['limit'] ?? 20), 50);
+            $language = $this->getUserLanguage($request);
+            
+            $user = User::with('currency')->find($user_id);
+            $targetCurrency = $currency_code ? 
+                Currency::findByCode($currency_code) : 
+                ($user->currency ?? Currency::getDefault());
+
+            // Définir la période
+            $startDate = match($period) {
+                'week' => Carbon::now()->subWeek(),
+                'quarter' => Carbon::now()->subQuarter(),
+                'year' => Carbon::now()->subYear(),
+                'all' => Carbon::create(2020, 1, 1),
+                default => Carbon::now()->subMonth()
+            };
+
+            $endDate = Carbon::now()->endOfDay();
+
+            // Obtenir les données combinées
+            $spendingData = $this->getCombinedSpendingData($user_id, $startDate, $endDate);
+
+            // Grouper par magasin
+            $storeStats = [];
+            foreach ($spendingData as $spending) {
+                $storeName = $spending['store_name'] ?? 'Non spécifié';
+                
+                if (!isset($storeStats[$storeName])) {
+                    $storeStats[$storeName] = [
+                        'store_name' => $storeName,
+                        'total_spent' => 0,
+                        'receipts_total' => 0,
+                        'items_total' => 0,
+                        'transactions_count' => 0,
+                        'receipts_count' => 0,
+                        'items_sessions' => 0,
+                        'last_visit' => null,
+                        'data_sources' => []
+                    ];
+                }
+                
+                $storeStats[$storeName]['total_spent'] += $spending['amount'];
+                $storeStats[$storeName]['transactions_count']++;
+                
+                if ($spending['source'] === 'receipt') {
+                    $storeStats[$storeName]['receipts_total'] += $spending['amount'];
+                    $storeStats[$storeName]['receipts_count']++;
+                } else {
+                    $storeStats[$storeName]['items_total'] += $spending['amount'];
+                    $storeStats[$storeName]['items_sessions']++;
+                }
+                
+                if (!$storeStats[$storeName]['last_visit'] || 
+                    $spending['date'] > $storeStats[$storeName]['last_visit']) {
+                    $storeStats[$storeName]['last_visit'] = $spending['date'];
+                }
+                
+                $storeStats[$storeName]['data_sources'][] = $spending['source'];
+            }
+
+            // Trier par montant total
+            uasort($storeStats, function($a, $b) {
+                return $b['total_spent'] <=> $a['total_spent'];
+            });
+
+            // Limiter et formater
+            $storeStats = array_slice($storeStats, 0, $limit, true);
+            $grandTotal = array_sum(array_column($storeStats, 'total_spent'));
+
+            $formattedStores = [];
+            foreach ($storeStats as $storeName => $data) {
+                $percentage = $grandTotal > 0 ? round(($data['total_spent'] / $grandTotal) * 100, 1) : 0;
+                $dataQuality = $data['receipts_total'] > 0 ? 'high' : ($data['items_total'] > 0 ? 'medium' : 'low');
+                
+                $formattedStores[] = [
+                    'store_name' => $storeName,
+                    'total_spent' => round($data['total_spent'], 2),
+                    'receipts_total' => round($data['receipts_total'], 2),
+                    'items_total' => round($data['items_total'], 2),
+                    'transactions_count' => $data['transactions_count'],
+                    'receipts_count' => $data['receipts_count'],
+                    'items_sessions' => $data['items_sessions'],
+                    'percentage_of_total' => $percentage,
+                    'data_quality' => $dataQuality,
+                    'primary_source' => $data['receipts_total'] > $data['items_total'] ? 'receipts' : 'items',
+                    'last_visit' => $data['last_visit'] ? $data['last_visit']->toDateString() : null,
+                    'formatted_total' => $targetCurrency->formatAmountDisplay($data['total_spent']),
+                    'formatted_receipts' => $targetCurrency->formatAmountDisplay($data['receipts_total']),
+                    'formatted_items' => $targetCurrency->formatAmountDisplay($data['items_total'])
+                ];
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'period' => $period,
+                    'language' => $language,
+                    'currency' => $targetCurrency->code,
+                    'stores' => $formattedStores,
+                    'summary' => [
+                        'total_spent' => round($grandTotal, 2),
+                        'total_stores' => count($formattedStores),
+                        'period_start' => $period !== 'all' ? $startDate->toDateString() : null,
+                        'formatted_total' => $targetCurrency->formatAmountDisplay($grandTotal),
+                        'data_quality_distribution' => [
+                            'high' => count(array_filter($formattedStores, fn($s) => $s['data_quality'] === 'high')),
+                            'medium' => count(array_filter($formattedStores, fn($s) => $s['data_quality'] === 'medium')),
+                            'low' => count(array_filter($formattedStores, fn($s) => $s['data_quality'] === 'low'))
+                        ]
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'STORE_ANALYTICS_ERROR',
+                    'message' => 'Error retrieving store spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Rapport de qualité des données
+     */
+    public function dataQualityReport(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $language = $this->getUserLanguage($request);
+            
+            $accessibleListIds = $this->getUserAccessibleListIds($user_id);
+            
+            if (empty($accessibleListIds)) {
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => [
+                        'language' => $language,
+                        'total_lists' => 0,
+                        'data_quality' => 'no_data'
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
+            // Statistiques par liste
+            $lists = ShoppingList::whereIn('id', $accessibleListIds)
+                ->with(['receipts', 'items'])
+                ->get();
+
+            $report = [
+                'total_lists' => $lists->count(),
+                'lists_with_receipts' => 0,
+                'lists_with_item_prices' => 0,
+                'lists_with_both' => 0,
+                'lists_with_no_pricing' => 0,
+                'total_receipts' => 0,
+                'total_items_with_prices' => 0,
+                'recommendations' => []
+            ];
+
+            foreach ($lists as $list) {
+                $hasReceipts = $list->receipts->isNotEmpty();
+                $hasItemPrices = $list->items->where('is_purchased', true)->whereNotNull('price')->isNotEmpty();
+                
+                if ($hasReceipts) $report['lists_with_receipts']++;
+                if ($hasItemPrices) $report['lists_with_item_prices']++;
+                if ($hasReceipts && $hasItemPrices) $report['lists_with_both']++;
+                if (!$hasReceipts && !$hasItemPrices) $report['lists_with_no_pricing']++;
+                
+                $report['total_receipts'] += $list->receipts->count();
+                $report['total_items_with_prices'] += $list->items->where('is_purchased', true)->whereNotNull('price')->count();
+            }
+
+            // Générer des recommandations
+            $noPricingPercentage = ($report['lists_with_no_pricing'] / $report['total_lists']) * 100;
+            
+            if ($noPricingPercentage > 50) {
+                $report['recommendations'][] = [
+                    'type' => 'critical',
+                    'message' => 'More than half of your lists have no pricing data. Consider adding receipts.',
+                    'action' => 'add_receipts'
+                ];
+            } elseif ($noPricingPercentage > 25) {
+                $report['recommendations'][] = [
+                    'type' => 'warning',
+                    'message' => 'Some lists are missing pricing data. Adding receipts will improve analytics.',
+                    'action' => 'improve_coverage'
+                ];
+            } else {
+                $report['recommendations'][] = [
+                    'type' => 'success',
+                    'message' => 'Good pricing data coverage! Your analytics are reliable.',
+                    'action' => 'maintain'
+                ];
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'report' => $report,
+                    'percentages' => [
+                        'lists_with_receipts' => round(($report['lists_with_receipts'] / $report['total_lists']) * 100, 1),
+                        'lists_with_item_prices' => round(($report['lists_with_item_prices'] / $report['total_lists']) * 100, 1),
+                        'lists_with_no_pricing' => round($noPricingPercentage, 1)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'DATA_QUALITY_ERROR',
+                    'message' => 'Error generating data quality report',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ HISTORIQUE DES DÉPENSES PAR MOIS (VERSION CORRIGÉE AVEC FACTURES)
+     */
+    public function monthlySpendingHistory(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            $months = min((int)($params['months'] ?? 12), 24);
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            
+            $user = User::with('currency')->find($user_id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            // Déterminer la devise cible
+            if ($currency_code) {
+                $targetCurrency = Currency::findByCode($currency_code);
+                if (!$targetCurrency) {
+                    throw new \Exception('Invalid currency code');
+                }
+            } else {
+                $targetCurrency = $user->currency ?? Currency::getDefault();
+            }
+
+            // Calculer les dates
+            $currentYear = Carbon::now()->year;
+            
+            if ($months == 12) {
+                $startDate = Carbon::create($currentYear, 1, 1)->startOfMonth();
+                $endDate = Carbon::create($currentYear, 12, 31)->endOfMonth();
+            } else {
+                $endDate = Carbon::now()->endOfMonth();
+                $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
+            }
+
+            // ✅ Obtenir les données combinées
+            $spendingData = $this->getCombinedSpendingData($user_id, $startDate, $endDate);
+
+            // Créer les mois dans l'ordre chronologique
+            $monthlyData = [];
+            $currentDate = $startDate->copy();
+            
+            while ($currentDate->lte($endDate)) {
+                $monthKey = $currentDate->format('Y-m');
+                $monthlyData[$monthKey] = [
+                    'year' => $currentDate->year,
+                    'month' => $currentDate->month,
+                    'month_name' => $currentDate->translatedFormat('F Y'),
+                    'month_short' => $currentDate->translatedFormat('M'),
+                    'total_spent' => 0,
+                    'total_transactions' => 0,
+                    'receipts_total' => 0,
+                    'items_total' => 0,
+                    'receipts_count' => 0,
+                    'items_sessions' => 0,
+                    'currency' => $targetCurrency->code,
+                    'sort_order' => $currentDate->month
+                ];
+                $currentDate->addMonth();
+            }
+
+            // Calculer les totaux
+            foreach ($spendingData as $spending) {
+                $monthKey = $spending['date']->format('Y-m');
+                if (isset($monthlyData[$monthKey])) {
+                    $monthlyData[$monthKey]['total_spent'] += $spending['amount'];
+                    $monthlyData[$monthKey]['total_transactions']++;
+                    
+                    if ($spending['source'] === 'receipt') {
+                        $monthlyData[$monthKey]['receipts_total'] += $spending['amount'];
+                        $monthlyData[$monthKey]['receipts_count']++;
+                    } else {
+                        $monthlyData[$monthKey]['items_total'] += $spending['amount'];
+                        $monthlyData[$monthKey]['items_sessions']++;
+                    }
+                }
+            }
+
+            // Formater les données
+            foreach ($monthlyData as &$month) {
+                $month['total_spent'] = round($month['total_spent'], 2);
+                $month['receipts_total'] = round($month['receipts_total'], 2);
+                $month['items_total'] = round($month['items_total'], 2);
+                $month['formatted_total'] = $targetCurrency->formatAmountDisplay($month['total_spent']);
+                $month['formatted_receipts'] = $targetCurrency->formatAmountDisplay($month['receipts_total']);
+                $month['formatted_items'] = $targetCurrency->formatAmountDisplay($month['items_total']);
+                $month['data_quality'] = $month['receipts_total'] > 0 ? 'high' : ($month['items_total'] > 0 ? 'medium' : 'none');
+            }
+
+            // Trier les données
+            $sortedMonthlyData = array_values($monthlyData);
+            usort($sortedMonthlyData, function($a, $b) {
+                if ($a['year'] !== $b['year']) {
+                    return $a['year'] <=> $b['year'];
+                }
+                return $a['month'] <=> $b['month'];
+            });
+
+            // Calculs de tendance
+            $values = array_column($sortedMonthlyData, 'total_spent');
+            $totalSpent = array_sum($values);
+            $averageMonthly = count($values) > 0 ? $totalSpent / count($values) : 0;
+            
+            $recentMonths = array_slice($values, -3);
+            $previousMonths = array_slice($values, -6, 3);
+            $recentAvg = count($recentMonths) > 0 ? array_sum($recentMonths) / count($recentMonths) : 0;
+            $previousAvg = count($previousMonths) > 0 ? array_sum($previousMonths) / count($previousMonths) : 0;
+            
+            $trendPercentage = $previousAvg > 0 ? 
+                round((($recentAvg - $previousAvg) / $previousAvg) * 100, 1) : 0;
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'monthly_data' => $sortedMonthlyData,
+                    'summary' => [
+                        'total_spent' => round($totalSpent, 2),
+                        'average_monthly' => round($averageMonthly, 2),
+                        'currency' => $targetCurrency->code,
+                        'period' => [
+                            'start' => $startDate->toDateString(),
+                            'end' => $endDate->toDateString(),
+                            'months' => $months,
+                            'year_based' => $months == 12
+                        ],
+                        'data_sources' => [
+                            'receipts_total' => round(array_sum(array_column($sortedMonthlyData, 'receipts_total')), 2),
+                            'items_total' => round(array_sum(array_column($sortedMonthlyData, 'items_total')), 2),
+                            'receipts_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['receipts_count'] > 0)),
+                            'items_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['items_sessions'] > 0))
+                        ],
+                        'trend' => [
+                            'percentage' => $trendPercentage,
+                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
+                            'recent_average' => round($recentAvg, 2),
+                            'previous_average' => round($previousAvg, 2)
+                        ],
+                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
+                        'formatted_average_monthly' => $targetCurrency->formatAmountDisplay($averageMonthly)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'ANALYTICS_ERROR',
+                    'message' => 'Error retrieving monthly spending data',
                     'details' => $e->getMessage()
                 ]
             ]));

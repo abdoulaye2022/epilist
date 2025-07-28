@@ -1,8 +1,13 @@
 // widgets/list_detail/list_detail_app_bar.dart - VERSION AVEC PERMISSIONS ET TRADUCTIONS
+import 'package:epilist/blocs/localization/localization_bloc.dart';
+import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/screens/receipts_screen.dart';
+import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String listName;
@@ -166,6 +171,25 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
+    items.add(
+      PopupMenuItem(
+        value: 'receipts',
+        child: Row(
+          children: [
+            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                l10n.receipts,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
     // Supprimer (si permission)
     if (shoppingList.canDelete && onDelete != null) {
       items.add(
@@ -201,6 +225,9 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         break;
       case 'delete':
         onDelete?.call();
+        break;
+      case 'receipts':
+        _openReceiptsScreen(context);
         break;
     }
   }
@@ -320,6 +347,25 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _openReceiptsScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => BlocProvider(
+              create:
+                  (context) => ReceiptBloc(
+                    receiptService: context.read<ReceiptService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+              child: ReceiptsScreen(
+                shoppingList: shoppingList,
+              ), // ✅ Utiliser this.shoppingList
+            ),
+      ),
     );
   }
 

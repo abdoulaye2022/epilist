@@ -2352,7 +2352,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sortBy => 'Trier par';
 
   @override
-  String get sortByAmount => 'Par montant';
+  String get sortByAmount => 'Trier par montant';
 
   @override
   String get sortByQuantity => 'Par quantité';
@@ -2620,4 +2620,359 @@ class AppLocalizationsFr extends AppLocalizations {
   String weekLabel(int number) {
     return 'S$number';
   }
+
+  @override
+  String get receipts => 'Factures';
+
+  @override
+  String get allReceipts => 'Toutes';
+
+  @override
+  String get byStore => 'Par magasin';
+
+  @override
+  String get addReceipt => 'Ajouter une facture';
+
+  @override
+  String get editReceipt => 'Modifier la facture';
+
+  @override
+  String get deleteReceipt => 'Supprimer la facture';
+
+  @override
+  String get deleteReceiptConfirm =>
+      'Êtes-vous sûr de vouloir supprimer cette facture ?';
+
+  @override
+  String get noReceipts => 'Aucune facture';
+
+  @override
+  String get addFirstReceipt =>
+      'Ajoutez votre première facture pour suivre vos dépenses réelles';
+
+  @override
+  String get enterStoreName => 'Entrez le nom du magasin';
+
+  @override
+  String get totalAmount => 'Montant total';
+
+  @override
+  String get enterAmount => 'Entrez le montant';
+
+  @override
+  String get purchaseDate => 'Date d\'achat';
+
+  @override
+  String get selectDate => 'Sélectionner la date';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get optionalNotes => 'Notes optionnelles';
+
+  @override
+  String get storeNameRequired => 'Le nom du magasin est requis';
+
+  @override
+  String get storeNameTooShort => 'Le nom doit contenir au moins 2 caractères';
+
+  @override
+  String get amountRequired => 'Le montant est requis';
+
+  @override
+  String get invalidAmount => 'Montant invalide';
+
+  @override
+  String get amountMustBePositive => 'Le montant doit être positif';
+
+  @override
+  String get amountTooHigh => 'Le montant est trop élevé';
+
+  @override
+  String get spendingSummary => 'Résumé des dépenses';
+
+  @override
+  String get totalExpensesSummary => 'Vue d\'ensemble de vos dépenses';
+
+  @override
+  String get totalFromReceipts => 'Total des factures';
+
+  @override
+  String get totalFromItems => 'Total des articles';
+
+  @override
+  String get bestEstimate => 'Meilleure estimation';
+
+  @override
+  String get dataComparison => 'Comparaison des données';
+
+  @override
+  String get receiptVsItemComparison => 'Factures vs prix des articles';
+
+  @override
+  String get dataQuality => 'Qualité des données';
+
+  @override
+  String get dataQualityExcellent => 'Excellente';
+
+  @override
+  String get dataQualityGood => 'Bonne';
+
+  @override
+  String get dataQualityFair => 'Correcte';
+
+  @override
+  String get dataQualityPoor => 'Faible';
+
+  @override
+  String get dataQualityUnknown => 'Inconnue';
+
+  @override
+  String get addReceiptsRecommendation =>
+      'Ajoutez des factures pour des données plus précises';
+
+  @override
+  String get addItemPricesRecommendation =>
+      'Ajoutez des prix aux articles pour plus de détails';
+
+  @override
+  String significantVarianceDetected(String percentage) {
+    return 'Écart significatif détecté ($percentage%)';
+  }
+
+  @override
+  String get lastVisit => 'Dernière visite';
+
+  @override
+  String get added => 'Ajouté';
+
+  @override
+  String get receiptAddedSuccessfully => 'Facture ajoutée avec succès';
+
+  @override
+  String get receiptUpdatedSuccessfully => 'Facture mise à jour avec succès';
+
+  @override
+  String get receiptDeletedSuccessfully => 'Facture supprimée avec succès';
+
+  @override
+  String get receiptsLoadedSuccessfully => 'Factures chargées avec succès';
+
+  @override
+  String get errorLoadingReceipts => 'Erreur lors du chargement des factures';
+
+  @override
+  String get errorAddingReceipt => 'Erreur lors de l\'ajout de la facture';
+
+  @override
+  String get errorUpdatingReceipt =>
+      'Erreur lors de la mise à jour de la facture';
+
+  @override
+  String get errorDeletingReceipt =>
+      'Erreur lors de la suppression de la facture';
+
+  @override
+  String get receiptValidationError => 'Données de facture invalides';
+
+  @override
+  String get storeNameInvalid => 'Nom de magasin invalide';
+
+  @override
+  String get amountTooLow => 'Montant trop faible';
+
+  @override
+  String get dateInFuture => 'La date ne peut pas être dans le futur';
+
+  @override
+  String get dateTooOld => 'La date ne peut pas être antérieure à 2 ans';
+
+  @override
+  String get notesTooLong => 'Notes trop longues (max 1000 caractères)';
+
+  @override
+  String get receiptDetails => 'Détails de la facture';
+
+  @override
+  String get receiptInformation => 'Informations de la facture';
+
+  @override
+  String get manageReceipts => 'Gérer les factures';
+
+  @override
+  String get viewReceipts => 'Voir les factures';
+
+  @override
+  String get receiptHistory => 'Historique des factures';
+
+  @override
+  String get totalReceipts => 'Total des factures';
+
+  @override
+  String get averageReceiptAmount => 'Montant moyen par facture';
+
+  @override
+  String get largestReceipt => 'Plus grande facture';
+
+  @override
+  String get smallestReceipt => 'Plus petite facture';
+
+  @override
+  String get mostFrequentStore => 'Magasin le plus fréquenté';
+
+  @override
+  String get comparisonResults => 'Résultats de comparaison';
+
+  @override
+  String get dataAccuracy => 'Précision des données';
+
+  @override
+  String get recommendationsTitle => 'Recommandations';
+
+  @override
+  String get improvementsNeeded => 'Améliorations nécessaires';
+
+  @override
+  String get wellDoneMessage => 'Bravo ! Vos données sont précises';
+
+  @override
+  String get addMoreReceiptsAdvice =>
+      'Ajoutez plus de factures pour améliorer la précision';
+
+  @override
+  String get priceItemsAdvice =>
+      'Ajoutez des prix à vos articles pour de meilleures estimations';
+
+  @override
+  String get loadingReceiptStats =>
+      'Chargement des statistiques de factures...';
+
+  @override
+  String get noReceiptStats => 'Aucune statistique de facture disponible';
+
+  @override
+  String get receiptStatsUnavailable =>
+      'Statistiques de factures indisponibles';
+
+  @override
+  String get refreshReceiptStats => 'Actualiser les statistiques';
+
+  @override
+  String get receiptOperationFailed => 'Opération de facture échouée';
+
+  @override
+  String get backToReceipts => 'Retour aux factures';
+
+  @override
+  String get addNewReceipt => 'Ajouter une nouvelle facture';
+
+  @override
+  String get editReceiptInfo => 'Modifier les informations de la facture';
+
+  @override
+  String get duplicateReceipt => 'Dupliquer la facture';
+
+  @override
+  String get shareReceipt => 'Partager la facture';
+
+  @override
+  String get exportReceipts => 'Exporter les factures';
+
+  @override
+  String get importReceipts => 'Importer les factures';
+
+  @override
+  String get filterByStore => 'Filtrer par magasin';
+
+  @override
+  String get filterByDate => 'Filtrer par date';
+
+  @override
+  String get filterByAmount => 'Filtrer par montant';
+
+  @override
+  String get sortByDate => 'Trier par date';
+
+  @override
+  String get sortByStore => 'Trier par magasin';
+
+  @override
+  String get newestFirst => 'Plus récent en premier';
+
+  @override
+  String get oldestFirst => 'Plus ancien en premier';
+
+  @override
+  String get highestFirst => 'Montant le plus élevé en premier';
+
+  @override
+  String get lowestFirst => 'Montant le plus faible en premier';
+
+  @override
+  String get cannotAddReceipt => 'Impossible d\'ajouter une facture';
+
+  @override
+  String get cannotEditReceipt => 'Impossible de modifier la facture';
+
+  @override
+  String get cannotDeleteReceipt => 'Impossible de supprimer la facture';
+
+  @override
+  String get receiptPermissionDenied =>
+      'Permission refusée pour les opérations de facture';
+
+  @override
+  String get receiptReadOnlyAccess => 'Accès en lecture seule aux factures';
+
+  @override
+  String get receiptDateFormat => 'Format de date de facture';
+
+  @override
+  String get amountDisplayFormat => 'Format d\'affichage du montant';
+
+  @override
+  String receiptNumberFormat(int number) {
+    return 'Facture n°$number';
+  }
+
+  @override
+  String get receiptSavedSuccessfully => 'Facture sauvegardée avec succès';
+
+  @override
+  String get receiptDeletedPermanently => 'Facture supprimée définitivement';
+
+  @override
+  String get allReceiptsCleared => 'Toutes les factures supprimées';
+
+  @override
+  String get receiptDataExported => 'Données de factures exportées';
+
+  @override
+  String get receiptDataImported => 'Données de factures importées';
+
+  @override
+  String get receiptHelpTitle => 'À propos des factures';
+
+  @override
+  String get receiptHelpDescription =>
+      'Ajoutez vos vraies factures d\'achat pour suivre les dépenses réelles versus les coûts estimés';
+
+  @override
+  String get receiptBenefits => 'Avantages d\'ajouter des factures';
+
+  @override
+  String get accurateSpendingData => '• Données de dépenses précises';
+
+  @override
+  String get betterBudgetTracking => '• Meilleur suivi du budget';
+
+  @override
+  String get spendingComparisons => '• Comparer estimations vs coûts réels';
+
+  @override
+  String get storeSpendingAnalysis => '• Analyser les dépenses par magasin';
+
+  @override
+  String get error => 'Erreur';
 }

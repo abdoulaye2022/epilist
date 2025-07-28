@@ -17,6 +17,7 @@ import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
+import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
@@ -151,6 +152,13 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          RepositoryProvider<ReceiptService>(
+            create:
+                (context) => ReceiptService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -165,6 +173,14 @@ void main() async {
             ),
 
             // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
+            BlocProvider(
+              create:
+                  (context) => CurrencyBloc(
+                    currencyService: context.read<CurrencyService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                    authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
+                  ),
+            ),
             BlocProvider(
               create:
                   (context) => CurrencyBloc(

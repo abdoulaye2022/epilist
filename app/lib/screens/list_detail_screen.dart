@@ -1,13 +1,16 @@
 // screens/list_detail_screen.dart - VERSION CORRIGÉE AVEC FormattedAmount
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
+import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
+import 'package:epilist/screens/receipts_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/list_detail/add_item_dialog.dart';
 import 'package:epilist/widgets/list_detail/edit_item_dialog.dart';
@@ -211,14 +214,51 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  Widget? _buildFloatingActionButton() {
-    if (!currentList.canManageItems) return null;
+  Widget _buildFloatingActionButton() {
+    final l10n = AppLocalizations.of(context)!;
 
-    return FloatingActionButton(
-      onPressed: _addNewItem,
-      backgroundColor: Colors.green[600],
-      tooltip: 'Ajouter un article',
-      child: const Icon(Icons.add, color: Colors.white),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Bouton des factures
+        FloatingActionButton(
+          onPressed: _openReceiptsScreen,
+          heroTag: "receipts_fab",
+          backgroundColor: Colors.blue[600],
+          tooltip: l10n.receipts,
+          child: const Icon(Icons.receipt_long, color: Colors.white),
+        ),
+        const SizedBox(height: 12),
+        // Bouton d'ajout d'article existant
+        FloatingActionButton(
+          onPressed:
+              currentList.canEdit
+                  ? _addNewItem
+                  : null, // ✅ Utiliser _addNewItem au lieu de _showAddItemDialog
+          heroTag: "add_item_fab",
+          backgroundColor:
+              currentList.canEdit ? Colors.green[600] : Colors.grey[400],
+          tooltip: l10n.addItem,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  void _openReceiptsScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => BlocProvider(
+              create:
+                  (context) => ReceiptBloc(
+                    receiptService: context.read<ReceiptService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+              child: ReceiptsScreen(shoppingList: widget.shoppingList),
+            ),
+      ),
     );
   }
 

@@ -1,5 +1,5 @@
 <?php
-// src/Models/Currency.php - VERSION AFFICHAGE SEULEMENT
+// src/Models/Currency.php - VERSION CORRIGÉE AVEC formatAmount()
 
 namespace App\Models;
 
@@ -104,7 +104,26 @@ class Currency extends Model
      */
     public static function getDefault(): self
     {
-        return static::findByCode('CAD') ?? static::find(1);
+        $default = static::findByCode('CAD');
+        
+        if (!$default) {
+            // Si CAD n'existe pas, retourner la première devise active
+            $default = static::active()->first();
+        }
+        
+        if (!$default) {
+            // Créer une devise par défaut si aucune n'existe
+            $default = new static([
+                'code' => 'CAD',
+                'name' => 'Dollar canadien',
+                'symbol' => '$',
+                'is_active' => true,
+                'is_popular' => true,
+                'display_order' => 1
+            ]);
+        }
+        
+        return $default;
     }
 
     /**
@@ -112,9 +131,10 @@ class Currency extends Model
      */
 
     /**
-     * Formater un montant avec le symbole de cette devise (AFFICHAGE SEULEMENT)
+     * ✅ MÉTHODE PRINCIPALE utilisée par les contrôleurs
+     * Formater un montant avec le symbole de cette devise
      */
-    public function formatAmountDisplay(float $amount, bool $showCode = false): string
+    public function formatAmount(float $amount, bool $showCode = false): string
     {
         $formatted = number_format($amount, 2);
         
@@ -123,6 +143,74 @@ class Currency extends Model
         }
         
         return "{$this->symbol}{$formatted}";
+    }
+
+    /**
+     * Alias pour la compatibilité (AFFICHAGE SEULEMENT)
+     */
+    public function formatAmountDisplay(float $amount, bool $showCode = false): string
+    {
+        return $this->formatAmount($amount, $showCode);
+    }
+
+    /**
+     * Formatage avec style personnalisé selon la devise
+     */
+    public function formatAmountWithStyle(float $amount, string $style = 'standard'): string
+    {
+        $formatted = number_format($amount, 2);
+        
+        switch ($style) {
+            case 'compact':
+                return "{$this->symbol}{$formatted}";
+                
+            case 'full':
+                return "{$this->symbol}{$formatted} {$this->code} ({$this->name})";
+                
+            case 'code_only':
+                return "{$formatted} {$this->code}";
+                
+            case 'standard':
+            default:
+                return "{$this->symbol}{$formatted}";
+        }
+    }
+
+    /**
+     * Formatage selon les conventions locales de la devise
+     */
+    public function formatAmountLocalized(float $amount): string
+    {
+        $formatted = number_format($amount, 2);
+        
+        // Règles de formatage selon la devise
+        switch ($this->code) {
+            case 'EUR':
+                // Format européen: 1 234,56 €
+                return number_format($amount, 2, ',', ' ') . ' ' . $this->symbol;
+                
+            case 'USD':
+            case 'CAD':
+            case 'AUD':
+            case 'NZD':
+                // Format nord-américain: $1,234.56
+                return $this->symbol . number_format($amount, 2);
+                
+            case 'GBP':
+                // Format britannique: £1,234.56
+                return $this->symbol . number_format($amount, 2);
+                
+            case 'JPY':
+                // Yen japonais sans décimales: ¥1,234
+                return $this->symbol . number_format($amount, 0);
+                
+            case 'CHF':
+                // Franc suisse: CHF 1'234.56
+                return $this->code . ' ' . number_format($amount, 2, '.', "'");
+                
+            default:
+                return $this->formatAmount($amount);
+        }
     }
 
     /**
@@ -146,6 +234,36 @@ class Currency extends Model
             'display_name' => $this->display_name,
             'is_popular' => $this->is_popular
         ];
+    }
+
+    /**
+     * ✅ MÉTHODES DE VALIDATION DES MONTANTS
+     */
+
+    /**
+     * Valider et nettoyer un montant
+     */
+    public function validateAmount(float $amount): float
+    {
+        // Arrondir selon la devise
+        $decimals = $this->getDecimalPlaces();
+        return round($amount, $decimals);
+    }
+
+    /**
+     * Obtenir le nombre de décimales pour cette devise
+     */
+    public function getDecimalPlaces(): int
+    {
+        // Certaines devises n'utilisent pas de décimales
+        $noDecimalCurrencies = ['JPY', 'KRW', 'VND', 'CLP'];
+        
+        if (in_array($this->code, $noDecimalCurrencies)) {
+            return 0;
+        }
+        
+        // La plupart des devises utilisent 2 décimales
+        return 2;
     }
 
     /**
@@ -192,5 +310,70 @@ class Currency extends Model
     public static function isSupported(string $code): bool
     {
         return in_array(strtoupper($code), static::SUPPORTED_CURRENCIES);
+    }
+
+    /**
+     * ✅ MÉTHODES STATIQUES UTILES
+     */
+
+    /**
+     * Formater rapidement un montant avec une devise
+     */
+    public static function quickFormat(float $amount, string $currencyCode = 'CAD'): string
+    {
+        $currency = static::findByCode($currencyCode) ?? static::getDefault();
+        return $currency->formatAmount($amount);
+    }
+
+    /**
+     * Obtenir la liste des devises pour un select
+     */
+    public static function getSelectOptions(): array
+    {
+        return static::active()
+            ->ordered()
+            ->get()
+            ->map(function ($currency) {
+                return [
+                    'value' => $currency->id,
+                    'label' => $currency->display_name,
+                    'code' => $currency->code,
+                    'symbol' => $currency->symbol
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * ✅ BOOT METHOD pour les événements du modèle
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Normaliser le code en majuscules avant sauvegarde
+        static::saving(function ($currency) {
+            $currency->code = strtoupper($currency->code);
+        });
+    }
+
+    /**
+     * ✅ ACCESSEURS ET MUTATEURS
+     */
+
+    /**
+     * Mutateur pour le code de devise
+     */
+    public function setCodeAttribute($value)
+    {
+        $this->attributes['code'] = strtoupper($value);
+    }
+
+    /**
+     * Accesseur pour vérifier si c'est la devise par défaut
+     */
+    public function getIsDefaultAttribute(): bool
+    {
+        return $this->code === static::DEFAULT_CURRENCY_CODE;
     }
 }
