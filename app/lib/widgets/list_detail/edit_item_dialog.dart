@@ -374,22 +374,9 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
   // ✅ CORRECTION: Widget pour afficher uniquement la devise sans montant
   Widget _buildCurrencyIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.amber[50],
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.amber[200]!),
-      ),
-      child: Text(
-        'CAD', // Temporaire - sera remplacé par la devise dynamique
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.amber[700],
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+    // Utiliser le nouveau widget CurrencyIndicator au lieu d'un placeholder fixe
+    return const CurrencyIndicator(
+      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
     );
   }
 

@@ -1,4 +1,4 @@
-// widgets/list_detail/modern_dropdown_menu.dart - MENU COMPLET AVEC TOUTES LES FONCTIONNALITÉS
+// widgets/list_detail/modern_dropdown_menu.dart - MENU SIMPLE INSPIRÉ DU SHOPPING CARD
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +26,9 @@ class ModernDropdownMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, color: Colors.grey[700]),
+      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
       onSelected: (value) => _handleMenuAction(value, context),
       itemBuilder: (context) => _buildMenuItems(context),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 8,
-      offset: const Offset(0, 10),
     );
   }
 
@@ -44,11 +41,18 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'edit',
-          child: _buildMenuItem(
-            icon: Icons.edit_outlined,
-            title: l10n.editList,
-            subtitle: 'Nom, description...',
-            color: Colors.blue[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.editList,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -59,11 +63,18 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'share',
-          child: _buildMenuItem(
-            icon: Icons.share_outlined,
-            title: l10n.shareList,
-            subtitle: 'Créer un lien de partage',
-            color: Colors.green[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.share, size: 20, color: Colors.green[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.shareList,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -76,11 +87,18 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'manage_shares',
-          child: _buildMenuItem(
-            icon: Icons.people_outline,
-            title: l10n.manageShares,
-            subtitle: 'Voir les collaborateurs',
-            color: Colors.purple[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.manageShares,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -91,11 +109,18 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'info',
-          child: _buildMenuItem(
-            icon: Icons.info_outline,
-            title: l10n.listInformation,
-            subtitle: 'Détails et permissions',
-            color: Colors.grey[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.listInformation,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -112,11 +137,19 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'leave',
-          child: _buildMenuItem(
-            icon: Icons.exit_to_app_outlined,
-            title: l10n.leaveList,
-            subtitle: 'Perdre l\'accès à cette liste',
-            color: Colors.orange[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.leaveList,
+                  style: TextStyle(color: Colors.orange[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -127,62 +160,25 @@ class ModernDropdownMenu extends StatelessWidget {
       items.add(
         PopupMenuItem(
           value: 'delete',
-          child: _buildMenuItem(
-            icon: Icons.delete_outline,
-            title: l10n.deleteList,
-            subtitle: 'Action irréversible',
-            color: Colors.red[600]!,
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.deleteList,
+                  style: TextStyle(color: Colors.red[600]),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
     return items;
-  }
-
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, size: 20, color: color),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _handleMenuAction(String action, BuildContext context) {
