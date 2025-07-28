@@ -1,4 +1,4 @@
-// widgets/analytics/period_chart_card.dart - VERSION MISE À JOUR
+// widgets/analytics/period_chart_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -18,12 +18,15 @@ class PeriodChartCard extends StatefulWidget {
 class _PeriodChartCardState extends State<PeriodChartCard> {
   String _selectedPeriod = 'month';
 
-  final Map<String, String> _periodLabels = {
-    'day': 'Jour',
-    'week': 'Semaine',
-    'month': 'Mois',
-    'year': 'Année',
-  };
+  // ✅ Ces labels seront maintenant dynamiques selon la langue
+  Map<String, String> _getPeriodLabels(AppLocalizations l10n) {
+    return {
+      'day': l10n.day,
+      'week': l10n.week,
+      'month': l10n.month,
+      'year': l10n.year,
+    };
+  }
 
   final Map<String, IconData> _periodIcons = {
     'day': Icons.today,
@@ -76,7 +79,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                _buildPeriodSelector(),
+                _buildPeriodSelector(l10n),
               ],
             ),
             const SizedBox(height: 20),
@@ -89,7 +92,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: ClipRect(child: _buildChart(periodData, context)),
+              child: ClipRect(child: _buildChart(periodData, context, l10n)),
             ),
 
             const SizedBox(height: 20),
@@ -163,11 +166,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   String _getPeriodTitle(AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
-        return 'Tendances quotidiennes';
+        return l10n.dailyTrends; // ✅ Traduit
       case 'week':
-        return 'Tendances hebdomadaires';
+        return l10n.weeklyTrends; // ✅ Traduit
       case 'year':
-        return 'Tendances annuelles';
+        return l10n.yearlyTrends; // ✅ Traduit
       case 'month':
       default:
         return l10n.monthlyTrends;
@@ -177,21 +180,23 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   String _getAverageLabel(AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
-        return 'Moyenne/jour';
+        return l10n.dailyAverage; // ✅ Traduit
       case 'week':
-        return 'Moyenne/semaine';
+        return l10n.weeklyAverage; // ✅ Traduit
       case 'year':
-        return 'Moyenne/année';
+        return l10n.yearlyAverage; // ✅ Traduit
       case 'month':
       default:
         return l10n.monthlyAverage;
     }
   }
 
-  Widget _buildPeriodSelector() {
+  Widget _buildPeriodSelector(AppLocalizations l10n) {
+    final periodLabels = _getPeriodLabels(l10n);
+
     return PopupMenuButton<String>(
       icon: Icon(Icons.date_range, color: Colors.grey[600]),
-      tooltip: 'Choisir la période',
+      tooltip: l10n.selectPeriod, // ✅ Traduit
       onSelected: (period) {
         setState(() {
           _selectedPeriod = period;
@@ -202,7 +207,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       },
       itemBuilder:
           (context) =>
-              _periodLabels.entries.map((entry) {
+              periodLabels.entries.map((entry) {
                 final period = entry.key;
                 final label = entry.value;
                 final isSelected = period == _selectedPeriod;
@@ -264,12 +269,16 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  Widget _buildChart(List<dynamic> periodData, BuildContext context) {
+  Widget _buildChart(
+    List<dynamic> periodData,
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     if (periodData.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Aucune donnée disponible',
-          style: TextStyle(color: Colors.grey),
+          l10n.noDataAvailable, // ✅ Traduit
+          style: const TextStyle(color: Colors.grey),
         ),
       );
     }
@@ -282,10 +291,10 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
 
     if (maxValue == 0) {
-      return const Center(
+      return Center(
         child: Text(
-          'Aucune dépense enregistrée',
-          style: TextStyle(color: Colors.grey),
+          l10n.noSpendingRecorded, // ✅ Traduit
+          style: const TextStyle(color: Colors.grey),
         ),
       );
     }
@@ -309,7 +318,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                     final value = item['total_spent']?.toDouble() ?? 0;
                     final height =
                         maxValue > 0 ? (value / maxValue) * barMaxHeight : 0;
-                    final label = _getItemLabel(item);
+                    final label = _getItemLabel(item, l10n);
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -352,7 +361,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   }
 
   /// ✅ MÉTHODE MISE À JOUR: Gestion des labels selon le type de données
-  String _getItemLabel(Map<String, dynamic> item) {
+  String _getItemLabel(Map<String, dynamic> item, AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
         // Pour les données quotidiennes
@@ -365,7 +374,8 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         final weekNumber = item['week_number'];
         final weekLabel = item['week_label'] ?? '';
         if (weekNumber != null) {
-          return 'S$weekNumber';
+          // ✅ Utiliser la traduction pour le format de semaine
+          return l10n.weekLabel(weekNumber);
         }
         return weekLabel.isNotEmpty ? _getShortWeekLabel(weekLabel) : '';
 

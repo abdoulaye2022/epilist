@@ -1000,5 +1000,126 @@
   "items": "articles",
   "done": "fini",
     "shared": "Partagée",
-  "sharedWithYou": "Partagée avec vous"
+  "sharedWithYou": "Partagée avec vous",
+  "sortBy": "Trier par",
+  "sortByAmount": "Par montant",
+  "sortByQuantity": "Par quantité", 
+  "sortByFrequency": "Par fréquence",
+  "unknownProduct": "Produit inconnu",
+  "itemsCount": "articles",
+  "storesLabel": "Magasins",
+  "averagePrice": "Prix moyen",
+  "stores": "Magasins",
+  "averagePriceLabel": "Prix moyen",
+  
+  "amountSort": "Montant",
+  "quantitySort": "Quantité", 
+  "frequencySort": "Fréquence",
+  
+  "loadingAnalytics": "Chargement des analyses...",
+  "errorLoadingAnalytics": "Erreur lors du chargement des analyses",
+  "analyticsUnavailable": "Analyses indisponibles",
+  "refreshAnalytics": "Actualiser les analyses",
+  
+  "rank": "Rang",
+  "ranking": "Classement",
+  "position": "Position",
+  "topRanked": "Mieux classé",
+  "mostPurchased": "Plus acheté",
+  "frequentlyBought": "Fréquemment acheté",
+  
+  "times": "fois",
+  "timesSingular": "fois",
+  "timesPlural": "fois",
+  "purchases": "achats",
+  "purchase": "achat",
+
+  "analyticsError": "Erreur d'analyse",
+  "noAnalyticsAvailable": "Aucune analyse disponible",
+  "analyticsLoading": "Chargement en cours...",
+  "dataNotAvailable": "Données non disponibles",
+  "selectPeriod": "Sélectionner la période",
+  "changePeriod": "Changer la période",
+  
+  "daily": "Quotidien",
+  "weekly": "Hebdomadaire", 
+  "monthly": "Mensuel",
+  "yearly": "Annuel",
+  "period": "Période",
+  "timeframe": "Période",
+  "chooseCurrency": "Choisir la devise",
+  "displayCurrency": "Devise d'affichage",
+  "currencyFormat": "Format de devise",
+  "viewDetails": "Voir les détails",
+  "showMore": "Afficher plus",
+  "showLess": "Afficher moins",
+  "expandChart": "Développer le graphique",
+  "collapseChart": "Réduire le graphique",
+  "statistics": "Statistiques",
+  "dataRange": "Plage de données",
+  "noDataFound": "Aucune donnée trouvée",
+  "insufficientData": "Données insuffisantes",
+  "calculatingData": "Calcul des données...",
+
+  "networkErrorAnalytics": "Erreur réseau lors du chargement des analyses",
+  "serverErrorAnalytics": "Erreur serveur pour les analyses",
+  "timeoutErrorAnalytics": "Délai d'attente dépassé pour les analyses",
+  "noDataAvailable": "Aucune donnée disponible",
+  "noSpendingRecorded": "Aucune dépense enregistrée",
+  
+  "selectPeriod": "Choisir la période",
+  "dailyTrends": "Tendances quotidiennes",
+  "weeklyTrends": "Tendances hebdomadaires", 
+  "yearlyTrends": "Tendances annuelles",
+  "day": "Jour",
+  "week": "Semaine", 
+  "month": "Mois",
+  "year": "Année",
+  
+  "dailyAverage": "Moyenne/jour",
+  "weeklyAverage": "Moyenne/semaine",
+  "yearlyAverage": "Moyenne/année",
+  
+  "choosePeriod": "Choisir la période",
+  "changePeriod": "Changer la période",
+  "updateChart": "Mettre à jour le graphique",
+  "refreshChart": "Actualiser le graphique",
+  
+  "chartData": "Données du graphique",
+  "barChart": "Graphique en barres",
+  "lineChart": "Graphique linéaire",
+  "noChartData": "Pas de données pour le graphique",
+  "loadingChart": "Chargement du graphique...",
+  
+  "summaryData": "Données de résumé",
+  "periodSummary": "Résumé de la période",
+  "averageSpending": "Dépense moyenne",
+  "totalForPeriod": "Total pour la période",
+  
+  "previousPeriod": "Période précédente",
+  "nextPeriod": "Période suivante", 
+  "currentPeriod": "Période actuelle",
+  "comparePeriods": "Comparer les périodes",
+  
+  "dataLoadingError": "Erreur de chargement des données",
+  "chartError": "Erreur du graphique",
+  "noDataForPeriod": "Aucune donnée pour cette période",
+  "selectDifferentPeriod": "Sélectionnez une période différente",
+  
+  "weekNumber": "Semaine {number}",
+  "@weekNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "weekLabel": "S{number}",
+  "@weekLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  }
 }

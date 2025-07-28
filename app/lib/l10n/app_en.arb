@@ -996,5 +996,129 @@
   "items": "items",
   "done": "done",
     "shared": "Shared", 
-  "sharedWithYou": "Shared with you"
+  "sharedWithYou": "Shared with you",
+  "sortBy": "Sort by",
+  "sortByAmount": "By amount",
+  "sortByQuantity": "By quantity",
+  "sortByFrequency": "By frequency", 
+  "unknownProduct": "Unknown product",
+  "itemsCount": "items",
+  "storesLabel": "Stores",
+  "averagePrice": "Average price",
+  "stores": "Stores",
+  "averagePriceLabel": "Average price",
+  
+  "amountSort": "Amount",
+  "quantitySort": "Quantity",
+  "frequencySort": "Frequency",
+  
+  "loadingAnalytics": "Loading analytics...",
+  "errorLoadingAnalytics": "Error loading analytics",
+  "analyticsUnavailable": "Analytics unavailable",
+  "refreshAnalytics": "Refresh analytics",
+  
+  "rank": "Rank",
+  "ranking": "Ranking",
+  "position": "Position", 
+  "topRanked": "Top ranked",
+  "mostPurchased": "Most purchased",
+  "frequentlyBought": "Frequently bought",
+  
+  "times": "times",
+  "timesSingular": "time",
+  "timesPlural": "times",
+  "purchases": "purchases",
+  "purchase": "purchase",
+  
+  "analyticsError": "Analytics error",
+  "noAnalyticsAvailable": "No analytics available",
+  "analyticsLoading": "Loading...",
+  "dataNotAvailable": "Data not available",
+  "selectPeriod": "Select period",
+  "changePeriod": "Change period",
+  
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly", 
+  "yearly": "Yearly",
+  "period": "Period",
+  "timeframe": "Timeframe",
+  
+  "chooseCurrency": "Choose currency",
+  "displayCurrency": "Display currency",
+  "currencyFormat": "Currency format",
+  
+  "viewDetails": "View details",
+  "showMore": "Show more",
+  "showLess": "Show less",
+  "expandChart": "Expand chart",
+  "collapseChart": "Collapse chart",
+  
+  "statistics": "Statistics",
+  "dataRange": "Data range",
+  "noDataFound": "No data found",
+  "insufficientData": "Insufficient data",
+  "calculatingData": "Calculating data...",
+  
+  "networkErrorAnalytics": "Network error loading analytics",
+  "serverErrorAnalytics": "Server error for analytics", 
+  "timeoutErrorAnalytics": "Timeout error for analytics",
+  "noDataAvailable": "No data available",
+  "noSpendingRecorded": "No spending recorded",
+  
+  "selectPeriod": "Select period",
+  "dailyTrends": "Daily trends",
+  "weeklyTrends": "Weekly trends",
+  "yearlyTrends": "Yearly trends", 
+  "day": "Day",
+  "week": "Week",
+  "month": "Month", 
+  "year": "Year",
+  
+  "dailyAverage": "Daily average",
+  "weeklyAverage": "Weekly average",
+  "yearlyAverage": "Yearly average",
+  
+  "choosePeriod": "Choose period",
+  "changePeriod": "Change period",
+  "updateChart": "Update chart",
+  "refreshChart": "Refresh chart",
+  
+  "chartData": "Chart data",
+  "barChart": "Bar chart",
+  "lineChart": "Line chart", 
+  "noChartData": "No chart data",
+  "loadingChart": "Loading chart...",
+  
+  "summaryData": "Summary data",
+  "periodSummary": "Period summary",
+  "averageSpending": "Average spending",
+  "totalForPeriod": "Total for period",
+  
+  "previousPeriod": "Previous period",
+  "nextPeriod": "Next period",
+  "currentPeriod": "Current period", 
+  "comparePeriods": "Compare periods",
+  
+  "dataLoadingError": "Data loading error",
+  "chartError": "Chart error",
+  "noDataForPeriod": "No data for this period",
+  "selectDifferentPeriod": "Select a different period",
+  
+  "weekNumber": "Week {number}",
+  "@weekNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "weekLabel": "W{number}",
+  "@weekLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  }
 }

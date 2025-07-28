@@ -1,4 +1,4 @@
-// widgets/analytics/monthly_chart_card.dart
+// widgets/analytics/monthly_chart_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -47,7 +47,9 @@ class MonthlyChartCard extends StatelessWidget {
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: ClipRect(child: _buildSimpleChart(monthlyData, context)),
+              child: ClipRect(
+                child: _buildSimpleChart(monthlyData, context, l10n),
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -78,12 +80,16 @@ class MonthlyChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSimpleChart(List<dynamic> monthlyData, BuildContext context) {
+  Widget _buildSimpleChart(
+    List<dynamic> monthlyData,
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     if (monthlyData.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'Aucune donnée disponible',
-          style: TextStyle(color: Colors.grey),
+          l10n.noDataAvailable, // ✅ Traduit
+          style: const TextStyle(color: Colors.grey),
         ),
       );
     }
@@ -96,10 +102,10 @@ class MonthlyChartCard extends StatelessWidget {
     }
 
     if (maxValue == 0) {
-      return const Center(
+      return Center(
         child: Text(
-          'Aucune dépense enregistrée',
-          style: TextStyle(color: Colors.grey),
+          l10n.noSpendingRecorded, // ✅ Traduit
+          style: const TextStyle(color: Colors.grey),
         ),
       );
     }

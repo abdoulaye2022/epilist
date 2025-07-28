@@ -2347,4 +2347,277 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sharedWithYou => 'Partagée avec vous';
+
+  @override
+  String get sortBy => 'Trier par';
+
+  @override
+  String get sortByAmount => 'Par montant';
+
+  @override
+  String get sortByQuantity => 'Par quantité';
+
+  @override
+  String get sortByFrequency => 'Par fréquence';
+
+  @override
+  String get unknownProduct => 'Produit inconnu';
+
+  @override
+  String get itemsCount => 'articles';
+
+  @override
+  String get storesLabel => 'Magasins';
+
+  @override
+  String get averagePrice => 'Prix moyen';
+
+  @override
+  String get stores => 'Magasins';
+
+  @override
+  String get averagePriceLabel => 'Prix moyen';
+
+  @override
+  String get amountSort => 'Montant';
+
+  @override
+  String get quantitySort => 'Quantité';
+
+  @override
+  String get frequencySort => 'Fréquence';
+
+  @override
+  String get loadingAnalytics => 'Chargement des analyses...';
+
+  @override
+  String get errorLoadingAnalytics => 'Erreur lors du chargement des analyses';
+
+  @override
+  String get analyticsUnavailable => 'Analyses indisponibles';
+
+  @override
+  String get refreshAnalytics => 'Actualiser les analyses';
+
+  @override
+  String get rank => 'Rang';
+
+  @override
+  String get ranking => 'Classement';
+
+  @override
+  String get position => 'Position';
+
+  @override
+  String get topRanked => 'Mieux classé';
+
+  @override
+  String get mostPurchased => 'Plus acheté';
+
+  @override
+  String get frequentlyBought => 'Fréquemment acheté';
+
+  @override
+  String get times => 'fois';
+
+  @override
+  String get timesSingular => 'fois';
+
+  @override
+  String get timesPlural => 'fois';
+
+  @override
+  String get purchases => 'achats';
+
+  @override
+  String get purchase => 'achat';
+
+  @override
+  String get analyticsError => 'Erreur d\'analyse';
+
+  @override
+  String get noAnalyticsAvailable => 'Aucune analyse disponible';
+
+  @override
+  String get analyticsLoading => 'Chargement en cours...';
+
+  @override
+  String get dataNotAvailable => 'Données non disponibles';
+
+  @override
+  String get selectPeriod => 'Choisir la période';
+
+  @override
+  String get changePeriod => 'Changer la période';
+
+  @override
+  String get daily => 'Quotidien';
+
+  @override
+  String get weekly => 'Hebdomadaire';
+
+  @override
+  String get monthly => 'Mensuel';
+
+  @override
+  String get yearly => 'Annuel';
+
+  @override
+  String get period => 'Période';
+
+  @override
+  String get timeframe => 'Période';
+
+  @override
+  String get chooseCurrency => 'Choisir la devise';
+
+  @override
+  String get displayCurrency => 'Devise d\'affichage';
+
+  @override
+  String get currencyFormat => 'Format de devise';
+
+  @override
+  String get viewDetails => 'Voir les détails';
+
+  @override
+  String get showMore => 'Afficher plus';
+
+  @override
+  String get showLess => 'Afficher moins';
+
+  @override
+  String get expandChart => 'Développer le graphique';
+
+  @override
+  String get collapseChart => 'Réduire le graphique';
+
+  @override
+  String get statistics => 'Statistiques';
+
+  @override
+  String get dataRange => 'Plage de données';
+
+  @override
+  String get noDataFound => 'Aucune donnée trouvée';
+
+  @override
+  String get insufficientData => 'Données insuffisantes';
+
+  @override
+  String get calculatingData => 'Calcul des données...';
+
+  @override
+  String get networkErrorAnalytics =>
+      'Erreur réseau lors du chargement des analyses';
+
+  @override
+  String get serverErrorAnalytics => 'Erreur serveur pour les analyses';
+
+  @override
+  String get timeoutErrorAnalytics =>
+      'Délai d\'attente dépassé pour les analyses';
+
+  @override
+  String get noSpendingRecorded => 'Aucune dépense enregistrée';
+
+  @override
+  String get dailyTrends => 'Tendances quotidiennes';
+
+  @override
+  String get weeklyTrends => 'Tendances hebdomadaires';
+
+  @override
+  String get yearlyTrends => 'Tendances annuelles';
+
+  @override
+  String get day => 'Jour';
+
+  @override
+  String get week => 'Semaine';
+
+  @override
+  String get month => 'Mois';
+
+  @override
+  String get year => 'Année';
+
+  @override
+  String get dailyAverage => 'Moyenne/jour';
+
+  @override
+  String get weeklyAverage => 'Moyenne/semaine';
+
+  @override
+  String get yearlyAverage => 'Moyenne/année';
+
+  @override
+  String get choosePeriod => 'Choisir la période';
+
+  @override
+  String get updateChart => 'Mettre à jour le graphique';
+
+  @override
+  String get refreshChart => 'Actualiser le graphique';
+
+  @override
+  String get chartData => 'Données du graphique';
+
+  @override
+  String get barChart => 'Graphique en barres';
+
+  @override
+  String get lineChart => 'Graphique linéaire';
+
+  @override
+  String get noChartData => 'Pas de données pour le graphique';
+
+  @override
+  String get loadingChart => 'Chargement du graphique...';
+
+  @override
+  String get summaryData => 'Données de résumé';
+
+  @override
+  String get periodSummary => 'Résumé de la période';
+
+  @override
+  String get averageSpending => 'Dépense moyenne';
+
+  @override
+  String get totalForPeriod => 'Total pour la période';
+
+  @override
+  String get previousPeriod => 'Période précédente';
+
+  @override
+  String get nextPeriod => 'Période suivante';
+
+  @override
+  String get currentPeriod => 'Période actuelle';
+
+  @override
+  String get comparePeriods => 'Comparer les périodes';
+
+  @override
+  String get dataLoadingError => 'Erreur de chargement des données';
+
+  @override
+  String get chartError => 'Erreur du graphique';
+
+  @override
+  String get noDataForPeriod => 'Aucune donnée pour cette période';
+
+  @override
+  String get selectDifferentPeriod => 'Sélectionnez une période différente';
+
+  @override
+  String weekNumber(int number) {
+    return 'Semaine $number';
+  }
+
+  @override
+  String weekLabel(int number) {
+    return 'S$number';
+  }
 }

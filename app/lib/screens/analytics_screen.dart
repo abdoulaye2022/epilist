@@ -1,4 +1,4 @@
-// screens/analytics_screen.dart - VERSION MISE À JOUR
+// screens/analytics_screen.dart - VERSION SANS SÉLECTEUR DE DEVISE
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
@@ -25,16 +25,6 @@ class AnalyticsScreen extends StatefulWidget {
 class _AnalyticsScreenState extends State<AnalyticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String? _selectedCurrency;
-
-  // Devises populaires disponibles
-  final List<Map<String, String>> _availableCurrencies = [
-    {'code': 'CAD', 'symbol': '\$', 'name': 'Dollar Canadien'},
-    {'code': 'USD', 'symbol': '\$', 'name': 'Dollar Américain'},
-    {'code': 'EUR', 'symbol': '€', 'name': 'Euro'},
-    {'code': 'GBP', 'symbol': '£', 'name': 'Livre Sterling'},
-    {'code': 'JPY', 'symbol': '¥', 'name': 'Yen Japonais'},
-  ];
 
   @override
   void initState() {
@@ -50,33 +40,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
   }
 
   void _loadInitialData() {
-    // Charger le dashboard initial
-    context.read<AnalyticsBloc>().add(
-      LoadDashboard(currencyCode: _selectedCurrency),
-    );
+    // Charger le dashboard initial (utilise la devise utilisateur par défaut)
+    context.read<AnalyticsBloc>().add(const LoadDashboard());
   }
 
   void _refreshCurrentTab() {
     switch (_tabController.index) {
       case 0:
-        context.read<AnalyticsBloc>().add(
-          LoadDashboard(currencyCode: _selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadDashboard());
         break;
       case 1:
-        context.read<AnalyticsBloc>().add(
-          LoadMonthlySpending(currencyCode: _selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
         break;
       case 2:
-        context.read<AnalyticsBloc>().add(
-          LoadSpendingCategories(currencyCode: _selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadSpendingCategories());
         break;
       case 3:
-        context.read<AnalyticsBloc>().add(
-          LoadTopProducts(currencyCode: _selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadTopProducts());
         break;
     }
   }
@@ -99,161 +79,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          // ✅ Sélecteur de devise simplifié
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.currency_exchange, color: Colors.white),
-            tooltip: 'Choisir la devise',
-            onSelected: (currency) {
-              setState(() {
-                _selectedCurrency = currency;
-              });
-              _refreshCurrentTab();
-
-              // Afficher un snackbar de confirmation
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    currency == null
-                        ? 'Devise utilisateur sélectionnée'
-                        : 'Devise changée vers $currency',
-                  ),
-                  duration: const Duration(seconds: 2),
-                  backgroundColor: Colors.green[600],
-                ),
-              );
-            },
-            itemBuilder:
-                (context) => [
-                  // Option devise utilisateur
-                  PopupMenuItem<String>(
-                    value: null,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.account_balance_wallet,
-                          color:
-                              _selectedCurrency == null
-                                  ? Colors.green[600]
-                                  : Colors.grey[600],
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              l10n.userCurrency,
-                              style: TextStyle(
-                                fontWeight:
-                                    _selectedCurrency == null
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                color:
-                                    _selectedCurrency == null
-                                        ? Colors.green[600]
-                                        : Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              'Devise par défaut',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        if (_selectedCurrency == null)
-                          Icon(Icons.check, color: Colors.green[600], size: 18),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-
-                  // Devises disponibles
-                  ..._availableCurrencies.map((currency) {
-                    final isSelected = _selectedCurrency == currency['code'];
-                    return PopupMenuItem<String>(
-                      value: currency['code'],
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected
-                                      ? Colors.green[100]
-                                      : Colors.grey[100],
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color:
-                                    isSelected
-                                        ? Colors.green[600]!
-                                        : Colors.grey[300]!,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                currency['symbol']!,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isSelected
-                                          ? Colors.green[600]
-                                          : Colors.grey[700],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  currency['code']!,
-                                  style: TextStyle(
-                                    fontWeight:
-                                        isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.w500,
-                                    color:
-                                        isSelected
-                                            ? Colors.green[600]
-                                            : Colors.black87,
-                                  ),
-                                ),
-                                Text(
-                                  currency['name']!,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (isSelected)
-                            Icon(
-                              Icons.check,
-                              color: Colors.green[600],
-                              size: 18,
-                            ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ],
-          ),
-
+          // ✅ SIMPLIFIÉ: Seulement le bouton d'actualisation
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
-            tooltip: 'Actualiser',
+            tooltip: l10n.refresh,
             onPressed: _refreshCurrentTab,
           ),
         ],
@@ -267,24 +96,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             // Charger les données selon l'onglet sélectionné
             switch (index) {
               case 0:
-                context.read<AnalyticsBloc>().add(
-                  LoadDashboard(currencyCode: _selectedCurrency),
-                );
+                context.read<AnalyticsBloc>().add(const LoadDashboard());
                 break;
               case 1:
-                context.read<AnalyticsBloc>().add(
-                  LoadMonthlySpending(currencyCode: _selectedCurrency),
-                );
+                context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
                 break;
               case 2:
                 context.read<AnalyticsBloc>().add(
-                  LoadSpendingCategories(currencyCode: _selectedCurrency),
+                  const LoadSpendingCategories(),
                 );
                 break;
               case 3:
-                context.read<AnalyticsBloc>().add(
-                  LoadTopProducts(currencyCode: _selectedCurrency),
-                );
+                context.read<AnalyticsBloc>().add(const LoadTopProducts());
                 break;
             }
           },
@@ -435,7 +258,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               children: [
                 PeriodChartCard(
                   data: chartData,
-                  selectedCurrency: _selectedCurrency,
+                  selectedCurrency: null, // ✅ Utilise la devise utilisateur
                 ),
                 const SizedBox(height: 16),
                 // Vous pouvez ajouter d'autres widgets de tendances ici
@@ -445,9 +268,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(
-            LoadMonthlySpending(currencyCode: _selectedCurrency),
-          );
+          context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
         });
       },
     );
@@ -490,9 +311,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(
-            LoadSpendingCategories(currencyCode: _selectedCurrency),
-          );
+          context.read<AnalyticsBloc>().add(const LoadSpendingCategories());
         });
       },
     );
@@ -511,15 +330,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: [TopProductsCard(data: state.productsData)],
+              children: [
+                TopProductsCard(
+                  data: state.productsData,
+                  selectedCurrency: null, // ✅ Utilise la devise utilisateur
+                ),
+              ],
             ),
           );
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(
-            LoadTopProducts(currencyCode: _selectedCurrency),
-          );
+          context.read<AnalyticsBloc>().add(const LoadTopProducts());
         });
       },
     );

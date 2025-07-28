@@ -2308,4 +2308,275 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sharedWithYou => 'Shared with you';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortByAmount => 'By amount';
+
+  @override
+  String get sortByQuantity => 'By quantity';
+
+  @override
+  String get sortByFrequency => 'By frequency';
+
+  @override
+  String get unknownProduct => 'Unknown product';
+
+  @override
+  String get itemsCount => 'items';
+
+  @override
+  String get storesLabel => 'Stores';
+
+  @override
+  String get averagePrice => 'Average price';
+
+  @override
+  String get stores => 'Stores';
+
+  @override
+  String get averagePriceLabel => 'Average price';
+
+  @override
+  String get amountSort => 'Amount';
+
+  @override
+  String get quantitySort => 'Quantity';
+
+  @override
+  String get frequencySort => 'Frequency';
+
+  @override
+  String get loadingAnalytics => 'Loading analytics...';
+
+  @override
+  String get errorLoadingAnalytics => 'Error loading analytics';
+
+  @override
+  String get analyticsUnavailable => 'Analytics unavailable';
+
+  @override
+  String get refreshAnalytics => 'Refresh analytics';
+
+  @override
+  String get rank => 'Rank';
+
+  @override
+  String get ranking => 'Ranking';
+
+  @override
+  String get position => 'Position';
+
+  @override
+  String get topRanked => 'Top ranked';
+
+  @override
+  String get mostPurchased => 'Most purchased';
+
+  @override
+  String get frequentlyBought => 'Frequently bought';
+
+  @override
+  String get times => 'times';
+
+  @override
+  String get timesSingular => 'time';
+
+  @override
+  String get timesPlural => 'times';
+
+  @override
+  String get purchases => 'purchases';
+
+  @override
+  String get purchase => 'purchase';
+
+  @override
+  String get analyticsError => 'Analytics error';
+
+  @override
+  String get noAnalyticsAvailable => 'No analytics available';
+
+  @override
+  String get analyticsLoading => 'Loading...';
+
+  @override
+  String get dataNotAvailable => 'Data not available';
+
+  @override
+  String get selectPeriod => 'Select period';
+
+  @override
+  String get changePeriod => 'Change period';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get timeframe => 'Timeframe';
+
+  @override
+  String get chooseCurrency => 'Choose currency';
+
+  @override
+  String get displayCurrency => 'Display currency';
+
+  @override
+  String get currencyFormat => 'Currency format';
+
+  @override
+  String get viewDetails => 'View details';
+
+  @override
+  String get showMore => 'Show more';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String get expandChart => 'Expand chart';
+
+  @override
+  String get collapseChart => 'Collapse chart';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get dataRange => 'Data range';
+
+  @override
+  String get noDataFound => 'No data found';
+
+  @override
+  String get insufficientData => 'Insufficient data';
+
+  @override
+  String get calculatingData => 'Calculating data...';
+
+  @override
+  String get networkErrorAnalytics => 'Network error loading analytics';
+
+  @override
+  String get serverErrorAnalytics => 'Server error for analytics';
+
+  @override
+  String get timeoutErrorAnalytics => 'Timeout error for analytics';
+
+  @override
+  String get noSpendingRecorded => 'No spending recorded';
+
+  @override
+  String get dailyTrends => 'Daily trends';
+
+  @override
+  String get weeklyTrends => 'Weekly trends';
+
+  @override
+  String get yearlyTrends => 'Yearly trends';
+
+  @override
+  String get day => 'Day';
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get dailyAverage => 'Daily average';
+
+  @override
+  String get weeklyAverage => 'Weekly average';
+
+  @override
+  String get yearlyAverage => 'Yearly average';
+
+  @override
+  String get choosePeriod => 'Choose period';
+
+  @override
+  String get updateChart => 'Update chart';
+
+  @override
+  String get refreshChart => 'Refresh chart';
+
+  @override
+  String get chartData => 'Chart data';
+
+  @override
+  String get barChart => 'Bar chart';
+
+  @override
+  String get lineChart => 'Line chart';
+
+  @override
+  String get noChartData => 'No chart data';
+
+  @override
+  String get loadingChart => 'Loading chart...';
+
+  @override
+  String get summaryData => 'Summary data';
+
+  @override
+  String get periodSummary => 'Period summary';
+
+  @override
+  String get averageSpending => 'Average spending';
+
+  @override
+  String get totalForPeriod => 'Total for period';
+
+  @override
+  String get previousPeriod => 'Previous period';
+
+  @override
+  String get nextPeriod => 'Next period';
+
+  @override
+  String get currentPeriod => 'Current period';
+
+  @override
+  String get comparePeriods => 'Compare periods';
+
+  @override
+  String get dataLoadingError => 'Data loading error';
+
+  @override
+  String get chartError => 'Chart error';
+
+  @override
+  String get noDataForPeriod => 'No data for this period';
+
+  @override
+  String get selectDifferentPeriod => 'Select a different period';
+
+  @override
+  String weekNumber(int number) {
+    return 'Week $number';
+  }
+
+  @override
+  String weekLabel(int number) {
+    return 'W$number';
+  }
 }

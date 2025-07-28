@@ -1,4 +1,4 @@
-// widgets/analytics/top_products_card.dart - VERSION FONCTIONNELLE
+// widgets/analytics/top_products_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -39,7 +39,7 @@ class TopProductsCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                _buildSortButton(context, sortBy),
+                _buildSortButton(context, sortBy, l10n),
               ],
             ),
             const SizedBox(height: 20),
@@ -132,7 +132,12 @@ class TopProductsCard extends StatelessWidget {
                     products.asMap().entries.map<Widget>((entry) {
                       final index = entry.key;
                       final product = entry.value;
-                      return _buildProductItem(product, index + 1, sortBy);
+                      return _buildProductItem(
+                        product,
+                        index + 1,
+                        sortBy,
+                        l10n,
+                      );
                     }).toList(),
               ),
           ],
@@ -141,13 +146,15 @@ class TopProductsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSortButton(BuildContext context, String currentSort) {
+  Widget _buildSortButton(
+    BuildContext context,
+    String currentSort,
+    AppLocalizations l10n,
+  ) {
     return PopupMenuButton<String>(
       icon: Icon(Icons.sort, color: Colors.grey[600]),
-      tooltip: 'Trier par',
+      tooltip: l10n.sortBy,
       onSelected: (sortBy) {
-        // ✅ CORRECTION : Déclencher l'événement ChangeTopProductsSort
-        print('Changement de tri vers: $sortBy'); // Debug
         context.read<AnalyticsBloc>().add(
           ChangeTopProductsSort(
             sortBy: sortBy,
@@ -173,7 +180,7 @@ class TopProductsCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Par montant',
+                    l10n.sortByAmount,
                     style: TextStyle(
                       fontWeight:
                           currentSort == 'total_spent'
@@ -205,7 +212,7 @@ class TopProductsCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Par quantité',
+                    l10n.sortByQuantity,
                     style: TextStyle(
                       fontWeight:
                           currentSort == 'quantity'
@@ -237,7 +244,7 @@ class TopProductsCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Par fréquence',
+                    l10n.sortByFrequency,
                     style: TextStyle(
                       fontWeight:
                           currentSort == 'frequency'
@@ -263,8 +270,9 @@ class TopProductsCard extends StatelessWidget {
     Map<String, dynamic> product,
     int rank,
     String sortBy,
+    AppLocalizations l10n,
   ) {
-    final productName = product['product_name'] ?? 'Produit inconnu';
+    final productName = product['product_name'] ?? l10n.unknownProduct;
     final totalSpent = product['total_spent']?.toDouble() ?? 0.0;
     final formattedTotal = product['formatted_total'] ?? '0';
     final totalQuantity = product['total_quantity'] ?? 0;
@@ -293,7 +301,7 @@ class TopProductsCard extends StatelessWidget {
         break;
       default: // total_spent
         mainValue = formattedTotal;
-        subValue = '$totalQuantity articles';
+        subValue = '$totalQuantity ${l10n.itemsCount}';
         icon = Icons.attach_money;
         color = Colors.green[600]!;
         break;
@@ -352,11 +360,11 @@ class TopProductsCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 if (stores.isNotEmpty)
                   Text(
-                    'Magasins: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
+                    '${l10n.storesLabel}: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 Text(
-                  'Prix moyen: $averagePrice',
+                  '${l10n.averagePriceLabel}: $averagePrice',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],

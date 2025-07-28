@@ -4356,6 +4356,540 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Partagée avec vous'**
   String get sharedWithYou;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trier par'**
+  String get sortBy;
+
+  /// No description provided for @sortByAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par montant'**
+  String get sortByAmount;
+
+  /// No description provided for @sortByQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par quantité'**
+  String get sortByQuantity;
+
+  /// No description provided for @sortByFrequency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par fréquence'**
+  String get sortByFrequency;
+
+  /// No description provided for @unknownProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit inconnu'**
+  String get unknownProduct;
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'articles'**
+  String get itemsCount;
+
+  /// No description provided for @storesLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasins'**
+  String get storesLabel;
+
+  /// No description provided for @averagePrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix moyen'**
+  String get averagePrice;
+
+  /// No description provided for @stores.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasins'**
+  String get stores;
+
+  /// No description provided for @averagePriceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix moyen'**
+  String get averagePriceLabel;
+
+  /// No description provided for @amountSort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant'**
+  String get amountSort;
+
+  /// No description provided for @quantitySort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get quantitySort;
+
+  /// No description provided for @frequencySort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fréquence'**
+  String get frequencySort;
+
+  /// No description provided for @loadingAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des analyses...'**
+  String get loadingAnalytics;
+
+  /// No description provided for @errorLoadingAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des analyses'**
+  String get errorLoadingAnalytics;
+
+  /// No description provided for @analyticsUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyses indisponibles'**
+  String get analyticsUnavailable;
+
+  /// No description provided for @refreshAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser les analyses'**
+  String get refreshAnalytics;
+
+  /// No description provided for @rank.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rang'**
+  String get rank;
+
+  /// No description provided for @ranking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classement'**
+  String get ranking;
+
+  /// No description provided for @position.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position'**
+  String get position;
+
+  /// No description provided for @topRanked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mieux classé'**
+  String get topRanked;
+
+  /// No description provided for @mostPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus acheté'**
+  String get mostPurchased;
+
+  /// No description provided for @frequentlyBought.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fréquemment acheté'**
+  String get frequentlyBought;
+
+  /// No description provided for @times.
+  ///
+  /// In fr, this message translates to:
+  /// **'fois'**
+  String get times;
+
+  /// No description provided for @timesSingular.
+  ///
+  /// In fr, this message translates to:
+  /// **'fois'**
+  String get timesSingular;
+
+  /// No description provided for @timesPlural.
+  ///
+  /// In fr, this message translates to:
+  /// **'fois'**
+  String get timesPlural;
+
+  /// No description provided for @purchases.
+  ///
+  /// In fr, this message translates to:
+  /// **'achats'**
+  String get purchases;
+
+  /// No description provided for @purchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'achat'**
+  String get purchase;
+
+  /// No description provided for @analyticsError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur d\'analyse'**
+  String get analyticsError;
+
+  /// No description provided for @noAnalyticsAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune analyse disponible'**
+  String get noAnalyticsAvailable;
+
+  /// No description provided for @analyticsLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement en cours...'**
+  String get analyticsLoading;
+
+  /// No description provided for @dataNotAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données non disponibles'**
+  String get dataNotAvailable;
+
+  /// No description provided for @selectPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir la période'**
+  String get selectPeriod;
+
+  /// No description provided for @changePeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la période'**
+  String get changePeriod;
+
+  /// No description provided for @daily.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quotidien'**
+  String get daily;
+
+  /// No description provided for @weekly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hebdomadaire'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mensuel'**
+  String get monthly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuel'**
+  String get yearly;
+
+  /// No description provided for @period.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get period;
+
+  /// No description provided for @timeframe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get timeframe;
+
+  /// No description provided for @chooseCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir la devise'**
+  String get chooseCurrency;
+
+  /// No description provided for @displayCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise d\'affichage'**
+  String get displayCurrency;
+
+  /// No description provided for @currencyFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format de devise'**
+  String get currencyFormat;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les détails'**
+  String get viewDetails;
+
+  /// No description provided for @showMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher plus'**
+  String get showMore;
+
+  /// No description provided for @showLess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher moins'**
+  String get showLess;
+
+  /// No description provided for @expandChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Développer le graphique'**
+  String get expandChart;
+
+  /// No description provided for @collapseChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réduire le graphique'**
+  String get collapseChart;
+
+  /// No description provided for @statistics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques'**
+  String get statistics;
+
+  /// No description provided for @dataRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plage de données'**
+  String get dataRange;
+
+  /// No description provided for @noDataFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée trouvée'**
+  String get noDataFound;
+
+  /// No description provided for @insufficientData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données insuffisantes'**
+  String get insufficientData;
+
+  /// No description provided for @calculatingData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcul des données...'**
+  String get calculatingData;
+
+  /// No description provided for @networkErrorAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur réseau lors du chargement des analyses'**
+  String get networkErrorAnalytics;
+
+  /// No description provided for @serverErrorAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur serveur pour les analyses'**
+  String get serverErrorAnalytics;
+
+  /// No description provided for @timeoutErrorAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Délai d\'attente dépassé pour les analyses'**
+  String get timeoutErrorAnalytics;
+
+  /// No description provided for @noSpendingRecorded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune dépense enregistrée'**
+  String get noSpendingRecorded;
+
+  /// No description provided for @dailyTrends.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances quotidiennes'**
+  String get dailyTrends;
+
+  /// No description provided for @weeklyTrends.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances hebdomadaires'**
+  String get weeklyTrends;
+
+  /// No description provided for @yearlyTrends.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances annuelles'**
+  String get yearlyTrends;
+
+  /// No description provided for @day.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour'**
+  String get day;
+
+  /// No description provided for @week.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semaine'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois'**
+  String get month;
+
+  /// No description provided for @year.
+  ///
+  /// In fr, this message translates to:
+  /// **'Année'**
+  String get year;
+
+  /// No description provided for @dailyAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne/jour'**
+  String get dailyAverage;
+
+  /// No description provided for @weeklyAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne/semaine'**
+  String get weeklyAverage;
+
+  /// No description provided for @yearlyAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne/année'**
+  String get yearlyAverage;
+
+  /// No description provided for @choosePeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir la période'**
+  String get choosePeriod;
+
+  /// No description provided for @updateChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour le graphique'**
+  String get updateChart;
+
+  /// No description provided for @refreshChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser le graphique'**
+  String get refreshChart;
+
+  /// No description provided for @chartData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données du graphique'**
+  String get chartData;
+
+  /// No description provided for @barChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Graphique en barres'**
+  String get barChart;
+
+  /// No description provided for @lineChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Graphique linéaire'**
+  String get lineChart;
+
+  /// No description provided for @noChartData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de données pour le graphique'**
+  String get noChartData;
+
+  /// No description provided for @loadingChart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du graphique...'**
+  String get loadingChart;
+
+  /// No description provided for @summaryData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de résumé'**
+  String get summaryData;
+
+  /// No description provided for @periodSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé de la période'**
+  String get periodSummary;
+
+  /// No description provided for @averageSpending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépense moyenne'**
+  String get averageSpending;
+
+  /// No description provided for @totalForPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total pour la période'**
+  String get totalForPeriod;
+
+  /// No description provided for @previousPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période précédente'**
+  String get previousPeriod;
+
+  /// No description provided for @nextPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période suivante'**
+  String get nextPeriod;
+
+  /// No description provided for @currentPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période actuelle'**
+  String get currentPeriod;
+
+  /// No description provided for @comparePeriods.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparer les périodes'**
+  String get comparePeriods;
+
+  /// No description provided for @dataLoadingError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de chargement des données'**
+  String get dataLoadingError;
+
+  /// No description provided for @chartError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur du graphique'**
+  String get chartError;
+
+  /// No description provided for @noDataForPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée pour cette période'**
+  String get noDataForPeriod;
+
+  /// No description provided for @selectDifferentPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez une période différente'**
+  String get selectDifferentPeriod;
+
+  /// No description provided for @weekNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semaine {number}'**
+  String weekNumber(int number);
+
+  /// No description provided for @weekLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'S{number}'**
+  String weekLabel(int number);
 }
 
 class _AppLocalizationsDelegate
