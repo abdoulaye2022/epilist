@@ -1,4 +1,4 @@
-// main.dart - VERSION CORRIGÉE AVEC SYNC AUTH + CURRENCY
+// main.dart - VERSION CORRIGÉE AVEC GESTION LOGOUT
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -182,21 +182,13 @@ void main() async {
               value: authBloc..add(CheckAuthentication()),
             ),
 
-            // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
+            // 3. ✅ CORRECTION CRITIQUE: UN SEUL CurrencyBloc
             BlocProvider(
               create:
                   (context) => CurrencyBloc(
                     currencyService: context.read<CurrencyService>(),
                     localizationBloc: context.read<LocalizationBloc>(),
-                    authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
-                  ),
-            ),
-            BlocProvider(
-              create:
-                  (context) => CurrencyBloc(
-                    currencyService: context.read<CurrencyService>(),
-                    localizationBloc: context.read<LocalizationBloc>(),
-                    authBloc: context.read<AuthBloc>(), // ✅ AJOUT CRUCIAL
+                    authBloc: context.read<AuthBloc>(),
                   ),
             ),
 
@@ -228,9 +220,6 @@ void main() async {
                     localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
-            // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
-
-            // 4. ✅ AJOUT MANQUANT: AnalyticsBloc
             BlocProvider(
               create:
                   (context) => AnalyticsBloc(
@@ -397,6 +386,8 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+        print('🔄 AuthWrapper - State changé: ${state.runtimeType}');
+
         if (!_hasCheckedAuth &&
             state is! AuthInitial &&
             state is! AuthLoading) {
@@ -410,6 +401,26 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             state is AccountDeletionCodeSent ||
             state is AccountDeletionConfirmed ||
             state is AccountDeletionCancelled) {
+          return;
+        }
+
+        // ✅ CORRECTION CRITIQUE: Gestion du logout avec redirection
+        if (state is Unauthenticated && _hasCheckedAuth && !_redirecting) {
+          print('🚪 Utilisateur déconnecté - Redirection en cours...');
+          setState(() {
+            _redirecting = true;
+          });
+
+          // ✅ Attendre un peu pour que l'état se stabilise
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) {
+              print('🚀 Redirection vers WelcomeScreen');
+              // Pas besoin de navigation explicite, le builder va gérer
+              setState(() {
+                _redirecting = false;
+              });
+            }
+          });
           return;
         }
 
@@ -451,14 +462,17 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           }
         }
 
-        // ✅ NOUVEAU: Charger la devise utilisateur après authentification réussie
+        // Charger la devise utilisateur après authentification réussie
         if (state is AuthSuccess) {
-          // Charger la devise utilisateur après connexion
           context.read<CurrencyBloc>().add(const LoadUserCurrency());
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
+          print(
+            '🎯 AuthWrapper buildWhen: ${previous.runtimeType} -> ${current.runtimeType}',
+          );
+
           if (current is AccountDeletionStatusLoaded ||
               current is AccountDeletionCodeSent ||
               current is AccountDeletionConfirmed ||
@@ -477,6 +491,8 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return true;
         },
         builder: (context, state) {
+          print('🏗️ AuthWrapper builder: ${state.runtimeType}');
+
           if (_isInitializing ||
               !_deepLinkInitialized ||
               state is AuthInitial ||
@@ -513,12 +529,16 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             );
           }
 
+          // ✅ CORRECTION: Gestion claire des états de déconnexion
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
+            print('📱 Affichage de WelcomeScreen pour: ${state.runtimeType}');
             return const WelcomeScreen();
           }
 
+          // Par défaut, afficher WelcomeScreen
+          print('📱 Affichage de WelcomeScreen par défaut');
           return const WelcomeScreen();
         },
       ),
@@ -526,6 +546,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   }
 }
 
+// LoadingScreen, LoadingDots, et ErrorApp restent inchangés
 class LoadingScreen extends StatelessWidget {
   final String? message;
 

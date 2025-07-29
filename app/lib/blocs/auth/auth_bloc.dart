@@ -354,27 +354,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    print('🔄 AuthBloc: Début du processus de déconnexion');
+
+    // ✅ CORRECTION: Émettre AuthLoading seulement brièvement
     emit(AuthLoading());
 
     try {
+      // Annuler le timer de refresh token
       _tokenRefreshTimer?.cancel();
+      print('⏰ Timer de refresh token annulé');
+
+      // ✅ CORRECTION: Processus de logout simplifié
       await authService.logout();
-      await authService.clearUserData();
-      await Future.delayed(const Duration(milliseconds: 100));
+      print('✅ AuthService.logout() terminé');
+
+      // ✅ IMPORTANT: Petit délai pour s'assurer que tout est nettoyé
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      // ✅ CORRECTION: Émettre Unauthenticated de manière garantie
+      print('🎯 Émission de l\'état Unauthenticated');
       emit(Unauthenticated());
+      print('✅ État Unauthenticated émis avec succès');
     } catch (e) {
+      print('❌ Erreur lors du logout: $e');
+
+      // ✅ CORRECTION: Même en cas d'erreur, forcer la déconnexion
       try {
         _tokenRefreshTimer?.cancel();
         await authService.clearUserData();
+        print('🔧 Nettoyage forcé après erreur');
+
+        // ✅ Toujours émettre Unauthenticated, même après une erreur
         emit(Unauthenticated());
+        print('✅ État Unauthenticated émis après récupération d\'erreur');
       } catch (clearError) {
-        final errorMessage = _getTranslatedErrorMessage(
-          'LOGOUT_ERROR',
-          e.toString(),
-        );
-        emit(AuthFailure(error: errorMessage));
-        await Future.delayed(const Duration(seconds: 2));
+        print('❌ Erreur critique lors du nettoyage: $clearError');
+
+        // ✅ LAST RESORT: Forcer Unauthenticated même en cas d'erreur critique
         emit(Unauthenticated());
+        print('🆘 État Unauthenticated émis en dernier recours');
       }
     }
   }

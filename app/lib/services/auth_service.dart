@@ -24,6 +24,7 @@ class AuthService {
   static const String _refreshTokenKey = 'refresh_token';
   static const String _userKey = 'user_data';
   static const String _tokenExpiryKey = 'token_expiry';
+  static const String _welcomeCardDismissedKey = 'welcome_card_dismissed';
 
   AuthService({required this.dio, required this.sharedPreferences});
 
@@ -445,19 +446,30 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    try {
-      final token = await getToken();
-      if (token != null) {
-        await dio.post(
-          '/auth/logout',
-          options: Options(headers: {'Authorization': 'Bearer $token'}),
-        );
-      }
-    } catch (e) {
-      print('Erreur lors de la déconnexion côté serveur: $e');
-    }
+    print('🚀 AuthService: Début du processus de logout');
 
+    // ✅ CORRECTION: Ne PAS essayer de contacter le serveur si l'endpoint n'existe pas
+    // Commenter ou supprimer cette section si votre API n'a pas d'endpoint logout
+    /*
+  try {
+    final token = await getToken();
+    if (token != null) {
+      await dio.post(
+        '/auth/logout',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      print('✅ Déconnexion côté serveur réussie');
+    }
+  } catch (e) {
+    print('⚠️ Erreur côté serveur lors du logout (ignorée): $e');
+    // On ignore l'erreur serveur et on continue le processus local
+  }
+  */
+
+    // ✅ FOCUS: Nettoyage local uniquement
+    print('🧹 Nettoyage des données locales...');
     await clearUserData();
+    print('✅ Déconnexion locale terminée');
   }
 
   Future<void> clearUserData() async {
@@ -467,6 +479,7 @@ class AuthService {
         _refreshTokenKey,
         _userKey,
         _tokenExpiryKey,
+        _welcomeCardDismissedKey,
       ];
 
       for (final key in keysToRemove) {
