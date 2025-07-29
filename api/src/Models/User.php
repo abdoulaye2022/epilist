@@ -371,4 +371,52 @@ class User extends Model
             'updated_at' => $this->updated_at->toISOString()
         ];
     }
+
+    /**
+     * ✅ NOUVELLE RELATION: Appareils de l'utilisateur
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Appareils actifs seulement
+     */
+    public function activeDevices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class)->active();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur peut recevoir des notifications
+     */
+    public function canReceiveNotifications(): bool
+    {
+        return $this->activeDevices()
+            ->canReceiveNotifications()
+            ->exists();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier une préférence de notification
+     */
+    public function hasNotificationPreference(string $type): bool
+    {
+        return $this->activeDevices()
+            ->get()
+            ->some(function($device) use ($type) {
+                return $device->hasNotificationPreference($type);
+            });
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Enregistrer un appareil
+     */
+    public function registerDevice(array $deviceData): UserDevice
+    {
+        return UserDevice::registerDevice(array_merge($deviceData, [
+            'user_id' => $this->id
+        ]));
+    }
 }

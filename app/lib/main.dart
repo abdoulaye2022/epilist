@@ -1,6 +1,8 @@
 // main.dart - VERSION CORRIGÉE AVEC SYNC AUTH + CURRENCY
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:epilist/blocs/analytics/analytics_bloc.dart';
+import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
@@ -14,6 +16,7 @@ import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/analytics_service.dart';
+import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
@@ -159,6 +162,13 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          RepositoryProvider<BudgetService>(
+            create:
+                (context) => BudgetService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -209,6 +219,23 @@ void main() async {
               create:
                   (context) => ProductSuggestionBloc(
                     suggestionService: context.read<ProductSuggestionService>(),
+                  ),
+            ),
+            BlocProvider(
+              create:
+                  (context) => BudgetBloc(
+                    budgetService: context.read<BudgetService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+            ),
+            // 3. ✅ CORRECTION CRITIQUE: CurrencyBloc avec AuthBloc
+
+            // 4. ✅ AJOUT MANQUANT: AnalyticsBloc
+            BlocProvider(
+              create:
+                  (context) => AnalyticsBloc(
+                    analyticsService: context.read<AnalyticsService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
           ],

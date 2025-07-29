@@ -399,4 +399,42 @@ class ListReceipt extends Model
     {
         return $this->belongsTo(ShoppingList::class, 'list_id');
     }
+
+    private static function checkAffectedBudgets(ListReceipt $receipt): void
+    {
+        if (!$receipt->list_id) {
+            return;
+        }
+        
+        $list = $receipt->shoppingList;
+        if (!$list) {
+            return;
+        }
+        
+        // Vérifier les budgets spécifiques à cette liste
+        $listBudgets = Budget::active()
+            ->current()
+            ->where('list_id', $receipt->list_id)
+            ->where('start_date', '<=', $receipt->purchase_date)
+            ->where('end_date', '>=', $receipt->purchase_date)
+            ->get();
+        
+        // Vérifier les budgets généraux de l'utilisateur
+        $generalBudgets = Budget::active()
+            ->current()
+            ->where('user_id', $list->user_id)
+            ->whereNull('list_id')
+            ->where('start_date', '<=', $receipt->purchase_date)
+            ->where('end_date', '>=', $receipt->purchase_date)
+            ->get();
+        
+        $allBudgets = $listBudgets->merge($generalBudgets);
+        
+        foreach ($allBudgets as $budget) {
+            $alertData = BudgetAlertService::checkPurchaseAlert($budget, $receipt->total_amount);
+            if ($alertData && $alertData['notification_sent']) {
+                error_log("Push notification sent for budget {$budget->id} after receipt: {$alertData['message']}");
+            }
+        }
+    }
 }

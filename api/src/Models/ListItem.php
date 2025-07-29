@@ -491,4 +491,41 @@ class ListItem extends Model
     {
         return $this->belongsTo(ShoppingList::class, 'list_id');
     }
+
+    private static function checkAffectedBudgets(ListItem $item): void
+    {
+        if (!$item->list_id || !$item->price) {
+            return;
+        }
+        
+        $list = $item->shoppingList;
+        if (!$list) {
+            return;
+        }
+        
+        $purchaseAmount = $item->price * $item->quantity;
+        $now = Carbon::now();
+        
+        // Vérifier les budgets spécifiques à cette liste
+        $listBudgets = Budget::active()
+            ->current()
+            ->where('list_id', $item->list_id)
+            ->get();
+        
+        // Vérifier les budgets généraux de l'utilisateur
+        $generalBudgets = Budget::active()
+            ->current()
+            ->where('user_id', $list->user_id)
+            ->whereNull('list_id')
+            ->get();
+        
+        $allBudgets = $listBudgets->merge($generalBudgets);
+        
+        foreach ($allBudgets as $budget) {
+            $alertData = BudgetAlertService::checkPurchaseAlert($budget, $purchaseAmount);
+            if ($alertData && $alertData['notification_sent']) {
+                error_log("Push notification sent for budget {$budget->id} after item purchase: {$alertData['message']}");
+            }
+        }
+    }
 }

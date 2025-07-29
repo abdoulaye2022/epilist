@@ -551,7 +551,7 @@ abstract class AppLocalizations {
   /// No description provided for @information.
   ///
   /// In fr, this message translates to:
-  /// **'Informations'**
+  /// **'Information'**
   String get information;
 
   /// No description provided for @aboutEpiList.
@@ -4720,7 +4720,7 @@ abstract class AppLocalizations {
   /// No description provided for @day.
   ///
   /// In fr, this message translates to:
-  /// **'Jour'**
+  /// **'jour'**
   String get day;
 
   /// No description provided for @week.
@@ -5020,7 +5020,7 @@ abstract class AppLocalizations {
   /// No description provided for @amountTooHigh.
   ///
   /// In fr, this message translates to:
-  /// **'Le montant est trop élevé'**
+  /// **'Montant trop élevé (max 999 999,99)'**
   String get amountTooHigh;
 
   /// No description provided for @spendingSummary.
@@ -5568,6 +5568,828 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur'**
   String get error;
+
+  /// No description provided for @budgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budgets'**
+  String get budgets;
+
+  /// No description provided for @createBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un budget'**
+  String get createBudget;
+
+  /// No description provided for @editBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le budget'**
+  String get editBudget;
+
+  /// No description provided for @deleteBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le budget'**
+  String get deleteBudget;
+
+  /// No description provided for @quickBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget rapide'**
+  String get quickBudget;
+
+  /// No description provided for @budgetName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du budget'**
+  String get budgetName;
+
+  /// No description provided for @budgetNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex: Courses du mois'**
+  String get budgetNameHint;
+
+  /// No description provided for @budgetAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant du budget'**
+  String get budgetAmount;
+
+  /// No description provided for @budgetAmountRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant du budget est requis'**
+  String get budgetAmountRequired;
+
+  /// No description provided for @budgetAmountInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant de budget invalide'**
+  String get budgetAmountInvalid;
+
+  /// No description provided for @budgetAmountTooHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant de budget trop élevé'**
+  String get budgetAmountTooHigh;
+
+  /// No description provided for @budgetNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du budget est requis'**
+  String get budgetNameRequired;
+
+  /// No description provided for @budgetNameTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du budget est trop court'**
+  String get budgetNameTooShort;
+
+  /// No description provided for @periodType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de période'**
+  String get periodType;
+
+  /// No description provided for @startDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de début'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de fin'**
+  String get endDate;
+
+  /// No description provided for @alertThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil d\'alerte'**
+  String get alertThreshold;
+
+  /// No description provided for @alertThresholdDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir une alerte quand ce pourcentage du budget est atteint'**
+  String get alertThresholdDescription;
+
+  /// No description provided for @associatedList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste associée'**
+  String get associatedList;
+
+  /// No description provided for @generalBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget général'**
+  String get generalBudget;
+
+  /// No description provided for @budgetCreatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget créé avec succès'**
+  String get budgetCreatedSuccessfully;
+
+  /// No description provided for @budgetUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget modifié avec succès'**
+  String get budgetUpdatedSuccessfully;
+
+  /// No description provided for @budgetDeletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget supprimé avec succès'**
+  String get budgetDeletedSuccessfully;
+
+  /// No description provided for @errorLoadingBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des budgets'**
+  String get errorLoadingBudgets;
+
+  /// No description provided for @budgetSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé des budgets'**
+  String get budgetSummary;
+
+  /// No description provided for @overviewOfYourBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble de vos budgets'**
+  String get overviewOfYourBudgets;
+
+  /// No description provided for @totalBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total budgets'**
+  String get totalBudgets;
+
+  /// No description provided for @active.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actifs'**
+  String get active;
+
+  /// No description provided for @warnings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes'**
+  String get warnings;
+
+  /// No description provided for @exceeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépassés'**
+  String get exceeded;
+
+  /// No description provided for @noBudgetsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun budget pour le moment'**
+  String get noBudgetsYet;
+
+  /// No description provided for @createFirstBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez votre premier budget pour gérer vos dépenses'**
+  String get createFirstBudgetDescription;
+
+  /// No description provided for @noActiveBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun budget actif'**
+  String get noActiveBudgets;
+
+  /// No description provided for @createActiveBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez un budget actif pour commencer le suivi'**
+  String get createActiveBudgetDescription;
+
+  /// No description provided for @noBudgetAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune alerte de budget'**
+  String get noBudgetAlerts;
+
+  /// No description provided for @allBudgetsOnTrack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous vos budgets sont sous contrôle'**
+  String get allBudgetsOnTrack;
+
+  /// No description provided for @budgeted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budgétisé'**
+  String get budgeted;
+
+  /// No description provided for @spent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépensé'**
+  String get spent;
+
+  /// No description provided for @remaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restant'**
+  String get remaining;
+
+  /// No description provided for @pause.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @activate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer'**
+  String get activate;
+
+  /// No description provided for @custom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnalisé'**
+  String get custom;
+
+  /// No description provided for @alerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes'**
+  String get alerts;
+
+  /// No description provided for @createQuickBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un budget rapide'**
+  String get createQuickBudget;
+
+  /// No description provided for @createMonthlyBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un budget mensuel'**
+  String get createMonthlyBudget;
+
+  /// No description provided for @quickBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez un budget rapidement avec des modèles prédéfinis'**
+  String get quickBudgetDescription;
+
+  /// No description provided for @monthlyBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget pour le mois en cours'**
+  String get monthlyBudgetDescription;
+
+  /// No description provided for @yearlyBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget pour l\'année en cours'**
+  String get yearlyBudgetDescription;
+
+  /// No description provided for @weeklyBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget pour la semaine en cours'**
+  String get weeklyBudgetDescription;
+
+  /// No description provided for @selectBudgetType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez le type de budget'**
+  String get selectBudgetType;
+
+  /// No description provided for @createBudgetQuickly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez un budget rapidement'**
+  String get createBudgetQuickly;
+
+  /// No description provided for @weeklyBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget hebdomadaire'**
+  String get weeklyBudget;
+
+  /// No description provided for @monthlyBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget mensuel'**
+  String get monthlyBudget;
+
+  /// No description provided for @yearlyBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget annuel'**
+  String get yearlyBudget;
+
+  /// No description provided for @recentBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budgets récents'**
+  String get recentBudgets;
+
+  /// No description provided for @deleteBudgetConfirmation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer le budget \"{budgetName}\" ?'**
+  String deleteBudgetConfirmation(String budgetName);
+
+  /// No description provided for @setBudgetForPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Définir un budget pour une période'**
+  String get setBudgetForPeriod;
+
+  /// No description provided for @modifyBudgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier les détails du budget'**
+  String get modifyBudgetDetails;
+
+  /// No description provided for @expired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expirés'**
+  String get expired;
+
+  /// No description provided for @upcoming.
+  ///
+  /// In fr, this message translates to:
+  /// **'À venir'**
+  String get upcoming;
+
+  /// No description provided for @warning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Attention'**
+  String get warning;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trier par nom'**
+  String get sortByName;
+
+  /// No description provided for @filters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtres'**
+  String get filters;
+
+  /// No description provided for @scope.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portée'**
+  String get scope;
+
+  /// No description provided for @general.
+  ///
+  /// In fr, this message translates to:
+  /// **'Général'**
+  String get general;
+
+  /// No description provided for @specific.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spécifique'**
+  String get specific;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer les filtres'**
+  String get clearFilters;
+
+  /// No description provided for @update.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get update;
+
+  /// No description provided for @filtersAndSort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtres et tri'**
+  String get filtersAndSort;
+
+  /// No description provided for @spendingProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Progression des dépenses'**
+  String get spendingProgress;
+
+  /// No description provided for @specificList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste spécifique'**
+  String get specificList;
+
+  /// No description provided for @budgetPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période du budget'**
+  String get budgetPeriod;
+
+  /// No description provided for @pleaseEnterAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer le montant'**
+  String get pleaseEnterAmount;
+
+  /// No description provided for @pleaseEnterValidAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer un montant valide'**
+  String get pleaseEnterValidAmount;
+
+  /// No description provided for @budgetScope.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portée du budget'**
+  String get budgetScope;
+
+  /// No description provided for @enterBudgetName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le nom du budget'**
+  String get enterBudgetName;
+
+  /// No description provided for @pleaseEnterBudgetName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer le nom du budget'**
+  String get pleaseEnterBudgetName;
+
+  /// No description provided for @preview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get preview;
+
+  /// No description provided for @type.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @amount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant'**
+  String get amount;
+
+  /// No description provided for @generalBudgetDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'S\'applique à toutes vos listes de courses'**
+  String get generalBudgetDescription;
+
+  /// No description provided for @orSelectSpecificList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ou sélectionnez une liste spécifique'**
+  String get orSelectSpecificList;
+
+  /// No description provided for @unknownList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste inconnue'**
+  String get unknownList;
+
+  /// No description provided for @date.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @suggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions'**
+  String get suggestions;
+
+  /// No description provided for @days.
+  ///
+  /// In fr, this message translates to:
+  /// **'jours'**
+  String get days;
+
+  /// No description provided for @all.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get all;
+
+  /// No description provided for @availableLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes disponibles'**
+  String get availableLists;
+
+  /// No description provided for @noListsAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune liste disponible'**
+  String get noListsAvailable;
+
+  /// No description provided for @selectList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une liste'**
+  String get selectList;
+
+  /// No description provided for @budgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails du budget'**
+  String get budgetDetails;
+
+  /// No description provided for @budgetProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Progression du budget'**
+  String get budgetProgress;
+
+  /// No description provided for @spentAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant dépensé'**
+  String get spentAmount;
+
+  /// No description provided for @remainingAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant restant'**
+  String get remainingAmount;
+
+  /// No description provided for @budgetStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut du budget'**
+  String get budgetStatus;
+
+  /// No description provided for @budgetExceeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget dépassé'**
+  String get budgetExceeded;
+
+  /// No description provided for @budgetWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte budget'**
+  String get budgetWarning;
+
+  /// No description provided for @budgetOnTrack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget sous contrôle'**
+  String get budgetOnTrack;
+
+  /// No description provided for @budgetCreateError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création du budget'**
+  String get budgetCreateError;
+
+  /// No description provided for @budgetUpdateError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour du budget'**
+  String get budgetUpdateError;
+
+  /// No description provided for @budgetDeleteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression du budget'**
+  String get budgetDeleteError;
+
+  /// No description provided for @budgetLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement du budget'**
+  String get budgetLoadError;
+
+  /// No description provided for @pauseBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre en pause le budget'**
+  String get pauseBudget;
+
+  /// No description provided for @resumeBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre le budget'**
+  String get resumeBudget;
+
+  /// No description provided for @toggleBudgetStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basculer le statut du budget'**
+  String get toggleBudgetStatus;
+
+  /// No description provided for @viewBudgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les détails du budget'**
+  String get viewBudgetDetails;
+
+  /// No description provided for @editBudgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier les détails du budget'**
+  String get editBudgetDetails;
+
+  /// No description provided for @budgetPeriodTypeWeekly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hebdomadaire'**
+  String get budgetPeriodTypeWeekly;
+
+  /// No description provided for @budgetPeriodTypeMonthly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mensuel'**
+  String get budgetPeriodTypeMonthly;
+
+  /// No description provided for @budgetPeriodTypeYearly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuel'**
+  String get budgetPeriodTypeYearly;
+
+  /// No description provided for @budgetPeriodTypeCustom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnalisé'**
+  String get budgetPeriodTypeCustom;
+
+  /// No description provided for @budgetFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get budgetFilterAll;
+
+  /// No description provided for @budgetFilterActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actifs'**
+  String get budgetFilterActive;
+
+  /// No description provided for @budgetFilterInactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactifs'**
+  String get budgetFilterInactive;
+
+  /// No description provided for @budgetFilterExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expirés'**
+  String get budgetFilterExpired;
+
+  /// No description provided for @budgetFilterUpcoming.
+  ///
+  /// In fr, this message translates to:
+  /// **'À venir'**
+  String get budgetFilterUpcoming;
+
+  /// No description provided for @budgetFilterWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Attention'**
+  String get budgetFilterWarning;
+
+  /// No description provided for @budgetFilterExceeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépassés'**
+  String get budgetFilterExceeded;
+
+  /// No description provided for @budgetScopeGeneral.
+  ///
+  /// In fr, this message translates to:
+  /// **'Général'**
+  String get budgetScopeGeneral;
+
+  /// No description provided for @budgetScopeSpecific.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spécifique à une liste'**
+  String get budgetScopeSpecific;
+
+  /// No description provided for @budgetValidationNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du budget est requis'**
+  String get budgetValidationNameRequired;
+
+  /// No description provided for @budgetValidationNameTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du budget doit contenir au moins 3 caractères'**
+  String get budgetValidationNameTooShort;
+
+  /// No description provided for @budgetValidationNameTooLong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom du budget ne peut pas dépasser 50 caractères'**
+  String get budgetValidationNameTooLong;
+
+  /// No description provided for @budgetValidationAmountRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant du budget est requis'**
+  String get budgetValidationAmountRequired;
+
+  /// No description provided for @budgetValidationAmountMustBePositive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant du budget doit être positif'**
+  String get budgetValidationAmountMustBePositive;
+
+  /// No description provided for @budgetValidationAmountTooHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le montant du budget ne peut pas dépasser 999 999,99'**
+  String get budgetValidationAmountTooHigh;
+
+  /// No description provided for @budgetValidationStartDateRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date de début est requise'**
+  String get budgetValidationStartDateRequired;
+
+  /// No description provided for @budgetValidationEndDateRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date de fin est requise'**
+  String get budgetValidationEndDateRequired;
+
+  /// No description provided for @budgetValidationEndDateAfterStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date de fin doit être après la date de début'**
+  String get budgetValidationEndDateAfterStart;
+
+  /// No description provided for @budgetValidationAlertThresholdInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le seuil d\'alerte doit être entre 1 et 100'**
+  String get budgetValidationAlertThresholdInvalid;
+
+  /// No description provided for @hideFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer les filtres'**
+  String get hideFilters;
+
+  /// No description provided for @showFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher les filtres'**
+  String get showFilters;
+
+  /// No description provided for @moreOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus d\'options'**
+  String get moreOptions;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat trouvé'**
+  String get noResultsFound;
+
+  /// No description provided for @tryAdjustingFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez d\'ajuster vos filtres ou d\'effacer les filtres actuels'**
+  String get tryAdjustingFilters;
+
+  /// No description provided for @daysRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'jours restants'**
+  String get daysRemaining;
+
+  /// No description provided for @dayRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'jour restant'**
+  String get dayRemaining;
 }
 
 class _AppLocalizationsDelegate

@@ -240,7 +240,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get security => 'Sécurité';
 
   @override
-  String get information => 'Informations';
+  String get information => 'Information';
 
   @override
   String get aboutEpiList => 'À propos d\'EpiList';
@@ -2531,7 +2531,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get yearlyTrends => 'Tendances annuelles';
 
   @override
-  String get day => 'Jour';
+  String get day => 'jour';
 
   @override
   String get week => 'Semaine';
@@ -2687,7 +2687,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get amountMustBePositive => 'Le montant doit être positif';
 
   @override
-  String get amountTooHigh => 'Le montant est trop élevé';
+  String get amountTooHigh => 'Montant trop élevé (max 999 999,99)';
 
   @override
   String get spendingSummary => 'Résumé des dépenses';
@@ -2975,4 +2975,431 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get error => 'Erreur';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get createBudget => 'Créer un budget';
+
+  @override
+  String get editBudget => 'Modifier le budget';
+
+  @override
+  String get deleteBudget => 'Supprimer le budget';
+
+  @override
+  String get quickBudget => 'Budget rapide';
+
+  @override
+  String get budgetName => 'Nom du budget';
+
+  @override
+  String get budgetNameHint => 'Ex: Courses du mois';
+
+  @override
+  String get budgetAmount => 'Montant du budget';
+
+  @override
+  String get budgetAmountRequired => 'Le montant du budget est requis';
+
+  @override
+  String get budgetAmountInvalid => 'Montant de budget invalide';
+
+  @override
+  String get budgetAmountTooHigh => 'Montant de budget trop élevé';
+
+  @override
+  String get budgetNameRequired => 'Le nom du budget est requis';
+
+  @override
+  String get budgetNameTooShort => 'Le nom du budget est trop court';
+
+  @override
+  String get periodType => 'Type de période';
+
+  @override
+  String get startDate => 'Date de début';
+
+  @override
+  String get endDate => 'Date de fin';
+
+  @override
+  String get alertThreshold => 'Seuil d\'alerte';
+
+  @override
+  String get alertThresholdDescription =>
+      'Recevoir une alerte quand ce pourcentage du budget est atteint';
+
+  @override
+  String get associatedList => 'Liste associée';
+
+  @override
+  String get generalBudget => 'Budget général';
+
+  @override
+  String get budgetCreatedSuccessfully => 'Budget créé avec succès';
+
+  @override
+  String get budgetUpdatedSuccessfully => 'Budget modifié avec succès';
+
+  @override
+  String get budgetDeletedSuccessfully => 'Budget supprimé avec succès';
+
+  @override
+  String get errorLoadingBudgets => 'Erreur lors du chargement des budgets';
+
+  @override
+  String get budgetSummary => 'Résumé des budgets';
+
+  @override
+  String get overviewOfYourBudgets => 'Vue d\'ensemble de vos budgets';
+
+  @override
+  String get totalBudgets => 'Total budgets';
+
+  @override
+  String get active => 'Actifs';
+
+  @override
+  String get warnings => 'Alertes';
+
+  @override
+  String get exceeded => 'Dépassés';
+
+  @override
+  String get noBudgetsYet => 'Aucun budget pour le moment';
+
+  @override
+  String get createFirstBudgetDescription =>
+      'Créez votre premier budget pour gérer vos dépenses';
+
+  @override
+  String get noActiveBudgets => 'Aucun budget actif';
+
+  @override
+  String get createActiveBudgetDescription =>
+      'Créez un budget actif pour commencer le suivi';
+
+  @override
+  String get noBudgetAlerts => 'Aucune alerte de budget';
+
+  @override
+  String get allBudgetsOnTrack => 'Tous vos budgets sont sous contrôle';
+
+  @override
+  String get budgeted => 'Budgétisé';
+
+  @override
+  String get spent => 'Dépensé';
+
+  @override
+  String get remaining => 'Restant';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get activate => 'Activer';
+
+  @override
+  String get custom => 'Personnalisé';
+
+  @override
+  String get alerts => 'Alertes';
+
+  @override
+  String get createQuickBudget => 'Créer un budget rapide';
+
+  @override
+  String get createMonthlyBudget => 'Créer un budget mensuel';
+
+  @override
+  String get quickBudgetDescription =>
+      'Créez un budget rapidement avec des modèles prédéfinis';
+
+  @override
+  String get monthlyBudgetDescription => 'Budget pour le mois en cours';
+
+  @override
+  String get yearlyBudgetDescription => 'Budget pour l\'année en cours';
+
+  @override
+  String get weeklyBudgetDescription => 'Budget pour la semaine en cours';
+
+  @override
+  String get selectBudgetType => 'Sélectionnez le type de budget';
+
+  @override
+  String get createBudgetQuickly => 'Créez un budget rapidement';
+
+  @override
+  String get weeklyBudget => 'Budget hebdomadaire';
+
+  @override
+  String get monthlyBudget => 'Budget mensuel';
+
+  @override
+  String get yearlyBudget => 'Budget annuel';
+
+  @override
+  String get recentBudgets => 'Budgets récents';
+
+  @override
+  String deleteBudgetConfirmation(String budgetName) {
+    return 'Êtes-vous sûr de vouloir supprimer le budget \"$budgetName\" ?';
+  }
+
+  @override
+  String get setBudgetForPeriod => 'Définir un budget pour une période';
+
+  @override
+  String get modifyBudgetDetails => 'Modifier les détails du budget';
+
+  @override
+  String get expired => 'Expirés';
+
+  @override
+  String get upcoming => 'À venir';
+
+  @override
+  String get warning => 'Attention';
+
+  @override
+  String get sortByName => 'Trier par nom';
+
+  @override
+  String get filters => 'Filtres';
+
+  @override
+  String get scope => 'Portée';
+
+  @override
+  String get general => 'Général';
+
+  @override
+  String get specific => 'Spécifique';
+
+  @override
+  String get clearFilters => 'Effacer les filtres';
+
+  @override
+  String get update => 'Mettre à jour';
+
+  @override
+  String get filtersAndSort => 'Filtres et tri';
+
+  @override
+  String get spendingProgress => 'Progression des dépenses';
+
+  @override
+  String get specificList => 'Liste spécifique';
+
+  @override
+  String get budgetPeriod => 'Période du budget';
+
+  @override
+  String get pleaseEnterAmount => 'Veuillez entrer le montant';
+
+  @override
+  String get pleaseEnterValidAmount => 'Veuillez entrer un montant valide';
+
+  @override
+  String get budgetScope => 'Portée du budget';
+
+  @override
+  String get enterBudgetName => 'Entrez le nom du budget';
+
+  @override
+  String get pleaseEnterBudgetName => 'Veuillez entrer le nom du budget';
+
+  @override
+  String get preview => 'Aperçu';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get amount => 'Montant';
+
+  @override
+  String get generalBudgetDescription =>
+      'S\'applique à toutes vos listes de courses';
+
+  @override
+  String get orSelectSpecificList => 'Ou sélectionnez une liste spécifique';
+
+  @override
+  String get unknownList => 'Liste inconnue';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get suggestions => 'Suggestions';
+
+  @override
+  String get days => 'jours';
+
+  @override
+  String get all => 'Tous';
+
+  @override
+  String get availableLists => 'Listes disponibles';
+
+  @override
+  String get noListsAvailable => 'Aucune liste disponible';
+
+  @override
+  String get selectList => 'Sélectionner une liste';
+
+  @override
+  String get budgetDetails => 'Détails du budget';
+
+  @override
+  String get budgetProgress => 'Progression du budget';
+
+  @override
+  String get spentAmount => 'Montant dépensé';
+
+  @override
+  String get remainingAmount => 'Montant restant';
+
+  @override
+  String get budgetStatus => 'Statut du budget';
+
+  @override
+  String get budgetExceeded => 'Budget dépassé';
+
+  @override
+  String get budgetWarning => 'Alerte budget';
+
+  @override
+  String get budgetOnTrack => 'Budget sous contrôle';
+
+  @override
+  String get budgetCreateError => 'Erreur lors de la création du budget';
+
+  @override
+  String get budgetUpdateError => 'Erreur lors de la mise à jour du budget';
+
+  @override
+  String get budgetDeleteError => 'Erreur lors de la suppression du budget';
+
+  @override
+  String get budgetLoadError => 'Erreur lors du chargement du budget';
+
+  @override
+  String get pauseBudget => 'Mettre en pause le budget';
+
+  @override
+  String get resumeBudget => 'Reprendre le budget';
+
+  @override
+  String get toggleBudgetStatus => 'Basculer le statut du budget';
+
+  @override
+  String get viewBudgetDetails => 'Voir les détails du budget';
+
+  @override
+  String get editBudgetDetails => 'Modifier les détails du budget';
+
+  @override
+  String get budgetPeriodTypeWeekly => 'Hebdomadaire';
+
+  @override
+  String get budgetPeriodTypeMonthly => 'Mensuel';
+
+  @override
+  String get budgetPeriodTypeYearly => 'Annuel';
+
+  @override
+  String get budgetPeriodTypeCustom => 'Personnalisé';
+
+  @override
+  String get budgetFilterAll => 'Tous';
+
+  @override
+  String get budgetFilterActive => 'Actifs';
+
+  @override
+  String get budgetFilterInactive => 'Inactifs';
+
+  @override
+  String get budgetFilterExpired => 'Expirés';
+
+  @override
+  String get budgetFilterUpcoming => 'À venir';
+
+  @override
+  String get budgetFilterWarning => 'Attention';
+
+  @override
+  String get budgetFilterExceeded => 'Dépassés';
+
+  @override
+  String get budgetScopeGeneral => 'Général';
+
+  @override
+  String get budgetScopeSpecific => 'Spécifique à une liste';
+
+  @override
+  String get budgetValidationNameRequired => 'Le nom du budget est requis';
+
+  @override
+  String get budgetValidationNameTooShort =>
+      'Le nom du budget doit contenir au moins 3 caractères';
+
+  @override
+  String get budgetValidationNameTooLong =>
+      'Le nom du budget ne peut pas dépasser 50 caractères';
+
+  @override
+  String get budgetValidationAmountRequired =>
+      'Le montant du budget est requis';
+
+  @override
+  String get budgetValidationAmountMustBePositive =>
+      'Le montant du budget doit être positif';
+
+  @override
+  String get budgetValidationAmountTooHigh =>
+      'Le montant du budget ne peut pas dépasser 999 999,99';
+
+  @override
+  String get budgetValidationStartDateRequired =>
+      'La date de début est requise';
+
+  @override
+  String get budgetValidationEndDateRequired => 'La date de fin est requise';
+
+  @override
+  String get budgetValidationEndDateAfterStart =>
+      'La date de fin doit être après la date de début';
+
+  @override
+  String get budgetValidationAlertThresholdInvalid =>
+      'Le seuil d\'alerte doit être entre 1 et 100';
+
+  @override
+  String get hideFilters => 'Masquer les filtres';
+
+  @override
+  String get showFilters => 'Afficher les filtres';
+
+  @override
+  String get moreOptions => 'Plus d\'options';
+
+  @override
+  String get noResultsFound => 'Aucun résultat trouvé';
+
+  @override
+  String get tryAdjustingFilters =>
+      'Essayez d\'ajuster vos filtres ou d\'effacer les filtres actuels';
+
+  @override
+  String get daysRemaining => 'jours restants';
+
+  @override
+  String get dayRemaining => 'jour restant';
 }

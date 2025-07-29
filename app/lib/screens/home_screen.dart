@@ -1,4 +1,4 @@
-// screens/home_screen.dart - VERSION CORRIGÉE AVEC LES VRAIES PROPRIÉTÉS
+// screens/home_screen.dart - VERSION CORRIGÉE SANS BLOC PROVIDERS
 import 'dart:io';
 
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -11,6 +11,7 @@ import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/notifications/notification_service.dart';
 import 'package:epilist/screens/analytics_screen.dart';
+import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/diagnostic_screen.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/shopping_reminder_service.dart';
@@ -176,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 
-                // Section Actions rapides
+                // Section Actions rapides avec Budget
                 _buildQuickActionsSection(context, l10n),
                 const SizedBox(height: 24),
 
@@ -204,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Section d'actions rapides avec bouton Analytics
+  // Section d'actions rapides avec Budget, Analytics et Listes
   Widget _buildQuickActionsSection(
     BuildContext context,
     AppLocalizations l10n,
@@ -221,8 +222,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
         const SizedBox(height: 12),
+
+        // Première ligne: Budget et Analytics
         Row(
           children: [
+            // Bouton Budget
+            Expanded(
+              child: _buildQuickActionCard(
+                icon: Icons.account_balance_wallet,
+                title: l10n.budgets,
+                subtitle: l10n.overviewOfYourBudgets,
+                color: Colors.green[600]!,
+                onTap: () => _goToBudget(context),
+              ),
+            ),
+            const SizedBox(width: 12),
             // Bouton Analytics
             Expanded(
               child: _buildQuickActionCard(
@@ -233,18 +247,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 onTap: () => _goToAnalytics(context),
               ),
             ),
-            const SizedBox(width: 12),
-            // Bouton Toutes les listes
-            Expanded(
-              child: _buildQuickActionCard(
-                icon: Icons.list_alt,
-                title: l10n.allLists,
-                subtitle: l10n.manageAllLists,
-                color: Colors.green[600]!,
-                onTap: () => _goToAllLists(context),
-              ),
-            ),
           ],
+        ),
+
+        const SizedBox(height: 12),
+
+        // Deuxième ligne: Toutes les listes (pleine largeur)
+        _buildQuickActionCard(
+          icon: Icons.list_alt,
+          title: l10n.allLists,
+          subtitle: l10n.manageAllLists,
+          color: Colors.purple[600]!,
+          onTap: () => _goToAllLists(context),
+          isFullWidth: true,
         ),
       ],
     );
@@ -256,6 +271,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required String subtitle,
     required Color color,
     required VoidCallback onTap,
+    bool isFullWidth = false,
   }) {
     return Card(
       elevation: 2,
@@ -401,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // ✅ CORRIGÉ: Carte de liste avec les vraies propriétés du modèle
+  // Carte de liste avec les vraies propriétés du modèle
   Widget _buildHorizontalListCard(
     ShoppingList list,
     BuildContext context,
@@ -463,19 +479,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const SizedBox(height: 8),
               ],
 
-              // ✅ CORRIGÉ: Statistiques avec les vraies propriétés
+              // Statistiques avec les vraies propriétés
               Row(
                 children: [
                   _buildStatChip(
                     Icons.shopping_cart,
-                    '${list.itemsCount}', // ✅ Vraie propriété
+                    '${list.itemsCount}',
                     l10n.items,
                     Colors.green,
                   ),
                   const SizedBox(width: 8),
                   _buildStatChip(
                     Icons.check_circle,
-                    '${list.purchasedItemsCount}', // ✅ Vraie propriété
+                    '${list.purchasedItemsCount}',
                     l10n.done,
                     Colors.blue,
                   ),
@@ -483,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
               const SizedBox(height: 12),
 
-              // ✅ CORRIGÉ: Barre de progression avec la vraie propriété
+              // Barre de progression avec la vraie propriété
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -499,7 +515,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       Text(
-                        '${list.progressPercentage}%', // ✅ Vraie propriété
+                        '${list.progressPercentage}%',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -510,13 +526,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 4),
                   LinearProgressIndicator(
-                    value: list.progress, // ✅ Vraie propriété (0.0 à 1.0)
+                    value: list.progress,
                     backgroundColor: Colors.grey[200],
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      list
-                              .isCompleted // ✅ Vraie propriété
-                          ? Colors.green[600]!
-                          : Colors.blue[600]!,
+                      list.isCompleted ? Colors.green[600]! : Colors.blue[600]!,
                     ),
                   ),
                 ],
@@ -586,7 +599,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Navigation vers la page Analytics
+  // ✅ Navigation vers la page Budget - SANS BlocProvider
+  void _goToBudget(BuildContext context) {
+    context.requireConnection(
+      onConnected: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => const BudgetScreen(), // ✅ Pas de BlocProvider ici
+          ),
+        );
+      },
+    );
+  }
+
+  // ✅ Navigation vers la page Analytics - SANS BlocProvider
   void _goToAnalytics(BuildContext context) {
     context.requireConnection(
       onConnected: () {
@@ -594,14 +622,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           context,
           MaterialPageRoute(
             builder:
-                (context) => BlocProvider(
-                  create:
-                      (context) => AnalyticsBloc(
-                        analyticsService: context.read<AnalyticsService>(),
-                        localizationBloc: context.read<LocalizationBloc>(),
-                      ),
-                  child: const AnalyticsScreen(),
-                ),
+                (context) =>
+                    const AnalyticsScreen(), // ✅ Pas de BlocProvider ici
           ),
         );
       },
@@ -1124,7 +1146,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Dialog methods
+  // Dialog methods - TOUS CONSERVENT BlocProvider.value
   void _showCreateListDialog(BuildContext context) {
     showDialog(
       context: context,

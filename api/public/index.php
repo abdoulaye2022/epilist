@@ -15,7 +15,9 @@ use App\Controllers\{
     ProductSuggestionController,
     CurrencyController,
     AnalyticsController,
-    ListReceiptsController
+    ListReceiptsController,
+    DeviceController,
+    BudgetController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -28,6 +30,8 @@ use App\Services\MailSender;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Carbon\Carbon;
+use App\Services\BudgetAlertService;
+use App\Services\MobileNotificationService;
 
 // Charger les variables d'environnement
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
@@ -229,6 +233,23 @@ $app->group('', function ($group) {
     $group->get('/analytics/spending/weekly', [AnalyticsController::class, 'weeklySpendingHistory']);
     $group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
     $group->get('/analytics/data-quality', [AnalyticsController::class, 'dataQualityReport']); // ✅ NOUVELLE
+
+    // ✅ ROUTES POUR LES BUDGETS (dans le groupe protégé)
+    $group->get('/budgets', [BudgetController::class, 'index']);
+    $group->post('/budgets', [BudgetController::class, 'store']);
+    $group->get('/budgets/dashboard', [BudgetController::class, 'dashboard']);
+    $group->get('/budgets/alerts', [BudgetController::class, 'getAlerts']);
+    $group->post('/budgets/quick', [BudgetController::class, 'createQuickBudget']);
+    $group->get('/budgets/{id}', [BudgetController::class, 'show']);
+    $group->put('/budgets/{id}', [BudgetController::class, 'update']);
+    $group->delete('/budgets/{id}', [BudgetController::class, 'destroy']);
+
+    $group->post('/devices/register', [DeviceController::class, 'register']);
+    $group->put('/devices/push-token', [DeviceController::class, 'updatePushToken']);
+    $group->get('/devices', [DeviceController::class, 'index']);
+    $group->put('/devices/notifications', [DeviceController::class, 'updateNotificationPreferences']);
+    $group->post('/devices/deactivate', [DeviceController::class, 'deactivate']);
+    $group->post('/devices/test-notification', [DeviceController::class, 'testNotification']);
 
 })->add($jwtMiddleware);
 
