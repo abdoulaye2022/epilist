@@ -1438,5 +1438,29 @@
   "goodMorning": "Good Morning",
   "goodAfternoon": "Good Afternoon",
   "goodEvening": "Good Evening",
-  "all": "All"
+  "all": "All",
+  "readOnly": "Read only",
+  "addItems": "add items",
+  "deleteItems": "delete items", 
+  "modifyItemStatus": "modify item status",
+  "cannotPerformActionReadOnly": "You cannot {action} because this list is in read-only mode.\n\nYour current permission: {permission}",
+  "@cannotPerformActionReadOnly": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "cannotPerformAction": "You don't have permission to {action}.\n\nYour current permission: {permission}",
+  "@cannotPerformAction": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "sharedBy": "Shared by {userName}",
+  "@sharedBy": {
+    "placeholders": {
+      "userName": {"type": "String"}
+    }
+  }
 }

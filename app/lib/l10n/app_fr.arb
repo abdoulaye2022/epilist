@@ -1467,5 +1467,29 @@
   "goodMorning": "Bonjour",
   "goodAfternoon": "Bon après-midi",
   "goodEvening": "Bonsoir",
-  "all": "Tous"
+  "all": "Tous",
+  "readOnly": "Lecture seule",
+  "addItems": "ajouter des articles",
+  "deleteItems": "supprimer des articles",
+  "modifyItemStatus": "modifier le statut des articles",
+  "cannotPerformActionReadOnly": "Vous ne pouvez pas {action} car cette liste est en mode lecture seule.\n\nVotre permission actuelle : {permission}",
+  "@cannotPerformActionReadOnly": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "cannotPerformAction": "Vous n'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}",
+  "@cannotPerformAction": {
+    "placeholders": {
+      "action": {"type": "String"},
+      "permission": {"type": "String"}
+    }
+  },
+  "sharedBy": "Partagée par {userName}",
+  "@sharedBy": {
+    "placeholders": {
+      "userName": {"type": "String"}
+    }
+  }
 }

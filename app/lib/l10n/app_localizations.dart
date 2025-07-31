@@ -221,8 +221,8 @@ abstract class AppLocalizations {
   /// No description provided for @sharedBy.
   ///
   /// In fr, this message translates to:
-  /// **'Partagée par'**
-  String get sharedBy;
+  /// **'Partagée par {userName}'**
+  String sharedBy(String userName);
 
   /// No description provided for @completed.
   ///
@@ -6480,6 +6480,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Bonsoir'**
   String get goodEvening;
+
+  /// No description provided for @readOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture seule'**
+  String get readOnly;
+
+  /// No description provided for @addItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'ajouter des articles'**
+  String get addItems;
+
+  /// No description provided for @deleteItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'supprimer des articles'**
+  String get deleteItems;
+
+  /// No description provided for @modifyItemStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'modifier le statut des articles'**
+  String get modifyItemStatus;
+
+  /// No description provided for @cannotPerformActionReadOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne pouvez pas {action} car cette liste est en mode lecture seule.\n\nVotre permission actuelle : {permission}'**
+  String cannotPerformActionReadOnly(String action, String permission);
+
+  /// No description provided for @cannotPerformAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}'**
+  String cannotPerformAction(String action, String permission);
 }
 
 class _AppLocalizationsDelegate

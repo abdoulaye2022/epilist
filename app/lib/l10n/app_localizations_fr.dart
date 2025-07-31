@@ -69,7 +69,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get collaborators => 'collaborateur(s)';
 
   @override
-  String get sharedBy => 'Partagée par';
+  String sharedBy(String userName) {
+    return 'Partagée par $userName';
+  }
 
   @override
   String get completed => '✅ Terminée';
@@ -3447,4 +3449,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get goodEvening => 'Bonsoir';
+
+  @override
+  String get readOnly => 'Lecture seule';
+
+  @override
+  String get addItems => 'ajouter des articles';
+
+  @override
+  String get deleteItems => 'supprimer des articles';
+
+  @override
+  String get modifyItemStatus => 'modifier le statut des articles';
+
+  @override
+  String cannotPerformActionReadOnly(String action, String permission) {
+    return 'Vous ne pouvez pas $action car cette liste est en mode lecture seule.\n\nVotre permission actuelle : $permission';
+  }
+
+  @override
+  String cannotPerformAction(String action, String permission) {
+    return 'Vous n\'avez pas la permission de $action.\n\nVotre permission actuelle : $permission';
+  }
 }

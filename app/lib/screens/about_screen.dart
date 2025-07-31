@@ -13,21 +13,22 @@ class AboutPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text(l10n.aboutEpiList),
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black87),
         foregroundColor: Colors.black87,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // App logo and name
             Container(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -36,63 +37,45 @@ class AboutPage extends StatelessWidget {
                     color: Colors.grey.withOpacity(0.1),
                     spreadRadius: 1,
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  // Application logo with improved design
+                  // ✅ Logo sans background (comme WelcomeScreen)
                   Container(
                     width: 100,
                     height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.green[400]!, Colors.green[600]!],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent, // ✅ Background transparent
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/images/app_logo.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          // Fallback with improved design if image is not found
-                          return Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.green[400]!,
-                                  Colors.green[600]!,
-                                ],
-                              ),
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.contain, // ✅ Changé de cover à contain
+                      errorBuilder: (context, error, stackTrace) {
+                        // ✅ Fallback avec design amélioré si l'image n'est pas trouvée
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.green[400]!, Colors.green[600]!],
                             ),
-                            child: Icon(
-                              Icons.shopping_cart_rounded,
-                              size: 50,
-                              color: Colors.white,
-                            ),
-                          );
-                        },
-                      ),
+                          ),
+                          child: const Icon(
+                            Icons.shopping_cart_rounded,
+                            size: 50,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     'EpiList',
                     style: TextStyle(
@@ -102,7 +85,7 @@ class AboutPage extends StatelessWidget {
                       letterSpacing: -0.5,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     l10n.manageGroceryListsEasily,
                     style: TextStyle(
@@ -111,9 +94,12 @@ class AboutPage extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green[50],
                       borderRadius: BorderRadius.circular(12),
@@ -132,77 +118,45 @@ class AboutPage extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
 
             // Description
-            _buildSection(
-              l10n.aboutMission ?? 'Notre Mission',
-              l10n.aboutMissionText ??
-                  'EpiList révolutionne la façon dont vous gérez vos courses. '
-                      'Créez des listes intelligentes, suivez vos dépenses en temps réel, '
-                      'partagez avec votre famille et ne manquez plus jamais un article important '
-                      'grâce à notre système de gestion collaborative.',
-            ),
+            _buildSection(l10n.aboutMission, l10n.aboutMissionText),
 
-            _buildSection(
-              l10n.aboutFeatures ?? 'Fonctionnalités principales',
-              l10n.aboutFeaturesText ??
-                  '• Création de compte sécurisée (prénom, nom, email)\n'
-                      '• Listes d\'épicerie personnalisées et intelligentes\n'
-                      '• Ajout d\'articles avec quantité, prix et magasin\n'
-                      '• Calcul automatique des totaux et pourcentages\n'
-                      '• Marquage en temps réel des articles achetés\n'
-                      '• Duplication rapide des listes existantes\n'
-                      '• Partage sécurisé via liens avec permissions\n'
-                      '• Gestion des droits (lecture, édition, administration)\n'
-                      '• Synchronisation sur tous vos appareils\n'
-                      '• Interface moderne et intuitive',
-            ),
+            _buildSection(l10n.aboutFeatures, l10n.aboutFeaturesText),
 
-            _buildSection(
-              l10n.aboutCollaboration ?? 'Collaboration familiale',
-              l10n.aboutCollaborationText ??
-                  'EpiList facilite les courses en famille avec son système de partage avancé. '
-                      'Partagez vos listes d\'un simple lien, définissez qui peut voir, modifier '
-                      'ou administrer chaque liste. Tout le monde reste synchronisé en temps réel!',
-            ),
+            _buildSection(l10n.aboutCollaboration, l10n.aboutCollaborationText),
 
-            _buildSection(
-              l10n.aboutDevelopment ?? 'Développement',
-              l10n.aboutDevelopmentText ??
-                  'EpiList est développé avec passion par M2atech Solutions Inc. pour vous offrir la meilleure '
-                      'expérience de gestion d\'épicerie. Nous sommes constamment à l\'écoute de vos retours pour améliorer l\'app et ajouter '
-                      'de nouvelles fonctionnalités innovantes.',
-            ),
+            _buildSection(l10n.aboutDevelopment, l10n.aboutDevelopmentText),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Action buttons
             Column(
               children: [
                 _buildActionButton(
-                  l10n.aboutContact ?? 'Nous contacter',
+                  l10n.aboutContact,
                   Icons.email,
                   () => _launchContactPage(context, l10n),
                   Colors.blue,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildActionButton(
-                  l10n.aboutRateApp ?? 'Évaluer l\'app',
+                  l10n.aboutRateApp,
                   Icons.star,
                   () => _rateApp(context, l10n),
                   Colors.orange,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildActionButton(
-                  l10n.aboutShareApp ?? 'Partager EpiList',
+                  l10n.aboutShareApp,
                   Icons.share,
                   () => _shareApp(context, l10n),
                   Colors.green,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildActionButton(
-                  l10n.aboutWebsite ?? 'Site web',
+                  l10n.aboutWebsite,
                   Icons.language,
                   () => _launchWebsite(context, l10n),
                   Colors.purple,
@@ -210,21 +164,21 @@ class AboutPage extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
 
             // Copyright
             Text(
-              '© 2025 EpiList. ${l10n.aboutRightsReserved ?? "Tous droits réservés."}',
+              '© 2025 EpiList. ${l10n.aboutRightsReserved}',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              '${l10n.aboutDevelopedWith ?? "Développé avec"} ❤️ ${l10n.aboutByCompany ?? "par M2atech Solutions Inc."}',
+              '${l10n.aboutDevelopedWith} ❤️ ${l10n.aboutByCompany}',
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Moncton, New Brunswick, Canada',
               style: TextStyle(color: Colors.grey[400], fontSize: 10),
@@ -239,8 +193,8 @@ class AboutPage extends StatelessWidget {
   Widget _buildSection(String title, String content) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: 24),
-      padding: EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -249,7 +203,7 @@ class AboutPage extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 4,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -258,13 +212,13 @@ class AboutPage extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             content,
             style: TextStyle(
@@ -293,7 +247,7 @@ class AboutPage extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           foregroundColor: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
@@ -309,16 +263,14 @@ class AboutPage extends StatelessWidget {
       } else {
         SmartSnackBarManager.showMessage(
           context,
-          l10n.aboutContactError ??
-              'Impossible d\'ouvrir le lien. Visitez https://epilist.app/contact',
+          l10n.aboutContactError,
           type: SnackBarType.error,
         );
       }
     } catch (e) {
       SmartSnackBarManager.showMessage(
         context,
-        l10n.aboutContactError ??
-            'Erreur lors de l\'ouverture du lien de contact',
+        l10n.aboutContactError,
         type: SnackBarType.error,
       );
     }
@@ -333,15 +285,14 @@ class AboutPage extends StatelessWidget {
       } else {
         SmartSnackBarManager.showMessage(
           context,
-          l10n.aboutWebsiteError ??
-              'Impossible d\'ouvrir le site web. Visitez https://epilist.app',
+          l10n.aboutWebsiteError,
           type: SnackBarType.error,
         );
       }
     } catch (e) {
       SmartSnackBarManager.showMessage(
         context,
-        l10n.aboutWebsiteError ?? 'Erreur lors de l\'ouverture du site web',
+        l10n.aboutWebsiteError,
         type: SnackBarType.error,
       );
     }
@@ -366,16 +317,14 @@ class AboutPage extends StatelessWidget {
       } else {
         SmartSnackBarManager.showMessage(
           context,
-          l10n.aboutStoreUnavailable ??
-              'Magasin indisponible. Évaluez EpiList sur votre magasin habituel!',
+          l10n.aboutStoreUnavailable,
           type: SnackBarType.info,
         );
       }
     } catch (e) {
       SmartSnackBarManager.showMessage(
         context,
-        l10n.aboutStoreError ??
-            'Impossible d\'ouvrir le magasin pour le moment',
+        l10n.aboutStoreError,
         type: SnackBarType.warning,
       );
     }
@@ -383,30 +332,22 @@ class AboutPage extends StatelessWidget {
 
   void _shareApp(BuildContext context, AppLocalizations l10n) async {
     const String appName = 'EpiList';
-    final String appDescription =
-        l10n.aboutShareDescription ??
-        'Organisez vos courses en famille avec EpiList! '
-            'Listes partagées, calculs automatiques, synchronisation temps réel.';
+    final String appDescription = l10n.aboutShareDescription;
     const String websiteLink = 'https://epilist.app';
 
     final String shareText =
         '$appName 🛒\n\n'
         '$appDescription\n\n'
-        '${l10n.aboutDiscoverApp ?? "Découvrez l\'app"}:\n'
+        '${l10n.aboutDiscoverApp}:\n'
         '$websiteLink\n\n'
         '#EpiList #Groceries #Organization #Family';
 
     try {
-      await Share.share(
-        shareText,
-        subject:
-            l10n.aboutShareSubject ??
-            'Découvrez EpiList - Votre assistant épicerie familial!',
-      );
+      await Share.share(shareText, subject: l10n.aboutShareSubject);
     } catch (e) {
       SmartSnackBarManager.showMessage(
         context,
-        l10n.aboutShareError ?? 'Impossible de partager pour le moment',
+        l10n.aboutShareError,
         type: SnackBarType.error,
       );
     }

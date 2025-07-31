@@ -75,7 +75,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.grey[100],
       // ✅ UTILISATION DU WIDGET RÉUTILISABLE ListDetailAppBar
       appBar: ListDetailAppBar(
         listName: currentList.name,
@@ -325,7 +325,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
       secondaryBackground: _buildDismissBackground(isStartToEnd: false),
       confirmDismiss: (direction) async {
         if (!currentList.canEdit) {
-          _showPermissionDenied('supprimer des articles');
+          final l10n = AppLocalizations.of(context)!;
+          _showPermissionDenied(l10n.deleteItems.toLowerCase());
           return false;
         }
         return await _showQuickDeleteConfirmation(item);
@@ -368,6 +369,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildDismissBackground({required bool isStartToEnd}) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -381,9 +384,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
         children: [
           Icon(Icons.delete_rounded, color: Colors.white, size: 32),
           const SizedBox(height: 4),
-          const Text(
-            'Supprimer',
-            style: TextStyle(
+          Text(
+            l10n.delete,
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 12,

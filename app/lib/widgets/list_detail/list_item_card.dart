@@ -1,4 +1,4 @@
-// widgets/list_detail/list_item_card.dart - VERSION AVEC DEBUG TEMPORAIRE
+// widgets/list_detail/list_item_card.dart - VERSION ENTIÈREMENT TRADUITE
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -182,7 +182,6 @@ class ListItemCard extends StatelessWidget {
         children: [
           Icon(Icons.attach_money, size: 12, color: Colors.green[600]),
           const SizedBox(width: 4),
-          // ✅ ACTIVÉ: Debug temporaire pour voir ce qui se passe
           FormattedAmount(
             amount: item.price!,
             style: TextStyle(
@@ -372,7 +371,7 @@ class ListItemCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     SmartSnackBarManager.showWarningSnackBar(
       context,
-      'Vous n\'avez pas les permissions pour cette action',
+      l10n.insufficientPermission,
       duration: const Duration(seconds: 2),
     );
   }
@@ -384,12 +383,17 @@ class ListItemCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: Text(l10n.deleteItemTitle ?? 'Supprimer l\'article'),
+          title: Text(
+            l10n.deleteItemTitle,
+            style: const TextStyle(color: Colors.black87),
+          ),
           content: Text(
-            'Êtes-vous sûr de vouloir supprimer "${item.productName}" ?',
+            l10n.deleteQuickConfirm(item.productName),
+            style: const TextStyle(color: Colors.black87),
           ),
           actions: [
             TextButton(

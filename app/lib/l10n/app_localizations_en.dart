@@ -69,7 +69,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collaborators => 'collaborator(s)';
 
   @override
-  String get sharedBy => 'Shared by';
+  String sharedBy(String userName) {
+    return 'Shared by $userName';
+  }
 
   @override
   String get completed => '✅ Completed';
@@ -3396,4 +3398,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goodEvening => 'Good Evening';
+
+  @override
+  String get readOnly => 'Read only';
+
+  @override
+  String get addItems => 'add items';
+
+  @override
+  String get deleteItems => 'delete items';
+
+  @override
+  String get modifyItemStatus => 'modify item status';
+
+  @override
+  String cannotPerformActionReadOnly(String action, String permission) {
+    return 'You cannot $action because this list is in read-only mode.\n\nYour current permission: $permission';
+  }
+
+  @override
+  String cannotPerformAction(String action, String permission) {
+    return 'You don\'t have permission to $action.\n\nYour current permission: $permission';
+  }
 }

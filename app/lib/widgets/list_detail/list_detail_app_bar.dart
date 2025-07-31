@@ -328,7 +328,10 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (!shoppingList.isOwner &&
                       shoppingList.sharedBy != null) ...[
                     const SizedBox(height: 8),
-                    _buildInfoRow(l10n.sharedBy, shoppingList.sharedBy!.name),
+                    _buildInfoRow(
+                      l10n.sharedBy as String,
+                      shoppingList.sharedBy!.name,
+                    ),
                   ],
                   const SizedBox(height: 8),
                   _buildPermissionsList(context),
