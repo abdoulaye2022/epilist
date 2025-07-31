@@ -1,4 +1,4 @@
-// screens/welcome_screen.dart - VERSION AVEC SÉLECTION DE LANGUE
+// screens/welcome_screen.dart - VERSION AVEC LOGO SANS BACKGROUND
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -16,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -25,50 +25,35 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 40),
 
-              // Logo de votre app avec design amélioré
+              // ✅ Logo sans background
               Container(
                 width: 100,
                 height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.green[400]!, Colors.green[600]!],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.withOpacity(0.3),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                decoration: const BoxDecoration(
+                  color: Colors.transparent, // ✅ Background transparent
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.asset(
-                    'assets/images/app_logo.png',
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Colors.green[400]!, Colors.green[600]!],
-                          ),
+                child: Image.asset(
+                  'assets/images/app_logo.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain, // ✅ Changé de cover à contain
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.green[400]!, Colors.green[600]!],
                         ),
-                        child: const Icon(
-                          Icons.shopping_cart_rounded,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                      child: const Icon(
+                        Icons.shopping_cart_rounded,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 24),
@@ -94,7 +79,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // NOUVEAU: Section sélection de langue
+              // Section sélection de langue
               _buildLanguageSection(context, l10n),
               const SizedBox(height: 32),
 
@@ -164,7 +149,7 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  // NOUVEAU: Widget pour la sélection de langue
+  // Widget pour la sélection de langue
   Widget _buildLanguageSection(BuildContext context, AppLocalizations l10n) {
     return Container(
       width: double.infinity,

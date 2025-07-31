@@ -1,4 +1,4 @@
-// widgets/profile/profile_app_bar.dart - VERSION I18N
+// widgets/profile/profile_app_bar.dart - VERSION CORRIGÉE AVEC STYLE UNIFORME
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -17,8 +17,16 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+      // ✅ FOND BLANC UNIFORME (comme les autres AppBars)
       backgroundColor: Colors.white,
-      elevation: 1,
+
+      // ✅ SUPPRESSION DE L'OMBRE (comme HomeAppBar et ListDetailAppBar)
+      elevation: 0,
+
+      // ✅ COULEUR DES ICÔNES NOIRE POUR FOND BLANC
+      iconTheme: const IconThemeData(color: Colors.black87),
+
+      // ✅ COULEUR DU TEXTE DE L'APPBAR
       foregroundColor: Colors.black87,
     );
   }

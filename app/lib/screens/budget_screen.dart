@@ -1,4 +1,4 @@
-// screens/budget_screen.dart
+// screens/budget_screen.dart - VERSION CORRIGÉE AVEC DESIGN HARMONISÉ
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
@@ -45,28 +45,28 @@ class _BudgetScreenState extends State<BudgetScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      // ✅ CORRECTION: Background gris clair comme HomeScreen
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        // ✅ STYLE ANALYTICS - Fond vert avec texte blanc
+        // ✅ CORRECTION: Style harmonisé avec HomeScreen (fond blanc)
         title: Text(
           l10n.budgets,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.green[700], // ✅ Texte vert au lieu de blanc
+            fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.green[600], // ✅ Fond vert comme Analytics
-        foregroundColor: Colors.white, // ✅ Texte blanc
-        elevation: 0, // ✅ Pas d'ombre comme Analytics
+        backgroundColor: Colors.white, // ✅ Fond blanc comme HomeScreen
+        foregroundColor: Colors.black, // ✅ Texte noir comme HomeScreen
+        elevation: 0, // ✅ Pas d'ombre comme HomeScreen
+        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
         actions: [
-          // ✅ Icône de filtres avec couleur blanche
+          // ✅ Icône de filtres avec couleur noire
           IconButton(
             icon: Icon(
               _showFilters ? Icons.filter_list_off : Icons.filter_list,
-              color:
-                  _showFilters
-                      ? Colors.white
-                      : Colors.white70, // ✅ Couleurs blanches
+              color: _showFilters ? Colors.green[700] : Colors.black,
             ),
             tooltip: _showFilters ? l10n.hideFilters : l10n.showFilters,
             onPressed: () {
@@ -75,15 +75,14 @@ class _BudgetScreenState extends State<BudgetScreen>
               });
             },
           ),
-          // ✅ Menu popup avec icône blanche
+          // ✅ Menu popup avec style harmonisé
           PopupMenuButton<String>(
             icon: const Icon(
               Icons.more_vert,
-              color: Colors.white,
-            ), // ✅ Icône blanche
+              color: Colors.black, // ✅ Icône noire
+            ),
             tooltip: l10n.moreOptions,
             onSelected: (value) => _handleMenuAction(value, context),
-            // ✅ Style du menu popup adapté
             color: Colors.white,
             elevation: 8,
             shape: RoundedRectangleBorder(
@@ -146,27 +145,32 @@ class _BudgetScreenState extends State<BudgetScreen>
                   ),
                 ],
           ),
+          const SizedBox(width: 8), // ✅ Espacement à droite comme HomeScreen
         ],
-        // ✅ TabBar avec style blanc comme Analytics
+        // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white, // ✅ Onglet sélectionné en blanc
+          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
           unselectedLabelColor:
-              Colors.white70, // ✅ Onglets non sélectionnés en blanc transparent
-          indicatorColor: Colors.white, // ✅ Indicateur blanc
-          indicatorWeight: 3, // ✅ Épaisseur comme Analytics
+              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
+          indicatorColor: Colors.green[700], // ✅ Indicateur vert
+          indicatorWeight: 3,
           tabs: [
             Tab(
-              icon: const Icon(
-                Icons.dashboard,
-              ), // ✅ Ajout d'icônes comme Analytics
+              icon: Icon(Icons.dashboard, color: Colors.green[600]),
               text: l10n.overview,
             ),
             Tab(
-              icon: const Icon(Icons.account_balance_wallet),
+              icon: Icon(
+                Icons.account_balance_wallet,
+                color: Colors.green[600],
+              ),
               text: l10n.active,
             ),
-            Tab(icon: const Icon(Icons.warning), text: l10n.alerts),
+            Tab(
+              icon: Icon(Icons.warning, color: Colors.orange[600]),
+              text: l10n.alerts,
+            ),
           ],
         ),
       ),
@@ -192,7 +196,7 @@ class _BudgetScreenState extends State<BudgetScreen>
         ],
         child: Column(
           children: [
-            // ✅ Filtres avec style adapté (fond blanc pour contraster avec AppBar verte)
+            // ✅ Filtres avec style adapté (fond blanc)
             if (_showFilters)
               Container(
                 color: Colors.white,
@@ -247,7 +251,6 @@ class _BudgetScreenState extends State<BudgetScreen>
   }
 
   Widget _buildContextualEmptyState(BudgetLoaded state, AppLocalizations l10n) {
-    // Vérifier s'il y a des filtres actifs
     final hasFilters = _hasActiveFilters(state);
 
     if (hasFilters) {
@@ -257,10 +260,7 @@ class _BudgetScreenState extends State<BudgetScreen>
     }
   }
 
-  // Méthode helper pour vérifier les filtres actifs
   bool _hasActiveFilters(BudgetLoaded state) {
-    // Cette méthode devra être adaptée selon votre implémentation BLoC
-    // Exemple d'implémentation possible :
     return state.hasActiveFilters ?? false;
   }
 
@@ -271,39 +271,52 @@ class _BudgetScreenState extends State<BudgetScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
-            const SizedBox(height: 16),
-            Text(
-              l10n.errorLoadingBudgets,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+            // ✅ CORRECTION: Card avec fond blanc
+            Card(
+              color: Colors.white,
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-              maxLines: 2,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: TextStyle(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-              maxLines: 3,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                context.read<BudgetBloc>().add(const LoadBudgets());
-              },
-              icon: const Icon(Icons.refresh),
-              label: Text(
-                l10n.retry,
-                overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
-                foregroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.errorLoadingBudgets,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      message,
+                      style: TextStyle(color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<BudgetBloc>().add(const LoadBudgets());
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: Text(l10n.retry, overflow: TextOverflow.ellipsis),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -327,10 +340,7 @@ class _BudgetScreenState extends State<BudgetScreen>
 
         if (state is BudgetLoaded) {
           if (state.budgets.isEmpty) {
-            return _buildContextualEmptyState(
-              state,
-              l10n,
-            ); // ✅ Utilise la nouvelle méthode
+            return _buildContextualEmptyState(state, l10n);
           }
 
           return RefreshIndicator(
@@ -339,8 +349,7 @@ class _BudgetScreenState extends State<BudgetScreen>
             },
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              physics:
-                  const AlwaysScrollableScrollPhysics(), // ✅ Pour le RefreshIndicator
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -377,83 +386,199 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   Widget _buildEmptyFilteredState(AppLocalizations l10n) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
+      child: SingleChildScrollView(
+        // ✅ CORRECTION OVERFLOW: Permettre le défilement
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          // ✅ CORRECTION OVERFLOW: Contraindre la hauteur minimale
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.5,
+          ),
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.search_off,
-                size: 64,
-                color: Colors.orange[300],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.noResultsFound, // Ajoutez cette clé de localisation
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-              maxLines: 2,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.tryAdjustingFilters, // Ajoutez cette clé de localisation
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-              maxLines: 3,
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Effacer tous les filtres
-                    context.read<BudgetBloc>().add(FilterBudgets());
-                    setState(() {
-                      _showFilters = false;
-                    });
-                  },
-                  icon: const Icon(Icons.clear_all),
-                  label: Text(l10n.clearFilters),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[600],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // ✅ CORRECTION OVERFLOW
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icône
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.search_off,
+                      size: 48, // ✅ RÉDUIT pour éviter overflow
+                      color: Colors.orange[300],
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed: () => _showCreateBudgetDialog(context),
-                  icon: const Icon(Icons.add),
-                  label: Text(l10n.createBudget),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.green[600],
-                    side: BorderSide(color: Colors.green[600]!),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+
+                  const SizedBox(height: 16),
+
+                  // Titre
+                  Text(
+                    l10n.noResultsFound,
+                    style: const TextStyle(
+                      fontSize: 18, // ✅ RÉDUIT de 20 à 18
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow:
+                        TextOverflow.visible, // ✅ PERMETTRE LE RETOUR LIGNE
+                    maxLines: 2,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Description
+                  Flexible(
+                    // ✅ CORRECTION OVERFLOW: Flexible pour s'adapter
+                    child: Text(
+                      l10n.tryAdjustingFilters,
+                      style: TextStyle(
+                        fontSize: 13, // ✅ RÉDUIT de 14 à 13
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow:
+                          TextOverflow.visible, // ✅ PERMETTRE LE RETOUR LIGNE
+                      maxLines: 3,
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 20),
+
+                  // Boutons - Version responsive
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      // ✅ CORRECTION OVERFLOW: Layout adaptatif selon la largeur
+                      if (constraints.maxWidth < 300) {
+                        // Version verticale pour petits écrans
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  context.read<BudgetBloc>().add(
+                                    FilterBudgets(),
+                                  );
+                                  setState(() {
+                                    _showFilters = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.clear_all, size: 18),
+                                label: Text(
+                                  l10n.clearFilters,
+                                  style: const TextStyle(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange[600],
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed:
+                                    () => _showCreateBudgetDialog(context),
+                                icon: const Icon(Icons.add, size: 18),
+                                label: Text(
+                                  l10n.createBudget,
+                                  style: const TextStyle(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.green[600],
+                                  side: BorderSide(color: Colors.green[600]!),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        // Version horizontale pour grands écrans
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              // ✅ CORRECTION OVERFLOW: Flexible au lieu d'Expanded
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  context.read<BudgetBloc>().add(
+                                    FilterBudgets(),
+                                  );
+                                  setState(() {
+                                    _showFilters = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.clear_all, size: 18),
+                                label: Text(
+                                  l10n.clearFilters,
+                                  style: const TextStyle(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.orange[600],
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              // ✅ CORRECTION OVERFLOW: Flexible au lieu d'Expanded
+                              child: OutlinedButton.icon(
+                                onPressed:
+                                    () => _showCreateBudgetDialog(context),
+                                icon: const Icon(Icons.add, size: 18),
+                                label: Text(
+                                  l10n.createBudget,
+                                  style: const TextStyle(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.green[600],
+                                  side: BorderSide(color: Colors.green[600]!),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -476,12 +601,11 @@ class _BudgetScreenState extends State<BudgetScreen>
           final activeBudgets = state.currentBudgets;
 
           if (activeBudgets.isEmpty) {
-            // Vérifier s'il y a des filtres actifs
             final hasFilters = _hasActiveFilters(state);
             if (hasFilters) {
-              return _buildEmptyFilteredState(l10n); // ✅ État vide avec filtres
+              return _buildEmptyFilteredState(l10n);
             } else {
-              return _buildEmptyActiveState(l10n); // ✅ État vide normal
+              return _buildEmptyActiveState(l10n);
             }
           }
 
@@ -491,8 +615,7 @@ class _BudgetScreenState extends State<BudgetScreen>
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              physics:
-                  const AlwaysScrollableScrollPhysics(), // ✅ Pour le RefreshIndicator
+              physics: const AlwaysScrollableScrollPhysics(),
               itemCount: activeBudgets.length,
               itemBuilder: (context, index) {
                 final budget = activeBudgets[index];
@@ -539,8 +662,7 @@ class _BudgetScreenState extends State<BudgetScreen>
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              physics:
-                  const AlwaysScrollableScrollPhysics(), // ✅ Pour le RefreshIndicator
+              physics: const AlwaysScrollableScrollPhysics(),
               itemCount: alertBudgets.length,
               itemBuilder: (context, index) {
                 final budget = alertBudgets[index];
@@ -548,10 +670,8 @@ class _BudgetScreenState extends State<BudgetScreen>
                   padding: const EdgeInsets.only(bottom: 12),
                   child: alerts.BudgetAlertsWidget(
                     budget: budget,
-                    // ✅ SUPPRESSION du paramètre onTap qui n'existe plus
                     onDismiss: () {
                       // Optionnel: logique pour masquer cette alerte
-                      // Par exemple, marquer comme "vue" ou la cacher temporairement
                     },
                   ),
                 );
@@ -605,6 +725,7 @@ class _BudgetScreenState extends State<BudgetScreen>
     );
   }
 
+  // ✅ CORRECTION: Card avec fond blanc
   Widget _buildQuickActionCard({
     required IconData icon,
     required String title,
@@ -613,6 +734,7 @@ class _BudgetScreenState extends State<BudgetScreen>
     required VoidCallback onTap,
   }) {
     return Card(
+      color: Colors.white, // ✅ Fond blanc
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
@@ -623,13 +745,23 @@ class _BudgetScreenState extends State<BudgetScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 24),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon, color: color, size: 24),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey[400],
+                    size: 16,
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               Text(
@@ -661,23 +793,46 @@ class _BudgetScreenState extends State<BudgetScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.recentBudgets,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+        // ✅ CORRECTION: Header avec fond blanc
+        Card(
+          color: Colors.white,
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.recentBudgets,
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (budgets.length > 5)
+                  TextButton(
+                    onPressed: () => _tabController.animateTo(1),
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                    ),
+                    child: Text(
+                      l10n.viewAll,
+                      style: TextStyle(
+                        color: Colors.green[700],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            if (budgets.length > 5)
-              TextButton(
-                onPressed: () => _tabController.animateTo(1),
-                child: Text(l10n.viewAll),
-              ),
-          ],
+          ),
         ),
         const SizedBox(height: 12),
         ...budgets.map(
@@ -699,54 +854,97 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
+      child: SingleChildScrollView(
+        // ✅ CORRECTION OVERFLOW: Permettre le défilement
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.5,
+          ),
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.account_balance_wallet,
-                size: 64,
-                color: Colors.green[300],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.account_balance_wallet,
+                      size: 48, // ✅ RÉDUIT pour éviter overflow
+                      color: Colors.green[300],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Text(
+                    l10n.noBudgetsYet,
+                    style: const TextStyle(
+                      fontSize: 18, // ✅ RÉDUIT
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.visible,
+                    maxLines: 2,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Flexible(
+                    child: Text(
+                      l10n.createFirstBudgetDescription,
+                      style: TextStyle(
+                        fontSize: 13, // ✅ RÉDUIT
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Bouton responsive
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 200),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showCreateBudgetDialog(context),
+                        icon: const Icon(Icons.add, size: 18),
+                        label: Text(
+                          l10n.createBudget,
+                          style: const TextStyle(fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.noBudgetsYet,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.createFirstBudgetDescription,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _showCreateBudgetDialog(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.createBudget),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -754,28 +952,62 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   Widget _buildEmptyActiveState(AppLocalizations l10n) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hourglass_empty, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              l10n.noActiveBudgets,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.hourglass_empty,
+                    size: 48, // ✅ RÉDUIT
+                    color: Colors.grey[400],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Text(
+                    l10n.noActiveBudgets,
+                    style: const TextStyle(
+                      fontSize: 16, // ✅ RÉDUIT
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.visible,
+                    maxLines: 2,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Flexible(
+                    child: Text(
+                      l10n.createActiveBudgetDescription,
+                      style: TextStyle(
+                        fontSize: 13, // ✅ RÉDUIT
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.createActiveBudgetDescription,
-              style: TextStyle(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -783,45 +1015,75 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   Widget _buildNoAlertsState(AppLocalizations l10n) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle,
-                size: 64,
-                color: Colors.green[400],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_circle,
+                      size: 48, // ✅ RÉDUIT
+                      color: Colors.green[400],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Text(
+                    l10n.noBudgetAlerts,
+                    style: const TextStyle(
+                      fontSize: 16, // ✅ RÉDUIT
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.visible,
+                    maxLines: 2,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Flexible(
+                    child: Text(
+                      l10n.allBudgetsOnTrack,
+                      style: TextStyle(
+                        fontSize: 13, // ✅ RÉDUIT
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 2,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.noBudgetAlerts,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.allBudgetsOnTrack,
-              style: TextStyle(color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  // Actions methods
+  // Actions methods - IDENTIQUES AU CODE ORIGINAL
   void _handleMenuAction(String action, BuildContext context) {
     switch (action) {
       case 'refresh':
@@ -848,14 +1110,9 @@ class _BudgetScreenState extends State<BudgetScreen>
             child: BlocListener<BudgetBloc, BudgetState>(
               listener: (context, state) {
                 if (state is BudgetOperationSuccess) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas de succès
+                  Navigator.pop(dialogContext);
                 } else if (state is BudgetError) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas d'erreur
-                  // L'erreur sera gérée par le BlocListener principal
+                  Navigator.pop(dialogContext);
                 }
               },
               child: const CreateBudgetDialog(),
@@ -873,14 +1130,9 @@ class _BudgetScreenState extends State<BudgetScreen>
             child: BlocListener<BudgetBloc, BudgetState>(
               listener: (context, state) {
                 if (state is BudgetOperationSuccess) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas de succès
+                  Navigator.pop(dialogContext);
                 } else if (state is BudgetError) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas d'erreur
-                  // L'erreur sera gérée par le BlocListener principal
+                  Navigator.pop(dialogContext);
                 }
               },
               child: quick.QuickBudgetDialog(
@@ -913,14 +1165,9 @@ class _BudgetScreenState extends State<BudgetScreen>
             child: BlocListener<BudgetBloc, BudgetState>(
               listener: (context, state) {
                 if (state is BudgetOperationSuccess) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas de succès
+                  Navigator.pop(dialogContext);
                 } else if (state is BudgetError) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas d'erreur
-                  // L'erreur sera gérée par le BlocListener principal
+                  Navigator.pop(dialogContext);
                 }
               },
               child: CreateBudgetDialog(
@@ -935,9 +1182,6 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   void _openBudgetDetails(Budget budget) {
     // TODO: Implémenter la navigation vers les détails du budget
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (context) => BudgetDetailScreen(budget: budget),
-    // ));
   }
 
   void _editBudget(Budget budget) {
@@ -949,14 +1193,9 @@ class _BudgetScreenState extends State<BudgetScreen>
             child: BlocListener<BudgetBloc, BudgetState>(
               listener: (context, state) {
                 if (state is BudgetOperationSuccess) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas de succès
+                  Navigator.pop(dialogContext);
                 } else if (state is BudgetError) {
-                  Navigator.pop(
-                    dialogContext,
-                  ); // Fermer le dialog en cas d'erreur
-                  // L'erreur sera gérée par le BlocListener principal
+                  Navigator.pop(dialogContext);
                 }
               },
               child: CreateBudgetDialog(budgetToEdit: budget),
@@ -972,6 +1211,7 @@ class _BudgetScreenState extends State<BudgetScreen>
       context: context,
       builder:
           (dialogContext) => AlertDialog(
+            backgroundColor: Colors.white, // ✅ Fond blanc pour les dialogs
             title: Text(l10n.deleteBudget),
             content: Text(l10n.deleteBudgetConfirmation(budget.name)),
             actions: [

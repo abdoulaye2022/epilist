@@ -1,4 +1,4 @@
-// screens/list_detail_screen.dart - VERSION CORRIGÉE AVEC FormattedAmount
+// screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
@@ -17,12 +17,12 @@ import 'package:epilist/widgets/list_detail/edit_item_dialog.dart';
 import 'package:epilist/widgets/profile/delete_confirmation_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
+import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
-import 'package:epilist/widgets/list_detail/modern_dropdown_menu.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
-import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -75,8 +75,16 @@ class _ListDetailViewState extends State<_ListDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: _buildAppBar(),
+      backgroundColor: Colors.grey[50],
+      // ✅ UTILISATION DU WIDGET RÉUTILISABLE ListDetailAppBar
+      appBar: ListDetailAppBar(
+        listName: currentList.name,
+        shoppingList: currentList,
+        onAddItem: currentList.canManageItems ? _addNewItem : null,
+        onShare: currentList.canShare ? _showShareDialog : null,
+        onEdit: currentList.canEdit ? _showEditListDialog : null,
+        onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
+      ),
       body: MultiBlocListener(
         listeners: [
           // Listener pour les articles
@@ -145,75 +153,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  AppBar _buildAppBar() {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            currentList.name,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          if (currentList.isShared) _buildSharingSubtitle(),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      elevation: 1,
-      actions: [
-        if (currentList.canManageItems)
-          IconButton(
-            onPressed: _addNewItem,
-            icon: const Icon(Icons.add),
-            tooltip: l10n.addItemTooltip,
-          )
-        else
-          IconButton(
-            onPressed: () => _showPermissionDenied(l10n.addItem.toLowerCase()),
-            icon: const Icon(Icons.add, color: Colors.grey),
-            tooltip: l10n.insufficientPermission,
-          ),
-        // Menu déroulant moderne avec toutes les fonctionnalités
-        ModernDropdownMenu(
-          shoppingList: currentList,
-          onEdit: currentList.canEdit ? _showEditListDialog : null,
-          onShare: currentList.canShare ? _showShareDialog : null,
-          onManageShares:
-              (currentList.isOwner && currentList.isShared)
-                  ? _showManageSharesDialog
-                  : null,
-          onInfo: _showListInfo,
-          onLeave: !currentList.isOwner ? _showLeaveConfirmation : null,
-          onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSharingSubtitle() {
-    final l10n = AppLocalizations.of(context)!;
-    String subtitle;
-    Color color;
-
-    if (currentList.isOwner) {
-      subtitle = l10n.sharedList;
-      color = Colors.blue[600]!;
-    } else {
-      subtitle = currentList.permissionDisplayName ?? l10n.sharedList;
-      color = currentList.isReadOnly ? Colors.blue[600]! : Colors.green[600]!;
-    }
-
-    return Text(
-      subtitle,
-      style: TextStyle(
-        fontSize: 12,
-        color: color,
-        fontWeight: FontWeight.normal,
-      ),
-    );
-  }
-
   Widget _buildFloatingActionButton() {
     final l10n = AppLocalizations.of(context)!;
 
@@ -229,12 +168,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
           child: const Icon(Icons.receipt_long, color: Colors.white),
         ),
         const SizedBox(height: 12),
-        // Bouton d'ajout d'article existant
+        // Bouton d'ajout d'article
         FloatingActionButton(
-          onPressed:
-              currentList.canEdit
-                  ? _addNewItem
-                  : null, // ✅ Utiliser _addNewItem au lieu de _showAddItemDialog
+          onPressed: currentList.canEdit ? _addNewItem : null,
           heroTag: "add_item_fab",
           backgroundColor:
               currentList.canEdit ? Colors.green[600] : Colors.grey[400],
@@ -275,6 +211,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     return Column(
       children: [
         if (!currentList.isOwner) _buildPermissionBanner(),
+        // ✅ UTILISATION DU WIDGET RÉUTILISABLE ListStatsHeader
         ListStatsHeader(
           totalItems: items.length,
           purchasedItems: items.where((item) => item.isPurchased).length,
@@ -529,7 +466,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
                         : Colors.grey[600],
               ),
             ),
-            // ✅ CORRECTION CRITIQUE: Utiliser FormattedAmount au lieu de _formatPrice
             if (item.price != null && item.price! > 0) ...[
               Text(
                 ' • ',
@@ -627,7 +563,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  // ===== FONCTIONNALITÉS AJOUTÉES =====
+  // ===== MÉTHODES D'ACTION =====
 
   void _showEditListDialog() {
     if (!currentList.canEdit) {
@@ -662,7 +598,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
             ),
           ),
     ).then((_) {
-      // Rafraîchir les données après partage potentiel
       _refreshListData();
     });
   }
@@ -681,7 +616,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
             child: ManageSharesDialog(list: currentList),
           ),
     ).then((_) {
-      // Rafraîchir les données après gestion des partages
       _refreshListData();
     });
   }
@@ -698,6 +632,35 @@ class _ListDetailViewState extends State<_ListDetailView> {
           (dialogContext) => BlocProvider.value(
             value: context.read<ListItemBloc>(),
             child: EditItemDialog(listId: currentList.id, item: item),
+          ),
+    );
+  }
+
+  void _showDeleteConfirmation() {
+    DeleteConfirmationDialog.showDeleteList(
+      context: context,
+      listName: currentList.name,
+      onConfirm: () {
+        context.read<ShoppingListBloc>().add(
+          DeleteShoppingList(currentList.id),
+        );
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  void _addNewItem() {
+    if (!currentList.canManageItems) {
+      _showPermissionDenied('ajouter des articles');
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<ListItemBloc>(),
+            child: AddItemDialog(listId: currentList.id),
           ),
     );
   }
@@ -765,236 +728,6 @@ class _ListDetailViewState extends State<_ListDetailView> {
           ],
         );
       },
-    );
-  }
-
-  void _showListInfo() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 10,
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildListInfoIcon(),
-                  const SizedBox(height: 20),
-                  _buildListInfoTitle(),
-                  const SizedBox(height: 12),
-                  _buildListInfoDescription(),
-                  const SizedBox(height: 24),
-                  _buildListInfoContent(),
-                  const SizedBox(height: 24),
-                  _buildListInfoButton(),
-                ],
-              ),
-            ),
-          ),
-    );
-  }
-
-  Widget _buildListInfoIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(Icons.info_rounded, size: 40, color: Colors.blue[600]),
-    );
-  }
-
-  Widget _buildListInfoTitle() {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Text(
-      l10n.listInformation,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  Widget _buildListInfoDescription() {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Text(
-      l10n.detailsAndPermissions(currentList.name),
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
-    );
-  }
-
-  Widget _buildListInfoContent() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildInfoRowStyled(
-            'Nom',
-            currentList.name,
-            Icons.list_alt_rounded,
-            Colors.blue[600]!,
-          ),
-          const SizedBox(height: 16),
-          _buildInfoRowStyled(
-            'Statut',
-            currentList.isShared ? 'Partagée' : 'Privée',
-            currentList.isShared ? Icons.people_rounded : Icons.lock_rounded,
-            currentList.isShared ? Colors.green[600]! : Colors.orange[600]!,
-          ),
-          if (currentList.isShared) ...[
-            const SizedBox(height: 16),
-            _buildInfoRowStyled(
-              'Votre rôle',
-              currentList.isOwner
-                  ? 'Propriétaire'
-                  : (currentList.permissionDisplayName ?? 'Collaborateur'),
-              currentList.isOwner ? Icons.crop_rounded : Icons.person_rounded,
-              currentList.isOwner ? Colors.amber[600]! : Colors.purple[600]!,
-            ),
-            if (!currentList.isOwner && currentList.sharedBy != null) ...[
-              const SizedBox(height: 16),
-              _buildInfoRowStyled(
-                'Partagée par',
-                currentList.sharedBy!.name,
-                Icons.share_rounded,
-                Colors.teal[600]!,
-              ),
-            ],
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRowStyled(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 18, color: color),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildListInfoButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => Navigator.of(context).pop(),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue[600],
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-        ),
-        child: const Text(
-          'Fermer',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-
-  void _showLeaveConfirmation() {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: LeaveSharedListDialog(list: currentList),
-          ),
-    );
-  }
-
-  void _showDeleteConfirmation() {
-    DeleteConfirmationDialog.showDeleteList(
-      context: context,
-      listName: currentList.name,
-      onConfirm: () {
-        // Déclencher la suppression via le bloc
-        context.read<ShoppingListBloc>().add(
-          DeleteShoppingList(currentList.id),
-        );
-        // Retourner à l'écran précédent
-        Navigator.of(context).pop();
-      },
-    );
-  }
-
-  void _addNewItem() {
-    if (!currentList.canManageItems) {
-      _showPermissionDenied('ajouter des articles');
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<ListItemBloc>(),
-            child: AddItemDialog(listId: currentList.id),
-          ),
     );
   }
 }

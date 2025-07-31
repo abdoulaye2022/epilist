@@ -1,4 +1,4 @@
-// widgets/list_detail/list_detail_app_bar.dart - VERSION AVEC PERMISSIONS ET TRADUCTIONS
+// widgets/list_detail/list_detail_app_bar.dart - CORRIGÉ AVEC FOND BLANC UNIFORME
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -30,23 +30,33 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      // ✅ FOND BLANC UNIFORME (comme HomeAppBar)
+      backgroundColor: Colors.white,
+
+      // ✅ SUPPRESSION DE L'OMBRE (comme HomeAppBar)
+      elevation: 0,
+
+      // ✅ COULEUR DES ICÔNES NOIRE POUR FOND BLANC
+      iconTheme: const IconThemeData(color: Colors.black87),
+
+      // ✅ COULEUR DU TEXTE DE L'APPBAR
+      foregroundColor: Colors.black87,
+
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             listName,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              // ✅ COULEUR NOIRE POUR FOND BLANC
+              color: Colors.black87,
             ),
           ),
           if (shoppingList.isShared) _buildSharingSubtitle(context),
         ],
       ),
-      backgroundColor: Colors.green[600],
-      foregroundColor: Colors.white,
-      elevation: 2,
       actions: _buildActions(context),
     );
   }
@@ -54,18 +64,23 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildSharingSubtitle(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     String subtitle;
+    Color subtitleColor;
 
     if (shoppingList.isOwner) {
       subtitle = l10n.sharedList;
+      subtitleColor = Colors.blue[600]!;
     } else {
       subtitle = shoppingList.permissionDisplayName ?? l10n.sharedList;
+      subtitleColor =
+          shoppingList.isReadOnly ? Colors.blue[600]! : Colors.green[600]!;
     }
 
     return Text(
       subtitle,
       style: TextStyle(
         fontSize: 12,
-        color: Colors.white.withOpacity(0.9),
+        // ✅ COULEUR COLORÉE POUR CONTRASTE SUR FOND BLANC
+        color: subtitleColor,
         fontWeight: FontWeight.normal,
       ),
     );
@@ -80,7 +95,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions.add(
         IconButton(
           onPressed: onAddItem,
-          icon: Icon(Icons.add),
+          // ✅ ICÔNE NOIRE POUR FOND BLANC
+          icon: const Icon(Icons.add, color: Colors.black87),
           tooltip: l10n.addItemTooltip,
         ),
       );
@@ -94,8 +110,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildOptionsMenu(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert),
+      // ✅ ICÔNE NOIRE POUR FOND BLANC
+      icon: const Icon(Icons.more_vert, color: Colors.black87),
       onSelected: (value) => _handleMenuAction(value, context),
+      // ✅ STYLE POUR FOND BLANC UNIFORME
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      elevation: 8,
       itemBuilder: (context) => _buildMenuItems(context),
     );
   }
@@ -112,8 +133,14 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Icon(Icons.edit, size: 20, color: Colors.blue[600]),
-              SizedBox(width: 8),
-              Text(l10n.editList),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.editList,
+                  style: const TextStyle(color: Colors.black87),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -128,8 +155,14 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Icon(Icons.share, size: 20, color: Colors.green[600]),
-              SizedBox(width: 8),
-              Text(l10n.share),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.share,
+                  style: const TextStyle(color: Colors.black87),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -143,8 +176,34 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           children: [
             Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
-            SizedBox(width: 8),
-            Text(l10n.information),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.information,
+                style: const TextStyle(color: Colors.black87),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Factures
+    items.add(
+      PopupMenuItem(
+        value: 'receipts',
+        child: Row(
+          children: [
+            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.receipts,
+                style: const TextStyle(color: Colors.black87),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
@@ -152,7 +211,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     // Séparateur avant actions destructives
     if (shoppingList.canDelete || !shoppingList.isOwner) {
-      items.add(PopupMenuDivider());
+      items.add(const PopupMenuDivider());
     }
 
     // Quitter la liste partagée (si pas propriétaire)
@@ -163,32 +222,19 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
-              SizedBox(width: 8),
-              Text(l10n.leaveList, style: TextStyle(color: Colors.orange[600])),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.leaveList,
+                  style: TextStyle(color: Colors.orange[600]),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
       );
     }
-
-    items.add(
-      PopupMenuItem(
-        value: 'receipts',
-        child: Row(
-          children: [
-            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.receipts,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
 
     // Supprimer (si permission)
     if (shoppingList.canDelete && onDelete != null) {
@@ -198,8 +244,14 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Icon(Icons.delete, size: 20, color: Colors.red[600]),
-              SizedBox(width: 8),
-              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.delete,
+                  style: TextStyle(color: Colors.red[600]),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),
@@ -239,11 +291,19 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       builder:
           (context) => AlertDialog(
+            // ✅ FOND BLANC POUR LA DIALOG
+            backgroundColor: Colors.white,
             title: Row(
               children: [
                 Icon(Icons.info_outline, color: Colors.blue[600]),
-                SizedBox(width: 8),
-                Text(l10n.listInformation),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.listInformation,
+                    style: const TextStyle(color: Colors.black87),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
             content: Column(
@@ -251,13 +311,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow(l10n.name, shoppingList.name),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 _buildInfoRow(
                   l10n.status,
                   shoppingList.isShared ? l10n.sharedList : l10n.private,
                 ),
                 if (shoppingList.isShared) ...[
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   _buildInfoRow(
                     l10n.yourRole,
                     shoppingList.isOwner
@@ -267,10 +327,10 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   if (!shoppingList.isOwner &&
                       shoppingList.sharedBy != null) ...[
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     _buildInfoRow(l10n.sharedBy, shoppingList.sharedBy!.name),
                   ],
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   _buildPermissionsList(context),
                 ],
               ],
@@ -299,7 +359,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-        Expanded(child: Text(value, style: TextStyle(color: Colors.black87))),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(color: Colors.black87),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }
@@ -336,13 +402,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.grey[700],
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         ...permissions.map(
           (permission) => Padding(
-            padding: EdgeInsets.only(left: 8, top: 2),
+            padding: const EdgeInsets.only(left: 8, top: 2),
             child: Text(
               permission,
-              style: TextStyle(fontSize: 13, color: Colors.black87),
+              style: const TextStyle(fontSize: 13, color: Colors.black87),
             ),
           ),
         ),
@@ -361,9 +427,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                     receiptService: context.read<ReceiptService>(),
                     localizationBloc: context.read<LocalizationBloc>(),
                   ),
-              child: ReceiptsScreen(
-                shoppingList: shoppingList,
-              ), // ✅ Utiliser this.shoppingList
+              child: ReceiptsScreen(shoppingList: shoppingList),
             ),
       ),
     );
@@ -376,8 +440,16 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(l10n.leaveList),
-            content: Text(l10n.leaveListConfirm(shoppingList.name)),
+            // ✅ FOND BLANC POUR LA DIALOG
+            backgroundColor: Colors.white,
+            title: Text(
+              l10n.leaveList,
+              style: const TextStyle(color: Colors.black87),
+            ),
+            content: Text(
+              l10n.leaveListConfirm(shoppingList.name),
+              style: const TextStyle(color: Colors.black87),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -386,7 +458,6 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // TODO: Implémenter la logique de quitter la liste
                   SmartSnackBarManager.showWarningSnackBar(
                     context,
                     l10n.leftList(shoppingList.name),
@@ -402,5 +473,5 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

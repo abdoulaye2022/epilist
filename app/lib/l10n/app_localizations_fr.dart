@@ -3402,4 +3402,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dayRemaining => 'jour restant';
+
+  @override
+  String get epilistUser => 'Utilisateur EpiList';
+
+  @override
+  String get refreshTooltip => 'Actualiser';
+
+  @override
+  String get appLogoError => 'Erreur de chargement du logo';
+
+  @override
+  String get userMenuHeader => 'Menu utilisateur';
+
+  @override
+  String get userRole => 'Rôle utilisateur';
+
+  @override
+  String get accessLevel => 'Niveau d\'accès';
+
+  @override
+  String get confirmAction => 'Confirmer l\'action';
+
+  @override
+  String get menuOptions => 'Options du menu';
+
+  @override
+  String get userActions => 'Actions utilisateur';
+
+  @override
+  String get appReady => 'Application prête';
+
+  @override
+  String get loadingUser => 'Chargement utilisateur';
+
+  @override
+  String get welcomeBack => 'Bon retour';
+
+  @override
+  String get goodMorning => 'Bonjour';
+
+  @override
+  String get goodAfternoon => 'Bon après-midi';
+
+  @override
+  String get goodEvening => 'Bonsoir';
 }

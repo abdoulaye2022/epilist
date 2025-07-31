@@ -1,4 +1,4 @@
-// main.dart - VERSION PRODUCTION
+// main.dart - VERSION AVEC RECEIPT BLOC GLOBAL
 
 import 'dart:async';
 import 'package:dio/dio.dart';
@@ -7,6 +7,7 @@ import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
+import 'package:epilist/blocs/receipt/receipt_bloc.dart'; // ✅ AJOUT: Import du ReceiptBloc
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -209,6 +210,14 @@ void main() async {
               create:
                   (context) => ProductSuggestionBloc(
                     suggestionService: context.read<ProductSuggestionService>(),
+                  ),
+            ),
+            // ✅ AJOUT: ReceiptBloc global
+            BlocProvider<ReceiptBloc>(
+              create:
+                  (context) => ReceiptBloc(
+                    receiptService: context.read<ReceiptService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
             BlocProvider(
@@ -574,50 +583,37 @@ class LoadingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // ✅ Logo sans background - juste l'image
             Container(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.green[400]!, Colors.green[600]!],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+              decoration: const BoxDecoration(
+                color:
+                    Colors.transparent, // ✅ Background complètement transparent
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  'assets/images/app_logo.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.green[400]!, Colors.green[600]!],
-                        ),
+              child: Image.asset(
+                'assets/images/app_logo.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain, // ✅ Pour respecter les proportions du logo
+                errorBuilder: (context, error, stackTrace) {
+                  // ✅ Fallback avec gradient seulement si le logo n'existe pas
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.green[400]!, Colors.green[600]!],
                       ),
-                      child: const Icon(
-                        Icons.shopping_cart_rounded,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
-                ),
+                    ),
+                    child: const Icon(
+                      Icons.shopping_cart_rounded,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 32),

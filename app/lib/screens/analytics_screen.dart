@@ -1,4 +1,4 @@
-// screens/analytics_screen.dart - VERSION SANS SÉLECTEUR DE DEVISE
+// screens/analytics_screen.dart - VERSION AVEC DESIGN HARMONISÉ
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
@@ -66,31 +66,41 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      // ✅ CORRECTION: Background gris clair comme BudgetScreen et HomeScreen
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
         title: Text(
           l10n.analytics,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.green[700], // ✅ Texte vert au lieu de blanc
+            fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.green[600],
-        foregroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: Colors.white, // ✅ Fond blanc comme BudgetScreen
+        foregroundColor: Colors.black, // ✅ Texte noir comme BudgetScreen
+        elevation: 0, // ✅ Pas d'ombre comme BudgetScreen
+        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
         actions: [
-          // ✅ SIMPLIFIÉ: Seulement le bouton d'actualisation
+          // ✅ Bouton d'actualisation avec couleur harmonisée
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
+            icon: const Icon(
+              Icons.refresh,
+              color: Colors.black,
+            ), // ✅ Icône noire
             tooltip: l10n.refresh,
             onPressed: _refreshCurrentTab,
           ),
+          const SizedBox(width: 8), // ✅ Espacement à droite comme BudgetScreen
         ],
+        // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
+          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
+          unselectedLabelColor:
+              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
+          indicatorColor: Colors.green[700], // ✅ Indicateur vert
           indicatorWeight: 3,
           onTap: (index) {
             // Charger les données selon l'onglet sélectionné
@@ -112,10 +122,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             }
           },
           tabs: [
-            Tab(icon: const Icon(Icons.dashboard), text: l10n.overview),
-            Tab(icon: const Icon(Icons.trending_up), text: l10n.trends),
-            Tab(icon: const Icon(Icons.pie_chart), text: l10n.categories),
-            Tab(icon: const Icon(Icons.star), text: l10n.topProducts),
+            Tab(
+              icon: Icon(Icons.dashboard, color: Colors.green[600]),
+              text: l10n.overview,
+            ),
+            Tab(
+              icon: Icon(Icons.trending_up, color: Colors.blue[600]),
+              text: l10n.trends,
+            ),
+            Tab(
+              icon: Icon(Icons.pie_chart, color: Colors.purple[600]),
+              text: l10n.categories,
+            ),
+            Tab(
+              icon: Icon(Icons.star, color: Colors.orange[600]),
+              text: l10n.topProducts,
+            ),
           ],
         ),
       ),
@@ -160,49 +182,50 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DashboardCard(data: state.dashboardData),
+                // ✅ CORRECTION: Wrapper les cards existantes pour forcer le fond blanc
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: DashboardCard(data: state.dashboardData),
+                ),
                 const SizedBox(height: 16),
-                ComparisonCard(
-                  data: state.dashboardData['comparison_with_last_month'] ?? {},
-                  currency: state.dashboardData['currency'] ?? 'CAD',
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ComparisonCard(
+                    data:
+                        state.dashboardData['comparison_with_last_month'] ?? {},
+                    currency: state.dashboardData['currency'] ?? 'CAD',
+                  ),
                 ),
               ],
             ),
           );
         }
 
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.analytics_outlined, size: 64, color: Colors.grey[400]),
-              const SizedBox(height: 16),
-              Text(
-                l10n.noAnalyticsData,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () => _loadInitialData(),
-                icon: const Icon(Icons.refresh),
-                label: Text(l10n.loadData),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        );
+        return _buildEmptyState(l10n, () => _loadInitialData());
       },
     );
   }
 
-  /// ✅ ONGLET TENDANCES MISE À JOUR - Support des nouveaux états
   Widget _buildTrendsTab(BuildContext context, AppLocalizations l10n) {
     return BlocBuilder<AnalyticsBloc, AnalyticsState>(
       builder: (context, state) {
@@ -240,7 +263,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             'period': 'year',
           };
         } else if (state is SpendingTrendsLoaded) {
-          // ✅ Compatibilité avec l'ancien état générique
           final trendsData = state.trendsData;
           final period = trendsData['period_type'] ?? 'month';
 
@@ -256,9 +278,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                PeriodChartCard(
-                  data: chartData,
-                  selectedCurrency: null, // ✅ Utilise la devise utilisateur
+                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: PeriodChartCard(
+                    data: chartData,
+                    selectedCurrency: null, // ✅ Utilise la devise utilisateur
+                  ),
                 ),
                 const SizedBox(height: 16),
                 // Vous pouvez ajouter d'autres widgets de tendances ici
@@ -274,7 +310,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     );
   }
 
-  /// ✅ MÉTHODE UTILITAIRE MISE À JOUR pour extraire les données selon la période
+  /// ✅ MÉTHODE UTILITAIRE pour extraire les données selon la période
   List<dynamic> _extractPeriodData(
     Map<String, dynamic> trendsData,
     String period,
@@ -305,7 +341,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
-              children: [CategoriesChartCard(data: state.categoriesData)],
+              children: [
+                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: CategoriesChartCard(data: state.categoriesData),
+                ),
+              ],
             ),
           );
         }
@@ -331,9 +383,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                TopProductsCard(
-                  data: state.productsData,
-                  selectedCurrency: null, // ✅ Utilise la devise utilisateur
+                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TopProductsCard(
+                    data: state.productsData,
+                    selectedCurrency: null, // ✅ Utilise la devise utilisateur
+                  ),
                 ),
               ],
             ),
@@ -347,32 +413,90 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     );
   }
 
+  // ✅ CORRECTION: État vide avec card blanche
   Widget _buildEmptyState(AppLocalizations l10n, VoidCallback onRetry) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.pie_chart_outline, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            l10n.noDataAvailable,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.5,
+          ),
+          child: Card(
+            color: Colors.white, // ✅ Fond blanc
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.analytics_outlined,
+                      size: 48,
+                      color: Colors.blue[300],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.noAnalyticsData,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.visible,
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: Text(
+                      'Commencez à faire vos courses pour voir vos analyses',
+                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 200),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: onRetry,
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: Text(
+                          l10n.loadData,
+                          style: const TextStyle(fontSize: 13),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: onRetry,
-            icon: const Icon(Icons.refresh),
-            label: Text(l10n.loadData),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

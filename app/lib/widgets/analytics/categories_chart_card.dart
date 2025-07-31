@@ -1,4 +1,4 @@
-// widgets/analytics/categories_chart_card.dart
+// widgets/analytics/categories_chart_card.dart - VERSION HARMONISÉE
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -13,9 +13,9 @@ class CategoriesChartCard extends StatelessWidget {
     final categories = data['categories'] as List<dynamic>? ?? [];
     final summary = data['summary'] ?? {};
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -23,13 +23,17 @@ class CategoriesChartCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.pie_chart, color: Colors.orange[600], size: 28),
+                Icon(Icons.pie_chart, color: Colors.purple[600], size: 28),
                 const SizedBox(width: 12),
-                Text(
-                  l10n.spendingByCategory,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n.spendingByCategory,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // ✅ Couleur harmonisée
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -40,8 +44,9 @@ class CategoriesChartCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.orange[50],
+                color: Colors.purple[50], // ✅ Couleur harmonisée
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.purple[100]!),
               ),
               child: Row(
                 children: [
@@ -51,19 +56,21 @@ class CategoriesChartCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.totalSpent,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           summary['formatted_total'] ?? '0',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange[600],
+                            color: Colors.purple[600],
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -74,19 +81,21 @@ class CategoriesChartCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.categories,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           '${summary['total_categories'] ?? 0}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange[600],
+                            color: Colors.purple[600],
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -109,6 +118,7 @@ class CategoriesChartCard extends StatelessWidget {
                       Text(
                         l10n.noCategoriesData,
                         style: TextStyle(color: Colors.grey[600]),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -118,7 +128,7 @@ class CategoriesChartCard extends StatelessWidget {
               Column(
                 children:
                     categories.take(8).map<Widget>((category) {
-                      return _buildCategoryItem(category);
+                      return _buildCategoryItem(category, l10n);
                     }).toList(),
               ),
           ],
@@ -127,9 +137,11 @@ class CategoriesChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(Map<String, dynamic> category) {
+  Widget _buildCategoryItem(
+    Map<String, dynamic> category,
+    AppLocalizations l10n,
+  ) {
     final categoryName = category['category'] ?? 'Inconnu';
-    final totalSpent = category['total_spent']?.toDouble() ?? 0.0;
     final formattedTotal = category['formatted_total'] ?? '0';
     final percentage = category['percentage_of_total']?.toDouble() ?? 0.0;
     final totalItems = category['total_items'] ?? 0;
@@ -176,11 +188,14 @@ class CategoriesChartCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '$totalItems articles',
+                      '$totalItems ${l10n.articles}', // ✅ Utilisation de la traduction
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -195,6 +210,7 @@ class CategoriesChartCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     '${percentage.toStringAsFixed(1)}%',
@@ -205,10 +221,14 @@ class CategoriesChartCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: percentage / 100,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(color),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: percentage / 100,
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+              minHeight: 6,
+            ),
           ),
         ],
       ),

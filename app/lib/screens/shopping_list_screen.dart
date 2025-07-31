@@ -1,4 +1,4 @@
-// screens/shopping_list_screen.dart - VERSION SANS RAPPELS DE COURSES
+// screens/shopping_list_screen.dart - VERSION AVEC NAVIGATION FACTURES CORRIGÉE
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
@@ -16,7 +16,7 @@ import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/shopping_list_app_bar.dart';
-import 'package:epilist/widgets/dialogs/shopping_list_card.dart';
+import 'package:epilist/widgets/dialogs/shopping_list_card.dart'; // ✅ CORRECTION: Import correct
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -132,7 +132,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           return ShoppingListCard(
             list: list,
             onTap: () => _openListDetails(list),
-            onMenuAction: (action) => _handleListAction(action, list),
+            onMenuAction:
+                (action) => _handleListAction(
+                  action,
+                  list,
+                ), // ✅ CORRECTION: Signature simple
           );
         },
       ),
@@ -160,6 +164,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     ).then((_) => _loadShoppingLists());
   }
 
+  // ✅ CORRECTION: Méthode avec signature adaptée
   void _handleListAction(String action, ShoppingList list) {
     final l10n = AppLocalizations.of(context)!;
 
@@ -177,6 +182,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
       case 'duplicate':
         _duplicateList(list);
+        break;
+
+      case 'receipts':
+        // ✅ NOUVEAU: L'action 'receipts' est maintenant gérée directement
+        // dans ShoppingListCard via _navigateToReceipts, pas besoin d'action ici
         break;
 
       case 'share':

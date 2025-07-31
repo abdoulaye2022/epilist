@@ -1,5 +1,6 @@
-// widgets/home/shopping_list_card.dart - VERSION I18N
+// widgets/home/shopping_list_card.dart - VERSION SIMPLIFIÉE POUR HOME SCREEN
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/screens/receipts_screen.dart';
 import 'package:epilist/utils/date_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -22,7 +23,6 @@ class ShoppingListCard extends StatelessWidget {
     final totalItems = list.itemsCount;
     final completedItems = list.purchasedItemsCount;
     final progress = list.progress;
-    final totalPrice = list.totalPrice;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -52,22 +52,17 @@ class ShoppingListCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // ✅ NOUVEAU: Taille minimale
             children: [
               _buildHeader(l10n),
               const SizedBox(height: 12),
-              _buildListInfo(totalItems, totalPrice, l10n),
-              if (list.isShared) ...[
-                const SizedBox(height: 8),
-                _buildSharingInfo(l10n),
-              ],
+              _buildEssentialInfo(totalItems, l10n),
               if (totalItems > 0) ...[
                 const SizedBox(height: 12),
                 _buildProgressSection(progress, completedItems, totalItems),
-                const SizedBox(height: 12),
-                _buildBottomRow(l10n),
               ],
               const SizedBox(height: 8),
-              _buildDateInfo(l10n),
+              _buildCompactFooter(l10n),
             ],
           ),
         ),
@@ -77,143 +72,101 @@ class ShoppingListCard extends StatelessWidget {
 
   Widget _buildHeader(AppLocalizations l10n) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  list.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              if (list.isShared) ...[
-                const SizedBox(width: 8),
-                _buildSharingIndicator(),
-              ],
-            ],
+          child: Text(
+            list.name,
+            style: const TextStyle(
+              fontSize: 16, // ✅ RÉDUIT: 18 -> 16
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
+        const SizedBox(width: 8),
+        if (list.isShared) _buildCompactSharingIndicator(),
         const SizedBox(width: 8),
         _buildPopupMenu(l10n),
       ],
     );
   }
 
-  Widget _buildListInfo(
-    int totalItems,
-    double totalPrice,
-    AppLocalizations l10n,
-  ) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isSmallScreen = constraints.maxWidth < 300;
+  // ✅ NOUVEAU: Info essentielle simplifiée
+  Widget _buildEssentialInfo(int totalItems, AppLocalizations l10n) {
+    final hasReceipts = list.hasReceipts ?? false;
 
-        if (isSmallScreen && totalPrice > 0) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
-                  const SizedBox(width: 6),
-                  Text(
-                    '$totalItems ${l10n.articles}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      '${l10n.budget}: ${totalPrice.toStringAsFixed(2)} \$CAD',
-                      style: TextStyle(
-                        color: Colors.green[600],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        } else {
-          return Row(
-            children: [
-              Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
-              const SizedBox(width: 6),
-              Text(
-                '$totalItems ${l10n.articles}',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
-              ),
-              if (totalPrice > 0) ...[
-                const SizedBox(width: 16),
-                Icon(Icons.attach_money, size: 16, color: Colors.green[600]),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    '${l10n.budget}: ${totalPrice.toStringAsFixed(2)} \$CAD',
-                    style: TextStyle(
-                      color: Colors.green[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ],
-          );
-        }
-      },
+    return Row(
+      children: [
+        // Articles
+        Icon(Icons.shopping_cart, size: 14, color: Colors.grey[600]),
+        const SizedBox(width: 4),
+        Text(
+          '$totalItems',
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+
+        // Factures badge si applicable
+        if (hasReceipts) ...[
+          const SizedBox(width: 12),
+          _buildCompactReceiptsBadge(),
+        ],
+
+        const Spacer(),
+
+        // Statut
+        _buildCompactStatusChip(l10n),
+      ],
     );
   }
 
-  Widget _buildSharingInfo(AppLocalizations l10n) {
-    if (!list.isShared) return const SizedBox.shrink();
-
+  // ✅ NOUVEAU: Badge factures compact
+  Widget _buildCompactReceiptsBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
-        ),
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            list.isOwner ? Icons.people_outline : Icons.person_add,
-            size: 14,
-            color: list.isOwner ? Colors.blue[600] : Colors.green[600],
-          ),
-          const SizedBox(width: 4),
+          Icon(Icons.receipt_long, size: 10, color: Colors.blue[600]),
+          const SizedBox(width: 2),
           Text(
-            list.isOwner
-                ? '${l10n.sharedList} • ${list.sharedWithCount ?? 0} ${l10n.collaborators}'
-                : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
+            '${list.receiptsCount ?? 0}',
             style: TextStyle(
-              fontSize: 12,
-              color: list.isOwner ? Colors.blue[600] : Colors.green[600],
-              fontWeight: FontWeight.w500,
+              fontSize: 9,
+              color: Colors.blue[600],
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ✅ NOUVEAU: Indicateur de partage compact
+  Widget _buildCompactSharingIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
+        ),
+      ),
+      child: Icon(
+        list.isOwner ? Icons.people : Icons.share,
+        size: 10,
+        color: list.isOwner ? Colors.blue[600] : Colors.green[600],
       ),
     );
   }
@@ -223,45 +176,49 @@ class ShoppingListCard extends StatelessWidget {
     int completedItems,
     int totalItems,
   ) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: LinearProgressIndicator(
-            value: progress,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
-            minHeight: 6,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '$completedItems/$totalItems',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              '${(progress * 100).round()}%',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Text(
-          '$completedItems/$totalItems',
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        const SizedBox(height: 4),
+        LinearProgressIndicator(
+          value: progress,
+          backgroundColor: Colors.grey[200],
+          valueColor: AlwaysStoppedAnimation<Color>(
+            list.isCompleted ? Colors.green[600]! : Colors.blue[600]!,
           ),
+          minHeight: 4, // ✅ RÉDUIT: 6 -> 4
         ),
       ],
     );
   }
 
-  Widget _buildBottomRow(AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildStatusChip(l10n),
-        if (!list.isOwner) _buildPermissionIndicator(l10n),
-      ],
-    );
-  }
-
-  Widget _buildStatusChip(AppLocalizations l10n) {
+  // ✅ NOUVEAU: Statut compact
+  Widget _buildCompactStatusChip(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: list.isCompleted ? Colors.green[50] : Colors.orange[50],
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
         ),
@@ -269,7 +226,7 @@ class ShoppingListCard extends StatelessWidget {
       child: Text(
         list.isCompleted ? l10n.completed : l10n.inProgress,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 10, // ✅ RÉDUIT: 12 -> 10
           color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
           fontWeight: FontWeight.w500,
         ),
@@ -277,98 +234,46 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo(AppLocalizations l10n) {
+  // ✅ NOUVEAU: Footer compact avec juste la date
+  Widget _buildCompactFooter(AppLocalizations l10n) {
     return Text(
-      '${l10n.created} ${DateFormatter.formatDate(list.createdAt)}',
-      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-    );
-  }
-
-  Widget _buildSharingIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            list.isOwner ? Icons.people : Icons.share,
-            size: 12,
-            color: list.isOwner ? Colors.blue[600] : Colors.green[600],
-          ),
-          if (list.isOwner) ...[
-            const SizedBox(width: 2),
-            Text(
-              '${list.sharedWithCount ?? 0}',
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.blue[600],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPermissionIndicator(AppLocalizations l10n) {
-    if (list.isOwner) return const SizedBox.shrink();
-
-    String text;
-    Color color;
-    IconData icon;
-
-    if (list.isReadOnly) {
-      text = l10n.readOnlyAccess;
-      color = Colors.blue[600]!;
-      icon = Icons.visibility;
-    } else if (list.canEdit) {
-      text = l10n.editAccess;
-      color = Colors.green[600]!;
-      icon = Icons.edit;
-    } else {
-      text = l10n.adminAccess;
-      color = Colors.purple[600]!;
-      icon = Icons.admin_panel_settings;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 10, color: color),
-          const SizedBox(width: 2),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 9,
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+      DateFormatter.formatDate(list.createdAt),
+      style: TextStyle(
+        fontSize: 10, // ✅ RÉDUIT: 12 -> 10
+        color: Colors.grey[500],
       ),
     );
   }
 
   Widget _buildPopupMenu(AppLocalizations l10n) {
-    return PopupMenuButton(
-      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-      itemBuilder: (context) => _buildMenuItems(l10n),
-      onSelected: (value) => onAction(value.toString()),
+    return Builder(
+      builder:
+          (context) => PopupMenuButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Colors.grey[600],
+              size: 18, // ✅ RÉDUIT: 24 -> 18
+            ),
+            itemBuilder: (context) => _buildMenuItems(l10n),
+            onSelected: (value) => _handleMenuAction(context, value.toString()),
+          ),
+    );
+  }
+
+  void _handleMenuAction(BuildContext context, String action) {
+    if (action == 'receipts') {
+      _navigateToReceipts(context);
+    } else {
+      onAction(action);
+    }
+  }
+
+  void _navigateToReceipts(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiptsScreen(shoppingList: list),
+      ),
     );
   }
 
@@ -382,7 +287,7 @@ class ShoppingListCard extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              const Icon(Icons.edit, size: 20),
+              Icon(Icons.edit, size: 18, color: Colors.blue[600]),
               const SizedBox(width: 8),
               Text(l10n.edit),
             ],
@@ -391,13 +296,13 @@ class ShoppingListCard extends StatelessWidget {
       );
     }
 
-    // Dupliquer (toujours disponible)
+    // Dupliquer
     items.add(
       PopupMenuItem(
         value: 'duplicate',
         child: Row(
           children: [
-            const Icon(Icons.copy, size: 20),
+            Icon(Icons.copy, size: 18, color: Colors.green[600]),
             const SizedBox(width: 8),
             Text(l10n.duplicate),
           ],
@@ -405,72 +310,80 @@ class ShoppingListCard extends StatelessWidget {
       ),
     );
 
-    // Partager (si propriétaire ou admin)
+    // Factures
+    items.add(
+      PopupMenuItem(
+        value: 'receipts',
+        child: Row(
+          children: [
+            Icon(Icons.receipt_long, size: 18, color: Colors.blue[600]),
+            const SizedBox(width: 8),
+            Expanded(child: Text(l10n.receipts)),
+            if ((list.hasReceipts ?? false)) ...[
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${list.receiptsCount ?? 0}',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: Colors.blue[600],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    // Partager (si applicable)
     if (list.canShare) {
+      items.add(const PopupMenuDivider());
       items.add(
         PopupMenuItem(
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 20, color: Colors.blue[600]),
+              Icon(Icons.share, size: 18, color: Colors.blue[600]),
               const SizedBox(width: 8),
-              Text(l10n.share, style: TextStyle(color: Colors.blue[600])),
+              Text(l10n.share),
             ],
           ),
         ),
       );
     }
 
-    // Gérer les partages (si propriétaire et liste partagée)
-    if (list.isOwner && list.isShared) {
-      items.add(
-        PopupMenuItem(
-          value: 'manage_shares',
-          child: Row(
-            children: [
-              Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
-              const SizedBox(width: 8),
-              Text(
-                l10n.manageShares,
-                style: TextStyle(color: Colors.purple[600]),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    // Actions destructives
+    items.add(const PopupMenuDivider());
 
-    // Séparateur si actions de suppression/quitter
-    if (list.canDelete || !list.isOwner) {
-      items.add(const PopupMenuDivider());
-    }
-
-    // Quitter (si pas propriétaire)
-    if (!list.isOwner) {
-      items.add(
-        PopupMenuItem(
-          value: 'leave',
-          child: Row(
-            children: [
-              const Icon(Icons.exit_to_app, size: 20, color: Colors.orange),
-              const SizedBox(width: 8),
-              Text(l10n.leave, style: const TextStyle(color: Colors.orange)),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Supprimer (si permission)
     if (list.canDelete) {
       items.add(
         PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
-              const Icon(Icons.delete, size: 20, color: Colors.red),
+              Icon(Icons.delete, size: 18, color: Colors.red[600]),
               const SizedBox(width: 8),
-              Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+            ],
+          ),
+        ),
+      );
+    } else if (!list.isOwner) {
+      items.add(
+        PopupMenuItem(
+          value: 'leave',
+          child: Row(
+            children: [
+              Icon(Icons.exit_to_app, size: 18, color: Colors.orange[600]),
+              const SizedBox(width: 8),
+              Text(l10n.leave, style: TextStyle(color: Colors.orange[600])),
             ],
           ),
         ),

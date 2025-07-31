@@ -1,4 +1,4 @@
-// widgets/list_detail/empty_items_state.dart - VERSION AVEC PERMISSIONS ET TRADUCTIONS
+// widgets/list_detail/empty_items_state.dart - VERSION AVEC FOND BLANC
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -15,20 +15,24 @@ class EmptyItemsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildIcon(),
-            SizedBox(height: 24),
-            _buildTitle(context),
-            SizedBox(height: 12),
-            _buildDescription(context),
-            SizedBox(height: 32),
-            _buildActionButton(context),
-          ],
+    return Container(
+      // ✅ AJOUT: Fond blanc pour le conteneur principal
+      color: Colors.white,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildIcon(),
+              const SizedBox(height: 24),
+              _buildTitle(context),
+              const SizedBox(height: 12),
+              _buildDescription(context),
+              const SizedBox(height: 32),
+              _buildActionButton(context),
+            ],
+          ),
         ),
       ),
     );
@@ -39,9 +43,10 @@ class EmptyItemsState extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        // ✅ MODIFICATION: Couleurs plus subtiles pour fond blanc
+        color: Colors.grey[50],
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.grey[300]!, width: 2),
+        border: Border.all(color: Colors.grey[200]!, width: 2),
       ),
       child: Icon(
         Icons.shopping_cart_outlined,
@@ -66,7 +71,8 @@ class EmptyItemsState extends StatelessWidget {
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.grey[700],
+        // ✅ MODIFICATION: Couleur plus foncée pour fond blanc
+        color: Colors.grey[800],
       ),
       textAlign: TextAlign.center,
     );
@@ -101,16 +107,16 @@ class EmptyItemsState extends StatelessWidget {
 
     // Si permission d'ajout mais pas de callback, ne rien afficher
     if (onAddItem == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     // Bouton normal d'ajout
     return ElevatedButton.icon(
       onPressed: onAddItem,
-      icon: Icon(Icons.add, color: Colors.white),
+      icon: const Icon(Icons.add, color: Colors.white),
       label: Text(
         l10n.addItem,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -118,7 +124,7 @@ class EmptyItemsState extends StatelessWidget {
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green[600],
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
       ),
@@ -142,7 +148,7 @@ class EmptyItemsState extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: infoColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
@@ -152,7 +158,7 @@ class EmptyItemsState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(infoIcon, size: 20, color: infoColor),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             infoText,
             style: TextStyle(

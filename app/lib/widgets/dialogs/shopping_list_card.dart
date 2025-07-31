@@ -1,13 +1,14 @@
-// widgets/shopping/shopping_list_card.dart - VERSION SANS RAPPELS
+// widgets/dialogs/shopping_list_card.dart - VERSION AVEC SIGNATURE CORRIGÉE
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/screens/receipts_screen.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList list;
   final VoidCallback onTap;
-  final Function(String) onMenuAction;
+  final Function(String) onMenuAction; // ✅ CORRECTION: Signature simple
 
   const ShoppingListCard({
     super.key,
@@ -112,8 +113,8 @@ class ShoppingListCard extends StatelessWidget {
     double totalPrice,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    // ✅ CORRECTION : Utiliser la nouvelle propriété hasReceipts
-    final hasReceipts = list.hasReceipts; // Au lieu de list.receiptsCount > 0
+    // ✅ CORRECTION : Protection contre null avec ??
+    final hasReceipts = list.hasReceipts ?? false;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -224,8 +225,6 @@ class ShoppingListCard extends StatelessWidget {
   }
 
   Widget _buildReceiptsBadge(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -239,7 +238,7 @@ class ShoppingListCard extends StatelessWidget {
           Icon(Icons.receipt_long, size: 12, color: Colors.blue[600]),
           const SizedBox(width: 2),
           Text(
-            '${list.receiptsCount}',
+            '${list.receiptsCount ?? 0}', // ✅ Protection contre null
             style: TextStyle(
               fontSize: 10,
               color: Colors.blue[600],
@@ -277,7 +276,7 @@ class ShoppingListCard extends StatelessWidget {
           Expanded(
             child: Text(
               list.isOwner
-                  ? '${l10n.sharedList} • ${list.sharedWithCount} ${l10n.collaborators}'
+                  ? '${l10n.sharedList} • ${list.sharedWithCount ?? 0} ${l10n.collaborators}' // ✅ Protection contre null
                   : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
               style: TextStyle(
                 fontSize: 12,
@@ -384,7 +383,7 @@ class ShoppingListCard extends StatelessWidget {
           if (list.isOwner) ...[
             const SizedBox(width: 2),
             Text(
-              '${list.sharedWithCount}',
+              '${list.sharedWithCount ?? 0}', // ✅ Protection contre null
               style: TextStyle(
                 fontSize: 10,
                 color: Colors.blue[600],
@@ -450,10 +449,32 @@ class ShoppingListCard extends StatelessWidget {
   }
 
   Widget _buildPopupMenu() {
-    return PopupMenuButton(
-      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-      itemBuilder: (context) => _buildMenuItems(context),
-      onSelected: (value) => onMenuAction(value.toString()),
+    return Builder(
+      builder:
+          (context) => PopupMenuButton(
+            icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+            itemBuilder: (context) => _buildMenuItems(context),
+            onSelected: (value) => _handleMenuAction(context, value.toString()),
+          ),
+    );
+  }
+
+  // ✅ NOUVEAU: Méthode pour gérer les actions du menu avec navigation
+  void _handleMenuAction(BuildContext context, String action) {
+    if (action == 'receipts') {
+      _navigateToReceipts(context);
+    } else {
+      onMenuAction(action); // ✅ CORRECTION: Appel simple sans context
+    }
+  }
+
+  // ✅ NOUVEAU: Méthode de navigation vers l'écran des factures
+  void _navigateToReceipts(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiptsScreen(shoppingList: list),
+      ),
     );
   }
 
@@ -504,6 +525,7 @@ class ShoppingListCard extends StatelessWidget {
       ),
     );
 
+    // ✅ MODIFICATION: Menu Factures avec gestion de navigation
     items.add(
       PopupMenuItem(
         value: 'receipts',
@@ -518,6 +540,25 @@ class ShoppingListCard extends StatelessWidget {
                 maxLines: 1,
               ),
             ),
+            // ✅ AJOUT: Badge avec nombre de factures si applicable
+            if ((list.hasReceipts ?? false)) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${list.receiptsCount ?? 0}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.blue[600],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

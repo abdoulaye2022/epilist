@@ -1,4 +1,3 @@
-// widgets/analytics/dashboard_card.dart
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -13,9 +12,9 @@ class DashboardCard extends StatelessWidget {
     final currentMonth = data['current_month'] ?? {};
     final quickStats = data['quick_stats'] ?? {};
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -25,11 +24,15 @@ class DashboardCard extends StatelessWidget {
               children: [
                 Icon(Icons.dashboard, color: Colors.green[600], size: 28),
                 const SizedBox(width: 12),
-                Text(
-                  l10n.monthlyOverview,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n.monthlyOverview,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // ✅ Couleur harmonisée
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -83,13 +86,17 @@ class DashboardCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            const Divider(),
+            Divider(color: Colors.grey[300]), // ✅ Couleur plus douce
             const SizedBox(height: 16),
 
             // Statistiques rapides
             Text(
               l10n.quickStats,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87, // ✅ Couleur harmonisée
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -97,9 +104,15 @@ class DashboardCard extends StatelessWidget {
               children: [
                 Icon(Icons.trending_up, color: Colors.green[600], size: 20),
                 const SizedBox(width: 8),
-                Text(
-                  '${l10n.averageDailySpending}: ${quickStats['average_daily_spending']?.toStringAsFixed(2) ?? '0.00'}',
-                  style: const TextStyle(fontSize: 14),
+                Expanded(
+                  child: Text(
+                    '${l10n.averageDailySpending}: ${quickStats['average_daily_spending']?.toStringAsFixed(2) ?? '0.00'}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87, // ✅ Couleur harmonisée
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -110,9 +123,15 @@ class DashboardCard extends StatelessWidget {
                 children: [
                   Icon(Icons.calendar_today, color: Colors.blue[600], size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    '${l10n.busiestDay}: ${quickStats['busiest_day_this_week']}',
-                    style: const TextStyle(fontSize: 14),
+                  Expanded(
+                    child: Text(
+                      '${l10n.busiestDay}: ${quickStats['busiest_day_this_week']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87, // ✅ Couleur harmonisée
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -165,6 +184,7 @@ class DashboardCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: color,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

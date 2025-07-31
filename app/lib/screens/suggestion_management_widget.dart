@@ -1,4 +1,4 @@
-// widgets/suggestion_management_widget.dart - CORRECTION POUR L'ÉTAT VIDE
+// screens/suggestion_management_widget.dart - CORRECTION AVEC BACKGROUND GRIS UNIFORME
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/widgets/suggestion/suggestion_app_bar.dart';
@@ -32,6 +32,7 @@ class _SuggestionManagementWidgetState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      // ✅ BACKGROUND GRIS UNIFORME (comme les autres pages)
       backgroundColor: Colors.grey[50],
       appBar: SuggestionAppBar(
         onClearAll: () => _showClearConfirmation(context, l10n),
@@ -115,6 +116,8 @@ class _SuggestionManagementWidgetState
       context: context,
       builder:
           (context) => AlertDialog(
+            // ✅ FOND BLANC POUR LES DIALOGUES
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -126,13 +129,17 @@ class _SuggestionManagementWidgetState
                 Expanded(
                   child: Text(
                     l10n.deleteSuggestion,
+                    style: const TextStyle(color: Colors.black87),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                 ),
               ],
             ),
-            content: Text(l10n.deleteSuggestionConfirm),
+            content: Text(
+              l10n.deleteSuggestionConfirm,
+              style: const TextStyle(color: Colors.black87),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -188,6 +195,8 @@ class _SuggestionManagementWidgetState
       context: context,
       builder:
           (context) => AlertDialog(
+            // ✅ FOND BLANC POUR LES DIALOGUES
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -199,6 +208,7 @@ class _SuggestionManagementWidgetState
                 Expanded(
                   child: Text(
                     l10n.clearAllSuggestions,
+                    style: const TextStyle(color: Colors.black87),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -209,7 +219,10 @@ class _SuggestionManagementWidgetState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.clearAllSuggestionsConfirm),
+                Text(
+                  l10n.clearAllSuggestionsConfirm,
+                  style: const TextStyle(color: Colors.black87),
+                ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),

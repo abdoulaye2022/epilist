@@ -1,4 +1,4 @@
-// widgets/budget/budget_filters.dart
+// widgets/budget/budget_filters.dart - VERSION CORRIGÉE AVEC ÉTAT VISUEL
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -38,14 +38,15 @@ class _BudgetFiltersState extends State<BudgetFilters> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final hasActiveFilters = _hasActiveFilters();
 
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.all(16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // En-tête avec bouton d'expansion
           InkWell(
@@ -61,21 +62,25 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                   Icon(
                     Icons.filter_list,
                     color:
-                        hasActiveFilters
-                            ? theme.primaryColor
-                            : Colors.grey[600],
+                        hasActiveFilters ? Colors.green[600] : Colors.grey[600],
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l10n.filtersAndSort,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: hasActiveFilters ? theme.primaryColor : null,
+                        color:
+                            hasActiveFilters
+                                ? Colors.green[600]
+                                : Colors.black87,
                       ),
-                      overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
+                  // ✅ CORRECTION: Affichage conditionnel amélioré
                   if (hasActiveFilters) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -83,27 +88,32 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.1),
+                        color: Colors.green[100],
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         _getActiveFiltersCount().toString(),
                         style: TextStyle(
-                          color: theme.primaryColor,
+                          color: Colors.green[700],
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: _clearAllFilters,
-                      icon: const Icon(Icons.clear, size: 20),
-                      tooltip: l10n.clearFilters,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    InkWell(
+                      onTap: _clearAllFilters,
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.clear,
+                          size: 18,
+                          color: Colors.grey[600],
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                   ],
                   Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
@@ -114,29 +124,78 @@ class _BudgetFiltersState extends State<BudgetFilters> {
             ),
           ),
 
-          // Contenu des filtres (expansible)
           if (_isExpanded) ...[
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Filtres par statut
-                  _buildFilterSection(l10n.status, _buildStatusFilters(l10n)),
-                  const SizedBox(height: 16),
+            const Divider(height: 1, color: Colors.grey),
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ✅ DEBUG: Affichage des valeurs actives pour test
+                    if (hasActiveFilters) ...[
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Filtres actifs:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[700],
+                                fontSize: 12,
+                              ),
+                            ),
+                            if (widget.activeStatusFilter != null)
+                              Text(
+                                'Statut: ${widget.activeStatusFilter}',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                            if (widget.activePeriodFilter != null)
+                              Text(
+                                'Période: ${widget.activePeriodFilter}',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                            if (widget.activeScopeFilter != null)
+                              Text(
+                                'Portée: ${widget.activeScopeFilter}',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                            if (widget.activeSortBy != null)
+                              Text(
+                                'Tri: ${widget.activeSortBy} (${widget.activeSortAscending == true ? 'ASC' : 'DESC'})',
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
 
-                  // Filtres par période
-                  _buildFilterSection(l10n.period, _buildPeriodFilters(l10n)),
-                  const SizedBox(height: 16),
+                    // Filtres par statut
+                    _buildFilterSection(l10n.status, _buildStatusFilters(l10n)),
+                    const SizedBox(height: 16),
 
-                  // Filtres par portée
-                  _buildFilterSection(l10n.scope, _buildScopeFilters(l10n)),
-                  const SizedBox(height: 16),
+                    // Filtres par période
+                    _buildFilterSection(l10n.period, _buildPeriodFilters(l10n)),
+                    const SizedBox(height: 16),
 
-                  // Tri
-                  _buildFilterSection(l10n.sortBy, _buildSortOptions(l10n)),
-                ],
+                    // Filtres par portée
+                    _buildFilterSection(l10n.scope, _buildScopeFilters(l10n)),
+                    const SizedBox(height: 16),
+
+                    // Tri
+                    _buildFilterSection(l10n.sortBy, _buildSortOptions(l10n)),
+
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
           ],
@@ -147,6 +206,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
 
   Widget _buildFilterSection(String title, Widget content) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -156,7 +216,8 @@ class _BudgetFiltersState extends State<BudgetFilters> {
             fontSize: 14,
             color: Colors.black87,
           ),
-          overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         const SizedBox(height: 8),
         content,
@@ -166,13 +227,12 @@ class _BudgetFiltersState extends State<BudgetFilters> {
 
   Widget _buildStatusFilters(AppLocalizations l10n) {
     return Wrap(
-      // ✅ CORRECTION OVERFLOW - Remplacer SingleChildScrollView par Wrap
       spacing: 8,
       runSpacing: 8,
       children: [
         _buildFilterChip(
           l10n.all,
-          null,
+          null, // ✅ IMPORTANT: null pour "Tous"
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
         ),
@@ -182,7 +242,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.play_circle,
-          color: Colors.green,
+          color: Colors.green[600],
         ),
         _buildFilterChip(
           l10n.exceeded,
@@ -190,7 +250,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.warning,
-          color: Colors.red,
+          color: Colors.red[600],
         ),
         _buildFilterChip(
           l10n.warning,
@@ -198,7 +258,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.info,
-          color: Colors.orange,
+          color: Colors.orange[600],
         ),
         _buildFilterChip(
           l10n.expired,
@@ -206,7 +266,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.schedule,
-          color: Colors.grey,
+          color: Colors.grey[600],
         ),
         _buildFilterChip(
           l10n.upcoming,
@@ -214,7 +274,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.upcoming,
-          color: Colors.blue,
+          color: Colors.blue[600],
         ),
       ],
     );
@@ -222,13 +282,12 @@ class _BudgetFiltersState extends State<BudgetFilters> {
 
   Widget _buildPeriodFilters(AppLocalizations l10n) {
     return Wrap(
-      // ✅ CORRECTION OVERFLOW - Remplacer SingleChildScrollView par Wrap
       spacing: 8,
       runSpacing: 8,
       children: [
         _buildFilterChip(
           l10n.all,
-          null,
+          null, // ✅ IMPORTANT: null pour "Tous"
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
         ),
@@ -238,6 +297,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.view_week,
+          color: Colors.purple[600],
         ),
         _buildFilterChip(
           l10n.monthly,
@@ -245,6 +305,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.calendar_month,
+          color: Colors.blue[600],
         ),
         _buildFilterChip(
           l10n.yearly,
@@ -252,6 +313,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.calendar_today,
+          color: Colors.indigo[600],
         ),
         _buildFilterChip(
           l10n.custom,
@@ -259,6 +321,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.tune,
+          color: Colors.teal[600],
         ),
       ],
     );
@@ -266,13 +329,12 @@ class _BudgetFiltersState extends State<BudgetFilters> {
 
   Widget _buildScopeFilters(AppLocalizations l10n) {
     return Wrap(
-      // ✅ CORRECTION OVERFLOW - Remplacer SingleChildScrollView par Wrap
       spacing: 8,
       runSpacing: 8,
       children: [
         _buildFilterChip(
           l10n.all,
-          null,
+          null, // ✅ IMPORTANT: null pour "Tous"
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
         ),
@@ -282,6 +344,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
           icon: Icons.public,
+          color: Colors.green[600],
         ),
         _buildFilterChip(
           l10n.specificList,
@@ -289,6 +352,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
           icon: Icons.list,
+          color: Colors.orange[600],
         ),
       ],
     );
@@ -308,72 +372,96 @@ class _BudgetFiltersState extends State<BudgetFilters> {
     ];
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children:
           sortOptions.map((option) {
             final isActive = widget.activeSortBy == option['key'];
             final isAscending = widget.activeSortAscending ?? true;
 
-            return InkWell(
-              onTap: () {
-                if (isActive) {
-                  widget.onSortChanged(option['key'] as String, !isAscending);
-                } else {
-                  widget.onSortChanged(option['key'] as String, true);
-                }
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 12,
-                ),
-                margin: const EdgeInsets.only(bottom: 4),
-                decoration: BoxDecoration(
-                  color:
-                      isActive
-                          ? Theme.of(context).primaryColor.withOpacity(0.1)
-                          : null,
+            return Container(
+              margin: const EdgeInsets.only(bottom: 4),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    // ✅ DEBUG: Print pour vérifier les clics
+                    print(
+                      '🔧 Sort option clicked: ${option['key']}, current: ${widget.activeSortBy}, isActive: $isActive',
+                    );
+
+                    if (isActive) {
+                      widget.onSortChanged(
+                        option['key'] as String,
+                        !isAscending,
+                      );
+                    } else {
+                      widget.onSortChanged(option['key'] as String, true);
+                    }
+                  },
                   borderRadius: BorderRadius.circular(8),
-                  border:
-                      isActive
-                          ? Border.all(
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.3),
-                          )
-                          : null,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      option['icon'] as IconData,
-                      size: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
                       color:
                           isActive
-                              ? Theme.of(context).primaryColor
-                              : Colors.grey[600],
+                              ? Colors.green[50]
+                              : Colors
+                                  .grey[50], // ✅ CORRECTION: Fond même quand inactif
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                          isActive
+                              ? Border.all(
+                                color: Colors.green[300]!,
+                                width: 2,
+                              ) // ✅ CORRECTION: Bordure plus visible
+                              : Border.all(color: Colors.grey[200]!),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        option['label'] as String,
-                        style: TextStyle(
+                    child: Row(
+                      children: [
+                        Icon(
+                          option['icon'] as IconData,
+                          size: 20,
                           color:
-                              isActive ? Theme.of(context).primaryColor : null,
-                          fontWeight:
-                              isActive ? FontWeight.w600 : FontWeight.normal,
+                              isActive ? Colors.green[600] : Colors.grey[600],
                         ),
-                        overflow:
-                            TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            option['label'] as String,
+                            style: TextStyle(
+                              color:
+                                  isActive ? Colors.green[700] : Colors.black87,
+                              fontWeight:
+                                  isActive
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        if (isActive)
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              isAscending
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              size: 16,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                      ],
                     ),
-                    if (isActive)
-                      Icon(
-                        isAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                        size: 16,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -381,6 +469,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
     );
   }
 
+  // ✅ CORRECTION MAJEURE: Logique de comparaison des filtres
   Widget _buildFilterChip(
     String label,
     String? value,
@@ -389,50 +478,69 @@ class _BudgetFiltersState extends State<BudgetFilters> {
     IconData? icon,
     Color? color,
   }) {
-    final isActive = activeValue == value;
-    final theme = Theme.of(context);
+    // ✅ CORRECTION: Logique de comparaison plus robuste
+    final isActive =
+        (value == null && activeValue == null) ||
+        (value != null && value == activeValue);
 
-    return FilterChip(
-      label: IntrinsicWidth(
-        // ✅ CORRECTION OVERFLOW - Contraindre la largeur
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 14,
-                color: isActive ? Colors.white : (color ?? theme.primaryColor),
-              ),
-              const SizedBox(width: 4),
-            ],
-            Flexible(
-              // ✅ CORRECTION OVERFLOW
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: isActive ? Colors.white : null,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 12,
-                ),
-                overflow: TextOverflow.ellipsis, // ✅ CORRECTION OVERFLOW
-                maxLines: 1, // ✅ LIMITATION À UNE LIGNE
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print(
+            '🔧 Filter chip clicked: "$label", value=$value, current activeValue=$activeValue',
+          );
+          // ✅ CORRECTION: Logique de toggle
+          if (isActive && value != null) {
+            // Si c'est actif et pas "Tous", désactiver (retour à null)
+            onChanged(null);
+          } else if (!isActive || value == null) {
+            // Si pas actif ou c'est "Tous", activer la valeur
+            onChanged(value);
+          }
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            // ✅ CORRECTION: Couleurs plus visibles
+            color: isActive ? (color ?? Colors.green[600]) : Colors.grey[100],
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color:
+                  isActive ? (color ?? Colors.green[600])! : Colors.grey[300]!,
+              width:
+                  isActive
+                      ? 2
+                      : 1, // ✅ CORRECTION: Bordure plus épaisse quand actif
             ),
-          ],
-        ),
-      ),
-      selected: isActive,
-      onSelected: (selected) => onChanged(selected ? value : null),
-      selectedColor: color ?? theme.primaryColor,
-      checkmarkColor: Colors.white,
-      backgroundColor: Colors.grey[100],
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isActive ? (color ?? theme.primaryColor) : Colors.grey[300]!,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 14,
+                  color: isActive ? Colors.white : (color ?? Colors.green[600]),
+                ),
+                const SizedBox(width: 6),
+              ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 120),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: isActive ? Colors.white : Colors.black87,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -455,6 +563,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
   }
 
   void _clearAllFilters() {
+    print('🔧 Clearing all filters');
     widget.onStatusFilterChanged(null);
     widget.onPeriodFilterChanged(null);
     widget.onScopeFilterChanged(null);

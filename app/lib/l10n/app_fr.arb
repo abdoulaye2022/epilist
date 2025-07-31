@@ -1451,5 +1451,21 @@
   "tryAdjustingFilters": "Essayez d'ajuster vos filtres ou d'effacer les filtres actuels",
   "clearFilters": "Effacer les filtres",
   "daysRemaining": "jours restants",
-  "dayRemaining": "jour restant"
+  "dayRemaining": "jour restant",
+  "epilistUser": "Utilisateur EpiList",
+  "refreshTooltip": "Actualiser",
+  "appLogoError": "Erreur de chargement du logo",
+  "userMenuHeader": "Menu utilisateur",
+  "userRole": "Rôle utilisateur",
+  "accessLevel": "Niveau d'accès",
+  "confirmAction": "Confirmer l'action",
+  "menuOptions": "Options du menu",
+  "userActions": "Actions utilisateur",
+  "appReady": "Application prête",
+  "loadingUser": "Chargement utilisateur",
+  "welcomeBack": "Bon retour",
+  "goodMorning": "Bonjour",
+  "goodAfternoon": "Bon après-midi",
+  "goodEvening": "Bonsoir",
+  "all": "Tous"
 }

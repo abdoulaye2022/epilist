@@ -1,4 +1,4 @@
-// screens/home_screen.dart - VERSION CORRIGÉE SANS BLOC PROVIDERS ET SANS RAPPELS
+// screens/home_screen.dart - VERSION AVEC CARDS À BACKGROUND BLANC
 import 'dart:io';
 
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -20,6 +20,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/home/welcome_card.dart';
 import 'package:epilist/widgets/home/home_app_bar.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
+import 'package:epilist/widgets/home/shopping_lists_content.dart';
 import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/delete_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
@@ -29,7 +30,6 @@ import 'package:epilist/widgets/shopping/empty_list_state.dart';
 import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
-import 'package:epilist/widgets/dialogs/shopping_list_card.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[50],
       appBar: HomeAppBar(
         onRefresh: () => _loadShoppingLists(),
         onViewAllLists: () => _goToAllLists(context),
@@ -180,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                 const SizedBox(height: 16),
 
-                // Listes avec scroll horizontal
-                _buildShoppingListsContent(context, l10n),
+                // Section des listes de courses
+                _buildShoppingListsSection(context),
               ],
             ),
           ),
@@ -256,6 +256,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  // ✅ Card avec background blanc
   Widget _buildQuickActionCard({
     required IconData icon,
     required String title,
@@ -265,6 +266,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     bool isFullWidth = false,
   }) {
     return Card(
+      // ✅ Background blanc pour toutes les cards
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
@@ -316,306 +319,151 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Widget pour afficher les listes avec scroll horizontal
-  Widget _buildShoppingListsContent(
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
+  // Section simplifiée utilisant ShoppingListsContent
+  Widget _buildShoppingListsSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<ShoppingListBloc, ShoppingListState>(
       builder: (context, state) {
-        if (state is ShoppingListLoading) {
-          return Container(
-            height: 200,
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.green),
-            ),
-          );
-        }
-
-        if (state is ShoppingListError) {
-          return Container(
-            height: 200,
-            child: ErrorState(
-              message: state.message,
-              onRetry: _loadShoppingLists,
-            ),
-          );
-        }
-
         if (state is ShoppingListLoaded) {
-          if (state.lists.isEmpty) {
-            return Container(
-              height: 200,
-              child: EmptyListState(
-                onCreateList: () => _showCreateListDialog(context),
-              ),
-            );
-          }
-
-          // Affichage horizontal des listes
+          // Header avec informations sur les listes récentes
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header avec compte et bouton "Voir tout"
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.recentLists('${state.lists.length}'),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+              // ✅ Header avec background blanc
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  if (state.lists.length > 3)
-                    TextButton(
-                      onPressed: () => _goToAllLists(context),
-                      child: Text(l10n.viewAll),
-                    ),
-                ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.recentLists('${state.lists.length}'),
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (state.lists.length > 3)
+                        TextButton(
+                          onPressed: () => _goToAllLists(context),
+                          style: TextButton.styleFrom(
+                            minimumSize: Size.zero,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                          ),
+                          child: Text(
+                            l10n.viewAll,
+                            style: TextStyle(
+                              color: Colors.green[700],
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-              // ScrollView horizontal pour les listes
+              // Utilisation de ShoppingListsContent avec mode horizontal
               SizedBox(
-                height: 180, // Hauteur fixe pour les cartes
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  itemCount: state.lists.length > 5 ? 5 : state.lists.length,
-                  itemBuilder: (context, index) {
-                    final list = state.lists[index];
-                    return Container(
-                      width: 280, // Largeur fixe pour chaque carte
-                      margin: const EdgeInsets.only(right: 16),
-                      child: _buildHorizontalListCard(list, context, l10n),
-                    );
-                  },
+                height: 200, // Hauteur fixe pour l'affichage horizontal
+                child: ShoppingListsContent(
+                  onCreateNew: () => _showCreateListDialog(context),
+                  onListTap: (list) => _openListDetails(context, list),
+                  onListAction:
+                      (action, list) =>
+                          _handleListAction(action, list, context, l10n),
+                  maxDisplayLists:
+                      5, // Limiter à 5 listes sur l'écran d'accueil
+                  horizontalLayout: true, // Mode horizontal pour HomeScreen
                 ),
               ),
             ],
           );
         }
 
-        return Container(
-          height: 200,
-          child: EmptyListState(
-            onCreateList: () => _showCreateListDialog(context),
-          ),
+        // Pour les autres états (loading, error, empty), utiliser ShoppingListsContent tel quel
+        return Column(
+          children: [
+            // ✅ Header avec background blanc pour les états de chargement/erreur
+            Card(
+              color: Colors.white,
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.recentLists('0'),
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 200,
+              child: ShoppingListsContent(
+                onCreateNew: () => _showCreateListDialog(context),
+                onListTap: (list) => _openListDetails(context, list),
+                onListAction:
+                    (action, list) =>
+                        _handleListAction(action, list, context, l10n),
+                maxDisplayLists: 5,
+                horizontalLayout: true, // Mode horizontal pour tous les états
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
-  // Carte de liste avec les vraies propriétés du modèle
-  Widget _buildHorizontalListCard(
-    ShoppingList list,
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => _openListDetails(context, list),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header avec nom et menu
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      list.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected:
-                        (action) =>
-                            _handleListAction(action, list, context, l10n),
-                    itemBuilder: (context) => _buildMenuItems(list, l10n),
-                    child: Icon(Icons.more_vert, color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Informations de la liste
-              if (list.isShared) ...[
-                Row(
-                  children: [
-                    Icon(Icons.people, size: 16, color: Colors.blue[600]),
-                    const SizedBox(width: 4),
-                    Text(
-                      list.isOwner ? l10n.shared : l10n.sharedWithYou,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-
-              // Statistiques avec les vraies propriétés
-              Row(
-                children: [
-                  _buildStatChip(
-                    Icons.shopping_cart,
-                    '${list.itemsCount}',
-                    l10n.items,
-                    Colors.green,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildStatChip(
-                    Icons.check_circle,
-                    '${list.purchasedItemsCount}',
-                    l10n.done,
-                    Colors.blue,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Barre de progression avec la vraie propriété
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.progress,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        '${list.progressPercentage}%',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: list.progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      list.isCompleted ? Colors.green[600]! : Colors.blue[600]!,
-                    ),
-                  ),
-                ],
-              ),
-
-              const Spacer(),
-
-              // Footer avec date
-              Text(
-                _formatDate(list.updatedAt),
-                style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatChip(
-    IconData icon,
-    String value,
-    String label,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 2),
-          Text(
-            label,
-            style: TextStyle(fontSize: 10, color: color.withOpacity(0.8)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      return 'Aujourd\'hui';
-    } else if (difference.inDays == 1) {
-      return 'Hier';
-    } else if (difference.inDays < 7) {
-      return 'Il y a ${difference.inDays} jours';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
-  }
-
-  // ✅ Navigation vers la page Budget - SANS BlocProvider
+  // Navigation vers la page Budget
   void _goToBudget(BuildContext context) {
     context.requireConnection(
       onConnected: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (context) => const BudgetScreen(), // ✅ Pas de BlocProvider ici
-          ),
+          MaterialPageRoute(builder: (context) => const BudgetScreen()),
         );
       },
     );
   }
 
-  // ✅ Navigation vers la page Analytics - SANS BlocProvider
+  // Navigation vers la page Analytics
   void _goToAnalytics(BuildContext context) {
     context.requireConnection(
       onConnected: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (context) =>
-                    const AnalyticsScreen(), // ✅ Pas de BlocProvider ici
-          ),
+          MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
         );
       },
     );
@@ -652,109 +500,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Menu items pour les listes
-  List<PopupMenuEntry<String>> _buildMenuItems(
-    ShoppingList list,
-    AppLocalizations l10n,
-  ) {
-    final items = <PopupMenuEntry<String>>[];
-
-    // Voir/Modifier
-    if (list.canEdit) {
-      items.add(
-        PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              const Icon(Icons.edit, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.edit),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Dupliquer
-    items.add(
-      PopupMenuItem(
-        value: 'duplicate',
-        child: Row(
-          children: [
-            const Icon(Icons.copy, size: 20),
-            const SizedBox(width: 8),
-            Text(l10n.duplicate),
-          ],
-        ),
-      ),
-    );
-
-    // Partager
-    if (list.canShare) {
-      items.add(const PopupMenuDivider());
-      items.add(
-        PopupMenuItem(
-          value: 'share',
-          child: Row(
-            children: [
-              const Icon(Icons.share, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.share),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (list.isOwner && list.isShared) {
-      items.add(
-        PopupMenuItem(
-          value: 'manage_shares',
-          child: Row(
-            children: [
-              const Icon(Icons.people, size: 20),
-              const SizedBox(width: 8),
-              Text(l10n.manageShares),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Supprimer/Quitter
-    items.add(const PopupMenuDivider());
-    if (list.canDelete) {
-      items.add(
-        PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 20, color: Colors.red[600]),
-              const SizedBox(width: 8),
-              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
-            ],
-          ),
-        ),
-      );
-    } else if (!list.isOwner) {
-      items.add(
-        PopupMenuItem(
-          value: 'leave',
-          child: Row(
-            children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
-              const SizedBox(width: 8),
-              Text(l10n.leave, style: TextStyle(color: Colors.orange[600])),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return items;
-  }
-
-  // Gestion des actions
+  // Gestion des actions déléguée à ShoppingListsContent
   void _handleListAction(
     String action,
     ShoppingList list,

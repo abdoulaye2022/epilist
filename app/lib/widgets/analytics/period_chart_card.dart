@@ -1,4 +1,4 @@
-// widgets/analytics/period_chart_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
+// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -18,7 +18,7 @@ class PeriodChartCard extends StatefulWidget {
 class _PeriodChartCardState extends State<PeriodChartCard> {
   String _selectedPeriod = 'month';
 
-  // ✅ Ces labels seront maintenant dynamiques selon la langue
+  // ✅ Labels dynamiques selon la langue
   Map<String, String> _getPeriodLabels(AppLocalizations l10n) {
     return {
       'day': l10n.day,
@@ -33,6 +33,14 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     'week': Icons.view_week,
     'month': Icons.calendar_month,
     'year': Icons.calendar_today,
+  };
+
+  // ✅ CORRECTION: Utilisation de MaterialColor au lieu de Color simple
+  final Map<String, MaterialColor> _periodColors = {
+    'day': Colors.green,
+    'week': Colors.blue,
+    'month': Colors.purple,
+    'year': Colors.orange,
   };
 
   @override
@@ -53,9 +61,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       });
     }
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    final currentColor = _periodColors[_selectedPeriod] ?? Colors.green;
+
+    return Container(
+      // ✅ Fond transparent pour intégration avec wrapper blanc
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -65,7 +75,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               children: [
                 Icon(
                   _periodIcons[_selectedPeriod] ?? Icons.show_chart,
-                  color: Colors.green[600],
+                  color: currentColor[600],
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -75,6 +85,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -89,10 +100,13 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               height: 200,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: currentColor[50],
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: currentColor[100]!),
               ),
-              child: ClipRect(child: _buildChart(periodData, context, l10n)),
+              child: ClipRect(
+                child: _buildChart(periodData, context, l10n, currentColor),
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -104,7 +118,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                   child: _buildSummaryItem(
                     l10n.totalSpent,
                     summary['formatted_total'] ?? '0',
-                    Colors.green,
+                    currentColor,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -123,7 +137,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     );
   }
 
-  /// ✅ NOUVELLE MÉTHODE: Extraction des données selon la période
+  /// ✅ Extraction des données selon la période
   List<dynamic> _extractPeriodData() {
     final period = widget.data['period'] ?? _selectedPeriod;
 
@@ -140,7 +154,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  /// ✅ NOUVELLE MÉTHODE: Obtenir la moyenne formatée selon la période
+  /// ✅ Obtenir la moyenne formatée selon la période
   String _getFormattedAverage(Map<String, dynamic> summary) {
     switch (_selectedPeriod) {
       case 'day':
@@ -166,11 +180,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   String _getPeriodTitle(AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
-        return l10n.dailyTrends; // ✅ Traduit
+        return l10n.dailyTrends;
       case 'week':
-        return l10n.weeklyTrends; // ✅ Traduit
+        return l10n.weeklyTrends;
       case 'year':
-        return l10n.yearlyTrends; // ✅ Traduit
+        return l10n.yearlyTrends;
       case 'month':
       default:
         return l10n.monthlyTrends;
@@ -180,11 +194,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   String _getAverageLabel(AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
-        return l10n.dailyAverage; // ✅ Traduit
+        return l10n.dailyAverage;
       case 'week':
-        return l10n.weeklyAverage; // ✅ Traduit
+        return l10n.weeklyAverage;
       case 'year':
-        return l10n.yearlyAverage; // ✅ Traduit
+        return l10n.yearlyAverage;
       case 'month':
       default:
         return l10n.monthlyAverage;
@@ -194,55 +208,65 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   Widget _buildPeriodSelector(AppLocalizations l10n) {
     final periodLabels = _getPeriodLabels(l10n);
 
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.date_range, color: Colors.grey[600]),
-      tooltip: l10n.selectPeriod, // ✅ Traduit
-      onSelected: (period) {
-        setState(() {
-          _selectedPeriod = period;
-        });
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: PopupMenuButton<String>(
+        icon: Icon(Icons.date_range, color: Colors.grey[600]),
+        tooltip: l10n.selectPeriod,
+        onSelected: (period) {
+          setState(() {
+            _selectedPeriod = period;
+          });
+          _loadDataForPeriod(period);
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        color: Colors.white,
+        elevation: 8,
+        itemBuilder:
+            (context) =>
+                periodLabels.entries.map((entry) {
+                  final period = entry.key;
+                  final label = entry.value;
+                  final isSelected = period == _selectedPeriod;
+                  final color = _periodColors[period] ?? Colors.grey;
 
-        // Déclencher le chargement des nouvelles données
-        _loadDataForPeriod(period);
-      },
-      itemBuilder:
-          (context) =>
-              periodLabels.entries.map((entry) {
-                final period = entry.key;
-                final label = entry.value;
-                final isSelected = period == _selectedPeriod;
-
-                return PopupMenuItem<String>(
-                  value: period,
-                  child: Row(
-                    children: [
-                      Icon(
-                        _periodIcons[period]!,
-                        size: 20,
-                        color:
-                            isSelected ? Colors.green[600] : Colors.grey[600],
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
-                          color:
-                              isSelected ? Colors.green[600] : Colors.black87,
+                  return PopupMenuItem<String>(
+                    value: period,
+                    child: Row(
+                      children: [
+                        Icon(
+                          _periodIcons[period]!,
+                          size: 20,
+                          color: isSelected ? color[600] : Colors.grey[600],
                         ),
-                      ),
-                      const Spacer(),
-                      if (isSelected)
-                        Icon(Icons.check, color: Colors.green[600], size: 18),
-                    ],
-                  ),
-                );
-              }).toList(),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            label,
+                            style: TextStyle(
+                              fontWeight:
+                                  isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                              color: isSelected ? color[600] : Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(Icons.check, color: color[600], size: 18),
+                      ],
+                    ),
+                  );
+                }).toList(),
+      ),
     );
   }
 
-  /// ✅ MÉTHODE MISE À JOUR: Utiliser les nouveaux events spécifiques
+  /// ✅ Utiliser les nouveaux events spécifiques
   void _loadDataForPeriod(String period) {
     switch (period) {
       case 'day':
@@ -273,12 +297,14 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     List<dynamic> periodData,
     BuildContext context,
     AppLocalizations l10n,
+    MaterialColor chartColor, // ✅ CORRECTION: MaterialColor au lieu de Color
   ) {
     if (periodData.isEmpty) {
       return Center(
         child: Text(
-          l10n.noDataAvailable, // ✅ Traduit
-          style: const TextStyle(color: Colors.grey),
+          l10n.noDataAvailable,
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          textAlign: TextAlign.center,
         ),
       );
     }
@@ -293,8 +319,9 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     if (maxValue == 0) {
       return Center(
         child: Text(
-          l10n.noSpendingRecorded, // ✅ Traduit
-          style: const TextStyle(color: Colors.grey),
+          l10n.noSpendingRecorded,
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          textAlign: TextAlign.center,
         ),
       );
     }
@@ -330,7 +357,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                             width: 20,
                             height: height < 5 ? 5 : height,
                             decoration: BoxDecoration(
-                              color: Colors.green[600],
+                              color: chartColor[600],
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -340,9 +367,9 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                             height: 20,
                             child: Text(
                               label,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 9,
-                                color: Colors.grey,
+                                color: Colors.grey[600],
                               ),
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
@@ -360,33 +387,29 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     );
   }
 
-  /// ✅ MÉTHODE MISE À JOUR: Gestion des labels selon le type de données
+  /// ✅ Gestion des labels selon le type de données
   String _getItemLabel(Map<String, dynamic> item, AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
-        // Pour les données quotidiennes
         final date = item['date'] ?? '';
         final dayShort = item['day_short'] ?? '';
         return dayShort.isNotEmpty ? dayShort : _getShortDateLabel(date);
 
       case 'week':
-        // Pour les données hebdomadaires
         final weekNumber = item['week_number'];
         final weekLabel = item['week_label'] ?? '';
         if (weekNumber != null) {
-          // ✅ Utiliser la traduction pour le format de semaine
+          // ✅ CORRECTION: Utilisation correcte de la méthode de traduction
           return l10n.weekLabel(weekNumber);
         }
         return weekLabel.isNotEmpty ? _getShortWeekLabel(weekLabel) : '';
 
       case 'year':
-        // Pour les données annuelles
         final year = item['year'] ?? item['year_label'] ?? '';
         return year.toString();
 
       case 'month':
       default:
-        // Pour les données mensuelles
         final monthShort = item['month_short'] ?? '';
         final monthName = item['month_name'] ?? '';
         return monthShort.isNotEmpty
@@ -436,20 +459,21 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  Widget _buildSummaryItem(String label, String value, Color color) {
+  Widget _buildSummaryItem(String label, String value, MaterialColor color) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

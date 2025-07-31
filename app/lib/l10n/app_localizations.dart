@@ -6390,6 +6390,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'jour restant'**
   String get dayRemaining;
+
+  /// No description provided for @epilistUser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisateur EpiList'**
+  String get epilistUser;
+
+  /// No description provided for @refreshTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get refreshTooltip;
+
+  /// No description provided for @appLogoError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de chargement du logo'**
+  String get appLogoError;
+
+  /// No description provided for @userMenuHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menu utilisateur'**
+  String get userMenuHeader;
+
+  /// No description provided for @userRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rôle utilisateur'**
+  String get userRole;
+
+  /// No description provided for @accessLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau d\'accès'**
+  String get accessLevel;
+
+  /// No description provided for @confirmAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer l\'action'**
+  String get confirmAction;
+
+  /// No description provided for @menuOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Options du menu'**
+  String get menuOptions;
+
+  /// No description provided for @userActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions utilisateur'**
+  String get userActions;
+
+  /// No description provided for @appReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Application prête'**
+  String get appReady;
+
+  /// No description provided for @loadingUser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement utilisateur'**
+  String get loadingUser;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon retour'**
+  String get welcomeBack;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour'**
+  String get goodMorning;
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon après-midi'**
+  String get goodAfternoon;
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir'**
+  String get goodEvening;
 }
 
 class _AppLocalizationsDelegate

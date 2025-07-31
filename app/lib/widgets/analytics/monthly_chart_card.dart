@@ -1,4 +1,3 @@
-// widgets/analytics/monthly_chart_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -13,9 +12,9 @@ class MonthlyChartCard extends StatelessWidget {
     final monthlyData = data['monthly_data'] as List<dynamic>? ?? [];
     final summary = data['summary'] ?? {};
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -23,7 +22,7 @@ class MonthlyChartCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.show_chart, color: Colors.green[600], size: 28),
+                Icon(Icons.show_chart, color: Colors.blue[600], size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -31,6 +30,7 @@ class MonthlyChartCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87, // ✅ Couleur harmonisée
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -44,8 +44,9 @@ class MonthlyChartCard extends StatelessWidget {
               height: 200,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Colors.blue[50], // ✅ Couleur harmonisée
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[100]!),
               ),
               child: ClipRect(
                 child: _buildSimpleChart(monthlyData, context, l10n),
@@ -88,8 +89,9 @@ class MonthlyChartCard extends StatelessWidget {
     if (monthlyData.isEmpty) {
       return Center(
         child: Text(
-          l10n.noDataAvailable, // ✅ Traduit
-          style: const TextStyle(color: Colors.grey),
+          l10n.noDataAvailable,
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          textAlign: TextAlign.center,
         ),
       );
     }
@@ -104,19 +106,18 @@ class MonthlyChartCard extends StatelessWidget {
     if (maxValue == 0) {
       return Center(
         child: Text(
-          l10n.noSpendingRecorded, // ✅ Traduit
-          style: const TextStyle(color: Colors.grey),
+          l10n.noSpendingRecorded,
+          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          textAlign: TextAlign.center,
         ),
       );
     }
 
-    // Utiliser LayoutBuilder pour s'adapter à l'espace disponible
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableHeight = constraints.maxHeight;
-        final chartHeight =
-            availableHeight - 40; // Espace pour les labels (30px) + padding
-        final barMaxHeight = chartHeight - 20; // Hauteur max des barres
+        final chartHeight = availableHeight - 40;
+        final barMaxHeight = chartHeight - 20;
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -141,26 +142,23 @@ class MonthlyChartCard extends StatelessWidget {
                         children: [
                           Container(
                             width: 20,
-                            height:
-                                height < 5
-                                    ? 5
-                                    : height, // Hauteur minimum réduite
+                            height: height < 5 ? 5 : height,
                             decoration: BoxDecoration(
-                              color: Colors.green[600],
+                              color: Colors.blue[600], // ✅ Couleur harmonisée
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
                           const SizedBox(height: 6),
                           SizedBox(
                             width: 28,
-                            height: 20, // Hauteur fixe pour les labels
+                            height: 20,
                             child: Text(
                               monthName.isNotEmpty
                                   ? _getShortMonthName(monthName)
                                   : '',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 9,
-                                color: Colors.grey,
+                                color: Colors.grey[600],
                               ),
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
@@ -197,14 +195,15 @@ class MonthlyChartCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Colors.grey,
+              color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

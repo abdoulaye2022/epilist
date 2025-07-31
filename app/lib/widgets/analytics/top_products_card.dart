@@ -1,4 +1,4 @@
-// widgets/analytics/top_products_card.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
+// widgets/analytics/top_products_card.dart - VERSION AVEC FOND BLANC
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -21,6 +21,8 @@ class TopProductsCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // ✅ AJOUT: Fond blanc explicite
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -36,6 +38,8 @@ class TopProductsCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      // ✅ AJOUT: Couleur de texte harmonisée
+                      color: Colors.black87,
                     ),
                   ),
                 ),
@@ -151,118 +155,133 @@ class TopProductsCard extends StatelessWidget {
     String currentSort,
     AppLocalizations l10n,
   ) {
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.sort, color: Colors.grey[600]),
-      tooltip: l10n.sortBy,
-      onSelected: (sortBy) {
-        context.read<AnalyticsBloc>().add(
-          ChangeTopProductsSort(
-            sortBy: sortBy,
-            currencyCode: selectedCurrency,
-            period: 'month',
-            limit: 10,
-          ),
-        );
-      },
-      itemBuilder:
-          (context) => [
-            PopupMenuItem(
-              value: 'total_spent',
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.attach_money,
-                    size: 20,
-                    color:
-                        currentSort == 'total_spent'
-                            ? Colors.green[600]
-                            : Colors.grey[600],
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.sortByAmount,
-                    style: TextStyle(
-                      fontWeight:
-                          currentSort == 'total_spent'
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: PopupMenuButton<String>(
+        icon: Icon(Icons.sort, color: Colors.grey[600]),
+        tooltip: l10n.sortBy,
+        onSelected: (sortBy) {
+          context.read<AnalyticsBloc>().add(
+            ChangeTopProductsSort(
+              sortBy: sortBy,
+              currencyCode: selectedCurrency,
+              period: 'month',
+              limit: 10,
+            ),
+          );
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        color: Colors.white,
+        elevation: 8,
+        itemBuilder:
+            (context) => [
+              PopupMenuItem(
+                value: 'total_spent',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.attach_money,
+                      size: 20,
                       color:
                           currentSort == 'total_spent'
                               ? Colors.green[600]
-                              : Colors.black87,
+                              : Colors.grey[600],
                     ),
-                  ),
-                  const Spacer(),
-                  if (currentSort == 'total_spent')
-                    Icon(Icons.check, color: Colors.green[600], size: 18),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.sortByAmount,
+                        style: TextStyle(
+                          fontWeight:
+                              currentSort == 'total_spent'
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                          color:
+                              currentSort == 'total_spent'
+                                  ? Colors.green[600]
+                                  : Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (currentSort == 'total_spent')
+                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                  ],
+                ),
               ),
-            ),
-            PopupMenuItem(
-              value: 'quantity',
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.numbers,
-                    size: 20,
-                    color:
-                        currentSort == 'quantity'
-                            ? Colors.green[600]
-                            : Colors.grey[600],
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.sortByQuantity,
-                    style: TextStyle(
-                      fontWeight:
-                          currentSort == 'quantity'
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+              PopupMenuItem(
+                value: 'quantity',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.numbers,
+                      size: 20,
                       color:
                           currentSort == 'quantity'
                               ? Colors.green[600]
-                              : Colors.black87,
+                              : Colors.grey[600],
                     ),
-                  ),
-                  const Spacer(),
-                  if (currentSort == 'quantity')
-                    Icon(Icons.check, color: Colors.green[600], size: 18),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.sortByQuantity,
+                        style: TextStyle(
+                          fontWeight:
+                              currentSort == 'quantity'
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                          color:
+                              currentSort == 'quantity'
+                                  ? Colors.green[600]
+                                  : Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (currentSort == 'quantity')
+                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                  ],
+                ),
               ),
-            ),
-            PopupMenuItem(
-              value: 'frequency',
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.repeat,
-                    size: 20,
-                    color:
-                        currentSort == 'frequency'
-                            ? Colors.green[600]
-                            : Colors.grey[600],
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.sortByFrequency,
-                    style: TextStyle(
-                      fontWeight:
-                          currentSort == 'frequency'
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+              PopupMenuItem(
+                value: 'frequency',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.repeat,
+                      size: 20,
                       color:
                           currentSort == 'frequency'
                               ? Colors.green[600]
-                              : Colors.black87,
+                              : Colors.grey[600],
                     ),
-                  ),
-                  const Spacer(),
-                  if (currentSort == 'frequency')
-                    Icon(Icons.check, color: Colors.green[600], size: 18),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.sortByFrequency,
+                        style: TextStyle(
+                          fontWeight:
+                              currentSort == 'frequency'
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                          color:
+                              currentSort == 'frequency'
+                                  ? Colors.green[600]
+                                  : Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (currentSort == 'frequency')
+                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+      ),
     );
   }
 
@@ -311,8 +330,11 @@ class TopProductsCard extends StatelessWidget {
     Color rankColor = Colors.grey[600]!;
     if (rank <= 3) {
       rankColor =
-          [Colors.amber[600]!, Colors.grey[500]!, Colors.orange[600]!][rank -
-              1];
+          [
+            Colors.amber[600]!, // 1er - Or
+            Colors.grey[500]!, // 2ème - Argent
+            Colors.orange[600]!, // 3ème - Bronze
+          ][rank - 1];
     }
 
     return Container(
@@ -353,6 +375,8 @@ class TopProductsCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    // ✅ AJOUT: Couleur de texte harmonisée
+                    color: Colors.black87,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -362,10 +386,12 @@ class TopProductsCard extends StatelessWidget {
                   Text(
                     '${l10n.storesLabel}: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 Text(
                   '${l10n.averagePriceLabel}: $averagePrice',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
