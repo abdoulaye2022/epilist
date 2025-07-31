@@ -1,5 +1,5 @@
 <?php
-// src/Models/User.php - VERSION MISE À JOUR AVEC SUPPORT DEVISE
+// src/Models/User.php - VERSION COMPLÈTE AVEC TOUTES LES RELATIONS
 
 namespace App\Models;
 
@@ -30,7 +30,7 @@ class User extends Model
         'email_verification_code_expires_at',
         'email_verified_at',
         'email_verified',
-        'currency_id', // ✅ Nouveau champ pour la devise
+        'currency_id',
         // Champs pour la suppression
         'account_deletion_code',
         'account_deletion_code_expires_at',
@@ -53,7 +53,7 @@ class User extends Model
         'email_verified' => 'boolean',
         'is_deletion_requested' => 'boolean',
         'is_active' => 'boolean',
-        'currency_id' => 'integer', // ✅ Nouveau cast
+        'currency_id' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -65,15 +65,17 @@ class User extends Model
     ];
 
     protected $attributes = [
-        'currency_id' => 1, // ✅ CAD par défaut
+        'currency_id' => 1, // CAD par défaut
         'is_active' => true,
         'email_verified' => false,
         'terms_accepted' => false,
         'is_deletion_requested' => false
     ];
 
+    // ===================== RELATIONS =====================
+
     /**
-     * ✅ NOUVELLE RELATION: Devise préférée de l'utilisateur
+     * ✅ Devise préférée de l'utilisateur
      */
     public function currency(): BelongsTo
     {
@@ -81,7 +83,7 @@ class User extends Model
     }
 
     /**
-     * Relation avec les listes de courses
+     * ✅ Listes de courses de l'utilisateur
      */
     public function shoppingLists(): HasMany
     {
@@ -89,7 +91,7 @@ class User extends Model
     }
 
     /**
-     * Relation avec les suggestions de produits
+     * ✅ Suggestions de produits de l'utilisateur
      */
     public function productSuggestions(): HasMany
     {
@@ -97,7 +99,7 @@ class User extends Model
     }
 
     /**
-     * Relation avec les listes partagées (en tant que propriétaire)
+     * ✅ Listes partagées par l'utilisateur (en tant que propriétaire)
      */
     public function ownedSharedLists(): HasMany
     {
@@ -105,12 +107,63 @@ class User extends Model
     }
 
     /**
-     * Relation avec les listes partagées (en tant qu'invité)
+     * ✅ Listes partagées avec l'utilisateur (en tant qu'invité)
      */
     public function receivedSharedLists(): HasMany
     {
         return $this->hasMany(SharedList::class, 'shared_with_user_id');
     }
+
+    /**
+     * ✅ Appareils de l'utilisateur
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    /**
+     * ✅ Appareils actifs seulement
+     */
+    public function activeDevices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class)->active();
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Budgets de l'utilisateur
+     */
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class);
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Budgets actifs de l'utilisateur
+     */
+    public function activeBudgets(): HasMany
+    {
+        return $this->hasMany(Budget::class)->active();
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Budgets actifs et actuels
+     */
+    public function currentBudgets(): HasMany
+    {
+        return $this->hasMany(Budget::class)->active()->current();
+    }
+
+    /**
+     * ✅ NOUVELLE RELATION: Budgets dépassés
+     */
+    public function exceededBudgets(): HasMany
+    {
+        return $this->hasMany(Budget::class)->active()->current();
+        // Note: Le filtrage pour "exceeded" se fait en PHP car complexe en SQL
+    }
+
+    // ===================== MÉTHODES STATIQUES =====================
 
     /**
      * Trouve un utilisateur par email
@@ -120,7 +173,8 @@ class User extends Model
         return static::where('email', $email)->first();
     }
 
-    // ✅ MÉTHODES EXISTANTES (inchangées)
+    // ===================== MÉTHODES D'AUTHENTIFICATION =====================
+
     public function isEmailVerified(): bool
     {
         return $this->email_verified || $this->email_verified_at !== null;
@@ -148,7 +202,8 @@ class User extends Model
                $this->password_change_code_expires_at > now();
     }
 
-    // ✅ MÉTHODES DE SUPPRESSION (inchangées)
+    // ===================== MÉTHODES DE SUPPRESSION =====================
+
     public function isAccountDeletionCodeValid(string $code): bool
     {
         return $this->account_deletion_code === $code && 
@@ -221,11 +276,8 @@ class User extends Model
         ]);
     }
 
-    // ✅ NOUVELLES MÉTHODES POUR LES DEVISES
+    // ===================== MÉTHODES POUR LES DEVISES =====================
 
-    /**
-     * Obtenir la devise de l'utilisateur ou la devise par défaut
-     */
     public function getPreferredCurrency(): Currency
     {
         if ($this->currency) {
@@ -239,9 +291,6 @@ class User extends Model
         return $defaultCurrency;
     }
 
-    /**
-     * Changer la devise préférée de l'utilisateur
-     */
     public function setCurrency(int $currencyId): bool
     {
         $currency = Currency::active()->find($currencyId);
@@ -253,9 +302,6 @@ class User extends Model
         return $this->update(['currency_id' => $currencyId]);
     }
 
-    /**
-     * Changer la devise par code
-     */
     public function setCurrencyByCode(string $currencyCode): bool
     {
         $currency = Currency::findByCode($currencyCode);
@@ -267,34 +313,105 @@ class User extends Model
         return $this->setCurrency($currency->id);
     }
 
-    /**
-     * Formater un montant dans la devise de l'utilisateur
-     */
     public function formatAmount(float $amount, bool $showCode = false): string
     {
         $currency = $this->getPreferredCurrency();
         return $currency->formatAmount($amount, $showCode);
     }
 
-    /**
-     * Convertir un montant vers la devise de l'utilisateur
-     */
     public function convertToCurrency(float $amount, string $fromCurrencyCode): float
     {
         $userCurrency = $this->getPreferredCurrency();
         return Currency::convert($amount, $fromCurrencyCode, $userCurrency->code);
     }
 
-    /**
-     * Convertir un montant depuis la devise de l'utilisateur
-     */
     public function convertFromCurrency(float $amount, string $toCurrencyCode): float
     {
         $userCurrency = $this->getPreferredCurrency();
         return Currency::convert($amount, $userCurrency->code, $toCurrencyCode);
     }
 
-    // ✅ SCOPES EXISTANTS (inchangés)
+    // ===================== MÉTHODES POUR LES NOTIFICATIONS =====================
+
+    public function canReceiveNotifications(): bool
+    {
+        return $this->activeDevices()
+            ->canReceiveNotifications()
+            ->exists();
+    }
+
+    public function hasNotificationPreference(string $type): bool
+    {
+        return $this->activeDevices()
+            ->get()
+            ->some(function($device) use ($type) {
+                return $device->hasNotificationPreference($type);
+            });
+    }
+
+    public function registerDevice(array $deviceData): UserDevice
+    {
+        return UserDevice::registerDevice(array_merge($deviceData, [
+            'user_id' => $this->id
+        ]));
+    }
+
+    // ===================== MÉTHODES POUR LES BUDGETS =====================
+
+    /**
+     * ✅ Obtenir les budgets qui nécessitent une alerte
+     */
+    public function getBudgetsRequiringAlert(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->currentBudgets()
+            ->get()
+            ->filter(function($budget) {
+                return $budget->shouldShowAlert();
+            });
+    }
+
+    /**
+     * ✅ Obtenir les budgets dépassés
+     */
+    public function getExceededBudgets(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->currentBudgets()
+            ->get()
+            ->filter(function($budget) {
+                return $budget->isExceeded();
+            });
+    }
+
+    /**
+     * ✅ Vérifier si l'utilisateur a des budgets actifs
+     */
+    public function hasActiveBudgets(): bool
+    {
+        return $this->currentBudgets()->count() > 0;
+    }
+
+    /**
+     * ✅ Obtenir le montant total budgété
+     */
+    public function getTotalBudgetAmount(): float
+    {
+        return $this->currentBudgets()->sum('budget_amount');
+    }
+
+    /**
+     * ✅ Obtenir le montant total dépensé
+     */
+    public function getTotalSpentAmount(): float
+    {
+        return $this->currentBudgets()
+            ->get()
+            ->sum(function($budget) {
+                return $budget->getSpentAmount();
+            });
+    }
+
+    // ===================== SCOPES =====================
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
@@ -311,7 +428,6 @@ class User extends Model
         return $query->where('is_active', false);
     }
 
-    // ✅ NOUVEAUX SCOPES POUR LES DEVISES
     public function scopeWithCurrency($query, string $currencyCode)
     {
         return $query->whereHas('currency', function($q) use ($currencyCode) {
@@ -327,32 +443,32 @@ class User extends Model
     }
 
     /**
-     * ✅ BOOT METHOD pour assigner la devise par défaut
+     * ✅ NOUVEAU SCOPE: Utilisateurs avec appareils actifs
      */
-    protected static function boot()
+    public function scopeWithActiveDevices($query)
     {
-        parent::boot();
-
-        // Assigner automatiquement la devise par défaut lors de la création
-        static::creating(function ($user) {
-            if (!$user->currency_id) {
-                $defaultCurrency = Currency::getDefault();
-                $user->currency_id = $defaultCurrency->id;
-            }
+        return $query->whereHas('devices', function($q) {
+            $q->active()->canReceiveNotifications();
         });
     }
 
     /**
-     * ✅ ACCESSEUR pour obtenir le nom complet
+     * ✅ NOUVEAU SCOPE: Utilisateurs avec budgets actifs
      */
+    public function scopeWithActiveBudgets($query)
+    {
+        return $query->whereHas('budgets', function($q) {
+            $q->active()->current();
+        });
+    }
+
+    // ===================== ACCESSEURS =====================
+
     public function getFullNameAttribute(): string
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    /**
-     * ✅ ACCESSEUR pour les données API avec devise
-     */
     public function getApiDataAttribute(): array
     {
         $currency = $this->getPreferredCurrency();
@@ -372,51 +488,18 @@ class User extends Model
         ];
     }
 
-    /**
-     * ✅ NOUVELLE RELATION: Appareils de l'utilisateur
-     */
-    public function devices(): HasMany
-    {
-        return $this->hasMany(UserDevice::class);
-    }
+    // ===================== BOOT METHOD =====================
 
-    /**
-     * ✅ NOUVELLE RELATION: Appareils actifs seulement
-     */
-    public function activeDevices(): HasMany
+    protected static function boot()
     {
-        return $this->hasMany(UserDevice::class)->active();
-    }
+        parent::boot();
 
-    /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur peut recevoir des notifications
-     */
-    public function canReceiveNotifications(): bool
-    {
-        return $this->activeDevices()
-            ->canReceiveNotifications()
-            ->exists();
-    }
-
-    /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier une préférence de notification
-     */
-    public function hasNotificationPreference(string $type): bool
-    {
-        return $this->activeDevices()
-            ->get()
-            ->some(function($device) use ($type) {
-                return $device->hasNotificationPreference($type);
-            });
-    }
-
-    /**
-     * ✅ NOUVELLE MÉTHODE: Enregistrer un appareil
-     */
-    public function registerDevice(array $deviceData): UserDevice
-    {
-        return UserDevice::registerDevice(array_merge($deviceData, [
-            'user_id' => $this->id
-        ]));
+        // Assigner automatiquement la devise par défaut lors de la création
+        static::creating(function ($user) {
+            if (!$user->currency_id) {
+                $defaultCurrency = Currency::getDefault();
+                $user->currency_id = $defaultCurrency->id;
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-// widgets/shopping/shopping_list_card.dart - VERSION SANS SIGNE DOLLAR
+// widgets/shopping/shopping_list_card.dart - VERSION SANS RAPPELS
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -514,113 +514,6 @@ class ShoppingListCard extends StatelessWidget {
             Expanded(
               child: Text(
                 l10n.receipts,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // ===== SECTION RAPPELS =====
-    items.add(const PopupMenuDivider());
-
-    // Programmer un rappel
-    items.add(
-      PopupMenuItem(
-        value: 'schedule_reminder',
-        child: Row(
-          children: [
-            Icon(Icons.schedule, size: 20, color: Colors.orange[600]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.scheduleReminder,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Rappel rapide dans 2h
-    items.add(
-      PopupMenuItem(
-        value: 'quick_reminder_2h',
-        child: Row(
-          children: [
-            Icon(Icons.access_time, size: 20, color: Colors.amber[600]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.remindIn2Hours,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Rappel pour demain
-    items.add(
-      PopupMenuItem(
-        value: 'quick_reminder_tomorrow',
-        child: Row(
-          children: [
-            Icon(Icons.today, size: 20, color: Colors.indigo[600]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.remindTomorrow,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Voir les rappels
-    items.add(
-      PopupMenuItem(
-        value: 'view_reminders',
-        child: Row(
-          children: [
-            Icon(
-              Icons.notifications_active,
-              size: 20,
-              color: Colors.purple[600],
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.viewReminders,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Annuler les rappels
-    items.add(
-      PopupMenuItem(
-        value: 'cancel_reminders',
-        child: Row(
-          children: [
-            Icon(Icons.notifications_off, size: 20, color: Colors.grey[600]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.cancelReminders,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),

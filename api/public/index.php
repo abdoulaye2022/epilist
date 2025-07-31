@@ -30,8 +30,6 @@ use App\Services\MailSender;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Carbon\Carbon;
-use App\Services\BudgetAlertService;
-use App\Services\MobileNotificationService;
 
 // Charger les variables d'environnement
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
@@ -163,6 +161,7 @@ $app->group('', function ($group) {
     $group->post('/auth/confirm-account-deletion', [AuthController::class, 'confirmAccountDeletion']);
     $group->post('/auth/cancel-account-deletion', [AuthController::class, 'cancelAccountDeletion']);
     $group->get('/auth/account-deletion-status', [AuthController::class, 'getAccountDeletionStatus']);
+    $group->put('/auth/fcm-token', [AuthController::class, 'updateFCMToken']);
 
     // ✅ ROUTES POUR LES SUGGESTIONS DE PRODUITS
     $group->get('/product-suggestions/search', [ProductSuggestionController::class, 'search']);
@@ -244,12 +243,24 @@ $app->group('', function ($group) {
     $group->put('/budgets/{id}', [BudgetController::class, 'update']);
     $group->delete('/budgets/{id}', [BudgetController::class, 'destroy']);
 
+    // ✅ ROUTES DEVICES COMPLÈTES ET CORRIGÉES
     $group->post('/devices/register', [DeviceController::class, 'register']);
     $group->put('/devices/push-token', [DeviceController::class, 'updatePushToken']);
     $group->get('/devices', [DeviceController::class, 'index']);
     $group->put('/devices/notifications', [DeviceController::class, 'updateNotificationPreferences']);
     $group->post('/devices/deactivate', [DeviceController::class, 'deactivate']);
+
+    // ✅ NOUVELLES ROUTES POUR VRAIES NOTIFICATIONS
+    $group->put('/devices/real-token', [DeviceController::class, 'updateWithRealToken']);
+    $group->get('/devices/analyze', [DeviceController::class, 'analyzeDeviceTokens']);
+    $group->post('/devices/test-advanced', [DeviceController::class, 'testAdvancedNotification']);
+
+    // ✅ ROUTES DE TEST DE NOTIFICATIONS
     $group->post('/devices/test-notification', [DeviceController::class, 'testNotification']);
+    $group->post('/devices/test-user-notifications', [DeviceController::class, 'testNotificationToUser']);
+
+    // ✅ ROUTE DE DEBUG
+    $group->get('/devices/debug', [DeviceController::class, 'debugDevices']);
 
 })->add($jwtMiddleware);
 

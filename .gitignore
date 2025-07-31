@@ -24,6 +24,7 @@ docker-compose.*.yml
 /api/vendor/
 /api/composer.lock
 /api/composer.phar
+/api/service-account.json
 
 # Cache
 /api/var/cache/*

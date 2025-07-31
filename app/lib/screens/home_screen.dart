@@ -1,4 +1,4 @@
-// screens/home_screen.dart - VERSION CORRIGÉE SANS BLOC PROVIDERS
+// screens/home_screen.dart - VERSION CORRIGÉE SANS BLOC PROVIDERS ET SANS RAPPELS
 import 'dart:io';
 
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -9,12 +9,9 @@ import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
-import 'package:epilist/notifications/notification_service.dart';
 import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
-import 'package:epilist/screens/diagnostic_screen.dart';
 import 'package:epilist/services/analytics_service.dart';
-import 'package:epilist/services/shopping_reminder_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
@@ -27,7 +24,6 @@ import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/delete_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_dialog.dart';
-import 'package:epilist/widgets/dialogs/schedule_reminder_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/empty_list_state.dart';
 import 'package:epilist/widgets/shopping/error_state.dart';
@@ -58,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     _loadShoppingLists();
-    _cleanExpiredReminders();
 
     // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,10 +63,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _loadShoppingLists() {
     context.read<ShoppingListBloc>().add(LoadShoppingLists());
-  }
-
-  void _cleanExpiredReminders() {
-    ShoppingReminderService.cleanExpiredReminders();
   }
 
   // Méthode pour initialiser les deep links une seule fois
@@ -698,47 +689,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
 
-    // Rappels
-    items.add(const PopupMenuDivider());
-    items.add(
-      PopupMenuItem(
-        value: 'schedule_reminder',
-        child: Row(
-          children: [
-            Icon(Icons.schedule, size: 20, color: Colors.blue[600]),
-            const SizedBox(width: 8),
-            Text(l10n.scheduleReminder),
-          ],
-        ),
-      ),
-    );
-
-    items.add(
-      PopupMenuItem(
-        value: 'quick_reminder_2h',
-        child: Row(
-          children: [
-            Icon(Icons.alarm, size: 20, color: Colors.orange[600]),
-            const SizedBox(width: 8),
-            Text(l10n.remindIn2Hours),
-          ],
-        ),
-      ),
-    );
-
-    items.add(
-      PopupMenuItem(
-        value: 'view_reminders',
-        child: Row(
-          children: [
-            Icon(Icons.list_alt, size: 20, color: Colors.green[600]),
-            const SizedBox(width: 8),
-            Text(l10n.viewReminders),
-          ],
-        ),
-      ),
-    );
-
     // Partager
     if (list.canShare) {
       items.add(const PopupMenuDivider());
@@ -834,27 +784,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
         break;
 
-      // Gestion des rappels de courses
-      case 'schedule_reminder':
-        _showScheduleReminderDialog(list);
-        break;
-
-      case 'quick_reminder_2h':
-        _scheduleQuickReminder(list, const Duration(hours: 2), l10n);
-        break;
-
-      case 'quick_reminder_tomorrow':
-        _scheduleQuickReminder(list, const Duration(hours: 24), l10n);
-        break;
-
-      case 'view_reminders':
-        _showScheduledReminders(list, l10n);
-        break;
-
-      case 'cancel_reminders':
-        _cancelAllReminders(list, l10n);
-        break;
-
       case 'share':
         if (list.canShare) {
           context.requireConnection(
@@ -906,243 +835,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           );
         }
         break;
-    }
-  }
-
-  // Méthodes de gestion des rappels
-  void _showScheduleReminderDialog(ShoppingList list) {
-    showDialog(
-      context: context,
-      builder: (context) => ScheduleReminderDialog(shoppingList: list),
-    );
-  }
-
-  Future<void> _scheduleQuickReminder(
-    ShoppingList list,
-    Duration delay,
-    AppLocalizations l10n,
-  ) async {
-    try {
-      await ShoppingReminderService.scheduleShoppingReminder(
-        shoppingList: list,
-        reminderTime: DateTime.now().add(delay),
-      );
-
-      if (mounted) {
-        final timeText =
-            delay.inHours < 24 ? l10n.inHours(delay.inHours) : l10n.tomorrow;
-
-        SmartSnackBarManager.showSuccessSnackBar(
-          context,
-          '${l10n.reminderScheduledFor} $timeText',
-          duration: const Duration(seconds: 2),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        SmartSnackBarManager.showErrorSnackBar(
-          context,
-          l10n.errorSchedulingReminder,
-        );
-      }
-    }
-  }
-
-  Future<void> _showScheduledReminders(
-    ShoppingList list,
-    AppLocalizations l10n,
-  ) async {
-    try {
-      final reminders = await ShoppingReminderService.getListReminders(list.id);
-
-      if (!mounted) return;
-
-      if (reminders.isEmpty) {
-        SmartSnackBarManager.showInfoSnackBar(
-          context,
-          l10n.noRemindersScheduled,
-        );
-        return;
-      }
-
-      // Afficher la liste des rappels dans un dialog simplifié
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Row(
-                children: [
-                  Icon(Icons.schedule, color: Colors.blue[600]),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      l10n.scheduledReminders,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: reminders.length,
-                  itemBuilder: (context, index) {
-                    final reminder = reminders[index];
-                    final reminderTime = DateTime.parse(
-                      reminder['reminder_time'],
-                    );
-                    final storeName = reminder['store_name'] as String?;
-
-                    return ListTile(
-                      leading: Icon(Icons.alarm, color: Colors.orange[600]),
-                      title: Text(_formatReminderTime(reminderTime)),
-                      subtitle:
-                          storeName != null
-                              ? Text('${l10n.store}: $storeName')
-                              : null,
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: Colors.red[600],
-                        ),
-                        onPressed:
-                            () => _cancelSpecificReminder(
-                              reminder['notification_id'],
-                              l10n,
-                            ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.close),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _showScheduleReminderDialog(list);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(l10n.addReminder),
-                ),
-              ],
-            ),
-      );
-    } catch (e) {
-      if (mounted) {
-        SmartSnackBarManager.showErrorSnackBar(
-          context,
-          l10n.errorLoadingReminders,
-        );
-      }
-    }
-  }
-
-  Future<void> _cancelAllReminders(
-    ShoppingList list,
-    AppLocalizations l10n,
-  ) async {
-    final shouldCancel = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(Icons.warning, color: Colors.orange[600]),
-                const SizedBox(width: 8),
-                Text(l10n.cancelAllReminders),
-              ],
-            ),
-            content: Text(l10n.cancelAllRemindersConfirm),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange[600],
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(l10n.cancelAll),
-              ),
-            ],
-          ),
-    );
-
-    if (shouldCancel == true) {
-      try {
-        await ShoppingReminderService.cancelListReminders(list.id);
-
-        if (mounted) {
-          SmartSnackBarManager.showSuccessSnackBar(
-            context,
-            l10n.allRemindersCancelled,
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          SmartSnackBarManager.showErrorSnackBar(
-            context,
-            l10n.errorCancellingReminders,
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _cancelSpecificReminder(
-    int notificationId,
-    AppLocalizations l10n,
-  ) async {
-    try {
-      await ShoppingReminderService.cancelSpecificReminder(notificationId);
-
-      if (mounted) {
-        Navigator.pop(context);
-        SmartSnackBarManager.showSuccessSnackBar(
-          context,
-          l10n.reminderCancelled,
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        SmartSnackBarManager.showErrorSnackBar(
-          context,
-          l10n.errorCancellingReminder,
-        );
-      }
-    }
-  }
-
-  String _formatReminderTime(DateTime reminderTime) {
-    final now = DateTime.now();
-    final difference = reminderTime.difference(now);
-
-    if (difference.isNegative) {
-      return 'Expiré';
-    }
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays}j ${difference.inHours % 24}h';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ${difference.inMinutes % 60}min';
-    } else {
-      return '${difference.inMinutes}min';
     }
   }
 

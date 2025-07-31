@@ -1,13 +1,15 @@
 <?php
-// app/Controllers/DeviceController.php
+// app/Controllers/DeviceController.php - VERSION NETTOYÉE
 
 namespace App\Controllers;
 
 use App\Models\UserDevice;
 use App\Models\User;
+use App\Services\NotificationService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Valitron\Validator;
+use Carbon\Carbon;
 
 class DeviceController
 {
@@ -58,8 +60,7 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while registering the device',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while registering the device'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -121,8 +122,7 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while updating push token',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while updating push token'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -145,13 +145,15 @@ class DeviceController
                 return $device->getDeviceInfo();
             });
 
+            $summary = [
+                'total_devices' => $devices->count(),
+                'active_devices' => $devices->filter(fn($d) => $d->isActive())->count()
+            ];
+
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => $formattedDevices,
-                'meta' => [
-                    'total_devices' => $devices->count(),
-                    'active_devices' => $devices->filter(fn($d) => $d->isActive())->count()
-                ]
+                'meta' => $summary
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
@@ -162,8 +164,7 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while retrieving devices',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while retrieving devices'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -226,8 +227,7 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while updating preferences',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while updating preferences'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -285,8 +285,7 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while deactivating device',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while deactivating device'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -340,33 +339,28 @@ class DeviceController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            // Envoyer une notification de test
-            $notificationService = new \App\Services\MobileNotificationService();
-            $testNotification = [
-                'title' => '🧪 Test Notification',
-                'body' => 'Votre appareil peut recevoir les notifications EpiList!',
-                'icon' => 'test',
-                'sound' => 'default',
-                'priority' => 'normal',
-                'data' => [
+            // Utiliser le service de notification
+            $notificationService = new NotificationService();
+            
+            $success = $notificationService->sendEpiListNotification(
+                $device,
+                'test',
+                '🧪 Test Notification',
+                'Test depuis ' . $device->device_model . ' - ' . Carbon::now()->format('H:i:s'),
+                [
                     'type' => 'test',
                     'timestamp' => time(),
-                    'action' => 'none'
+                    'action' => 'none',
+                    'device_id' => $device->device_id
                 ]
-            ];
-
-            $success = false;
-            if ($device->platform === 'android') {
-                $success = $notificationService->sendFCMNotification($device, $testNotification);
-            } elseif ($device->platform === 'ios') {
-                $success = $notificationService->sendAPNSNotification($device, $testNotification);
-            }
+            );
 
             $response->getBody()->write(json_encode([
                 'success' => $success,
                 'data' => [
                     'notification_sent' => $success,
-                    'platform' => $device->platform
+                    'platform' => $device->platform,
+                    'device_info' => $device->getDeviceInfo()
                 ],
                 'message' => $success ? 'Test notification sent' : 'Failed to send test notification'
             ]));
@@ -379,8 +373,45 @@ class DeviceController
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
-                    'message' => 'An error occurred while sending test notification',
-                    'details' => $e->getMessage()
+                    'message' => 'An error occurred while sending test notification'
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ TEST DE NOTIFICATION POUR TOUS LES APPAREILS DE L'UTILISATEUR
+     */
+    public function testNotificationToUser(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+
+            $notificationService = new NotificationService();
+            $result = $notificationService->sendToUser(
+                $user_id,
+                'test',
+                '🧪 Test Notification EpiList',
+                'Test notification envoyée à tous vos appareils - ' . Carbon::now()->format('H:i:s'),
+                [
+                    'type' => 'test',
+                    'timestamp' => time(),
+                    'action' => 'none'
+                ]
+            );
+
+            $response->getBody()->write(json_encode($result));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            error_log("Test notification to user error: " . $e->getMessage());
+            
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'INTERNAL_ERROR',
+                    'message' => 'An error occurred while sending test notification'
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

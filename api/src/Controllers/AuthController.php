@@ -1,9 +1,10 @@
 <?php
-// src/Controllers/AuthController.php - VERSION COMPLÈTE AVEC SUPPORT DEVISE
+// src/Controllers/AuthController.php - VERSION COMPLÈTE AVEC SUPPORT FCM ET DEVISE
 
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Models\Currency;
 use App\Services\JwtService;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,6 +29,81 @@ class AuthController
     public function __construct()
     {
         $this->jwtService = new JwtService();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Mettre à jour le token FCM de l'utilisateur
+     */
+    private function updateUserFCMToken(int $userId, array $fcmData): bool
+    {
+        try {
+            error_log("🔔 Mise à jour FCM pour utilisateur: {$userId}");
+            
+            // Valider les données FCM
+            if (empty($fcmData['device_id']) || empty($fcmData['push_token'])) {
+                error_log("⚠️ Données FCM incomplètes - ignoré");
+                return false;
+            }
+
+            // Vérifier la plateforme
+            $platform = $fcmData['platform'] ?? 'unknown';
+            if (!in_array($platform, ['android', 'ios'])) {
+                error_log("⚠️ Plateforme invalide: {$platform} - ignoré");
+                return false;
+            }
+
+            error_log("   Device ID: " . substr($fcmData['device_id'], 0, 20) . '...');
+            error_log("   Platform: {$platform}");
+            error_log("   Push Token: " . substr($fcmData['push_token'], 0, 20) . '...');
+
+            // Chercher un appareil existant
+            $existingDevice = UserDevice::forUser($userId)
+                ->where('device_id', $fcmData['device_id'])
+                ->first();
+
+            if ($existingDevice) {
+                $oldToken = $existingDevice->push_token;
+                $newToken = $fcmData['push_token'];
+                
+                if ($oldToken !== $newToken) {
+                    error_log("🔄 Token FCM différent détecté - mise à jour");
+                    error_log("   Ancien: " . substr($oldToken, 0, 20) . '...');
+                    error_log("   Nouveau: " . substr($newToken, 0, 20) . '...');
+                    
+                    // Mettre à jour l'appareil existant
+                    $existingDevice->update([
+                        'push_token' => $newToken,
+                        'platform' => $platform,
+                        'app_version' => $fcmData['app_version'] ?? $existingDevice->app_version,
+                        'os_version' => $fcmData['os_version'] ?? $existingDevice->os_version,
+                        'device_model' => $fcmData['device_model'] ?? $existingDevice->device_model,
+                        'is_active' => true,
+                        'last_active_at' => Carbon::now()
+                    ]);
+                    
+                    error_log("✅ Token FCM mis à jour avec succès");
+                    return true;
+                } else {
+                    error_log("✅ Token FCM identique - activité mise à jour");
+                    $existingDevice->markAsActive();
+                    return true;
+                }
+            } else {
+                error_log("🆕 Nouvel appareil détecté - enregistrement");
+                
+                // Créer un nouvel appareil
+                $device = UserDevice::registerDevice(array_merge($fcmData, [
+                    'user_id' => $userId
+                ]));
+                
+                error_log("✅ Nouvel appareil enregistré avec ID: {$device->id}");
+                return true;
+            }
+
+        } catch (\Exception $e) {
+            error_log("❌ Erreur lors de la mise à jour FCM: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -109,6 +185,12 @@ class AuthController
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
             }
 
+            // ✅ NOUVEAU: Mettre à jour le token FCM si fourni
+            if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+                error_log("🔔 Mise à jour FCM lors du refresh token pour utilisateur: {$user->id}");
+                $this->updateUserFCMToken($user->id, $data['fcm_data']);
+            }
+
             // Générer un nouveau access_token
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
@@ -153,6 +235,26 @@ class AuthController
         
         $validator->rule('lengthMax', 'email', 255)
             ->message('Email is too long (max 255 characters)');
+
+        // ✅ NOUVELLE VALIDATION OPTIONNELLE POUR FCM
+        if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+            $fcmData = $data['fcm_data'];
+            
+            if (isset($fcmData['device_id'])) {
+                $validator->rule('lengthMax', 'fcm_data.device_id', 255)
+                    ->message('Device ID too long');
+            }
+            
+            if (isset($fcmData['push_token'])) {
+                $validator->rule('lengthMax', 'fcm_data.push_token', 512)
+                    ->message('Push token too long');
+            }
+            
+            if (isset($fcmData['platform'])) {
+                $validator->rule('in', 'fcm_data.platform', ['android', 'ios'])
+                    ->message('Platform must be android or ios');
+            }
+        }
 
         // Validate
         if (!$validator->validate()) {
@@ -203,6 +305,18 @@ class AuthController
                 return $response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus(403);
+            }
+
+            // ✅ NOUVEAU: Mettre à jour le token FCM après connexion réussie
+            if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+                error_log("🔔 Mise à jour FCM lors du login pour utilisateur: {$user->id}");
+                $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
+                
+                if ($fcmUpdateSuccess) {
+                    error_log("✅ Token FCM mis à jour avec succès lors du login");
+                } else {
+                    error_log("⚠️ Échec de la mise à jour FCM (connexion continue)");
+                }
             }
 
             // Generate tokens
@@ -365,6 +479,26 @@ class AuthController
         $validator->rule('email', 'email')
             ->message('Invalid email address');
 
+        // ✅ VALIDATION FCM OPTIONNELLE POUR CONFIRMATION EMAIL
+        if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+            $fcmData = $data['fcm_data'];
+            
+            if (isset($fcmData['device_id'])) {
+                $validator->rule('lengthMax', 'fcm_data.device_id', 255)
+                    ->message('Device ID too long');
+            }
+            
+            if (isset($fcmData['push_token'])) {
+                $validator->rule('lengthMax', 'fcm_data.push_token', 512)
+                    ->message('Push token too long');
+            }
+            
+            if (isset($fcmData['platform'])) {
+                $validator->rule('in', 'fcm_data.platform', ['android', 'ios'])
+                    ->message('Platform must be android or ios');
+            }
+        }
+
         if (!$validator->validate()) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -417,6 +551,18 @@ class AuthController
             // Marquer l'email comme vérifié
             $user->markEmailAsVerified();
             $user->save();
+
+            // ✅ NOUVEAU: Mettre à jour le token FCM après confirmation d'email
+            if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+                error_log("🔔 Mise à jour FCM lors de la confirmation d'email pour utilisateur: {$user->id}");
+                $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
+                
+                if ($fcmUpdateSuccess) {
+                    error_log("✅ Token FCM mis à jour avec succès lors de la confirmation");
+                } else {
+                    error_log("⚠️ Échec de la mise à jour FCM (confirmation continue)");
+                }
+            }
 
             if(Config::get('APP_ENV') == 'dev') {
                 $user->email = 'm2atodev@gmail.com';
@@ -671,6 +817,51 @@ class AuthController
         }
     }
 
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérification d'authentification avec mise à jour FCM
+     */
+    public function checkAuth(Request $request, Response $response)
+    {
+        // Récupérer l'ID de l'utilisateur depuis le token JWT
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::with('currency')->find($authId);
+            
+            if (!$user || !$user->isActive()) {
+                return $this->createErrorResponse('Utilisateur non trouvé ou inactif', 404);
+            }
+
+            // ✅ NOUVEAU: Mettre à jour le token FCM si fourni lors de la vérification
+            $data = $request->getParsedBody() ?? [];
+            if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
+                error_log("🔔 Mise à jour FCM lors de checkAuth pour utilisateur: {$user->id}");
+                $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
+                
+                if ($fcmUpdateSuccess) {
+                    error_log("✅ Token FCM mis à jour avec succès lors de checkAuth");
+                }
+            }
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Authentification valide',
+                    'data' => $this->formatUserData($user)
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function getCurrentUser(Request $request, Response $response)
     {
         // Récupérer l'ID de l'utilisateur depuis le token JWT
@@ -781,6 +972,93 @@ class AuthController
         } catch (\Exception $e) {
             return $this->createErrorResponse('Update error: ' . $e->getMessage(), 500);
         }
+    }
+
+    // ✅ NOUVELLE ROUTE POUR MISE À JOUR FCM EXCLUSIVE
+    public function updateFCMToken(Request $request, Response $response)
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        $data = $request->getParsedBody();
+
+        // Validation spécifique pour FCM
+        $validator = new Validator($data);
+        $validator->rule('required', ['device_id', 'push_token', 'platform'])
+            ->message('{field} is required');
+        $validator->rule('in', 'platform', ['android', 'ios'])
+            ->message('Platform must be android or ios');
+        $validator->rule('lengthMax', 'device_id', 255)
+            ->message('Device ID too long');
+        $validator->rule('lengthMax', 'push_token', 512)
+            ->message('Push token too long');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'VALIDATION_ERROR',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user || !$user->isActive()) {
+                return $this->createErrorResponse('Utilisateur non trouvé ou inactif', 404);
+            }
+
+            // Mettre à jour le token FCM
+            $updateSuccess = $this->updateUserFCMToken($user->id, $data);
+
+            if ($updateSuccess) {
+                return new JsonResponse(
+                    200,
+                    new Headers(['Content-Type' => 'application/json']),
+                    (new StreamFactory())->createStream(json_encode([
+                        'success' => true,
+                        'message' => 'Token FCM mis à jour avec succès',
+                        'data' => [
+                            'device_id' => $data['device_id'],
+                            'platform' => $data['platform'],
+                            'updated_at' => Carbon::now()->toISOString()
+                        ]
+                    ]))
+                );
+            } else {
+                return $this->createErrorResponse(
+                    'Échec de la mise à jour du token FCM', 
+                    500
+                );
+            }
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la mise à jour FCM: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    public function logout(Request $request, Response $response)
+    {
+        // Pour l'instant, le logout côté serveur ne fait rien de spécial
+        // Le token est invalidé côté client
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'message' => 'Logout successful'
+            ]))
+        );
     }
 
     private function genererResetToken(): string {

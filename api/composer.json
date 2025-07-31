@@ -21,6 +21,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "firebase/php-jwt": "^6.10",
         "vlucas/valitron": "^1.4",
-        "getbrevo/brevo-php": "1.x.x"
+        "getbrevo/brevo-php": "1.x.x",
+        "kreait/firebase-php": "^7.0"
     }
 }

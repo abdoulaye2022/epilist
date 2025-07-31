@@ -41,15 +41,20 @@ class ComparisonCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ✅ CORRECTION: Row avec Expanded pour éviter l'overflow
             Row(
               children: [
                 Icon(Icons.compare_arrows, color: Colors.blue[600], size: 28),
                 const SizedBox(width: 12),
-                Text(
-                  l10n.comparisonWithLastMonth,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n.comparisonWithLastMonth,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2, // ✅ Maximum 2 lignes
+                    overflow: TextOverflow.ellipsis, // ✅ Ellipsis si trop long
                   ),
                 ),
               ],
@@ -71,6 +76,7 @@ class ComparisonCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // ✅ CORRECTION: Gestion de l'overflow pour le texte de tendance
                         Text(
                           _getTrendText(trend, l10n),
                           style: TextStyle(
@@ -78,6 +84,9 @@ class ComparisonCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: trendColor,
                           ),
+                          maxLines: 1, // ✅ Une seule ligne
+                          overflow:
+                              TextOverflow.ellipsis, // ✅ Ellipsis si nécessaire
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -89,12 +98,17 @@ class ComparisonCard extends StatelessWidget {
                           ),
                         ),
                         if (absoluteChange != 0)
+                          // ✅ CORRECTION: Gestion de l'overflow pour le montant
                           Text(
                             '${absoluteChange > 0 ? '+' : ''}${absoluteChange.toStringAsFixed(2)} $currency',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
                             ),
+                            maxLines: 1, // ✅ Une seule ligne
+                            overflow:
+                                TextOverflow
+                                    .ellipsis, // ✅ Ellipsis si nécessaire
                           ),
                       ],
                     ),

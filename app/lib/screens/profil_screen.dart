@@ -1,4 +1,5 @@
-// screens/profile_screen.dart - VERSION SANS NAVIGATION DE LOGOUT
+// screens/profile_screen.dart - VERSION PRODUCTION
+
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
@@ -67,13 +68,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listener:
           (context, state) => _handleAuthStateChanges(context, state, l10n),
       buildWhen: (previous, current) {
-        // ✅ CORRECTION: Ne pas rebuilder pour Unauthenticated
-        // Laisser le dialog et l'AuthWrapper gérer la navigation
         return current is AuthLoading ||
             current is AuthSuccess ||
             current is ProfileUpdated ||
             current is AuthFailure;
-        // ✅ Supprimé: current is Unauthenticated
       },
       builder: (context, state) => _buildContent(state, l10n),
     );
@@ -84,24 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     AuthState state,
     AppLocalizations l10n,
   ) {
-    // ✅ CORRECTION CRITIQUE: Supprimer la navigation vers LoginScreen
-    // Le dialog de logout et l'AuthWrapper gèrent maintenant la navigation
-    /*
-    if (state is Unauthenticated) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    }
-    */
-
     if (state is AuthSuccess) {
       _currentUser = state.user;
     } else if (state is ProfileUpdated) {
       _currentUser = state.user;
     }
 
-    // ✅ Garder seulement les notifications pour la suppression de compte
     if (state is AccountDeletionCodeSent) {
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.deletionCodeSent);
     } else if (state is AccountDeletionConfirmed) {
@@ -117,11 +103,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    // ✅ NOUVEAU: Log pour debugging
     if (state is Unauthenticated) {
-      print(
-        '📱 ProfileScreen: Unauthenticated détecté - Pas de navigation (géré par dialog/AuthWrapper)',
-      );
+      // Géré par AuthWrapper
     }
   }
 
@@ -185,6 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             _buildSettingsSection(l10n),
             const SizedBox(height: 16),
+
             _buildInfoSection(l10n),
             const SizedBox(height: 24),
             LogoutButton(onLogout: _showLogoutDialog),

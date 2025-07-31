@@ -1,5 +1,5 @@
 <?php
-// app/Services/BudgetAlertService.php - VERSION MISE À JOUR POUR MOBILE
+// app/Services/BudgetAlertService.php - VERSION NETTOYÉE
 
 namespace App\Services;
 
@@ -35,11 +35,7 @@ class BudgetAlertService
         $user = $budget->user;
         $status = $budget->getAlertStatus();
 
-        // Log l'alerte
-        error_log("Budget Alert - User: {$user->id}, Budget: {$budget->name}, Status: {$status}");
-
-        // Envoyer notification push
-        $notificationService = new MobileNotificationService();
+        $notificationService = new NotificationService();
         $alertType = $budget->isExceeded() ? 'exceeded' : 'warning';
         
         $success = $notificationService->sendBudgetAlert($user, $budget, $alertType);
@@ -61,18 +57,40 @@ class BudgetAlertService
         }
 
         $user = $budget->user;
-        $notificationService = new MobileNotificationService();
+        $notificationService = new NotificationService();
         
         // Envoyer notification immédiate
         $alertType = $budget->isExceeded() ? 'exceeded' : 'warning';
-        $notificationService->sendPurchaseNotification($user, $budget, $purchaseAmount);
+        $spentPercentage = round($budget->getSpentPercentage(), 1);
+        
+        $title = $alertType === 'exceeded' ? '🚨 Budget Dépassé!' : '⚠️ Attention Budget';
+        $body = $alertType === 'exceeded' 
+            ? "Vous avez dépassé le budget \"{$budget->name}\"" 
+            : "Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\"";
+            
+        $result = $notificationService->sendToUser(
+            $user->id,
+            'budget_purchase_alert',
+            $title,
+            $body,
+            [
+                'budget_id' => (string) $budget->id,
+                'budget_name' => $budget->name,
+                'alert_type' => $alertType,
+                'purchase_amount' => $purchaseAmount,
+                'spent_percentage' => $spentPercentage,
+                'action' => 'open_budget_details'
+            ],
+            $alertType === 'exceeded' ? 'high' : 'normal'
+        );
 
         return [
             'budget_id' => $budget->id,
             'status' => $budget->getAlertStatus(),
             'message' => $budget->getAlertMessage(),
-            'notification_sent' => true,
-            'alert_type' => $alertType
+            'notification_sent' => $result['success'],
+            'alert_type' => $alertType,
+            'devices_notified' => $result['sent_count'] ?? 0
         ];
     }
 
@@ -149,17 +167,22 @@ class BudgetAlertService
      */
     private static function sendDailySummaries(): void
     {
-        $users = User::whereHas('activeBudgets')
-            ->whereHas('activeDevices', function($query) {
-                $query->where('notification_preferences->daily_summary', true);
+        $users = User::active()
+            ->whereHas('devices', function($query) {
+                $query->active()->canReceiveNotifications();
             })
-            ->with(['activeBudgets', 'activeDevices'])
             ->get();
 
-        $notificationService = new MobileNotificationService();
+        $notificationService = new NotificationService();
 
         foreach ($users as $user) {
-            $urgentBudgets = $user->activeBudgets->filter(function($budget) {
+            // Récupérer les budgets actifs de l'utilisateur
+            $budgets = Budget::forUser($user->id)
+                ->active()
+                ->current()
+                ->get();
+
+            $urgentBudgets = $budgets->filter(function($budget) {
                 return $budget->shouldShowAlert();
             });
 
@@ -180,22 +203,35 @@ class BudgetAlertService
         
         $expiringBudgets = Budget::active()
             ->whereDate('end_date', $threeDaysFromNow)
-            ->with(['user.activeDevices'])
+            ->with(['user'])
             ->get();
 
-        $notificationService = new MobileNotificationService();
+        $notificationService = new NotificationService();
 
         foreach ($expiringBudgets as $budget) {
             $user = $budget->user;
             
-            // Vérifier si l'utilisateur veut recevoir ces notifications
-            $hasDeviceWithPreference = $user->activeDevices->some(function($device) {
-                return $device->hasNotificationPreference('budget_expiring');
-            });
-
-            if ($hasDeviceWithPreference) {
-                $notificationService->sendBudgetExpirationNotification($budget);
+            // Vérifier si l'utilisateur peut recevoir des notifications
+            if (!$user->canReceiveNotifications()) {
+                continue;
             }
+
+            $daysLeft = $budget->getDaysRemaining();
+            $spentPercentage = round($budget->getSpentPercentage(), 1);
+            
+            $notificationService->sendToUser(
+                $user->id,
+                'budget_expiring',
+                '⏰ Budget se termine bientôt',
+                "Le budget \"{$budget->name}\" se termine dans {$daysLeft} jour(s). Vous avez utilisé {$spentPercentage}%",
+                [
+                    'budget_id' => (string) $budget->id,
+                    'budget_name' => $budget->name,
+                    'days_remaining' => $daysLeft,
+                    'spent_percentage' => $spentPercentage,
+                    'action' => 'renew_budget'
+                ]
+            );
         }
     }
 
@@ -235,14 +271,16 @@ class BudgetAlertService
             ->filter(fn($budget) => $budget->isNearLimit() && !$budget->isExceeded())
             ->count();
 
-        $usersWithAlerts = User::whereHas('activeBudgets', function($query) {
-            $query->whereRaw('
-                (SELECT COALESCE(SUM(lr.total_amount), 0) 
-                 FROM list_receipts lr 
-                 WHERE lr.list_id = budgets.list_id 
-                 AND lr.purchase_date BETWEEN budgets.start_date AND budgets.end_date
-                ) >= budgets.budget_amount * (budgets.alert_threshold / 100)
-            ');
+        $usersWithAlerts = User::whereHas('budgets', function($query) {
+            $query->active()
+                  ->current()
+                  ->whereRaw('
+                      (SELECT COALESCE(SUM(lr.total_amount), 0) 
+                       FROM list_receipts lr 
+                       WHERE lr.list_id = budgets.list_id 
+                       AND lr.purchase_date BETWEEN budgets.start_date AND budgets.end_date
+                      ) >= budgets.budget_amount * (budgets.alert_threshold / 100)
+                  ');
         })->count();
 
         return [
@@ -261,14 +299,14 @@ class BudgetAlertService
      */
     public static function sendTestAlert(int $userId, int $budgetId): bool
     {
-        $user = User::with('activeDevices')->find($userId);
+        $user = User::find($userId);
         $budget = Budget::find($budgetId);
 
         if (!$user || !$budget || $budget->user_id !== $userId) {
             return false;
         }
 
-        $notificationService = new MobileNotificationService();
+        $notificationService = new NotificationService();
         return $notificationService->sendBudgetAlert($user, $budget, 'warning');
     }
 
@@ -342,5 +380,45 @@ class BudgetAlertService
         }
         
         return $suggestions;
+    }
+
+    /**
+     * ✅ ENVOYER NOTIFICATION IMMÉDIATE LORS D'UN ACHAT
+     */
+    public static function sendImmediatePurchaseAlert(User $user, Budget $budget, float $purchaseAmount): bool
+    {
+        if (!$budget->shouldShowAlert()) {
+            return false;
+        }
+
+        $notificationService = new NotificationService();
+        $alertType = $budget->isExceeded() ? 'exceeded' : 'warning';
+        
+        $title = $alertType === 'exceeded' ? '🚨 Budget Dépassé!' : '⚠️ Attention Budget';
+        $spentPercentage = round($budget->getSpentPercentage(), 1);
+        $currency = $user->getPreferredCurrency();
+        
+        $body = $alertType === 'exceeded' 
+            ? "Achat de {$currency->formatAmount($purchaseAmount)} - Budget \"{$budget->name}\" dépassé!"
+            : "Achat de {$currency->formatAmount($purchaseAmount)} - {$spentPercentage}% du budget \"{$budget->name}\" utilisé";
+
+        $result = $notificationService->sendToUser(
+            $user->id,
+            'purchase_budget_alert',
+            $title,
+            $body,
+            [
+                'budget_id' => (string) $budget->id,
+                'budget_name' => $budget->name,
+                'purchase_amount' => $purchaseAmount,
+                'formatted_purchase_amount' => $currency->formatAmount($purchaseAmount),
+                'spent_percentage' => $spentPercentage,
+                'alert_type' => $alertType,
+                'action' => 'open_budget_details'
+            ],
+            $alertType === 'exceeded' ? 'high' : 'normal'
+        );
+
+        return $result['success'];
     }
 }

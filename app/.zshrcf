@@ -1,0 +1,13 @@
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PATH="/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH" # Apple Silicon
+export PATH="/usr/local/opt/ruby/bin:$PATH" # Intel
+export PATH="/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH" # Apple Silicon
+export PATH="/usr/local/lib/ruby/gems/3.4.0/bin:$PATH" # Intel
+export PATH="/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH"
+export PATH=~/.npm-global/bin:$PATH
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export PATH="$JAVA_HOME/bin:$PATH"
+export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
+export PATH="$PATH:$HOME/.pub-cache/bin"

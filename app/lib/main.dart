@@ -1,4 +1,5 @@
-// main.dart - VERSION CORRIGÉE AVEC GESTION LOGOUT
+// main.dart - VERSION PRODUCTION
+
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -8,12 +9,12 @@ import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
-import 'package:epilist/notifications/notification_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
+import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/budget_service.dart';
@@ -39,17 +40,23 @@ import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
-// IMPORTS POUR I18N
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:epilist/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    final sharedPreferences = await SharedPreferences.getInstance();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-    // ✅ Initialiser le service de connectivité dès le démarrage
+    final sharedPreferences = await SharedPreferences.getInstance();
     await ConnectivityService().initialize();
 
     final dio = Dio(
@@ -91,7 +98,6 @@ void main() async {
       localizationBloc: localizationBloc,
     );
 
-    // Ajouter l'interceptor de refresh token
     dio.interceptors.add(
       TokenRefreshInterceptor(
         authService: authService,
@@ -100,7 +106,6 @@ void main() async {
       ),
     );
 
-    // Ajouter les interceptors de logging en mode debug
     if (kDebugMode) {
       dio.interceptors.add(
         LogInterceptor(
@@ -172,17 +177,12 @@ void main() async {
         ],
         child: MultiBlocProvider(
           providers: [
-            // 1. LocalizationBloc en premier (pas de dépendances)
             BlocProvider<LocalizationBloc>.value(
               value: localizationBloc..add(LoadLanguage()),
             ),
-
-            // 2. AuthBloc (dépend de LocalizationBloc)
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
-
-            // 3. ✅ CORRECTION CRITIQUE: UN SEUL CurrencyBloc
             BlocProvider(
               create:
                   (context) => CurrencyBloc(
@@ -191,8 +191,6 @@ void main() async {
                     authBloc: context.read<AuthBloc>(),
                   ),
             ),
-
-            // 4. Autres BLoCs
             BlocProvider(
               create:
                   (context) => ShoppingListBloc(
@@ -233,7 +231,7 @@ void main() async {
       ),
     );
   } catch (e) {
-    runApp(const ErrorApp());
+    runApp(ErrorApp(error: e.toString()));
   }
 }
 
@@ -244,7 +242,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LocalizationBloc, LocalizationState>(
       builder: (context, localizationState) {
-        Locale currentLocale = const Locale('fr'); // Par défaut
+        Locale currentLocale = const Locale('fr');
 
         if (localizationState is LocalizationLoaded) {
           currentLocale = localizationState.locale;
@@ -253,8 +251,6 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'EpiList',
           debugShowCheckedModeBanner: false,
-
-          // CONFIGURATION I18N
           locale: currentLocale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -263,9 +259,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('fr', ''), Locale('en', '')],
-
           theme: ThemeData(primarySwatch: Colors.green, useMaterial3: true),
-
           routes: {
             '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
@@ -310,6 +304,18 @@ class MyApp extends StatelessWidget {
                 showBanner: false,
               );
             },
+            '/budget': (context) => _wrapWithConnectivity(const BudgetScreen()),
+            '/list/details': (context) {
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>?;
+              final listId = args?['list_id'] as String?;
+
+              if (listId != null) {
+                return _wrapWithConnectivity(ListDetailsScreen(listId: listId));
+              }
+              return _wrapWithConnectivity(const HomeScreen());
+            },
           },
           home: const AuthWrapper(),
         );
@@ -344,6 +350,10 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeDeepLinksWithDelay();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.updateContext(context);
+    });
   }
 
   @override
@@ -362,6 +372,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
       Future.delayed(const Duration(milliseconds: 1000), () {
         if (mounted) {
           DeepLinkHandler.updateContext(context);
+          NotificationService.updateContext(context);
         }
       });
     }
@@ -371,7 +382,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     if (mounted && !_deepLinkInitialized) {
-      print('🚀 Initialisation des deep links depuis AuthWrapper');
       DeepLinkHandler.initialize(context);
       setState(() {
         _deepLinkInitialized = true;
@@ -386,8 +396,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        print('🔄 AuthWrapper - State changé: ${state.runtimeType}');
-
         if (!_hasCheckedAuth &&
             state is! AuthInitial &&
             state is! AuthLoading) {
@@ -396,7 +404,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           });
         }
 
-        // Ignorer les états de suppression de compte pour éviter les conflits
         if (state is AccountDeletionStatusLoaded ||
             state is AccountDeletionCodeSent ||
             state is AccountDeletionConfirmed ||
@@ -404,18 +411,15 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return;
         }
 
-        // ✅ CORRECTION CRITIQUE: Gestion du logout avec redirection
         if (state is Unauthenticated && _hasCheckedAuth && !_redirecting) {
-          print('🚪 Utilisateur déconnecté - Redirection en cours...');
+          NotificationService.clearDeviceData();
+
           setState(() {
             _redirecting = true;
           });
 
-          // ✅ Attendre un peu pour que l'état se stabilise
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
-              print('🚀 Redirection vers WelcomeScreen');
-              // Pas besoin de navigation explicite, le builder va gérer
               setState(() {
                 _redirecting = false;
               });
@@ -424,7 +428,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return;
         }
 
-        // Gérer la redirection vers la vérification d'email
         if (state is EmailVerificationRequired && !_redirecting) {
           setState(() => _redirecting = true);
 
@@ -451,7 +454,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           });
         }
 
-        // Gérer la confirmation d'email réussie
         if (state is EmailConfirmationSuccess) {
           if (mounted) {
             SmartSnackBarManager.showSuccessSnackBar(
@@ -462,17 +464,34 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           }
         }
 
-        // Charger la devise utilisateur après authentification réussie
         if (state is AuthSuccess) {
           context.read<CurrencyBloc>().add(const LoadUserCurrency());
+
+          Future.delayed(const Duration(milliseconds: 2000), () async {
+            if (NotificationService.getCurrentToken() != null) {
+              try {
+                await NotificationService.reRegisterDeviceWithTokenRefresh();
+              } catch (e) {
+                try {
+                  await NotificationService.reRegisterDevice();
+                } catch (fallbackError) {
+                  // Log error in production monitoring
+                }
+              }
+            } else {
+              try {
+                await NotificationService.ensureDeviceIsRegistered();
+              } catch (e) {
+                // Log error in production monitoring
+              }
+            }
+          });
+
+          NotificationService.updateContext(context);
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
         buildWhen: (previous, current) {
-          print(
-            '🎯 AuthWrapper buildWhen: ${previous.runtimeType} -> ${current.runtimeType}',
-          );
-
           if (current is AccountDeletionStatusLoaded ||
               current is AccountDeletionCodeSent ||
               current is AccountDeletionConfirmed ||
@@ -491,8 +510,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return true;
         },
         builder: (context, state) {
-          print('🏗️ AuthWrapper builder: ${state.runtimeType}');
-
           if (_isInitializing ||
               !_deepLinkInitialized ||
               state is AuthInitial ||
@@ -529,16 +546,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             );
           }
 
-          // ✅ CORRECTION: Gestion claire des états de déconnexion
           if (state is Unauthenticated ||
               state is AuthFailure ||
               state is PasswordChanged) {
-            print('📱 Affichage de WelcomeScreen pour: ${state.runtimeType}');
             return const WelcomeScreen();
           }
 
-          // Par défaut, afficher WelcomeScreen
-          print('📱 Affichage de WelcomeScreen par défaut');
           return const WelcomeScreen();
         },
       ),
@@ -546,7 +559,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   }
 }
 
-// LoadingScreen, LoadingDots, et ErrorApp restent inchangés
 class LoadingScreen extends StatelessWidget {
   final String? message;
 
@@ -701,38 +713,79 @@ class _LoadingDotsState extends State<LoadingDots>
 }
 
 class ErrorApp extends StatelessWidget {
-  const ErrorApp({super.key});
+  final String? error;
+
+  const ErrorApp({super.key, this.error});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              const Text(
-                'Erreur d\'initialisation',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Impossible de démarrer l\'application',
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  // Redémarrer l'app
-                },
-                child: const Text('Réessayer'),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                const Text(
+                  'Erreur d\'initialisation',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Impossible de démarrer l\'application',
+                  style: TextStyle(color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                if (error != null && kDebugMode) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      'Détails: $error',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                        fontFamily: 'monospace',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    // Restart functionality could be implemented here
+                  },
+                  child: const Text('Réessayer'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class ListDetailsScreen extends StatelessWidget {
+  final String listId;
+
+  const ListDetailsScreen({super.key, required this.listId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Détails Liste')),
+      body: Center(child: Text('Liste ID: $listId')),
     );
   }
 }
