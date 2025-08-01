@@ -1462,5 +1462,11 @@
     "placeholders": {
       "userName": {"type": "String"}
     }
-  }
+  },
+  "codePastedSuccessfully": "Code pasted successfully!",
+  "codePartiallyPasted": "Code partially pasted",
+  "noCodeFoundInClipboard": "No code found in clipboard",
+  "errorPastingCode": "Error pasting code",
+  "pasteCode": "Paste code",
+  "clear": "Clear"
 }

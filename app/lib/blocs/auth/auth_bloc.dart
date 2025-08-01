@@ -14,21 +14,6 @@ import 'dart:io';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-class AuthenticationException implements Exception {
-  final String code;
-  final String message;
-  final String? email;
-
-  AuthenticationException({
-    required this.code,
-    required this.message,
-    this.email,
-  });
-
-  @override
-  String toString() => 'AuthenticationException: $code - $message';
-}
-
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
   final AccountDeletionService accountDeletionService;
@@ -72,10 +57,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
+      print('🟦 Début de _onLoginButtonPressed');
+
       final loginResponse = await authService.login(
         event.email,
         event.password,
       );
+
+      print('🟦 Login réussi, tokens reçus');
 
       await authService.saveTokens(
         loginResponse['access_token']!,
@@ -85,21 +74,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await authService.getCurrentUser();
       if (user == null) {
         final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
+        print('🟦 Erreur utilisateur null: $errorMessage');
         emit(AuthFailure(error: errorMessage));
         return;
       }
 
       _scheduleTokenRefresh();
-
-      // Mettre à jour le token FCM après connexion réussie
       await _updateFCMTokenAfterLogin();
-
       emit(AuthSuccess(user: user));
+      print('🟦 AuthSuccess émis avec succès');
     } on AuthenticationException catch (e) {
+      // ✅ CORRECTION: Ce catch doit être en PREMIER
+      print('🔴 AuthenticationException attrapée dans _onLoginButtonPressed:');
+      print('   Code: ${e.code}');
+      print('   Message: ${e.message}');
+      print('   Email: ${e.email}');
+
       await _handleAuthenticationException(e, event.email, emit);
     } catch (e) {
+      // ✅ CORRECTION: Ce catch général doit être en DERNIER
+      print('🔴 Autre exception attrapée dans _onLoginButtonPressed: $e');
+      print('🔴 Type de l\'exception: ${e.runtimeType}');
+
+      // ✅ AJOUT: Vérifier si c'est quand même une AuthenticationException
+      if (e is AuthenticationException) {
+        print(
+          '🔴 ATTENTION: AuthenticationException catchée dans le catch général !',
+        );
+        await _handleAuthenticationException(e, event.email, emit);
+        return;
+      }
+
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+
+      print('🔴 Code extrait: $errorCode');
+      print('🔴 Message traduit: $errorMessage');
+      print('🔴 Émission de AuthFailure avec: $errorMessage');
+
       emit(AuthFailure(error: errorMessage));
     }
   }
@@ -192,15 +204,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case 'EMAIL_NOT_VERIFIED':
         final emailToUse = e.email?.isNotEmpty == true ? e.email! : email;
 
-        try {
-          await authService.resendVerificationCode(emailToUse);
-          emit(EmailVerificationRequired(emailToUse));
-        } catch (resendError) {
-          emit(EmailVerificationRequired(emailToUse));
-        }
+        // ✅ CORRECTION: Ne PAS renvoyer automatiquement le code
+        // Juste émettre l'état pour rediriger vers l'écran de vérification
+        emit(EmailVerificationRequired(emailToUse));
         return;
       default:
-        errorCode = 'AUTH_ERROR';
+        errorCode = 'INVALID_CREDENTIALS';
     }
 
     final errorMessage = _getTranslatedErrorMessage(errorCode, e.message);
@@ -460,10 +469,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       await authService.resendVerificationCode(event.email);
+
+      // ✅ CORRECTION: Une seule émission
       emit(VerificationCodeResent(event.email));
 
-      await Future.delayed(const Duration(milliseconds: 500));
-      emit(EmailConfirmationRequired(event.email));
+      // ✅ CORRECTION: Pas de re-émission vers EmailConfirmationRequired
+      // L'écran gère déjà le fait qu'il reste sur la même page
     } catch (e) {
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
@@ -613,6 +624,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   String _getTranslatedErrorMessage(String errorCode, String errorMessage) {
     const Map<String, String> frenchMessages = {
       'INVALID_CREDENTIALS': 'Email ou mot de passe incorrect',
+      'INVALID_PASSWORD': 'Email ou mot de passe incorrect',
       'USER_NOT_FOUND': 'Aucun compte trouvé avec cet email',
       'EMAIL_NOT_VERIFIED': 'Email non vérifié',
       'EMAIL_ALREADY_EXISTS': 'Cette adresse email est déjà utilisée',
@@ -638,10 +650,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RESEND_FAILED': 'Erreur lors du renvoi du code',
       'SERVER_CONFIG_ERROR': 'Erreur de configuration du serveur',
       'INVALID_EMAIL_FORMAT': 'Format d\'email invalide',
+      'TOO_MANY_ATTEMPTS':
+          'Trop de tentatives. Veuillez réessayer plus tard', // ✅ AJOUT
+      'RATE_LIMITED':
+          'Trop de tentatives. Veuillez réessayer plus tard', // ✅ AJOUT
+      'ACCOUNT_DISABLED': 'Ce compte utilisateur est désactivé', // ✅ AJOUT
     };
 
     const Map<String, String> englishMessages = {
       'INVALID_CREDENTIALS': 'Invalid email or password',
+      'INVALID_PASSWORD': 'Invalid email or password',
       'USER_NOT_FOUND': 'No account found with this email',
       'EMAIL_NOT_VERIFIED': 'Email not verified',
       'EMAIL_ALREADY_EXISTS': 'This email address is already in use',
@@ -667,6 +685,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RESEND_FAILED': 'Error sending code',
       'SERVER_CONFIG_ERROR': 'Server configuration error',
       'INVALID_EMAIL_FORMAT': 'Invalid email format',
+      'TOO_MANY_ATTEMPTS':
+          'Too many attempts. Please try again later', // ✅ AJOUT
+      'RATE_LIMITED': 'Too many attempts. Please try again later', // ✅ AJOUT
+      'ACCOUNT_DISABLED': 'This user account is disabled', //
     };
 
     final isEnglish =
@@ -685,7 +707,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final errorString = error.toString().toLowerCase();
 
     if (errorString.contains('invalid') &&
-        errorString.contains('credentials')) {
+        (errorString.contains('credentials') ||
+            errorString.contains('password'))) {
       return 'INVALID_CREDENTIALS';
     } else if (errorString.contains('user') &&
         errorString.contains('not found')) {
@@ -696,6 +719,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else if (errorString.contains('email') &&
         (errorString.contains('exists') || errorString.contains('conflict'))) {
       return 'EMAIL_ALREADY_EXISTS';
+    } else if (errorString.contains('too many') &&
+        errorString.contains('attempts')) {
+      return 'TOO_MANY_ATTEMPTS';
+    } else if (errorString.contains('rate') && errorString.contains('limit')) {
+      return 'RATE_LIMITED';
+    } else if (errorString.contains('account') &&
+        (errorString.contains('disabled') ||
+            errorString.contains('inactive'))) {
+      return 'USER_INACTIVE';
     } else if (errorString.contains('network') ||
         errorString.contains('réseau') ||
         errorString.contains('connection')) {

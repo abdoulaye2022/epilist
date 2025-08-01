@@ -1,4 +1,5 @@
-// screens/home_screen.dart - VERSION AVEC CARDS À BACKGROUND BLANC
+// screens/home_screen.dart - VERSION PRODUCTION SANS TEST
+
 import 'dart:io';
 
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -17,6 +18,8 @@ import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
+// import 'package:epilist/widgets/profile/notification_test_widget.dart'; // ✅ COMMENTÉ POUR PRODUCTION
 import 'package:epilist/widgets/home/welcome_card.dart';
 import 'package:epilist/widgets/home/home_app_bar.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
@@ -47,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // Variables pour contrôler les initialisations et éviter les redondances
   bool _deepLinkInitialized = false;
   bool _isResuming = false;
+  // ✅ SUPPRIMÉ : bool _showNotificationTest = false;
 
   @override
   void initState() {
@@ -168,6 +172,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const WelcomeCard(),
                 const SizedBox(height: 24),
 
+                // ✅ SUPPRIMÉ : Widget de test notifications
+                // if (_showNotificationTest) ...[
+                //   const NotificationTestWidget(),
+                //   const SizedBox(height: 24),
+                // ],
+
                 // Section Actions rapides avec Budget
                 _buildQuickActionsSection(context, l10n),
                 const SizedBox(height: 24),
@@ -187,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
+      // ✅ FAB RESTAURÉ : Création de liste
       floatingActionButton: ConnectedFloatingActionButton(
         onPressed: () => _showCreateListDialog(context),
         backgroundColor: Colors.green[600],
@@ -256,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // ✅ Card avec background blanc
+  // Card avec background blanc
   Widget _buildQuickActionCard({
     required IconData icon,
     required String title,
@@ -266,7 +277,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     bool isFullWidth = false,
   }) {
     return Card(
-      // ✅ Background blanc pour toutes les cards
       color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -326,11 +336,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return BlocBuilder<ShoppingListBloc, ShoppingListState>(
       builder: (context, state) {
         if (state is ShoppingListLoaded) {
-          // Header avec informations sur les listes récentes
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ✅ Header avec background blanc
+              // Header avec informations sur les listes récentes
               Card(
                 color: Colors.white,
                 elevation: 1,
@@ -380,26 +389,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               // Utilisation de ShoppingListsContent avec mode horizontal
               SizedBox(
-                height: 200, // Hauteur fixe pour l'affichage horizontal
+                height: 200,
                 child: ShoppingListsContent(
                   onCreateNew: () => _showCreateListDialog(context),
                   onListTap: (list) => _openListDetails(context, list),
                   onListAction:
                       (action, list) =>
                           _handleListAction(action, list, context, l10n),
-                  maxDisplayLists:
-                      5, // Limiter à 5 listes sur l'écran d'accueil
-                  horizontalLayout: true, // Mode horizontal pour HomeScreen
+                  maxDisplayLists: 5,
+                  horizontalLayout: true,
                 ),
               ),
             ],
           );
         }
 
-        // Pour les autres états (loading, error, empty), utiliser ShoppingListsContent tel quel
+        // Pour les autres états (loading, error, empty)
         return Column(
           children: [
-            // ✅ Header avec background blanc pour les états de chargement/erreur
             Card(
               color: Colors.white,
               elevation: 1,
@@ -436,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     (action, list) =>
                         _handleListAction(action, list, context, l10n),
                 maxDisplayLists: 5,
-                horizontalLayout: true, // Mode horizontal pour tous les états
+                horizontalLayout: true,
               ),
             ),
           ],
@@ -584,7 +591,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Dialog methods - TOUS CONSERVENT BlocProvider.value
+  // Dialog methods - conservés identiques
   void _showCreateListDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -599,8 +606,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => const LogoutDialog(),
+      barrierDismissible:
+          false, // ✅ Empêcher la fermeture en cliquant à l'extérieur
+      builder:
+          (dialogContext) => BlocProvider.value(
+            // ✅ IMPORTANT : Passer le AuthBloc au dialog
+            value: context.read<AuthBloc>(),
+            child:
+                const LogoutConfirmationDialog(), // ✅ UTILISER votre dialog personnalisé
+          ),
     );
   }
 

@@ -159,7 +159,7 @@ class AuthService {
     }
   }
 
-  // === LOGIN - CORRIGÉ POUR GÉRER LA STRUCTURE DE RÉPONSE ===
+  // auth_service.dart - CORRECTION : Gestion complète des erreurs de login
 
   Future<Map<String, String>> login(String email, String password) async {
     try {
@@ -171,7 +171,6 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = response.data;
 
-        // ✅ CORRECTION : Vérifier que nous avons la bonne structure
         print('Réponse complète de login: $data');
 
         final accessToken = data['access_token'] as String?;
@@ -184,25 +183,12 @@ class AuthService {
           );
         }
 
-        // ✅ CORRECTION CRITIQUE : Créer l'utilisateur avec les tokens ET les données
         final user = User.fromLoginResponse({
           'access_token': accessToken,
           'refresh_token': refreshToken,
-          'data': data['data'], // ✅ IMPORTANT: Passer les données utilisateur
+          'data': data['data'],
         });
 
-        // ✅ DEBUG: Vérifier que la devise est bien parsée
-        print('Utilisateur créé: ${user.fullName} (${user.email})');
-        print(
-          'Devise utilisateur: ${user.currency?.code ?? 'null'} - ${user.currency?.symbol ?? 'null'}',
-        );
-        if (user.currency != null) {
-          print(
-            'Devise complète: ${user.currency!.name} (${user.currency!.symbol})',
-          );
-        }
-
-        // ✅ NOUVEAU : Sauvegarder l'utilisateur en cache immédiatement
         await saveUserToCache(user);
 
         final expiry = _getTokenExpiration(accessToken);
@@ -219,28 +205,83 @@ class AuthService {
 
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         final errorData = e.response?.data;
-        if (errorData != null && errorData['code'] == 'EMAIL_NOT_VERIFIED') {
-          String emailFromResponse = email;
 
-          if (errorData['data'] != null && errorData['data']['email'] != null) {
-            emailFromResponse = errorData['data']['email'];
+        if (errorData != null && errorData is Map) {
+          final errorCode = errorData['code'] as String?;
+
+          print('Code d\'erreur du serveur: $errorCode');
+
+          switch (errorCode) {
+            case 'EMAIL_NOT_VERIFIED':
+              String emailFromResponse = email;
+              if (errorData['data'] != null &&
+                  errorData['data']['email'] != null) {
+                emailFromResponse = errorData['data']['email'];
+              }
+              throw AuthenticationException(
+                'Email non vérifié',
+                'EMAIL_NOT_VERIFIED',
+                email: emailFromResponse,
+              );
+
+            case 'INVALID_CREDENTIALS':
+              print('Identifiants invalides détectés');
+              throw AuthenticationException(
+                'Email ou mot de passe incorrect',
+                'INVALID_CREDENTIALS',
+              );
+
+            // ✅ SUPPRIMÉ: Plus besoin de gérer INVALID_PASSWORD et USER_NOT_FOUND séparément
+            // car l'API retourne maintenant toujours INVALID_CREDENTIALS
+
+            case 'USER_INACTIVE':
+            case 'ACCOUNT_DISABLED':
+              throw AuthenticationException(
+                'Ce compte utilisateur n\'est pas actif',
+                'USER_INACTIVE',
+              );
+
+            case 'TOO_MANY_ATTEMPTS':
+            case 'RATE_LIMITED':
+              throw AuthenticationException(
+                'Trop de tentatives de connexion. Veuillez réessayer plus tard.',
+                'TOO_MANY_ATTEMPTS',
+              );
+
+            default:
+              // Pour tous les autres codes non reconnus, utiliser INVALID_CREDENTIALS par défaut
+              final serverMessage = errorData['message'] as String?;
+              print(
+                'Code d\'erreur non géré: $errorCode, message: $serverMessage',
+              );
+              throw AuthenticationException(
+                'Email ou mot de passe incorrect',
+                'INVALID_CREDENTIALS',
+              );
           }
-
+        } else {
+          // Si pas de données d'erreur structurées, erreur générique
+          print('Pas de données d\'erreur structurées');
           throw AuthenticationException(
-            'Email non vérifié',
-            'EMAIL_NOT_VERIFIED',
-            email: emailFromResponse,
+            'Email ou mot de passe incorrect',
+            'INVALID_CREDENTIALS',
           );
         }
-
-        throw AuthenticationException(
-          'Email ou mot de passe incorrect',
-          'INVALID_CREDENTIALS',
-        );
       } else if (e.response?.statusCode == 404) {
+        // 404 peut arriver si l'endpoint n'existe pas
         throw AuthenticationException(
-          'Aucun compte trouvé avec cet email',
-          'USER_NOT_FOUND',
+          'Service non disponible',
+          'SERVICE_UNAVAILABLE',
+        );
+      } else if (e.response?.statusCode == 429) {
+        throw AuthenticationException(
+          'Trop de tentatives de connexion. Veuillez réessayer plus tard.',
+          'TOO_MANY_ATTEMPTS',
+        );
+      } else if (e.response?.statusCode == 500) {
+        throw AuthenticationException(
+          'Erreur du serveur. Veuillez réessayer plus tard.',
+          'SERVER_ERROR',
         );
       } else {
         throw AuthenticationException(

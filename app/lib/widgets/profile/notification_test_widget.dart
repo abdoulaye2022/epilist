@@ -1,4 +1,5 @@
-// widgets/profile/notification_test_widget.dart - VERSION CORRIGÉE AVEC SUPPORT SIMULATEUR
+// widgets/profile/notification_test_widget.dart - VERSION CORRIGÉE AVEC APPEL SERVEUR
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,7 +75,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            // ✅ BADGE SIMULATEUR/PHYSIQUE
+                            // Badge simulateur/physique
                             if (NotificationService.isSimulator)
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -119,8 +120,8 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                         ),
                         Text(
                           NotificationService.isSimulator
-                              ? 'Tester sur simulateur iOS (notifications simulées)'
-                              : 'Tester sur appareil physique (vraies notifications)',
+                              ? 'Tester sur simulateur (notifications via serveur)'
+                              : 'Tester sur appareil physique (vraies notifications FCM)',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.blue[600],
@@ -134,7 +135,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
 
               const SizedBox(height: 16),
 
-              // ✅ INFORMATIONS SUR L'ÉTAT ACTUEL
+              // Informations sur l'état actuel
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
@@ -213,7 +214,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
 
               const SizedBox(height: 16),
 
-              // ✅ RÉSULTAT DU DERNIER TEST
+              // Résultat du dernier test
               if (_lastTestResult != null) ...[
                 Container(
                   width: double.infinity,
@@ -262,7 +263,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
               // Boutons d'action
               Column(
                 children: [
-                  // ✅ BOUTON PRINCIPAL: Test via serveur (simulé ou réel)
+                  // BOUTON PRINCIPAL: Test via serveur FCM
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -277,25 +278,17 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
+                                  color: Colors.white,
                                 ),
                               )
-                              : Icon(
-                                NotificationService.isSimulator
-                                    ? Icons.science
-                                    : Icons.send,
-                              ),
+                              : const Icon(Icons.cloud_upload),
                       label: Text(
                         _isLoading
                             ? 'Envoi en cours...'
-                            : NotificationService.isSimulator
-                            ? 'Test Simulé via Serveur'
-                            : 'Test Réel via Serveur',
+                            : 'Test FCM via Serveur',
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            NotificationService.isSimulator
-                                ? Colors.orange[600]
-                                : Colors.blue[600],
+                        backgroundColor: Colors.blue[600],
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -307,7 +300,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
 
                   const SizedBox(height: 8),
 
-                  // ✅ BOUTON: Test notification locale immédiate
+                  // BOUTON: Test notification locale
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -330,7 +323,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
 
                   const SizedBox(height: 8),
 
-                  // ✅ BOUTON: Voir appareils enregistrés
+                  // BOUTON: Voir appareils enregistrés
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
@@ -348,30 +341,10 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                       ),
                     ),
                   ),
-
-                  // ✅ NOUVEAU: Bouton test notification service direct
-                  if (NotificationService.isSimulator) ...[
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton.icon(
-                        onPressed:
-                            _isLoading
-                                ? null
-                                : () => _testNotificationServiceDirect(context),
-                        icon: const Icon(Icons.science),
-                        label: const Text('Test Service Direct'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.orange[600],
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
 
-              // Affichage des informations de debug si disponibles
+              // Affichage des informations de debug
               if (_lastDebugData != null) ...[
                 const SizedBox(height: 16),
                 Container(
@@ -399,20 +372,12 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                         '(Actifs: ${_lastDebugData!['active_devices'] ?? 0})',
                         style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                       ),
-                      if (_lastDebugData!['simulated_count'] != null)
-                        Text(
-                          'Simulés: ${_lastDebugData!['simulated_count']}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.orange[600],
-                          ),
-                        ),
                     ],
                   ),
                 ),
               ],
 
-              // ✅ INFORMATION POUR LE DÉVELOPPEUR
+              // Information pour le développeur
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -435,9 +400,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      NotificationService.isSimulator
-                          ? '📱 Simulateur iOS détecté: Les notifications Firebase sont simulées visuellement avec des notifications locales et des SnackBars.'
-                          : '📱 Appareil physique détecté: Les notifications Firebase peuvent être reçues normalement.',
+                      'Le test FCM via serveur utilise votre backend pour envoyer une vraie notification Firebase Cloud Messaging à cet appareil.',
                       style: TextStyle(fontSize: 11, color: Colors.blue[700]),
                     ),
                   ],
@@ -450,7 +413,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
     );
   }
 
-  // ✅ NOUVELLE MÉTHODE: Test via serveur (gère simulateur et physique)
+  // ✅ MÉTHODE CORRIGÉE: Test via serveur FCM
   Future<void> _testNotificationViaServer(BuildContext context) async {
     setState(() {
       _isLoading = true;
@@ -458,43 +421,102 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
     });
 
     try {
-      // ✅ UTILISER LE SERVICE NOTIFICATION DIRECTEMENT
-      // final result =
-      //     await NotificationService.sendTestNotificationToCurrentUser();
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('access_token');
 
-      // setState(() {
-      //   if (result['success'] == true) {
-      //     String message = '✅ ${result['message']}';
+      if (authToken == null) {
+        setState(() {
+          _lastTestResult = '❌ Non authentifié - Token manquant';
+        });
+        _showErrorSnackBar(context, '❌ Non authentifié');
+        return;
+      }
 
-      //     if (result['is_simulator'] == true) {
-      //       message += '\n🧪 Mode simulateur activé';
-      //     }
+      // Vérifier que l'appareil est enregistré
+      final isRegistered = await NotificationService.isDeviceRegistered();
+      if (!isRegistered) {
+        setState(() {
+          _lastTestResult = '❌ Appareil non enregistré - Relancez l\'app';
+        });
+        _showErrorSnackBar(context, '❌ Appareil non enregistré');
+        return;
+      }
 
-      //     if (result['simulated_count'] != null &&
-      //         result['simulated_count'] > 0) {
-      //       message +=
-      //           '\n📱 ${result['simulated_count']} notifications simulées';
-      //       _lastDebugData = {'simulated_count': result['simulated_count']};
-      //     }
+      final dio = Dio();
+      dio.options.baseUrl = AppConfig.baseUrl;
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      dio.options.headers['Content-Type'] = 'application/json';
+      dio.options.connectTimeout = const Duration(seconds: 15);
+      dio.options.receiveTimeout = const Duration(seconds: 15);
 
-      //     if (result['sent_count'] != null) {
-      //       message += '\n📨 ${result['sent_count']} envois total';
-      //     }
+      print('🔥 [TEST] Envoi requête test notification vers serveur...');
 
-      //     if (result['local_fallback'] == true) {
-      //       message += '\n💾 Fallback local utilisé (normal en développement)';
-      //     }
+      // ✅ APPEL À VOTRE ENDPOINT DE TEST
+      final response = await dio.post(
+        '/devices/test-user-notifications',
+        data: {
+          'title': '🧪 Test EpiList',
+          'body': 'Notification de test envoyée depuis l\'application !',
+          'data': {
+            'type': 'test_notification',
+            'source': 'profile_widget',
+            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'test_id': 'test_${DateTime.now().millisecondsSinceEpoch}',
+          },
+        },
+      );
 
-      //     _lastTestResult = message;
-      //     _showSuccessSnackBar(context, '✅ Test réussi !');
-      //   } else {
-      //     _lastTestResult = '❌ ${result['message']}';
-      //     _showErrorSnackBar(context, 'Échec: ${result['message']}');
-      //   }
-      // });
+      print('🔥 [TEST] Réponse serveur: ${response.statusCode}');
+      print('🔥 [TEST] Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        if (data['success'] == true) {
+          final sentCount = data['sent_count'] ?? 0;
+          final totalDevices = data['total_devices'] ?? 0;
+
+          setState(() {
+            _lastTestResult =
+                '✅ Test FCM réussi !\n'
+                '📨 Envoyé à $sentCount/$totalDevices appareils\n'
+                '⏰ ${DateTime.now().toString().substring(11, 19)}';
+          });
+
+          _showSuccessSnackBar(
+            context,
+            '✅ Notification FCM envoyée à $sentCount appareils !',
+          );
+
+          // Vérifier si des erreurs ont eu lieu
+          if (data['errors'] != null && data['errors'].isNotEmpty) {
+            print('⚠️ [TEST] Erreurs lors de l\'envoi: ${data['errors']}');
+          }
+        } else {
+          setState(() {
+            _lastTestResult =
+                '❌ Échec du test FCM\n'
+                'Message: ${data['message'] ?? 'Erreur inconnue'}';
+          });
+          _showErrorSnackBar(
+            context,
+            '❌ ${data['message'] ?? 'Échec du test'}',
+          );
+        }
+      } else {
+        setState(() {
+          _lastTestResult =
+              '❌ Erreur serveur\n'
+              'Code: ${response.statusCode}';
+        });
+        _showErrorSnackBar(context, '❌ Erreur serveur: ${response.statusCode}');
+      }
     } catch (e) {
+      print('❌ [TEST] Erreur: $e');
       setState(() {
-        _lastTestResult = '❌ Erreur: ${_getErrorMessage(e)}';
+        _lastTestResult =
+            '❌ Erreur lors du test FCM\n'
+            'Détail: ${_getErrorMessage(e)}';
       });
       _showErrorSnackBar(context, '❌ Erreur: ${_getErrorMessage(e)}');
     } finally {
@@ -502,38 +524,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
     }
   }
 
-  // ✅ NOUVELLE MÉTHODE: Test service direct (pour simulateur)
-  Future<void> _testNotificationServiceDirect(BuildContext context) async {
-    if (!NotificationService.isSimulator) {
-      _showErrorSnackBar(
-        context,
-        '⚠️ Cette fonction n\'est disponible que sur simulateur',
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      // await NotificationService.showTestNotificationNow();
-
-      setState(() {
-        _lastTestResult =
-            '✅ Notification service direct testée avec succès\n🧪 Notification locale affichée immédiatement';
-      });
-
-      _showSuccessSnackBar(context, '✅ Test service direct réussi !');
-    } catch (e) {
-      setState(() {
-        _lastTestResult = '❌ Erreur test service direct: $e';
-      });
-      _showErrorSnackBar(context, '❌ Erreur service: $e');
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  // ✅ MÉTHODE AMÉLIORÉE: Test notification locale
+  // ✅ MÉTHODE: Test notification locale
   Future<void> _testLocalNotificationImmediate(BuildContext context) async {
     setState(() => _isLoading = true);
 
@@ -542,7 +533,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
       final FlutterLocalNotificationsPlugin localNotifications =
           FlutterLocalNotificationsPlugin();
 
-      // ✅ CONFIGURATION AMÉLIORÉE POUR iOS ET ANDROID
+      // Configuration pour Android et iOS
       const androidDetails = AndroidNotificationDetails(
         'test_channel_immediate',
         'Test Immédiat',
@@ -569,7 +560,6 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
         iOS: iosDetails,
       );
 
-      // Générer un ID unique basé sur le timestamp
       final notificationId = DateTime.now().millisecondsSinceEpoch.remainder(
         100000,
       );
@@ -579,15 +569,12 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'source': 'widget_test',
         'device_type': Platform.isIOS ? 'ios' : 'android',
-        'is_simulator': NotificationService.isSimulator,
       });
 
       await localNotifications.show(
         notificationId,
         '🧪 Test Notification Locale',
-        NotificationService.isSimulator
-            ? 'Notification locale sur simulateur iOS (ID: $notificationId)'
-            : 'Notification locale sur appareil physique (ID: $notificationId)',
+        'Notification locale générée depuis l\'app (ID: $notificationId)',
         notificationDetails,
         payload: payload,
       );
@@ -613,7 +600,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
     }
   }
 
-  // ✅ MÉTHODE ORIGINALE CONSERVÉE: Debug appareils
+  // ✅ MÉTHODE: Debug appareils
   Future<void> _debugDevices(BuildContext context) async {
     setState(() => _isLoading = true);
 
@@ -627,16 +614,15 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
       }
 
       final dio = Dio();
+      dio.options.baseUrl = AppConfig.baseUrl;
       dio.options.headers['Authorization'] = 'Bearer $authToken';
+      dio.options.connectTimeout = const Duration(seconds: 10);
 
-      final response = await dio.get('${AppConfig.baseUrl}/devices/debug');
+      final response = await dio.get('/devices/debug');
 
       if (response.statusCode == 200) {
         final data = response.data;
-
-        // Sauvegarder pour l'affichage
         setState(() => _lastDebugData = data);
-
         _showDevicesDialog(context, data);
       }
     } catch (e) {
@@ -651,21 +637,11 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Row(
+            title: const Row(
               children: [
-                Icon(
-                  NotificationService.isSimulator
-                      ? Icons.science
-                      : Icons.devices,
-                  color:
-                      NotificationService.isSimulator
-                          ? Colors.orange
-                          : Colors.blue,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '🔍 Mes Appareils ${NotificationService.isSimulator ? "(Mode Simulateur)" : ""}',
-                ),
+                Icon(Icons.devices, color: Colors.blue),
+                SizedBox(width: 8),
+                Text('🔍 Mes Appareils'),
               ],
             ),
             content: SingleChildScrollView(
@@ -677,10 +653,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color:
-                          NotificationService.isSimulator
-                              ? Colors.orange[50]
-                              : Colors.blue[50],
+                      color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -693,15 +666,6 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                         Text('Total: ${data['total_devices']}'),
                         Text('Actifs: ${data['active_devices']}'),
                         Text('User ID: ${data['user_id']}'),
-                        if (NotificationService.isSimulator)
-                          Text(
-                            '🧪 Mode Simulateur Actif',
-                            style: TextStyle(
-                              color: Colors.orange[700],
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
                       ],
                     ),
                   ),
@@ -745,32 +709,6 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                                           ),
                                         ),
                                       ),
-                                      // ✅ BADGE SIMULATEUR DANS LA LISTE
-                                      if (device['push_token'] != null &&
-                                          device['push_token']
-                                              .toString()
-                                              .contains('simulator_token'))
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange[100],
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            '🧪 SIM',
-                                            style: TextStyle(
-                                              fontSize: 8,
-                                              color: Colors.orange,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      const SizedBox(width: 4),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 6,
@@ -848,11 +786,7 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                     Navigator.of(context).pop();
                     _testNotificationViaServer(context);
                   },
-                  child: Text(
-                    NotificationService.isSimulator
-                        ? 'Tester (Simulé)'
-                        : 'Tester Notifications',
-                  ),
+                  child: const Text('Tester Notifications'),
                 ),
             ],
           ),

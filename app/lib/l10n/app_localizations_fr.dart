@@ -3471,4 +3471,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String cannotPerformAction(String action, String permission) {
     return 'Vous n\'avez pas la permission de $action.\n\nVotre permission actuelle : $permission';
   }
+
+  @override
+  String get codePastedSuccessfully => 'Code collé avec succès !';
+
+  @override
+  String get codePartiallyPasted => 'Code partiellement collé';
+
+  @override
+  String get noCodeFoundInClipboard =>
+      'Aucun code trouvé dans le presse-papiers';
+
+  @override
+  String get errorPastingCode => 'Erreur lors du collage du code';
+
+  @override
+  String get pasteCode => 'Coller le code';
+
+  @override
+  String get clear => 'Effacer';
 }

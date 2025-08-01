@@ -52,17 +52,28 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
+          print('🟨 LoginScreen - State reçu: ${state.runtimeType}');
+
           if (state is AuthLoading) {
+            print('🟨 AuthLoading détecté');
             setState(() => _isLoading = true);
           } else if (state is AuthFailure) {
+            print('🟨 AuthFailure détecté');
+            print('🟨 Message d\'erreur reçu: "${state.error}"');
+
             setState(() => _isLoading = false);
+
+            // ✅ AJOUT: Vérifier le message avant de l'envoyer au SnackBar
+            final errorMessage = state.error;
+            print('🟨 Envoi du message au SnackBar: "$errorMessage"');
 
             SmartSnackBarManager.showErrorSnackBar(
               context,
-              state.error,
+              errorMessage, // ✅ Utiliser directement state.error
               duration: const Duration(seconds: 4),
             );
           } else if (state is EmailVerificationRequired) {
+            print('🟨 EmailVerificationRequired détecté pour: ${state.email}');
             setState(() => _isLoading = false);
 
             SmartSnackBarManager.showErrorSnackBar(
@@ -86,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             });
           } else if (state is AuthSuccess) {
+            print('🟨 AuthSuccess détecté');
             setState(() => _isLoading = false);
 
             SmartSnackBarManager.clearAll(context);
@@ -99,6 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             });
           } else if (state is Unauthenticated) {
+            print('🟨 Unauthenticated détecté');
             setState(() => _isLoading = false);
           }
         },

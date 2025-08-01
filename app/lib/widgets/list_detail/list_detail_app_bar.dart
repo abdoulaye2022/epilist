@@ -1,4 +1,4 @@
-// widgets/list_detail/list_detail_app_bar.dart - CORRIGÉ AVEC FOND BLANC UNIFORME
+// widgets/list_detail/list_detail_app_bar.dart - POPUP INFORMATION CORRIGÉ
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -30,18 +30,10 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      // ✅ FOND BLANC UNIFORME (comme HomeAppBar)
       backgroundColor: Colors.white,
-
-      // ✅ SUPPRESSION DE L'OMBRE (comme HomeAppBar)
       elevation: 0,
-
-      // ✅ COULEUR DES ICÔNES NOIRE POUR FOND BLANC
       iconTheme: const IconThemeData(color: Colors.black87),
-
-      // ✅ COULEUR DU TEXTE DE L'APPBAR
       foregroundColor: Colors.black87,
-
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -50,7 +42,6 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              // ✅ COULEUR NOIRE POUR FOND BLANC
               color: Colors.black87,
             ),
           ),
@@ -79,7 +70,6 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       subtitle,
       style: TextStyle(
         fontSize: 12,
-        // ✅ COULEUR COLORÉE POUR CONTRASTE SUR FOND BLANC
         color: subtitleColor,
         fontWeight: FontWeight.normal,
       ),
@@ -95,7 +85,6 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions.add(
         IconButton(
           onPressed: onAddItem,
-          // ✅ ICÔNE NOIRE POUR FOND BLANC
           icon: const Icon(Icons.add, color: Colors.black87),
           tooltip: l10n.addItemTooltip,
         ),
@@ -110,10 +99,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildOptionsMenu(BuildContext context) {
     return PopupMenuButton<String>(
-      // ✅ ICÔNE NOIRE POUR FOND BLANC
       icon: const Icon(Icons.more_vert, color: Colors.black87),
       onSelected: (value) => _handleMenuAction(value, context),
-      // ✅ STYLE POUR FOND BLANC UNIFORME
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 8,
@@ -290,61 +277,128 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
-            // ✅ FOND BLANC POUR LA DIALOG
-            backgroundColor: Colors.white,
-            title: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.blue[600]),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.listInformation,
-                    style: const TextStyle(color: Colors.black87),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildInfoRow(l10n.name, shoppingList.name),
-                const SizedBox(height: 8),
-                _buildInfoRow(
-                  l10n.status,
-                  shoppingList.isShared ? l10n.sharedList : l10n.private,
-                ),
-                if (shoppingList.isShared) ...[
-                  const SizedBox(height: 8),
-                  _buildInfoRow(
-                    l10n.yourRole,
-                    shoppingList.isOwner
-                        ? l10n.owner
-                        : (shoppingList.permissionDisplayName ??
-                            l10n.collaborator),
-                  ),
-                  if (!shoppingList.isOwner &&
-                      shoppingList.sharedBy != null) ...[
-                    const SizedBox(height: 8),
-                    _buildInfoRow(
-                      l10n.sharedBy as String,
-                      shoppingList.sharedBy!.name,
+            elevation: 10,
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 24,
+            ),
+            child: Container(
+              width: double.infinity,
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+                maxWidth: 500,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildInfoIcon(),
+                          const SizedBox(height: 20),
+                          _buildInfoTitle(l10n),
+                          const SizedBox(height: 12),
+                          _buildInfoDescription(l10n),
+                          const SizedBox(height: 24),
+                          _buildInfoContent(l10n),
+                          const SizedBox(height: 24),
+                          _buildCloseButton(l10n, context),
+                        ],
+                      ),
                     ),
-                  ],
-                  const SizedBox(height: 8),
-                  _buildPermissionsList(context),
+                  ),
                 ],
-              ],
+              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.close),
+          ),
+    );
+  }
+
+  Widget _buildInfoIcon() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Icon(
+        Icons.info_outline_rounded,
+        size: 40,
+        color: Colors.blue[600],
+      ),
+    );
+  }
+
+  Widget _buildInfoTitle(AppLocalizations l10n) {
+    return Text(
+      l10n.listInformation,
+      style: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+    );
+  }
+
+  Widget _buildInfoDescription(AppLocalizations l10n) {
+    return Text(
+      'Détails et permissions de cette liste',
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+    );
+  }
+
+  Widget _buildInfoContent(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoRow(l10n.name, shoppingList.name),
+          const SizedBox(height: 16),
+          _buildInfoRow(
+            l10n.status,
+            shoppingList.isShared ? l10n.sharedList : l10n.private,
+          ),
+          if (shoppingList.isShared) ...[
+            const SizedBox(height: 16),
+            _buildInfoRow(
+              l10n.yourRole,
+              shoppingList.isOwner
+                  ? l10n.owner
+                  : (shoppingList.permissionDisplayName ?? l10n.collaborator),
+            ),
+            if (!shoppingList.isOwner && shoppingList.sharedBy != null) ...[
+              const SizedBox(height: 16),
+              // ✅ CORRECTION: Utiliser seulement le label sans le nom en double
+              _buildInfoRow(
+                'Partagée par', // Label simple
+                shoppingList.sharedBy!.name, // Valeur
               ),
             ],
-          ),
+            const SizedBox(height: 20),
+            _buildPermissionsList(l10n),
+          ],
+        ],
+      ),
     );
   }
 
@@ -353,69 +407,210 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 80,
+          width: 100,
           child: Text(
             '$label:',
             style: TextStyle(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: Colors.grey[700],
+              fontSize: 14,
             ),
           ),
         ),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(color: Colors.black87),
-            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPermissionsList(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    List<String> permissions = [];
+  Widget _buildPermissionsList(AppLocalizations l10n) {
+    List<Map<String, dynamic>> permissions = [];
 
     if (shoppingList.canEdit) {
-      permissions.add('✅ ${l10n.editItems}');
+      permissions.add({
+        'icon': Icons.edit,
+        'color': Colors.green[600],
+        'text': l10n.editItems,
+        'granted': true,
+      });
     } else {
-      permissions.add('❌ ${l10n.editItems}');
+      permissions.add({
+        'icon': Icons.edit_off,
+        'color': Colors.red[400],
+        'text': l10n.editItems,
+        'granted': false,
+      });
     }
 
     if (shoppingList.canShare) {
-      permissions.add('✅ ${l10n.shareList}');
+      permissions.add({
+        'icon': Icons.share,
+        'color': Colors.green[600],
+        'text': l10n.shareList,
+        'granted': true,
+      });
     } else {
-      permissions.add('❌ ${l10n.shareList}');
+      permissions.add({
+        'icon': Icons.share_outlined,
+        'color': Colors.red[400],
+        'text': l10n.shareList,
+        'granted': false,
+      });
     }
 
     if (shoppingList.canDelete) {
-      permissions.add('✅ ${l10n.deleteList}');
+      permissions.add({
+        'icon': Icons.delete,
+        'color': Colors.green[600],
+        'text': l10n.deleteList,
+        'granted': true,
+      });
     } else {
-      permissions.add('❌ ${l10n.deleteList}');
+      permissions.add({
+        'icon': Icons.delete_outline,
+        'color': Colors.red[400],
+        'text': l10n.deleteList,
+        'granted': false,
+      });
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${l10n.permissions}:',
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.security, size: 18, color: Colors.blue[600]),
+              const SizedBox(width: 8),
+              Text(
+                '${l10n.permissions}:',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                  fontSize: 15,
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 4),
-        ...permissions.map(
-          (permission) => Padding(
-            padding: const EdgeInsets.only(left: 8, top: 2),
-            child: Text(
-              permission,
-              style: const TextStyle(fontSize: 13, color: Colors.black87),
+          const SizedBox(height: 12),
+          ...permissions.map(
+            (permission) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    permission['icon'] as IconData,
+                    size: 18,
+                    color: permission['color'] as Color,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      permission['text'] as String,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color:
+                            permission['granted']
+                                ? Colors.black87
+                                : Colors.grey[600],
+                        fontWeight:
+                            permission['granted']
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  if (permission['granted'])
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green[200]!),
+                      ),
+                      child: Text(
+                        'Autorisé',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.green[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red[200]!),
+                      ),
+                      child: Text(
+                        'Refusé',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.red[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCloseButton(AppLocalizations l10n, BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => Navigator.of(context).pop(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue[600],
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
         ),
-      ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.check, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              l10n.understood,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -443,7 +638,6 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            // ✅ FOND BLANC POUR LA DIALOG
             backgroundColor: Colors.white,
             title: Text(
               l10n.leaveList,

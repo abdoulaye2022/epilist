@@ -6516,6 +6516,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous n\'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}'**
   String cannotPerformAction(String action, String permission);
+
+  /// No description provided for @codePastedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code collé avec succès !'**
+  String get codePastedSuccessfully;
+
+  /// No description provided for @codePartiallyPasted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code partiellement collé'**
+  String get codePartiallyPasted;
+
+  /// No description provided for @noCodeFoundInClipboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun code trouvé dans le presse-papiers'**
+  String get noCodeFoundInClipboard;
+
+  /// No description provided for @errorPastingCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du collage du code'**
+  String get errorPastingCode;
+
+  /// No description provided for @pasteCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coller le code'**
+  String get pasteCode;
+
+  /// No description provided for @clear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer'**
+  String get clear;
 }
 
 class _AppLocalizationsDelegate

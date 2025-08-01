@@ -1491,5 +1491,11 @@
     "placeholders": {
       "userName": {"type": "String"}
     }
-  }
+  },
+  "codePastedSuccessfully": "Code collé avec succès !",
+  "codePartiallyPasted": "Code partiellement collé",
+  "noCodeFoundInClipboard": "Aucun code trouvé dans le presse-papiers",
+  "errorPastingCode": "Erreur lors du collage du code",
+  "pasteCode": "Coller le code",
+  "clear": "Effacer"
 }

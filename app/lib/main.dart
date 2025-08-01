@@ -1,4 +1,4 @@
-// main.dart - VERSION AVEC RECEIPT BLOC GLOBAL
+// main.dart - VERSION AVEC FLUTTERFIRE CLI
 
 import 'dart:async';
 import 'package:dio/dio.dart';
@@ -7,7 +7,7 @@ import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
-import 'package:epilist/blocs/receipt/receipt_bloc.dart'; // ✅ AJOUT: Import du ReceiptBloc
+import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -45,14 +45,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
+// ✅ CORRECTION: Import FlutterFire CLI
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'firebase_options.dart'; // ✅ Généré par FlutterFire CLI
 import 'package:epilist/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
+    // ✅ CORRECTION: Initialisation Firebase avec FlutterFire CLI
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -119,6 +121,7 @@ void main() async {
       );
     }
 
+    // ✅ CORRECTION: Initialisation des notifications APRÈS Firebase
     await NotificationService.initialize();
 
     runApp(
@@ -212,7 +215,6 @@ void main() async {
                     suggestionService: context.read<ProductSuggestionService>(),
                   ),
             ),
-            // ✅ AJOUT: ReceiptBloc global
             BlocProvider<ReceiptBloc>(
               create:
                   (context) => ReceiptBloc(
@@ -244,6 +246,7 @@ void main() async {
   }
 }
 
+// ✅ Le reste de votre code reste identique
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -341,6 +344,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ✅ Le reste des classes reste identique (AuthWrapper, LoadingScreen, etc.)
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -583,21 +587,16 @@ class LoadingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ✅ Logo sans background - juste l'image
             Container(
               width: 100,
               height: 100,
-              decoration: const BoxDecoration(
-                color:
-                    Colors.transparent, // ✅ Background complètement transparent
-              ),
+              decoration: const BoxDecoration(color: Colors.transparent),
               child: Image.asset(
                 'assets/images/app_logo.png',
                 width: 100,
                 height: 100,
-                fit: BoxFit.contain, // ✅ Pour respecter les proportions du logo
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
-                  // ✅ Fallback avec gradient seulement si le logo n'existe pas
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),

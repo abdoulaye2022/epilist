@@ -3420,4 +3420,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String cannotPerformAction(String action, String permission) {
     return 'You don\'t have permission to $action.\n\nYour current permission: $permission';
   }
+
+  @override
+  String get codePastedSuccessfully => 'Code pasted successfully!';
+
+  @override
+  String get codePartiallyPasted => 'Code partially pasted';
+
+  @override
+  String get noCodeFoundInClipboard => 'No code found in clipboard';
+
+  @override
+  String get errorPastingCode => 'Error pasting code';
+
+  @override
+  String get pasteCode => 'Paste code';
+
+  @override
+  String get clear => 'Clear';
 }

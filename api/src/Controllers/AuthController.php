@@ -236,7 +236,7 @@ class AuthController
         $validator->rule('lengthMax', 'email', 255)
             ->message('Email is too long (max 255 characters)');
 
-        // ✅ NOUVELLE VALIDATION OPTIONNELLE POUR FCM
+        // ✅ VALIDATION OPTIONNELLE POUR FCM
         if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
             $fcmData = $data['fcm_data'];
             
@@ -273,24 +273,31 @@ class AuthController
             // Find user by email with currency
             $user = User::with('currency')->where('email', $data['email'])->first();
             
+            // ✅ CHANGEMENT: Email inexistant = INVALID_CREDENTIALS
             if (!$user) {
-                return $this->createErrorResponse(
-                    'Invalid credentials. Please try again.', 
-                    401,
-                    'USER_NOT_FOUND'
-                );
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'code' => 'INVALID_CREDENTIALS',
+                    'message' => 'Invalid credentials. Please try again.'
+                ]));
+                return $response
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withStatus(401);
             }
 
-            // Verify password
+            // ✅ CHANGEMENT: Mot de passe incorrect = INVALID_CREDENTIALS
             if (!password_verify($data['password'], $user->password_hash)) {
-                return $this->createErrorResponse(
-                    'Invalid credentials. Please try again.', 
-                    401,
-                    'INVALID_PASSWORD'
-                );
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'code' => 'INVALID_CREDENTIALS',
+                    'message' => 'Invalid credentials. Please try again.'
+                ]));
+                return $response
+                    ->withHeader('Content-Type', 'application/json')
+                    ->withStatus(401);
             }
 
-            // Vérifier si l'email est confirmé
+            // ✅ INCHANGÉ: Email non vérifié reste un cas spécial
             if (!$user->isEmailVerified()) {
                 $response->getBody()->write(json_encode([
                     'success' => false,
@@ -307,7 +314,7 @@ class AuthController
                     ->withStatus(403);
             }
 
-            // ✅ NOUVEAU: Mettre à jour le token FCM après connexion réussie
+            // ✅ Mettre à jour le token FCM après connexion réussie
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
                 error_log("🔔 Mise à jour FCM lors du login pour utilisateur: {$user->id}");
                 $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
