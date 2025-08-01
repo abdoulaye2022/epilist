@@ -1497,5 +1497,37 @@
   "noCodeFoundInClipboard": "Aucun code trouvé dans le presse-papiers",
   "errorPastingCode": "Erreur lors du collage du code",
   "pasteCode": "Coller le code",
-  "clear": "Effacer"
+  "clear": "Effacer",
+  "refreshing": "Refreshing...",
+  "export": "Export",
+  "exportReceiptsDescription": "Export your receipts to PDF or CSV format",
+  
+  "exportToPDF": "Export to PDF",
+  "exportToCSV": "Export to CSV",
+  "exportPDFInProgress": "PDF export in progress...",
+  "exportCSVInProgress": "CSV export in progress...",
+  
+  "addFirstReceiptToStart": "Add your first receipt to start tracking your actual spending",
+  "createReceiptNow": "Create receipt now",
+  
+  "errorExportingReceipts": "Error exporting receipts",
+  "exportCompletedSuccessfully": "Export completed successfully",
+  "exportFailed": "Export failed",
+  
+  "refreshingData": "Refreshing data...",
+  "dataRefreshedSuccessfully": "Data refreshed successfully",
+  
+  "exportOptions": "Export Options",
+  "selectExportFormat": "Select export format",
+  
+  "exportToPDFFile": "Export to PDF file",
+  "exportToCSVFile": "Export to CSV file",
+  
+  "exportStarted": "Export started",
+  "checkDownloadsFolder": "Check your downloads folder",
+  
+  "pdfExportError": "PDF export error",
+  "csvExportError": "CSV export error",
+  "fileCreationError": "File creation error",
+  "permissionDeniedError": "Permission denied for file creation"
 }

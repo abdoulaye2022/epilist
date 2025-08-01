@@ -3438,4 +3438,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clear => 'Clear';
+
+  @override
+  String get refreshing => 'Actualisation...';
+
+  @override
+  String get export => 'Exporter';
+
+  @override
+  String get exportReceiptsDescription =>
+      'Exportez vos factures au format PDF ou CSV';
+
+  @override
+  String get exportToPDF => 'Exporter en PDF';
+
+  @override
+  String get exportToCSV => 'Exporter en CSV';
+
+  @override
+  String get exportPDFInProgress => 'Export PDF en cours...';
+
+  @override
+  String get exportCSVInProgress => 'Export CSV en cours...';
+
+  @override
+  String get addFirstReceiptToStart =>
+      'Ajoutez votre première facture pour commencer à suivre vos dépenses réelles';
+
+  @override
+  String get createReceiptNow => 'Créer une facture maintenant';
+
+  @override
+  String get errorExportingReceipts => 'Erreur lors de l\'export des factures';
+
+  @override
+  String get exportCompletedSuccessfully => 'Export terminé avec succès';
+
+  @override
+  String get exportFailed => 'Échec de l\'export';
+
+  @override
+  String get refreshingData => 'Actualisation des données...';
+
+  @override
+  String get dataRefreshedSuccessfully => 'Données actualisées avec succès';
+
+  @override
+  String get exportOptions => 'Options d\'export';
+
+  @override
+  String get selectExportFormat => 'Sélectionnez le format d\'export';
+
+  @override
+  String get exportToPDFFile => 'Exporter vers fichier PDF';
+
+  @override
+  String get exportToCSVFile => 'Exporter vers fichier CSV';
+
+  @override
+  String get exportStarted => 'Export démarré';
+
+  @override
+  String get checkDownloadsFolder =>
+      'Vérifiez votre dossier de téléchargements';
+
+  @override
+  String get pdfExportError => 'Erreur d\'export PDF';
+
+  @override
+  String get csvExportError => 'Erreur d\'export CSV';
+
+  @override
+  String get fileCreationError => 'Erreur de création de fichier';
+
+  @override
+  String get permissionDeniedError =>
+      'Permission refusée pour la création de fichier';
 }

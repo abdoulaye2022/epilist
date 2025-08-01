@@ -3490,4 +3490,78 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get clear => 'Effacer';
+
+  @override
+  String get refreshing => 'Refreshing...';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get exportReceiptsDescription =>
+      'Export your receipts to PDF or CSV format';
+
+  @override
+  String get exportToPDF => 'Export to PDF';
+
+  @override
+  String get exportToCSV => 'Export to CSV';
+
+  @override
+  String get exportPDFInProgress => 'PDF export in progress...';
+
+  @override
+  String get exportCSVInProgress => 'CSV export in progress...';
+
+  @override
+  String get addFirstReceiptToStart =>
+      'Add your first receipt to start tracking your actual spending';
+
+  @override
+  String get createReceiptNow => 'Create receipt now';
+
+  @override
+  String get errorExportingReceipts => 'Error exporting receipts';
+
+  @override
+  String get exportCompletedSuccessfully => 'Export completed successfully';
+
+  @override
+  String get exportFailed => 'Export failed';
+
+  @override
+  String get refreshingData => 'Refreshing data...';
+
+  @override
+  String get dataRefreshedSuccessfully => 'Data refreshed successfully';
+
+  @override
+  String get exportOptions => 'Export Options';
+
+  @override
+  String get selectExportFormat => 'Select export format';
+
+  @override
+  String get exportToPDFFile => 'Export to PDF file';
+
+  @override
+  String get exportToCSVFile => 'Export to CSV file';
+
+  @override
+  String get exportStarted => 'Export started';
+
+  @override
+  String get checkDownloadsFolder => 'Check your downloads folder';
+
+  @override
+  String get pdfExportError => 'PDF export error';
+
+  @override
+  String get csvExportError => 'CSV export error';
+
+  @override
+  String get fileCreationError => 'File creation error';
+
+  @override
+  String get permissionDeniedError => 'Permission denied for file creation';
 }

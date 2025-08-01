@@ -1468,5 +1468,37 @@
   "noCodeFoundInClipboard": "No code found in clipboard",
   "errorPastingCode": "Error pasting code",
   "pasteCode": "Paste code",
-  "clear": "Clear"
+  "clear": "Clear",
+  "refreshing": "Actualisation...",
+  "export": "Exporter",
+  "exportReceiptsDescription": "Exportez vos factures au format PDF ou CSV",
+  
+  "exportToPDF": "Exporter en PDF",
+  "exportToCSV": "Exporter en CSV", 
+  "exportPDFInProgress": "Export PDF en cours...",
+  "exportCSVInProgress": "Export CSV en cours...",
+  
+  "addFirstReceiptToStart": "Ajoutez votre première facture pour commencer à suivre vos dépenses réelles",
+  "createReceiptNow": "Créer une facture maintenant",
+  
+  "errorExportingReceipts": "Erreur lors de l'export des factures",
+  "exportCompletedSuccessfully": "Export terminé avec succès",
+  "exportFailed": "Échec de l'export",
+  
+  "refreshingData": "Actualisation des données...",
+  "dataRefreshedSuccessfully": "Données actualisées avec succès",
+  
+  "exportOptions": "Options d'export",
+  "selectExportFormat": "Sélectionnez le format d'export",
+  
+  "exportToPDFFile": "Exporter vers fichier PDF",
+  "exportToCSVFile": "Exporter vers fichier CSV",
+  
+  "exportStarted": "Export démarré",
+  "checkDownloadsFolder": "Vérifiez votre dossier de téléchargements",
+  
+  "pdfExportError": "Erreur d'export PDF",
+  "csvExportError": "Erreur d'export CSV", 
+  "fileCreationError": "Erreur de création de fichier",
+  "permissionDeniedError": "Permission refusée pour la création de fichier"
 }

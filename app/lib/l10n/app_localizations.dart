@@ -6552,6 +6552,150 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Effacer'**
   String get clear;
+
+  /// No description provided for @refreshing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refreshing...'**
+  String get refreshing;
+
+  /// No description provided for @export.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @exportReceiptsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export your receipts to PDF or CSV format'**
+  String get exportReceiptsDescription;
+
+  /// No description provided for @exportToPDF.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export to PDF'**
+  String get exportToPDF;
+
+  /// No description provided for @exportToCSV.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export to CSV'**
+  String get exportToCSV;
+
+  /// No description provided for @exportPDFInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'PDF export in progress...'**
+  String get exportPDFInProgress;
+
+  /// No description provided for @exportCSVInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'CSV export in progress...'**
+  String get exportCSVInProgress;
+
+  /// No description provided for @addFirstReceiptToStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Add your first receipt to start tracking your actual spending'**
+  String get addFirstReceiptToStart;
+
+  /// No description provided for @createReceiptNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Create receipt now'**
+  String get createReceiptNow;
+
+  /// No description provided for @errorExportingReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Error exporting receipts'**
+  String get errorExportingReceipts;
+
+  /// No description provided for @exportCompletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export completed successfully'**
+  String get exportCompletedSuccessfully;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export failed'**
+  String get exportFailed;
+
+  /// No description provided for @refreshingData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refreshing data...'**
+  String get refreshingData;
+
+  /// No description provided for @dataRefreshedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Data refreshed successfully'**
+  String get dataRefreshedSuccessfully;
+
+  /// No description provided for @exportOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export Options'**
+  String get exportOptions;
+
+  /// No description provided for @selectExportFormat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Select export format'**
+  String get selectExportFormat;
+
+  /// No description provided for @exportToPDFFile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export to PDF file'**
+  String get exportToPDFFile;
+
+  /// No description provided for @exportToCSVFile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export to CSV file'**
+  String get exportToCSVFile;
+
+  /// No description provided for @exportStarted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export started'**
+  String get exportStarted;
+
+  /// No description provided for @checkDownloadsFolder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Check your downloads folder'**
+  String get checkDownloadsFolder;
+
+  /// No description provided for @pdfExportError.
+  ///
+  /// In fr, this message translates to:
+  /// **'PDF export error'**
+  String get pdfExportError;
+
+  /// No description provided for @csvExportError.
+  ///
+  /// In fr, this message translates to:
+  /// **'CSV export error'**
+  String get csvExportError;
+
+  /// No description provided for @fileCreationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'File creation error'**
+  String get fileCreationError;
+
+  /// No description provided for @permissionDeniedError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Permission denied for file creation'**
+  String get permissionDeniedError;
 }
 
 class _AppLocalizationsDelegate

@@ -97,48 +97,229 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
     }
   }
 
+  // ✅ NOUVELLE MÉTHODE: Gestionnaire du menu d'actions
+  void _handleMenuAction(String action, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (action) {
+      case 'refresh':
+        _loadDataForCurrentTab();
+        SmartSnackBarManager.showInfoSnackBar(
+          context,
+          l10n.refreshing,
+          duration: const Duration(seconds: 1),
+        );
+        break;
+      case 'add_receipt':
+        _showAddReceiptDialog();
+        break;
+      case 'export':
+        _showExportDialog();
+        break;
+    }
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Dialog d'export
+  void _showExportDialog() {
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.file_download, color: Colors.green[600]),
+                const SizedBox(width: 8),
+                Text(l10n.export),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.exportReceiptsDescription),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          _exportToPDF();
+                        },
+                        icon: const Icon(Icons.picture_as_pdf),
+                        label: const Text('PDF'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red[600],
+                          side: BorderSide(color: Colors.red[600]!),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          _exportToCSV();
+                        },
+                        icon: const Icon(Icons.table_chart),
+                        label: const Text('CSV'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green[600],
+                          side: BorderSide(color: Colors.green[600]!),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.cancel),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // ✅ Méthodes d'export (à implémenter selon vos besoins)
+  void _exportToPDF() {
+    SmartSnackBarManager.showInfoSnackBar(
+      context,
+      'Export PDF en cours...',
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _exportToCSV() {
+    SmartSnackBarManager.showInfoSnackBar(
+      context,
+      'Export CSV en cours...',
+      duration: const Duration(seconds: 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      // ✅ CORRECTION: Background gris clair comme BudgetScreen
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.receipts,
-              style: const TextStyle(
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.green[700], // ✅ Texte vert au lieu de blanc
               ),
             ),
             Text(
               widget.shoppingList.name,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600], // ✅ Gris au lieu de blanc70
                 fontWeight: FontWeight.normal,
               ),
             ),
           ],
         ),
-        backgroundColor: Colors.green[600],
-        foregroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: Colors.white, // ✅ Fond blanc comme BudgetScreen
+        foregroundColor: Colors.black, // ✅ Texte noir comme BudgetScreen
+        elevation: 0, // ✅ Pas d'ombre comme BudgetScreen
+        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
+        // ✅ AJOUT: Menu d'actions comme dans BudgetScreen
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(
+              Icons.more_vert,
+              color: Colors.black, // ✅ Icône noire
+            ),
+            tooltip: l10n.moreOptions,
+            onSelected: (value) => _handleMenuAction(value, context),
+            color: Colors.white,
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'refresh',
+                    child: Row(
+                      children: [
+                        Icon(Icons.refresh, size: 20, color: Colors.green[600]),
+                        const SizedBox(width: 8),
+                        Text(l10n.refresh),
+                      ],
+                    ),
+                  ),
+                  if (widget.shoppingList.canEdit) ...[
+                    const PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'add_receipt',
+                      child: Row(
+                        children: [
+                          Icon(Icons.add, size: 20, color: Colors.blue[600]),
+                          const SizedBox(width: 8),
+                          Text(l10n.addReceipt),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'export',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.file_download,
+                          size: 20,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(l10n.export),
+                      ],
+                    ),
+                  ),
+                ],
+          ),
+          const SizedBox(width: 8), // ✅ Espacement à droite comme BudgetScreen
+        ],
+
+        // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
+          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
+          unselectedLabelColor:
+              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
+          indicatorColor: Colors.green[700], // ✅ Indicateur vert
           indicatorWeight: 3,
-          onTap: _onTabChanged, // ✅ CORRECTION: Utiliser la nouvelle méthode
+          onTap: _onTabChanged, // ✅ Garder la logique existante
           tabs: [
-            Tab(icon: const Icon(Icons.receipt_long), text: l10n.allReceipts),
-            Tab(icon: const Icon(Icons.store), text: l10n.byStore),
-            Tab(icon: const Icon(Icons.analytics), text: l10n.statistics),
+            Tab(
+              icon: Icon(Icons.receipt_long, color: Colors.green[600]),
+              text: l10n.allReceipts,
+            ),
+            Tab(
+              icon: Icon(Icons.store, color: Colors.green[600]),
+              text: l10n.byStore,
+            ),
+            Tab(
+              icon: Icon(Icons.analytics, color: Colors.green[600]),
+              text: l10n.statistics,
+            ),
           ],
         ),
       ),
@@ -305,42 +486,77 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            l10n.noReceipts,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.5,
+          ),
+          child: Card(
+            color: Colors.white, // ✅ Fond blanc comme BudgetScreen
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.addFirstReceipt,
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            textAlign: TextAlign.center,
-          ),
-          if (widget.shoppingList.canEdit) ...[
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _showAddReceiptDialog,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addReceipt),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.receipt_long,
+                      size: 48,
+                      color: Colors.green[300],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.noReceipts,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: Text(
+                      l10n.addFirstReceipt,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                    ),
+                  ),
+                  if (widget.shoppingList.canEdit) ...[
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: _showAddReceiptDialog,
+                      icon: const Icon(Icons.add),
+                      label: Text(l10n.addReceipt),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -349,42 +565,63 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
-          const SizedBox(height: 16),
-          Text(
-            l10n.error,
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.red[600],
-              fontWeight: FontWeight.w500,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          child: Card(
+            color: Colors.white, // ✅ Fond blanc comme BudgetScreen
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.error,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.red[600],
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Flexible(
+                    child: Text(
+                      message,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 4,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // ✅ CORRECTION: Utiliser la méthode centralisée
+                      _loadDataForCurrentTab();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l10n.retry),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[600],
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
-              message,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              // ✅ CORRECTION: Utiliser la méthode centralisée
-              _loadDataForCurrentTab();
-            },
-            icon: const Icon(Icons.refresh),
-            label: Text(l10n.retry),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[600],
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -469,6 +706,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       context: context,
       builder:
           (dialogContext) => AlertDialog(
+            backgroundColor: Colors.white, // ✅ Fond blanc pour cohérence
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
