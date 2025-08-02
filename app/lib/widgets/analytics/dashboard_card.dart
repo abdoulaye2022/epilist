@@ -1,4 +1,4 @@
-// widgets/analytics/dashboard_card.dart - VERSION CORRIGÉE POUR LA NOUVELLE API
+// widgets/analytics/dashboard_card.dart - VERSION AVEC INFO FILTRAGE
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -12,7 +12,10 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    // ✅ CORRECTION: Accès correct aux données selon la nouvelle structure API
+    // ✅ NOUVEAU: Récupérer les informations de filtrage
+    final includeShared = data['include_shared'] ?? true;
+    final dataBreakdown = data['data_breakdown'] as Map<String, dynamic>?;
+
     final currentMonth = data['current_month'] ?? {};
     final quickStats = data['quick_stats'] ?? {};
     final last7Days = data['last_7_days'] as List<dynamic>? ?? [];
@@ -24,28 +27,48 @@ class DashboardCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ✅ Header avec indicateur de filtrage
             Row(
               children: [
                 Icon(Icons.dashboard, color: Colors.green[600], size: 28),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    l10n.monthlyOverview,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.monthlyOverview,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      // ✅ NOUVEAU: Indicateur de source des données
+                      if (!includeShared)
+                        Text(
+                          l10n.ownListsOnly ?? 'Listes personnelles uniquement',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                // ✅ AJOUT: Indicateur de devise dans le header
                 const CurrencyIndicator(),
               ],
             ),
+
+            // ✅ NOUVEAU: Affichage du breakdown si disponible et listes partagées incluses
+            if (includeShared && dataBreakdown != null)
+              _buildDataSourceInfo(context, dataBreakdown),
+
             const SizedBox(height: 20),
 
-            // ✅ CORRECTION: Métriques principales avec les bonnes clés de l'API
+            // ✅ Métriques principales (inchangées)
             Row(
               children: [
                 Expanded(
@@ -99,7 +122,7 @@ class DashboardCard extends StatelessWidget {
             Divider(color: Colors.grey[300]),
             const SizedBox(height: 16),
 
-            // ✅ AJOUT: Section des 7 derniers jours
+            // ✅ Section des 7 derniers jours (inchangée)
             if (last7Days.isNotEmpty) ...[
               Text(
                 l10n.last7Days ?? 'Derniers 7 jours',
@@ -111,13 +134,11 @@ class DashboardCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // ✅ CORRECTION: Affichage compact des 7 derniers jours avec protection overflow
               SizedBox(
-                height: 70, // ✅ Hauteur légèrement augmentée
+                height: 70,
                 child:
                     last7Days.length <= 4
-                        ? // ✅ Si 4 jours ou moins, affichage en ligne
-                        Row(
+                        ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children:
                               last7Days.take(4).map((dayData) {
@@ -128,8 +149,7 @@ class DashboardCard extends StatelessWidget {
                                 );
                               }).toList(),
                         )
-                        : // ✅ Si plus de 4 jours, ListView scrollable
-                        ListView.builder(
+                        : ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: last7Days.length,
                           itemBuilder: (context, index) {
@@ -145,7 +165,7 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 12),
             ],
 
-            // Statistiques rapides avec FormattedAmount
+            // ✅ Statistiques rapides (inchangées)
             Text(
               l10n.quickStats,
               style: const TextStyle(
@@ -164,7 +184,6 @@ class DashboardCard extends StatelessWidget {
                   '${l10n.averageDailySpending}: ',
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                 ),
-                // ✅ REMPLACEMENT: Utilisation de FormattedAmount
                 FormattedAmount(
                   amount:
                       quickStats['average_daily_spending']?.toDouble() ?? 0.0,
@@ -178,7 +197,6 @@ class DashboardCard extends StatelessWidget {
               ],
             ),
 
-            // ✅ AJOUT: Calcul et affichage du jour le plus actif basé sur last_7_days
             if (last7Days.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
@@ -197,10 +215,6 @@ class DashboardCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-
-            // ✅ AJOUT: Calcul et affichage du plus gros achat basé sur last_7_days
-            if (last7Days.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -221,10 +235,6 @@ class DashboardCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-
-            // ✅ AJOUT: Activité cette semaine
-            if (last7Days.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -249,6 +259,110 @@ class DashboardCard extends StatelessWidget {
     );
   }
 
+  // ✅ NOUVEAU: Widget pour afficher les informations de source des données
+  Widget _buildDataSourceInfo(
+    BuildContext context,
+    Map<String, dynamic> breakdown,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final ownTotal = breakdown['own_lists_total']?.toDouble() ?? 0.0;
+    final sharedTotal = breakdown['shared_lists_total']?.toDouble() ?? 0.0;
+    final ownPercentage = breakdown['own_lists_percentage']?.toDouble() ?? 0.0;
+    final sharedPercentage =
+        breakdown['shared_lists_percentage']?.toDouble() ?? 0.0;
+
+    // Ne pas afficher si pas de données
+    if (ownTotal == 0 && sharedTotal == 0) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 16, color: Colors.blue[600]),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.dataSourceBreakdown ?? 'Sources des données',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.blue[700],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          Row(
+            children: [
+              // Mes listes
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${l10n.myLists ?? "Mes listes"}: ${ownPercentage.toStringAsFixed(1)}%',
+                        style: const TextStyle(fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Listes partagées
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.7),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${l10n.sharedLists ?? "Partagées"}: ${sharedPercentage.toStringAsFixed(1)}%',
+                        style: const TextStyle(fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ Méthodes existantes inchangées
   Widget _buildMetricBox(
     String title,
     double value,
@@ -285,7 +399,6 @@ class DashboardCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // ✅ LOGIQUE CONDITIONNELLE: FormattedAmount pour les montants, Text pour les nombres
           if (isAmount)
             FormattedAmount(
               amount: value,
@@ -311,16 +424,15 @@ class DashboardCard extends StatelessWidget {
     );
   }
 
-  // ✅ NOUVELLE MÉTHODE: Widget pour une carte de jour
   Widget _buildDayCard(Map<String, dynamic> dayData) {
     final totalSpent = dayData['total_spent']?.toDouble() ?? 0.0;
     final itemsCount = dayData['items_count'] ?? 0;
     final dayName = dayData['day_name'] ?? '';
 
     return Container(
-      width: 75, // ✅ Largeur légèrement réduite
-      margin: const EdgeInsets.only(right: 6), // ✅ Marge réduite
-      padding: const EdgeInsets.all(6), // ✅ Padding réduit
+      width: 75,
+      margin: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color:
             totalSpent > 0
@@ -336,12 +448,12 @@ class DashboardCard extends StatelessWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min, // ✅ AJOUT: Éviter l'expansion
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             dayName.length >= 3 ? dayName.substring(0, 3) : dayName,
             style: const TextStyle(
-              fontSize: 9, // ✅ Taille réduite
+              fontSize: 9,
               fontWeight: FontWeight.w500,
               color: Colors.black54,
             ),
@@ -351,11 +463,10 @@ class DashboardCard extends StatelessWidget {
           const SizedBox(height: 2),
           if (totalSpent > 0)
             Flexible(
-              // ✅ AJOUT: Protection overflow
               child: FormattedAmount(
                 amount: totalSpent,
                 style: const TextStyle(
-                  fontSize: 9, // ✅ Taille réduite
+                  fontSize: 9,
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
                 ),
@@ -375,8 +486,7 @@ class DashboardCard extends StatelessWidget {
     );
   }
 
-  // ✅ NOUVELLES MÉTHODES UTILITAIRES pour analyser les données des 7 derniers jours
-
+  // ✅ Méthodes utilitaires inchangées
   String _getBusiestDay(List<dynamic> last7Days) {
     if (last7Days.isEmpty) return 'N/A';
 

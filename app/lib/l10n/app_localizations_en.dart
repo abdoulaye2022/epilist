@@ -3515,4 +3515,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get last7Days => 'Last 7 Days';
+
+  @override
+  String get includeSharedLists => 'Include shared lists';
+
+  @override
+  String get showingOnlyOwnLists => 'Showing only your own lists';
+
+  @override
+  String get spendingBreakdown => 'Spending Breakdown';
+
+  @override
+  String get myLists => 'My Lists';
+
+  @override
+  String get sharedLists => 'Shared Lists';
+
+  @override
+  String get ownListsOnly => 'Own lists only';
+
+  @override
+  String get dataSourceBreakdown => 'Data Source Breakdown';
+
+  @override
+  String get andXMore => 'And';
+
+  @override
+  String get moreCategories => 'more categories';
 }

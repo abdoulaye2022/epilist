@@ -3570,4 +3570,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get last7Days => '7 derniers jours';
+
+  @override
+  String get includeSharedLists => 'Inclure les listes partagées';
+
+  @override
+  String get showingOnlyOwnLists =>
+      'Affichage uniquement de vos propres listes';
+
+  @override
+  String get spendingBreakdown => 'Répartition des dépenses';
+
+  @override
+  String get myLists => 'Mes listes';
+
+  @override
+  String get sharedLists => 'Listes partagées';
+
+  @override
+  String get ownListsOnly => 'Mes listes uniquement';
+
+  @override
+  String get dataSourceBreakdown => 'Répartition des sources de données';
+
+  @override
+  String get andXMore => 'Et';
+
+  @override
+  String get moreCategories => 'autres catégories';
 }

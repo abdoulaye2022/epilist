@@ -404,33 +404,47 @@ class AnalyticsController
             
             $currency_code = $params['currency'] ?? null;
             $language = $this->getUserLanguage($request);
+            $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            // Récupérer l'utilisateur
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
                 Currency::findByCode($currency_code) : 
                 ($user->currency ?? Currency::getDefault());
 
-            // Période actuelle (mois en cours)
+            // Période actuelle
             $currentMonthStart = Carbon::now()->startOfMonth();
             $currentMonthEnd = Carbon::now()->endOfMonth();
 
-            // Stats du mois actuel
-            $currentMonthItems = $this->getUserAccessibleItemsQuery($user_id)
+            // Obtenir les données avec breakdown
+            $breakdown = $this->getSpendingDataWithBreakdown($user_id, $currentMonthStart, $currentMonthEnd);
+            
+            // Choisir les données selon le filtre
+            if ($includeShared) {
+                $currentTotal = $breakdown['totals']['grand_total'];
+                $listIds = array_merge(
+                    ShoppingList::where('user_id', $user_id)->pluck('id')->toArray(),
+                    SharedList::where('shared_with_user_id', $user_id)
+                            ->where('status', 'accepted')
+                            ->where('is_active', true)
+                            ->pluck('list_id')->toArray()
+                );
+            } else {
+                $currentTotal = $breakdown['totals']['own_lists_total'];
+                $listIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
+            }
+
+            // Stats du mois avec les bonnes listes
+            $currentMonthItems = ListItem::whereIn('list_id', $listIds)
                 ->where('is_purchased', true)
                 ->whereNotNull('price')
                 ->whereBetween('updated_at', [$currentMonthStart, $currentMonthEnd])
                 ->get();
 
-            $currentTotal = $currentMonthItems->sum(function($item) {
-                return $item->price * $item->quantity;
-            });
-
-            // Données des 7 derniers jours
+            // Derniers 7 jours
             $last7Days = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
-                $dayItems = $this->getUserAccessibleItemsQuery($user_id)
+                $dayItems = ListItem::whereIn('list_id', $listIds)
                     ->where('is_purchased', true)
                     ->whereNotNull('price')
                     ->whereDate('updated_at', $date->toDateString())
@@ -454,6 +468,8 @@ class AnalyticsController
                 'data' => [
                     'language' => $language,
                     'currency' => $targetCurrency->code,
+                    'include_shared' => $includeShared,
+                    
                     'current_month' => [
                         'total_spent' => round($currentTotal, 2),
                         'items_purchased' => $currentMonthItems->sum('quantity'),
@@ -461,9 +477,24 @@ class AnalyticsController
                         'shopping_sessions' => $currentMonthItems->count(),
                         'formatted_total' => $targetCurrency->formatAmountDisplay($currentTotal)
                     ],
+                    
                     'last_7_days' => $last7Days,
+                    
+                    // ✅ NOUVELLE SECTION: Breakdown des sources
+                    'data_breakdown' => [
+                        'own_lists_total' => round($breakdown['totals']['own_lists_total'], 2),
+                        'shared_lists_total' => round($breakdown['totals']['shared_lists_total'], 2),
+                        'own_lists_percentage' => $breakdown['totals']['grand_total'] > 0 ? 
+                            round(($breakdown['totals']['own_lists_total'] / $breakdown['totals']['grand_total']) * 100, 1) : 0,
+                        'shared_lists_percentage' => $breakdown['totals']['grand_total'] > 0 ? 
+                            round(($breakdown['totals']['shared_lists_total'] / $breakdown['totals']['grand_total']) * 100, 1) : 0,
+                        'formatted_own_total' => $targetCurrency->formatAmountDisplay($breakdown['totals']['own_lists_total']),
+                        'formatted_shared_total' => $targetCurrency->formatAmountDisplay($breakdown['totals']['shared_lists_total'])
+                    ],
+                    
                     'quick_stats' => [
-                        'average_daily_spending' => round(array_sum(array_column($last7Days, 'total_spent')) / 7, 2)
+                        'average_daily_spending' => round(array_sum(array_column($last7Days, 'total_spent')) / 7, 2),
+                        'data_source' => $includeShared ? 'own_and_shared' : 'own_only'
                     ]
                 ]
             ]));
@@ -475,6 +506,94 @@ class AnalyticsController
                 'error' => [
                     'code' => 'DASHBOARD_ERROR',
                     'message' => 'Error retrieving dashboard data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE ROUTE: Obtenir les statistiques de répartition des listes
+     */
+    public function getListsBreakdown(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            $period = $params['period'] ?? 'month';
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            
+            $user = User::with('currency')->find($user_id);
+            $targetCurrency = $currency_code ? 
+                Currency::findByCode($currency_code) : 
+                ($user->currency ?? Currency::getDefault());
+
+            // Définir la période
+            $startDate = match($period) {
+                'week' => Carbon::now()->subWeek(),
+                'quarter' => Carbon::now()->subQuarter(),
+                'year' => Carbon::now()->subYear(),
+                default => Carbon::now()->subMonth()
+            };
+            $endDate = Carbon::now()->endOfDay();
+
+            $breakdown = $this->getSpendingDataWithBreakdown($user_id, $startDate, $endDate);
+            
+            // Statistiques des listes
+            $ownListsCount = ShoppingList::where('user_id', $user_id)->count();
+            $sharedListsCount = SharedList::where('shared_with_user_id', $user_id)
+                                        ->where('status', 'accepted')
+                                        ->where('is_active', true)
+                                        ->count();
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => $language,
+                    'period' => $period,
+                    'currency' => $targetCurrency->code,
+                    
+                    'spending_breakdown' => [
+                        'own_lists_total' => round($breakdown['totals']['own_lists_total'], 2),
+                        'shared_lists_total' => round($breakdown['totals']['shared_lists_total'], 2),
+                        'grand_total' => round($breakdown['totals']['grand_total'], 2),
+                        'own_lists_percentage' => $breakdown['totals']['grand_total'] > 0 ? 
+                            round(($breakdown['totals']['own_lists_total'] / $breakdown['totals']['grand_total']) * 100, 1) : 0,
+                        'shared_lists_percentage' => $breakdown['totals']['grand_total'] > 0 ? 
+                            round(($breakdown['totals']['shared_lists_total'] / $breakdown['totals']['grand_total']) * 100, 1) : 0
+                    ],
+                    
+                    'lists_stats' => [
+                        'own_lists_count' => $ownListsCount,
+                        'shared_lists_count' => $sharedListsCount,
+                        'total_accessible_lists' => $ownListsCount + $sharedListsCount,
+                        'own_lists_transactions' => count($breakdown['own_lists']),
+                        'shared_lists_transactions' => count($breakdown['shared_lists'])
+                    ],
+                    
+                    'formatted_amounts' => [
+                        'own_lists_total' => $targetCurrency->formatAmountDisplay($breakdown['totals']['own_lists_total']),
+                        'shared_lists_total' => $targetCurrency->formatAmountDisplay($breakdown['totals']['shared_lists_total']),
+                        'grand_total' => $targetCurrency->formatAmountDisplay($breakdown['totals']['grand_total'])
+                    ],
+                    
+                    'period_info' => [
+                        'start_date' => $startDate->toDateString(),
+                        'end_date' => $endDate->toDateString()
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'BREAKDOWN_ERROR',
+                    'message' => 'Error retrieving lists breakdown',
                     'details' => $e->getMessage()
                 ]
             ]));
@@ -1715,6 +1834,142 @@ class AnalyticsController
         }
     }
 
+    private function getCombinedSpendingDataSafe(int $user_id, Carbon $startDate, Carbon $endDate): array
+    {
+        try {
+            error_log("🔍 getCombinedSpendingDataSafe START");
+            
+            $accessibleListIds = $this->getUserAccessibleListIds($user_id);
+            
+            if (empty($accessibleListIds)) {
+                error_log("⚠️ No accessible lists found!");
+                return [];
+            }
+
+            $spendingData = [];
+
+            // 1. FACTURES - CORRECTION: Clé unique avec ID de facture
+            try {
+                error_log("💳 === ANALYZING RECEIPTS ===");
+                $receipts = ListReceipt::whereIn('list_id', $accessibleListIds)
+                    ->whereBetween('purchase_date', [$startDate, $endDate])
+                    ->get();
+                
+                error_log("💳 Found " . $receipts->count() . " receipts in date range");
+                
+                foreach ($receipts as $receipt) {
+                    if (!$receipt->purchase_date || !is_numeric($receipt->total_amount)) {
+                        error_log("   ❌ SKIPPED: Invalid data for receipt {$receipt->id}");
+                        continue;
+                    }
+                    
+                    // CORRECTION: Clé unique incluant l'ID de la facture
+                    $key = $receipt->purchase_date->format('Y-m-d') . '|' . $receipt->list_id . '|receipt|' . $receipt->id;
+                    
+                    $spendingData[$key] = [
+                        'date' => $receipt->purchase_date,
+                        'amount' => (float)$receipt->total_amount,
+                        'source' => 'receipt',
+                        'store_name' => (string)($receipt->store_name ?? ''),
+                        'list_id' => (int)$receipt->list_id,
+                        'details' => [
+                            'receipt_id' => (int)$receipt->id,
+                            'notes' => (string)($receipt->notes ?? '')
+                        ]
+                    ];
+                    
+                    error_log("💳 Receipt ID {$receipt->id}: {$receipt->total_amount}$ on {$receipt->purchase_date->toDateString()} - Key: $key");
+                }
+                
+            } catch (Exception $e) {
+                error_log("❌ Error fetching receipts: " . $e->getMessage());
+            }
+
+            // 2. ITEMS - Logique inchangée
+            try {
+                error_log("📦 === ANALYZING ITEMS ===");
+                
+                // Identifier les listes qui ont des factures
+                $receiptKeys = array_keys(array_filter($spendingData, function($item) {
+                    return $item['source'] === 'receipt';
+                }));
+                
+                $listsWithReceipts = array_unique(array_map(function($key) {
+                    return (int)explode('|', $key)[1]; // Position 1 pour list_id
+                }, $receiptKeys));
+                
+                error_log("📦 Lists with receipts: " . json_encode($listsWithReceipts));
+                
+                $listsForItemsData = array_diff($accessibleListIds, $listsWithReceipts);
+                error_log("📦 Lists for items analysis: " . json_encode($listsForItemsData));
+                
+                if (!empty($listsForItemsData)) {
+                    $items = ListItem::whereIn('list_id', $listsForItemsData)
+                        ->where('is_purchased', true)
+                        ->whereNotNull('price')
+                        ->where('price', '>', 0)
+                        ->whereBetween('updated_at', [$startDate, $endDate])
+                        ->get();
+
+                    error_log("📦 Found " . $items->count() . " items with prices in date range");
+                    
+                    foreach ($items as $item) {
+                        if (!$item->updated_at || !is_numeric($item->price) || !is_numeric($item->quantity)) {
+                            continue;
+                        }
+                        
+                        $date = $item->updated_at->toDateString();
+                        $key = $date . '|' . $item->list_id . '|items';
+                        
+                        if (!isset($spendingData[$key])) {
+                            $spendingData[$key] = [
+                                'date' => $item->updated_at,
+                                'amount' => 0.0,
+                                'source' => 'items',
+                                'store_name' => (string)($item->store_name ?? ''),
+                                'list_id' => (int)$item->list_id,
+                                'details' => [
+                                    'items_count' => 0,
+                                    'items' => []
+                                ]
+                            ];
+                        }
+                        
+                        $itemTotal = (float)$item->price * (int)$item->quantity;
+                        $spendingData[$key]['amount'] += $itemTotal;
+                        $spendingData[$key]['details']['items_count']++;
+                        
+                        error_log("📦 Item {$item->id}: {$item->product_name} = $itemTotal");
+                    }
+                }
+                
+            } catch (Exception $e) {
+                error_log("❌ Error fetching items: " . $e->getMessage());
+            }
+
+            // 3. RÉSUMÉ FINAL
+            $finalData = array_values($spendingData);
+            $totalAmount = array_sum(array_column($finalData, 'amount'));
+            
+            error_log("💰 === FINAL SUMMARY (CORRECTED) ===");
+            error_log("💰 Total spending entries: " . count($finalData));
+            error_log("💰 Grand total amount: $totalAmount");
+            
+            // Détail de chaque entrée
+            foreach ($finalData as $index => $entry) {
+                error_log("💰 Entry #$index: {$entry['date']->toDateString()} - {$entry['amount']}$ from {$entry['source']}");
+            }
+            
+            error_log("🔍 getCombinedSpendingDataSafe END");
+            
+            return $finalData;
+            
+        } catch (Exception $e) {
+            error_log("❌ Error in getCombinedSpendingDataSafe: " . $e->getMessage());
+            return [];
+        }
+    }
+
     /**
      * ✅ HISTORIQUE DES DÉPENSES PAR MOIS (VERSION CORRIGÉE AVEC FACTURES)
      */
@@ -1728,87 +1983,162 @@ class AnalyticsController
             $currency_code = $params['currency'] ?? null;
             $language = $this->getUserLanguage($request);
             
+            // ✅ Validation des paramètres
+            if (!$user_id || !is_numeric($user_id)) {
+                throw new \InvalidArgumentException('Invalid user ID');
+            }
+            
+            error_log("🔍 monthlySpendingHistory - User ID: $user_id, Months: $months");
+            
             $user = User::with('currency')->find($user_id);
             if (!$user) {
                 throw new \Exception('User not found');
             }
 
             // Déterminer la devise cible
+            $targetCurrency = null;
             if ($currency_code) {
-                $targetCurrency = Currency::findByCode($currency_code);
+                $targetCurrency = Currency::where('code', strtoupper($currency_code))->first();
                 if (!$targetCurrency) {
-                    throw new \Exception('Invalid currency code');
+                    error_log("⚠️ Invalid currency code: $currency_code, using default");
+                    $targetCurrency = Currency::where('code', 'CAD')->first();
                 }
             } else {
-                $targetCurrency = $user->currency ?? Currency::getDefault();
+                $targetCurrency = $user->currency ?? Currency::where('code', 'CAD')->first();
+            }
+
+            // Fallback si aucune devise trouvée
+            if (!$targetCurrency) {
+                $targetCurrency = (object)[
+                    'code' => 'CAD',
+                    'symbol' => '$',
+                    'formatAmountDisplay' => function($amount) {
+                        return '$' . number_format($amount, 2);
+                    }
+                ];
             }
 
             // Calculer les dates
-            $currentYear = Carbon::now()->year;
+            $endDate = Carbon::now()->endOfMonth();
+            $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
             
-            if ($months == 12) {
-                $startDate = Carbon::create($currentYear, 1, 1)->startOfMonth();
-                $endDate = Carbon::create($currentYear, 12, 31)->endOfMonth();
-            } else {
-                $endDate = Carbon::now()->endOfMonth();
-                $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
+            error_log("📅 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+
+            // Obtenir les données avec gestion d'erreur
+            try {
+                $spendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
+                error_log("💰 Total spending records found: " . count($spendingData));
+            } catch (\Exception $e) {
+                error_log("❌ Error getting spending data: " . $e->getMessage());
+                $spendingData = [];
             }
 
-            // ✅ Obtenir les données combinées
-            $spendingData = $this->getCombinedSpendingData($user_id, $startDate, $endDate);
-
-            // Créer les mois dans l'ordre chronologique
+            // Noms des mois sécurisés
+            $monthNames = [
+                1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
+                5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
+                9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre'
+            ];
+            
+            // Créer les données mensuelles
             $monthlyData = [];
             $currentDate = $startDate->copy();
             
             while ($currentDate->lte($endDate)) {
                 $monthKey = $currentDate->format('Y-m');
+                $monthName = $monthNames[$currentDate->month] ?? 'mois';
+                
+                // Formatage sécurisé des montants
+                $formattedZero = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                    ? $targetCurrency->formatAmountDisplay(0)
+                    : $targetCurrency->symbol . '0.00';
+                
                 $monthlyData[$monthKey] = [
-                    'year' => $currentDate->year,
-                    'month' => $currentDate->month,
-                    'month_name' => $currentDate->translatedFormat('F Y'),
-                    'month_short' => $currentDate->translatedFormat('M'),
-                    'total_spent' => 0,
+                    'year' => (int)$currentDate->year,
+                    'month' => (int)$currentDate->month,
+                    'month_name' => $monthName . ' ' . $currentDate->year,
+                    'month_short' => substr($monthName, 0, 4) . '.',
+                    'total_spent' => 0.0,
                     'total_transactions' => 0,
-                    'receipts_total' => 0,
-                    'items_total' => 0,
+                    'receipts_total' => 0.0,
+                    'items_total' => 0.0,
                     'receipts_count' => 0,
                     'items_sessions' => 0,
-                    'currency' => $targetCurrency->code,
-                    'sort_order' => $currentDate->month
+                    'currency' => (string)$targetCurrency->code,
+                    'sort_order' => (int)$currentDate->month,
+                    'formatted_total' => (string)$formattedZero,
+                    'formatted_receipts' => (string)$formattedZero,
+                    'formatted_items' => (string)$formattedZero,
+                    'data_quality' => 'none'
                 ];
                 $currentDate->addMonth();
             }
 
+            error_log("📊 Created " . count($monthlyData) . " months");
+
             // Calculer les totaux
             foreach ($spendingData as $spending) {
-                $monthKey = $spending['date']->format('Y-m');
-                if (isset($monthlyData[$monthKey])) {
-                    $monthlyData[$monthKey]['total_spent'] += $spending['amount'];
-                    $monthlyData[$monthKey]['total_transactions']++;
-                    
-                    if ($spending['source'] === 'receipt') {
-                        $monthlyData[$monthKey]['receipts_total'] += $spending['amount'];
-                        $monthlyData[$monthKey]['receipts_count']++;
-                    } else {
-                        $monthlyData[$monthKey]['items_total'] += $spending['amount'];
-                        $monthlyData[$monthKey]['items_sessions']++;
+                try {
+                    if (!isset($spending['date']) || !isset($spending['amount'])) {
+                        continue;
                     }
+                    
+                    $monthKey = $spending['date']->format('Y-m');
+                    
+                    if (isset($monthlyData[$monthKey])) {
+                        $amount = (float)$spending['amount'];
+                        $monthlyData[$monthKey]['total_spent'] += $amount;
+                        $monthlyData[$monthKey]['total_transactions']++;
+                        
+                        $source = $spending['source'] ?? 'unknown';
+                        if ($source === 'receipt') {
+                            $monthlyData[$monthKey]['receipts_total'] += $amount;
+                            $monthlyData[$monthKey]['receipts_count']++;
+                        } else {
+                            $monthlyData[$monthKey]['items_total'] += $amount;
+                            $monthlyData[$monthKey]['items_sessions']++;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error processing spending entry: " . $e->getMessage());
+                    continue;
                 }
             }
 
-            // Formater les données
+            // Formater les données finales
             foreach ($monthlyData as &$month) {
-                $month['total_spent'] = round($month['total_spent'], 2);
-                $month['receipts_total'] = round($month['receipts_total'], 2);
-                $month['items_total'] = round($month['items_total'], 2);
-                $month['formatted_total'] = $targetCurrency->formatAmountDisplay($month['total_spent']);
-                $month['formatted_receipts'] = $targetCurrency->formatAmountDisplay($month['receipts_total']);
-                $month['formatted_items'] = $targetCurrency->formatAmountDisplay($month['items_total']);
-                $month['data_quality'] = $month['receipts_total'] > 0 ? 'high' : ($month['items_total'] > 0 ? 'medium' : 'none');
+                try {
+                    $month['total_spent'] = round((float)$month['total_spent'], 2);
+                    $month['receipts_total'] = round((float)$month['receipts_total'], 2);
+                    $month['items_total'] = round((float)$month['items_total'], 2);
+                    
+                    // Formatage sécurisé
+                    if (is_callable([$targetCurrency, 'formatAmountDisplay'])) {
+                        $month['formatted_total'] = (string)$targetCurrency->formatAmountDisplay($month['total_spent']);
+                        $month['formatted_receipts'] = (string)$targetCurrency->formatAmountDisplay($month['receipts_total']);
+                        $month['formatted_items'] = (string)$targetCurrency->formatAmountDisplay($month['items_total']);
+                    } else {
+                        $symbol = $targetCurrency->symbol ?? '$';
+                        $month['formatted_total'] = $symbol . number_format($month['total_spent'], 2);
+                        $month['formatted_receipts'] = $symbol . number_format($month['receipts_total'], 2);
+                        $month['formatted_items'] = $symbol . number_format($month['items_total'], 2);
+                    }
+                    
+                    // Qualité des données
+                    if ($month['receipts_total'] > 0) {
+                        $month['data_quality'] = 'high';
+                    } elseif ($month['items_total'] > 0) {
+                        $month['data_quality'] = 'medium';
+                    } else {
+                        $month['data_quality'] = 'none';
+                    }
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error formatting month data: " . $e->getMessage());
+                    $month['data_quality'] = 'error';
+                }
             }
 
-            // Trier les données
+            // Trier chronologiquement
             $sortedMonthlyData = array_values($monthlyData);
             usort($sortedMonthlyData, function($a, $b) {
                 if ($a['year'] !== $b['year']) {
@@ -1817,63 +2147,126 @@ class AnalyticsController
                 return $a['month'] <=> $b['month'];
             });
 
-            // Calculs de tendance
+            // Calculs de résumé sécurisés
             $values = array_column($sortedMonthlyData, 'total_spent');
             $totalSpent = array_sum($values);
             $averageMonthly = count($values) > 0 ? $totalSpent / count($values) : 0;
             
-            $recentMonths = array_slice($values, -3);
-            $previousMonths = array_slice($values, -6, 3);
-            $recentAvg = count($recentMonths) > 0 ? array_sum($recentMonths) / count($recentMonths) : 0;
-            $previousAvg = count($previousMonths) > 0 ? array_sum($previousMonths) / count($previousMonths) : 0;
-            
-            $trendPercentage = $previousAvg > 0 ? 
-                round((($recentAvg - $previousAvg) / $previousAvg) * 100, 1) : 0;
+            // Formatage final sécurisé
+            $formattedTotal = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                ? $targetCurrency->formatAmountDisplay($totalSpent)
+                : ($targetCurrency->symbol ?? '$') . number_format($totalSpent, 2);
+                
+            $formattedAverage = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                ? $targetCurrency->formatAmountDisplay($averageMonthly)
+                : ($targetCurrency->symbol ?? '$') . number_format($averageMonthly, 2);
 
-            $response->getBody()->write(json_encode([
+            // Construction de la réponse avec types explicites
+            $responseData = [
                 'success' => true,
                 'data' => [
-                    'language' => $language,
+                    'language' => (string)$language,
                     'monthly_data' => $sortedMonthlyData,
                     'summary' => [
                         'total_spent' => round($totalSpent, 2),
                         'average_monthly' => round($averageMonthly, 2),
-                        'currency' => $targetCurrency->code,
+                        'currency' => (string)$targetCurrency->code,
                         'period' => [
-                            'start' => $startDate->toDateString(),
-                            'end' => $endDate->toDateString(),
-                            'months' => $months,
-                            'year_based' => $months == 12
+                            'start' => (string)$startDate->toDateString(),
+                            'end' => (string)$endDate->toDateString(),
+                            'months' => (int)$months,
+                            'year_based' => false
                         ],
                         'data_sources' => [
                             'receipts_total' => round(array_sum(array_column($sortedMonthlyData, 'receipts_total')), 2),
                             'items_total' => round(array_sum(array_column($sortedMonthlyData, 'items_total')), 2),
-                            'receipts_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['receipts_count'] > 0)),
-                            'items_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['items_sessions'] > 0))
+                            'receipts_months' => (int)count(array_filter($sortedMonthlyData, fn($m) => $m['receipts_count'] > 0)),
+                            'items_months' => (int)count(array_filter($sortedMonthlyData, fn($m) => $m['items_sessions'] > 0))
                         ],
-                        'trend' => [
-                            'percentage' => $trendPercentage,
-                            'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
-                            'recent_average' => round($recentAvg, 2),
-                            'previous_average' => round($previousAvg, 2)
-                        ],
-                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
-                        'formatted_average_monthly' => $targetCurrency->formatAmountDisplay($averageMonthly)
+                        'formatted_total' => (string)$formattedTotal,
+                        'formatted_average_monthly' => (string)$formattedAverage
                     ]
                 ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
+            ];
 
+            // ✅ Encodage JSON sécurisé
+            $jsonData = json_encode($responseData, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            
+            if ($jsonData === false) {
+                throw new \Exception('JSON encoding failed: ' . json_last_error_msg());
+            }
+
+            $response->getBody()->write($jsonData);
+            return $response->withHeader('Content-Type', 'application/json; charset=utf-8');
+
+        } catch (\JsonException $e) {
+            error_log("❌ JSON Error in monthlySpendingHistory: " . $e->getMessage());
+            
+            $errorResponse = json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'JSON_ENCODING_ERROR',
+                    'message' => 'Error encoding response data',
+                    'details' => $e->getMessage()
+                ]
+            ]);
+            
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            
         } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
+            error_log("❌ Error in monthlySpendingHistory: " . $e->getMessage());
+            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            
+            $errorResponse = json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'ANALYTICS_ERROR',
                     'message' => 'Error retrieving monthly spending data',
                     'details' => $e->getMessage()
                 ]
-            ]));
+            ]);
+            
+            $response->getBody()->write($errorResponse);
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les données avec séparation propres/partagées
+     */
+    private function getSpendingDataWithBreakdown(int $user_id, Carbon $startDate, Carbon $endDate): array
+    {
+        $ownListIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
+        $sharedListIds = SharedList::where('shared_with_user_id', $user_id)
+                                ->where('status', 'accepted')
+                                ->where('is_active', true)
+                                ->pluck('list_id')->toArray();
+        
+        $allSpendingData = $this->getCombinedSpendingData($user_id, $startDate, $endDate);
+        
+        $breakdown = [
+            'own_lists' => [],
+            'shared_lists' => [],
+            'totals' => [
+                'own_lists_total' => 0,
+                'shared_lists_total' => 0,
+                'grand_total' => 0
+            ]
+        ];
+        
+        foreach ($allSpendingData as $spending) {
+            if (in_array($spending['list_id'], $ownListIds)) {
+                $breakdown['own_lists'][] = $spending;
+                $breakdown['totals']['own_lists_total'] += $spending['amount'];
+            } else {
+                $breakdown['shared_lists'][] = $spending;
+                $breakdown['totals']['shared_lists_total'] += $spending['amount'];
+            }
+            
+            $breakdown['totals']['grand_total'] += $spending['amount'];
+        }
+        
+        return $breakdown;
     }
 }

@@ -1413,5 +1413,14 @@
   "topCategory": "Catégorie principale",
   "mostFrequentCategory": "Catégorie la plus fréquente",
   "weeklyActivity": "Activité hebdomadaire",
-"last7Days": "7 derniers jours"
+  "last7Days": "7 derniers jours",
+  "includeSharedLists": "Inclure les listes partagées",
+  "showingOnlyOwnLists": "Affichage uniquement de vos propres listes",
+  "spendingBreakdown": "Répartition des dépenses",
+  "myLists": "Mes listes",
+  "sharedLists": "Listes partagées",
+  "ownListsOnly": "Mes listes uniquement",
+  "dataSourceBreakdown": "Répartition des sources de données",
+  "andXMore": "Et",
+"moreCategories": "autres catégories"
 }

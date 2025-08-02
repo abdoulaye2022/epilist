@@ -6708,6 +6708,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'7 derniers jours'**
   String get last7Days;
+
+  /// No description provided for @includeSharedLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inclure les listes partagées'**
+  String get includeSharedLists;
+
+  /// No description provided for @showingOnlyOwnLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affichage uniquement de vos propres listes'**
+  String get showingOnlyOwnLists;
+
+  /// No description provided for @spendingBreakdown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Répartition des dépenses'**
+  String get spendingBreakdown;
+
+  /// No description provided for @myLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes listes'**
+  String get myLists;
+
+  /// No description provided for @sharedLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes partagées'**
+  String get sharedLists;
+
+  /// No description provided for @ownListsOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes listes uniquement'**
+  String get ownListsOnly;
+
+  /// No description provided for @dataSourceBreakdown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Répartition des sources de données'**
+  String get dataSourceBreakdown;
+
+  /// No description provided for @andXMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Et'**
+  String get andXMore;
+
+  /// No description provided for @moreCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'autres catégories'**
+  String get moreCategories;
 }
 
 class _AppLocalizationsDelegate

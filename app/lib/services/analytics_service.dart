@@ -1,4 +1,4 @@
-// services/analytics_service.dart - VERSION MISE À JOUR AVEC NOUVEAUX ENDPOINTS
+// services/analytics_service.dart - VERSION AVEC FILTRAGE
 import 'package:dio/dio.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
@@ -12,36 +12,35 @@ class AnalyticsService {
     : _dio = dio,
       _authService = authService;
 
-  /// ✅ MÉTHODE POUR OBTENIR LA LANGUE ACTUELLE
   String _getCurrentLanguage() {
-    // Récupérer la langue depuis le contexte global ou les préférences
-    // Pour l'instant, on utilise la locale système
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
     final languageCode = locale.languageCode;
 
-    // Supporter seulement français et anglais
     if (languageCode == 'fr' || languageCode == 'en') {
       return languageCode;
     }
 
-    // Défaut : français
     return 'fr';
   }
 
-  /// ✅ MÉTHODE POUR AJOUTER LES HEADERS DE LANGUE
   Map<String, String> _getHeaders() {
     final language = _getCurrentLanguage();
     return {'Accept-Language': language, 'Content-Type': 'application/json'};
   }
 
-  Future<Map<String, dynamic>> getDashboard([String? currencyCode]) async {
+  // ✅ MODIFIÉ: Dashboard avec support du filtrage
+  Future<Map<String, dynamic>> getDashboard([
+    String? currencyCode,
+    bool includeShared = true,
+  ]) async {
     final token = await _authService.getToken();
 
     final queryParams = <String, dynamic>{};
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
-    // ✅ Ajouter la langue aux paramètres
+    // ✅ NOUVEAU: Paramètre pour inclure/exclure les listes partagées
+    queryParams['include_shared'] = includeShared.toString();
     queryParams['lang'] = _getCurrentLanguage();
 
     final response = await _dio.get(
@@ -59,17 +58,21 @@ class AnalyticsService {
     }
   }
 
+  // ✅ MODIFIÉ: Dépenses mensuelles avec filtrage
   Future<Map<String, dynamic>> getMonthlySpending({
     int months = 12,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'months': months};
+    final queryParams = <String, dynamic>{
+      'months': months,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
-    // ✅ Ajouter la langue
     queryParams['lang'] = _getCurrentLanguage();
 
     final response = await _dio.get(
@@ -89,14 +92,18 @@ class AnalyticsService {
     }
   }
 
-  /// ✅ NOUVEAU: Méthode pour les dépenses quotidiennes
+  // ✅ MODIFIÉ: Dépenses quotidiennes avec filtrage
   Future<Map<String, dynamic>> getDailySpending({
     int days = 30,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'days': days};
+    final queryParams = <String, dynamic>{
+      'days': days,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
@@ -119,14 +126,18 @@ class AnalyticsService {
     }
   }
 
-  /// ✅ NOUVEAU: Méthode pour les dépenses hebdomadaires
+  // ✅ MODIFIÉ: Dépenses hebdomadaires avec filtrage
   Future<Map<String, dynamic>> getWeeklySpending({
     int weeks = 12,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'weeks': weeks};
+    final queryParams = <String, dynamic>{
+      'weeks': weeks,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
@@ -149,14 +160,18 @@ class AnalyticsService {
     }
   }
 
-  /// ✅ NOUVEAU: Méthode pour les dépenses annuelles
+  // ✅ MODIFIÉ: Dépenses annuelles avec filtrage
   Future<Map<String, dynamic>> getYearlySpending({
     int years = 5,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'years': years};
+    final queryParams = <String, dynamic>{
+      'years': years,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
@@ -179,37 +194,54 @@ class AnalyticsService {
     }
   }
 
-  /// ✅ MODIFIÉ: Méthode getSpendingTrends mise à jour pour utiliser les nouveaux endpoints
+  // ✅ MODIFIÉ: Tendances avec filtrage
   Future<Map<String, dynamic>> getSpendingTrends({
     String period = 'month',
     String? currencyCode,
+    bool includeShared = true,
   }) async {
-    // Rediriger vers les bonnes méthodes selon la période
     switch (period) {
       case 'day':
-        return await getDailySpending(currencyCode: currencyCode);
+        return await getDailySpending(
+          currencyCode: currencyCode,
+          includeShared: includeShared,
+        );
       case 'week':
-        return await getWeeklySpending(currencyCode: currencyCode);
+        return await getWeeklySpending(
+          currencyCode: currencyCode,
+          includeShared: includeShared,
+        );
       case 'year':
-        return await getYearlySpending(currencyCode: currencyCode);
+        return await getYearlySpending(
+          currencyCode: currencyCode,
+          includeShared: includeShared,
+        );
       case 'month':
       default:
-        return await getMonthlySpending(currencyCode: currencyCode);
+        return await getMonthlySpending(
+          currencyCode: currencyCode,
+          includeShared: includeShared,
+        );
     }
   }
 
+  // ✅ MODIFIÉ: Catégories avec filtrage
   Future<Map<String, dynamic>> getSpendingCategories({
     String period = 'month',
     int limit = 10,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'period': period, 'limit': limit};
+    final queryParams = <String, dynamic>{
+      'period': period,
+      'limit': limit,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
-    // ✅ Ajouter la langue
     queryParams['lang'] = _getCurrentLanguage();
 
     final response = await _dio.get(
@@ -227,11 +259,13 @@ class AnalyticsService {
     }
   }
 
+  // ✅ MODIFIÉ: Top produits avec filtrage
   Future<Map<String, dynamic>> getTopProducts({
     String period = 'month',
     String sortBy = 'total_spent',
     int limit = 10,
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
@@ -239,11 +273,11 @@ class AnalyticsService {
       'period': period,
       'sort_by': sortBy,
       'limit': limit,
+      'include_shared': includeShared.toString(),
     };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
-    // ✅ Ajouter la langue
     queryParams['lang'] = _getCurrentLanguage();
 
     final response = await _dio.get(
@@ -263,17 +297,21 @@ class AnalyticsService {
     }
   }
 
+  // ✅ MODIFIÉ: Comparaison des périodes avec filtrage
   Future<Map<String, dynamic>> getPeriodComparison({
     String periodType = 'month',
     String? currencyCode,
+    bool includeShared = true,
   }) async {
     final token = await _authService.getToken();
 
-    final queryParams = <String, dynamic>{'period_type': periodType};
+    final queryParams = <String, dynamic>{
+      'period_type': periodType,
+      'include_shared': includeShared.toString(),
+    };
     if (currencyCode != null) {
       queryParams['currency'] = currencyCode;
     }
-    // ✅ Ajouter la langue
     queryParams['lang'] = _getCurrentLanguage();
 
     final response = await _dio.get(
@@ -289,6 +327,36 @@ class AnalyticsService {
     } else {
       throw Exception(
         response.data['error']['message'] ?? 'Erreur comparaison',
+      );
+    }
+  }
+
+  // ✅ NOUVEAU: Obtenir les statistiques de répartition des listes
+  Future<Map<String, dynamic>> getListsBreakdown({
+    String period = 'month',
+    String? currencyCode,
+  }) async {
+    final token = await _authService.getToken();
+
+    final queryParams = <String, dynamic>{'period': period};
+    if (currencyCode != null) {
+      queryParams['currency'] = currencyCode;
+    }
+    queryParams['lang'] = _getCurrentLanguage();
+
+    final response = await _dio.get(
+      '/analytics/lists-breakdown',
+      queryParameters: queryParams,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token', ..._getHeaders()},
+      ),
+    );
+
+    if (response.data['success'] == true) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        response.data['error']['message'] ?? 'Erreur breakdown listes',
       );
     }
   }

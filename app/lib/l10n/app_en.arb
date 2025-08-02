@@ -1407,5 +1407,14 @@
   "topCategory": "Top Category",
   "mostFrequentCategory": "Most Frequent Category",
   "weeklyActivity": "Weekly Activity",
-"last7Days": "Last 7 Days"
+"last7Days": "Last 7 Days",
+"includeSharedLists": "Include shared lists",
+"showingOnlyOwnLists": "Showing only your own lists",
+"spendingBreakdown": "Spending Breakdown",
+"myLists": "My Lists",
+"sharedLists": "Shared Lists",
+"ownListsOnly": "Own lists only",
+"dataSourceBreakdown": "Data Source Breakdown",
+"andXMore": "And",
+"moreCategories": "more categories"
 }

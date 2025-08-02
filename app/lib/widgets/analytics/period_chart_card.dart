@@ -1,4 +1,4 @@
-// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE SÉPARÉE
+// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE AVEC CALCUL MANUEL
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -93,7 +93,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
             ),
             const SizedBox(height: 20),
 
-            // ✅ SOLUTION: Graphique avec contraintes strictes
+            // Graphique avec contraintes strictes
             Container(
               height: 200,
               width: double.infinity,
@@ -108,13 +108,13 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
 
             const SizedBox(height: 20),
 
-            // Résumé avec FormattedAmount
+            // ✅ CORRIGÉ: Calcul basé sur les données réelles au lieu du summary
             Row(
               children: [
                 Expanded(
                   child: _buildSummaryItem(
                     l10n.totalSpent,
-                    summary['total']?.toDouble() ?? 0.0,
+                    _calculateTotalFromPeriodData(periodData),
                     currentColor,
                     isAmount: true,
                   ),
@@ -123,17 +123,71 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                 Expanded(
                   child: _buildSummaryItem(
                     _getAverageLabel(l10n),
-                    _getAverageValue(summary),
+                    _calculateAverageFromPeriodData(periodData),
                     Colors.blue,
                     isAmount: true,
                   ),
                 ),
               ],
             ),
+
+            const SizedBox(height: 16),
+
+            // ✅ NOUVEAU: Informations sur les données
+            _buildDataInfo(periodData, l10n),
           ],
         ),
       ),
     );
+  }
+
+  // ✅ NOUVEAU: Méthode utilitaire pour conversion sécurisée vers double
+  double _safeToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      return parsed ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  // ✅ NOUVEAU: Calcul du total depuis les données de période
+  double _calculateTotalFromPeriodData(List<dynamic> periodData) {
+    double total = 0.0;
+    for (var period in periodData) {
+      if (period is Map<String, dynamic>) {
+        final periodTotal = period['total_spent'];
+        total += _safeToDouble(periodTotal);
+      }
+    }
+    return total;
+  }
+
+  // ✅ NOUVEAU: Calcul de la moyenne depuis les données de période
+  double _calculateAverageFromPeriodData(List<dynamic> periodData) {
+    final total = _calculateTotalFromPeriodData(periodData);
+
+    // Compter les périodes avec des données > 0
+    int periodsWithData = 0;
+    for (var period in periodData) {
+      if (period is Map<String, dynamic>) {
+        final periodTotal = period['total_spent'];
+        final value = _safeToDouble(periodTotal);
+        if (value > 0) {
+          periodsWithData++;
+        }
+      }
+    }
+
+    if (periodsWithData > 0) {
+      return total / periodsWithData;
+    }
+
+    // Fallback: moyenne sur toutes les périodes
+    return total / (periodData.length > 0 ? periodData.length : 1);
   }
 
   List<dynamic> _extractPeriodData() {
@@ -152,26 +206,10 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
+  // ✅ MODIFIÉ: Utilise le calcul manuel au lieu du summary
   double _getAverageValue(Map<String, dynamic> summary) {
-    switch (_selectedPeriod) {
-      case 'day':
-        return summary['average_daily']?.toDouble() ??
-            summary['average']?.toDouble() ??
-            0.0;
-      case 'week':
-        return summary['average_weekly']?.toDouble() ??
-            summary['average']?.toDouble() ??
-            0.0;
-      case 'year':
-        return summary['average_yearly']?.toDouble() ??
-            summary['average']?.toDouble() ??
-            0.0;
-      case 'month':
-      default:
-        return summary['average_monthly']?.toDouble() ??
-            summary['average']?.toDouble() ??
-            0.0;
-    }
+    final periodData = _extractPeriodData();
+    return _calculateAverageFromPeriodData(periodData);
   }
 
   String _getPeriodTitle(AppLocalizations l10n) {
@@ -281,7 +319,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  // ✅ SOLUTION: Chart simplifié sans LayoutBuilder complexe
   Widget _buildChart(
     List<dynamic> periodData,
     AppLocalizations l10n,
@@ -300,21 +337,27 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     // Trouver la valeur maximale
     double maxValue = 0;
     for (var item in periodData) {
-      final value = item['total_spent']?.toDouble() ?? 0;
+      final value = _safeToDouble(item['total_spent']);
       if (value > maxValue) maxValue = value;
     }
 
     if (maxValue == 0) {
       return Center(
-        child: Text(
-          l10n.noSpendingRecorded,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.analytics_outlined, size: 48, color: Colors.grey[400]),
+            const SizedBox(height: 12),
+            Text(
+              l10n.noSpendingRecorded ?? 'Aucune dépense enregistrée',
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       );
     }
 
-    // ✅ SOLUTION: Chart simple avec contraintes fixes
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
@@ -324,42 +367,40 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
           children:
               periodData.asMap().entries.map((entry) {
                 final item = entry.value;
-                final value = item['total_spent']?.toDouble() ?? 0;
+                final value = _safeToDouble(item['total_spent']);
                 final label = _getItemLabel(item, l10n);
-                final height =
-                    maxValue > 0
-                        ? (value / maxValue) * 120
-                        : 5; // ✅ CORRECTION: 120px max au lieu de 140px
+                final height = maxValue > 0 ? (value / maxValue) * 120 : 5.0;
 
                 return Container(
-                  width: 45, // Largeur fixe par barre
+                  width: 45,
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Barre du graphique
                       Tooltip(
-                        message: '${value.toStringAsFixed(2)}',
+                        message: '${value.toStringAsFixed(2)} XOF',
                         child: Container(
                           width: 24,
                           height: height < 5 ? 5 : height,
                           decoration: BoxDecoration(
-                            color: chartColor[600],
+                            color:
+                                value > 0 ? chartColor[600] : Colors.grey[300],
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 6,
-                      ), // ✅ CORRECTION: 6px au lieu de 8px
+                      const SizedBox(height: 6),
                       // Label
                       SizedBox(
-                        height: 16, // ✅ CORRECTION: Hauteur fixe pour le label
+                        height: 16,
                         child: Text(
                           label,
                           style: TextStyle(
-                            fontSize: 9, // ✅ CORRECTION: Police plus petite
+                            fontSize: 9,
                             color: Colors.grey[600],
+                            fontWeight:
+                                value > 0 ? FontWeight.w600 : FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
@@ -442,6 +483,62 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     } catch (e) {
       return '';
     }
+  }
+
+  // ✅ NOUVEAU: Informations sur les données
+  Widget _buildDataInfo(List<dynamic> periodData, AppLocalizations l10n) {
+    final totalSpent = _calculateTotalFromPeriodData(periodData);
+
+    if (totalSpent == 0) {
+      return const SizedBox.shrink();
+    }
+
+    int periodsWithData = 0;
+    for (var period in periodData) {
+      if (_safeToDouble(period['total_spent']) > 0) {
+        periodsWithData++;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 16, color: Colors.blue[600]),
+              const SizedBox(width: 6),
+              Text(
+                'Informations sur la période',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          Row(
+            children: [
+              Icon(Icons.timeline, size: 14, color: Colors.grey[600]),
+              const SizedBox(width: 6),
+              Text(
+                'Périodes avec données: $periodsWithData/${periodData.length}',
+                style: const TextStyle(fontSize: 11),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSummaryItem(
