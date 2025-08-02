@@ -297,8 +297,8 @@ class _CompleteNotificationTestState extends State<CompleteNotificationTest> {
     _addLog('🔔 Test NotificationService...');
 
     try {
-      final isInitialized = NotificationService.isInitialized;
-      _addLog('🔔 Service initialisé: $isInitialized');
+      // final isInitialized = NotificationService.isInitialized;
+      // _addLog('🔔 Service initialisé: $isInitialized');
 
       final currentToken = NotificationService.getCurrentToken();
       if (currentToken != null) {

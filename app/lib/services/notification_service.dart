@@ -1,4 +1,4 @@
-// services/notification_service.dart - CORRECTION FINALE
+// services/notification_service.dart - VERSION OPTIMISÉE POUR LOGIN UNIQUEMENT
 
 import 'dart:io';
 import 'dart:convert';
@@ -27,7 +27,8 @@ class NotificationService {
   static BuildContext? _context;
   static String? _currentToken;
   static String? _apnsToken;
-  static bool _isInitialized = false;
+  static bool _isBasicInitialized = false;
+  static bool _isFullyInitialized = false;
   static String? _lastRegisteredToken;
   static bool _deviceRegistrationInProgress = false;
   static bool _isSimulator = false;
@@ -37,8 +38,11 @@ class NotificationService {
   static const String _channelReminders = 'reminders';
   static const String _channelGeneral = 'general';
 
-  static Future<void> initialize([BuildContext? context]) async {
-    print('🚀 [EPILIST] Starting NotificationService initialization...');
+  // ✅ NOUVELLE MÉTHODE: Initialisation basique au démarrage (sans permissions)
+  static Future<void> initializeBasic([BuildContext? context]) async {
+    if (_isBasicInitialized) return;
+
+    print('🔔 [EPILIST] Initialisation basique des notifications...');
 
     try {
       _context = context;
@@ -57,31 +61,66 @@ class NotificationService {
       print('📨 [EPILIST] Setting up message handlers...');
       await _setupMessageHandlers();
 
-      // 4. Demander les permissions
-      print('🔒 [EPILIST] Requesting permissions...');
-      await _requestPermissions();
+      // 4. Récupérer le token en cache s'il existe
+      final prefs = await SharedPreferences.getInstance();
+      final cachedToken = prefs.getString('fcm_token');
+      if (cachedToken != null && cachedToken.isNotEmpty) {
+        _currentToken = cachedToken;
+        print(
+          '📱 [EPILIST] Token en cache trouvé: ${cachedToken.substring(0, 20)}...',
+        );
+      }
 
-      // 5. Gérer le token FCM
-      print('🔑 [EPILIST] Handling FCM token...');
-      await _handlePushNotificationsToken();
-
-      // 6. Vérifier les messages initiaux
-      print('📬 [EPILIST] Checking initial messages...');
-      await _checkInitialMessage();
-
-      _isInitialized = true;
-      print('✅ [EPILIST] NotificationService initialized successfully!');
+      _isBasicInitialized = true;
+      print('✅ [EPILIST] Initialisation basique terminée');
     } catch (e, stackTrace) {
-      print('❌ [EPILIST] Error initializing NotificationService: $e');
+      print('❌ [EPILIST] Erreur lors de l\'initialisation basique: $e');
       print('📍 [EPILIST] Stack trace: $stackTrace');
     }
   }
 
+  // ✅ NOUVELLE MÉTHODE: Initialisation complète après connexion
+  static Future<void> initializeAfterLogin() async {
+    if (_isFullyInitialized) {
+      print('ℹ️ [EPILIST] Notifications déjà complètement initialisées');
+      return;
+    }
+
+    if (!_isBasicInitialized) {
+      await initializeBasic();
+    }
+
+    print(
+      '🔔 [EPILIST] Initialisation complète des notifications après connexion...',
+    );
+
+    try {
+      // 1. Demander les permissions
+      print('🔒 [EPILIST] Requesting permissions...');
+      await _requestPermissions();
+
+      // 2. Gérer le token FCM
+      print('🔑 [EPILIST] Handling FCM token...');
+      await _handlePushNotificationsToken();
+
+      // 3. Vérifier les messages initiaux
+      print('📬 [EPILIST] Checking initial messages...');
+      await _checkInitialMessage();
+
+      _isFullyInitialized = true;
+      print('✅ [EPILIST] Initialisation complète terminée!');
+    } catch (e, stackTrace) {
+      print('❌ [EPILIST] Erreur lors de l\'initialisation complète: $e');
+      print('📍 [EPILIST] Stack trace: $stackTrace');
+    }
+  }
+
+  // ✅ MÉTHODE OPTIMISÉE: Token refresh uniquement lors de la connexion
   static Future<void> _handlePushNotificationsToken() async {
     try {
       print('🔄 [EPILIST] Setting up token refresh listener...');
 
-      // Écouter les changements de token
+      // Écouter les changements de token SEULEMENT si l'utilisateur est connecté
       _firebaseMessaging.onTokenRefresh
           .listen((fcmToken) async {
             print(
@@ -94,7 +133,12 @@ class NotificationService {
               await _tryGetAPNSTokenSafe();
             }
 
-            await _tryRegisterIfAuthenticated();
+            // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
+            final prefs = await SharedPreferences.getInstance();
+            final authToken = prefs.getString('access_token');
+            if (authToken != null && authToken.isNotEmpty) {
+              await _registerDeviceWithToken();
+            }
           })
           .onError((error) {
             print('❌ [EPILIST] Token refresh error: $error');
@@ -109,17 +153,6 @@ class NotificationService {
   static Future<void> _getInitialTokenSafe() async {
     try {
       print('🔍 [EPILIST] Getting initial FCM token...');
-
-      // D'abord, vérifier le token en cache
-      final prefs = await SharedPreferences.getInstance();
-      final cachedToken = prefs.getString('fcm_token');
-
-      if (cachedToken != null && cachedToken.isNotEmpty) {
-        _currentToken = cachedToken;
-        print(
-          '📱 [EPILIST] Using cached FCM token: ${cachedToken.substring(0, 20)}...',
-        );
-      }
 
       // Traitement spécial iOS pour APNS
       if (Platform.isIOS && !_isSimulator) {
@@ -168,7 +201,16 @@ class NotificationService {
             await _tryGetAPNSTokenSafe();
           }
 
-          await _tryRegisterIfAuthenticated();
+          // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
+          final prefs = await SharedPreferences.getInstance();
+          final authToken = prefs.getString('access_token');
+          if (authToken != null && authToken.isNotEmpty) {
+            await _registerDeviceWithToken();
+          } else {
+            print(
+              'ℹ️ [EPILIST] Utilisateur non connecté, token stocké pour plus tard',
+            );
+          }
           return;
         } else {
           print(
@@ -244,7 +286,11 @@ class NotificationService {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('apns_token', apnsToken);
 
-        await _tryRegisterIfAuthenticated();
+        // ✅ OPTIMISATION: Enregistrer seulement si connecté
+        final authToken = prefs.getString('access_token');
+        if (authToken != null && authToken.isNotEmpty) {
+          await _registerDeviceWithToken();
+        }
 
         print(
           '✅ [EPILIST] APNS token updated: ${apnsToken.substring(0, 20)}...',
@@ -254,6 +300,81 @@ class NotificationService {
       }
     } catch (e) {
       print('❌ [EPILIST] Error getting APNS token safely: $e');
+    }
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Enregistrement du device optimisé
+  static Future<void> _registerDeviceWithToken() async {
+    if (_deviceRegistrationInProgress) {
+      print('⏳ [EPILIST] Device registration already in progress');
+      return;
+    }
+
+    if (_currentToken == null || _currentToken!.isEmpty) {
+      print('⚠️ [EPILIST] No FCM token available for registration');
+      return;
+    }
+
+    _deviceRegistrationInProgress = true;
+
+    try {
+      print('🔄 [EPILIST] Starting device registration...');
+
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('access_token');
+
+      if (authToken == null) {
+        print('⚠️ [EPILIST] No auth token, skipping device registration');
+        return;
+      }
+
+      print(
+        '🔄 [EPILIST] Registering device with FCM token: ${_currentToken!.substring(0, 20)}...',
+      );
+
+      final deviceInfo = await _getDeviceInfo();
+      final dio = Dio();
+      dio.options.baseUrl = AppConfig.baseUrl;
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      dio.options.headers['Content-Type'] = 'application/json';
+      dio.options.connectTimeout = const Duration(seconds: 15);
+      dio.options.receiveTimeout = const Duration(seconds: 15);
+
+      final deviceData = {
+        'device_id': deviceInfo['device_id'],
+        'platform': Platform.isAndroid ? 'android' : 'ios',
+        'push_token': _currentToken,
+        'app_version': deviceInfo['app_version'],
+        'os_version': deviceInfo['os_version'],
+        'device_model': deviceInfo['device_model'],
+      };
+
+      if (Platform.isIOS && !_isSimulator && _apnsToken != null) {
+        deviceData['apns_token'] = _apnsToken!;
+      }
+
+      print('📡 [EPILIST] Sending registration request...');
+      print('📡 [EPILIST] Device data: $deviceData');
+
+      final response = await dio.post('/devices/register', data: deviceData);
+
+      print('📡 [EPILIST] Registration response: ${response.statusCode}');
+      print('📡 [EPILIST] Response data: ${response.data}');
+
+      if (response.statusCode == 201) {
+        await prefs.setString('last_registered_token', _currentToken!);
+        await prefs.setString('device_registered', 'true');
+        _lastRegisteredToken = _currentToken;
+
+        print('✅ [EPILIST] Device registered successfully!');
+      } else {
+        print('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ [EPILIST] Device registration failed: $e');
+      print('📍 [EPILIST] Stack trace: $stackTrace');
+    } finally {
+      _deviceRegistrationInProgress = false;
     }
   }
 
@@ -330,81 +451,6 @@ class NotificationService {
       }
     } catch (e, stackTrace) {
       print('❌ [EPILIST] Error requesting permissions: $e');
-    }
-  }
-
-  static Future<void> _tryRegisterIfAuthenticated() async {
-    if (_deviceRegistrationInProgress) {
-      print('⏳ [EPILIST] Device registration already in progress');
-      return;
-    }
-
-    if (_currentToken == null || _currentToken!.isEmpty) {
-      print('⚠️ [EPILIST] No FCM token available for registration');
-      return;
-    }
-
-    _deviceRegistrationInProgress = true;
-
-    try {
-      print('🔄 [EPILIST] Starting device registration...');
-
-      final prefs = await SharedPreferences.getInstance();
-      final authToken = prefs.getString('access_token');
-
-      if (authToken == null) {
-        print('⚠️ [EPILIST] No auth token, skipping device registration');
-        return;
-      }
-
-      print(
-        '🔄 [EPILIST] Registering device with FCM token: ${_currentToken!.substring(0, 20)}...',
-      );
-
-      final deviceInfo = await _getDeviceInfo();
-      final dio = Dio();
-      dio.options.baseUrl = AppConfig.baseUrl;
-      dio.options.headers['Authorization'] = 'Bearer $authToken';
-      dio.options.headers['Content-Type'] = 'application/json';
-      dio.options.connectTimeout = const Duration(seconds: 15);
-      dio.options.receiveTimeout = const Duration(seconds: 15);
-
-      final deviceData = {
-        'device_id': deviceInfo['device_id'],
-        'platform': Platform.isAndroid ? 'android' : 'ios',
-        'push_token': _currentToken,
-        'app_version': deviceInfo['app_version'],
-        'os_version': deviceInfo['os_version'],
-        'device_model': deviceInfo['device_model'],
-      };
-
-      if (Platform.isIOS && !_isSimulator && _apnsToken != null) {
-        deviceData['apns_token'] = _apnsToken!;
-      }
-
-      print('📡 [EPILIST] Sending registration request...');
-      print('📡 [EPILIST] Device data: $deviceData');
-
-      final response = await dio.post('/devices/register', data: deviceData);
-
-      print('📡 [EPILIST] Registration response: ${response.statusCode}');
-      print('📡 [EPILIST] Response data: ${response.data}');
-
-      if (response.statusCode == 201) {
-        await prefs.setString('last_registered_token', _currentToken!);
-        // ✅ FIX PRINCIPAL: Enregistrer comme string 'true' au lieu de bool
-        await prefs.setString('device_registered', 'true');
-        _lastRegisteredToken = _currentToken;
-
-        print('✅ [EPILIST] Device registered successfully!');
-      } else {
-        print('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
-      }
-    } catch (e, stackTrace) {
-      print('❌ [EPILIST] Device registration failed: $e');
-      print('📍 [EPILIST] Stack trace: $stackTrace');
-    } finally {
-      _deviceRegistrationInProgress = false;
     }
   }
 
@@ -540,8 +586,8 @@ class NotificationService {
         enableVibration: true,
         enableLights: true,
         ledColor: Color(0xFF4CAF50),
-        ledOnMs: 1000, // ✅ Fix pour éviter l'erreur LED
-        ledOffMs: 500, // ✅ Fix pour éviter l'erreur LED
+        ledOnMs: 1000,
+        ledOffMs: 500,
         playSound: true,
       );
 
@@ -574,35 +620,30 @@ class NotificationService {
     }
   }
 
-  // Méthodes publiques et utilitaires
+  // ✅ MÉTHODES PUBLIQUES OPTIMISÉES
+
   static String? getCurrentToken() => _currentToken;
   static bool get isSimulator => _isSimulator;
-  static bool get isInitialized => _isInitialized;
+  static bool get isBasicInitialized => _isBasicInitialized;
+  static bool get isFullyInitialized => _isFullyInitialized;
 
   static void updateContext(BuildContext context) {
     _context = context;
   }
 
-  // ✅ FIX PRINCIPAL: Correction complète de la méthode isDeviceRegistered
   static Future<bool> isDeviceRegistered() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      // ✅ Gérer les deux cas: bool et string de manière robuste
       final registeredValue = prefs.get('device_registered');
       bool isRegistered = false;
 
       if (registeredValue is bool) {
-        // Cas normal: valeur stockée comme bool
         isRegistered = registeredValue;
       } else if (registeredValue is String) {
-        // Cas alternatif: valeur stockée comme string
         isRegistered = registeredValue.toLowerCase() == 'true';
       } else if (registeredValue == null) {
-        // Cas où la clé n'existe pas
         isRegistered = false;
       } else {
-        // Cas inattendu: forcer false et nettoyer
         print(
           '⚠️ [EPILIST] Unexpected type for device_registered: ${registeredValue.runtimeType}',
         );
@@ -611,7 +652,6 @@ class NotificationService {
       }
 
       final lastToken = prefs.getString('last_registered_token');
-
       final result =
           isRegistered && lastToken == _currentToken && _currentToken != null;
 
@@ -625,7 +665,6 @@ class NotificationService {
       return result;
     } catch (e) {
       print('❌ [EPILIST] Error checking device registration: $e');
-      // En cas d'erreur, nettoyer les préférences corrompues
       try {
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('device_registered');
@@ -637,6 +676,20 @@ class NotificationService {
     }
   }
 
+  // ✅ NOUVELLE MÉTHODE: Enregistrement lors de la connexion UNIQUEMENT
+  static Future<void> registerAfterLogin() async {
+    if (!_isFullyInitialized) {
+      await initializeAfterLogin();
+    }
+
+    if (_currentToken == null || _currentToken!.isEmpty) {
+      print('⚠️ [EPILIST] No FCM token available for registration after login');
+      return;
+    }
+
+    await _registerDeviceWithToken();
+  }
+
   static Future<void> ensureDeviceIsRegistered() async {
     if (_currentToken == null || _currentToken!.isEmpty) {
       return;
@@ -644,7 +697,7 @@ class NotificationService {
 
     final isRegistered = await isDeviceRegistered();
     if (!isRegistered) {
-      await _tryRegisterIfAuthenticated();
+      await _registerDeviceWithToken();
     }
   }
 
@@ -662,7 +715,7 @@ class NotificationService {
         await _saveTokenToPreferences(newToken);
       }
     }
-    await _tryRegisterIfAuthenticated();
+    await _registerDeviceWithToken();
   }
 
   static Future<void> reRegisterDeviceWithTokenRefresh() async {
@@ -674,7 +727,7 @@ class NotificationService {
     await prefs.remove('last_registered_token');
     await prefs.remove('device_registered');
     _deviceRegistrationInProgress = false;
-    await _tryRegisterIfAuthenticated();
+    await _registerDeviceWithToken();
   }
 
   static Future<void> clearDeviceData() async {
@@ -695,7 +748,8 @@ class NotificationService {
     _currentToken = null;
     _apnsToken = null;
     _lastRegisteredToken = null;
-    _isInitialized = false;
+    _isBasicInitialized = false;
+    _isFullyInitialized = false;
     _deviceRegistrationInProgress = false;
 
     if (Platform.isAndroid) {
@@ -706,6 +760,8 @@ class NotificationService {
       }
     }
   }
+
+  // ✅ MÉTHODES UTILITAIRES (INCHANGÉES)
 
   static Future<void> _detectSimulator() async {
     try {
@@ -783,7 +839,8 @@ class NotificationService {
   }
 
   static void dispose() {
-    _isInitialized = false;
+    _isBasicInitialized = false;
+    _isFullyInitialized = false;
     _deviceRegistrationInProgress = false;
   }
 }

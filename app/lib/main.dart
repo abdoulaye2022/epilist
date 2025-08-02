@@ -1,4 +1,4 @@
-// main.dart - VERSION AVEC FLUTTERFIRE CLI
+// main.dart - VERSION OPTIMISÉE AVEC FIREBASE
 
 import 'dart:async';
 import 'package:dio/dio.dart';
@@ -33,6 +33,7 @@ import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -45,19 +46,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
-// ✅ CORRECTION: Import FlutterFire CLI
+// ✅ CORRECTION: Import Firebase avec options par défaut
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // ✅ Généré par FlutterFire CLI
+import 'firebase_options.dart';
 import 'package:epilist/services/notification_service.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('📱 Message reçu en arrière-plan: ${message.messageId}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // ✅ CORRECTION: Initialisation Firebase avec FlutterFire CLI
+    // ✅ ÉTAPE 1: Initialiser Firebase avec options
+    print('🚀 Initialisation de Firebase...');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    print('✅ Firebase initialisé avec succès');
+
+    // ✅ ÉTAPE 2: Configurer les notifications en arrière-plan
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // ✅ ÉTAPE 3: Initialisation simple des notifications (sans demander permissions)
+    print('🔔 Initialisation basique des notifications...');
+    await NotificationService.initializeBasic();
 
     final sharedPreferences = await SharedPreferences.getInstance();
     await ConnectivityService().initialize();
@@ -120,9 +135,6 @@ void main() async {
         ),
       );
     }
-
-    // ✅ CORRECTION: Initialisation des notifications APRÈS Firebase
-    await NotificationService.initialize();
 
     runApp(
       MultiRepositoryProvider(
@@ -242,6 +254,7 @@ void main() async {
       ),
     );
   } catch (e) {
+    print('❌ Erreur lors de l\'initialisation: $e');
     runApp(ErrorApp(error: e.toString()));
   }
 }
@@ -477,26 +490,22 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           }
         }
 
+        // ✅ OPTIMISATION: Initialisation complète des notifications SEULEMENT lors de la connexion
         if (state is AuthSuccess) {
           context.read<CurrencyBloc>().add(const LoadUserCurrency());
 
-          Future.delayed(const Duration(milliseconds: 2000), () async {
-            if (NotificationService.getCurrentToken() != null) {
-              try {
-                await NotificationService.reRegisterDeviceWithTokenRefresh();
-              } catch (e) {
-                try {
-                  await NotificationService.reRegisterDevice();
-                } catch (fallbackError) {
-                  // Log error in production monitoring
-                }
-              }
-            } else {
-              try {
-                await NotificationService.ensureDeviceIsRegistered();
-              } catch (e) {
-                // Log error in production monitoring
-              }
+          // ✅ NOUVEAU: Initialisation complète des notifications après connexion
+          Future.delayed(const Duration(milliseconds: 500), () async {
+            try {
+              print(
+                '🔔 Initialisation complète des notifications après connexion...',
+              );
+              await NotificationService.initializeAfterLogin();
+              print('✅ Notifications initialisées avec succès après connexion');
+            } catch (e) {
+              print(
+                '⚠️ Erreur lors de l\'initialisation des notifications: $e',
+              );
             }
           });
 

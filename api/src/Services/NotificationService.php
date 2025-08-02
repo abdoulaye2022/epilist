@@ -1,5 +1,5 @@
 <?php
-// app/Services/NotificationService.php - VERSION NETTOYÉE
+// app/Services/NotificationService.php - VERSION CORRIGÉE AVEC FORMATAGE DEVISE UTILISATEUR
 
 namespace App\Services;
 
@@ -11,6 +11,7 @@ use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\ApnsConfig;
 use App\Models\UserDevice;
 use App\Models\User;
+use App\Models\Currency;
 use Carbon\Carbon;
 
 class NotificationService
@@ -25,6 +26,8 @@ class NotificationService
     const TYPE_LIST_UPDATED = 'list_updated';
     const TYPE_PURCHASE_REMINDER = 'purchase_reminder';
     const TYPE_DAILY_SUMMARY = 'daily_summary';
+    const TYPE_USER_INACTIVE = 'user_inactive';
+    const TYPE_LIST_COMPLETED = 'list_completed';
 
     public function __construct()
     {
@@ -45,7 +48,204 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE PRINCIPALE: Envoyer une notification à un appareil
+     * ✅ NOUVELLE MÉTHODE: Formater un montant selon la devise de l'utilisateur
+     */
+    private function formatAmountForUser(float $amount, User $user, bool $showCode = false): string
+    {
+        try {
+            $currency = $user->getPreferredCurrency();
+            
+            // ✅ Utiliser le formatage international de FormattedAmount
+            return $this->formatAmountInternational($amount, $currency, $showCode);
+            
+        } catch (\Exception $e) {
+            error_log("Error formatting amount for user {$user->id}: " . $e->getMessage());
+            // Fallback: format CAD par défaut
+            return '$' . number_format($amount, 2);
+        }
+    }
+
+    /**
+     * ✅ FORMATAGE INTERNATIONAL (même logique que FormattedAmount)
+     */
+    private function formatAmountInternational(float $amount, Currency $currency, bool $showCode = false): string
+    {
+        $code = strtoupper($currency->code);
+        $decimals = $this->getDecimalsForCurrency($code);
+        $formattedNumber = number_format($amount, $decimals);
+
+        // Appliquer les séparateurs selon la région
+        $localizedNumber = $this->applyLocalizedSeparators($formattedNumber, $code);
+
+        // Appliquer le placement du symbole selon les normes internationales
+        $result = $this->applySymbolPlacement($localizedNumber, $currency);
+        
+        if ($showCode) {
+            $result .= ' ' . $code;
+        }
+        
+        return $result;
+    }
+
+    /**
+     * ✅ Obtenir le nombre de décimales selon la norme ISO 4217
+     */
+    private function getDecimalsForCurrency(string $currencyCode): int
+    {
+        switch ($currencyCode) {
+            // Devises sans décimales (0 décimales)
+            case 'JPY': // Yen japonais
+            case 'KRW': // Won coréen
+            case 'VND': // Dong vietnamien
+            case 'CLP': // Peso chilien
+            case 'ISK': // Couronne islandaise
+            case 'XOF': // Franc CFA BCEAO
+            case 'XAF': // Franc CFA BEAC
+                return 0;
+
+            // Devises avec 3 décimales
+            case 'BHD': // Dinar de Bahreïn
+            case 'KWD': // Dinar koweïtien
+            case 'OMR': // Rial omanais
+            case 'JOD': // Dinar jordanien
+            case 'IQD': // Dinar irakien
+            case 'LYD': // Dinar libyen
+            case 'TND': // Dinar tunisien
+                return 3;
+
+            // Toutes les autres devises (2 décimales - standard)
+            default:
+                return 2;
+        }
+    }
+
+    /**
+     * ✅ Appliquer les séparateurs localisés selon VOS devises
+     */
+    private function applyLocalizedSeparators(string $formattedNumber, string $currencyCode): string
+    {
+        // Séparer la partie entière et décimale
+        $parts = explode('.', $formattedNumber);
+        $integerPart = $parts[0];
+        $decimalPart = isset($parts[1]) ? $parts[1] : '';
+
+        // Déterminer les séparateurs selon VOS devises en base
+        $thousandSeparator = ',';
+        $decimalSeparator = '.';
+
+        // ✅ Régions utilisant virgule comme séparateur décimal selon VOTRE base
+        $commaDecimalCountries = [
+            'EUR',    // Euro (Europe)
+            'CHF',    // Franc suisse
+            'MAD',    // Dirham marocain (influence française)
+            'TND',    // Dinar tunisien (influence française)
+            'DZD',    // Dinar algérien (influence française)
+            'XOF',    // Franc CFA BCEAO (influence française)
+            'XAF',    // Franc CFA BEAC (influence française)
+        ];
+
+        if (in_array($currencyCode, $commaDecimalCountries)) {
+            $thousandSeparator = ' '; // Espace pour les milliers (norme française/européenne)
+            $decimalSeparator = ',';
+        }
+
+        // ✅ Cas spéciaux pour certaines devises de votre base
+        if (in_array($currencyCode, ['JPY', 'KRW'])) {
+            // Pas de décimales, donc pas besoin de séparateur décimal
+            $decimalPart = '';
+        }
+
+        // Ajouter les séparateurs de milliers
+        $formattedInteger = $this->addThousandSeparators($integerPart, $thousandSeparator);
+
+        // Reconstituer le nombre
+        if (!empty($decimalPart)) {
+            return $formattedInteger . $decimalSeparator . $decimalPart;
+        }
+        return $formattedInteger;
+    }
+
+    /**
+     * ✅ Ajouter les séparateurs de milliers
+     */
+    private function addThousandSeparators(string $number, string $separator): string
+    {
+        if (strlen($number) <= 3) return $number;
+
+        $reversed = array_reverse(str_split($number));
+        $result = [];
+
+        for ($i = 0; $i < count($reversed); $i++) {
+            if ($i > 0 && $i % 3 === 0) {
+                $result[] = $separator;
+            }
+            $result[] = $reversed[$i];
+        }
+
+        return implode('', array_reverse($result));
+    }
+
+    /**
+     * ✅ Appliquer le placement du symbole selon VOS devises en base
+     */
+    private function applySymbolPlacement(string $formattedNumber, Currency $currency): string
+    {
+        $code = strtoupper($currency->code);
+        $symbol = $currency->symbol;
+
+        // ✅ ADAPTATION à votre base de données exacte
+        
+        // Devises avec symbole APRÈS le montant (avec espace)
+        $symbolAfterWithSpace = [
+            'EUR',    // € (Euro)
+            'ZAR',    // R (Rand sud-africain)
+            'XOF',    // CFA (Franc CFA BCEAO)
+            'XAF',    // FCFA (Franc CFA BEAC)
+            'MAD',    // د.م. (Dirham marocain)
+            'TND',    // د.ت (Dinar tunisien)
+            'DZD',    // د.ج (Dinar algérien)
+            'BWP',    // P (Pula botswanais)
+        ];
+
+        // Devises avec symbole AVANT le montant (avec espace) - symboles longs
+        $symbolBeforeWithSpace = [
+            'CHF',    // CHF (Franc suisse)
+            'KES',    // KSh (Shilling kényan)
+            'UGX',    // USh (Shilling ougandais)
+            'GHS',    // GH₵ (Cedi ghanéen)
+        ];
+
+        // Devises avec symbole AVANT le montant (sans espace) - symboles courts
+        $symbolBeforeNoSpace = [
+            'USD',    // $ (Dollar américain)
+            'CAD',    // $ (Dollar canadien)
+            'AUD',    // A$ (Dollar australien)
+            'HKD',    // HK$ (Dollar de Hong Kong)
+            'SGD',    // S$ (Dollar de Singapour)
+            'NAD',    // N$ (Dollar namibien)
+            'GBP',    // £ (Livre sterling)
+            'EGP',    // £ (Livre égyptienne)
+            'JPY',    // ¥ (Yen japonais)
+            'CNY',    // ¥ (Yuan chinois)
+            'NGN',    // ₦ (Naira nigérian)
+            'MUR',    // ₨ (Roupie mauricienne)
+            'ETB',    // Br (Birr éthiopien)
+        ];
+
+        if (in_array($code, $symbolAfterWithSpace)) {
+            return $formattedNumber . ' ' . $symbol;
+        } elseif (in_array($code, $symbolBeforeWithSpace)) {
+            return $symbol . ' ' . $formattedNumber;
+        } elseif (in_array($code, $symbolBeforeNoSpace)) {
+            return $symbol . $formattedNumber;
+        } else {
+            // Fallback: symbole avant sans espace (standard)
+            return $symbol . $formattedNumber;
+        }
+    }
+
+    /**
+     * ✅ MÉTHODE PRINCIPALE: Envoyer une notification à un appareil - VERSION CORRIGÉE
      */
     public function sendEpiListNotification(
         UserDevice $device,
@@ -58,17 +258,25 @@ class NotificationService
         try {
             // Vérifier que l'appareil peut recevoir des notifications
             if (!$device->canReceiveNotifications()) {
+                error_log("Device {$device->id} cannot receive notifications");
                 return false;
             }
 
             $token = $device->push_token;
 
-            // Préparer les données de base
+            // ✅ CORRECTION: Nettoyer les données pour éviter les arrays dans les valeurs
+            $cleanData = $this->cleanNotificationData($data);
+
+            // Préparer les données de base - TOUTES LES VALEURS DOIVENT ÊTRE DES STRINGS
             $notificationData = array_merge([
-                'type' => $type,
-                'timestamp' => Carbon::now()->timestamp,
+                'type' => (string) $type,
+                'timestamp' => (string) Carbon::now()->timestamp,
                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-            ], $data);
+            ], $cleanData);
+
+            // ✅ LOG POUR DEBUG
+            error_log("📱 Sending notification to device {$device->id}");
+            error_log("📦 Notification data: " . json_encode($notificationData));
 
             // Créer le message de base
             $message = CloudMessage::withTarget('token', $token)
@@ -120,12 +328,44 @@ class NotificationService
             // Marquer l'appareil comme actif
             $device->markAsActive();
             
+            error_log("✅ Notification sent successfully to device {$device->id}");
             return true;
 
         } catch (\Exception $e) {
-            error_log("Failed to send notification to device {$device->id}: " . $e->getMessage());
+            error_log("❌ Failed to send notification to device {$device->id}: " . $e->getMessage());
+            error_log("❌ Stack trace: " . $e->getTraceAsString());
             return false;
         }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Nettoyer les données de notification
+     */
+    private function cleanNotificationData(array $data): array
+    {
+        $cleanData = [];
+        
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                // ✅ CORRECTION: Convertir les arrays en JSON strings
+                $cleanData[$key] = json_encode($value);
+                error_log("🔧 Converted array to JSON for key '{$key}': " . $cleanData[$key]);
+            } elseif (is_bool($value)) {
+                // Convertir les booleans en strings
+                $cleanData[$key] = $value ? 'true' : 'false';
+            } elseif (is_numeric($value)) {
+                // Convertir les nombres en strings
+                $cleanData[$key] = (string) $value;
+            } elseif (is_null($value)) {
+                // Convertir null en string vide
+                $cleanData[$key] = '';
+            } else {
+                // Garder les strings telles quelles
+                $cleanData[$key] = (string) $value;
+            }
+        }
+        
+        return $cleanData;
     }
 
     /**
@@ -139,11 +379,17 @@ class NotificationService
         array $data = [],
         string $priority = 'normal'
     ): array {
-        $devices = UserDevice::forUser($userId)
-            ->canReceiveNotifications()
+        error_log("📤 Sending notification to user {$userId}: '{$title}'");
+        
+        $devices = UserDevice::where('user_id', $userId)
+            ->where('is_active', true)
+            ->whereNotNull('push_token')
             ->get();
 
+        error_log("📱 Found {$devices->count()} active devices for user {$userId}");
+
         if ($devices->isEmpty()) {
+            error_log("❌ No active devices found for user {$userId}");
             return [
                 'success' => false,
                 'message' => 'No active devices found for user',
@@ -168,34 +414,107 @@ class NotificationService
 
                 if ($success) {
                     $sentCount++;
+                    error_log("✅ Sent to device {$device->id}");
                 } else {
                     $errors[] = "Failed to send to device {$device->id}";
+                    error_log("❌ Failed to send to device {$device->id}");
                 }
             } catch (\Exception $e) {
                 $errors[] = "Error with device {$device->id}: " . $e->getMessage();
+                error_log("❌ Error with device {$device->id}: " . $e->getMessage());
             }
         }
 
-        return [
+        $result = [
             'success' => $sentCount > 0,
             'sent_count' => $sentCount,
             'total_devices' => $devices->count(),
             'errors' => $errors
         ];
+
+        error_log("📊 Final result for user {$userId}: " . json_encode($result));
+        return $result;
     }
 
     /**
-     * ✅ MÉTHODE SPÉCIALISÉE: Envoyer alerte budget
+     * ✅ MÉTHODE SPÉCIALISÉE: Envoyer notification de liste complétée - VERSION CORRIGÉE
+     */
+    public function sendListCompletionNotification(User $user, $list, float $estimatedTotal = 0): bool
+    {
+        $totalItems = $list->items->count();
+        
+        $title = "🎉 Liste terminée !";
+        $body = $this->getListCompletionBody($user, $list->name, $totalItems, $estimatedTotal);
+        
+        // ✅ CORRECTION: Formater les montants selon la devise de l'utilisateur
+        $formattedTotal = $this->formatAmountForUser($estimatedTotal, $user);
+        
+        $data = [
+            'list_id' => (string) $list->id,
+            'list_name' => (string) $list->name,
+            'total_items' => (string) $totalItems,
+            'estimated_total' => (string) $estimatedTotal, // Montant brut pour les calculs
+            'formatted_total' => (string) $formattedTotal, // Montant formaté pour l'affichage
+            'currency_code' => (string) $user->getPreferredCurrency()->code,
+            'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
+            'completion_type' => 'without_receipt',
+            'action' => 'add_receipt'
+        ];
+
+        $result = $this->sendToUser(
+            $user->id,
+            self::TYPE_LIST_COMPLETED,
+            $title,
+            $body,
+            $data,
+            'normal'
+        );
+
+        return $result['success'];
+    }
+
+    /**
+     * ✅ MÉTHODE CORRIGÉE: Générer le message de completion avec devise
+     */
+    private function getListCompletionBody(User $user, string $listName, int $totalItems, float $estimatedTotal): string
+    {
+        $baseMessage = "Bravo ! Vous avez terminé votre liste \"{$listName}\" ({$totalItems} article" . ($totalItems > 1 ? 's' : '') . ")";
+        
+        if ($estimatedTotal > 0) {
+            $formattedAmount = $this->formatAmountForUser($estimatedTotal, $user);
+            $baseMessage .= " pour environ {$formattedAmount}";
+        }
+        
+        $baseMessage .= ". Voulez-vous ajouter une facture pour un suivi précis ?";
+        
+        return $baseMessage;
+    }
+
+    /**
+     * ✅ MÉTHODE CORRIGÉE: Envoyer alertes budget avec devise
      */
     public function sendBudgetAlert(User $user, $budget, string $alertType): bool
     {
         $title = $this->getBudgetAlertTitle($alertType);
-        $body = $this->getBudgetAlertBody($budget, $alertType);
+        $body = $this->getBudgetAlertBody($user, $budget, $alertType);
+        
+        // ✅ Formater les montants selon la devise de l'utilisateur
+        $budgetAmount = method_exists($budget, 'getBudgetAmount') ? $budget->getBudgetAmount() : 0;
+        $spentAmount = method_exists($budget, 'getSpentAmount') ? $budget->getSpentAmount() : 0;
+        $remainingAmount = $budgetAmount - $spentAmount;
         
         $data = [
             'budget_id' => (string) $budget->id,
-            'budget_name' => $budget->name,
-            'alert_type' => $alertType,
+            'budget_name' => (string) $budget->name,
+            'alert_type' => (string) $alertType,
+            'budget_amount' => (string) $budgetAmount,
+            'spent_amount' => (string) $spentAmount,
+            'remaining_amount' => (string) $remainingAmount,
+            'formatted_budget' => (string) $this->formatAmountForUser($budgetAmount, $user),
+            'formatted_spent' => (string) $this->formatAmountForUser($spentAmount, $user),
+            'formatted_remaining' => (string) $this->formatAmountForUser($remainingAmount, $user),
+            'currency_code' => (string) $user->getPreferredCurrency()->code,
+            'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
             'action' => 'open_budget_details'
         ];
 
@@ -212,7 +531,142 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODES UTILITAIRES
+     * ✅ VERSION AVEC TOUS LES TESTS POSSIBLES
+     */
+    private function getBudgetAlertBody(User $user, $budget, string $alertType): string
+    {
+        // ✅ DEBUG: Vérifier toutes les possibilités pour le montant budget
+        error_log("🔍 Debug getBudgetAlertBody for budget {$budget->id}:");
+        error_log("  - Budget name: {$budget->name}");
+        error_log("  - Budget object type: " . get_class($budget));
+        
+        // Lister TOUTES les propriétés de l'objet budget
+        $budgetVars = get_object_vars($budget);
+        error_log("  - Budget properties: " . json_encode(array_keys($budgetVars)));
+        
+        // Tester TOUTES les possibilités courantes pour le montant budget
+        $budgetAmount = 0;
+        $possibleBudgetFields = [
+            'getBudgetAmount', 'getAmount', 'getTotalAmount', 'getTarget',
+            'budget_amount', 'amount', 'total_amount', 'target_amount', 'limit_amount',
+            'budgetAmount', 'totalAmount', 'targetAmount', 'limitAmount'
+        ];
+        
+        foreach ($possibleBudgetFields as $field) {
+            if (method_exists($budget, $field)) {
+                $budgetAmount = $budget->$field();
+                error_log("  - ✅ Found method {$field}(): {$budgetAmount}");
+                break;
+            } elseif (property_exists($budget, $field) || isset($budget->$field)) {
+                $budgetAmount = $budget->$field;
+                error_log("  - ✅ Found property {$field}: {$budgetAmount}");
+                break;
+            }
+        }
+        
+        if ($budgetAmount == 0) {
+            error_log("  - ❌ No budget amount found in any standard field!");
+            // Dump de toutes les valeurs pour debug
+            foreach ($budgetVars as $key => $value) {
+                if (is_numeric($value) && $value > 0) {
+                    error_log("    Possible field: {$key} = {$value}");
+                }
+            }
+        }
+        
+        // Tester pour le montant dépensé
+        $spentAmount = 0;
+        $possibleSpentFields = [
+            'getSpentAmount', 'getUsedAmount', 'getCurrentAmount',
+            'spent_amount', 'used_amount', 'current_amount',
+            'spentAmount', 'usedAmount', 'currentAmount'
+        ];
+        
+        foreach ($possibleSpentFields as $field) {
+            if (method_exists($budget, $field)) {
+                $spentAmount = $budget->$field();
+                error_log("  - ✅ Found spent method {$field}(): {$spentAmount}");
+                break;
+            } elseif (property_exists($budget, $field) || isset($budget->$field)) {
+                $spentAmount = $budget->$field;
+                error_log("  - ✅ Found spent property {$field}: {$spentAmount}");
+                break;
+            }
+        }
+        
+        // Calculer le pourcentage
+        $spentPercentage = 0;
+        if (method_exists($budget, 'getSpentPercentage')) {
+            $spentPercentage = round($budget->getSpentPercentage(), 1);
+            error_log("  - getSpentPercentage(): {$spentPercentage}%");
+        } elseif ($budgetAmount > 0) {
+            $spentPercentage = round(($spentAmount / $budgetAmount) * 100, 1);
+            error_log("  - Calculated percentage: {$spentPercentage}%");
+        }
+        
+        // Debug du formatage
+        error_log("  - User currency: {$user->getPreferredCurrency()->code}");
+        $formattedBudget = $this->formatAmountForUser($budgetAmount, $user);
+        $formattedSpent = $this->formatAmountForUser($spentAmount, $user);
+        error_log("  - Formatted budget: {$formattedBudget}");
+        error_log("  - Formatted spent: {$formattedSpent}");
+        
+        switch ($alertType) {
+            case 'exceeded':
+                return "Vous avez dépassé le budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+            
+            case 'warning':
+                return "Attention ! Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+            
+            case 'daily_summary':
+                return "Résumé du budget \"{$budget->name}\": {$spentPercentage}% utilisé ({$formattedSpent}/{$formattedBudget})";
+            
+            default:
+                return "Mise à jour du budget \"{$budget->name}\": {$formattedSpent}/{$formattedBudget}";
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer rappel d'inactivité avec devise
+     */
+    public function sendInactivityReminder(User $user, int $daysSinceLastList): bool
+    {
+        $title = "🛒 On vous a manqué !";
+        $body = $this->getInactivityReminderBody($daysSinceLastList);
+        
+        $data = [
+            'reminder_type' => 'inactivity',
+            'days_since_last_list' => (string) $daysSinceLastList,
+            'currency_code' => (string) $user->getPreferredCurrency()->code,
+            'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
+            'action' => 'create_new_list'
+        ];
+
+        $result = $this->sendToUser(
+            $user->id,
+            self::TYPE_USER_INACTIVE,
+            $title,
+            $body,
+            $data,
+            'normal'
+        );
+
+        return $result['success'];
+    }
+
+    private function getInactivityReminderBody(int $days): string
+    {
+        if ($days <= 14) {
+            return "Cela fait {$days} jours que vous n'avez pas créé de liste de courses. Besoin d'aide pour organiser vos achats ?";
+        } elseif ($days <= 30) {
+            return "Nous espérons que tout va bien ! Cela fait {$days} jours que vous n'avez pas utilisé EpiList. Prêt pour une nouvelle liste ?";
+        } else {
+            return "EpiList vous attend ! Cela fait plus d'un mois que vous n'avez pas créé de liste. Redécouvrez nos nouvelles fonctionnalités !";
+        }
+    }
+
+    /**
+     * ✅ MÉTHODES UTILITAIRES (inchangées)
      */
     private function getNotificationSound(string $type): string
     {
@@ -221,6 +675,8 @@ class NotificationService
             self::TYPE_BUDGET_WARNING => 'budget_warning',
             self::TYPE_LIST_SHARED => 'list_shared',
             self::TYPE_PURCHASE_REMINDER => 'reminder',
+            self::TYPE_USER_INACTIVE => 'gentle_reminder',
+            self::TYPE_LIST_COMPLETED => 'success_chime',
             default => 'default'
         };
     }
@@ -232,8 +688,10 @@ class NotificationService
             self::TYPE_BUDGET_WARNING,
             self::TYPE_BUDGET_EXCEEDED => 'budget_alerts',
             self::TYPE_LIST_SHARED,
-            self::TYPE_LIST_UPDATED => 'list_updates',
-            self::TYPE_PURCHASE_REMINDER => 'reminders',
+            self::TYPE_LIST_UPDATED,
+            self::TYPE_LIST_COMPLETED => 'list_updates',
+            self::TYPE_PURCHASE_REMINDER,
+            self::TYPE_USER_INACTIVE => 'reminders',
             default => 'general'
         };
     }
@@ -248,24 +706,16 @@ class NotificationService
         };
     }
 
-    private function getBudgetAlertBody($budget, string $alertType): string
-    {
-        $spentPercentage = round($budget->getSpentPercentage(), 1);
-        
-        return match($alertType) {
-            'exceeded' => "Vous avez dépassé le budget \"{$budget->name}\"",
-            'warning' => "Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\"",
-            'daily_summary' => "Résumé du budget \"{$budget->name}\": {$spentPercentage}% utilisé",
-            default => "Mise à jour du budget \"{$budget->name}\""
-        };
-    }
-
     private function getBadgeCount(int $userId): int
     {
-        return \App\Models\Budget::forUser($userId)
-            ->active()
-            ->get()
-            ->filter(fn($b) => $b->shouldShowAlert())
-            ->count();
+        try {
+            return \App\Models\Budget::where('user_id', $userId)
+                ->where('is_active', true)
+                ->get()
+                ->filter(fn($b) => $b->shouldShowAlert())
+                ->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 }

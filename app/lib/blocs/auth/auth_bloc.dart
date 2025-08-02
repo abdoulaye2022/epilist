@@ -1,4 +1,4 @@
-// blocs/auth/auth_bloc.dart - VERSION PRODUCTION
+// blocs/auth/auth_bloc.dart - VERSION OPTIMISÉE POUR FCM
 
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
@@ -80,11 +80,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       _scheduleTokenRefresh();
-      await _updateFCMTokenAfterLogin();
+
+      // ✅ OPTIMISATION: Enregistrement FCM UNIQUEMENT après connexion réussie
+      await _registerFCMAfterSuccessfulLogin();
+
       emit(AuthSuccess(user: user));
       print('🟦 AuthSuccess émis avec succès');
     } on AuthenticationException catch (e) {
-      // ✅ CORRECTION: Ce catch doit être en PREMIER
       print('🔴 AuthenticationException attrapée dans _onLoginButtonPressed:');
       print('   Code: ${e.code}');
       print('   Message: ${e.message}');
@@ -92,11 +94,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await _handleAuthenticationException(e, event.email, emit);
     } catch (e) {
-      // ✅ CORRECTION: Ce catch général doit être en DERNIER
       print('🔴 Autre exception attrapée dans _onLoginButtonPressed: $e');
       print('🔴 Type de l\'exception: ${e.runtimeType}');
 
-      // ✅ AJOUT: Vérifier si c'est quand même une AuthenticationException
       if (e is AuthenticationException) {
         print(
           '🔴 ATTENTION: AuthenticationException catchée dans le catch général !',
@@ -116,36 +116,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _updateFCMTokenAfterLogin() async {
+  // ✅ NOUVELLE MÉTHODE: Enregistrement FCM optimisé après connexion
+  Future<void> _registerFCMAfterSuccessfulLogin() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 1000));
+      print('🔔 [AUTH] Démarrage de l\'enregistrement FCM après connexion...');
 
-      final currentToken = NotificationService.getCurrentToken();
-      if (currentToken == null) {
-        for (int i = 0; i < 10; i++) {
-          await Future.delayed(const Duration(milliseconds: 500));
-          final token = NotificationService.getCurrentToken();
-          if (token != null) {
-            break;
-          }
-        }
-      }
+      // Délai court pour s'assurer que les tokens sont sauvegardés
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      try {
-        await NotificationService.reRegisterDevice();
-        return;
-      } catch (standardError) {
-        // Fallback avec refresh token
-        try {
-          await NotificationService.reRegisterDeviceWithTokenRefresh();
-          return;
-        } catch (refreshError) {
-          // Dernier recours
-          await NotificationService.ensureDeviceIsRegistered();
-        }
-      }
+      // Enregistrer le device avec le token FCM
+      await NotificationService.registerAfterLogin();
+
+      print('✅ [AUTH] Enregistrement FCM terminé avec succès');
     } catch (e) {
-      // La connexion continue même si FCM échoue
+      print('⚠️ [AUTH] Erreur lors de l\'enregistrement FCM: $e');
+      // ✅ IMPORTANT: Ne pas bloquer la connexion si FCM échoue
+      // L'utilisateur peut quand même utiliser l'app sans notifications
     }
   }
 
@@ -162,10 +148,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (user != null) {
           _scheduleTokenRefresh();
 
+          // ✅ OPTIMISATION: Vérifier si le device est déjà enregistré
+          // Si non, l'enregistrer (cas où l'utilisateur était déjà connecté)
           try {
             await Future.delayed(const Duration(milliseconds: 500));
-            await NotificationService.ensureDeviceIsRegistered();
+            final isRegistered = await NotificationService.isDeviceRegistered();
+            if (!isRegistered) {
+              print('📱 [AUTH] Device non enregistré, enregistrement...');
+              await NotificationService.registerAfterLogin();
+            } else {
+              print('📱 [AUTH] Device déjà enregistré');
+            }
           } catch (fcmError) {
+            print('⚠️ [AUTH] Erreur FCM lors de la vérification: $fcmError');
             // Continuer malgré l'erreur FCM
           }
 
@@ -203,9 +198,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         break;
       case 'EMAIL_NOT_VERIFIED':
         final emailToUse = e.email?.isNotEmpty == true ? e.email! : email;
-
-        // ✅ CORRECTION: Ne PAS renvoyer automatiquement le code
-        // Juste émettre l'état pour rediriger vers l'écran de vérification
         emit(EmailVerificationRequired(emailToUse));
         return;
       default:
@@ -267,27 +259,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       _tokenRefreshTimer?.cancel();
 
+      // ✅ OPTIMISATION: Nettoyage FCM lors de la déconnexion
       try {
+        print('🔄 [AUTH] Nettoyage des données FCM lors de la déconnexion...');
         NotificationService.clearDeviceData();
+        print('✅ [AUTH] Données FCM nettoyées');
       } catch (fcmError) {
+        print('⚠️ [AUTH] Erreur lors du nettoyage FCM: $fcmError');
         // Non bloquant
       }
 
       try {
         await authService.logout();
       } catch (logoutError) {
+        print('⚠️ [AUTH] Erreur lors du logout serveur: $logoutError');
         // Continuer le logout même si le serveur échoue
       }
 
       try {
         await authService.clearUserData();
       } catch (clearError) {
+        print('⚠️ [AUTH] Erreur lors du nettoyage des données: $clearError');
         // Continuer
       }
 
       await Future.delayed(const Duration(milliseconds: 300));
       emit(Unauthenticated());
     } catch (e) {
+      print('❌ [AUTH] Erreur générale lors du logout: $e');
       try {
         _tokenRefreshTimer?.cancel();
         await authService.clearUserData();
@@ -440,8 +439,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (user != null) {
           _scheduleTokenRefresh();
 
-          // Mettre à jour le token FCM après confirmation d'email
-          await _updateFCMTokenAfterLogin();
+          // ✅ OPTIMISATION: Enregistrement FCM après confirmation d'email
+          await _registerFCMAfterSuccessfulLogin();
 
           emit(AuthSuccess(user: user));
         } else {
@@ -469,12 +468,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       await authService.resendVerificationCode(event.email);
-
-      // ✅ CORRECTION: Une seule émission
       emit(VerificationCodeResent(event.email));
-
-      // ✅ CORRECTION: Pas de re-émission vers EmailConfirmationRequired
-      // L'écran gère déjà le fait qu'il reste sur la même page
     } catch (e) {
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
@@ -650,11 +644,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RESEND_FAILED': 'Erreur lors du renvoi du code',
       'SERVER_CONFIG_ERROR': 'Erreur de configuration du serveur',
       'INVALID_EMAIL_FORMAT': 'Format d\'email invalide',
-      'TOO_MANY_ATTEMPTS':
-          'Trop de tentatives. Veuillez réessayer plus tard', // ✅ AJOUT
-      'RATE_LIMITED':
-          'Trop de tentatives. Veuillez réessayer plus tard', // ✅ AJOUT
-      'ACCOUNT_DISABLED': 'Ce compte utilisateur est désactivé', // ✅ AJOUT
+      'TOO_MANY_ATTEMPTS': 'Trop de tentatives. Veuillez réessayer plus tard',
+      'RATE_LIMITED': 'Trop de tentatives. Veuillez réessayer plus tard',
+      'ACCOUNT_DISABLED': 'Ce compte utilisateur est désactivé',
     };
 
     const Map<String, String> englishMessages = {
@@ -685,10 +677,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RESEND_FAILED': 'Error sending code',
       'SERVER_CONFIG_ERROR': 'Server configuration error',
       'INVALID_EMAIL_FORMAT': 'Invalid email format',
-      'TOO_MANY_ATTEMPTS':
-          'Too many attempts. Please try again later', // ✅ AJOUT
-      'RATE_LIMITED': 'Too many attempts. Please try again later', // ✅ AJOUT
-      'ACCOUNT_DISABLED': 'This user account is disabled', //
+      'TOO_MANY_ATTEMPTS': 'Too many attempts. Please try again later',
+      'RATE_LIMITED': 'Too many attempts. Please try again later',
+      'ACCOUNT_DISABLED': 'This user account is disabled',
     };
 
     final isEnglish =

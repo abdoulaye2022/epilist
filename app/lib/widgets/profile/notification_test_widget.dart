@@ -140,47 +140,47 @@ class _NotificationTestWidgetState extends State<NotificationTestWidget> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color:
-                      NotificationService.isInitialized
-                          ? Colors.green[50]
-                          : Colors.orange[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color:
-                        NotificationService.isInitialized
-                            ? Colors.green[200]!
-                            : Colors.orange[200]!,
-                  ),
+                  // color:
+                  //     NotificationService.isInitialized
+                  //         ? Colors.green[50]
+                  //         : Colors.orange[50],
+                  // borderRadius: BorderRadius.circular(8),
+                  // border: Border.all(
+                  //   color:
+                  //       NotificationService.isInitialized
+                  //           ? Colors.green[200]!
+                  //           : Colors.orange[200]!,
+                  // ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          NotificationService.isInitialized
-                              ? Icons.check_circle
-                              : Icons.warning,
-                          size: 16,
-                          color:
-                              NotificationService.isInitialized
-                                  ? Colors.green[700]
-                                  : Colors.orange[700],
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          NotificationService.isInitialized
-                              ? '✅ Service Notifications: Initialisé'
-                              : '⚠️ Service Notifications: Non initialisé',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                NotificationService.isInitialized
-                                    ? Colors.green[700]
-                                    : Colors.orange[700],
-                          ),
-                        ),
+                        // Icon(
+                        //   NotificationService.isInitialized
+                        //       ? Icons.check_circle
+                        //       : Icons.warning,
+                        //   size: 16,
+                        //   color:
+                        //       NotificationService.isInitialized
+                        //           ? Colors.green[700]
+                        //           : Colors.orange[700],
+                        // ),
+                        // const SizedBox(width: 8),
+                        // Text(
+                        //   NotificationService.isInitialized
+                        //       ? '✅ Service Notifications: Initialisé'
+                        //       : '⚠️ Service Notifications: Non initialisé',
+                        //   style: TextStyle(
+                        //     fontSize: 12,
+                        //     fontWeight: FontWeight.bold,
+                        //     color:
+                        //         NotificationService.isInitialized
+                        //             ? Colors.green[700]
+                        //             : Colors.orange[700],
+                        //   ),
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 4),

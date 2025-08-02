@@ -502,4 +502,221 @@ class User extends Model
             }
         });
     }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer notification de liste complétée
+     */
+    public function sendListCompletionNotification($list, float $estimatedTotal = 0): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendListCompletionNotification($this, $list, $estimatedTotal);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer notification de budget avec devise
+     */
+    public function sendBudgetAlert($budget, string $alertType): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendBudgetAlert($this, $budget, $alertType);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer rappel d'inactivité
+     */
+    public function sendInactivityReminder(int $daysSinceLastList): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendInactivityReminder($this, $daysSinceLastList);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer notification de partage de liste
+     */
+    public function sendListSharingNotification($sharedList, User $sharedByUser): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendListSharingNotification($this, $sharedList, $sharedByUser);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer notification de mise à jour de liste partagée
+     */
+    public function sendSharedListUpdateNotification($sharedList, User $updatedByUser, string $updateType = 'item_added'): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendSharedListUpdateNotification($this, $sharedList, $updatedByUser, $updateType);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir toutes les notifications en attente
+     */
+    public function getPendingNotifications(): array
+    {
+        $notifications = [];
+
+        // Notifications de budgets
+        if ($this->hasActiveBudgets()) {
+            $budgetAlerts = $this->getBudgetsRequiringAlert();
+            foreach ($budgetAlerts as $budget) {
+                $notifications[] = [
+                    'id' => "budget_alert_{$budget->id}",
+                    'type' => 'budget_alert',
+                    'priority' => $budget->isExceeded() ? 'high' : 'medium',
+                    'title' => $budget->isExceeded() ? '🚨 Budget Dépassé' : '⚠️ Attention Budget',
+                    'message' => $this->getBudgetAlertMessage($budget),
+                    'data' => [
+                        'budget_id' => $budget->id,
+                        'budget_name' => $budget->name,
+                        'formatted_spent' => $this->formatAmount($budget->getSpentAmount()),
+                        'formatted_budget' => $this->formatAmount($budget->getBudgetAmount()),
+                        'currency_code' => $this->getPreferredCurrency()->code,
+                        'currency_symbol' => $this->getPreferredCurrency()->symbol,
+                    ],
+                    'created_at' => Carbon::now()->toISOString()
+                ];
+            }
+        }
+
+        // Notifications de listes complétées (à implémenter si nécessaire)
+        // ...
+
+        return $notifications;
+    }
+
+    /**
+     * ✅ HELPER: Générer le message d'alerte budget avec devise
+     */
+    private function getBudgetAlertMessage($budget): string
+    {
+        $spentAmount = $budget->getSpentAmount();
+        $budgetAmount = $budget->getBudgetAmount();
+        $spentPercentage = round($budget->getSpentPercentage(), 1);
+        
+        $formattedSpent = $this->formatAmount($spentAmount);
+        $formattedBudget = $this->formatAmount($budgetAmount);
+
+        if ($budget->isExceeded()) {
+            return "Vous avez dépassé le budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+        } else {
+            return "Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les préférences de notification
+     */
+    public function getNotificationPreferences(): array
+    {
+        $preferences = [];
+        
+        $devices = $this->activeDevices;
+        foreach ($devices as $device) {
+            $devicePreferences = $device->getNotificationPreferences();
+            foreach ($devicePreferences as $type => $enabled) {
+                if (!isset($preferences[$type])) {
+                    $preferences[$type] = false;
+                }
+                $preferences[$type] = $preferences[$type] || $enabled;
+            }
+        }
+
+        return $preferences;
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Mettre à jour les préférences de notification pour tous les appareils
+     */
+    public function updateNotificationPreferences(array $preferences): bool
+    {
+        $success = true;
+        
+        foreach ($this->activeDevices as $device) {
+            if (!$device->setNotificationPreferences($preferences)) {
+                $success = false;
+            }
+        }
+
+        return $success;
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur peut recevoir un type spécifique de notification
+     */
+    public function canReceiveNotificationType(string $notificationType): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        // Vérifier si au moins un appareil autorise ce type de notification
+        return $this->activeDevices()
+            ->get()
+            ->some(function($device) use ($notificationType) {
+                return $device->hasNotificationPreference($notificationType);
+            });
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques de notifications
+     */
+    public function getNotificationStats(): array
+    {
+        $stats = [
+            'total_devices' => $this->devices()->count(),
+            'active_devices' => $this->activeDevices()->count(),
+            'can_receive_notifications' => $this->canReceiveNotifications(),
+            'notification_types_enabled' => [],
+        ];
+
+        if ($stats['can_receive_notifications']) {
+            $preferences = $this->getNotificationPreferences();
+            $stats['notification_types_enabled'] = array_keys(array_filter($preferences));
+        }
+
+        return $stats;
+    }
+
+    // ===================== MÉTHODES DE FORMATAGE POUR L'API =====================
+
+    /**
+     * ✅ Données API étendues avec informations de devise et notifications
+     */
+    public function getExtendedApiDataAttribute(): array
+    {
+        $currency = $this->getPreferredCurrency();
+        $baseData = $this->api_data;
+        
+        return array_merge($baseData, [
+            'notification_preferences' => $this->getNotificationPreferences(),
+            'notification_stats' => $this->getNotificationStats(),
+            'budget_summary' => [
+                'has_active_budgets' => $this->hasActiveBudgets(),
+                'total_budget_amount' => $this->formatAmount($this->getTotalBudgetAmount()),
+                'total_spent_amount' => $this->formatAmount($this->getTotalSpentAmount()),
+                'exceeded_budgets_count' => $this->getExceededBudgets()->count(),
+                'currency' => $currency->getApiFormatAttribute(),
+            ]
+        ]);
+    }
 }
