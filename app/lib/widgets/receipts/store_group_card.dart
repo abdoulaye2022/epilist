@@ -2,6 +2,7 @@
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/receipts/receipt_card.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:flutter/material.dart';
 
 class StoreGroupCard extends StatefulWidget {
@@ -89,13 +90,16 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
                   color: Colors.black87,
                 ),
               ),
-              Text(
-                widget.storeGroup.formattedTotal,
+              // CORRECTION: Calculer le total à partir des reçus
+              FormattedAmount(
+                amount: _calculateGroupTotal(),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.green[600],
                 ),
+                showCode: false,
+                fallbackCurrencyCode: 'CAD',
               ),
             ],
           ),
@@ -180,6 +184,14 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
               );
             }).toList(),
       ),
+    );
+  }
+
+  // Méthode pour calculer le total du groupe
+  double _calculateGroupTotal() {
+    return widget.storeGroup.receipts.fold(
+      0.0,
+      (sum, receipt) => sum + receipt.totalAmount,
     );
   }
 

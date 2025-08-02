@@ -2447,7 +2447,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dataNotAvailable => 'Données non disponibles';
 
   @override
-  String get selectPeriod => 'Choisir la période';
+  String get selectPeriod => 'Sélectionner la période';
 
   @override
   String get changePeriod => 'Changer la période';
@@ -2545,13 +2545,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get year => 'Année';
 
   @override
-  String get dailyAverage => 'Moyenne/jour';
+  String get dailyAverage => 'Moyenne quotidienne';
 
   @override
-  String get weeklyAverage => 'Moyenne/semaine';
+  String get weeklyAverage => 'Moyenne hebdomadaire';
 
   @override
-  String get yearlyAverage => 'Moyenne/année';
+  String get yearlyAverage => 'Moyenne annuelle';
 
   @override
   String get choosePeriod => 'Choisir la période';
@@ -3471,4 +3471,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String cannotPerformAction(String action, String permission) {
     return 'Vous n\'avez pas la permission de $action.\n\nVotre permission actuelle : $permission';
   }
+
+  @override
+  String get overBudget => 'Dépassement budget';
+
+  @override
+  String get highestPurchase => 'Plus gros achat';
+
+  @override
+  String get topCategory => 'Catégorie principale';
+
+  @override
+  String get mostFrequentCategory => 'Catégorie la plus fréquente';
 }

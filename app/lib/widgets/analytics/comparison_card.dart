@@ -1,13 +1,12 @@
-// widgets/analytics/comparison_card.dart
-// widgets/analytics/comparison_card.dart - VERSION HARMONISÉE
+// widgets/analytics/comparison_card.dart - VERSION AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class ComparisonCard extends StatelessWidget {
   final Map<String, dynamic> data;
-  final String currency;
 
-  const ComparisonCard({super.key, required this.data, required this.currency});
+  const ComparisonCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +34,12 @@ class ComparisonCard extends StatelessWidget {
     }
 
     return Container(
-      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
       decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ CORRECTION: Row avec Expanded pour éviter l'overflow
             Row(
               children: [
                 Icon(Icons.compare_arrows, color: Colors.orange[600], size: 28),
@@ -53,7 +50,7 @@ class ComparisonCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87, // ✅ Couleur harmonisée
+                      color: Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -78,7 +75,6 @@ class ComparisonCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ✅ CORRECTION: Gestion de l'overflow pour le texte de tendance
                         Text(
                           _getTrendText(trend, l10n),
                           style: TextStyle(
@@ -99,22 +95,43 @@ class ComparisonCard extends StatelessWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (absoluteChange != 0)
-                          // ✅ CORRECTION: Gestion de l'overflow pour le montant
-                          Text(
-                            '${absoluteChange > 0 ? '+' : ''}${absoluteChange.toStringAsFixed(2)} $currency',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        if (absoluteChange != 0) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Text(
+                                '${absoluteChange > 0 ? '+' : ''}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              // ✅ REMPLACEMENT: Utilisation de FormattedAmount
+                              Flexible(
+                                child: FormattedAmount(
+                                  amount: absoluteChange.abs(),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                  showCode: false,
+                                ),
+                              ),
+                            ],
                           ),
+                        ],
                       ],
                     ),
                   ),
                 ],
               ),
+            ),
+
+            // Indicateur de devise en bas
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: const [CurrencyIndicator()],
             ),
           ],
         ),

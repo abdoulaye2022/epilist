@@ -1,6 +1,7 @@
 // widgets/receipts/receipt_stats_card.dart
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:flutter/material.dart';
 
 class ReceiptStatsCard extends StatelessWidget {
@@ -70,7 +71,7 @@ class ReceiptStatsCard extends StatelessWidget {
             _buildStatRow(
               icon: Icons.receipt_long,
               label: l10n.totalFromReceipts,
-              value: stats.formattedAmounts['receipts_total'] ?? '',
+              amount: stats.receiptsTotal, // Utiliser le montant brut
               color: Colors.green,
               isHighlighted: stats.hasReceiptData,
             ),
@@ -78,7 +79,7 @@ class ReceiptStatsCard extends StatelessWidget {
             _buildStatRow(
               icon: Icons.shopping_cart,
               label: l10n.totalFromItems,
-              value: stats.formattedAmounts['items_total'] ?? '',
+              amount: stats.itemsTotal, // Utiliser le montant brut
               color: Colors.orange,
               isHighlighted: stats.hasItemData,
             ),
@@ -88,7 +89,7 @@ class ReceiptStatsCard extends StatelessWidget {
             _buildStatRow(
               icon: Icons.star,
               label: l10n.bestEstimate,
-              value: stats.formattedAmounts['best_total'] ?? '',
+              amount: stats.bestTotal, // Utiliser le montant brut
               color: Colors.purple,
               isHighlighted: true,
               isBold: true,
@@ -162,7 +163,7 @@ class ReceiptStatsCard extends StatelessWidget {
                   child: _buildComparisonStat(
                     label: l10n.receipts,
                     count: stats.totalReceipts,
-                    amount: stats.formattedAmounts['receipts_total'] ?? '',
+                    amount: stats.receiptsTotal, // Utiliser le montant brut
                     color: Colors.green,
                   ),
                 ),
@@ -171,7 +172,7 @@ class ReceiptStatsCard extends StatelessWidget {
                   child: _buildComparisonStat(
                     label: l10n.items,
                     count: stats.itemsWithPrices,
-                    amount: stats.formattedAmounts['items_total'] ?? '',
+                    amount: stats.itemsTotal, // Utiliser le montant brut
                     color: Colors.orange,
                   ),
                 ),
@@ -266,10 +267,11 @@ class ReceiptStatsCard extends StatelessWidget {
     );
   }
 
+  // CORRECTION: Modification pour utiliser FormattedAmount au lieu de String
   Widget _buildStatRow({
     required IconData icon,
     required String label,
-    required String value,
+    required double amount, // Changé de String à double
     required MaterialColor color,
     bool isHighlighted = false,
     bool isBold = false,
@@ -299,22 +301,26 @@ class ReceiptStatsCard extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          value,
+        // CORRECTION: Utilisation de FormattedAmount
+        FormattedAmount(
+          amount: amount,
           style: TextStyle(
             fontSize: isBold ? 18 : 16,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
             color: isHighlighted ? color[600] : Colors.grey[700],
           ),
+          showCode: false,
+          fallbackCurrencyCode: 'CAD',
         ),
       ],
     );
   }
 
+  // CORRECTION: Modification pour utiliser FormattedAmount
   Widget _buildComparisonStat({
     required String label,
     required int count,
-    required String amount,
+    required double amount, // Changé de String à double
     required MaterialColor color,
   }) {
     return Container(
@@ -345,13 +351,16 @@ class ReceiptStatsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            amount,
+          // CORRECTION: Utilisation de FormattedAmount
+          FormattedAmount(
+            amount: amount,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: color[600],
             ),
+            showCode: false,
+            fallbackCurrencyCode: 'CAD',
           ),
         ],
       ),

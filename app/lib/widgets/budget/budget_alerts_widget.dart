@@ -1,7 +1,8 @@
-// widgets/budget/budget_alerts_widget.dart
+// widgets/budget/budget_alerts_widget.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
 
 class BudgetAlertsWidget extends StatelessWidget {
   final Budget budget;
@@ -92,7 +93,7 @@ class BudgetAlertsWidget extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Budget details
+            // ✅ SECTION BUDGET AVEC FormattedAmount
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -108,8 +109,9 @@ class BudgetAlertsWidget extends StatelessWidget {
                         l10n.budgeted,
                         style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                       ),
-                      Text(
-                        budget.formattedBudgetAmount,
+                      FormattedAmount(
+                        // ✅ UTILISATION DE FormattedAmount
+                        amount: budget.budgetAmount,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -126,8 +128,9 @@ class BudgetAlertsWidget extends StatelessWidget {
                         l10n.spent,
                         style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                       ),
-                      Text(
-                        budget.formattedSpentAmount,
+                      FormattedAmount(
+                        // ✅ UTILISATION DE FormattedAmount
+                        amount: budget.spentAmount,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -217,6 +220,10 @@ class BudgetAlertsWidget extends StatelessWidget {
               ),
             ],
 
+            // ✅ AJOUT D'UN RÉSUMÉ AVEC MONTANT RESTANT OU DÉPASSEMENT
+            const SizedBox(height: 12),
+            _buildBudgetSummary(l10n),
+
             // Action button (only suggestions for exceeded budgets)
             if (budget.isExceeded) ...[
               const SizedBox(height: 12),
@@ -236,6 +243,57 @@ class BudgetAlertsWidget extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  // ✅ NOUVEAU WIDGET POUR LE RÉSUMÉ BUDGÉTAIRE
+  Widget _buildBudgetSummary(AppLocalizations l10n) {
+    final remainingAmount = budget.budgetAmount - budget.spentAmount;
+    final isOverBudget = remainingAmount < 0;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isOverBudget ? Colors.red[50] : Colors.green[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isOverBudget ? Colors.red[200]! : Colors.green[200]!,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isOverBudget ? Icons.trending_up : Icons.account_balance_wallet,
+                size: 16,
+                color: isOverBudget ? Colors.red[600] : Colors.green[600],
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isOverBudget
+                    ? (l10n.overBudget ?? 'Over Budget')
+                    : l10n.remaining,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: isOverBudget ? Colors.red[700] : Colors.green[700],
+                ),
+              ),
+            ],
+          ),
+          FormattedAmount(
+            // ✅ UTILISATION DE FormattedAmount POUR LE RÉSUMÉ
+            amount: remainingAmount.abs(), // Valeur absolue pour l'affichage
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isOverBudget ? Colors.red[700] : Colors.green[700],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -309,12 +367,12 @@ class BudgetAlertsWidget extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSuggestionItem(
                   Icons.analytics,
-                  'Review Recent Purchases',
+                  l10n.analytics ?? 'Review Recent Purchases',
                   'Check your recent expenses to identify unnecessary spending',
                 ),
                 _buildSuggestionItem(
                   Icons.tune,
-                  'Adjust Budget Amount',
+                  l10n.update ?? 'Adjust Budget Amount',
                   'Consider increasing the budget if expenses are justified',
                 ),
                 _buildSuggestionItem(

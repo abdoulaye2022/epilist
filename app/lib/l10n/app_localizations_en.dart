@@ -2324,7 +2324,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByFrequency => 'By frequency';
 
   @override
-  String get unknownProduct => 'Unknown product';
+  String get unknownProduct => 'Unknown Product';
 
   @override
   String get itemsCount => 'items';
@@ -2339,7 +2339,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stores => 'Stores';
 
   @override
-  String get averagePriceLabel => 'Average price';
+  String get averagePriceLabel => 'Average Price';
 
   @override
   String get amountSort => 'Amount';
@@ -2408,7 +2408,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dataNotAvailable => 'Data not available';
 
   @override
-  String get selectPeriod => 'Select period';
+  String get selectPeriod => 'Select Period';
 
   @override
   String get changePeriod => 'Change period';
@@ -2483,13 +2483,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSpendingRecorded => 'No spending recorded';
 
   @override
-  String get dailyTrends => 'Daily trends';
+  String get dailyTrends => 'Daily Trends';
 
   @override
-  String get weeklyTrends => 'Weekly trends';
+  String get weeklyTrends => 'Weekly Trends';
 
   @override
-  String get yearlyTrends => 'Yearly trends';
+  String get yearlyTrends => 'Yearly Trends';
 
   @override
   String get day => 'day';
@@ -2504,13 +2504,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get year => 'Year';
 
   @override
-  String get dailyAverage => 'Daily average';
+  String get dailyAverage => 'Daily Average';
 
   @override
-  String get weeklyAverage => 'Weekly average';
+  String get weeklyAverage => 'Weekly Average';
 
   @override
-  String get yearlyAverage => 'Yearly average';
+  String get yearlyAverage => 'Yearly Average';
 
   @override
   String get choosePeriod => 'Choose period';
@@ -3420,4 +3420,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String cannotPerformAction(String action, String permission) {
     return 'You don\'t have permission to $action.\n\nYour current permission: $permission';
   }
+
+  @override
+  String get overBudget => 'Over Budget';
+
+  @override
+  String get highestPurchase => 'Highest Purchase';
+
+  @override
+  String get topCategory => 'Top Category';
+
+  @override
+  String get mostFrequentCategory => 'Most Frequent Category';
 }

@@ -4552,7 +4552,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectPeriod.
   ///
   /// In fr, this message translates to:
-  /// **'Choisir la période'**
+  /// **'Sélectionner la période'**
   String get selectPeriod;
 
   /// No description provided for @changePeriod.
@@ -4744,19 +4744,19 @@ abstract class AppLocalizations {
   /// No description provided for @dailyAverage.
   ///
   /// In fr, this message translates to:
-  /// **'Moyenne/jour'**
+  /// **'Moyenne quotidienne'**
   String get dailyAverage;
 
   /// No description provided for @weeklyAverage.
   ///
   /// In fr, this message translates to:
-  /// **'Moyenne/semaine'**
+  /// **'Moyenne hebdomadaire'**
   String get weeklyAverage;
 
   /// No description provided for @yearlyAverage.
   ///
   /// In fr, this message translates to:
-  /// **'Moyenne/année'**
+  /// **'Moyenne annuelle'**
   String get yearlyAverage;
 
   /// No description provided for @choosePeriod.
@@ -6516,6 +6516,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous n\'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}'**
   String cannotPerformAction(String action, String permission);
+
+  /// No description provided for @overBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépassement budget'**
+  String get overBudget;
+
+  /// No description provided for @highestPurchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus gros achat'**
+  String get highestPurchase;
+
+  /// No description provided for @topCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie principale'**
+  String get topCategory;
+
+  /// No description provided for @mostFrequentCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie la plus fréquente'**
+  String get mostFrequentCategory;
 }
 
 class _AppLocalizationsDelegate

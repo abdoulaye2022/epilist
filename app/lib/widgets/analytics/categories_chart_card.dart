@@ -1,6 +1,7 @@
-// widgets/analytics/categories_chart_card.dart - VERSION HARMONISÉE
+// widgets/analytics/categories_chart_card.dart - VERSION AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class CategoriesChartCard extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -14,7 +15,6 @@ class CategoriesChartCard extends StatelessWidget {
     final summary = data['summary'] ?? {};
 
     return Container(
-      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
       decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -31,7 +31,7 @@ class CategoriesChartCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87, // ✅ Couleur harmonisée
+                      color: Colors.black87,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -40,11 +40,11 @@ class CategoriesChartCard extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Résumé
+            // Résumé avec FormattedAmount
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.purple[50], // ✅ Couleur harmonisée
+                color: Colors.purple[50],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.purple[100]!),
               ),
@@ -63,14 +63,15 @@ class CategoriesChartCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          summary['formatted_total'] ?? '0',
+                        // ✅ REMPLACEMENT: Utilisation de FormattedAmount
+                        FormattedAmount(
+                          amount: summary['total']?.toDouble() ?? 0.0,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.purple[600],
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          showCode: false,
                         ),
                       ],
                     ),
@@ -131,6 +132,13 @@ class CategoriesChartCard extends StatelessWidget {
                       return _buildCategoryItem(category, l10n);
                     }).toList(),
               ),
+
+            // Indicateur de devise en bas
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: const [CurrencyIndicator()],
+            ),
           ],
         ),
       ),
@@ -142,7 +150,7 @@ class CategoriesChartCard extends StatelessWidget {
     AppLocalizations l10n,
   ) {
     final categoryName = category['category'] ?? 'Inconnu';
-    final formattedTotal = category['formatted_total'] ?? '0';
+    final totalAmount = category['total']?.toDouble() ?? 0.0;
     final percentage = category['percentage_of_total']?.toDouble() ?? 0.0;
     final totalItems = category['total_items'] ?? 0;
 
@@ -193,7 +201,7 @@ class CategoriesChartCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '$totalItems ${l10n.articles}', // ✅ Utilisation de la traduction
+                      '$totalItems ${l10n.articles}',
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -203,14 +211,15 @@ class CategoriesChartCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    formattedTotal,
+                  // ✅ REMPLACEMENT: Utilisation de FormattedAmount
+                  FormattedAmount(
+                    amount: totalAmount,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    showCode: false,
                   ),
                   Text(
                     '${percentage.toStringAsFixed(1)}%',
