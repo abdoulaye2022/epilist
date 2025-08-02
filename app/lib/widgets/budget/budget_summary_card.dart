@@ -1,6 +1,7 @@
-// widgets/budget/budget_summary_card.dart
+// widgets/budget/budget_summary_card.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
 
 class BudgetSummaryCard extends StatelessWidget {
   final int totalBudgets;
@@ -9,8 +10,8 @@ class BudgetSummaryCard extends StatelessWidget {
   final int warningBudgets;
   final double? totalBudgeted;
   final double? totalSpent;
-  final String? formattedTotalBudgeted;
-  final String? formattedTotalSpent;
+  // ✅ SUPPRESSION DES PROPRIÉTÉS formattedTotalBudgeted ET formattedTotalSpent
+  // Elles ne sont plus nécessaires car FormattedAmount gère le formatage
 
   const BudgetSummaryCard({
     super.key,
@@ -20,14 +21,14 @@ class BudgetSummaryCard extends StatelessWidget {
     required this.warningBudgets,
     this.totalBudgeted,
     this.totalSpent,
-    this.formattedTotalBudgeted,
-    this.formattedTotalSpent,
+    // ✅ SUPPRESSION DES PARAMÈTRES DE FORMATAGE
+    // this.formattedTotalBudgeted,
+    // this.formattedTotalSpent,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Card(
       elevation: 4,
@@ -132,9 +133,8 @@ class BudgetSummaryCard extends StatelessWidget {
               ],
             ),
 
-            // Amounts (if provided)
-            if (formattedTotalBudgeted != null &&
-                formattedTotalSpent != null) ...[
+            // ✅ SECTION MONTANTS AVEC FormattedAmount
+            if (totalBudgeted != null && totalSpent != null) ...[
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(16),
@@ -154,8 +154,9 @@ class BudgetSummaryCard extends StatelessWidget {
                             color: Colors.grey[700],
                           ),
                         ),
-                        Text(
-                          formattedTotalBudgeted!,
+                        FormattedAmount(
+                          // ✅ UTILISATION DE FormattedAmount
+                          amount: totalBudgeted!,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -175,8 +176,9 @@ class BudgetSummaryCard extends StatelessWidget {
                             color: Colors.grey[700],
                           ),
                         ),
-                        Text(
-                          formattedTotalSpent!,
+                        FormattedAmount(
+                          // ✅ UTILISATION DE FormattedAmount
+                          amount: totalSpent!,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -185,18 +187,135 @@ class BudgetSummaryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (totalBudgeted != null && totalSpent != null) ...[
-                      const SizedBox(height: 12),
-                      LinearProgressIndicator(
-                        value:
-                            totalBudgeted! > 0
-                                ? (totalSpent! / totalBudgeted!).clamp(0.0, 1.0)
-                                : 0.0,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _getSpentColor(),
+                    const SizedBox(height: 12),
+                    // ✅ BARRE DE PROGRESSION AVEC CALCUL DE POURCENTAGE
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              l10n.spendingProgress ?? 'Progress',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              '${_getSpentPercentage().toStringAsFixed(1)}%',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: _getSpentColor(),
+                              ),
+                            ),
+                          ],
                         ),
-                        minHeight: 8,
+                        const SizedBox(height: 6),
+                        LinearProgressIndicator(
+                          value:
+                              totalBudgeted! > 0
+                                  ? (totalSpent! / totalBudgeted!).clamp(
+                                    0.0,
+                                    1.0,
+                                  )
+                                  : 0.0,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            _getSpentColor(),
+                          ),
+                          minHeight: 8,
+                        ),
+                      ],
+                    ),
+
+                    // ✅ AJOUT DU MONTANT RESTANT
+                    if (totalBudgeted! > totalSpent!) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green[200]!),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.savings,
+                                  size: 16,
+                                  color: Colors.green[600],
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  l10n.remaining,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.green[700],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            FormattedAmount(
+                              // ✅ MONTANT RESTANT AVEC FormattedAmount
+                              amount: totalBudgeted! - totalSpent!,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ] else if (totalSpent! > totalBudgeted!) ...[
+                      // ✅ AFFICHAGE DU DÉPASSEMENT
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red[200]!),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.warning,
+                                  size: 16,
+                                  color: Colors.red[600],
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  l10n.overBudget ?? 'Over Budget',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.red[700],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            FormattedAmount(
+                              // ✅ MONTANT DE DÉPASSEMENT
+                              amount: totalSpent! - totalBudgeted!,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red[700],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ],
@@ -246,12 +365,20 @@ class BudgetSummaryCard extends StatelessWidget {
     );
   }
 
+  // ✅ MÉTHODE POUR CALCULER LE POURCENTAGE DÉPENSÉ
+  double _getSpentPercentage() {
+    if (totalBudgeted == null || totalSpent == null || totalBudgeted == 0) {
+      return 0.0;
+    }
+    return (totalSpent! / totalBudgeted!) * 100;
+  }
+
   Color _getSpentColor() {
     if (totalBudgeted == null || totalSpent == null || totalBudgeted == 0) {
       return Colors.green[600]!;
     }
 
-    final percentage = (totalSpent! / totalBudgeted!) * 100;
+    final percentage = _getSpentPercentage();
 
     if (percentage >= 100) {
       return Colors.red[600]!;

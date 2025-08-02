@@ -1,15 +1,15 @@
-// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE
+// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE SÉPARÉE
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class PeriodChartCard extends StatefulWidget {
   final Map<String, dynamic> data;
-  final String? selectedCurrency;
 
-  const PeriodChartCard({super.key, required this.data, this.selectedCurrency});
+  const PeriodChartCard({super.key, required this.data});
 
   @override
   State<PeriodChartCard> createState() => _PeriodChartCardState();
@@ -18,7 +18,6 @@ class PeriodChartCard extends StatefulWidget {
 class _PeriodChartCardState extends State<PeriodChartCard> {
   String _selectedPeriod = 'month';
 
-  // ✅ Labels dynamiques selon la langue
   Map<String, String> _getPeriodLabels(AppLocalizations l10n) {
     return {
       'day': l10n.day,
@@ -35,7 +34,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     'year': Icons.calendar_today,
   };
 
-  // ✅ CORRECTION: Utilisation de MaterialColor au lieu de Color simple
   final Map<String, MaterialColor> _periodColors = {
     'day': Colors.green,
     'week': Colors.blue,
@@ -50,7 +48,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     final summary = widget.data['summary'] ?? {};
     final currentPeriod = widget.data['period'] ?? 'month';
 
-    // Mettre à jour la période sélectionnée si elle vient des données
     if (currentPeriod != _selectedPeriod) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -64,7 +61,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     final currentColor = _periodColors[_selectedPeriod] ?? Colors.green;
 
     return Container(
-      // ✅ Fond transparent pour intégration avec wrapper blanc
       decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -90,43 +86,46 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const CurrencyIndicator(),
+                const SizedBox(width: 8),
                 _buildPeriodSelector(l10n),
               ],
             ),
             const SizedBox(height: 20),
 
-            // Graphique avec hauteur flexible
+            // ✅ SOLUTION: Graphique avec contraintes strictes
             Container(
               height: 200,
+              width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: currentColor[50],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: currentColor[100]!),
               ),
-              child: ClipRect(
-                child: _buildChart(periodData, context, l10n, currentColor),
-              ),
+              child: _buildChart(periodData, l10n, currentColor),
             ),
 
             const SizedBox(height: 20),
 
-            // Résumé adaptatif selon la période
+            // Résumé avec FormattedAmount
             Row(
               children: [
                 Expanded(
                   child: _buildSummaryItem(
                     l10n.totalSpent,
-                    summary['formatted_total'] ?? '0',
+                    summary['total']?.toDouble() ?? 0.0,
                     currentColor,
+                    isAmount: true,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildSummaryItem(
                     _getAverageLabel(l10n),
-                    _getFormattedAverage(summary),
+                    _getAverageValue(summary),
                     Colors.blue,
+                    isAmount: true,
                   ),
                 ),
               ],
@@ -137,7 +136,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     );
   }
 
-  /// ✅ Extraction des données selon la période
   List<dynamic> _extractPeriodData() {
     final period = widget.data['period'] ?? _selectedPeriod;
 
@@ -154,26 +152,25 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  /// ✅ Obtenir la moyenne formatée selon la période
-  String _getFormattedAverage(Map<String, dynamic> summary) {
+  double _getAverageValue(Map<String, dynamic> summary) {
     switch (_selectedPeriod) {
       case 'day':
-        return summary['formatted_average_daily'] ??
-            summary['formatted_average'] ??
-            '0';
+        return summary['average_daily']?.toDouble() ??
+            summary['average']?.toDouble() ??
+            0.0;
       case 'week':
-        return summary['formatted_average_weekly'] ??
-            summary['formatted_average'] ??
-            '0';
+        return summary['average_weekly']?.toDouble() ??
+            summary['average']?.toDouble() ??
+            0.0;
       case 'year':
-        return summary['formatted_average_yearly'] ??
-            summary['formatted_average'] ??
-            '0';
+        return summary['average_yearly']?.toDouble() ??
+            summary['average']?.toDouble() ??
+            0.0;
       case 'month':
       default:
-        return summary['formatted_average_monthly'] ??
-            summary['formatted_average'] ??
-            '0';
+        return summary['average_monthly']?.toDouble() ??
+            summary['average']?.toDouble() ??
+            0.0;
     }
   }
 
@@ -266,38 +263,29 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     );
   }
 
-  /// ✅ Utiliser les nouveaux events spécifiques
   void _loadDataForPeriod(String period) {
     switch (period) {
       case 'day':
-        context.read<AnalyticsBloc>().add(
-          LoadDailySpending(currencyCode: widget.selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadDailySpending());
         break;
       case 'week':
-        context.read<AnalyticsBloc>().add(
-          LoadWeeklySpending(currencyCode: widget.selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadWeeklySpending());
         break;
       case 'year':
-        context.read<AnalyticsBloc>().add(
-          LoadYearlySpending(currencyCode: widget.selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadYearlySpending());
         break;
       case 'month':
       default:
-        context.read<AnalyticsBloc>().add(
-          LoadMonthlySpending(currencyCode: widget.selectedCurrency),
-        );
+        context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
         break;
     }
   }
 
+  // ✅ SOLUTION: Chart simplifié sans LayoutBuilder complexe
   Widget _buildChart(
     List<dynamic> periodData,
-    BuildContext context,
     AppLocalizations l10n,
-    MaterialColor chartColor, // ✅ CORRECTION: MaterialColor au lieu de Color
+    MaterialColor chartColor,
   ) {
     if (periodData.isEmpty) {
       return Center(
@@ -309,7 +297,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       );
     }
 
-    // Trouver la valeur maximale pour normaliser
+    // Trouver la valeur maximale
     double maxValue = 0;
     for (var item in periodData) {
       final value = item['total_spent']?.toDouble() ?? 0;
@@ -326,68 +314,67 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableHeight = constraints.maxHeight;
-        final chartHeight = availableHeight - 40;
-        final barMaxHeight = chartHeight - 20;
+    // ✅ SOLUTION: Chart simple avec contraintes fixes
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children:
+              periodData.asMap().entries.map((entry) {
+                final item = entry.value;
+                final value = item['total_spent']?.toDouble() ?? 0;
+                final label = _getItemLabel(item, l10n);
+                final height =
+                    maxValue > 0
+                        ? (value / maxValue) * 120
+                        : 5; // ✅ CORRECTION: 120px max au lieu de 140px
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-            height: availableHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children:
-                  periodData.map<Widget>((item) {
-                    final value = item['total_spent']?.toDouble() ?? 0;
-                    final height =
-                        maxValue > 0 ? (value / maxValue) * barMaxHeight : 0;
-                    final label = _getItemLabel(item, l10n);
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 20,
-                            height: height < 5 ? 5 : height,
-                            decoration: BoxDecoration(
-                              color: chartColor[600],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                return Container(
+                  width: 45, // Largeur fixe par barre
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Barre du graphique
+                      Tooltip(
+                        message: '${value.toStringAsFixed(2)}',
+                        child: Container(
+                          width: 24,
+                          height: height < 5 ? 5 : height,
+                          decoration: BoxDecoration(
+                            color: chartColor[600],
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            width: 28,
-                            height: 20,
-                            child: Text(
-                              label,
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  }).toList(),
-            ),
-          ),
-        );
-      },
+                      const SizedBox(
+                        height: 6,
+                      ), // ✅ CORRECTION: 6px au lieu de 8px
+                      // Label
+                      SizedBox(
+                        height: 16, // ✅ CORRECTION: Hauteur fixe pour le label
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 9, // ✅ CORRECTION: Police plus petite
+                            color: Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+        ),
+      ),
     );
   }
 
-  /// ✅ Gestion des labels selon le type de données
   String _getItemLabel(Map<String, dynamic> item, AppLocalizations l10n) {
     switch (_selectedPeriod) {
       case 'day':
@@ -399,7 +386,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         final weekNumber = item['week_number'];
         final weekLabel = item['week_label'] ?? '';
         if (weekNumber != null) {
-          // ✅ CORRECTION: Utilisation correcte de la méthode de traduction
           return l10n.weekLabel(weekNumber);
         }
         return weekLabel.isNotEmpty ? _getShortWeekLabel(weekLabel) : '';
@@ -423,7 +409,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       if (date.contains('-')) {
         final parts = date.split('-');
         if (parts.length >= 3) {
-          return '${parts[2]}/${parts[1]}'; // JJ/MM
+          return '${parts[2]}/${parts[1]}';
         }
       }
       return date.length > 5 ? date.substring(0, 5) : date;
@@ -434,7 +420,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
 
   String _getShortWeekLabel(String weekLabel) {
     try {
-      // Format: "Jan 1 - Jan 7, 2024" → "Jan 1"
       final parts = weekLabel.split(' - ');
       if (parts.isNotEmpty) {
         final startPart = parts[0].trim();
@@ -459,7 +444,12 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     }
   }
 
-  Widget _buildSummaryItem(String label, String value, MaterialColor color) {
+  Widget _buildSummaryItem(
+    String label,
+    double value,
+    MaterialColor color, {
+    bool isAmount = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -481,16 +471,27 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
             maxLines: 2,
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
+          if (isAmount)
+            FormattedAmount(
+              amount: value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              showCode: false,
+            )
+          else
+            Text(
+              value.toInt().toString(),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );

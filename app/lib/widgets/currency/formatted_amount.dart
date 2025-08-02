@@ -1,4 +1,4 @@
-// widgets/currency/formatted_amount.dart - VERSION FINALE CORRIGÉE
+// widgets/currency/formatted_amount.dart - VERSION FINALE CORRIGÉE AVEC NORMES INTERNATIONALES
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -13,15 +13,14 @@ class FormattedAmount extends StatelessWidget {
   final double amount;
   final TextStyle? style;
   final bool showCode;
-  final String?
-  fallbackCurrencyCode; // Optionnel pour spécifier un fallback différent
+  final String? fallbackCurrencyCode;
 
   const FormattedAmount({
     super.key,
     required this.amount,
     this.style,
     this.showCode = false,
-    this.fallbackCurrencyCode, // Par défaut null = CAD
+    this.fallbackCurrencyCode,
   });
 
   @override
@@ -30,22 +29,22 @@ class FormattedAmount extends StatelessWidget {
       builder: (context, authState) {
         return BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
-            // ✅ CORRECTION: Essayer de charger la devise si nécessaire
+            // Essayer de charger la devise si nécessaire
             if (currencyState is CurrencyInitial && authState is AuthSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 context.read<CurrencyBloc>().add(const LoadUserCurrency());
               });
             }
 
-            // ✅ CORRECTION: Déterminer la devise à utiliser dynamiquement
+            // Déterminer la devise à utiliser
             Currency currency = _getCurrentCurrency(
               authState,
               currencyState,
               context,
             );
 
-            // ✅ CORRECTION: Formater le montant avec la vraie devise
-            final formatted = _formatAmount(amount, currency);
+            // Formater le montant selon les normes internationales
+            final formatted = _formatAmountInternational(amount, currency);
             final displayText =
                 showCode
                     ? '$formatted ${currency.code.toUpperCase()}'
@@ -62,72 +61,202 @@ class FormattedAmount extends StatelessWidget {
     );
   }
 
-  /// ✅ CORRECTION: Formater le montant selon les règles de la devise
-  String _formatAmount(double amount, Currency currency) {
-    // Gérer les décimales selon la devise
-    final decimals = _getDecimalsForCurrency(currency.code);
+  /// Formater le montant selon les normes internationales
+  String _formatAmountInternational(double amount, Currency currency) {
+    final code = currency.code.toUpperCase();
+    final decimals = _getDecimalsForCurrency(code);
     final formattedNumber = amount.toStringAsFixed(decimals);
 
-    // Appliquer le symbole selon la devise
-    switch (currency.code.toUpperCase()) {
-      case 'EUR':
-        return '$formattedNumber€'; // Euro après le montant
-      case 'USD':
-      case 'CAD':
-      case 'AUD':
-        return '${currency.symbol}$formattedNumber'; // Dollar avant le montant
-      case 'GBP':
-        return '£$formattedNumber'; // Livre avant le montant
-      case 'JPY':
-        return '¥${amount.toStringAsFixed(0)}'; // Yen sans décimales
-      case 'CHF':
-        return 'CHF $formattedNumber'; // Franc suisse avec espace
-      default:
-        return '${currency.symbol}$formattedNumber';
-    }
+    // Appliquer les séparateurs selon la région
+    final localizedNumber = _applyLocalizedSeparators(formattedNumber, code);
+
+    // Appliquer le placement du symbole selon les normes internationales
+    return _applySymbolPlacement(localizedNumber, currency);
   }
 
-  /// ✅ NOUVEAU: Obtenir le nombre de décimales selon la devise
+  /// Obtenir le nombre de décimales selon la norme ISO 4217
   int _getDecimalsForCurrency(String currencyCode) {
-    switch (currencyCode.toUpperCase()) {
-      case 'JPY': // Yen japonais sans décimales
-      case 'KRW': // Won coréen sans décimales
+    switch (currencyCode) {
+      // Devises sans décimales (0 décimales)
+      case 'JPY': // Yen japonais
+      case 'KRW': // Won coréen
+      case 'VND': // Dong vietnamien
+      case 'CLP': // Peso chilien
+      case 'ISK': // Couronne islandaise
+      case 'XOF': // Franc CFA BCEAO (traditionnellement sans décimales)
+      case 'XAF': // Franc CFA BEAC (traditionnellement sans décimales)
         return 0;
-      case 'BHD': // Dinar de Bahreïn avec 3 décimales
-      case 'KWD': // Dinar koweïtien avec 3 décimales
+
+      // Devises avec 3 décimales
+      case 'BHD': // Dinar de Bahreïn
+      case 'KWD': // Dinar koweïtien
+      case 'OMR': // Rial omanais
+      case 'JOD': // Dinar jordanien
+      case 'IQD': // Dinar irakien
+      case 'LYD': // Dinar libyen
+      case 'TND': // Dinar tunisien
         return 3;
+
+      // Toutes les autres devises (2 décimales - standard)
       default:
-        return 2; // La plupart des devises ont 2 décimales
+        return 2;
     }
   }
 
-  /// ✅ CORRECTION: Déterminer la devise actuelle depuis les différents états
+  /// Appliquer les séparateurs localisés (décimal et milliers)
+  String _applyLocalizedSeparators(
+    String formattedNumber,
+    String currencyCode,
+  ) {
+    // Séparer la partie entière et décimale
+    final parts = formattedNumber.split('.');
+    final integerPart = parts[0];
+    final decimalPart = parts.length > 1 ? parts[1] : '';
+
+    // Déterminer les séparateurs selon la région
+    String thousandSeparator = ',';
+    String decimalSeparator = '.';
+
+    // Régions utilisant virgule comme séparateur décimal et point pour milliers
+    final commaDecimalCountries = [
+      'EUR', 'CHF', 'DZD', 'MAD', 'TND', // Europe et Afrique du Nord
+      'XOF', 'XAF', // Francs CFA (influence française)
+    ];
+
+    if (commaDecimalCountries.contains(currencyCode)) {
+      thousandSeparator = '.';
+      decimalSeparator = ',';
+    }
+
+    // Ajouter les séparateurs de milliers
+    String formattedInteger = _addThousandSeparators(
+      integerPart,
+      thousandSeparator,
+    );
+
+    // Reconstituer le nombre
+    if (decimalPart.isNotEmpty) {
+      return '$formattedInteger$decimalSeparator$decimalPart';
+    }
+    return formattedInteger;
+  }
+
+  /// Ajouter les séparateurs de milliers
+  String _addThousandSeparators(String number, String separator) {
+    if (number.length <= 3) return number;
+
+    final reversed = number.split('').reversed.toList();
+    final result = <String>[];
+
+    for (int i = 0; i < reversed.length; i++) {
+      if (i > 0 && i % 3 == 0) {
+        result.add(separator);
+      }
+      result.add(reversed[i]);
+    }
+
+    return result.reversed.join();
+  }
+
+  /// Appliquer le placement du symbole selon les normes internationales
+  String _applySymbolPlacement(String formattedNumber, Currency currency) {
+    final code = currency.code.toUpperCase();
+    final symbol = currency.symbol;
+
+    // Devises avec symbole APRÈS le montant (avec espace)
+    final symbolAfterWithSpace = [
+      'EUR', 'CHF', 'DZD', 'MAD', 'TND', // Europe et Afrique du Nord
+      'XOF', 'XAF', // Francs CFA
+      'ZAR', 'NAD', // Afrique du Sud et Namibie
+    ];
+
+    // Devises avec symbole APRÈS le montant (sans espace)
+    final symbolAfterNoSpace = [
+      'SEK', 'NOK', 'DKK', // Pays nordiques
+    ];
+
+    // Devises avec code AVANT le montant (avec espace)
+    final codeBeforeWithSpace = [
+      'CHF', 'XOF', 'XAF', 'NGN', 'EGP', 'KES', 'GHS',
+      'ETB', 'UGX', 'BWP', // Devises africaines spécifiques
+    ];
+
+    if (symbolAfterWithSpace.contains(code)) {
+      return '$formattedNumber $symbol';
+    } else if (symbolAfterNoSpace.contains(code)) {
+      return '$formattedNumber$symbol';
+    } else if (codeBeforeWithSpace.contains(code) && symbol.length > 2) {
+      // Utiliser le code pour les symboles longs
+      return '$symbol $formattedNumber';
+    } else {
+      // Symbole AVANT le montant (standard anglophone)
+      return '$symbol$formattedNumber';
+    }
+  }
+
+  /// Obtenir le symbole correct pour un code de devise
+  String _getSymbolForCode(String code) {
+    final symbolMap = {
+      // Devises principales
+      'USD': '\$',
+      'CAD': '\$',
+      'AUD': 'A\$',
+      'HKD': 'HK\$',
+      'SGD': 'S\$',
+      'NAD': 'N\$',
+      'EUR': '€',
+      'GBP': '£',
+      'EGP': '£',
+      'JPY': '¥',
+      'CNY': '¥',
+      'CHF': 'CHF',
+
+      // Devises africaines
+      'ZAR': 'R',
+      'NGN': '₦',
+      'MAD': 'د.م.',
+      'XOF': 'CFA',
+      'XAF': 'FCFA',
+      'KES': 'KSh',
+      'GHS': 'GH₵',
+      'ETB': 'Br',
+      'TND': 'د.ت',
+      'DZD': 'د.ج',
+      'UGX': 'USh',
+      'MUR': '₨',
+      'BWP': 'P',
+    };
+
+    return symbolMap[code.toUpperCase()] ?? '\$';
+  }
+
+  /// Déterminer la devise actuelle depuis les différents états
   Currency _getCurrentCurrency(
     AuthState authState,
     CurrencyState currencyState,
     BuildContext context,
   ) {
-    // 1. PRIORITÉ MAXIMALE: État de devise mise à jour récemment
+    // 1. État de devise mise à jour récemment
     if (currencyState is UserCurrencyUpdated) {
       return currencyState.userCurrency.currency;
     }
 
-    // 2. État de devise chargée via CurrencyBloc
+    // 2. État de devise chargée
     if (currencyState is UserCurrencyLoaded) {
       return currencyState.userCurrency.currency;
     }
 
-    // 3. État de devise sélectionnée temporairement
+    // 3. État de devise sélectionnée
     if (currencyState is CurrencySelected) {
       return currencyState.currency;
     }
 
-    // 4. ✅ CORRECTION: Devise depuis l'utilisateur authentifié (priorité élevée)
+    // 4. Devise depuis l'utilisateur authentifié
     if (authState is AuthSuccess && authState.user.currency != null) {
       return authState.user.currency!;
     }
 
-    // 5. ✅ CORRECTION: Utiliser le CurrencyBloc pour obtenir la devise actuelle
+    // 5. Utiliser le CurrencyBloc
     try {
       final currencyBloc = BlocProvider.of<CurrencyBloc>(context);
       final currentCurrency = currencyBloc.getCurrentCurrency();
@@ -135,19 +264,17 @@ class FormattedAmount extends StatelessWidget {
         return currentCurrency;
       }
     } catch (e) {
-      // Si le BlocProvider n'est pas disponible, continuer avec les fallbacks
       print('CurrencyBloc non disponible: $e');
     }
 
-    // 6. ✅ NOUVEAU: Fallback avec devise personnalisée si spécifiée
+    // 6. Fallback avec devise personnalisée
     if (fallbackCurrencyCode != null) {
-      // Essayer de trouver la devise dans les devises prédéfinies
       final predefinedCurrency = Currency.findByCode(fallbackCurrencyCode!);
       if (predefinedCurrency != null) {
         return predefinedCurrency;
       }
 
-      // Si pas trouvé, créer une devise temporaire
+      // Créer une devise temporaire
       final now = DateTime.now();
       return Currency(
         id: 0,
@@ -162,34 +289,12 @@ class FormattedAmount extends StatelessWidget {
       );
     }
 
-    // 7. Fallback final: CAD par défaut
+    // 7. Fallback final: CAD
     return Currency.cad;
-  }
-
-  /// ✅ NOUVEAU: Obtenir le symbole pour un code de devise
-  String _getSymbolForCode(String code) {
-    switch (code.toUpperCase()) {
-      case 'USD':
-        return '\$';
-      case 'EUR':
-        return '€';
-      case 'GBP':
-        return '£';
-      case 'JPY':
-        return '¥';
-      case 'CAD':
-        return '\$';
-      case 'AUD':
-        return '\$';
-      case 'CHF':
-        return 'CHF';
-      default:
-        return '\$';
-    }
   }
 }
 
-/// ✅ NOUVEAU: Widget pour afficher uniquement l'indicateur de devise (pour les placeholders)
+/// Widget pour afficher uniquement l'indicateur de devise
 class CurrencyIndicator extends StatelessWidget {
   final TextStyle? style;
   final String? fallbackCode;
@@ -202,11 +307,10 @@ class CurrencyIndicator extends StatelessWidget {
       builder: (context, authState) {
         return BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
-            // ✅ CORRECTION CRITIQUE: Ajouter le paramètre context manquant
             String currencyCode = _getCurrentCurrencyCode(
               authState,
               currencyState,
-              context, // ✅ AJOUTÉ LE CONTEXT MANQUANT
+              context,
             );
 
             return Container(
@@ -234,13 +338,12 @@ class CurrencyIndicator extends StatelessWidget {
     );
   }
 
-  /// ✅ CORRECTION: Obtenir le code de devise actuel avec tous les paramètres
+  /// Obtenir le code de devise actuel
   String _getCurrentCurrencyCode(
     AuthState authState,
     CurrencyState currencyState,
-    BuildContext context, // ✅ PARAMÈTRE CONTEXT AJOUTÉ
+    BuildContext context,
   ) {
-    // Vérifier les états de devise dans l'ordre de priorité
     if (currencyState is UserCurrencyUpdated) {
       return currencyState.userCurrency.currency.code;
     }
@@ -257,7 +360,6 @@ class CurrencyIndicator extends StatelessWidget {
       return authState.user.currency!.code;
     }
 
-    // Utiliser le CurrencyBloc
     try {
       final currencyBloc = BlocProvider.of<CurrencyBloc>(context);
       final currentCode = currencyBloc.getCurrentCurrencyCode();
@@ -265,7 +367,6 @@ class CurrencyIndicator extends StatelessWidget {
         return currentCode;
       }
     } catch (e) {
-      // Si le BlocProvider n'est pas disponible, utiliser le fallback
       print('CurrencyBloc non disponible: $e');
     }
 

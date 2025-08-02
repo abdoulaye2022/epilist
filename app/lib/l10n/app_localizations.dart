@@ -137,7 +137,7 @@ abstract class AppLocalizations {
   /// No description provided for @newList.
   ///
   /// In fr, this message translates to:
-  /// **'Nouvelle Liste'**
+  /// **'Nouvelle'**
   String get newList;
 
   /// No description provided for @createList.
@@ -221,8 +221,8 @@ abstract class AppLocalizations {
   /// No description provided for @sharedBy.
   ///
   /// In fr, this message translates to:
-  /// **'Partagée par {userName}'**
-  String sharedBy(String userName);
+  /// **'Partagée par'**
+  String get sharedBy;
 
   /// No description provided for @completed.
   ///
@@ -551,7 +551,7 @@ abstract class AppLocalizations {
   /// No description provided for @information.
   ///
   /// In fr, this message translates to:
-  /// **'Information'**
+  /// **'Informations'**
   String get information;
 
   /// No description provided for @aboutEpiList.
@@ -1241,7 +1241,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareLinkCreatedSuccessfully.
   ///
   /// In fr, this message translates to:
-  /// **'Lien de partage créé avec succès'**
+  /// **'Lien de partage créé avec succès !'**
   String get shareLinkCreatedSuccessfully;
 
   /// No description provided for @linkCopiedToClipboard.
@@ -3778,7 +3778,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseCurrencyDescription.
   ///
   /// In fr, this message translates to:
-  /// **'Choisissez votre devise d\'affichage préférée'**
+  /// **'Choisissez votre devise préférée pour les prix'**
   String get chooseCurrencyDescription;
 
   /// No description provided for @manageCurrencyDescription.
@@ -4006,7 +4006,7 @@ abstract class AppLocalizations {
   /// No description provided for @currencyDisplayOnly.
   ///
   /// In fr, this message translates to:
-  /// **'Cette devise sera utilisée pour l\'affichage uniquement. Les prix ne sont pas convertis.'**
+  /// **'Affichage uniquement'**
   String get currencyDisplayOnly;
 
   /// No description provided for @pricesNotConverted.
@@ -4024,19 +4024,19 @@ abstract class AppLocalizations {
   /// No description provided for @loadingCurrencies.
   ///
   /// In fr, this message translates to:
-  /// **'Chargement des devises...'**
+  /// **'Chargement des devises disponibles...'**
   String get loadingCurrencies;
 
   /// No description provided for @noCurrenciesAvailable.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune devise disponible'**
+  /// **'Aucune devise disponible pour le moment'**
   String get noCurrenciesAvailable;
 
   /// No description provided for @cannotLoadCurrencies.
   ///
   /// In fr, this message translates to:
-  /// **'Impossible de charger les devises depuis le serveur'**
+  /// **'Impossible de charger la liste des devises'**
   String get cannotLoadCurrencies;
 
   /// No description provided for @currencyUpdated.
@@ -4552,7 +4552,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectPeriod.
   ///
   /// In fr, this message translates to:
-  /// **'Choisir la période'**
+  /// **'Sélectionner la période'**
   String get selectPeriod;
 
   /// No description provided for @changePeriod.
@@ -6091,126 +6091,6 @@ abstract class AppLocalizations {
   /// **'Tous'**
   String get all;
 
-  /// No description provided for @availableLists.
-  ///
-  /// In fr, this message translates to:
-  /// **'Listes disponibles'**
-  String get availableLists;
-
-  /// No description provided for @noListsAvailable.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune liste disponible'**
-  String get noListsAvailable;
-
-  /// No description provided for @selectList.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sélectionner une liste'**
-  String get selectList;
-
-  /// No description provided for @budgetDetails.
-  ///
-  /// In fr, this message translates to:
-  /// **'Détails du budget'**
-  String get budgetDetails;
-
-  /// No description provided for @budgetProgress.
-  ///
-  /// In fr, this message translates to:
-  /// **'Progression du budget'**
-  String get budgetProgress;
-
-  /// No description provided for @spentAmount.
-  ///
-  /// In fr, this message translates to:
-  /// **'Montant dépensé'**
-  String get spentAmount;
-
-  /// No description provided for @remainingAmount.
-  ///
-  /// In fr, this message translates to:
-  /// **'Montant restant'**
-  String get remainingAmount;
-
-  /// No description provided for @budgetStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Statut du budget'**
-  String get budgetStatus;
-
-  /// No description provided for @budgetExceeded.
-  ///
-  /// In fr, this message translates to:
-  /// **'Budget dépassé'**
-  String get budgetExceeded;
-
-  /// No description provided for @budgetWarning.
-  ///
-  /// In fr, this message translates to:
-  /// **'Alerte budget'**
-  String get budgetWarning;
-
-  /// No description provided for @budgetOnTrack.
-  ///
-  /// In fr, this message translates to:
-  /// **'Budget sous contrôle'**
-  String get budgetOnTrack;
-
-  /// No description provided for @budgetCreateError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Erreur lors de la création du budget'**
-  String get budgetCreateError;
-
-  /// No description provided for @budgetUpdateError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Erreur lors de la mise à jour du budget'**
-  String get budgetUpdateError;
-
-  /// No description provided for @budgetDeleteError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Erreur lors de la suppression du budget'**
-  String get budgetDeleteError;
-
-  /// No description provided for @budgetLoadError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Erreur lors du chargement du budget'**
-  String get budgetLoadError;
-
-  /// No description provided for @pauseBudget.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre en pause le budget'**
-  String get pauseBudget;
-
-  /// No description provided for @resumeBudget.
-  ///
-  /// In fr, this message translates to:
-  /// **'Reprendre le budget'**
-  String get resumeBudget;
-
-  /// No description provided for @toggleBudgetStatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Basculer le statut du budget'**
-  String get toggleBudgetStatus;
-
-  /// No description provided for @viewBudgetDetails.
-  ///
-  /// In fr, this message translates to:
-  /// **'Voir les détails du budget'**
-  String get viewBudgetDetails;
-
-  /// No description provided for @editBudgetDetails.
-  ///
-  /// In fr, this message translates to:
-  /// **'Modifier les détails du budget'**
-  String get editBudgetDetails;
-
   /// No description provided for @budgetPeriodTypeWeekly.
   ///
   /// In fr, this message translates to:
@@ -6366,6 +6246,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Plus d\'options'**
   String get moreOptions;
+
+  /// No description provided for @toggleBudgetStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basculer le statut du budget'**
+  String get toggleBudgetStatus;
+
+  /// No description provided for @viewBudgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les détails du budget'**
+  String get viewBudgetDetails;
+
+  /// No description provided for @pauseBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre en pause le budget'**
+  String get pauseBudget;
+
+  /// No description provided for @resumeBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre le budget'**
+  String get resumeBudget;
+
+  /// No description provided for @budgetOnTrack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget sous contrôle'**
+  String get budgetOnTrack;
+
+  /// No description provided for @budgetWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte budget'**
+  String get budgetWarning;
+
+  /// No description provided for @budgetExceeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget dépassé'**
+  String get budgetExceeded;
+
+  /// No description provided for @budgetDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails du budget'**
+  String get budgetDetails;
+
+  /// No description provided for @budgetProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Progression du budget'**
+  String get budgetProgress;
+
+  /// No description provided for @spentAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant dépensé'**
+  String get spentAmount;
+
+  /// No description provided for @remainingAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant restant'**
+  String get remainingAmount;
+
+  /// No description provided for @budgetStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut du budget'**
+  String get budgetStatus;
+
+  /// No description provided for @budgetCreateError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création du budget'**
+  String get budgetCreateError;
+
+  /// No description provided for @budgetUpdateError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour du budget'**
+  String get budgetUpdateError;
+
+  /// No description provided for @budgetDeleteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression du budget'**
+  String get budgetDeleteError;
+
+  /// No description provided for @budgetLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement du budget'**
+  String get budgetLoadError;
 
   /// No description provided for @noResultsFound.
   ///
@@ -6556,146 +6532,170 @@ abstract class AppLocalizations {
   /// No description provided for @refreshing.
   ///
   /// In fr, this message translates to:
-  /// **'Refreshing...'**
+  /// **'Actualisation...'**
   String get refreshing;
 
   /// No description provided for @export.
   ///
   /// In fr, this message translates to:
-  /// **'Export'**
+  /// **'Exporter'**
   String get export;
 
   /// No description provided for @exportReceiptsDescription.
   ///
   /// In fr, this message translates to:
-  /// **'Export your receipts to PDF or CSV format'**
+  /// **'Exportez vos factures au format PDF ou CSV'**
   String get exportReceiptsDescription;
 
   /// No description provided for @exportToPDF.
   ///
   /// In fr, this message translates to:
-  /// **'Export to PDF'**
+  /// **'Exporter en PDF'**
   String get exportToPDF;
 
   /// No description provided for @exportToCSV.
   ///
   /// In fr, this message translates to:
-  /// **'Export to CSV'**
+  /// **'Exporter en CSV'**
   String get exportToCSV;
 
   /// No description provided for @exportPDFInProgress.
   ///
   /// In fr, this message translates to:
-  /// **'PDF export in progress...'**
+  /// **'Export PDF en cours...'**
   String get exportPDFInProgress;
 
   /// No description provided for @exportCSVInProgress.
   ///
   /// In fr, this message translates to:
-  /// **'CSV export in progress...'**
+  /// **'Export CSV en cours...'**
   String get exportCSVInProgress;
 
   /// No description provided for @addFirstReceiptToStart.
   ///
   /// In fr, this message translates to:
-  /// **'Add your first receipt to start tracking your actual spending'**
+  /// **'Ajoutez votre première facture pour commencer à suivre vos dépenses réelles'**
   String get addFirstReceiptToStart;
 
   /// No description provided for @createReceiptNow.
   ///
   /// In fr, this message translates to:
-  /// **'Create receipt now'**
+  /// **'Créer une facture maintenant'**
   String get createReceiptNow;
 
   /// No description provided for @errorExportingReceipts.
   ///
   /// In fr, this message translates to:
-  /// **'Error exporting receipts'**
+  /// **'Erreur lors de l\'export des factures'**
   String get errorExportingReceipts;
 
   /// No description provided for @exportCompletedSuccessfully.
   ///
   /// In fr, this message translates to:
-  /// **'Export completed successfully'**
+  /// **'Export terminé avec succès'**
   String get exportCompletedSuccessfully;
 
   /// No description provided for @exportFailed.
   ///
   /// In fr, this message translates to:
-  /// **'Export failed'**
+  /// **'Échec de l\'export'**
   String get exportFailed;
 
   /// No description provided for @refreshingData.
   ///
   /// In fr, this message translates to:
-  /// **'Refreshing data...'**
+  /// **'Actualisation des données...'**
   String get refreshingData;
 
   /// No description provided for @dataRefreshedSuccessfully.
   ///
   /// In fr, this message translates to:
-  /// **'Data refreshed successfully'**
+  /// **'Données actualisées avec succès'**
   String get dataRefreshedSuccessfully;
 
   /// No description provided for @exportOptions.
   ///
   /// In fr, this message translates to:
-  /// **'Export Options'**
+  /// **'Options d\'export'**
   String get exportOptions;
 
   /// No description provided for @selectExportFormat.
   ///
   /// In fr, this message translates to:
-  /// **'Select export format'**
+  /// **'Sélectionnez le format d\'export'**
   String get selectExportFormat;
 
   /// No description provided for @exportToPDFFile.
   ///
   /// In fr, this message translates to:
-  /// **'Export to PDF file'**
+  /// **'Exporter vers fichier PDF'**
   String get exportToPDFFile;
 
   /// No description provided for @exportToCSVFile.
   ///
   /// In fr, this message translates to:
-  /// **'Export to CSV file'**
+  /// **'Exporter vers fichier CSV'**
   String get exportToCSVFile;
 
   /// No description provided for @exportStarted.
   ///
   /// In fr, this message translates to:
-  /// **'Export started'**
+  /// **'Export démarré'**
   String get exportStarted;
 
   /// No description provided for @checkDownloadsFolder.
   ///
   /// In fr, this message translates to:
-  /// **'Check your downloads folder'**
+  /// **'Vérifiez votre dossier de téléchargements'**
   String get checkDownloadsFolder;
 
   /// No description provided for @pdfExportError.
   ///
   /// In fr, this message translates to:
-  /// **'PDF export error'**
+  /// **'Erreur d\'export PDF'**
   String get pdfExportError;
 
   /// No description provided for @csvExportError.
   ///
   /// In fr, this message translates to:
-  /// **'CSV export error'**
+  /// **'Erreur d\'export CSV'**
   String get csvExportError;
 
   /// No description provided for @fileCreationError.
   ///
   /// In fr, this message translates to:
-  /// **'File creation error'**
+  /// **'Erreur de création de fichier'**
   String get fileCreationError;
 
   /// No description provided for @permissionDeniedError.
   ///
   /// In fr, this message translates to:
-  /// **'Permission denied for file creation'**
+  /// **'Permission refusée pour la création de fichier'**
   String get permissionDeniedError;
+
+  /// No description provided for @overBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépassement budget'**
+  String get overBudget;
+
+  /// No description provided for @highestPurchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus gros achat'**
+  String get highestPurchase;
+
+  /// No description provided for @topCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie principale'**
+  String get topCategory;
+
+  /// No description provided for @mostFrequentCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie la plus fréquente'**
+  String get mostFrequentCategory;
 }
 
 class _AppLocalizationsDelegate

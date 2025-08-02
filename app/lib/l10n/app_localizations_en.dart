@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myGroceryLists => 'My Grocery Lists';
 
   @override
-  String get viewAll => 'View All';
+  String get viewAll => 'View all';
 
   @override
   String get newList => 'New';
@@ -69,9 +69,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collaborators => 'collaborator(s)';
 
   @override
-  String sharedBy(String userName) {
-    return 'Shared by $userName';
-  }
+  String get sharedBy => 'Shared by';
 
   @override
   String get completed => '✅ Completed';
@@ -623,7 +621,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get shareLinkCreatedSuccessfully => 'Share link created successfully';
+  String get shareLinkCreatedSuccessfully => 'Share link created successfully!';
 
   @override
   String get linkCopiedToClipboard => 'Link copied to clipboard!';
@@ -650,7 +648,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Can do everything, including share and delete';
 
   @override
-  String get total => 'total';
+  String get total => 'Total';
 
   @override
   String get progress => 'Progress';
@@ -2008,7 +2006,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseCurrencyDescription =>
-      'Choose your preferred display currency';
+      'Choose your preferred currency for prices';
 
   @override
   String get manageCurrencyDescription => 'Manage your currency preferences';
@@ -2131,8 +2129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseCurrencyPreference => 'Choose your currency preference';
 
   @override
-  String get currencyDisplayOnly =>
-      'This currency will be used for display only. Prices are not converted.';
+  String get currencyDisplayOnly => 'Display only';
 
   @override
   String get pricesNotConverted => 'Prices are not automatically converted';
@@ -2141,13 +2138,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get currentSelectedCurrency => 'Currently selected currency';
 
   @override
-  String get loadingCurrencies => 'Loading currencies...';
+  String get loadingCurrencies => 'Loading available currencies...';
 
   @override
-  String get noCurrenciesAvailable => 'No currencies available';
+  String get noCurrenciesAvailable => 'No currencies available at the moment';
 
   @override
-  String get cannotLoadCurrencies => 'Unable to load currencies from server';
+  String get cannotLoadCurrencies => 'Unable to load currency list';
 
   @override
   String get currencyUpdated => 'Your currency has been updated successfully';
@@ -2492,7 +2489,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearlyTrends => 'Yearly trends';
 
   @override
-  String get day => 'day';
+  String get day => 'Day';
 
   @override
   String get week => 'Week';
@@ -3101,7 +3098,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String deleteBudgetConfirmation(String budgetName) {
-    return 'Are you sure you want to delete the budget \"$budgetName\"?';
+    return 'Are you sure you want to delete budget \"$budgetName\"?';
   }
 
   @override
@@ -3135,7 +3132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get specific => 'Specific';
 
   @override
-  String get clearFilters => 'Effacer les filtres';
+  String get clearFilters => 'Clear filters';
 
   @override
   String get update => 'Update';
@@ -3192,70 +3189,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggestions => 'Suggestions';
 
   @override
-  String get days => 'days';
+  String get days => 'jours';
 
   @override
   String get all => 'All';
-
-  @override
-  String get availableLists => 'Listes disponibles';
-
-  @override
-  String get noListsAvailable => 'Aucune liste disponible';
-
-  @override
-  String get selectList => 'Sélectionner une liste';
-
-  @override
-  String get budgetDetails => 'Budget Details';
-
-  @override
-  String get budgetProgress => 'Budget Progress';
-
-  @override
-  String get spentAmount => 'Amount Spent';
-
-  @override
-  String get remainingAmount => 'Amount Remaining';
-
-  @override
-  String get budgetStatus => 'Budget Status';
-
-  @override
-  String get budgetExceeded => 'Budget exceeded';
-
-  @override
-  String get budgetWarning => 'Budget warning';
-
-  @override
-  String get budgetOnTrack => 'Budget on track';
-
-  @override
-  String get budgetCreateError => 'Error creating budget';
-
-  @override
-  String get budgetUpdateError => 'Error updating budget';
-
-  @override
-  String get budgetDeleteError => 'Error deleting budget';
-
-  @override
-  String get budgetLoadError => 'Error loading budget';
-
-  @override
-  String get pauseBudget => 'Pause budget';
-
-  @override
-  String get resumeBudget => 'Resume budget';
-
-  @override
-  String get toggleBudgetStatus => 'Toggle budget status';
-
-  @override
-  String get viewBudgetDetails => 'View budget details';
-
-  @override
-  String get editBudgetDetails => 'Modifier les détails du budget';
 
   @override
   String get budgetPeriodTypeWeekly => 'Weekly';
@@ -3342,11 +3279,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moreOptions => 'More options';
 
   @override
-  String get noResultsFound => 'Aucun résultat trouvé';
+  String get toggleBudgetStatus => 'Toggle budget status';
+
+  @override
+  String get viewBudgetDetails => 'View budget details';
+
+  @override
+  String get pauseBudget => 'Pause budget';
+
+  @override
+  String get resumeBudget => 'Resume budget';
+
+  @override
+  String get budgetOnTrack => 'Budget on track';
+
+  @override
+  String get budgetWarning => 'Budget warning';
+
+  @override
+  String get budgetExceeded => 'Budget exceeded';
+
+  @override
+  String get budgetDetails => 'Budget Details';
+
+  @override
+  String get budgetProgress => 'Budget Progress';
+
+  @override
+  String get spentAmount => 'Amount Spent';
+
+  @override
+  String get remainingAmount => 'Amount Remaining';
+
+  @override
+  String get budgetStatus => 'Budget Status';
+
+  @override
+  String get budgetCreateError => 'Error creating budget';
+
+  @override
+  String get budgetUpdateError => 'Error updating budget';
+
+  @override
+  String get budgetDeleteError => 'Error deleting budget';
+
+  @override
+  String get budgetLoadError => 'Error loading budget';
+
+  @override
+  String get noResultsFound => 'No results found';
 
   @override
   String get tryAdjustingFilters =>
-      'Essayez d\'ajuster vos filtres ou d\'effacer les filtres actuels';
+      'Try adjusting your filters or clear current filters';
 
   @override
   String get daysRemaining => 'days remaining';
@@ -3440,78 +3425,88 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clear => 'Clear';
 
   @override
-  String get refreshing => 'Actualisation...';
+  String get refreshing => 'Refreshing...';
 
   @override
-  String get export => 'Exporter';
+  String get export => 'Export';
 
   @override
   String get exportReceiptsDescription =>
-      'Exportez vos factures au format PDF ou CSV';
+      'Export your receipts to PDF or CSV format';
 
   @override
-  String get exportToPDF => 'Exporter en PDF';
+  String get exportToPDF => 'Export to PDF';
 
   @override
-  String get exportToCSV => 'Exporter en CSV';
+  String get exportToCSV => 'Export to CSV';
 
   @override
-  String get exportPDFInProgress => 'Export PDF en cours...';
+  String get exportPDFInProgress => 'PDF export in progress...';
 
   @override
-  String get exportCSVInProgress => 'Export CSV en cours...';
+  String get exportCSVInProgress => 'CSV export in progress...';
 
   @override
   String get addFirstReceiptToStart =>
-      'Ajoutez votre première facture pour commencer à suivre vos dépenses réelles';
+      'Add your first receipt to start tracking your actual spending';
 
   @override
-  String get createReceiptNow => 'Créer une facture maintenant';
+  String get createReceiptNow => 'Create a receipt now';
 
   @override
-  String get errorExportingReceipts => 'Erreur lors de l\'export des factures';
+  String get errorExportingReceipts => 'Error exporting receipts';
 
   @override
-  String get exportCompletedSuccessfully => 'Export terminé avec succès';
+  String get exportCompletedSuccessfully => 'Export completed successfully';
 
   @override
-  String get exportFailed => 'Échec de l\'export';
+  String get exportFailed => 'Export failed';
 
   @override
-  String get refreshingData => 'Actualisation des données...';
+  String get refreshingData => 'Refreshing data...';
 
   @override
-  String get dataRefreshedSuccessfully => 'Données actualisées avec succès';
+  String get dataRefreshedSuccessfully => 'Data refreshed successfully';
 
   @override
-  String get exportOptions => 'Options d\'export';
+  String get exportOptions => 'Export options';
 
   @override
-  String get selectExportFormat => 'Sélectionnez le format d\'export';
+  String get selectExportFormat => 'Select export format';
 
   @override
-  String get exportToPDFFile => 'Exporter vers fichier PDF';
+  String get exportToPDFFile => 'Export to PDF file';
 
   @override
-  String get exportToCSVFile => 'Exporter vers fichier CSV';
+  String get exportToCSVFile => 'Export to CSV file';
 
   @override
-  String get exportStarted => 'Export démarré';
+  String get exportStarted => 'Export started';
 
   @override
-  String get checkDownloadsFolder =>
-      'Vérifiez votre dossier de téléchargements';
+  String get checkDownloadsFolder => 'Check your downloads folder';
 
   @override
-  String get pdfExportError => 'Erreur d\'export PDF';
+  String get pdfExportError => 'PDF export error';
 
   @override
-  String get csvExportError => 'Erreur d\'export CSV';
+  String get csvExportError => 'CSV export error';
 
   @override
-  String get fileCreationError => 'Erreur de création de fichier';
+  String get fileCreationError => 'File creation error';
 
   @override
-  String get permissionDeniedError =>
-      'Permission refusée pour la création de fichier';
+  String get permissionDeniedError => 'Permission denied for file creation';
+
+  @override
+  String get overBudget => 'Over Budget';
+
+  @override
+  String get highestPurchase => 'Highest Purchase';
+
+  @override
+  String get topCategory => 'Top Category';
+
+  @override
+  String get mostFrequentCategory => 'Most Frequent Category';
 }

@@ -1,4 +1,4 @@
-// widgets/budget/create_budget_dialog.dart - DESIGN CORRIGÉ
+// widgets/budget/create_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +7,7 @@ import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
 
 class CreateBudgetDialog extends StatefulWidget {
   final Budget? budgetToEdit;
@@ -203,6 +204,9 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         _buildListField(l10n),
         const SizedBox(height: 16),
         _buildAlertThresholdSlider(l10n),
+        const SizedBox(height: 16),
+        // ✅ AJOUT DU PREVIEW AVEC FormattedAmount
+        _buildAmountPreview(l10n),
       ],
     );
   }
@@ -250,7 +254,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         labelText: l10n.budgetAmount,
         hintText: '100.00',
         prefixIcon: Icon(Icons.monetization_on, color: Colors.amber[700]),
-        suffixText: '\$',
+        // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -270,6 +274,10 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
       ],
+      onChanged: (value) {
+        // ✅ DÉCLENCHER UN REBUILD POUR LE PREVIEW
+        setState(() {});
+      },
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return l10n.budgetAmountRequired;
@@ -283,6 +291,63 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         }
         return null;
       },
+    );
+  }
+
+  // ✅ NOUVEAU WIDGET PREVIEW AVEC FormattedAmount
+  Widget _buildAmountPreview(AppLocalizations l10n) {
+    final amountText = _amountController.text;
+    final amount = double.tryParse(amountText);
+
+    if (amount == null || amount <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.preview, color: Colors.blue[600], size: 20),
+              const SizedBox(width: 8),
+              Text(
+                l10n.preview,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue[600],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.budgetAmount,
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              ),
+              FormattedAmount(
+                // ✅ UTILISATION DE FormattedAmount POUR LE PREVIEW
+                amount: amount,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue[600],
+                ),
+                showCode: true, // ✅ AFFICHER LE CODE DE DEVISE
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

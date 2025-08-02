@@ -1,8 +1,9 @@
-// widgets/budget/quick_budget_dialog.dart - DESIGN CORRIGÉ
+// widgets/budget/quick_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
 
 class QuickBudgetDialog extends StatefulWidget {
   final List<ShoppingList>? availableLists;
@@ -313,7 +314,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.monetization_on, color: Colors.amber[700]),
             hintText: l10n.enterAmount,
-            suffixText: '\$',
+            // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey[300]!),
@@ -329,6 +330,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             filled: true,
             fillColor: Colors.grey[50],
           ),
+          onChanged: (value) {
+            // ✅ DÉCLENCHER UN REBUILD POUR LE PREVIEW
+            setState(() {});
+          },
           validator: (value) {
             if (value == null || value.isEmpty) {
               return l10n.pleaseEnterAmount;
@@ -565,6 +570,9 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
   }
 
   Widget _buildPreview(AppLocalizations l10n) {
+    final amountText = _amountController.text;
+    final amount = double.tryParse(amountText);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -592,9 +600,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           _buildPreviewItem(l10n.type, _getPeriodLabel(_selectedType, l10n)),
           _buildPreviewItem(
             l10n.amount,
-            _amountController.text.isEmpty
-                ? '0.00 \$'
-                : '${_amountController.text} \$',
+            amount != null && amount > 0
+                ? null
+                : '0.00', // ✅ UTILISER FormattedAmount AU LIEU DU STRING
+            amount: amount,
           ),
           _buildPreviewItem(l10n.scope, _getScopeLabel(l10n)),
         ],
@@ -602,17 +611,25 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
     );
   }
 
-  Widget _buildPreviewItem(String label, String value) {
+  Widget _buildPreviewItem(String label, String? value, {double? amount}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(fontSize: 14)),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
+          // ✅ UTILISATION CONDITIONNELLE DE FormattedAmount
+          if (amount != null && amount > 0)
+            FormattedAmount(
+              amount: amount,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              showCode: true, // ✅ AFFICHER LE CODE DE DEVISE DANS LE PREVIEW
+            )
+          else
+            Text(
+              value ?? '0.00',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
         ],
       ),
     );

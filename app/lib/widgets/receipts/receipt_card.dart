@@ -1,6 +1,7 @@
 // widgets/receipts/receipt_card.dart
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:flutter/material.dart';
 
 class ReceiptCard extends StatelessWidget {
@@ -94,13 +95,16 @@ class ReceiptCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          receipt.formattedAmount,
+        // CORRECTION : Utilisation de FormattedAmount au lieu de receipt.formattedAmount
+        FormattedAmount(
+          amount: receipt.totalAmount,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.green[600],
           ),
+          showCode: false, // Pas d'affichage du code de devise ici
+          fallbackCurrencyCode: 'CAD', // Devise de fallback
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

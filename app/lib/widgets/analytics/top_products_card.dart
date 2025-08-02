@@ -1,15 +1,15 @@
-// widgets/analytics/top_products_card.dart - VERSION AVEC FOND BLANC
+// widgets/analytics/top_products_card.dart - VERSION AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class TopProductsCard extends StatelessWidget {
   final Map<String, dynamic> data;
-  final String? selectedCurrency;
 
-  const TopProductsCard({super.key, required this.data, this.selectedCurrency});
+  const TopProductsCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,8 @@ class TopProductsCard extends StatelessWidget {
     final summary = data['summary'] ?? {};
     final sortBy = data['sort_by'] ?? 'total_spent';
 
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      // ✅ AJOUT: Fond blanc explicite
-      color: Colors.white,
+    return Container(
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -38,11 +35,13 @@ class TopProductsCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      // ✅ AJOUT: Couleur de texte harmonisée
                       color: Colors.black87,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const CurrencyIndicator(),
+                const SizedBox(width: 8),
                 _buildSortButton(context, sortBy, l10n),
               ],
             ),
@@ -54,6 +53,7 @@ class TopProductsCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.amber[50],
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.amber[100]!),
               ),
               child: Row(
                 children: [
@@ -63,12 +63,13 @@ class TopProductsCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.totalProducts,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           '${summary['total_unique_products'] ?? 0}',
                           style: TextStyle(
@@ -76,6 +77,7 @@ class TopProductsCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Colors.amber[600],
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -86,12 +88,13 @@ class TopProductsCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.showing,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           '${summary['showing_top'] ?? 0}',
                           style: TextStyle(
@@ -99,6 +102,7 @@ class TopProductsCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Colors.amber[600],
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -125,6 +129,7 @@ class TopProductsCard extends StatelessWidget {
                       Text(
                         l10n.noProductsData,
                         style: TextStyle(color: Colors.grey[600]),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -165,12 +170,7 @@ class TopProductsCard extends StatelessWidget {
         tooltip: l10n.sortBy,
         onSelected: (sortBy) {
           context.read<AnalyticsBloc>().add(
-            ChangeTopProductsSort(
-              sortBy: sortBy,
-              currencyCode: selectedCurrency,
-              period: 'month',
-              limit: 10,
-            ),
+            ChangeTopProductsSort(sortBy: sortBy, period: 'month', limit: 10),
           );
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -293,33 +293,54 @@ class TopProductsCard extends StatelessWidget {
   ) {
     final productName = product['product_name'] ?? l10n.unknownProduct;
     final totalSpent = product['total_spent']?.toDouble() ?? 0.0;
-    final formattedTotal = product['formatted_total'] ?? '0';
     final totalQuantity = product['total_quantity'] ?? 0;
     final frequency = product['purchase_frequency'] ?? 0;
-    final averagePrice = product['formatted_average'] ?? '0';
+    final averagePrice = product['average_price']?.toDouble() ?? 0.0;
     final stores = product['stores'] as List<dynamic>? ?? [];
 
     // Déterminer la valeur principale selon le tri
-    String mainValue;
+    Widget mainValue;
     String subValue;
     IconData icon;
     Color color;
 
     switch (sortBy) {
       case 'quantity':
-        mainValue = '$totalQuantity';
-        subValue = formattedTotal;
+        mainValue = Text(
+          '$totalQuantity',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue[600],
+          ),
+        );
+        subValue = '${l10n.itemsCount}';
         icon = Icons.shopping_cart;
         color = Colors.blue[600]!;
         break;
       case 'frequency':
-        mainValue = '$frequency';
-        subValue = formattedTotal;
+        mainValue = Text(
+          '$frequency',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.purple[600],
+          ),
+        );
+        subValue = '${l10n.timesPlural}';
         icon = Icons.repeat;
         color = Colors.purple[600]!;
         break;
       default: // total_spent
-        mainValue = formattedTotal;
+        mainValue = FormattedAmount(
+          amount: totalSpent,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.green[600],
+          ),
+          showCode: false,
+        );
         subValue = '$totalQuantity ${l10n.itemsCount}';
         icon = Icons.attach_money;
         color = Colors.green[600]!;
@@ -375,7 +396,6 @@ class TopProductsCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    // ✅ AJOUT: Couleur de texte harmonisée
                     color: Colors.black87,
                   ),
                   maxLines: 2,
@@ -388,10 +408,21 @@ class TopProductsCard extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     overflow: TextOverflow.ellipsis,
                   ),
-                Text(
-                  '${l10n.averagePriceLabel}: $averagePrice',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  overflow: TextOverflow.ellipsis,
+                // ✅ REMPLACEMENT: FormattedAmount pour le prix moyen
+                Row(
+                  children: [
+                    Text(
+                      '${l10n.averagePriceLabel}: ',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                    Flexible(
+                      child: FormattedAmount(
+                        amount: averagePrice,
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        showCode: false,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -406,20 +437,14 @@ class TopProductsCard extends StatelessWidget {
                 children: [
                   Icon(icon, size: 16, color: color),
                   const SizedBox(width: 4),
-                  Text(
-                    mainValue,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
+                  mainValue,
                 ],
               ),
-              Text(
-                subValue,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
+              if (subValue.isNotEmpty)
+                Text(
+                  subValue,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
             ],
           ),
         ],

@@ -1,5 +1,7 @@
+// widgets/analytics/monthly_chart_card.dart - SOLUTION FINALE
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class MonthlyChartCard extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -13,7 +15,6 @@ class MonthlyChartCard extends StatelessWidget {
     final summary = data['summary'] ?? {};
 
     return Container(
-      // ✅ CORRECTION: Fond transparent pour intégration avec wrapper blanc
       decoration: const BoxDecoration(color: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -30,47 +31,49 @@ class MonthlyChartCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87, // ✅ Couleur harmonisée
+                      color: Colors.black87,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const CurrencyIndicator(),
               ],
             ),
             const SizedBox(height: 20),
 
-            // Graphique simple avec hauteur flexible
+            // ✅ SOLUTION: Graphique avec contraintes strictes
             Container(
               height: 200,
+              width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[50], // ✅ Couleur harmonisée
+                color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[100]!),
               ),
-              child: ClipRect(
-                child: _buildSimpleChart(monthlyData, context, l10n),
-              ),
+              child: _buildSimpleChart(monthlyData, l10n),
             ),
 
             const SizedBox(height: 20),
 
-            // Résumé
+            // Résumé avec FormattedAmount
             Row(
               children: [
                 Expanded(
                   child: _buildSummaryItem(
                     l10n.totalSpent,
-                    summary['formatted_total'] ?? '0',
+                    summary['total']?.toDouble() ?? 0.0,
                     Colors.green,
+                    isAmount: true,
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildSummaryItem(
                     l10n.monthlyAverage,
-                    summary['formatted_average_monthly'] ?? '0',
+                    summary['average_monthly']?.toDouble() ?? 0.0,
                     Colors.blue,
+                    isAmount: true,
                   ),
                 ),
               ],
@@ -81,11 +84,8 @@ class MonthlyChartCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSimpleChart(
-    List<dynamic> monthlyData,
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
+  // ✅ SOLUTION: Chart simplifié sans LayoutBuilder ni ScrollView complexe
+  Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n) {
     if (monthlyData.isEmpty) {
       return Center(
         child: Text(
@@ -96,7 +96,7 @@ class MonthlyChartCard extends StatelessWidget {
       );
     }
 
-    // Trouver la valeur maximale pour normaliser
+    // Trouver la valeur maximale
     double maxValue = 0;
     for (var month in monthlyData) {
       final value = month['total_spent']?.toDouble() ?? 0;
@@ -113,83 +113,87 @@ class MonthlyChartCard extends StatelessWidget {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableHeight = constraints.maxHeight;
-        final chartHeight = availableHeight - 40;
-        final barMaxHeight = chartHeight - 20;
+    // ✅ SOLUTION: Chart simple avec contraintes fixes
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children:
+              monthlyData.asMap().entries.map((entry) {
+                final month = entry.value;
+                final value = month['total_spent']?.toDouble() ?? 0;
+                final monthName = month['month_name'] ?? '';
+                final height =
+                    maxValue > 0
+                        ? (value / maxValue) * 120
+                        : 5; // ✅ CORRECTION: 120px max au lieu de 140px
 
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Container(
-            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-            height: availableHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children:
-                  monthlyData.map<Widget>((month) {
-                    final value = month['total_spent']?.toDouble() ?? 0;
-                    final height =
-                        maxValue > 0 ? (value / maxValue) * barMaxHeight : 0;
-                    final monthName = month['month_name'] ?? '';
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 20,
-                            height: height < 5 ? 5 : height,
-                            decoration: BoxDecoration(
-                              color: Colors.blue[600], // ✅ Couleur harmonisée
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                return Container(
+                  width: 45, // Largeur fixe par barre
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Barre du graphique
+                      Tooltip(
+                        message: '${value.toStringAsFixed(2)}',
+                        child: Container(
+                          width: 24,
+                          height: height < 5 ? 5 : height,
+                          decoration: BoxDecoration(
+                            color: Colors.blue[600],
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            width: 28,
-                            height: 20,
-                            child: Text(
-                              monthName.isNotEmpty
-                                  ? _getShortMonthName(monthName)
-                                  : '',
-                              style: TextStyle(
-                                fontSize: 9,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  }).toList(),
-            ),
-          ),
-        );
-      },
+                      const SizedBox(
+                        height: 6,
+                      ), // ✅ CORRECTION: 6px au lieu de 8px
+                      // Label du mois
+                      SizedBox(
+                        height: 16, // ✅ CORRECTION: Hauteur fixe pour le label
+                        child: Text(
+                          _getShortMonthName(monthName),
+                          style: TextStyle(
+                            fontSize: 9, // ✅ CORRECTION: Police plus petite
+                            color: Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+        ),
+      ),
     );
   }
 
   String _getShortMonthName(String monthName) {
+    if (monthName.isEmpty) return '';
     try {
       final parts = monthName.split(' ');
       if (parts.isNotEmpty) {
         final month = parts[0];
         return month.length >= 3 ? month.substring(0, 3) : month;
       }
-      return '';
+      return monthName.length > 4 ? monthName.substring(0, 4) : monthName;
     } catch (e) {
-      return '';
+      return monthName.length > 4 ? monthName.substring(0, 4) : monthName;
     }
   }
 
-  Widget _buildSummaryItem(String label, String value, Color color) {
+  Widget _buildSummaryItem(
+    String label,
+    double value,
+    Color color, {
+    bool isAmount = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -211,16 +215,27 @@ class MonthlyChartCard extends StatelessWidget {
             maxLines: 2,
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
+          if (isAmount)
+            FormattedAmount(
+              amount: value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              showCode: false,
+            )
+          else
+            Text(
+              value.toInt().toString(),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );

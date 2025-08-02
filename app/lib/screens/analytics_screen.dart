@@ -1,4 +1,4 @@
-// screens/analytics_screen.dart - VERSION AVEC DESIGN HARMONISÉ
+// screens/analytics_screen.dart - VERSION CORRIGÉE
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
@@ -40,7 +40,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
   }
 
   void _loadInitialData() {
-    // Charger le dashboard initial (utilise la devise utilisateur par défaut)
     context.read<AnalyticsBloc>().add(const LoadDashboard());
   }
 
@@ -66,44 +65,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      // ✅ CORRECTION: Background gris clair comme BudgetScreen et HomeScreen
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
         title: Text(
           l10n.analytics,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.green[700], // ✅ Texte vert au lieu de blanc
+            color: Colors.green[700],
             fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.white, // ✅ Fond blanc comme BudgetScreen
-        foregroundColor: Colors.black, // ✅ Texte noir comme BudgetScreen
-        elevation: 0, // ✅ Pas d'ombre comme BudgetScreen
-        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
-          // ✅ Bouton d'actualisation avec couleur harmonisée
           IconButton(
-            icon: const Icon(
-              Icons.refresh,
-              color: Colors.black,
-            ), // ✅ Icône noire
+            icon: const Icon(Icons.refresh, color: Colors.black),
             tooltip: l10n.refresh,
             onPressed: _refreshCurrentTab,
           ),
-          const SizedBox(width: 8), // ✅ Espacement à droite comme BudgetScreen
+          const SizedBox(width: 8),
         ],
-        // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
-          unselectedLabelColor:
-              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
-          indicatorColor: Colors.green[700], // ✅ Indicateur vert
+          labelColor: Colors.green[700],
+          unselectedLabelColor: Colors.grey[600],
+          indicatorColor: Colors.green[700],
           indicatorWeight: 3,
           onTap: (index) {
-            // Charger les données selon l'onglet sélectionné
             switch (index) {
               case 0:
                 context.read<AnalyticsBloc>().add(const LoadDashboard());
@@ -182,7 +172,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ✅ CORRECTION: Wrapper les cards existantes pour forcer le fond blanc
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -210,10 +199,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
+                  // ✅ CORRECTION: Suppression du paramètre currency
                   child: ComparisonCard(
                     data:
                         state.dashboardData['comparison_with_last_month'] ?? {},
-                    currency: state.dashboardData['currency'] ?? 'CAD',
                   ),
                 ),
               ],
@@ -235,7 +224,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           );
         }
 
-        // ✅ Gérer tous les types de données de tendances
         Map<String, dynamic> chartData = {};
 
         if (state is MonthlySpendingLoaded) {
@@ -278,7 +266,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -291,13 +278,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
-                  child: PeriodChartCard(
-                    data: chartData,
-                    selectedCurrency: null, // ✅ Utilise la devise utilisateur
-                  ),
+                  // ✅ CORRECTION: Suppression du paramètre selectedCurrency
+                  child: PeriodChartCard(data: chartData),
                 ),
                 const SizedBox(height: 16),
-                // Vous pouvez ajouter d'autres widgets de tendances ici
               ],
             ),
           );
@@ -310,7 +294,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     );
   }
 
-  /// ✅ MÉTHODE UTILITAIRE pour extraire les données selon la période
   List<dynamic> _extractPeriodData(
     Map<String, dynamic> trendsData,
     String period,
@@ -342,7 +325,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -383,7 +365,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // ✅ CORRECTION: Wrapper la card pour forcer le fond blanc
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -396,10 +377,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
-                  child: TopProductsCard(
-                    data: state.productsData,
-                    selectedCurrency: null, // ✅ Utilise la devise utilisateur
-                  ),
+                  // ✅ CORRECTION: Suppression du paramètre selectedCurrency
+                  child: TopProductsCard(data: state.productsData),
                 ),
               ],
             ),
@@ -413,7 +392,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     );
   }
 
-  // ✅ CORRECTION: État vide avec card blanche
   Widget _buildEmptyState(AppLocalizations l10n, VoidCallback onRetry) {
     return Center(
       child: SingleChildScrollView(
@@ -423,7 +401,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             minHeight: MediaQuery.of(context).size.height * 0.5,
           ),
           child: Card(
-            color: Colors.white, // ✅ Fond blanc
+            color: Colors.white,
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
