@@ -3509,4 +3509,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mostFrequentCategory => 'Most Frequent Category';
+
+  @override
+  String get weeklyActivity => 'Weekly Activity';
+
+  @override
+  String get last7Days => 'Last 7 Days';
 }

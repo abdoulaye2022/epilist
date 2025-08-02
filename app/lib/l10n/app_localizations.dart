@@ -6696,6 +6696,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Catégorie la plus fréquente'**
   String get mostFrequentCategory;
+
+  /// No description provided for @weeklyActivity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activité hebdomadaire'**
+  String get weeklyActivity;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In fr, this message translates to:
+  /// **'7 derniers jours'**
+  String get last7Days;
 }
 
 class _AppLocalizationsDelegate

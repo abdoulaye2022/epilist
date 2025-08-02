@@ -1,8 +1,8 @@
-// widgets/budget/budget_card.dart - VERSION AVEC FormattedAmount
+// widgets/budget/budget_card.dart - VERSION AVEC BACKGROUND BLANC
 import 'package:flutter/material.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/l10n/app_localizations.dart';
-import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class BudgetCard extends StatelessWidget {
   final Budget budget;
@@ -28,11 +28,16 @@ class BudgetCard extends StatelessWidget {
 
     return Card(
       elevation: compact ? 1 : 3,
+      color: Colors.white, // ✅ BACKGROUND BLANC
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // ✅ BACKGROUND BLANC
+            borderRadius: BorderRadius.circular(12),
+          ),
           padding: EdgeInsets.all(compact ? 12 : 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,7 +233,6 @@ class BudgetCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         FormattedAmount(
-          // ✅ UTILISATION DE FormattedAmount
           amount: amount,
           style: TextStyle(
             fontSize: 14,
@@ -350,7 +354,6 @@ class BudgetCard extends StatelessWidget {
           child: Row(
             children: [
               FormattedAmount(
-                // ✅ UTILISATION DE FormattedAmount
                 amount: budget.spentAmount,
                 style: const TextStyle(
                   fontSize: 14,
@@ -363,7 +366,6 @@ class BudgetCard extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               FormattedAmount(
-                // ✅ UTILISATION DE FormattedAmount
                 amount: budget.budgetAmount,
                 style: const TextStyle(
                   fontSize: 14,
@@ -451,7 +453,7 @@ class BudgetCard extends StatelessWidget {
   }
 }
 
-// widgets/budget/budget_alerts_widget.dart - VERSION AVEC FormattedAmount
+// widgets/budget/budget_alerts_widget.dart - VERSION AVEC BACKGROUND BLANC
 class BudgetAlertsWidget extends StatelessWidget {
   final Budget budget;
   final VoidCallback? onDismiss;
@@ -464,22 +466,16 @@ class BudgetAlertsWidget extends StatelessWidget {
 
     return Card(
       elevation: 3,
+      color: Colors.white, // ✅ BACKGROUND BLANC
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
+          color: Colors.white, // ✅ BACKGROUND BLANC
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _getAlertColor().withOpacity(0.3),
             width: 1.5,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              _getAlertColor().withOpacity(0.05),
-              _getAlertColor().withOpacity(0.1),
-            ],
           ),
         ),
         child: Column(
@@ -491,7 +487,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getAlertColor().withOpacity(0.2),
+                    color: _getAlertColor().withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -545,7 +541,7 @@ class BudgetAlertsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.grey[50], // ✅ BACKGROUND GRIS TRÈS CLAIR
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -558,7 +554,6 @@ class BudgetAlertsWidget extends StatelessWidget {
                         style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                       ),
                       FormattedAmount(
-                        // ✅ UTILISATION DE FormattedAmount
                         amount: budget.budgetAmount,
                         style: const TextStyle(
                           fontSize: 14,
@@ -577,7 +572,6 @@ class BudgetAlertsWidget extends StatelessWidget {
                         style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                       ),
                       FormattedAmount(
-                        // ✅ UTILISATION DE FormattedAmount
                         amount: budget.spentAmount,
                         style: TextStyle(
                           fontSize: 14,
@@ -735,7 +729,7 @@ class BudgetAlertsWidget extends StatelessWidget {
   }
 }
 
-// widgets/budget/budget_summary_card.dart - VERSION AVEC FormattedAmount
+// widgets/budget/budget_summary_card.dart - VERSION AVEC BACKGROUND BLANC
 class BudgetSummaryCard extends StatelessWidget {
   final int totalBudgets;
   final int activeBudgets;
@@ -760,16 +754,13 @@ class BudgetSummaryCard extends StatelessWidget {
 
     return Card(
       elevation: 4,
+      color: Colors.white, // ✅ BACKGROUND BLANC
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
+          color: Colors.white, // ✅ BACKGROUND BLANC
           borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.green[50]!, Colors.green[100]!],
-          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -867,7 +858,7 @@ class BudgetSummaryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.grey[50], // ✅ BACKGROUND GRIS TRÈS CLAIR
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -883,7 +874,6 @@ class BudgetSummaryCard extends StatelessWidget {
                           ),
                         ),
                         FormattedAmount(
-                          // ✅ UTILISATION DE FormattedAmount
                           amount: totalBudgeted!,
                           style: const TextStyle(
                             fontSize: 16,
@@ -905,7 +895,6 @@ class BudgetSummaryCard extends StatelessWidget {
                           ),
                         ),
                         FormattedAmount(
-                          // ✅ UTILISATION DE FormattedAmount
                           amount: totalSpent!,
                           style: TextStyle(
                             fontSize: 16,
@@ -946,7 +935,7 @@ class BudgetSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: Colors.grey[50], // ✅ BACKGROUND GRIS TRÈS CLAIR
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.2)),
       ),

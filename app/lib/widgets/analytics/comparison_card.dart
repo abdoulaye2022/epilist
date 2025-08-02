@@ -1,4 +1,4 @@
-// widgets/analytics/comparison_card.dart - VERSION AVEC FormattedAmount
+// widgets/analytics/comparison_card.dart - VERSION CORRIGÉE AVEC FormattedAmount
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -56,6 +56,8 @@ class ComparisonCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                // ✅ AJOUT: Indicateur de devise dans le header
+                const CurrencyIndicator(),
               ],
             ),
             const SizedBox(height: 20),
@@ -106,7 +108,7 @@ class ComparisonCard extends StatelessWidget {
                                   color: Colors.grey[600],
                                 ),
                               ),
-                              // ✅ REMPLACEMENT: Utilisation de FormattedAmount
+                              // ✅ UTILISATION CORRECTE: Votre FormattedAmount sans paramètres inconnus
                               Flexible(
                                 child: FormattedAmount(
                                   amount: absoluteChange.abs(),
@@ -127,14 +129,72 @@ class ComparisonCard extends StatelessWidget {
               ),
             ),
 
-            // Indicateur de devise en bas
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: const [CurrencyIndicator()],
-            ),
+            // ✅ AMÉLIORATION: Section supplémentaire si on a plus de données de comparaison
+            if (data.containsKey('current_period') &&
+                data.containsKey('previous_period')) ...[
+              const SizedBox(height: 16),
+              Divider(color: Colors.grey[300]),
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPeriodComparison(
+                      l10n.currentPeriod ?? 'Période actuelle',
+                      data['current_period']?.toDouble() ?? 0.0,
+                      Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildPeriodComparison(
+                      l10n.previousPeriod ?? 'Période précédente',
+                      data['previous_period']?.toDouble() ?? 0.0,
+                      Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Comparaison visuelle des périodes
+  Widget _buildPeriodComparison(String title, double amount, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          FormattedAmount(
+            amount: amount,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            showCode: false,
+          ),
+        ],
       ),
     );
   }

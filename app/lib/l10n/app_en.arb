@@ -1405,5 +1405,7 @@
   "overBudget": "Over Budget",
   "highestPurchase": "Highest Purchase",
   "topCategory": "Top Category",
-  "mostFrequentCategory": "Most Frequent Category"
+  "mostFrequentCategory": "Most Frequent Category",
+  "weeklyActivity": "Weekly Activity",
+"last7Days": "Last 7 Days"
 }

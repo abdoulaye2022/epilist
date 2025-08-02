@@ -3564,4 +3564,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mostFrequentCategory => 'Catégorie la plus fréquente';
+
+  @override
+  String get weeklyActivity => 'Activité hebdomadaire';
+
+  @override
+  String get last7Days => '7 derniers jours';
 }

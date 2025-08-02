@@ -1411,5 +1411,7 @@
   "overBudget": "Dépassement budget",
   "highestPurchase": "Plus gros achat",
   "topCategory": "Catégorie principale",
-  "mostFrequentCategory": "Catégorie la plus fréquente"
+  "mostFrequentCategory": "Catégorie la plus fréquente",
+  "weeklyActivity": "Activité hebdomadaire",
+"last7Days": "7 derniers jours"
 }
