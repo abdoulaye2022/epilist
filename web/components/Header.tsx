@@ -62,29 +62,23 @@ export default function Header() {
             className="flex items-center space-x-3 group cursor-pointer"
           >
             <div className="relative">
-              {/* Effet de glow en arrière-plan */}
-              <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-
-              {/* Container du logo avec arrière-plan */}
-              <div className="relative bg-gradient-to-r from-green-500 to-blue-500 p-2 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                {/* Logo Image - Priorité 1: Image personnalisée */}
-                <div className="relative w-8 h-8">
-                  <Image
-                    src="/app_logo.png" // Ou .png/.jpg selon votre format
-                    alt="EpiList Logo"
-                    fill
-                    className="object-contain"
-                    priority
-                    sizes="32px"
-                  />
-                </div>
-
-                {/* Logo Image - Priorité 2: Fallback avec icône si pas d'image */}
-                {/* Commentez la div ci-dessus et décommentez celle ci-dessous si vous n'avez pas encore d'image */}
-                {/* 
-                <Smartphone className="h-8 w-8 text-white" />
-                */}
+              {/* Logo Image sans background */}
+              <div className="relative w-8 h-8 group-hover:scale-110 transition-transform duration-300">
+                <Image
+                  src="/app_logo.png" // Ou .png/.jpg selon votre format
+                  alt="EpiList Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                  sizes="32px"
+                />
               </div>
+
+              {/* Logo Image - Priorité 2: Fallback avec icône si pas d'image */}
+              {/* Commentez la div ci-dessus et décommentez celle ci-dessous si vous n'avez pas encore d'image */}
+              {/* 
+              <Smartphone className="h-8 w-8 text-green-600 group-hover:scale-110 transition-transform duration-300" />
+              */}
             </div>
 
             {/* Texte du logo */}

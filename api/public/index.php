@@ -17,7 +17,8 @@ use App\Controllers\{
     AnalyticsController,
     ListReceiptsController,
     DeviceController,
-    BudgetController
+    BudgetController,
+    CampaignController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -144,6 +145,10 @@ $app->get('/test-json', function ($request, $response) {
 
 $app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
 
+// ✅ ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
+$app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
+$app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']);
+
 // ✅ GROUPE DE ROUTES PROTÉGÉES (avec authentification)
 $app->group('', function ($group) {
     // ✅ ROUTES D'AUTHENTIFICATION PROTÉGÉES
@@ -261,6 +266,15 @@ $app->group('', function ($group) {
 
     // ✅ ROUTE DE DEBUG
     $group->get('/devices/debug', [DeviceController::class, 'debugDevices']);
+
+    // ✅ ROUTES POUR LES CAMPAGNES MARKETING
+    $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign']);
+    $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats']);
+    $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail']);
+
+    $group->get('/user/email-preferences', [AuthController::class, 'getEmailPreferences']);
+    $group->put('/user/email-preferences', [AuthController::class, 'updateEmailPreferences']);
+    $group->post('/user/resubscribe-marketing', [AuthController::class, 'resubscribeToMarketing']);
 
 })->add($jwtMiddleware);
 

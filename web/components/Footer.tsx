@@ -26,27 +26,21 @@ export default function Footer() {
             className="inline-flex items-center justify-center space-x-3 mb-6 group"
           >
             <div className="relative">
-              {/* Effet de glow en arrière-plan */}
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-300"></div>
-
-              {/* Container du logo avec arrière-plan */}
-              <div className="relative bg-gradient-to-r from-green-500 to-blue-500 p-3 rounded-2xl shadow-lg group-hover:scale-105 transition-transform duration-300">
-                {/* Logo Image - Remplace l'icône Smartphone */}
-                <div className="relative w-8 h-8">
-                  <Image
-                    src="/app_logo.png" // Votre logo
-                    alt="EpiList Logo"
-                    fill
-                    className="object-contain"
-                    sizes="32px"
-                  />
-                </div>
-
-                {/* Fallback avec icône si l'image ne charge pas */}
-                {/* Vous pouvez décommenter ceci si besoin de fallback :
-                <Smartphone className="h-8 w-8 text-white" />
-                */}
+              {/* Logo Image sans background */}
+              <div className="relative w-8 h-8 group-hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/app_logo.png" // Votre logo
+                  alt="EpiList Logo"
+                  fill
+                  className="object-contain"
+                  sizes="32px"
+                />
               </div>
+
+              {/* Fallback avec icône si l'image ne charge pas */}
+              {/* Vous pouvez décommenter ceci si besoin de fallback :
+              <Smartphone className="h-8 w-8 text-green-400 group-hover:scale-105 transition-transform duration-300" />
+              */}
             </div>
 
             <div>

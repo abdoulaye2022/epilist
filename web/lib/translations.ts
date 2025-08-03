@@ -23,61 +23,159 @@ export const translations = {
     instantInstall: 'Installation instantanée',
     discoverFeatures: 'Découvrir les fonctionnalités',
     
-    // Features Section
+    // Features Section - Enhanced
     featuresTitle: 'Tout ce dont vous avez',
     featuresTitleHighlight: 'besoin',
     featuresSubtitle: 'Découvrez une suite complète d\'outils pensés pour transformer votre expérience d\'achat et renforcer la collaboration familiale',
     advancedFeatures: 'Fonctionnalités avancées',
     
-    feature1Title: 'Création intuitive',
-    feature1Desc: 'Interface ultra-simple pour créer vos listes en quelques secondes avec suggestions intelligentes',
-    feature2Title: 'Partage instantané',
-    feature2Desc: 'Partagez vos listes avec votre famille et synchronisez en temps réel sur tous les appareils',
-    feature3Title: 'Duplication intelligente',
-    feature3Desc: 'Dupliquez et personnalisez vos listes récurrentes pour économiser du temps précieux',
-    feature4Title: 'Sécurité maximale',
-    feature4Desc: 'Vos données sont protégées avec un cryptage de niveau bancaire et sauvegarde automatique',
-    feature5Title: 'Performance optimale',
-    feature5Desc: 'Application ultra-rapide et légère, fonctionne parfaitement même hors connexion',
-    feature6Title: 'Expérience premium',
-    feature6Desc: 'Interface élégante et intuitive conçue pour simplifier votre quotidien familial',
+    // Enhanced Features (9 features total)
+    feature1Title: 'Gestion intelligente des listes',
+    feature1Desc: 'Créez, modifiez et dupliquez vos listes avec suggestions automatiques et organisation par catégories',
+    
+    feature2Title: 'Partage familial instantané',
+    feature2Desc: 'Partagez vos listes via liens sécurisés avec gestion des permissions et synchronisation temps réel',
+    
+    feature3Title: 'Gestion avancée des articles',
+    feature3Desc: 'Ajoutez des articles avec suggestions intelligentes, quantités et statuts d\'achat personnalisables',
+    
+    feature4Title: 'Budgets et suivi financier',
+    feature4Desc: 'Créez des budgets, suivez vos dépenses avec graphiques détaillés et analyses par période',
+    
+    feature5Title: 'Analytiques et statistiques',
+    feature5Desc: 'Visualisez vos habitudes d\'achat avec graphiques des top produits et analyses temporelles',
+    
+    feature6Title: 'Sécurité et profil utilisateur',
+    feature6Desc: 'Comptes sécurisés avec confirmation email, gestion de profil et récupération de mot de passe',
+    
+    feature7Title: 'Collaboration familiale',
+    feature7Desc: 'Invitez votre famille, gérez les permissions et collaborez en temps réel sur vos achats',
+    
+    feature8Title: 'Accès hors ligne',
+    feature8Desc: 'Consultez et modifiez vos listes même sans connexion, synchronisation automatique au retour',
+    
+    feature9Title: 'Deep linking et navigation',
+    feature9Desc: 'Accès direct aux listes partagées via liens profonds et navigation intuitive',
+    
     moreToDiscover: 'Et bien plus encore à découvrir...',
     
-    // Benefits Section
+    // Feature Categories
+    essentialFeatures: 'Fonctionnalités essentielles',
+    collaborativeTools: 'Outils collaboratifs',
+    advancedTools: 'Outils avancés',
+    analyticsTools: 'Outils d\'analyse',
+    securityTools: 'Outils de sécurité',
+    
+    // Account Management Features
+    accountManagement: 'Gestion de compte',
+    createAccount: 'Créer un compte utilisateur',
+    confirmEmail: 'Confirmer l\'email du compte',
+    changePassword: 'Changer de mot de passe',
+    loginAccount: 'Se connecter',
+    tokenManagement: 'Gestion des tokens de connexion',
+    profileManagement: 'Modifier le profil',
+    deleteAccount: 'Supprimer le compte utilisateur',
+    cancelDeletion: 'Annuler la suppression du compte',
+    
+    // List Management Features
+    listManagement: 'Gestion des listes',
+    createList: 'Créer une liste',
+    editList: 'Modifier une liste',
+    duplicateList: 'Dupliquer une liste',
+    shareList: 'Partager une liste',
+    deleteList: 'Supprimer une liste',
+    deepLinking: 'Liens profonds testés',
+    
+    // Item Management Features
+    itemManagement: 'Gestion des articles',
+    createItem: 'Créer un article',
+    editItem: 'Modifier un article',
+    itemSuggestions: 'Suggestions d\'articles',
+    deleteSuggestionData: 'Supprimer les données de suggestion',
+    
+    // Budget Features
+    budgetManagement: 'Gestion des budgets',
+    createBudget: 'Créer un budget',
+    editBudget: 'Modifier un budget',
+    disableBudget: 'Désactiver un budget',
+    deleteBudget: 'Supprimer un budget',
+    budgetFilter: 'Filtrer les budgets',
+    
+    // Analytics Features
+    analyticsFeatures: 'Analyses et statistiques',
+    topProductsChart: 'Graphique des top produits',
+    expensesChart: 'Graphique des dépenses',
+    monthlyFilter: 'Filtrer par mois',
+    weeklyFilter: 'Filtrer par semaine',
+    yearlyFilter: 'Filtrer par année',
+    
+    // Security Features
+    securityFeatures: 'Fonctionnalités de sécurité',
+    emailVerification: 'Vérification par email',
+    secureAuthentication: 'Authentification sécurisée',
+    passwordRecovery: 'Récupération de mot de passe',
+    accountProtection: 'Protection du compte',
+    dataEncryption: 'Chiffrement des données',
+    
+    // Collaboration Features
+    collaborationFeatures: 'Fonctionnalités collaboratives',
+    familyInvites: 'Invitations familiales',
+    permissionManagement: 'Gestion des permissions',
+    realTimeSync: 'Synchronisation temps réel',
+    sharedLists: 'Listes partagées',
+    teamwork: 'Travail d\'équipe',
+    
+    // Advanced Analytics
+    advancedAnalytics: 'Analyses avancées',
+    spendingPatterns: 'Habitudes de dépenses',
+    topProducts: 'Produits favoris',
+    budgetTracking: 'Suivi budgétaire',
+    monthlyReports: 'Rapports mensuels',
+    yearlyOverview: 'Vue d\'ensemble annuelle',
+    
+    // User Experience
+    userExperience: 'Expérience utilisateur',
+    intuitivInterface: 'Interface intuitive',
+    smartSuggestions: 'Suggestions intelligentes',
+    offlineAccess: 'Accès hors ligne',
+    quickActions: 'Actions rapides',
+    seamlessNavigation: 'Navigation fluide',
+    
+    // Enhanced Benefits Section
     benefitsTitle: 'Transformez votre',
     benefitsTitleHighlight: 'quotidien',
     benefitsSubtitle: 'Rejoignez plus de 50 000 familles qui ont déjà révolutionné leur façon de faire les courses avec EpiList',
     concreteAdvantages: 'Avantages concrets',
     
     benefit1Title: 'Économisez 70% de votre temps',
-    benefit1Desc: 'Fini les allers-retours au magasin et les oublis. Organisez vos courses en quelques minutes.',
+    benefit1Desc: 'Fini les allers-retours au magasin et les oublis. Organisez vos courses en quelques minutes avec budgets intégrés.',
     benefit1Stat: '70%',
     benefit1StatLabel: 'de temps économisé',
     
     benefit2Title: 'Coordination familiale parfaite',
-    benefit2Desc: 'Synchronisez vos achats avec tous les membres de votre famille en temps réel.',
+    benefit2Desc: 'Synchronisez vos achats avec tous les membres de votre famille en temps réel avec permissions personnalisées.',
     benefit2Stat: '100%',
     benefit2StatLabel: 'de synchronisation',
     
-    benefit3Title: 'Réduisez vos dépenses',
-    benefit3Desc: 'Contrôlez votre budget et évitez les achats impulsifs grâce à la planification.',
+    benefit3Title: 'Contrôle budgétaire intelligent',
+    benefit3Desc: 'Suivez vos dépenses avec graphiques détaillés et alertes budgétaires pour éviter les dépassements.',
     benefit3Stat: '30%',
     benefit3StatLabel: 'd\'économies moyennes',
     
-    benefit4Title: 'Plus de temps en famille',
-    benefit4Desc: 'Libérez-vous des tâches répétitives pour profiter de moments précieux ensemble.',
+    benefit4Title: 'Analyses approfondies',
+    benefit4Desc: 'Découvrez vos habitudes d\'achat avec statistiques avancées et recommandations personnalisées.',
     benefit4Stat: '∞',
-    benefit4StatLabel: 'de bonheur partagé',
+    benefit4StatLabel: 'insights précieux',
     
-    benefit5Title: 'Objectifs atteints',
-    benefit5Desc: 'Ne manquez plus jamais un article important grâce aux rappels intelligents.',
-    benefit5Stat: '95%',
-    benefit5StatLabel: 'de réussite',
+    benefit5Title: 'Sécurité maximale',
+    benefit5Desc: 'Comptes protégés avec authentification email et récupération sécurisée de mot de passe.',
+    benefit5Stat: '100%',
+    benefit5StatLabel: 'sécurisé',
     
-    benefit6Title: 'Efficacité maximale',
-    benefit6Desc: 'Optimisez vos trajets en magasin avec l\'organisation automatique par rayons.',
-    benefit6Stat: '2x',
-    benefit6StatLabel: 'plus rapide',
+    benefit6Title: 'Expérience offline',
+    benefit6Desc: 'Accédez à vos listes même sans connexion internet avec synchronisation automatique.',
+    benefit6Stat: '24/7',
+    benefit6StatLabel: 'disponible',
     
     // Testimonials
     testimonialsTitle: 'Ils ont adopté',
@@ -90,26 +188,26 @@ export const translations = {
     positiveReviews: 'Plus de 2000 avis positifs',
     downloads: '50k+ téléchargements',
     
-    // Testimonial content
+    // Enhanced testimonials
     testimonial1Name: 'Marie Dubois',
     testimonial1Role: 'Mère de famille, Moncton',
-    testimonial1Content: 'EpiList a complètement transformé notre organisation familiale ! Plus de stress, plus d\'oublis. Mes enfants peuvent même ajouter ce dont ils ont besoin depuis leur téléphone.',
+    testimonial1Content: 'Les budgets intelligents d\'EpiList m\'ont aidée à économiser 200$ par mois ! Les graphiques montrent exactement où va notre argent.',
     
     testimonial2Name: 'Pierre Martin',
     testimonial2Role: 'Père de 3 enfants, Fredericton',
-    testimonial2Content: 'La synchronisation en temps réel est magique. Ma femme ajoute des articles au bureau et je les vois immédiatement. Nous économisons 2h par semaine !',
+    testimonial2Content: 'Le partage familial avec permissions est génial. Ma femme gère les budgets, moi les courses, et les enfants ajoutent leurs demandes.',
     
     testimonial3Name: 'Sophie Laurent',
     testimonial3Role: 'Étudiante, Saint John',
-    testimonial3Content: 'Interface ultra-intuitive et gratuite ! Je partage mes listes avec mes colocataires et on évite les doublons. Plus jamais 3 packs de lait dans le frigo !',
+    testimonial3Content: 'Les suggestions d\'articles et les analyses de dépenses m\'aident à mieux gérer mon budget étudiant. Interface parfaite !',
     
     testimonial4Name: 'Jean-Marc Petit',
     testimonial4Role: 'Retraité, Bathurst',
-    testimonial4Content: 'Même à 65 ans, j\'ai adopté EpiList en 5 minutes ! Mes enfants m\'aident à distance en ajoutant des articles. C\'est formidable pour rester connecté.',
+    testimonial4Content: 'Même hors ligne, je peux consulter mes listes. La synchronisation automatique au retour est magique !',
     
     testimonial5Name: 'Amélie Chen',
     testimonial5Role: 'Professeure, Dieppe',
-    testimonial5Content: 'L\'organisation par catégories et la suggestion automatique me font gagner un temps précieux. EpiList comprend mes habitudes et anticipe mes besoins !',
+    testimonial5Content: 'Les graphiques des top produits et le suivi mensuel m\'ont révélé mes habitudes. J\'ai optimisé mon budget courses !',
     
     // CTA Section
     ctaTitle: 'Prêt à révolutionner vos courses ?',
@@ -119,7 +217,7 @@ export const translations = {
     protectedData: 'données protégées',
     
     // Footer
-    footerDescription: 'L\'application qui révolutionne votre façon de faire les courses. Organisez, partagez et économisez du temps avec votre famille, tout en profitant d\'une expérience utilisateur exceptionnelle.',
+    footerDescription: 'L\'application complète qui révolutionne votre façon de faire les courses. Organisez, partagez, budgétisez et analysez vos habitudes d\'achat avec votre famille.',
     footerNewBrunswick: 'Fièrement développé au Nouveau-Brunswick, Canada',
     footerAddress: '123 Avenue Innovation, Fredericton, NB E3B 1A1',
     footerPhone: '+1 (506) 123-4567',
@@ -127,7 +225,7 @@ export const translations = {
     footerFeatures: 'Fonctionnalités',
     footerSupport2: 'Support',
     footerNewsletter: 'Restez informé des nouveautés',
-    footerNewsletterDesc: 'Recevez les dernières mises à jour et conseils pour optimiser vos courses',
+    footerNewsletterDesc: 'Recevez les dernières mises à jour et conseils pour optimiser vos courses et budgets',
     footerNewsletterPlaceholder: 'Votre adresse email',
     footerNewsletterButton: 'S\'abonner',
     footerCopyright: '© 2024 EpiList. Tous droits réservés. Fait avec ❤️ au Canada.',
@@ -138,7 +236,7 @@ export const translations = {
     synchronization: 'Synchronisation',
     advancedSecurity: 'Sécurité avancée',
     offlineMode: 'Mode hors ligne',
-    smartSuggestions: 'Suggestions intelligentes',
+    smartSuggestionsFooter: 'Suggestions intelligentes',
     helpCenter: 'Centre d\'aide',
     faq: 'FAQ',
     reportBug: 'Signaler un bug',
@@ -187,6 +285,7 @@ export const translations = {
     readyIn30s: 'Prêt en 30 secondes',
     madeInCanada: 'Fait au Canada',
     language: 'fr',
+    availability: 'Disponibilité',
     
     // Legal Pages Common
     backToHome: 'Retour à l\'accueil',
@@ -371,7 +470,6 @@ export const translations = {
     satisfactionText: 'Nous nous engageons à fournir un support exceptionnel à tous nos utilisateurs.',
     satisfactionRate: 'Taux de satisfaction',
     averageResponseTime: 'Temps de réponse moyen',
-    availability: 'Disponibilité',
     
     // Contact Page
     contactTitle: 'Contactez-nous',
@@ -462,61 +560,159 @@ export const translations = {
     instantInstall: 'Instant install',
     discoverFeatures: 'Discover features',
     
-    // Features Section
+    // Features Section - Enhanced
     featuresTitle: 'Everything you',
     featuresTitleHighlight: 'need',
     featuresSubtitle: 'Discover a complete suite of tools designed to transform your shopping experience and strengthen family collaboration',
     advancedFeatures: 'Advanced features',
     
-    feature1Title: 'Intuitive creation',
-    feature1Desc: 'Ultra-simple interface to create your lists in seconds with smart suggestions',
-    feature2Title: 'Instant sharing',
-    feature2Desc: 'Share your lists with your family and sync in real-time across all devices',
-    feature3Title: 'Smart duplication',
-    feature3Desc: 'Duplicate and customize your recurring lists to save precious time',
-    feature4Title: 'Maximum security',
-    feature4Desc: 'Your data is protected with bank-level encryption and automatic backup',
-    feature5Title: 'Optimal performance',
-    feature5Desc: 'Ultra-fast and lightweight app, works perfectly even offline',
-    feature6Title: 'Premium experience',
-    feature6Desc: 'Elegant and intuitive interface designed to simplify your family daily life',
+    // Enhanced Features (9 features total)
+    feature1Title: 'Smart List Management',
+    feature1Desc: 'Create, edit and duplicate your lists with automatic suggestions and category organization',
+    
+    feature2Title: 'Instant Family Sharing',
+    feature2Desc: 'Share your lists via secure links with permission management and real-time synchronization',
+    
+    feature3Title: 'Advanced Item Management',
+    feature3Desc: 'Add items with smart suggestions, customizable quantities and purchase statuses',
+    
+    feature4Title: 'Budgets & Financial Tracking',
+    feature4Desc: 'Create budgets, track expenses with detailed charts and period analysis',
+    
+    feature5Title: 'Analytics & Statistics',
+    feature5Desc: 'Visualize your shopping habits with top product charts and temporal analysis',
+    
+    feature6Title: 'Security & User Profile',
+    feature6Desc: 'Secure accounts with email confirmation, profile management and password recovery',
+    
+    feature7Title: 'Family Collaboration',
+    feature7Desc: 'Invite your family, manage permissions and collaborate in real-time on your purchases',
+    
+    feature8Title: 'Offline Access',
+    feature8Desc: 'View and edit your lists even without connection, automatic sync when back online',
+    
+    feature9Title: 'Deep Linking & Navigation',
+    feature9Desc: 'Direct access to shared lists via deep links and intuitive navigation',
+    
     moreToDiscover: 'And much more to discover...',
     
-    // Benefits Section
+    // Feature Categories
+    essentialFeatures: 'Essential Features',
+    collaborativeTools: 'Collaborative Tools',
+    advancedTools: 'Advanced Tools',
+    analyticsTools: 'Analytics Tools',
+    securityTools: 'Security Tools',
+    
+    // Account Management Features
+    accountManagement: 'Account Management',
+    createAccount: 'Create user account',
+    confirmEmail: 'Confirm account email',
+    changePassword: 'Change password',
+    loginAccount: 'Sign in',
+    tokenManagement: 'Login token management',
+    profileManagement: 'Edit profile',
+    deleteAccount: 'Delete user account',
+    cancelDeletion: 'Cancel account deletion',
+    
+    // List Management Features
+    listManagement: 'List Management',
+    createList: 'Create a list',
+    editList: 'Edit a list',
+    duplicateList: 'Duplicate a list',
+    shareList: 'Share a list',
+    deleteList: 'Delete a list',
+    deepLinking: 'Deep linking tested',
+    
+    // Item Management Features
+    itemManagement: 'Item Management',
+    createItem: 'Create an item',
+    editItem: 'Edit an item',
+    itemSuggestions: 'Item suggestions',
+    deleteSuggestionData: 'Delete suggestion data',
+    
+    // Budget Features
+    budgetManagement: 'Budget Management',
+    createBudget: 'Create a budget',
+    editBudget: 'Edit a budget',
+    disableBudget: 'Disable a budget',
+    deleteBudget: 'Delete a budget',
+    budgetFilter: 'Filter budgets',
+    
+    // Analytics Features
+    analyticsFeatures: 'Analytics & Statistics',
+    topProductsChart: 'Top products chart',
+    expensesChart: 'Expenses chart',
+    monthlyFilter: 'Filter by month',
+    weeklyFilter: 'Filter by week',
+    yearlyFilter: 'Filter by year',
+    
+    // Security Features
+    securityFeatures: 'Security Features',
+    emailVerification: 'Email verification',
+    secureAuthentication: 'Secure authentication',
+    passwordRecovery: 'Password recovery',
+    accountProtection: 'Account protection',
+    dataEncryption: 'Data encryption',
+    
+    // Collaboration Features
+    collaborationFeatures: 'Collaborative Features',
+    familyInvites: 'Family invitations',
+    permissionManagement: 'Permission management',
+    realTimeSync: 'Real-time synchronization',
+    sharedLists: 'Shared lists',
+    teamwork: 'Teamwork',
+    
+    // Advanced Analytics
+    advancedAnalytics: 'Advanced Analytics',
+    spendingPatterns: 'Spending patterns',
+    topProducts: 'Top products',
+    budgetTracking: 'Budget tracking',
+    monthlyReports: 'Monthly reports',
+    yearlyOverview: 'Yearly overview',
+    
+    // User Experience
+    userExperience: 'User Experience',
+    intuitivInterface: 'Intuitive interface',
+    smartSuggestions: 'Smart suggestions',
+    offlineAccess: 'Offline access',
+    quickActions: 'Quick actions',
+    seamlessNavigation: 'Seamless navigation',
+    
+    // Enhanced Benefits Section
     benefitsTitle: 'Transform your',
     benefitsTitleHighlight: 'daily life',
     benefitsSubtitle: 'Join over 50,000 families who have already revolutionized their shopping with EpiList',
     concreteAdvantages: 'Concrete advantages',
     
     benefit1Title: 'Save 70% of your time',
-    benefit1Desc: 'No more back-and-forth trips to the store and forgotten items. Organize your shopping in minutes.',
+    benefit1Desc: 'No more back-and-forth trips to the store and forgotten items. Organize your shopping in minutes with integrated budgets.',
     benefit1Stat: '70%',
     benefit1StatLabel: 'time saved',
     
     benefit2Title: 'Perfect family coordination',
-    benefit2Desc: 'Synchronize your purchases with all family members in real-time.',
+    benefit2Desc: 'Synchronize your purchases with all family members in real-time with personalized permissions.',
     benefit2Stat: '100%',
     benefit2StatLabel: 'synchronization',
     
-    benefit3Title: 'Reduce your expenses',
-    benefit3Desc: 'Control your budget and avoid impulse purchases through planning.',
+    benefit3Title: 'Smart budget control',
+    benefit3Desc: 'Track your expenses with detailed charts and budget alerts to avoid overspending.',
     benefit3Stat: '30%',
     benefit3StatLabel: 'average savings',
     
-    benefit4Title: 'More family time',
-    benefit4Desc: 'Free yourself from repetitive tasks to enjoy precious moments together.',
+    benefit4Title: 'Deep insights',
+    benefit4Desc: 'Discover your shopping habits with advanced statistics and personalized recommendations.',
     benefit4Stat: '∞',
-    benefit4StatLabel: 'shared happiness',
+    benefit4StatLabel: 'valuable insights',
     
-    benefit5Title: 'Goals achieved',
-    benefit5Desc: 'Never miss an important item again thanks to smart reminders.',
-    benefit5Stat: '95%',
-    benefit5StatLabel: 'success rate',
+    benefit5Title: 'Maximum security',
+    benefit5Desc: 'Protected accounts with email authentication and secure password recovery.',
+    benefit5Stat: '100%',
+    benefit5StatLabel: 'secure',
     
-    benefit6Title: 'Maximum efficiency',
-    benefit6Desc: 'Optimize your store routes with automatic organization by aisles.',
-    benefit6Stat: '2x',
-    benefit6StatLabel: 'faster',
+    benefit6Title: 'Offline experience',
+    benefit6Desc: 'Access your lists even without internet connection with automatic synchronization.',
+    benefit6Stat: '24/7',
+    benefit6StatLabel: 'available',
     
     // Testimonials
     testimonialsTitle: 'They adopted',
@@ -529,26 +725,26 @@ export const translations = {
     positiveReviews: 'Over 2000 positive reviews',
     downloads: '50k+ downloads',
     
-    // Testimonial content
+    // Enhanced testimonials
     testimonial1Name: 'Marie Dubois',
     testimonial1Role: 'Mother of family, Moncton',
-    testimonial1Content: 'EpiList has completely transformed our family organization! No more stress, no more forgotten items. My children can even add what they need from their phone.',
+    testimonial1Content: 'EpiList\'s smart budgets helped me save $200 per month! The charts show exactly where our money goes.',
     
     testimonial2Name: 'Pierre Martin',
     testimonial2Role: 'Father of 3 children, Fredericton',
-    testimonial2Content: 'Real-time synchronization is magical. My wife adds items at the office and I see them immediately. We save 2 hours per week!',
+    testimonial2Content: 'Family sharing with permissions is brilliant. My wife manages budgets, I handle shopping, and kids add their requests.',
     
     testimonial3Name: 'Sophie Laurent',
     testimonial3Role: 'Student, Saint John',
-    testimonial3Content: 'Ultra-intuitive interface and free! I share my lists with my roommates and we avoid duplicates. Never again 3 milk packs in the fridge!',
+    testimonial3Content: 'Item suggestions and expense analysis help me better manage my student budget. Perfect interface!',
     
     testimonial4Name: 'Jean-Marc Petit',
     testimonial4Role: 'Retiree, Bathurst',
-    testimonial4Content: 'Even at 65, I adopted EpiList in 5 minutes! My children help me remotely by adding items. It\'s wonderful to stay connected.',
+    testimonial4Content: 'Even offline, I can check my lists. The automatic sync when back online is magical!',
     
     testimonial5Name: 'Amélie Chen',
     testimonial5Role: 'Teacher, Dieppe',
-    testimonial5Content: 'Category organization and automatic suggestions save me precious time. EpiList understands my habits and anticipates my needs!',
+    testimonial5Content: 'Top product charts and monthly tracking revealed my habits. I optimized my grocery budget!',
     
     // CTA Section
     ctaTitle: 'Ready to revolutionize your shopping?',
@@ -558,7 +754,7 @@ export const translations = {
     protectedData: 'protected data',
     
     // Footer
-    footerDescription: 'The app that revolutionizes your way of shopping. Organize, share and save time with your family, while enjoying an exceptional user experience.',
+    footerDescription: 'The complete app that revolutionizes your way of shopping. Organize, share, budget and analyze your shopping habits with your family.',
     footerNewBrunswick: 'Proudly developed in New Brunswick, Canada',
     footerAddress: '123 Innovation Avenue, Fredericton, NB E3B 1A1',
     footerPhone: '+1 (506) 123-4567',
@@ -566,7 +762,7 @@ export const translations = {
     footerFeatures: 'Features',
     footerSupport2: 'Support',
     footerNewsletter: 'Stay informed about news',
-    footerNewsletterDesc: 'Receive the latest updates and tips to optimize your shopping',
+    footerNewsletterDesc: 'Receive the latest updates and tips to optimize your shopping and budgets',
     footerNewsletterPlaceholder: 'Your email address',
     footerNewsletterButton: 'Subscribe',
     footerCopyright: '© 2024 EpiList. All rights reserved. Made with ❤️ in Canada.',
@@ -577,7 +773,7 @@ export const translations = {
     synchronization: 'Synchronization',
     advancedSecurity: 'Advanced security',
     offlineMode: 'Offline mode',
-    smartSuggestions: 'Smart suggestions',
+    smartSuggestionsFooter: 'Smart suggestions',
     helpCenter: 'Help center',
     faq: 'FAQ',
     reportBug: 'Report a bug',
@@ -626,6 +822,7 @@ export const translations = {
     readyIn30s: 'Ready in 30 seconds',
     madeInCanada: 'Made in Canada',
     language: 'en',
+    availability: 'Availability',
     
     // Legal Pages Common
     backToHome: 'Back to Home',
@@ -810,7 +1007,6 @@ export const translations = {
     satisfactionText: 'We are committed to providing exceptional support to all our users.',
     satisfactionRate: 'Satisfaction rate',
     averageResponseTime: 'Average response time',
-    availability: 'Availability',
     
     // Contact Page
     contactTitle: 'Contact Us',

@@ -1410,4 +1410,187 @@ class AuthController
         $response->getBody()->write(json_encode($debug, JSON_PRETTY_PRINT));
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les préférences email de l'utilisateur
+     */
+    public function getEmailPreferences(Request $request, Response $response): Response
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            $preferences = [
+                'email_marketing_consent' => $user->email_marketing_consent,
+                'email_marketing_unsubscribed_at' => $user->email_marketing_unsubscribed_at?->toISOString(),
+                'can_receive_marketing' => $user->canReceiveMarketingEmails(),
+                'unsubscribe_url' => $user->getUnsubscribeUrl()
+            ];
+
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'data' => $preferences,
+                    'message' => 'Préférences email récupérées avec succès'
+                ]))
+            );
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la récupération des préférences: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Mettre à jour les préférences email
+     */
+    public function updateEmailPreferences(Request $request, Response $response): Response
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        $data = $request->getParsedBody();
+
+        // Validation
+        $validator = new Validator($data);
+        $validator->rule('required', 'email_marketing_consent')
+            ->message('Le consentement marketing est requis');
+        $validator->rule('boolean', 'email_marketing_consent')
+            ->message('Le consentement doit être true ou false');
+
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]));
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus(400);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            $newConsent = (bool)$data['email_marketing_consent'];
+            
+            if ($newConsent) {
+                // Réabonnement
+                $success = $user->resubscribeToMarketing();
+                $message = 'Vous êtes maintenant réabonné aux emails marketing';
+            } else {
+                // Désabonnement
+                $success = $user->unsubscribeFromMarketing();
+                $message = 'Vous êtes maintenant désabonné des emails marketing';
+            }
+
+            if ($success) {
+                return new JsonResponse(
+                    200,
+                    new Headers(['Content-Type' => 'application/json']),
+                    (new StreamFactory())->createStream(json_encode([
+                        'success' => true,
+                        'message' => $message,
+                        'data' => [
+                            'email_marketing_consent' => $user->email_marketing_consent,
+                            'updated_at' => Carbon::now()->toISOString()
+                        ]
+                    ]))
+                );
+            } else {
+                return $this->createErrorResponse(
+                    'Erreur lors de la mise à jour des préférences', 
+                    500
+                );
+            }
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors de la mise à jour: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Réabonnement rapide aux emails marketing
+     */
+    public function resubscribeToMarketing(Request $request, Response $response): Response
+    {
+        $authId = $request->getAttribute('auth_id');
+        
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
+
+        try {
+            $user = User::find($authId);
+            
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
+            }
+
+            if ($user->email_marketing_consent) {
+                return new JsonResponse(
+                    200,
+                    new Headers(['Content-Type' => 'application/json']),
+                    (new StreamFactory())->createStream(json_encode([
+                        'success' => true,
+                        'message' => 'Vous êtes déjà abonné aux emails marketing',
+                        'data' => [
+                            'already_subscribed' => true
+                        ]
+                    ]))
+                );
+            }
+
+            $success = $user->resubscribeToMarketing();
+
+            if ($success) {
+                return new JsonResponse(
+                    200,
+                    new Headers(['Content-Type' => 'application/json']),
+                    (new StreamFactory())->createStream(json_encode([
+                        'success' => true,
+                        'message' => 'Réabonnement effectué avec succès ! Vous recevrez de nouveau nos emails marketing.',
+                        'data' => [
+                            'email_marketing_consent' => true,
+                            'resubscribed_at' => Carbon::now()->toISOString()
+                        ]
+                    ]))
+                );
+            } else {
+                return $this->createErrorResponse(
+                    'Erreur lors du réabonnement', 
+                    500
+                );
+            }
+
+        } catch (\Exception $e) {
+            return $this->createErrorResponse(
+                'Erreur lors du réabonnement: ' . $e->getMessage(), 
+                500
+            );
+        }
+    }
 }

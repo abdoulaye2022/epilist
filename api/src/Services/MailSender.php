@@ -302,7 +302,7 @@ class MailSender
                                     <td class='header' style='background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 40px 30px 30px; text-align: center; border-bottom: 1px solid #e5e7eb;'>
                                         <!-- Logo EpiList depuis votre serveur -->
                                         <div style='margin-bottom: 16px;'>
-                                            <img src='https://m2acode.com/api.epilist/public/app_logo.png' 
+                                            <img src='https://m2atodev.com/api.epilist/public/app_logo.png' 
                                                  alt='EpiList Logo' 
                                                  style='width: 80px; height: 80px; border-radius: 20px; border: none; display: block; margin: 0 auto;'
                                                  onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
@@ -322,96 +322,114 @@ class MailSender
     }
 
     /**
-     * Template de pied de page pour Epilist
+     * ✅ MISE À JOUR du footerContent pour inclure le lien de désabonnement
      */
-    public static function footerContent(): string
+    public static function footerContent(string $unsubscribeUrl = null): string
     {
         $currentYear = date('Y');
         
+        // Lien de désabonnement conditionnel
+        $unsubscribeSection = '';
+        if ($unsubscribeUrl) {
+            $unsubscribeSection = "
+                <!-- Section de désabonnement -->
+                <div style='margin-top: 20px; padding: 15px; background: rgba(107, 114, 128, 0.05); border-radius: 8px; border-top: 1px solid #e5e7eb;'>
+                    <p style='margin: 0; font-size: 11px; color: #6b7280; text-align: center; line-height: 1.4;'>
+                        Vous recevez cet email car vous êtes inscrit à EpiList.<br>
+                        <a href='{$unsubscribeUrl}' style='color: #6b7280; text-decoration: underline;'>Se désabonner des emails marketing</a> | 
+                        <a href='https://epilist.app' style='color: #6b7280; text-decoration: underline;'>Préférences email</a>
+                    </p>
+                </div>
+            ";
+        }
+        
         return "
-                                <tr>
-                                    <td class='footer' style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-align: center; padding: 40px 30px;'>
-                                        <!-- Logo footer -->
-                                        <div style='margin-bottom: 20px;'>
-                                            <img src='https://m2acode.com/api.epilist/public/app_logo.png' 
-                                                 alt='EpiList Logo' 
-                                                 style='width: 60px; height: 60px; border-radius: 16px; border: none; display: block; margin: 0 auto;'
-                                                 onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
-                                            <!-- Fallback si l'image ne charge pas -->
-                                            <div style='display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto; position: relative;'>
-                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
+                                    <tr>
+                                        <td class='footer' style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-align: center; padding: 40px 30px;'>
+                                            <!-- Logo footer -->
+                                            <div style='margin-bottom: 20px;'>
+                                                <img src='https://m2atodev.com/api.epilist/public/app_logo.png' 
+                                                    alt='EpiList Logo' 
+                                                    style='width: 60px; height: 60px; border-radius: 16px; border: none; display: block; margin: 0 auto;'
+                                                    onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
+                                                <!-- Fallback si l'image ne charge pas -->
+                                                <div style='display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto; position: relative;'>
+                                                    <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <h3 style='margin: 0 0 8px; font-size: 18px; font-weight: 600; color: #ffffff;'>EpiList</h3>
-                                        <p style='margin: 0 0 25px; font-size: 15px; color: #d1d5db; font-weight: 500;'>
-                                            Simplifiez vos courses. Maîtrisez votre budget.
-                                        </p>
-                                        
-                                        <!-- Fonctionnalités clés -->
-                                        <div style='margin: 25px 0 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;'>
-                                            <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                <span style='margin-right: 8px;'>✅</span>
-                                                <span>Créez vos listes avant d'aller faire vos courses</span>
-                                            </div>
-                                            <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                <span style='margin-right: 8px;'>🛍️</span>
-                                                <span>Cochez vos achats en temps réel</span>
-                                            </div>
-                                            <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                <span style='margin-right: 8px;'>💰</span>
-                                                <span>Suivez vos dépenses d'épicerie en CAD\$</span>
-                                            </div>
-                                            <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
-                                                <span style='margin-right: 8px;'>👨‍👩‍👧‍👦</span>
-                                                <span>Partagez vos listes avec votre famille</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Bouton vers le site web -->
-                                        <div style='margin: 25px 0; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);'>
-                                            <p style='margin: 0 0 12px; font-size: 15px; color: #10b981; font-weight: 600; text-align: center;'>
-                                                🌐 Découvrez toutes nos fonctionnalités
+                                            
+                                            <h3 style='margin: 0 0 8px; font-size: 18px; font-weight: 600; color: #ffffff;'>EpiList</h3>
+                                            <p style='margin: 0 0 25px; font-size: 15px; color: #d1d5db; font-weight: 500;'>
+                                                Simplifiez vos courses. Maîtrisez votre budget.
                                             </p>
-                                            <a href='https://epilist.app' 
-                                               style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;'>
-                                                Visitez epilist.app
-                                            </a>
-                                        </div>
-                                        
-                                        <!-- Informations de contact -->
-                                        <p style='margin: 20px 0; font-size: 12px; color: #6b7280; line-height: 1.5; text-align: center;'>
-                                            © {$currentYear} EpiList - Application de gestion de courses<br>
-                                            Nouveau-Brunswick, Canada
-                                        </p>
-                                        
-                                        <!-- Une question ou besoin d'aide -->
-                                        <div style='margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.15);'>
-                                            <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600; text-align: center;'>
-                                                Une question ? Besoin d'aide ?
+                                            
+                                            <!-- Fonctionnalités clés -->
+                                            <div style='margin: 25px 0 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;'>
+                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
+                                                    <span style='margin-right: 8px;'>✅</span>
+                                                    <span>Créez vos listes avant d'aller faire vos courses</span>
+                                                </div>
+                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
+                                                    <span style='margin-right: 8px;'>🛍️</span>
+                                                    <span>Cochez vos achats en temps réel</span>
+                                                </div>
+                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
+                                                    <span style='margin-right: 8px;'>💰</span>
+                                                    <span>Suivez vos dépenses dans votre devise préférée</span>
+                                                </div>
+                                                <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
+                                                    <span style='margin-right: 8px;'>👨‍👩‍👧‍👦</span>
+                                                    <span>Partagez vos listes avec votre famille</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Bouton vers le site web -->
+                                            <div style='margin: 25px 0; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);'>
+                                                <p style='margin: 0 0 12px; font-size: 15px; color: #10b981; font-weight: 600; text-align: center;'>
+                                                    🌐 Découvrez toutes nos fonctionnalités
+                                                </p>
+                                                <a href='https://epilist.app' 
+                                                style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;'>
+                                                    Visitez epilist.app
+                                                </a>
+                                            </div>
+                                            
+                                            <!-- Informations de contact -->
+                                            <p style='margin: 20px 0; font-size: 12px; color: #6b7280; line-height: 1.5; text-align: center;'>
+                                                © {$currentYear} EpiList - Application de gestion de courses<br>
+                                                Nouveau-Brunswick, Canada
                                             </p>
-                                            <p style='margin: 0; font-size: 13px; color: #059669; text-align: center;'>
-                                                Rendez-vous sur notre site web pour nous contacter
-                                            </p>
-                                        </div>
-                                        
-                                        <!-- Message local -->
-                                        <div style='margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px;'>
-                                            <p style='margin: 0; font-size: 12px; color: #10b981; font-weight: 500; text-align: center;'>
-                                                🍁 Développée avec ❤️ par M2atech Solutions Inc.<br>
-                                                <span style='font-size: 11px; color: #6b7280;'>Fièrement canadienne depuis le Nouveau-Brunswick</span>
-                                            </p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </body>
-            </html>
+                                            
+                                            <!-- Une question ou besoin d'aide -->
+                                            <div style='margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.15);'>
+                                                <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600; text-align: center;'>
+                                                    Une question ? Besoin d'aide ?
+                                                </p>
+                                                <p style='margin: 0; font-size: 13px; color: #059669; text-align: center;'>
+                                                    Rendez-vous sur notre site web pour nous contacter
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Message local -->
+                                            <div style='margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px;'>
+                                                <p style='margin: 0; font-size: 12px; color: #10b981; font-weight: 500; text-align: center;'>
+                                                    🍁 Développée avec ❤️ par M2atech Solutions Inc.<br>
+                                                    <span style='font-size: 11px; color: #6b7280;'>Fièrement canadienne depuis le Nouveau-Brunswick</span>
+                                                </p>
+                                            </div>
+                                            
+                                            {$unsubscribeSection}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
         ";
     }
+
 
     /**
      * Template complet pour email de vérification
@@ -951,6 +969,373 @@ class MailSender
         $subject = "🎉 Suppression de compte annulée - EpiList";
         
         $htmlContent = self::accountDeletionCancellationEmail($firstName);
+        
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
+
+   /**
+     * ✅ CORRECTION: Template pour campagne de nouvelle version avec URL de désabonnement
+     */
+    public static function newVersionCampaignEmail(string $prenom, string $unsubscribeUrl = null): string
+    {
+        $header = self::headerContent('EpiList 2.0 - La révolution de vos courses !');
+        $footer = self::footerContent($unsubscribeUrl); // ✅ Passer l'URL de désabonnement
+        
+        $content = "
+                <tr>
+                    <td class='content' style='padding: 40px 30px;'>
+                        <!-- En-tête principal -->
+                        <div style='text-align: center; margin-bottom: 30px;'>
+                            <h1 style='margin: 0 0 15px; font-size: 32px; font-weight: bold; color: #047857; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>
+                                🚀 EpiList 2.0 est arrivé !
+                            </h1>
+                            <p style='margin: 0; font-size: 18px; color: #059669; font-weight: 600;'>
+                                La révolution de vos courses commence maintenant
+                            </p>
+                        </div>
+                        
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Bonjour <strong>{$prenom}</strong>,
+                        </p>
+                        
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Nous sommes <strong>extrêmement fiers</strong> de vous présenter EpiList 2.0 ! Cette mise à jour majeure transforme complètement votre expérience de gestion des courses avec des fonctionnalités révolutionnaires.
+                        </p>
+
+                        <!-- Badge NOUVEAU -->
+                        <div style='background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;'>
+                            🔥 Nouveau
+                        </div>
+
+                        <!-- Nouvelles fonctionnalités avec icônes -->
+                        <h2 style='margin: 30px 0 20px; font-size: 24px; font-weight: 600; color: #047857; text-align: center;'>
+                            ✨ Découvrez les nouvelles fonctionnalités
+                        </h2>
+
+                        <div style='margin: 30px 0;'>
+                            <!-- Gestion des dépenses -->
+                            <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💰</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #047857; font-weight: 600;'>Gestion complète des dépenses</h3>
+                                </div>
+                                <p style='margin: 0; color: #059669; font-size: 14px; line-height: 1.5;'>
+                                    Suivez précisément vos dépenses, analysez vos habitudes et optimisez votre budget courses avec des graphiques détaillés et des tendances intelligentes.
+                                </p>
+                            </div>
+
+                            <!-- Factures -->
+                            <div style='background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🧾</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #1e40af; font-weight: 600;'>Gestion des factures</h3>
+                                </div>
+                                <p style='margin: 0; color: #2563eb; font-size: 14px; line-height: 1.5;'>
+                                    Enregistrez et organisez vos factures par magasin, consultez vos historiques d'achats et comparez les prix entre différents commerçants.
+                                </p>
+                            </div>
+
+                            <!-- Budgets -->
+                            <div style='background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎯</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #92400e; font-weight: 600;'>Budgets intelligents</h3>
+                                </div>
+                                <p style='margin: 0; color: #d97706; font-size: 14px; line-height: 1.5;'>
+                                    Définissez des budgets mensuels, hebdomadaires ou par catégorie. Recevez des alertes intelligentes pour rester dans vos objectifs financiers.
+                                </p>
+                            </div>
+
+                            <!-- Analytics -->
+                            <div style='background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📊</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Statistiques avancées</h3>
+                                </div>
+                                <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
+                                    Tableau de bord complet avec analyses détaillées : évolution des dépenses, produits les plus achetés, comparaisons de périodes.
+                                </p>
+                            </div>
+
+                            <!-- Notifications -->
+                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🔔</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Alertes intelligentes</h3>
+                                </div>
+                                <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
+                                    Notifications push personnalisées : alertes de budget, rappels de courses, et suggestions basées sur vos habitudes d'achat.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Section Apps mobiles -->
+                        <div style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); border-radius: 16px; padding: 30px; margin: 40px 0; text-align: center;'>
+                            <h2 style='margin: 0 0 15px; font-size: 24px; font-weight: bold; color: #ffffff;'>
+                                📱 Maintenant disponible sur mobile !
+                            </h2>
+                            <p style='margin: 0 0 25px; font-size: 16px; color: #d1d5db; line-height: 1.6;'>
+                                Téléchargez l'application officielle EpiList sur votre smartphone et profitez de toutes ces fonctionnalités où que vous soyez !
+                            </p>
+                            
+                            <!-- Boutons de téléchargement -->
+                            <div style='display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;'>
+                                <!-- App Store -->
+                                <a href='https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA' 
+                                style='display: inline-block; background: #000000; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 5px;'>
+                                    <div style='display: flex; align-items: center;'>
+                                        <span style='font-size: 20px; margin-right: 8px;'>🍎</span>
+                                        <div style='text-align: left;'>
+                                            <div style='font-size: 10px; opacity: 0.8;'>Télécharger sur</div>
+                                            <div style='font-size: 14px;'>App Store</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                                <!-- Google Play -->
+                                <a href='https://play.google.com/store/apps/details?id=com.m2atech.epilist' 
+                                style='display: inline-block; background: #01875f; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 5px;'>
+                                    <div style='display: flex; align-items: center;'>
+                                        <span style='font-size: 20px; margin-right: 8px;'>🤖</span>
+                                        <div style='text-align: left;'>
+                                            <div style='font-size: 10px; opacity: 0.8;'>Disponible sur</div>
+                                            <div style='font-size: 14px;'>Google Play</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Captures d'écran -->
+                        <div style='margin: 40px 0; text-align: center;'>
+                            <h3 style='margin: 0 0 20px; font-size: 20px; color: #047857; font-weight: 600;'>
+                                📸 Aperçu de la nouvelle interface
+                            </h3>
+                            
+                            <!-- Grille de screenshots -->
+                            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0;'>
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/dashboard.png' 
+                                        alt='Tableau de bord' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>📊</div>
+                                        <div style='font-size: 12px;'>Dashboard</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Tableau de bord</p>
+                                </div>
+                                
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/budget.png' 
+                                        alt='Gestion budgets' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>🎯</div>
+                                        <div style='font-size: 12px;'>Budgets</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Gestion budgets</p>
+                                </div>
+                                
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/analyse.png' 
+                                        alt='Statistiques' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>📈</div>
+                                        <div style='font-size: 12px;'>Analytics</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Statistiques</p>
+                                </div>
+                                
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/facture.png' 
+                                        alt='Factures' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>🧾</div>
+                                        <div style='font-size: 12px;'>Factures</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Factures</p>
+                                </div>
+
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/profil.png' 
+                                        alt='Multi-language' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>🌍</div>
+                                        <div style='font-size: 12px;'>Multi-lang</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Multi-language & Multi-device</p>
+                                </div>
+
+                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
+                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/chart.png' 
+                                        alt='Charts' 
+                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
+                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
+                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'>📈</div>
+                                        <div style='font-size: 12px;'>Charts</div>
+                                    </div>
+                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Graphiques détaillés</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Call to Action principal -->
+                        <div style='background: linear-gradient(135deg, #059669 0%, #047857 100%); border-radius: 16px; padding: 30px; margin: 40px 0; text-align: center; color: white;'>
+                            <h2 style='margin: 0 0 15px; font-size: 24px; font-weight: bold; color: #ffffff;'>
+                                🚀 Mettez à jour dès maintenant !
+                            </h2>
+                            <p style='margin: 0 0 20px; font-size: 16px; color: #d1fae5; line-height: 1.6;'>
+                                Ne manquez pas ces incroyables nouvelles fonctionnalités ! La mise à jour est gratuite et disponible immédiatement.
+                            </p>
+                            
+                            <div style='background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px; margin: 20px 0;'>
+                                <p style='margin: 0; font-size: 14px; color: #d1fae5; font-weight: 500;'>
+                                    ⚡ <strong>Mise à jour automatique</strong> : Si vous avez déjà l'app, la mise à jour se fera automatiquement !<br>
+                                    📲 <strong>Nouvelle installation</strong> : Utilisez les liens ci-dessus pour télécharger
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Bénéfices utilisateur -->
+                        <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; margin: 25px 0;'>
+                            <h3 style='margin: 0 0 15px; font-size: 18px; color: #92400e; font-weight: 600;'>
+                                💡 Pourquoi cette mise à jour va changer votre vie
+                            </h3>
+                            <ul style='margin: 0; padding-left: 20px; color: #92400e; font-size: 14px; line-height: 1.6;'>
+                                <li><strong>Économisez plus :</strong> Suivez précisément vos dépenses et identifiez où vous pouvez réduire vos coûts</li>
+                                <li><strong>Gagnez du temps :</strong> Interface repensée et fonctionnalités automatisées</li>
+                                <li><strong>Restez organisé :</strong> Toutes vos factures et budgets centralisés en un seul endroit</li>
+                                <li><strong>Prenez de meilleures décisions :</strong> Statistiques détaillées pour optimiser vos achats</li>
+                            </ul>
+                        </div>
+
+                        <!-- Section support -->
+                        <div style='background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin: 25px 0; text-align: center;'>
+                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'>❓ Besoin d'aide avec la mise à jour ?</h4>
+                            <p style='margin: 0; font-size: 14px; color: #6b7280;'>
+                                Notre équipe est là pour vous accompagner ! Visitez notre site web ou contactez-nous directement.
+                            </p>
+                        </div>
+
+                        <!-- Message de remerciement -->
+                        <div style='margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb;'>
+                            <p style='margin: 0 0 15px; color: #374151; font-size: 16px; line-height: 1.6;'>
+                                Merci d'être un utilisateur fidèle d'EpiList ! Votre confiance nous pousse à innover constamment pour vous offrir la meilleure expérience possible.
+                            </p>
+                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
+                                Très bonne découverte et excellentes courses ! 🛒✨
+                            </p>
+                            <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                                L'équipe EpiList 💚
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+        ";
+        
+        return $header . $content . $footer;
+    }
+
+    /**
+     * ✅ CORRECTION: sendNewVersionCampaign avec gestion du lien de désabonnement
+     */
+    public static function sendNewVersionCampaign(string $email, string $firstName, string $unsubscribeUrl = null): bool
+    {
+        $subject = "🚀 EpiList 2.0 - Gestion complète de vos courses + Apps mobiles !";
+        
+        // ✅ Passer l'URL de désabonnement au template
+        $htmlContent = self::newVersionCampaignEmail($firstName, $unsubscribeUrl);
+        
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Template pour page de désabonnement
+     */
+    public static function unsubscribeConfirmationEmail(string $prenom): string
+    {
+        $header = self::headerContent('Désabonnement confirmé - EpiList');
+        $footer = self::footerContent(); // Pas de lien de désabonnement dans cet email
+        
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #059669;'>
+                        ✅ Désabonnement confirmé
+                    </h2>
+                    
+                    <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        Bonjour <strong>{$prenom}</strong>,
+                    </p>
+                    
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        Votre demande de désabonnement des emails marketing d'EpiList a été prise en compte. Vous ne recevrez plus nos communications promotionnelles.
+                    </p>
+                    
+                    <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0;'>
+                        <h3 style='margin: 0 0 12px; font-size: 16px; color: #047857;'>📧 Ce que cela signifie :</h3>
+                        <ul style='margin: 0; padding-left: 20px; color: #059669; font-size: 14px; line-height: 1.6;'>
+                            <li>Vous ne recevrez plus d'emails sur les nouvelles fonctionnalités</li>
+                            <li>Aucune communication marketing ou promotionnelle</li>
+                            <li>Vous continuerez à recevoir les emails importants (sécurité, compte)</li>
+                            <li>Votre compte EpiList reste actif et fonctionnel</li>
+                        </ul>
+                    </div>
+                    
+                    <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                        <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'>🔄 Changé d'avis ?</h4>
+                        <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
+                            Vous pouvez vous réabonner à tout moment depuis les paramètres de votre compte EpiList.
+                        </p>
+                    </div>
+                    
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='https://epilist.app' 
+                        style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 28px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 16px;'>
+                            Retour à EpiList
+                        </a>
+                    </div>
+                    
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
+                            Merci d'avoir utilisé EpiList !
+                        </p>
+                        <p style='margin: 0; color: #6b7280; font-size: 14px;'>
+                            L'équipe EpiList 🛒
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+        
+        return $header . $content . $footer;
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer confirmation de désabonnement
+     */
+    public static function sendUnsubscribeConfirmation(string $email, string $firstName): bool
+    {
+        $subject = "✅ Désabonnement confirmé - EpiList";
+        
+        $htmlContent = self::unsubscribeConfirmationEmail($firstName);
         
         return self::sendMail(
             $subject,

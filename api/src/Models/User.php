@@ -37,7 +37,10 @@ class User extends Model
         'deletion_reason',
         'is_deletion_requested',
         'deletion_requested_at',
-        'is_active'
+        'is_active',
+        'email_marketing_consent',
+        'email_marketing_unsubscribed_at',
+        'unsubscribe_token'
     ];
 
     protected $hidden = [
@@ -61,7 +64,9 @@ class User extends Model
         'password_change_code_expires_at' => 'datetime',
         'email_verification_code_expires_at' => 'datetime',
         'account_deletion_code_expires_at' => 'datetime',
-        'deletion_requested_at' => 'datetime'
+        'deletion_requested_at' => 'datetime',
+        'email_marketing_consent' => 'boolean',
+        'email_marketing_unsubscribed_at' => 'datetime'
     ];
 
     protected $attributes = [
@@ -69,7 +74,8 @@ class User extends Model
         'is_active' => true,
         'email_verified' => false,
         'terms_accepted' => false,
-        'is_deletion_requested' => false
+        'is_deletion_requested' => false,
+        'email_marketing_consent' => true
     ];
 
     // ===================== RELATIONS =====================
@@ -718,5 +724,94 @@ class User extends Model
                 'currency' => $currency->getApiFormatAttribute(),
             ]
         ]);
+    }
+
+    /**
+     * Vérifier si l'utilisateur consent à recevoir des emails marketing
+     */
+    public function canReceiveMarketingEmails(): bool
+    {
+        return $this->email_marketing_consent && 
+            $this->email_verified && 
+            $this->is_active && 
+            !$this->isDeletionRequested();
+    }
+
+    /**
+     * Générer un token de désabonnement unique
+     */
+    public function generateUnsubscribeToken(): string
+    {
+        if (!$this->unsubscribe_token) {
+            do {
+                $token = bin2hex(random_bytes(32));
+                $existingUser = self::where('unsubscribe_token', $token)->first();
+            } while ($existingUser);
+            
+            $this->update(['unsubscribe_token' => $token]);
+        }
+        
+        return $this->unsubscribe_token;
+    }
+
+    /**
+     * Désabonner l'utilisateur des emails marketing
+     */
+    public function unsubscribeFromMarketing(?string $reason = null): bool
+    {
+        return $this->update([
+            'email_marketing_consent' => false,
+            'email_marketing_unsubscribed_at' => Carbon::now()
+        ]);
+    }
+
+    /**
+     * Réabonner l'utilisateur aux emails marketing
+     */
+    public function resubscribeToMarketing(): bool
+    {
+        return $this->update([
+            'email_marketing_consent' => true,
+            'email_marketing_unsubscribed_at' => null
+        ]);
+    }
+
+    /**
+     * Obtenir l'URL de désabonnement
+     */
+    public function getUnsubscribeUrl(): string
+    {
+        $token = $this->generateUnsubscribeToken();
+        $baseUrl = $_ENV['APP_URL'] ?? 'https://epilist.app';
+        return "{$baseUrl}/unsubscribe/{$token}";
+    }
+
+    /**
+     * Trouver un utilisateur par son token de désabonnement
+     */
+    public static function findByUnsubscribeToken(string $token): ?User
+    {
+        return self::where('unsubscribe_token', $token)->first();
+    }
+
+    // ===================== SCOPES POUR LES EMAILS =====================
+
+    /**
+     * Scope pour utilisateurs éligibles aux emails marketing
+     */
+    public function scopeMarketingEmailEligible($query)
+    {
+        return $query->where('email_marketing_consent', true)
+                    ->where('email_verified_at', '!=', null)
+                    ->where('is_active', true)
+                    ->whereNull('deletion_requested_at');
+    }
+
+    /**
+     * Scope pour utilisateurs désabonnés
+     */
+    public function scopeUnsubscribedFromMarketing($query)
+    {
+        return $query->where('email_marketing_consent', false);
     }
 }
