@@ -1,5 +1,5 @@
 <?php
-// app/Services/NotificationService.php - VERSION CORRIGÉE AVEC FORMATAGE DEVISE UTILISATEUR
+// app/Services/NotificationService.php - VERSION CORRIGÉE AVEC FIX DE LA CONVERSION FLOAT VERS INT
 
 namespace App\Services;
 
@@ -570,10 +570,14 @@ class NotificationService
         // Calculer le pourcentage
         $spentPercentage = 0;
         if (method_exists($budget, 'getSpentPercentage')) {
-            $spentPercentage = round($budget->getSpentPercentage(), 1);
+            // ✅ CORRECTION: Conversion explicite en float puis formatage
+            $rawPercentage = (float) $budget->getSpentPercentage();
+            $spentPercentage = number_format($rawPercentage, 1, '.', '');
             error_log("  - getSpentPercentage(): {$spentPercentage}%");
         } elseif ($budgetAmount > 0) {
-            $spentPercentage = round(($spentAmount / $budgetAmount) * 100, 1);
+            // ✅ CORRECTION: Éviter round() qui peut retourner un float
+            $rawPercentage = ($spentAmount / $budgetAmount) * 100;
+            $spentPercentage = number_format($rawPercentage, 1, '.', '');
             error_log("  - Calculated percentage: {$spentPercentage}%");
         }
         
@@ -683,18 +687,56 @@ class NotificationService
         };
     }
 
+    /**
+     * ✅ CORRECTION PRINCIPALE: getBadgeCount avec conversion float vers int sécurisée
+     */
     private function getBadgeCount(int $userId): int
     {
         try {
-            $count = \App\Models\Budget::where('user_id', $userId)
-                ->where('is_active', true)
-                ->get()
-                ->filter(fn($b) => $b->shouldShowAlert())
-                ->count();
+            if (!class_exists('App\Models\Budget')) {
+                return 0;
+            }
             
-            // ✅ S'assurer que c'est bien un entier
-            return (int) $count;
+            $budgets = \App\Models\Budget::where('user_id', $userId)
+                ->where('is_active', true)
+                ->get();
+            
+            if ($budgets->isEmpty()) {
+                return 0;
+            }
+            
+            $alertCount = 0;
+            
+            foreach ($budgets as $budget) {
+                // ✅ CORRECTION: Vérifier explicitement chaque budget individuellement
+                if (method_exists($budget, 'shouldShowAlert')) {
+                    try {
+                        $shouldAlert = $budget->shouldShowAlert();
+                        
+                        // ✅ CORRECTION: Conversion sécurisée en évitant les floats
+                        if ($shouldAlert === true || $shouldAlert === 1 || $shouldAlert === '1') {
+                            $alertCount++;
+                        } elseif (is_numeric($shouldAlert)) {
+                            // Si c'est un nombre (potentiellement float), on utilise intval()
+                            $numericValue = intval($shouldAlert);
+                            if ($numericValue > 0) {
+                                $alertCount++;
+                            }
+                        }
+                        
+                    } catch (\Exception $e) {
+                        error_log("Error checking budget {$budget->id} shouldShowAlert: " . $e->getMessage());
+                        // En cas d'erreur, on assume qu'il n'y a pas d'alerte
+                        continue;
+                    }
+                }
+            }
+            
+            // ✅ S'assurer que le résultat final est bien un entier
+            return (int) $alertCount;
+            
         } catch (\Exception $e) {
+            error_log("Error in getBadgeCount for user {$userId}: " . $e->getMessage());
             return 0;
         }
     }

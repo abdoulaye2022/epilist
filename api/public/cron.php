@@ -83,10 +83,10 @@ try {
         checkUsersWithoutWeeklyLists($notificationService);
     }
 
-    // if (Carbon::now()->hour === 19 && Carbon::now()->minute < 30) {
+    if (Carbon::now()->hour === 19 && Carbon::now()->minute < 30) {
         echo "Checking for users with no lists today...\n";
         checkUsersWithoutTodayLists($notificationService);
-    // }
+    }
 
     echo "=== Cron completed successfully ===\n";
 
@@ -853,6 +853,8 @@ function checkUsersWithoutTodayLists(NotificationService $service): void
             })
             ->with(['shoppingLists' => function($q) {
                 $q->orderBy('created_at', 'desc')->limit(1);
+            }, 'devices' => function($q) {
+                $q->where('is_active', true)->whereNotNull('push_token');
             }])
             ->get();
 
@@ -863,12 +865,27 @@ function checkUsersWithoutTodayLists(NotificationService $service): void
         
         foreach ($usersWithoutTodayLists as $user) {
             try {
+                echo "\n=== Processing user {$user->id} ===\n";
+                echo "User name: {$user->name}\n";
+                echo "User email: {$user->email}\n";
+                echo "User is_active: " . ($user->is_active ? 'true' : 'false') . "\n";
+                
+                // Debug des appareils
+                $devices = $user->devices;
+                echo "User devices count: {$devices->count()}\n";
+                foreach ($devices as $device) {
+                    echo "  Device {$device->id}: platform={$device->platform}, active=" . ($device->is_active ? 'true' : 'false') . ", token=" . (empty($device->push_token) ? 'empty' : 'present') . "\n";
+                }
+                
                 // Vérifier qu'on n'a pas déjà envoyé cette notification aujourd'hui
                 $lastDailyReminder = getLastDailyReminder($user->id);
                 $now = Carbon::now();
                 
+                echo "Last daily reminder: " . ($lastDailyReminder ? $lastDailyReminder->toDateTimeString() : 'never') . "\n";
+                
                 // Ne pas spammer: une seule notification par jour
                 if ($lastDailyReminder && $lastDailyReminder->isToday()) {
+                    echo "❌ Already sent today, skipping user {$user->id}\n";
                     continue;
                 }
                 
@@ -878,24 +895,61 @@ function checkUsersWithoutTodayLists(NotificationService $service): void
                     $lastList->created_at->diffInDays($now) : 
                     $user->created_at->diffInDays($now);
                 
-                // Envoyer la notification adaptée
+                echo "Days since last list: {$daysSinceLastList}\n";
+                echo "Last list: " . ($lastList ? $lastList->created_at->toDateTimeString() : 'never') . "\n";
+                
+                // Test de la devise de l'utilisateur
+                try {
+                    $currency = $user->getPreferredCurrency();
+                    echo "User currency: {$currency->code} ({$currency->symbol})\n";
+                } catch (\Exception $e) {
+                    echo "⚠️ Currency error: " . $e->getMessage() . "\n";
+                }
+                
+                // Envoyer la notification
+                echo "Attempting to send notification...\n";
                 $success = $service->sendDailyListReminder($user, $daysSinceLastList);
+                
+                echo "Notification result: " . ($success ? 'SUCCESS' : 'FAILED') . "\n";
                 
                 if ($success) {
                     $sentCount++;
                     saveLastDailyReminder($user->id, $now);
-                    echo "Sent daily reminder to user {$user->id} ({$daysSinceLastList} days since last list)\n";
+                    echo "✅ Sent daily reminder to user {$user->id} ({$daysSinceLastList} days since last list)\n";
                 } else {
-                    $errors[] = "Failed to send to user {$user->id}";
+                    $error = "Failed to send to user {$user->id}";
+                    $errors[] = $error;
+                    echo "❌ {$error}\n";
+                    
+                    // Test direct avec sendToUser pour voir si c'est la méthode qui pose problème
+                    echo "Testing direct sendToUser...\n";
+                    $directResult = $service->sendToUser(
+                        $user->id,
+                        'test_daily_reminder',
+                        '🧪 Test notification quotidienne',
+                        'Ceci est un test direct de notification',
+                        [
+                            'test' => 'true',
+                            'user_id' => (string) $user->id,
+                            'timestamp' => (string) $now->timestamp
+                        ]
+                    );
+                    
+                    echo "Direct sendToUser result: " . json_encode($directResult) . "\n";
                 }
                 
             } catch (\Exception $e) {
-                $errors[] = "Error processing user {$user->id}: " . $e->getMessage();
+                $error = "Error processing user {$user->id}: " . $e->getMessage();
+                $errors[] = $error;
+                echo "❌ {$error}\n";
+                echo "Stack trace: " . $e->getTraceAsString() . "\n";
                 error_log("Daily reminder error for user {$user->id}: " . $e->getMessage());
             }
         }
         
+        echo "\n=== SUMMARY ===\n";
         echo "Daily reminders sent: {$sentCount}\n";
+        echo "Total users processed: {$usersWithoutTodayLists->count()}\n";
         
         if (!empty($errors)) {
             echo "Errors encountered:\n";
@@ -906,6 +960,7 @@ function checkUsersWithoutTodayLists(NotificationService $service): void
         
     } catch (\Exception $e) {
         echo "Error in checkUsersWithoutTodayLists: " . $e->getMessage() . "\n";
+        echo "Stack trace: " . $e->getTraceAsString() . "\n";
         error_log("Daily lists check error: " . $e->getMessage());
     }
 }
