@@ -1435,6 +1435,8 @@ class AnalyticsController
             $currency_code = $params['currency'] ?? null;
             $language = $this->getUserLanguage($request);
             
+            error_log("🔍 yearlySpendingHistory - User ID: $user_id, Years: $years");
+            
             // Récupérer l'utilisateur avec sa devise
             $user = User::with('currency')->find($user_id);
             if (!$user) {
@@ -1443,153 +1445,307 @@ class AnalyticsController
 
             // Déterminer la devise cible
             if ($currency_code) {
-                $targetCurrency = Currency::findByCode($currency_code);
+                $targetCurrency = Currency::where('code', strtoupper($currency_code))->first();
                 if (!$targetCurrency) {
-                    throw new \Exception('Invalid currency code');
+                    error_log("⚠️ Invalid currency code: $currency_code, using default");
+                    $targetCurrency = Currency::where('code', 'CAD')->first();
                 }
             } else {
-                $targetCurrency = $user->currency ?? Currency::getDefault();
+                $targetCurrency = $user->currency ?? Currency::where('code', 'CAD')->first();
             }
 
-            // Calculer les dates
+            // Fallback si aucune devise trouvée
+            if (!$targetCurrency) {
+                $targetCurrency = (object)[
+                    'code' => 'CAD',
+                    'symbol' => '$',
+                    'formatAmountDisplay' => function($amount) {
+                        return '$' . number_format($amount, 2);
+                    }
+                ];
+            }
+
+            // ✅ CORRECTION 1: Calculer les dates correctement
             $currentYear = Carbon::now()->year;
-            $startYear = $currentYear - $years + 1;
+            $startYear = $currentYear - $years + 1; // Inclure l'année courante
             $endYear = $currentYear;
 
-            $startDate = Carbon::create($startYear, 1, 1)->startOfYear();
-            $endDate = Carbon::create($endYear, 12, 31)->endOfYear();
+            // ✅ CORRECTION 2: Utiliser des dates complètes pour la requête
+            $startDate = Carbon::create($startYear, 1, 1, 0, 0, 0);
+            $endDate = Carbon::create($endYear, 12, 31, 23, 59, 59);
 
-            // Query pour les items achetés avec prix
-            $items = $this->getUserAccessibleItemsQuery($user_id)
-                ->where('is_purchased', true)
-                ->whereNotNull('price')
-                ->whereBetween('updated_at', [$startDate, $endDate])
-                ->get();
+            error_log("📅 Year range: $startYear to $endYear");
+            error_log("📅 Date range: {$startDate->toDateTimeString()} to {$endDate->toDateTimeString()}");
 
-            // Créer les données par année
+            // ✅ CORRECTION 3: Utiliser la méthode combinée pour récupérer les données
+            try {
+                $spendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
+                error_log("💰 Total spending records found: " . count($spendingData));
+            } catch (\Exception $e) {
+                error_log("❌ Error getting spending data: " . $e->getMessage());
+                $spendingData = [];
+            }
+
+            // ✅ CORRECTION 4: Créer les données par année de façon plus robuste
             $yearlyData = [];
             for ($year = $startYear; $year <= $endYear; $year++) {
                 $yearlyData[$year] = [
                     'year' => $year,
                     'year_label' => (string)$year,
                     'is_current_year' => $year === $currentYear,
-                    'total_spent' => 0,
-                    'total_items' => 0,
+                    'total_spent' => 0.0,
+                    'total_transactions' => 0,
+                    'receipts_total' => 0.0,
+                    'items_total' => 0.0,
+                    'receipts_count' => 0,
+                    'items_sessions' => 0,
                     'shopping_months' => 0,
                     'shopping_days' => 0,
-                    'average_item_price' => 0,
-                    'average_monthly' => 0,
-                    'currency' => $targetCurrency->code
+                    'average_monthly' => 0.0,
+                    'currency' => (string)$targetCurrency->code
                 ];
             }
 
-            // Calculer les totaux par année
+            error_log("📊 Created " . count($yearlyData) . " years");
+
+            // ✅ CORRECTION 5: Calculer les totaux avec gestion d'erreur améliorée
             $monthsByYear = [];
             $daysByYear = [];
             
-            foreach ($items as $item) {
-                $year = $item->updated_at->year;
-                if (isset($yearlyData[$year])) {
-                    $totalPrice = $item->price * $item->quantity;
-                    $yearlyData[$year]['total_spent'] += $totalPrice;
-                    $yearlyData[$year]['total_items'] += $item->quantity;
+            foreach ($spendingData as $spending) {
+                try {
+                    if (!isset($spending['date']) || !isset($spending['amount'])) {
+                        error_log("⚠️ Skipping invalid spending entry: missing date or amount");
+                        continue;
+                    }
                     
-                    // Compter les mois et jours de shopping uniques
-                    $monthKey = $item->updated_at->format('Y-m');
-                    $dayKey = $item->updated_at->format('Y-m-d');
-                    $monthsByYear[$year][$monthKey] = true;
-                    $daysByYear[$year][$dayKey] = true;
+                    $spendingYear = $spending['date']->year;
+                    
+                    if (!isset($yearlyData[$spendingYear])) {
+                        error_log("⚠️ Skipping spending from year $spendingYear (outside range)");
+                        continue;
+                    }
+                    
+                    $amount = (float)$spending['amount'];
+                    if ($amount <= 0) {
+                        error_log("⚠️ Skipping spending with invalid amount: $amount");
+                        continue;
+                    }
+                    
+                    // Ajouter aux totaux
+                    $yearlyData[$spendingYear]['total_spent'] += $amount;
+                    $yearlyData[$spendingYear]['total_transactions']++;
+                    
+                    $source = $spending['source'] ?? 'unknown';
+                    if ($source === 'receipt') {
+                        $yearlyData[$spendingYear]['receipts_total'] += $amount;
+                        $yearlyData[$spendingYear]['receipts_count']++;
+                    } else {
+                        $yearlyData[$spendingYear]['items_total'] += $amount;
+                        $yearlyData[$spendingYear]['items_sessions']++;
+                    }
+                    
+                    // Compter les mois et jours uniques
+                    $monthKey = $spending['date']->format('Y-m');
+                    $dayKey = $spending['date']->format('Y-m-d');
+                    $monthsByYear[$spendingYear][$monthKey] = true;
+                    $daysByYear[$spendingYear][$dayKey] = true;
+                    
+                    error_log("💰 Added $amount to year $spendingYear from $source");
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error processing spending entry: " . $e->getMessage());
+                    continue;
                 }
             }
 
-            // Finaliser les calculs et formater
+            // ✅ CORRECTION 6: Finaliser les calculs avec gestion d'erreur
             foreach ($yearlyData as $year => &$data) {
-                $data['shopping_months'] = count($monthsByYear[$year] ?? []);
-                $data['shopping_days'] = count($daysByYear[$year] ?? []);
-                
-                if ($data['total_items'] > 0) {
-                    $data['average_item_price'] = round($data['total_spent'] / $data['total_items'], 2);
+                try {
+                    $data['shopping_months'] = count($monthsByYear[$year] ?? []);
+                    $data['shopping_days'] = count($daysByYear[$year] ?? []);
+                    
+                    // Calcul de la moyenne mensuelle uniquement si il y a des mois avec transactions
+                    if ($data['shopping_months'] > 0) {
+                        $data['average_monthly'] = round($data['total_spent'] / $data['shopping_months'], 2);
+                    } else {
+                        $data['average_monthly'] = 0.0;
+                    }
+                    
+                    // Arrondir les totaux
+                    $data['total_spent'] = round($data['total_spent'], 2);
+                    $data['receipts_total'] = round($data['receipts_total'], 2);
+                    $data['items_total'] = round($data['items_total'], 2);
+                    
+                    // Formatage sécurisé
+                    if (is_callable([$targetCurrency, 'formatAmountDisplay'])) {
+                        $data['formatted_total'] = (string)$targetCurrency->formatAmountDisplay($data['total_spent']);
+                        $data['formatted_average_monthly'] = (string)$targetCurrency->formatAmountDisplay($data['average_monthly']);
+                    } else {
+                        $symbol = $targetCurrency->symbol ?? '$';
+                        $data['formatted_total'] = $symbol . number_format($data['total_spent'], 2);
+                        $data['formatted_average_monthly'] = $symbol . number_format($data['average_monthly'], 2);
+                    }
+                    
+                    // Qualité des données
+                    if ($data['receipts_total'] > 0) {
+                        $data['data_quality'] = 'high';
+                    } elseif ($data['items_total'] > 0) {
+                        $data['data_quality'] = 'medium';
+                    } else {
+                        $data['data_quality'] = 'none';
+                    }
+                    
+                    error_log("📊 Year $year: {$data['total_spent']}$ from {$data['total_transactions']} transactions");
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error finalizing year $year data: " . $e->getMessage());
+                    $data['data_quality'] = 'error';
                 }
-                
-                if ($data['shopping_months'] > 0) {
-                    $data['average_monthly'] = round($data['total_spent'] / $data['shopping_months'], 2);
-                }
-                
-                $data['total_spent'] = round($data['total_spent'], 2);
-                $data['formatted_total'] = $targetCurrency->formatAmountDisplay($data['total_spent']);
-                $data['formatted_average_item'] = $targetCurrency->formatAmountDisplay($data['average_item_price']);
-                $data['formatted_average_monthly'] = $targetCurrency->formatAmountDisplay($data['average_monthly']);
             }
 
-            // Trier par année
+            // ✅ CORRECTION 7: Trier par année (plus ancien au plus récent)
             $sortedYearlyData = array_values($yearlyData);
             usort($sortedYearlyData, function($a, $b) {
                 return $a['year'] <=> $b['year'];
             });
 
-            // Calculs de tendance
+            // ✅ CORRECTION 8: Calculs de tendance améliorés
             $values = array_column($sortedYearlyData, 'total_spent');
             $totalSpent = array_sum($values);
-            $averageYearly = count($values) > 0 ? $totalSpent / count($values) : 0;
+            $averageYearly = count(array_filter($values)) > 0 ? 
+                $totalSpent / count(array_filter($values)) : 0; // Moyenne uniquement sur les années avec dépenses
             
             // Tendance (comparaison année actuelle vs précédente)
-            $currentYearSpending = end($values);
-            $previousYearSpending = count($values) > 1 ? $values[count($values) - 2] : 0;
+            $currentYearSpending = 0;
+            $previousYearSpending = 0;
+            
+            foreach ($sortedYearlyData as $yearData) {
+                if ($yearData['year'] === $currentYear) {
+                    $currentYearSpending = $yearData['total_spent'];
+                } elseif ($yearData['year'] === $currentYear - 1) {
+                    $previousYearSpending = $yearData['total_spent'];
+                }
+            }
             
             $trendPercentage = $previousYearSpending > 0 ? 
                 round((($currentYearSpending - $previousYearSpending) / $previousYearSpending) * 100, 1) : 0;
 
-            // Année avec le plus de dépenses
+            // ✅ CORRECTION 9: Insights améliorés
             $maxSpendingYear = null;
             $maxSpending = 0;
+            $yearsWithSpending = 0;
+            
             foreach ($sortedYearlyData as $yearData) {
+                if ($yearData['total_spent'] > 0) {
+                    $yearsWithSpending++;
+                }
                 if ($yearData['total_spent'] > $maxSpending) {
                     $maxSpending = $yearData['total_spent'];
                     $maxSpendingYear = $yearData['year'];
                 }
             }
 
-            $response->getBody()->write(json_encode([
+            // Formatage final sécurisé
+            $formattedTotal = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                ? $targetCurrency->formatAmountDisplay($totalSpent)
+                : ($targetCurrency->symbol ?? '$') . number_format($totalSpent, 2);
+                
+            $formattedAverage = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                ? $targetCurrency->formatAmountDisplay($averageYearly)
+                : ($targetCurrency->symbol ?? '$') . number_format($averageYearly, 2);
+                
+            $formattedHighest = is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                ? $targetCurrency->formatAmountDisplay($maxSpending)
+                : ($targetCurrency->symbol ?? '$') . number_format($maxSpending, 2);
+
+            // ✅ CONSTRUCTION DE LA RÉPONSE FINALE
+            $responseData = [
                 'success' => true,
                 'data' => [
-                    'language' => $language,
+                    'language' => (string)$language,
                     'yearly_data' => $sortedYearlyData,
                     'summary' => [
                         'total_spent' => round($totalSpent, 2),
                         'average_yearly' => round($averageYearly, 2),
-                        'currency' => $targetCurrency->code,
+                        'currency' => (string)$targetCurrency->code,
                         'period' => [
-                            'start_year' => $startYear,
-                            'end_year' => $endYear,
-                            'years' => $years
+                            'start_year' => (int)$startYear,
+                            'end_year' => (int)$endYear,
+                            'years_requested' => (int)$years,
+                            'years_with_spending' => (int)$yearsWithSpending
                         ],
                         'trend' => [
-                            'percentage' => $trendPercentage,
+                            'percentage' => (float)$trendPercentage,
                             'direction' => $trendPercentage > 0 ? 'increasing' : ($trendPercentage < 0 ? 'decreasing' : 'stable'),
                             'current_year_spending' => round($currentYearSpending, 2),
-                            'previous_year_spending' => round($previousYearSpending, 2)
+                            'previous_year_spending' => round($previousYearSpending, 2),
+                            'current_year' => (int)$currentYear
                         ],
                         'insights' => [
                             'highest_spending_year' => $maxSpendingYear,
                             'highest_spending_amount' => round($maxSpending, 2),
-                            'formatted_highest' => $targetCurrency->formatAmountDisplay($maxSpending)
+                            'has_spending_data' => $totalSpent > 0,
+                            'data_span_years' => $yearsWithSpending,
+                            'formatted_highest' => (string)$formattedHighest
                         ],
-                        'formatted_total' => $targetCurrency->formatAmountDisplay($totalSpent),
-                        'formatted_average_yearly' => $targetCurrency->formatAmountDisplay($averageYearly)
+                        'data_sources' => [
+                            'receipts_total' => round(array_sum(array_column($sortedYearlyData, 'receipts_total')), 2),
+                            'items_total' => round(array_sum(array_column($sortedYearlyData, 'items_total')), 2),
+                            'years_with_receipts' => count(array_filter($sortedYearlyData, fn($y) => $y['receipts_count'] > 0)),
+                            'years_with_items' => count(array_filter($sortedYearlyData, fn($y) => $y['items_sessions'] > 0))
+                        ],
+                        'formatted_total' => (string)$formattedTotal,
+                        'formatted_average_yearly' => (string)$formattedAverage
                     ]
                 ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
+            ];
 
+            // Log du résumé final
+            error_log("📊 YEARLY SUMMARY:");
+            error_log("📊 Total: $totalSpent over $yearsWithSpending years");
+            error_log("📊 Range: $startYear-$endYear");
+            error_log("📊 Best year: $maxSpendingYear with $maxSpending");
+
+            // ✅ Encodage JSON sécurisé
+            $jsonData = json_encode($responseData, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+            
+            if ($jsonData === false) {
+                throw new \Exception('JSON encoding failed: ' . json_last_error_msg());
+            }
+
+            $response->getBody()->write($jsonData);
+            return $response->withHeader('Content-Type', 'application/json; charset=utf-8');
+
+        } catch (\JsonException $e) {
+            error_log("❌ JSON Error in yearlySpendingHistory: " . $e->getMessage());
+            
+            $errorResponse = json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'JSON_ENCODING_ERROR',
+                    'message' => 'Error encoding response data',
+                    'details' => $e->getMessage()
+                ]
+            ]);
+            
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            
         } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
+            error_log("❌ Error in yearlySpendingHistory: " . $e->getMessage());
+            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            
+            $errorResponse = json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'YEARLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving yearly spending data',
                     'details' => $e->getMessage()
                 ]
-            ]));
+            ]);
+            
+            $response->getBody()->write($errorResponse);
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
