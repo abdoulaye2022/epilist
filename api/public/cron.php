@@ -42,10 +42,10 @@ try {
 
     // 2. ✅ ALERTES BUDGETS DÉPASSÉS (toutes les heures 9h-21h)
     $currentHour = Carbon::now()->hour;
-    if ($currentHour >= 9 && $currentHour <= 21) {
+    // if ($currentHour >= 9 && $currentHour <= 21) {
         echo "Checking for budget alerts...\n";
         checkBudgetAlerts($notificationService);
-    }
+    // }
 
     // 3. ✅ BUDGETS EXPIRANT BIENTÔT (une fois par jour à 18h)
     if (Carbon::now()->hour === 18 && Carbon::now()->minute < 30) {
@@ -73,6 +73,14 @@ try {
         // ✅ NOUVEAU: Nettoyer aussi les fichiers de cache de notifications
         echo "Cleaning up old notification cache files...\n";
         cleanupNotificationCacheFiles();
+    }
+
+    /**
+     * ✅ NOUVELLE: VÉRIFICATION UTILISATEURS SANS LISTE CETTE SEMAINE (une fois par semaine le vendredi à 19h)
+     */
+    if (Carbon::now()->dayOfWeek === Carbon::FRIDAY && Carbon::now()->hour === 19 && Carbon::now()->minute < 30) {
+        echo "Checking for users with no lists this week...\n";
+        checkUsersWithoutWeeklyLists($notificationService);
     }
 
     echo "=== Cron completed successfully ===\n";
@@ -455,9 +463,13 @@ function cleanupNotificationCacheFiles(): void
         $inactivityCleaned = cleanupInactivityCacheFiles();
         echo "Inactivity notification cache files cleaned: {$inactivityCleaned}\n";
         
-        // ✅ NOUVEAU: Nettoyer aussi les fichiers d'alertes budget
+        // ✅ ANCIEN: Nettoyer aussi les fichiers d'alertes budget
         $budgetAlertsCleaned = cleanupBudgetAlertsCacheFiles();
         echo "Budget alerts cache files cleaned: {$budgetAlertsCleaned}\n";
+        
+        // ✅ NOUVEAU: Nettoyer les fichiers de rappels hebdomadaires
+        $weeklyReminderCleaned = cleanupWeeklyReminderCacheFiles();
+        echo "Weekly reminder cache files cleaned: {$weeklyReminderCleaned}\n";
         
     } catch (\Exception $e) {
         echo "Error cleaning notification cache files: " . $e->getMessage() . "\n";
@@ -639,6 +651,177 @@ function cleanupBudgetAlertsCacheFiles(): int
         
     } catch (\Exception $e) {
         error_log("Error cleaning budget alerts cache files: " . $e->getMessage());
+    }
+    
+    return $cleaned;
+}
+
+/**
+ * ✅ NOUVELLE FONCTION: Vérifier les utilisateurs sans liste cette semaine
+ */
+function checkUsersWithoutWeeklyLists(NotificationService $service): void
+{
+    echo "Starting weekly lists check...\n";
+    
+    try {
+        $startOfWeek = Carbon::now()->startOfWeek(); // Lundi de cette semaine
+        $endOfWeek = Carbon::now()->endOfWeek();     // Dimanche de cette semaine
+        
+        echo "Checking for lists created between {$startOfWeek->toDateString()} and {$endOfWeek->toDateString()}\n";
+        
+        // ✅ Trouver les utilisateurs actifs qui n'ont PAS créé de liste cette semaine
+        $usersWithoutWeeklyLists = User::where('is_active', true)
+            ->whereHas('devices', function($q) {
+                $q->where('is_active', true)->whereNotNull('push_token');
+            })
+            ->whereHas('shoppingLists') // Ont déjà créé des listes dans le passé
+            ->whereDoesntHave('shoppingLists', function($q) use ($startOfWeek, $endOfWeek) {
+                $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+            })
+            ->with(['shoppingLists' => function($q) {
+                $q->orderBy('created_at', 'desc')->limit(1);
+            }])
+            ->get();
+
+        echo "Found {$usersWithoutWeeklyLists->count()} users without lists this week\n";
+        
+        $sentCount = 0;
+        $errors = [];
+        
+        foreach ($usersWithoutWeeklyLists as $user) {
+            try {
+                // Vérifier qu'on n'a pas déjà envoyé cette notification cette semaine
+                $lastWeeklyReminder = getLastWeeklyReminder($user->id);
+                $now = Carbon::now();
+                
+                // Ne pas spammer: une seule notification par semaine
+                if ($lastWeeklyReminder && $lastWeeklyReminder->isCurrentWeek()) {
+                    continue;
+                }
+                
+                // Calculer depuis quand l'utilisateur n'a pas créé de liste
+                $lastList = $user->shoppingLists->first();
+                $daysSinceLastList = $lastList ? 
+                    $lastList->created_at->diffInDays($now) : 
+                    $user->created_at->diffInDays($now);
+                
+                // Envoyer la notification avec un message adapté
+                $success = $service->sendWeeklyListReminder($user, $daysSinceLastList);
+                
+                if ($success) {
+                    $sentCount++;
+                    saveLastWeeklyReminder($user->id, $now);
+                    echo "Sent weekly reminder to user {$user->id} ({$daysSinceLastList} days since last list)\n";
+                } else {
+                    $errors[] = "Failed to send to user {$user->id}";
+                }
+                
+            } catch (\Exception $e) {
+                $errors[] = "Error processing user {$user->id}: " . $e->getMessage();
+                error_log("Weekly reminder error for user {$user->id}: " . $e->getMessage());
+            }
+        }
+        
+        echo "Weekly reminders sent: {$sentCount}\n";
+        
+        if (!empty($errors)) {
+            echo "Errors encountered:\n";
+            foreach ($errors as $error) {
+                echo "- {$error}\n";
+            }
+        }
+        
+    } catch (\Exception $e) {
+        echo "Error in checkUsersWithoutWeeklyLists: " . $e->getMessage() . "\n";
+        error_log("Weekly lists check error: " . $e->getMessage());
+    }
+}
+
+/**
+ * ✅ HELPER: Récupérer le dernier rappel hebdomadaire
+ */
+function getLastWeeklyReminder(int $userId): ?Carbon
+{
+    $cacheFile = __DIR__ . "/../storage/weekly_reminder_{$userId}.txt";
+    
+    if (!file_exists($cacheFile)) {
+        return null;
+    }
+    
+    try {
+        $timestamp = file_get_contents($cacheFile);
+        
+        if (!$timestamp || !is_numeric($timestamp)) {
+            unlink($cacheFile);
+            return null;
+        }
+        
+        $reminderTime = Carbon::createFromTimestamp($timestamp, 'UTC');
+        
+        // Vérification de sécurité: Pas plus de 2 mois dans le passé
+        if ($reminderTime->diffInMonths(Carbon::now()) > 2) {
+            unlink($cacheFile);
+            return null;
+        }
+        
+        return $reminderTime;
+        
+    } catch (\Exception $e) {
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+        return null;
+    }
+}
+
+/**
+ * ✅ HELPER: Sauvegarder le dernier rappel hebdomadaire
+ */
+function saveLastWeeklyReminder(int $userId, Carbon $time): void
+{
+    $cacheFile = __DIR__ . "/../storage/weekly_reminder_{$userId}.txt";
+    $storageDir = dirname($cacheFile);
+    
+    try {
+        if (!is_dir($storageDir)) {
+            mkdir($storageDir, 0755, true);
+        }
+        
+        file_put_contents($cacheFile, $time->getTimestamp());
+        
+    } catch (\Exception $e) {
+        error_log("Error saving weekly reminder timestamp: " . $e->getMessage());
+    }
+}
+
+/**
+ * ✅ HELPER: Nettoyer les anciens fichiers cache de rappels hebdomadaires (à ajouter dans cleanupNotificationCacheFiles)
+ */
+function cleanupWeeklyReminderCacheFiles(): int
+{
+    $cleaned = 0;
+    $storageDir = __DIR__ . "/../storage";
+    
+    if (!is_dir($storageDir)) {
+        return 0;
+    }
+    
+    try {
+        $files = glob($storageDir . "/weekly_reminder_*.txt");
+        $now = time();
+        
+        foreach ($files as $file) {
+            $lastModified = filemtime($file);
+            
+            // Supprimer les fichiers plus anciens que 2 mois
+            if (($now - $lastModified) > (2 * 30 * 24 * 60 * 60)) {
+                unlink($file);
+                $cleaned++;
+            }
+        }
+        
+    } catch (\Exception $e) {
+        error_log("Error cleaning weekly reminder cache files: " . $e->getMessage());
     }
     
     return $cleaned;

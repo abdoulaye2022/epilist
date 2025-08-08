@@ -814,4 +814,123 @@ class User extends Model
     {
         return $query->where('email_marketing_consent', false);
     }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer rappel hebdomadaire de liste
+     */
+    public function sendWeeklyListReminder(int $daysSinceLastList): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendWeeklyListReminder($this, $daysSinceLastList);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste cette semaine
+     */
+    public function hasCreatedListThisWeek(): bool
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        
+        return $this->shoppingLists()
+            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->exists();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir la dernière liste créée
+     */
+    public function getLastCreatedList(): ?ShoppingList
+    {
+        return $this->shoppingLists()
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir le nombre de jours depuis la dernière liste
+     */
+    public function getDaysSinceLastList(): int
+    {
+        $lastList = $this->getLastCreatedList();
+        
+        if (!$lastList) {
+            // Si aucune liste, compter depuis la création du compte
+            return $this->created_at->diffInDays(Carbon::now());
+        }
+        
+        return $lastList->created_at->diffInDays(Carbon::now());
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel hebdomadaire
+     */
+    public function isEligibleForWeeklyReminder(): bool
+    {
+        return $this->isActive() && 
+            $this->canReceiveNotifications() && 
+            $this->shoppingLists()->exists() && // A déjà créé des listes dans le passé
+            !$this->hasCreatedListThisWeek(); // N'a pas créé de liste cette semaine
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques hebdomadaires de l'utilisateur
+     */
+    public function getWeeklyStats(): array
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        
+        $thisWeekLists = $this->shoppingLists()
+            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->count();
+        
+        $lastWeekStart = Carbon::now()->subWeek()->startOfWeek();
+        $lastWeekEnd = Carbon::now()->subWeek()->endOfWeek();
+        
+        $lastWeekLists = $this->shoppingLists()
+            ->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])
+            ->count();
+        
+        return [
+            'current_week' => [
+                'lists_created' => $thisWeekLists,
+                'has_created_list' => $thisWeekLists > 0,
+                'week_start' => $startOfWeek->toDateString(),
+                'week_end' => $endOfWeek->toDateString()
+            ],
+            'last_week' => [
+                'lists_created' => $lastWeekLists,
+                'week_start' => $lastWeekStart->toDateString(),
+                'week_end' => $lastWeekEnd->toDateString()
+            ],
+            'comparison' => [
+                'difference' => $thisWeekLists - $lastWeekLists,
+                'trend' => $thisWeekLists > $lastWeekLists ? 'up' : 
+                        ($thisWeekLists < $lastWeekLists ? 'down' : 'stable')
+            ],
+            'days_since_last_list' => $this->getDaysSinceLastList(),
+            'is_eligible_for_reminder' => $this->isEligibleForWeeklyReminder()
+        ];
+    }
+
+    /**
+     * ✅ NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels hebdomadaires
+     */
+    public function scopeEligibleForWeeklyReminder($query)
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        
+        return $query->active()
+            ->withActiveDevices()
+            ->whereHas('shoppingLists') // Ont déjà créé des listes
+            ->whereDoesntHave('shoppingLists', function($q) use ($startOfWeek, $endOfWeek) {
+                $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+            });
+    }
 }

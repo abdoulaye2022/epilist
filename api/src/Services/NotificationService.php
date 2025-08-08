@@ -28,6 +28,7 @@ class NotificationService
     const TYPE_DAILY_SUMMARY = 'daily_summary';
     const TYPE_USER_INACTIVE = 'user_inactive';
     const TYPE_LIST_COMPLETED = 'list_completed';
+    const TYPE_WEEKLY_LIST_REMINDER = 'weekly_list_reminder';
 
     public function __construct()
     {
@@ -53,6 +54,8 @@ class NotificationService
     private function formatAmountForUser(float $amount, User $user, bool $showCode = false): string
     {
         try {
+            // ✅ S'assurer que $amount est bien un float
+            $amount = (float) $amount;
             $currency = $user->getPreferredCurrency();
             
             // ✅ Utiliser le formatage international de FormattedAmount
@@ -61,7 +64,7 @@ class NotificationService
         } catch (\Exception $e) {
             error_log("Error formatting amount for user {$user->id}: " . $e->getMessage());
             // Fallback: format CAD par défaut
-            return '$' . number_format($amount, 2);
+            return '$' . number_format((float) $amount, 2);
         }
     }
 
@@ -92,31 +95,19 @@ class NotificationService
      */
     private function getDecimalsForCurrency(string $currencyCode): int
     {
-        switch ($currencyCode) {
+        $decimals = match ($currencyCode) {
             // Devises sans décimales (0 décimales)
-            case 'JPY': // Yen japonais
-            case 'KRW': // Won coréen
-            case 'VND': // Dong vietnamien
-            case 'CLP': // Peso chilien
-            case 'ISK': // Couronne islandaise
-            case 'XOF': // Franc CFA BCEAO
-            case 'XAF': // Franc CFA BEAC
-                return 0;
+            'JPY', 'KRW', 'VND', 'CLP', 'ISK', 'XOF', 'XAF' => 0,
 
             // Devises avec 3 décimales
-            case 'BHD': // Dinar de Bahreïn
-            case 'KWD': // Dinar koweïtien
-            case 'OMR': // Rial omanais
-            case 'JOD': // Dinar jordanien
-            case 'IQD': // Dinar irakien
-            case 'LYD': // Dinar libyen
-            case 'TND': // Dinar tunisien
-                return 3;
+            'BHD', 'KWD', 'OMR', 'JOD', 'IQD', 'LYD', 'TND' => 3,
 
             // Toutes les autres devises (2 décimales - standard)
-            default:
-                return 2;
-        }
+            default => 2
+        };
+        
+        // ✅ S'assurer explicitement que c'est un entier
+        return (int) $decimals;
     }
 
     /**
@@ -191,45 +182,22 @@ class NotificationService
     private function applySymbolPlacement(string $formattedNumber, Currency $currency): string
     {
         $code = strtoupper($currency->code);
-        $symbol = $currency->symbol;
-
-        // ✅ ADAPTATION à votre base de données exacte
+        $symbol = (string) $currency->symbol; // ✅ Conversion explicite
         
         // Devises avec symbole APRÈS le montant (avec espace)
         $symbolAfterWithSpace = [
-            'EUR',    // € (Euro)
-            'ZAR',    // R (Rand sud-africain)
-            'XOF',    // CFA (Franc CFA BCEAO)
-            'XAF',    // FCFA (Franc CFA BEAC)
-            'MAD',    // د.م. (Dirham marocain)
-            'TND',    // د.ت (Dinar tunisien)
-            'DZD',    // د.ج (Dinar algérien)
-            'BWP',    // P (Pula botswanais)
+            'EUR', 'ZAR', 'XOF', 'XAF', 'MAD', 'TND', 'DZD', 'BWP'
         ];
 
         // Devises avec symbole AVANT le montant (avec espace) - symboles longs
         $symbolBeforeWithSpace = [
-            'CHF',    // CHF (Franc suisse)
-            'KES',    // KSh (Shilling kényan)
-            'UGX',    // USh (Shilling ougandais)
-            'GHS',    // GH₵ (Cedi ghanéen)
+            'CHF', 'KES', 'UGX', 'GHS'
         ];
 
         // Devises avec symbole AVANT le montant (sans espace) - symboles courts
         $symbolBeforeNoSpace = [
-            'USD',    // $ (Dollar américain)
-            'CAD',    // $ (Dollar canadien)
-            'AUD',    // A$ (Dollar australien)
-            'HKD',    // HK$ (Dollar de Hong Kong)
-            'SGD',    // S$ (Dollar de Singapour)
-            'NAD',    // N$ (Dollar namibien)
-            'GBP',    // £ (Livre sterling)
-            'EGP',    // £ (Livre égyptienne)
-            'JPY',    // ¥ (Yen japonais)
-            'CNY',    // ¥ (Yuan chinois)
-            'NGN',    // ₦ (Naira nigérian)
-            'MUR',    // ₨ (Roupie mauricienne)
-            'ETB',    // Br (Birr éthiopien)
+            'USD', 'CAD', 'AUD', 'HKD', 'SGD', 'NAD', 'GBP', 'EGP', 
+            'JPY', 'CNY', 'NGN', 'MUR', 'ETB'
         ];
 
         if (in_array($code, $symbolAfterWithSpace)) {
@@ -354,8 +322,12 @@ class NotificationService
                 // Convertir les booleans en strings
                 $cleanData[$key] = $value ? 'true' : 'false';
             } elseif (is_numeric($value)) {
-                // Convertir les nombres en strings
-                $cleanData[$key] = (string) $value;
+                // ✅ CORRECTION: Convertir les nombres en strings (source probable du problème)
+                if (is_float($value)) {
+                    $cleanData[$key] = number_format($value, 2, '.', ''); // Formatage pour éviter la perte de précision
+                } else {
+                    $cleanData[$key] = (string) $value;
+                }
             } elseif (is_null($value)) {
                 // Convertir null en string vide
                 $cleanData[$key] = '';
@@ -441,7 +413,7 @@ class NotificationService
      */
     public function sendListCompletionNotification(User $user, $list, float $estimatedTotal = 0): bool
     {
-        $totalItems = $list->items->count();
+        $totalItems = (int) $list->items->count(); // ✅ Conversion explicite
         
         $title = "🎉 Liste terminée !";
         $body = $this->getListCompletionBody($user, $list->name, $totalItems, $estimatedTotal);
@@ -453,8 +425,8 @@ class NotificationService
             'list_id' => (string) $list->id,
             'list_name' => (string) $list->name,
             'total_items' => (string) $totalItems,
-            'estimated_total' => (string) $estimatedTotal, // Montant brut pour les calculs
-            'formatted_total' => (string) $formattedTotal, // Montant formaté pour l'affichage
+            'estimated_total' => number_format($estimatedTotal, 2, '.', ''), // ✅ Format string avec précision
+            'formatted_total' => (string) $formattedTotal,
             'currency_code' => (string) $user->getPreferredCurrency()->code,
             'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
             'completion_type' => 'without_receipt',
@@ -498,18 +470,18 @@ class NotificationService
         $title = $this->getBudgetAlertTitle($alertType);
         $body = $this->getBudgetAlertBody($user, $budget, $alertType);
         
-        // ✅ Formater les montants selon la devise de l'utilisateur
-        $budgetAmount = method_exists($budget, 'getBudgetAmount') ? $budget->getBudgetAmount() : 0;
-        $spentAmount = method_exists($budget, 'getSpentAmount') ? $budget->getSpentAmount() : 0;
+        // ✅ Formater les montants selon la devise de l'utilisateur avec conversions explicites
+        $budgetAmount = method_exists($budget, 'getBudgetAmount') ? (float) $budget->getBudgetAmount() : 0.0;
+        $spentAmount = method_exists($budget, 'getSpentAmount') ? (float) $budget->getSpentAmount() : 0.0;
         $remainingAmount = $budgetAmount - $spentAmount;
         
         $data = [
             'budget_id' => (string) $budget->id,
             'budget_name' => (string) $budget->name,
             'alert_type' => (string) $alertType,
-            'budget_amount' => (string) $budgetAmount,
-            'spent_amount' => (string) $spentAmount,
-            'remaining_amount' => (string) $remainingAmount,
+            'budget_amount' => number_format($budgetAmount, 2, '.', ''), // ✅ Format string avec précision
+            'spent_amount' => number_format($spentAmount, 2, '.', ''),   // ✅ Format string avec précision
+            'remaining_amount' => number_format($remainingAmount, 2, '.', ''), // ✅ Format string avec précision
             'formatted_budget' => (string) $this->formatAmountForUser($budgetAmount, $user),
             'formatted_spent' => (string) $this->formatAmountForUser($spentAmount, $user),
             'formatted_remaining' => (string) $this->formatAmountForUser($remainingAmount, $user),
@@ -677,6 +649,7 @@ class NotificationService
             self::TYPE_PURCHASE_REMINDER => 'reminder',
             self::TYPE_USER_INACTIVE => 'gentle_reminder',
             self::TYPE_LIST_COMPLETED => 'success_chime',
+            self::TYPE_WEEKLY_LIST_REMINDER => 'weekly_reminder', // ✅ NOUVEAU
             default => 'default'
         };
     }
@@ -691,7 +664,8 @@ class NotificationService
             self::TYPE_LIST_UPDATED,
             self::TYPE_LIST_COMPLETED => 'list_updates',
             self::TYPE_PURCHASE_REMINDER,
-            self::TYPE_USER_INACTIVE => 'reminders',
+            self::TYPE_USER_INACTIVE,
+            self::TYPE_WEEKLY_LIST_REMINDER => 'reminders', // ✅ NOUVEAU
             default => 'general'
         };
     }
@@ -709,13 +683,62 @@ class NotificationService
     private function getBadgeCount(int $userId): int
     {
         try {
-            return \App\Models\Budget::where('user_id', $userId)
+            $count = \App\Models\Budget::where('user_id', $userId)
                 ->where('is_active', true)
                 ->get()
                 ->filter(fn($b) => $b->shouldShowAlert())
                 ->count();
+            
+            // ✅ S'assurer que c'est bien un entier
+            return (int) $count;
         } catch (\Exception $e) {
             return 0;
+        }
+    }
+
+    /**
+     * ✅ CORRECTION: Méthode sendWeeklyListReminder - ligne ~728
+     */
+    public function sendWeeklyListReminder(User $user, int $daysSinceLastList): bool
+    {
+        $title = "📝 Votre liste de la semaine";
+        $body = $this->getWeeklyReminderBody($daysSinceLastList);
+        
+        $data = [
+            'reminder_type' => 'weekly_list',
+            'days_since_last_list' => (string) $daysSinceLastList,
+            'week_number' => (string) Carbon::now()->weekOfYear,
+            'year' => (string) Carbon::now()->year,
+            'currency_code' => (string) $user->getPreferredCurrency()->code,
+            'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
+            'action' => 'create_new_list'
+        ];
+
+        $result = $this->sendToUser(
+            $user->id,
+            self::TYPE_WEEKLY_LIST_REMINDER,
+            $title,
+            $body,
+            $data,
+            'normal'
+        );
+
+        return $result['success'];
+    }
+
+    /**
+     * ✅ MÉTHODE PRIVÉE: Générer le message de rappel hebdomadaire
+     */
+    private function getWeeklyReminderBody(int $daysSinceLastList): string
+    {
+        $weekDay = Carbon::now()->locale('fr')->dayName;
+        
+        if ($daysSinceLastList <= 7) {
+            return "C'est {$weekDay} ! Vous n'avez pas encore créé votre liste de courses de la semaine. Prêt à planifier vos achats ?";
+        } elseif ($daysSinceLastList <= 14) {
+            return "Hello ! Cela fait {$daysSinceLastList} jours sans nouvelle liste. Que diriez-vous de créer votre liste hebdomadaire ?";
+        } else {
+            return "📋 EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
         }
     }
 }

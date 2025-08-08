@@ -26,21 +26,15 @@ export default function Footer() {
             className="inline-flex items-center justify-center space-x-3 mb-6 group"
           >
             <div className="relative">
-              {/* Logo Image sans background */}
               <div className="relative w-8 h-8 group-hover:scale-105 transition-transform duration-300">
                 <Image
-                  src="/app_logo.png" // Votre logo
+                  src="/app_logo.png"
                   alt="EpiList Logo"
                   fill
                   className="object-contain"
                   sizes="32px"
                 />
               </div>
-
-              {/* Fallback avec icône si l'image ne charge pas */}
-              {/* Vous pouvez décommenter ceci si besoin de fallback :
-              <Smartphone className="h-8 w-8 text-green-400 group-hover:scale-105 transition-transform duration-300" />
-              */}
             </div>
 
             <div>
@@ -57,7 +51,8 @@ export default function Footer() {
 
           {/* Description */}
           <p className="text-gray-400 mb-8 leading-relaxed text-lg max-w-2xl mx-auto">
-            {t("footerDescription")}
+            L'application de courses familiale la plus populaire au Canada.
+            Synchronisation temps réel, mode hors ligne, 100% gratuite à vie.
           </p>
 
           {/* Social Media */}
@@ -81,7 +76,7 @@ export default function Footer() {
               {
                 icon: Mail,
                 label: "Email",
-                href: "mailto:contact@epilist.app",
+                href: "mailto:support@epilist.app",
               },
             ].map((social, index) => (
               <Button
@@ -107,37 +102,114 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            {[
-              { text: t("privacyPolicy"), href: "/privacy" },
-              { text: t("termsOfService"), href: "/terms" },
-              { text: t("contact"), href: "/contact" },
-            ].map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className="text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm hover:underline underline-offset-4"
-              >
-                {link.text}
-              </Link>
-            ))}
+          {/* Quick Links - CORRIGÉ avec nouvelles URLs SEO */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 max-w-4xl mx-auto">
+            {/* Colonne 1: App */}
+            <div>
+              <h4 className="text-green-400 font-semibold mb-3">Application</h4>
+              <div className="space-y-2">
+                <Link
+                  href="/telecharger"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Télécharger
+                </Link>
+                <Link
+                  href="/fonctionnalites"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Fonctionnalités
+                </Link>
+                <Link
+                  href="/comparaison-applications-courses"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Comparaison
+                </Link>
+              </div>
+            </div>
+
+            {/* Colonne 2: Support */}
+            <div>
+              <h4 className="text-blue-400 font-semibold mb-3">Support</h4>
+              <div className="space-y-2">
+                <Link
+                  href="/aide"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Centre d'aide
+                </Link>
+                <Link
+                  href="/contact"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Nous contacter
+                </Link>
+                <a
+                  href="mailto:support@epilist.app"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Support email
+                </a>
+              </div>
+            </div>
+
+            {/* Colonne 3: Entreprise */}
+            <div>
+              <h4 className="text-purple-400 font-semibold mb-3">Entreprise</h4>
+              <div className="space-y-2">
+                <Link
+                  href="/a-propos"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  À propos
+                </Link>
+                <span className="block text-gray-400 text-sm">
+                  🍁 Nouveau-Brunswick
+                </span>
+                <span className="block text-gray-400 text-sm">
+                  Made in Canada
+                </span>
+              </div>
+            </div>
+
+            {/* Colonne 4: Légal */}
+            <div>
+              <h4 className="text-orange-400 font-semibold mb-3">Légal</h4>
+              <div className="space-y-2">
+                <Link
+                  href="/politique-confidentialite"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Confidentialité
+                </Link>
+                <Link
+                  href="/conditions-utilisation"
+                  className="block text-gray-400 hover:text-green-400 transition-colors duration-300 text-sm"
+                >
+                  Conditions
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Newsletter Section */}
         <div className="border-t border-gray-800 pt-8 mb-8">
           <div className="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-2xl p-8 text-center max-w-2xl mx-auto border border-white/10">
-            <h3 className="text-2xl font-bold mb-4">{t("footerNewsletter")}</h3>
-            <p className="text-gray-400 mb-6">{t("footerNewsletterDesc")}</p>
+            <h3 className="text-2xl font-bold mb-4">Restez informé 📬</h3>
+            <p className="text-gray-400 mb-6">
+              Nouvelles fonctionnalités, conseils courses et mises à jour
+              exclusives
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
-                placeholder={t("footerNewsletterPlaceholder")}
+                placeholder="votre@email.com"
                 className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
               />
               <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-                {t("footerNewsletterButton")}
+                S'abonner
               </Button>
             </div>
           </div>
@@ -146,7 +218,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="text-center border-t border-gray-800 pt-8">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-400 text-sm">
-            <span>{t("footerCopyright")}</span>
+            <span>© 2025 EpiList Inc. Tous droits réservés.</span>
             <div className="flex items-center gap-2">
               <span>•</span>
               <span>Made with</span>

@@ -1,5 +1,7 @@
 "use client";
 
+import { trackAppDownload, trackDemoView } from "@/lib/gtag";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -44,24 +46,26 @@ export default function HeroSection() {
   };
 
   // Fonction pour détecter l'appareil et ouvrir le bon store
-  const handleDownload = () => {
+  const handleDownload = (): void => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
 
     if (isIOS) {
+      trackAppDownload("ios", "hero_main_cta");
       window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
     } else if (isAndroid) {
+      trackAppDownload("android", "hero_main_cta");
       window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
     } else {
-      // Par défaut sur desktop, ouvrir Google Play
+      // Sur desktop, on assume Android/Google Play
+      trackAppDownload("android", "hero_main_cta_desktop");
       window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
     }
   };
 
   // Fonction pour ouvrir la démo vidéo (peut être modifiée selon vos besoins)
-  const handleWatchDemo = () => {
-    // Remplacez par l'URL de votre vidéo de démo
-    // Pour l'instant, on redirige vers Google Play aussi
+  const handleWatchDemo = (): void => {
+    trackDemoView("hero_demo_button");
     window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
   };
 

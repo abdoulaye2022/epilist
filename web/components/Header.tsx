@@ -1,4 +1,9 @@
+// ==========================================
+// 1. Header.tsx corrigé avec nouvelles URLs
+// ==========================================
 "use client";
+
+import { trackAppDownload } from "@/lib/gtag";
 
 import React from "react";
 import { useState, useEffect } from "react";
@@ -20,6 +25,16 @@ export default function Header() {
   const GOOGLE_PLAY_URL =
     "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
 
+  const openAppStore = (): void => {
+    trackAppDownload("ios", "header");
+    window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
+  };
+
+  const openGooglePlay = (): void => {
+    trackAppDownload("android", "header");
+    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -35,15 +50,6 @@ export default function Header() {
       element.scrollIntoView({ behavior: "smooth" });
     }
     setIsMobileMenuOpen(false);
-  };
-
-  // Fonction pour ouvrir les liens des stores
-  const openAppStore = () => {
-    window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
-  };
-
-  const openGooglePlay = () => {
-    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -62,10 +68,9 @@ export default function Header() {
             className="flex items-center space-x-3 group cursor-pointer"
           >
             <div className="relative">
-              {/* Logo Image sans background */}
               <div className="relative w-8 h-8 group-hover:scale-110 transition-transform duration-300">
                 <Image
-                  src="/app_logo.png" // Ou .png/.jpg selon votre format
+                  src="/app_logo.png"
                   alt="EpiList Logo"
                   fill
                   className="object-contain"
@@ -73,15 +78,8 @@ export default function Header() {
                   sizes="32px"
                 />
               </div>
-
-              {/* Logo Image - Priorité 2: Fallback avec icône si pas d'image */}
-              {/* Commentez la div ci-dessus et décommentez celle ci-dessous si vous n'avez pas encore d'image */}
-              {/* 
-              <Smartphone className="h-8 w-8 text-green-600 group-hover:scale-110 transition-transform duration-300" />
-              */}
             </div>
 
-            {/* Texte du logo */}
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                 EpiList
@@ -100,12 +98,13 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - CORRIGÉ */}
           <nav className="hidden lg:flex items-center space-x-8">
             {[
-              { key: "features", id: "fonctionnalites" },
+              { key: "features", href: "/fonctionnalites" },
               { key: "benefits", id: "avantages" },
               { key: "testimonials", id: "temoignages" },
+              { key: "help", href: "/aide" },
               { key: "contact", href: "/contact" },
             ].map((item) =>
               item.href ? (
@@ -114,7 +113,9 @@ export default function Header() {
                   href={item.href}
                   className="relative text-gray-700 hover:text-green-600 transition-all duration-300 font-medium group"
                 >
-                  {t(item.key as any)}
+                  {item.key === "features" && "Fonctionnalités"}
+                  {item.key === "help" && "Aide"}
+                  {item.key === "contact" && t(item.key as any)}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 group-hover:w-full transition-all duration-300"></span>
                 </Link>
               ) : (
@@ -133,17 +134,21 @@ export default function Header() {
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center space-x-3">
             <LanguageToggle />
-            <Button
-              onClick={openAppStore}
-              variant="outline"
-              className="border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300 group relative overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center">
-                <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-                {t("appStore")}
-              </span>
-              <div className="absolute inset-0 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-            </Button>
+
+            {/* Nouveau bouton Télécharger */}
+            <Link href="/telecharger">
+              <Button
+                variant="outline"
+                className="border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300 group relative overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center">
+                  <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
+                  Télécharger
+                </span>
+                <div className="absolute inset-0 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              </Button>
+            </Link>
+
             <Button
               onClick={openGooglePlay}
               className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white transition-all duration-300 shadow-lg hover:shadow-xl group relative overflow-hidden"
@@ -170,7 +175,7 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - CORRIGÉ */}
         <div
           className={`lg:hidden absolute top-full left-0 right-0 transition-all duration-500 ${
             isMobileMenuOpen
@@ -181,10 +186,19 @@ export default function Header() {
           <div className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl mx-4 mt-2 shadow-xl">
             <nav className="flex flex-col p-6 space-y-4">
               {[
-                { key: "features", id: "fonctionnalites" },
-                { key: "benefits", id: "avantages" },
-                { key: "testimonials", id: "temoignages" },
-                { key: "contact", href: "/contact" },
+                {
+                  key: "features",
+                  href: "/fonctionnalites",
+                  label: "Fonctionnalités",
+                },
+                { key: "benefits", id: "avantages", label: t("benefits") },
+                {
+                  key: "testimonials",
+                  id: "temoignages",
+                  label: t("testimonials"),
+                },
+                { key: "help", href: "/aide", label: "Aide" },
+                { key: "contact", href: "/contact", label: t("contact") },
               ].map((item) =>
                 item.href ? (
                   <Link
@@ -193,7 +207,7 @@ export default function Header() {
                     className="text-left text-gray-700 hover:text-green-600 transition-colors duration-300 font-medium py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {t(item.key as any)}
+                    {item.label}
                   </Link>
                 ) : (
                   <button
@@ -201,23 +215,33 @@ export default function Header() {
                     onClick={() => scrollToSection(item.id!)}
                     className="text-left text-gray-700 hover:text-green-600 transition-colors duration-300 font-medium py-2"
                   >
-                    {t(item.key as any)}
+                    {item.label}
                   </button>
                 )
               )}
+
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
                 <LanguageToggle />
-                <Button
-                  onClick={openAppStore}
-                  variant="outline"
-                  className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300"
+
+                <Link
+                  href="/telecharger"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Download className="mr-2 h-4 w-4" />
-                  {t("appStore")}
-                </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Télécharger l'app
+                  </Button>
+                </Link>
+
                 <Button
-                  onClick={openGooglePlay}
-                  className="bg-gradient-to-r from-green-500 to-blue-500 text-white"
+                  onClick={() => {
+                    openGooglePlay();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white"
                 >
                   <Download className="mr-2 h-4 w-4" />
                   {t("googlePlay")}
