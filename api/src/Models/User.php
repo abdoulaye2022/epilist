@@ -933,4 +933,158 @@ class User extends Model
                 $q->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
             });
     }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Envoyer rappel quotidien de liste
+     */
+    public function sendDailyListReminder(int $daysSinceLastList): bool
+    {
+        if (!$this->canReceiveNotifications()) {
+            return false;
+        }
+
+        $notificationService = new \App\Services\NotificationService();
+        return $notificationService->sendDailyListReminder($this, $daysSinceLastList);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste aujourd'hui
+     */
+    public function hasCreatedListToday(): bool
+    {
+        $today = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        
+        return $this->shoppingLists()
+            ->whereBetween('created_at', [$today, $endOfDay])
+            ->exists();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel quotidien
+     */
+    public function isEligibleForDailyReminder(): bool
+    {
+        return $this->isActive() && 
+            $this->canReceiveNotifications() && 
+            $this->shoppingLists()->exists() && // A déjà créé des listes dans le passé
+            !$this->hasCreatedListToday(); // N'a pas créé de liste aujourd'hui
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques quotidiennes de l'utilisateur
+     */
+    public function getDailyStats(): array
+    {
+        $today = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        
+        $todayLists = $this->shoppingLists()
+            ->whereBetween('created_at', [$today, $endOfDay])
+            ->count();
+        
+        $yesterday = Carbon::now()->subDay();
+        $yesterdayStart = $yesterday->startOfDay();
+        $yesterdayEnd = $yesterday->endOfDay();
+        
+        $yesterdayLists = $this->shoppingLists()
+            ->whereBetween('created_at', [$yesterdayStart, $yesterdayEnd])
+            ->count();
+        
+        return [
+            'today' => [
+                'lists_created' => $todayLists,
+                'has_created_list' => $todayLists > 0,
+                'date' => $today->toDateString(),
+                'day_name' => Carbon::now()->locale('fr')->dayName
+            ],
+            'yesterday' => [
+                'lists_created' => $yesterdayLists,
+                'date' => $yesterday->toDateString(),
+                'day_name' => $yesterday->locale('fr')->dayName
+            ],
+            'comparison' => [
+                'difference' => $todayLists - $yesterdayLists,
+                'trend' => $todayLists > $yesterdayLists ? 'up' : 
+                        ($todayLists < $yesterdayLists ? 'down' : 'stable')
+            ],
+            'days_since_last_list' => $this->getDaysSinceLastList(),
+            'is_eligible_for_reminder' => $this->isEligibleForDailyReminder()
+        ];
+    }
+
+    /**
+     * ✅ NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels quotidiens
+     */
+    public function scopeEligibleForDailyReminder($query)
+    {
+        $today = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        
+        return $query->active()
+            ->withActiveDevices()
+            ->whereHas('shoppingLists') // Ont déjà créé des listes
+            ->whereDoesntHave('shoppingLists', function($q) use ($today, $endOfDay) {
+                $q->whereBetween('created_at', [$today, $endOfDay]);
+            });
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir le nombre de listes créées dans les X derniers jours
+     */
+    public function getListsCountLastDays(int $days = 7): int
+    {
+        $startDate = Carbon::now()->subDays($days)->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
+        
+        return $this->shoppingLists()
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est un utilisateur régulier
+     */
+    public function isRegularUser(): bool
+    {
+        // Un utilisateur régulier = au moins 3 listes dans les 30 derniers jours
+        return $this->getListsCountLastDays(30) >= 3;
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir le pattern d'usage de l'utilisateur
+     */
+    public function getUserUsagePattern(): array
+    {
+        $totalLists = $this->shoppingLists()->count();
+        $accountAgeDays = $this->created_at->diffInDays(Carbon::now());
+        $recentLists = $this->getListsCountLastDays(30);
+        $weeklyAverage = $accountAgeDays > 0 ? round(($totalLists / $accountAgeDays) * 7, 2) : 0;
+        
+        // Déterminer le type d'utilisateur
+        $userType = 'new';
+        if ($totalLists === 0) {
+            $userType = 'inactive';
+        } elseif ($recentLists === 0 && $totalLists > 0) {
+            $userType = 'dormant';
+        } elseif ($recentLists >= 8) {
+            $userType = 'power_user';
+        } elseif ($recentLists >= 3) {
+            $userType = 'regular';
+        } elseif ($recentLists >= 1) {
+            $userType = 'occasional';
+        }
+        
+        return [
+            'user_type' => $userType,
+            'total_lists' => $totalLists,
+            'account_age_days' => $accountAgeDays,
+            'recent_lists_30_days' => $recentLists,
+            'weekly_average' => $weeklyAverage,
+            'last_list_date' => $this->getLastCreatedList()?->created_at?->toDateString(),
+            'days_since_last_list' => $this->getDaysSinceLastList(),
+            'is_regular_user' => $this->isRegularUser(),
+            'needs_encouragement' => $recentLists === 0 && $totalLists > 0
+        ];
+    }
 }

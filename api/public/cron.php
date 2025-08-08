@@ -42,10 +42,10 @@ try {
 
     // 2. ✅ ALERTES BUDGETS DÉPASSÉS (toutes les heures 9h-21h)
     $currentHour = Carbon::now()->hour;
-    // if ($currentHour >= 9 && $currentHour <= 21) {
+    if ($currentHour >= 9 && $currentHour <= 21) {
         echo "Checking for budget alerts...\n";
         checkBudgetAlerts($notificationService);
-    // }
+    }
 
     // 3. ✅ BUDGETS EXPIRANT BIENTÔT (une fois par jour à 18h)
     if (Carbon::now()->hour === 18 && Carbon::now()->minute < 30) {
@@ -60,10 +60,10 @@ try {
     }
 
     // 5. ✅ CORRECTION: VÉRIFICATION LISTES COMPLÉTÉES SANS FACTURE (toutes les 2 heures, 8h-22h)
-    // if ($currentHour >= 8 && $currentHour <= 22 && $currentHour % 2 === 0 && Carbon::now()->minute < 30) {
+    if ($currentHour >= 8 && $currentHour <= 22 && $currentHour % 2 === 0 && Carbon::now()->minute < 30) {
         echo "Checking for completed lists without receipts...\n";
         checkCompletedLists();
-    // }
+    }
 
     // 6. ✅ NETTOYAGE DES APPAREILS INACTIFS (une fois par semaine le dimanche à 2h)
     if (Carbon::now()->dayOfWeek === Carbon::SUNDAY && Carbon::now()->hour === 2) {
@@ -82,6 +82,11 @@ try {
         echo "Checking for users with no lists this week...\n";
         checkUsersWithoutWeeklyLists($notificationService);
     }
+
+    // if (Carbon::now()->hour === 19 && Carbon::now()->minute < 30) {
+        echo "Checking for users with no lists today...\n";
+        checkUsersWithoutTodayLists($notificationService);
+    // }
 
     echo "=== Cron completed successfully ===\n";
 
@@ -822,6 +827,175 @@ function cleanupWeeklyReminderCacheFiles(): int
         
     } catch (\Exception $e) {
         error_log("Error cleaning weekly reminder cache files: " . $e->getMessage());
+    }
+    
+    return $cleaned;
+}
+
+function checkUsersWithoutTodayLists(NotificationService $service): void
+{
+    echo "Starting daily lists check...\n";
+    
+    try {
+        $today = Carbon::now()->startOfDay();
+        $endOfDay = Carbon::now()->endOfDay();
+        
+        echo "Checking for lists created between {$today->toDateTimeString()} and {$endOfDay->toDateTimeString()}\n";
+        
+        // ✅ Trouver les utilisateurs actifs qui n'ont PAS créé de liste aujourd'hui
+        $usersWithoutTodayLists = User::where('is_active', true)
+            ->whereHas('devices', function($q) {
+                $q->where('is_active', true)->whereNotNull('push_token');
+            })
+            ->whereHas('shoppingLists') // Ont déjà créé des listes dans le passé
+            ->whereDoesntHave('shoppingLists', function($q) use ($today, $endOfDay) {
+                $q->whereBetween('created_at', [$today, $endOfDay]);
+            })
+            ->with(['shoppingLists' => function($q) {
+                $q->orderBy('created_at', 'desc')->limit(1);
+            }])
+            ->get();
+
+        echo "Found {$usersWithoutTodayLists->count()} users without lists today\n";
+        
+        $sentCount = 0;
+        $errors = [];
+        
+        foreach ($usersWithoutTodayLists as $user) {
+            try {
+                // Vérifier qu'on n'a pas déjà envoyé cette notification aujourd'hui
+                $lastDailyReminder = getLastDailyReminder($user->id);
+                $now = Carbon::now();
+                
+                // Ne pas spammer: une seule notification par jour
+                if ($lastDailyReminder && $lastDailyReminder->isToday()) {
+                    continue;
+                }
+                
+                // Calculer depuis quand l'utilisateur n'a pas créé de liste
+                $lastList = $user->shoppingLists->first();
+                $daysSinceLastList = $lastList ? 
+                    $lastList->created_at->diffInDays($now) : 
+                    $user->created_at->diffInDays($now);
+                
+                // Envoyer la notification adaptée
+                $success = $service->sendDailyListReminder($user, $daysSinceLastList);
+                
+                if ($success) {
+                    $sentCount++;
+                    saveLastDailyReminder($user->id, $now);
+                    echo "Sent daily reminder to user {$user->id} ({$daysSinceLastList} days since last list)\n";
+                } else {
+                    $errors[] = "Failed to send to user {$user->id}";
+                }
+                
+            } catch (\Exception $e) {
+                $errors[] = "Error processing user {$user->id}: " . $e->getMessage();
+                error_log("Daily reminder error for user {$user->id}: " . $e->getMessage());
+            }
+        }
+        
+        echo "Daily reminders sent: {$sentCount}\n";
+        
+        if (!empty($errors)) {
+            echo "Errors encountered:\n";
+            foreach ($errors as $error) {
+                echo "- {$error}\n";
+            }
+        }
+        
+    } catch (\Exception $e) {
+        echo "Error in checkUsersWithoutTodayLists: " . $e->getMessage() . "\n";
+        error_log("Daily lists check error: " . $e->getMessage());
+    }
+}
+
+/**
+ * ✅ HELPER: Récupérer le dernier rappel quotidien
+ */
+function getLastDailyReminder(int $userId): ?Carbon
+{
+    $cacheFile = __DIR__ . "/../storage/daily_reminder_{$userId}.txt";
+    
+    if (!file_exists($cacheFile)) {
+        return null;
+    }
+    
+    try {
+        $timestamp = file_get_contents($cacheFile);
+        
+        if (!$timestamp || !is_numeric($timestamp)) {
+            unlink($cacheFile);
+            return null;
+        }
+        
+        $reminderTime = Carbon::createFromTimestamp($timestamp, 'UTC');
+        
+        // Vérification de sécurité: Pas plus de 7 jours dans le passé
+        if ($reminderTime->diffInDays(Carbon::now()) > 7) {
+            unlink($cacheFile);
+            return null;
+        }
+        
+        return $reminderTime;
+        
+    } catch (\Exception $e) {
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+        return null;
+    }
+}
+
+/**
+ * ✅ HELPER: Sauvegarder le dernier rappel quotidien
+ */
+function saveLastDailyReminder(int $userId, Carbon $time): void
+{
+    $cacheFile = __DIR__ . "/../storage/daily_reminder_{$userId}.txt";
+    $storageDir = dirname($cacheFile);
+    
+    try {
+        if (!is_dir($storageDir)) {
+            mkdir($storageDir, 0755, true);
+        }
+        
+        file_put_contents($cacheFile, $time->getTimestamp());
+        
+    } catch (\Exception $e) {
+        error_log("Error saving daily reminder timestamp: " . $e->getMessage());
+    }
+}
+
+/**
+ * ✅ HELPER: Nettoyer les anciens fichiers cache de rappels quotidiens
+ * (À ajouter dans la fonction cleanupNotificationCacheFiles existante)
+ */
+function cleanupDailyReminderCacheFiles(): int
+{
+    $cleaned = 0;
+    $storageDir = __DIR__ . "/../storage";
+    
+    if (!is_dir($storageDir)) {
+        return 0;
+    }
+    
+    try {
+        $files = glob($storageDir . "/daily_reminder_*.txt");
+        $now = time();
+        
+        foreach ($files as $file) {
+            $lastModified = filemtime($file);
+            
+            // Supprimer les fichiers plus anciens que 7 jours
+            if (($now - $lastModified) > (7 * 24 * 60 * 60)) {
+                unlink($file);
+                $cleaned++;
+            }
+        }
+        
+    } catch (\Exception $e) {
+        error_log("Error cleaning daily reminder cache files: " . $e->getMessage());
     }
     
     return $cleaned;

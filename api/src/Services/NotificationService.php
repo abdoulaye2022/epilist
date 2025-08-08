@@ -29,6 +29,7 @@ class NotificationService
     const TYPE_USER_INACTIVE = 'user_inactive';
     const TYPE_LIST_COMPLETED = 'list_completed';
     const TYPE_WEEKLY_LIST_REMINDER = 'weekly_list_reminder';
+    const TYPE_DAILY_LIST_REMINDER = 'daily_list_reminder';
 
     public function __construct()
     {
@@ -650,6 +651,7 @@ class NotificationService
             self::TYPE_USER_INACTIVE => 'gentle_reminder',
             self::TYPE_LIST_COMPLETED => 'success_chime',
             self::TYPE_WEEKLY_LIST_REMINDER => 'weekly_reminder', // ✅ NOUVEAU
+            self::TYPE_DAILY_LIST_REMINDER => 'daily_reminder',
             default => 'default'
         };
     }
@@ -666,6 +668,7 @@ class NotificationService
             self::TYPE_PURCHASE_REMINDER,
             self::TYPE_USER_INACTIVE,
             self::TYPE_WEEKLY_LIST_REMINDER => 'reminders', // ✅ NOUVEAU
+            self::TYPE_DAILY_LIST_REMINDER => 'reminders',
             default => 'general'
         };
     }
@@ -739,6 +742,71 @@ class NotificationService
             return "Hello ! Cela fait {$daysSinceLastList} jours sans nouvelle liste. Que diriez-vous de créer votre liste hebdomadaire ?";
         } else {
             return "📋 EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
+        }
+    }
+
+    public function sendDailyListReminder(User $user, int $daysSinceLastList): bool
+    {
+        $title = "📝 N'oubliez pas votre liste !";
+        $body = $this->getDailyReminderBody($daysSinceLastList);
+        
+        $data = [
+            'reminder_type' => 'daily_list',
+            'days_since_last_list' => (string) $daysSinceLastList,
+            'date' => (string) Carbon::now()->toDateString(),
+            'day_name' => (string) Carbon::now()->locale('fr')->dayName,
+            'currency_code' => (string) $user->getPreferredCurrency()->code,
+            'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
+            'action' => 'create_new_list'
+        ];
+
+        $result = $this->sendToUser(
+            $user->id,
+            self::TYPE_DAILY_LIST_REMINDER,
+            $title,
+            $body,
+            $data,
+            'normal'
+        );
+
+        return $result['success'];
+    }
+
+    /**
+     * ✅ MÉTHODE PRIVÉE: Générer le message de rappel quotidien
+     */
+    private function getDailyReminderBody(int $daysSinceLastList): string
+    {
+        $dayName = Carbon::now()->locale('fr')->dayName;
+        $timeOfDay = Carbon::now()->hour;
+        
+        // Messages selon l'heure et le jour
+        if ($timeOfDay >= 17 && $timeOfDay <= 20) {
+            // En soirée (17h-20h)
+            if ($daysSinceLastList === 0) {
+                return "Bonsoir ! Vous n'avez pas encore créé votre liste de courses aujourd'hui. Préparez-vous pour demain ?";
+            } elseif ($daysSinceLastList === 1) {
+                return "Bonsoir ! Cela fait maintenant 1 jour sans nouvelle liste. Avez-vous des courses à prévoir ?";
+            } elseif ($daysSinceLastList <= 3) {
+                return "Bonsoir ! Cela fait {$daysSinceLastList} jours que vous n'avez pas créé de liste. Besoin d'aide pour organiser vos achats ?";
+            } elseif ($daysSinceLastList <= 7) {
+                return "Bonsoir ! Une semaine sans liste de courses, ça se ressent ! Prêt à reprendre de bonnes habitudes ?";
+            } else {
+                return "Bonsoir ! EpiList vous attend depuis {$daysSinceLastList} jours. Redécouvrez le plaisir d'organiser vos courses !";
+            }
+        } else {
+            // Messages génériques pour autres heures
+            if ($daysSinceLastList === 0) {
+                return "Bonjour ! Vous n'avez pas encore planifié vos courses pour aujourd'hui. Créez votre liste maintenant !";
+            } elseif ($daysSinceLastList === 1) {
+                return "Salut ! Hier, pas de liste de courses... Et aujourd'hui ? Laissez EpiList vous aider !";
+            } elseif ($daysSinceLastList <= 3) {
+                return "Hello ! {$daysSinceLastList} jours sans liste, c'est le moment de s'y remettre. Que diriez-vous d'une nouvelle liste ?";
+            } elseif ($daysSinceLastList <= 7) {
+                return "Coucou ! Une semaine sans EpiList, ça fait long ! Reprenez vos bonnes habitudes de courses organisées.";
+            } else {
+                return "📋 On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
+            }
         }
     }
 }
