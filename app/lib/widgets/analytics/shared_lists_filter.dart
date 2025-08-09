@@ -24,95 +24,210 @@ class SharedListsFilter extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color:
+              includeShared
+                  ? Colors.blue.withOpacity(0.3)
+                  : theme.colorScheme.outline.withOpacity(0.2),
+          width: includeShared ? 1.5 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Column(
-        children: [
-          // ✅ Toggle principal
-          Row(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // En-tête avec icône et titre
+            _buildHeader(context, l10n),
+            const SizedBox(height: 16),
+
+            // Toggle principal avec design moderne
+            _buildMainToggle(context, l10n),
+
+            // Description explicative
+            if (!includeShared) ...[
+              const SizedBox(height: 12),
+              _buildInfoBanner(context, l10n),
+            ],
+
+            // Breakdown optionnel
+            if (showBreakdown && includeShared) ...[
+              const SizedBox(height: 20),
+              _buildBreakdownSection(context),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return Row(
+      children: [
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: includeShared ? Colors.blue[50] : Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            includeShared ? Icons.groups_rounded : Icons.person_rounded,
+            color: includeShared ? Colors.blue[600] : Colors.grey[600],
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                includeShared ? Icons.group : Icons.person,
-                color: includeShared ? Colors.blue : Colors.grey,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.includeSharedLists ?? 'Inclure les listes partagées',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.onSurface,
-                  ),
+              Text(
+                l10n.includeSharedLists ?? 'Inclure les listes partagées',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-              Switch.adaptive(
-                value: includeShared,
-                onChanged: (value) {
-                  if (onChanged != null) {
-                    onChanged!(value);
-                  } else {
-                    // ✅ CORRECTION: Utiliser le bloc existant du contexte
-                    context.read<AnalyticsBloc>().add(
-                      ToggleSharedListsFilter(includeShared: value),
-                    );
-                  }
-                },
-                activeColor: Colors.blue,
+              const SizedBox(height: 2),
+              Text(
+                includeShared
+                    ? 'Toutes les listes sont incluses'
+                    : 'Seules vos listes personnelles',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                ),
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
 
-          // ✅ Description explicative
-          if (!includeShared)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16,
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      l10n.showingOnlyOwnLists ??
-                          'Affichage uniquement de vos propres listes',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                    ),
-                  ),
-                ],
+  Widget _buildMainToggle(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color:
+            includeShared
+                ? Colors.blue[50]?.withOpacity(0.5)
+                : theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color:
+              includeShared
+                  ? Colors.blue.withOpacity(0.2)
+                  : theme.colorScheme.outline.withOpacity(0.1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            includeShared
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked_rounded,
+            color: includeShared ? Colors.blue[600] : Colors.grey[500],
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              includeShared
+                  ? 'Analyse complète (mes listes + partagées)'
+                  : 'Analyse personnelle uniquement',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurface,
               ),
             ),
-
-          // ✅ Breakdown optionnel (si activé) - CORRIGÉ pour utiliser le bloc existant
-          if (showBreakdown && includeShared)
-            BlocBuilder<AnalyticsBloc, AnalyticsState>(
-              builder: (context, state) {
-                if (state is DashboardLoaded) {
-                  final breakdown = state.dashboardData['data_breakdown'];
-                  if (breakdown != null) {
-                    return _buildBreakdownSection(context, breakdown);
-                  }
+          ),
+          const SizedBox(width: 12),
+          Transform.scale(
+            scale: 0.9,
+            child: Switch.adaptive(
+              value: includeShared,
+              onChanged: (value) {
+                if (onChanged != null) {
+                  onChanged!(value);
+                } else {
+                  context.read<AnalyticsBloc>().add(
+                    ToggleSharedListsFilter(includeShared: value),
+                  );
                 }
-                return const SizedBox.shrink();
               },
+              activeColor: Colors.blue[600],
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBreakdownSection(
+  Widget _buildInfoBanner(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.orange[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: Colors.orange[700]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.showingOnlyOwnLists ??
+                  'Affichage uniquement de vos propres listes',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.orange[700],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBreakdownSection(BuildContext context) {
+    return BlocBuilder<AnalyticsBloc, AnalyticsState>(
+      builder: (context, state) {
+        if (state is DashboardLoaded) {
+          final breakdown = state.dashboardData['data_breakdown'];
+          if (breakdown != null) {
+            return _buildBreakdownContent(context, breakdown);
+          }
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _buildBreakdownContent(
     BuildContext context,
     Map<String, dynamic> breakdown,
   ) {
@@ -130,59 +245,78 @@ class SharedListsFilter extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.spendingBreakdown ?? 'Répartition des dépenses',
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          // En-tête du breakdown
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.pie_chart_outline_rounded,
+                  size: 18,
+                  color: Colors.blue[600],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.spendingBreakdown ?? 'Répartition des dépenses',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
 
-          // Barre de progression
+          const SizedBox(height: 16),
+
+          // Barre de progression moderne
           if (ownTotal > 0 || sharedTotal > 0) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: ownPercentage / 100,
-                backgroundColor: Colors.blue.withOpacity(0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                minHeight: 6,
+            Container(
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: Colors.grey[200],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: ownPercentage / 100,
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green[500]!),
+                  minHeight: 8,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
           ],
 
-          // Détails
+          // Statistiques détaillées
           Row(
             children: [
               // Mes listes
               Expanded(
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '${l10n.myLists ?? "Mes listes"}: ${ownPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                child: _buildStatCard(
+                  context,
+                  icon: Icons.person_rounded,
+                  color: Colors.green,
+                  label: l10n.myLists ?? "Mes listes",
+                  percentage: ownPercentage,
                 ),
               ),
 
@@ -190,25 +324,12 @@ class SharedListsFilter extends StatelessWidget {
 
               // Listes partagées
               Expanded(
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.7),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '${l10n.sharedLists ?? "Partagées"}: ${sharedPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                child: _buildStatCard(
+                  context,
+                  icon: Icons.group_rounded,
+                  color: Colors.blue,
+                  label: l10n.sharedLists ?? "Partagées",
+                  percentage: sharedPercentage,
                 ),
               ),
             ],
@@ -217,9 +338,64 @@ class SharedListsFilter extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required MaterialColor color,
+    required String label,
+    required double percentage,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: color[500],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(icon, size: 12, color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: color[700],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${percentage.toStringAsFixed(1)}%',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color[700],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-// ✅ Widget simplifié pour un toggle rapide
+// ✅ Widget simplifié pour un toggle rapide - Design moderne
 class QuickSharedListsToggle extends StatelessWidget {
   final bool includeShared;
   final Function(bool) onChanged;
@@ -232,29 +408,43 @@ class QuickSharedListsToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          includeShared ? Icons.group : Icons.person,
-          size: 18,
-          color: includeShared ? Colors.blue : Colors.grey,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: includeShared ? Colors.blue[50] : Colors.grey[100],
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color:
+              includeShared
+                  ? Colors.blue.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.3),
         ),
-        const SizedBox(width: 4),
-        Switch.adaptive(
-          value: includeShared,
-          onChanged: onChanged,
-          activeColor: Colors.blue,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-      ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            includeShared ? Icons.groups_rounded : Icons.person_rounded,
+            size: 16,
+            color: includeShared ? Colors.blue[600] : Colors.grey[600],
+          ),
+          const SizedBox(width: 6),
+          Transform.scale(
+            scale: 0.8,
+            child: Switch.adaptive(
+              value: includeShared,
+              onChanged: onChanged,
+              activeColor: Colors.blue[600],
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// ✅ Widget de statut du filtre pour la barre d'app
+// ✅ Widget de statut du filtre pour la barre d'app - Design moderne
 class FilterStatusIndicator extends StatelessWidget {
   final bool includeShared;
 
@@ -269,23 +459,42 @@ class FilterStatusIndicator extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.orange[50],
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.filter_alt, size: 14, color: Colors.orange[700]),
-          const SizedBox(width: 4),
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Colors.orange[100],
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Icon(
+              Icons.filter_alt_rounded,
+              size: 10,
+              color: Colors.orange[700],
+            ),
+          ),
+          const SizedBox(width: 6),
           Text(
             l10n.ownListsOnly ?? 'Mes listes uniquement',
             style: TextStyle(
               fontSize: 11,
               color: Colors.orange[700],
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

@@ -178,7 +178,6 @@ class LoadYearlySpending extends AnalyticsEvent {
   List<Object?> get props => [years, currencyCode, includeShared];
 }
 
-// ✅ NOUVEAUX ÉVÉNEMENTS pour le contrôle global du filtrage
 class ToggleSharedListsFilter extends AnalyticsEvent {
   final bool includeShared;
 
@@ -188,15 +187,42 @@ class ToggleSharedListsFilter extends AnalyticsEvent {
   List<Object?> get props => [includeShared];
 }
 
+class SetPeriodFilter extends AnalyticsEvent {
+  final String? periodFilter;
+
+  const SetPeriodFilter({required this.periodFilter});
+
+  @override
+  List<Object?> get props => [periodFilter];
+}
+
+class SetCurrencyFilter extends AnalyticsEvent {
+  final String? currencyFilter;
+
+  const SetCurrencyFilter({required this.currencyFilter});
+
+  @override
+  List<Object?> get props => [currencyFilter];
+}
+
 class RefreshAnalyticsWithFilter extends AnalyticsEvent {
   final bool includeShared;
   final String? currencyCode;
+  final String? periodFilter;
+  final bool clearAllFilters;
 
   const RefreshAnalyticsWithFilter({
     required this.includeShared,
     this.currencyCode,
+    this.periodFilter,
+    this.clearAllFilters = false,
   });
 
   @override
-  List<Object?> get props => [includeShared, currencyCode];
+  List<Object?> get props => [
+    includeShared,
+    currencyCode,
+    periodFilter,
+    clearAllFilters,
+  ];
 }

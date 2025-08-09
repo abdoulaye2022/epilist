@@ -2,6 +2,7 @@
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
+import 'package:epilist/widgets/analytics/analytics_filters.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,7 @@ class AnalyticsScreen extends StatefulWidget {
 class _AnalyticsScreenState extends State<AnalyticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -44,18 +46,49 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
   }
 
   void _refreshCurrentTab() {
+    _refreshCurrentTabWithFilters();
+  }
+
+  void _refreshCurrentTabWithFilters() {
+    final analyticsBloc = context.read<AnalyticsBloc>();
+
+    print('🔧 Refreshing tab ${_tabController.index} with filters:');
+    print('🔧 - includeShared: ${analyticsBloc.includeShared}');
+    print('🔧 - currentCurrency: ${analyticsBloc.currentCurrency}');
+    print('🔧 - currentPeriodFilter: ${analyticsBloc.currentPeriodFilter}');
+
     switch (_tabController.index) {
       case 0:
-        context.read<AnalyticsBloc>().add(const LoadDashboard());
+        analyticsBloc.add(
+          LoadDashboard(
+            currencyCode: analyticsBloc.currentCurrency,
+            includeShared: analyticsBloc.includeShared,
+          ),
+        );
         break;
       case 1:
-        context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
+        analyticsBloc.add(
+          LoadMonthlySpending(
+            currencyCode: analyticsBloc.currentCurrency,
+            includeShared: analyticsBloc.includeShared,
+          ),
+        );
         break;
       case 2:
-        context.read<AnalyticsBloc>().add(const LoadSpendingCategories());
+        analyticsBloc.add(
+          LoadSpendingCategories(
+            currencyCode: analyticsBloc.currentCurrency,
+            includeShared: analyticsBloc.includeShared,
+          ),
+        );
         break;
       case 3:
-        context.read<AnalyticsBloc>().add(const LoadTopProducts());
+        analyticsBloc.add(
+          LoadTopProducts(
+            currencyCode: analyticsBloc.currentCurrency,
+            includeShared: analyticsBloc.includeShared,
+          ),
+        );
         break;
     }
   }
@@ -81,6 +114,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
+            icon: Icon(
+              _showFilters ? Icons.filter_list_off : Icons.filter_list,
+              color: _showFilters ? Colors.green[700] : Colors.black,
+            ),
+            tooltip: _showFilters ? l10n.hideFilters : l10n.showFilters,
+            onPressed: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh, color: Colors.black),
             tooltip: l10n.refresh,
             onPressed: _refreshCurrentTab,
@@ -94,22 +139,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           indicatorColor: Colors.green[700],
           indicatorWeight: 3,
           onTap: (index) {
-            switch (index) {
-              case 0:
-                context.read<AnalyticsBloc>().add(const LoadDashboard());
-                break;
-              case 1:
-                context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
-                break;
-              case 2:
-                context.read<AnalyticsBloc>().add(
-                  const LoadSpendingCategories(),
-                );
-                break;
-              case 3:
-                context.read<AnalyticsBloc>().add(const LoadTopProducts());
-                break;
-            }
+            // ✅ CORRECTION: Appeler la version avec filtres
+            _refreshCurrentTabWithFilters();
           },
           tabs: [
             Tab(
@@ -133,6 +164,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
       ),
       body: BlocListener<AnalyticsBloc, AnalyticsState>(
         listener: (context, state) {
+          // ✅ CORRECTION: Gérer les erreurs ET les changements de filtres
           if (state is AnalyticsError) {
             SmartSnackBarManager.showErrorSnackBar(
               context,
@@ -140,18 +172,84 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               duration: const Duration(seconds: 3),
             );
           }
+
+          // ✅ CORRECTION: Listener pour les changements de filtres
+          if (state is AnalyticsFiltersChanged) {
+            print(
+              '🔧 Filters changed detected, refreshing current tab: ${_tabController.index}',
+            );
+            // Délai pour éviter les conflits de state
+            Future.delayed(const Duration(milliseconds: 100), () {
+              _refreshCurrentTabWithFilters();
+            });
+          }
         },
-        child: ConnectedRefreshIndicator(
-          onRefresh: () async => _refreshCurrentTab(),
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildOverviewTab(context, l10n),
-              _buildTrendsTab(context, l10n),
-              _buildCategoriesTab(context, l10n),
-              _buildTopProductsTab(context, l10n),
-            ],
-          ),
+        child: Column(
+          children: [
+            // Filtres
+            if (_showFilters)
+              BlocBuilder<AnalyticsBloc, AnalyticsState>(
+                builder: (context, state) {
+                  // ✅ CORRECTION: Toujours récupérer depuis le BLoC, pas depuis le state
+                  final analyticsBloc = context.read<AnalyticsBloc>();
+                  final includeShared = analyticsBloc.includeShared;
+                  final activePeriodFilter = analyticsBloc.currentPeriodFilter;
+
+                  print(
+                    '🔧 Filters widget - includeShared: $includeShared, period: $activePeriodFilter',
+                  );
+
+                  return AnalyticsFilters(
+                    includeShared: includeShared,
+                    activePeriodFilter: activePeriodFilter,
+                    onIncludeSharedChanged: (value) {
+                      print(
+                        '🔧 Analytics screen - Include shared changed: $value',
+                      );
+                      context.read<AnalyticsBloc>().add(
+                        ToggleSharedListsFilter(includeShared: value),
+                      );
+                    },
+                    onPeriodFilterChanged: (value) {
+                      print(
+                        '🔧 Analytics screen - Period filter changed: $value',
+                      );
+                      context.read<AnalyticsBloc>().add(
+                        SetPeriodFilter(periodFilter: value),
+                      );
+                    },
+                    onClearFilters: () {
+                      print('🔧 Analytics screen - Clearing all filters');
+                      context.read<AnalyticsBloc>().add(
+                        RefreshAnalyticsWithFilter(
+                          includeShared: true,
+                          clearAllFilters: true,
+                        ),
+                      );
+                      setState(() {
+                        _showFilters = false;
+                      });
+                    },
+                  );
+                },
+              ),
+
+            // Contenu principal avec onglets
+            Expanded(
+              child: ConnectedRefreshIndicator(
+                onRefresh: () async => _refreshCurrentTab(),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildOverviewTab(context, l10n),
+                    _buildTrendsTab(context, l10n),
+                    _buildCategoriesTab(context, l10n),
+                    _buildTopProductsTab(context, l10n),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -199,7 +297,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
-                  // ✅ CORRECTION: Suppression du paramètre currency
                   child: ComparisonCard(
                     data:
                         state.dashboardData['comparison_with_last_month'] ?? {},
@@ -278,7 +375,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
-                  // ✅ CORRECTION: Suppression du paramètre selectedCurrency
                   child: PeriodChartCard(data: chartData),
                 ),
                 const SizedBox(height: 16),
@@ -288,7 +384,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
+          final analyticsBloc = context.read<AnalyticsBloc>();
+          analyticsBloc.add(
+            LoadMonthlySpending(
+              currencyCode: analyticsBloc.currentCurrency,
+              includeShared: analyticsBloc.includeShared,
+            ),
+          );
         });
       },
     );
@@ -345,7 +447,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(const LoadSpendingCategories());
+          final analyticsBloc = context.read<AnalyticsBloc>();
+          analyticsBloc.add(
+            LoadSpendingCategories(
+              currencyCode: analyticsBloc.currentCurrency,
+              includeShared: analyticsBloc.includeShared,
+            ),
+          );
         });
       },
     );
@@ -377,7 +485,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       ),
                     ],
                   ),
-                  // ✅ CORRECTION: Suppression du paramètre selectedCurrency
                   child: TopProductsCard(data: state.productsData),
                 ),
               ],
@@ -386,7 +493,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         }
 
         return _buildEmptyState(l10n, () {
-          context.read<AnalyticsBloc>().add(const LoadTopProducts());
+          final analyticsBloc = context.read<AnalyticsBloc>();
+          analyticsBloc.add(
+            LoadTopProducts(
+              currencyCode: analyticsBloc.currentCurrency,
+              includeShared: analyticsBloc.includeShared,
+            ),
+          );
         });
       },
     );

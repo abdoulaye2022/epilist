@@ -360,4 +360,124 @@ class AnalyticsService {
       );
     }
   }
+
+  // ✅ Rapport de propriétaire de liste
+  Future<Map<String, dynamic>> getOwnerListReport(
+    String listId, {
+    String? currencyCode,
+  }) async {
+    final token = await _authService.getToken();
+
+    final queryParams = <String, dynamic>{};
+    if (currencyCode != null) {
+      queryParams['currency'] = currencyCode;
+    }
+    queryParams['lang'] = _getCurrentLanguage();
+
+    final response = await _dio.get(
+      '/analytics/list/$listId/owner-report',
+      queryParameters: queryParams,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token', ..._getHeaders()},
+      ),
+    );
+
+    if (response.data['success'] == true) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        response.data['error']['message'] ?? 'Erreur rapport propriétaire',
+      );
+    }
+  }
+
+  // ✅ Rapport de contribution d'un participant
+  Future<Map<String, dynamic>> getParticipantReport(
+    String listId, {
+    String? currencyCode,
+  }) async {
+    final token = await _authService.getToken();
+
+    final queryParams = <String, dynamic>{};
+    if (currencyCode != null) {
+      queryParams['currency'] = currencyCode;
+    }
+    queryParams['lang'] = _getCurrentLanguage();
+
+    final response = await _dio.get(
+      '/analytics/list/$listId/participant-report',
+      queryParameters: queryParams,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token', ..._getHeaders()},
+      ),
+    );
+
+    if (response.data['success'] == true) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        response.data['error']['message'] ?? 'Erreur rapport participant',
+      );
+    }
+  }
+
+  // ✅ Rapport de transparence
+  Future<Map<String, dynamic>> getTransparencyReport(
+    String listId, {
+    String? currencyCode,
+  }) async {
+    final token = await _authService.getToken();
+
+    final queryParams = <String, dynamic>{};
+    if (currencyCode != null) {
+      queryParams['currency'] = currencyCode;
+    }
+    queryParams['lang'] = _getCurrentLanguage();
+
+    final response = await _dio.get(
+      '/analytics/list/$listId/transparency',
+      queryParameters: queryParams,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token', ..._getHeaders()},
+      ),
+    );
+
+    if (response.data['success'] == true) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        response.data['error']['message'] ?? 'Erreur rapport transparence',
+      );
+    }
+  }
+
+  // ✅ Rapport d'impact budgétaire
+  Future<Map<String, dynamic>> getBudgetImpactReport(
+    String listId, {
+    String? currencyCode,
+  }) async {
+    final token = await _authService.getToken();
+
+    final queryParams = <String, dynamic>{};
+    if (currencyCode != null) {
+      queryParams['currency'] = currencyCode;
+    }
+    queryParams['lang'] = _getCurrentLanguage();
+
+    final response = await _dio.get(
+      '/analytics/list/$listId/budget-impact',
+      queryParameters: queryParams,
+      options: Options(
+        headers: {'Authorization': 'Bearer $token', ..._getHeaders()},
+      ),
+    );
+
+    if (response.data['success'] == true) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        response.data['error']['message'] ?? 'Erreur rapport budget',
+      );
+    }
+  }
 }

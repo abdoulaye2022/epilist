@@ -1,10 +1,11 @@
-// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE AVEC CALCUL MANUEL
+// widgets/analytics/period_chart_card.dart - VERSION CORRIGÉE AVEC FORMATAGE CORRECT DES DEVISES
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
+import 'package:epilist/utils/tooltip_currency_formatter.dart';
 
 class PeriodChartCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -377,19 +378,8 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Barre du graphique
-                      Tooltip(
-                        message: '${value.toStringAsFixed(2)} XOF',
-                        child: Container(
-                          width: 24,
-                          height: height < 5 ? 5 : height,
-                          decoration: BoxDecoration(
-                            color:
-                                value > 0 ? chartColor[600] : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
+                      // ✅ CORRECTION: Tooltip avec widget personnalisé
+                      _buildTooltipBar(item, height, chartColor, value, label),
                       const SizedBox(height: 6),
                       // Label
                       SizedBox(
@@ -412,6 +402,118 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                 );
               }).toList(),
         ),
+      ),
+    );
+  }
+
+  // ✅ NOUVEAU: Widget de barre avec tooltip formaté correctement
+  Widget _buildTooltipBar(
+    dynamic item,
+    double height,
+    MaterialColor chartColor,
+    double value,
+    String label,
+  ) {
+    return Builder(
+      builder: (context) {
+        return Tooltip(
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          richMessage: _buildTooltipContent(context, item, label, value),
+          child: Container(
+            width: 24,
+            height: height < 5 ? 5 : height,
+            decoration: BoxDecoration(
+              color: value > 0 ? chartColor[600] : Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ✅ NOUVEAU: Contenu du tooltip avec formatage correct des montants
+  InlineSpan _buildTooltipContent(
+    BuildContext context,
+    dynamic item,
+    String label,
+    double value,
+  ) {
+    if (item is! Map<String, dynamic>) {
+      return const TextSpan(
+        text: 'Données invalides',
+        style: TextStyle(color: Colors.white, fontSize: 12),
+      );
+    }
+
+    // Récupérer les localisations pour le texte
+    final l10n = AppLocalizations.of(context)!;
+
+    final List<InlineSpan> spans = [];
+
+    // Titre de la période
+    spans.add(
+      TextSpan(
+        text: '$label\n',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+
+    // Total avec formatage correct
+    spans.add(
+      TextSpan(
+        text: '${l10n.total}: ',
+        style: const TextStyle(color: Colors.white, fontSize: 11),
+      ),
+    );
+    spans.add(_buildFormattedAmountSpan(context, value));
+
+    // Ajout d'informations supplémentaires si disponibles
+    final receiptsTotal = _safeToDouble(item['receipts_total']);
+    final itemsTotal = _safeToDouble(item['items_total']);
+
+    if (receiptsTotal > 0) {
+      spans.add(
+        TextSpan(
+          text: '\n${l10n.receipts}: ',
+          style: const TextStyle(color: Colors.white, fontSize: 11),
+        ),
+      );
+      spans.add(_buildFormattedAmountSpan(context, receiptsTotal));
+    }
+
+    if (itemsTotal > 0) {
+      spans.add(
+        TextSpan(
+          text: '\n${l10n.items}: ',
+          style: const TextStyle(color: Colors.white, fontSize: 11),
+        ),
+      );
+      spans.add(_buildFormattedAmountSpan(context, itemsTotal));
+    }
+
+    return TextSpan(children: spans);
+  }
+
+  // ✅ NOUVEAU: Créer un span avec montant formaté
+  InlineSpan _buildFormattedAmountSpan(BuildContext context, double amount) {
+    final formattedAmount = TooltipCurrencyFormatter.formatAmount(
+      context,
+      amount,
+    );
+    return TextSpan(
+      text: formattedAmount,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
       ),
     );
   }

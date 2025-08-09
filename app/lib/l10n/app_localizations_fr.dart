@@ -2711,7 +2711,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get receiptVsItemComparison => 'Factures vs prix des articles';
 
   @override
-  String get dataQuality => 'Qualité des données';
+  String get dataQuality => 'Qualité';
 
   @override
   String get dataQualityExcellent => 'Excellente';
@@ -3598,4 +3598,37 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get moreCategories => 'autres catégories';
+
+  @override
+  String get periodInformation => 'Informations sur la période';
+
+  @override
+  String get monthsWithData => 'Mois avec données';
+
+  @override
+  String get periodsWithData => 'Périodes avec données';
+
+  @override
+  String get analyticsFilters => 'Filtres d\'analyse';
+
+  @override
+  String get customizeYourView => 'Personnalisez votre vue';
+
+  @override
+  String get apply => 'Appliquer';
+
+  @override
+  String get excludeSharedLists => 'Exclure les listes partagées';
+
+  @override
+  String get thisWeek => 'Cette semaine';
+
+  @override
+  String get thisMonth => 'Ce mois';
+
+  @override
+  String get thisYear => 'Cette année';
+
+  @override
+  String get last30Days => 'Derniers 30 jours';
 }

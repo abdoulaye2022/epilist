@@ -5068,7 +5068,7 @@ abstract class AppLocalizations {
   /// No description provided for @dataQuality.
   ///
   /// In fr, this message translates to:
-  /// **'Qualité des données'**
+  /// **'Qualité'**
   String get dataQuality;
 
   /// No description provided for @dataQualityExcellent.
@@ -6762,6 +6762,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'autres catégories'**
   String get moreCategories;
+
+  /// No description provided for @periodInformation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations sur la période'**
+  String get periodInformation;
+
+  /// No description provided for @monthsWithData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois avec données'**
+  String get monthsWithData;
+
+  /// No description provided for @periodsWithData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Périodes avec données'**
+  String get periodsWithData;
+
+  /// No description provided for @analyticsFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtres d\'analyse'**
+  String get analyticsFilters;
+
+  /// No description provided for @customizeYourView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnalisez votre vue'**
+  String get customizeYourView;
+
+  /// No description provided for @apply.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appliquer'**
+  String get apply;
+
+  /// No description provided for @excludeSharedLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exclure les listes partagées'**
+  String get excludeSharedLists;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce mois'**
+  String get thisMonth;
+
+  /// No description provided for @thisYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette année'**
+  String get thisYear;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In fr, this message translates to:
+  /// **'Derniers 30 jours'**
+  String get last30Days;
 }
 
 class _AppLocalizationsDelegate

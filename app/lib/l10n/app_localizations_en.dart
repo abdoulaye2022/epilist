@@ -2669,7 +2669,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptVsItemComparison => 'Receipts vs item prices';
 
   @override
-  String get dataQuality => 'Data Quality';
+  String get dataQuality => 'Quality';
 
   @override
   String get dataQualityExcellent => 'Excellent';
@@ -3189,7 +3189,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggestions => 'Suggestions';
 
   @override
-  String get days => 'jours';
+  String get days => 'days';
 
   @override
   String get all => 'All';
@@ -3542,4 +3542,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moreCategories => 'more categories';
+
+  @override
+  String get periodInformation => 'Period Information';
+
+  @override
+  String get monthsWithData => 'Months with data';
+
+  @override
+  String get periodsWithData => 'Periods with data';
+
+  @override
+  String get analyticsFilters => 'Analytics Filters';
+
+  @override
+  String get customizeYourView => 'Customize your view';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get excludeSharedLists => 'Exclude shared lists';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get thisYear => 'This year';
+
+  @override
+  String get last30Days => 'Last 30 days';
 }
