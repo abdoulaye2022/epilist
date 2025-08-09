@@ -1422,19 +1422,5 @@
   "ownListsOnly": "Mes listes uniquement",
   "dataSourceBreakdown": "Répartition des sources de données",
   "andXMore": "Et",
-  "moreCategories": "autres catégories",
-  "dataQuality": "Qualité",
-  "periodInformation": "Informations sur la période",
-  "period": "Période",
-  "monthsWithData": "Mois avec données",
-  "periodsWithData": "Périodes avec données",
-  "analyticsFilters": "Filtres d'analyse",
-  "customizeYourView": "Personnalisez votre vue",
-  "apply": "Appliquer",
-  "excludeSharedLists": "Exclure les listes partagées",
-  "thisWeek": "Cette semaine",
-  "thisMonth": "Ce mois",
-  "thisYear": "Cette année", 
-  "last30Days": "Derniers 30 jours",
-  "sharedLists": "Listes partagées"
+"moreCategories": "autres catégories"
 }

@@ -1,9 +1,7 @@
-// widgets/analytics/monthly_chart_card.dart - VERSION CORRIGÉE AVEC CONTEXT
-import 'package:epilist/utils/month_localization_helper.dart';
+// widgets/analytics/monthly_chart_card.dart - VERSION CORRIGÉE COMPLÈTE SANS ERREURS DE TYPE
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
-import 'package:epilist/utils/tooltip_currency_formatter.dart';
 
 class MonthlyChartCard extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -38,8 +36,7 @@ class MonthlyChartCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                // Décommentez si vous avez ce widget
-                // const CurrencyIndicator(),
+                const CurrencyIndicator(),
               ],
             ),
             const SizedBox(height: 20),
@@ -54,8 +51,7 @@ class MonthlyChartCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[100]!),
               ),
-              // ✅ CORRECTION: Passer le context à la méthode
-              child: _buildSimpleChart(context, monthlyData, l10n),
+              child: _buildSimpleChart(monthlyData, l10n),
             ),
 
             const SizedBox(height: 20),
@@ -142,12 +138,7 @@ class MonthlyChartCard extends StatelessWidget {
     return total / (monthlyData.length > 0 ? monthlyData.length : 12);
   }
 
-  // ✅ CORRECTION: Ajouter le context en paramètre
-  Widget _buildSimpleChart(
-    BuildContext context,
-    List<dynamic> monthlyData,
-    AppLocalizations l10n,
-  ) {
+  Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n) {
     if (monthlyData.isEmpty) {
       return Center(
         child: Text(
@@ -158,7 +149,7 @@ class MonthlyChartCard extends StatelessWidget {
       );
     }
 
-    // ✅ CORRECTION: Calcul de la valeur maximale
+    // Trouver la valeur maximale
     double maxValue = 0;
     for (var month in monthlyData) {
       final value = _getMonthValue(month);
@@ -192,17 +183,9 @@ class MonthlyChartCard extends StatelessWidget {
               monthlyData.asMap().entries.map((entry) {
                 final month = entry.value;
                 final value = _getMonthValue(month);
-
-                // ✅ CORRECTION: Le context est maintenant disponible
-                final rawMonthShort =
+                final monthShort =
                     _getStringValue(month, 'month_short') ??
                     'M${entry.key + 1}';
-                final monthShort =
-                    MonthLocalizationHelper.localizeShortMonthName(
-                      context, // ← Maintenant accessible
-                      rawMonthShort,
-                    );
-
                 final dataQuality =
                     _getStringValue(month, 'data_quality') ?? 'none';
                 final height = maxValue > 0 ? (value / maxValue) * 120 : 5.0;
@@ -213,13 +196,24 @@ class MonthlyChartCard extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildTooltipBar(month, height, dataQuality, value),
+                      // Barre du graphique
+                      Tooltip(
+                        message: _buildTooltipMessage(month),
+                        child: Container(
+                          width: 24,
+                          height: height < 5 ? 5 : height,
+                          decoration: BoxDecoration(
+                            color: _getBarColor(dataQuality, value),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 6),
-                      // Label du mois (maintenant localisé)
+                      // Label du mois
                       SizedBox(
                         height: 16,
                         child: Text(
-                          monthShort, // ← Maintenant localisé
+                          monthShort,
                           style: TextStyle(
                             fontSize: 9,
                             color: Colors.grey[600],
@@ -240,134 +234,63 @@ class MonthlyChartCard extends StatelessWidget {
     );
   }
 
-  // ✅ NOUVEAU: Widget de barre avec tooltip formaté correctement
-  Widget _buildTooltipBar(
-    dynamic month,
-    double height,
-    String dataQuality,
-    double value,
-  ) {
-    return Builder(
-      builder: (context) {
-        return Tooltip(
-          decoration: BoxDecoration(
-            color: Colors.black87,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          richMessage: _buildTooltipContent(context, month),
-          child: Container(
-            width: 24,
-            height: height < 5 ? 5 : height,
-            decoration: BoxDecoration(
-              color: _getBarColor(dataQuality, value),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        );
-      },
-    );
+  // ✅ CORRIGÉ: Extraction robuste de la valeur du mois
+  double _getMonthValue(dynamic month) {
+    if (month is! Map<String, dynamic>) return 0.0;
+    final monthTotal = month['total_spent'];
+    return _safeToDouble(monthTotal);
   }
 
-  // ✅ CORRIGÉ: Contenu du tooltip avec localisation complète
-  InlineSpan _buildTooltipContent(BuildContext context, dynamic month) {
-    if (month is! Map<String, dynamic>) {
-      return const TextSpan(
-        text: 'Données invalides',
-        style: TextStyle(color: Colors.white, fontSize: 12),
-      );
-    }
+  // ✅ NOUVEAU: Méthode utilitaire pour extraire des chaînes de caractères
+  String? _getStringValue(dynamic month, String key) {
+    if (month is! Map<String, dynamic>) return null;
+    final value = month[key];
+    if (value == null) return null;
+    return value.toString();
+  }
 
-    final l10n = AppLocalizations.of(context)!;
+  String _buildTooltipMessage(dynamic month) {
+    if (month is! Map<String, dynamic>) return 'Données invalides';
 
-    // ✅ CORRECTION: Localiser le nom du mois
-    final rawMonthName =
+    final monthName =
         _getStringValue(month, 'month_name') ??
         'Mois ${_getStringValue(month, 'month') ?? '?'}';
-    final monthName = MonthLocalizationHelper.extractAndLocalizeMonth(
-      context,
-      rawMonthName,
-    );
-
     final totalSpent = _getMonthValue(month);
     final receiptsTotal = _safeToDouble(month['receipts_total']);
     final itemsTotal = _safeToDouble(month['items_total']);
     final dataQuality = _getStringValue(month, 'data_quality') ?? 'none';
 
-    final List<InlineSpan> spans = [];
+    String message = '$monthName\n';
+    message += 'Total: ${totalSpent.toStringAsFixed(2)} XOF\n';
 
-    // Titre du mois (maintenant localisé)
-    spans.add(
-      TextSpan(
-        text: '$monthName\n',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-
-    // Total avec localisation
-    spans.add(
-      TextSpan(
-        text: '${l10n.total}: ',
-        style: const TextStyle(color: Colors.white, fontSize: 11),
-      ),
-    );
-    spans.add(_buildFormattedAmountSpan(context, totalSpent));
-    spans.add(
-      const TextSpan(
-        text: '\n',
-        style: TextStyle(color: Colors.white, fontSize: 11),
-      ),
-    );
-
-    // Factures avec localisation
     if (receiptsTotal > 0) {
-      spans.add(
-        TextSpan(
-          text: '${l10n.receipts}: ',
-          style: const TextStyle(color: Colors.white, fontSize: 11),
-        ),
-      );
-      spans.add(_buildFormattedAmountSpan(context, receiptsTotal));
-      spans.add(
-        const TextSpan(
-          text: '\n',
-          style: TextStyle(color: Colors.white, fontSize: 11),
-        ),
-      );
+      message += 'Factures: ${receiptsTotal.toStringAsFixed(2)} XOF\n';
     }
-
-    // Items avec localisation
     if (itemsTotal > 0) {
-      spans.add(
-        TextSpan(
-          text: '${l10n.items}: ',
-          style: const TextStyle(color: Colors.white, fontSize: 11),
-        ),
-      );
-      spans.add(_buildFormattedAmountSpan(context, itemsTotal));
-      spans.add(
-        const TextSpan(
-          text: '\n',
-          style: TextStyle(color: Colors.white, fontSize: 11),
-        ),
-      );
+      message += 'Items: ${itemsTotal.toStringAsFixed(2)} XOF\n';
     }
 
-    // Qualité des données avec localisation
-    spans.add(
-      TextSpan(
-        text: '${l10n.dataQuality}: $dataQuality',
-        style: const TextStyle(color: Colors.white70, fontSize: 10),
-      ),
-    );
-
-    return TextSpan(children: spans);
+    message += 'Qualité: $dataQuality';
+    return message;
   }
 
-  // ✅ CORRECTION: Informations sur les données avec localisation
+  Color _getBarColor(String dataQuality, double value) {
+    if (value == 0) return Colors.grey[300]!;
+
+    switch (dataQuality) {
+      case 'high':
+        return Colors.blue[600]!;
+      case 'medium':
+        return Colors.blue[400]!;
+      case 'low':
+        return Colors.blue[300]!;
+      case 'none':
+      default:
+        return Colors.blue[200]!;
+    }
+  }
+
+  // ✅ CORRIGÉ: Informations simplifiées sur les données
   Widget _buildDataInfo(List<dynamic> monthlyData, AppLocalizations l10n) {
     final totalSpent = _calculateTotalFromMonthlyData(monthlyData);
 
@@ -410,7 +333,7 @@ class MonthlyChartCard extends StatelessWidget {
               Icon(Icons.info_outline, size: 16, color: Colors.blue[600]),
               const SizedBox(width: 6),
               Text(
-                l10n.periodInformation,
+                'Informations sur la période',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -426,10 +349,7 @@ class MonthlyChartCard extends StatelessWidget {
               children: [
                 Icon(Icons.calendar_month, size: 14, color: Colors.grey[600]),
                 const SizedBox(width: 6),
-                Text(
-                  '${l10n.period}: $period',
-                  style: const TextStyle(fontSize: 11),
-                ),
+                Text('Période: $period', style: const TextStyle(fontSize: 11)),
               ],
             ),
             const SizedBox(height: 4),
@@ -440,7 +360,7 @@ class MonthlyChartCard extends StatelessWidget {
               Icon(Icons.timeline, size: 14, color: Colors.grey[600]),
               const SizedBox(width: 6),
               Text(
-                '${l10n.monthsWithData}: $monthsWithData/${monthlyData.length}',
+                'Mois avec données: $monthsWithData/${monthlyData.length}',
                 style: const TextStyle(fontSize: 11),
               ),
             ],
@@ -448,53 +368,6 @@ class MonthlyChartCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // ✅ NOUVEAU: Créer un span avec montant formaté (en utilisant le helper)
-  InlineSpan _buildFormattedAmountSpan(BuildContext context, double amount) {
-    final formattedAmount = TooltipCurrencyFormatter.formatAmount(
-      context,
-      amount,
-    );
-    return TextSpan(
-      text: formattedAmount,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  // ✅ CORRIGÉ: Extraction robuste de la valeur du mois
-  double _getMonthValue(dynamic month) {
-    if (month is! Map<String, dynamic>) return 0.0;
-    final monthTotal = month['total_spent'];
-    return _safeToDouble(monthTotal);
-  }
-
-  // ✅ NOUVEAU: Méthode utilitaire pour extraire des chaînes de caractères
-  String? _getStringValue(dynamic month, String key) {
-    if (month is! Map<String, dynamic>) return null;
-    final value = month[key];
-    if (value == null) return null;
-    return value.toString();
-  }
-
-  Color _getBarColor(String dataQuality, double value) {
-    if (value == 0) return Colors.grey[300]!;
-
-    switch (dataQuality) {
-      case 'high':
-        return Colors.blue[600]!;
-      case 'medium':
-        return Colors.blue[400]!;
-      case 'low':
-        return Colors.blue[300]!;
-      case 'none':
-      default:
-        return Colors.blue[200]!;
-    }
   }
 
   Widget _buildSummaryItem(

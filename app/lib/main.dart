@@ -1,4 +1,4 @@
-// main.dart - VERSION OPTIMISÉE AVEC FIREBASE ET TOUS LES BLOCS
+// main.dart - VERSION OPTIMISÉE AVEC FIREBASE
 
 import 'dart:async';
 import 'package:dio/dio.dart';
@@ -6,7 +6,6 @@ import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
-import 'package:epilist/blocs/list_item/list_item_bloc.dart'; // ✅ AJOUT
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/config/app_config.dart';
@@ -17,7 +16,6 @@ import 'package:epilist/screens/signup_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
-import 'package:epilist/screens/analytics_screen.dart'; // ✅ AJOUT
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/budget_service.dart';
@@ -48,7 +46,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
-// ✅ Firebase imports
+// ✅ CORRECTION: Import Firebase avec options par défaut
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:epilist/services/notification_service.dart';
@@ -195,15 +193,12 @@ void main() async {
         ],
         child: MultiBlocProvider(
           providers: [
-            // ✅ Blocs de base
             BlocProvider<LocalizationBloc>.value(
               value: localizationBloc..add(LoadLanguage()),
             ),
             BlocProvider<AuthBloc>.value(
               value: authBloc..add(CheckAuthentication()),
             ),
-
-            // ✅ Currency Bloc
             BlocProvider(
               create:
                   (context) => CurrencyBloc(
@@ -212,8 +207,6 @@ void main() async {
                     authBloc: context.read<AuthBloc>(),
                   ),
             ),
-
-            // ✅ Shopping List Blocs
             BlocProvider(
               create:
                   (context) => ShoppingListBloc(
@@ -228,25 +221,12 @@ void main() async {
                     localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
-
-            // ✅ AJOUT: List Item Bloc - ESSENTIEL pour AddItemDialog
-            BlocProvider(
-              create:
-                  (context) => ListItemBloc(
-                    listItemService: context.read<ListItemService>(),
-                    localizationBloc: context.read<LocalizationBloc>(),
-                  ),
-            ),
-
-            // ✅ Product Suggestion Bloc
             BlocProvider<ProductSuggestionBloc>(
               create:
                   (context) => ProductSuggestionBloc(
                     suggestionService: context.read<ProductSuggestionService>(),
                   ),
             ),
-
-            // ✅ Receipt Bloc
             BlocProvider<ReceiptBloc>(
               create:
                   (context) => ReceiptBloc(
@@ -254,8 +234,6 @@ void main() async {
                     localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
-
-            // ✅ Budget Bloc
             BlocProvider(
               create:
                   (context) => BudgetBloc(
@@ -263,8 +241,6 @@ void main() async {
                     localizationBloc: context.read<LocalizationBloc>(),
                   ),
             ),
-
-            // ✅ Analytics Bloc - ESSENTIEL pour le nouveau SharedListsFilter
             BlocProvider(
               create:
                   (context) => AnalyticsBloc(
@@ -283,6 +259,7 @@ void main() async {
   }
 }
 
+// ✅ Le reste de votre code reste identique
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -319,11 +296,6 @@ class MyApp extends StatelessWidget {
             '/profil':
                 (context) => _wrapWithConnectivity(const ProfileScreen()),
             '/welcome': (context) => const WelcomeScreen(),
-
-            // ✅ AJOUT: Route pour Analytics Screen
-            '/analytics':
-                (context) => _wrapWithConnectivity(const AnalyticsScreen()),
-
             '/email-verification': (context) {
               final args =
                   ModalRoute.of(context)!.settings.arguments
@@ -385,6 +357,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ✅ Le reste des classes reste identique (AuthWrapper, LoadingScreen, etc.)
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -519,7 +492,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
         // ✅ OPTIMISATION: Initialisation complète des notifications SEULEMENT lors de la connexion
         if (state is AuthSuccess) {
-          // ✅ CORRECTION: Charger la devise utilisateur
           context.read<CurrencyBloc>().add(const LoadUserCurrency());
 
           // ✅ NOUVEAU: Initialisation complète des notifications après connexion
