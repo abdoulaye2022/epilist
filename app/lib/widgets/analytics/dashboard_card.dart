@@ -1,4 +1,4 @@
-// widgets/analytics/dashboard_card.dart - VERSION AVEC INFO FILTRAGE
+// widgets/analytics/dashboard_card.dart - VERSION AVEC TRADUCTION DES JOURS
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -122,7 +122,7 @@ class DashboardCard extends StatelessWidget {
             Divider(color: Colors.grey[300]),
             const SizedBox(height: 16),
 
-            // ✅ Section des 7 derniers jours (inchangée)
+            // ✅ Section des 7 derniers jours avec traduction
             if (last7Days.isNotEmpty) ...[
               Text(
                 l10n.last7Days ?? 'Derniers 7 jours',
@@ -145,6 +145,7 @@ class DashboardCard extends StatelessWidget {
                                 return Flexible(
                                   child: _buildDayCard(
                                     dayData as Map<String, dynamic>,
+                                    l10n, // ✅ AJOUT: Passer l10n pour traduction
                                   ),
                                 );
                               }).toList(),
@@ -155,7 +156,10 @@ class DashboardCard extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final dayData =
                                 last7Days[index] as Map<String, dynamic>;
-                            return _buildDayCard(dayData);
+                            return _buildDayCard(
+                              dayData,
+                              l10n, // ✅ AJOUT: Passer l10n pour traduction
+                            );
                           },
                         ),
               ),
@@ -165,7 +169,7 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 12),
             ],
 
-            // ✅ Statistiques rapides (inchangées)
+            // ✅ Statistiques rapides avec traduction du jour le plus actif
             Text(
               l10n.quickStats,
               style: const TextStyle(
@@ -205,7 +209,7 @@ class DashboardCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.busiestDay ?? "Jour le plus actif"}: ${_getBusiestDay(last7Days)}',
+                      '${l10n.busiestDay ?? "Jour le plus actif"}: ${_getBusiestDay(last7Days, l10n)}', // ✅ AJOUT: Passer l10n
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
@@ -257,6 +261,96 @@ class DashboardCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // ==================== TRADUCTION DES JOURS ====================
+
+  /// ✅ NOUVEAU: Traduit un nom de jour complet (anglais vers français)
+  String _translateDayName(String dayName, AppLocalizations l10n) {
+    if (dayName.isEmpty) return dayName;
+
+    final lowerDay = dayName.toLowerCase().trim();
+
+    // Mapping des noms complets
+    switch (lowerDay) {
+      case 'monday':
+      case 'lundi':
+        return l10n.monday;
+      case 'tuesday':
+      case 'mardi':
+        return l10n.tuesday;
+      case 'wednesday':
+      case 'mercredi':
+        return l10n.wednesday;
+      case 'thursday':
+      case 'jeudi':
+        return l10n.thursday;
+      case 'friday':
+      case 'vendredi':
+        return l10n.friday;
+      case 'saturday':
+      case 'samedi':
+        return l10n.saturday;
+      case 'sunday':
+      case 'dimanche':
+        return l10n.sunday;
+      default:
+        // Fallback: essayer de détecter par les premières lettres
+        if (lowerDay.startsWith('mon') || lowerDay.startsWith('lun'))
+          return l10n.monday;
+        if (lowerDay.startsWith('tue') || lowerDay.startsWith('mar'))
+          return l10n.tuesday;
+        if (lowerDay.startsWith('wed') || lowerDay.startsWith('mer'))
+          return l10n.wednesday;
+        if (lowerDay.startsWith('thu') || lowerDay.startsWith('jeu'))
+          return l10n.thursday;
+        if (lowerDay.startsWith('fri') || lowerDay.startsWith('ven'))
+          return l10n.friday;
+        if (lowerDay.startsWith('sat') || lowerDay.startsWith('sam'))
+          return l10n.saturday;
+        if (lowerDay.startsWith('sun') || lowerDay.startsWith('dim'))
+          return l10n.sunday;
+
+        return dayName; // Retourner tel quel si pas de correspondance
+    }
+  }
+
+  /// ✅ NOUVEAU: Traduit une abréviation de jour (anglais vers français)
+  String _translateDayShort(String dayShort, AppLocalizations l10n) {
+    if (dayShort.isEmpty) return dayShort;
+
+    final lowerShort = dayShort.toLowerCase().trim();
+
+    // Mapping des abréviations
+    switch (lowerShort) {
+      case 'mon':
+      case 'lun':
+        return l10n.mondayShort;
+      case 'tue':
+      case 'mar':
+        return l10n.tuesdayShort;
+      case 'wed':
+      case 'mer':
+        return l10n.wednesdayShort;
+      case 'thu':
+      case 'jeu':
+        return l10n.thursdayShort;
+      case 'fri':
+      case 'ven':
+        return l10n.fridayShort;
+      case 'sat':
+      case 'sam':
+        return l10n.saturdayShort;
+      case 'sun':
+      case 'dim':
+        return l10n.sundayShort;
+      default:
+        // Fallback: si c'est plus long, prendre les 3 premières lettres
+        if (dayShort.length > 3) {
+          return _translateDayShort(dayShort.substring(0, 3), l10n);
+        }
+        return dayShort;
+    }
   }
 
   // ✅ NOUVEAU: Widget pour afficher les informations de source des données
@@ -424,10 +518,18 @@ class DashboardCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDayCard(Map<String, dynamic> dayData) {
+  // ✅ MODIFIÉ: Widget de carte jour avec traduction
+  Widget _buildDayCard(Map<String, dynamic> dayData, AppLocalizations l10n) {
     final totalSpent = dayData['total_spent']?.toDouble() ?? 0.0;
     final itemsCount = dayData['items_count'] ?? 0;
     final dayName = dayData['day_name'] ?? '';
+
+    // ✅ CORRECTION: Traduire le nom du jour
+    final translatedDayName = _translateDayName(dayName, l10n);
+    final dayShort =
+        translatedDayName.length >= 3
+            ? translatedDayName.substring(0, 3)
+            : translatedDayName;
 
     return Container(
       width: 75,
@@ -451,7 +553,7 @@ class DashboardCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            dayName.length >= 3 ? dayName.substring(0, 3) : dayName,
+            dayShort,
             style: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w500,
@@ -486,8 +588,8 @@ class DashboardCard extends StatelessWidget {
     );
   }
 
-  // ✅ Méthodes utilitaires inchangées
-  String _getBusiestDay(List<dynamic> last7Days) {
+  // ✅ MODIFIÉ: Méthode pour obtenir le jour le plus actif avec traduction
+  String _getBusiestDay(List<dynamic> last7Days, AppLocalizations l10n) {
     if (last7Days.isEmpty) return 'N/A';
 
     var busiestDay = last7Days.first as Map<String, dynamic>;
@@ -502,9 +604,16 @@ class DashboardCard extends StatelessWidget {
       }
     }
 
-    return maxSpent > 0 ? (busiestDay['day_name'] ?? 'N/A') : 'Aucun';
+    if (maxSpent > 0) {
+      final dayName = busiestDay['day_name'] ?? 'N/A';
+      // ✅ CORRECTION: Traduire le nom du jour
+      return _translateDayName(dayName, l10n);
+    }
+
+    return 'Aucun';
   }
 
+  // ✅ Méthodes utilitaires inchangées
   double _getHighestDaySpending(List<dynamic> last7Days) {
     if (last7Days.isEmpty) return 0.0;
 

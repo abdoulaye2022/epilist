@@ -17,6 +17,61 @@ use Illuminate\Database\Eloquent\Builder;
 class AnalyticsController
 {
     /**
+     * ✅ NOUVEAU: TRADUCTIONS DES JOURS SELON LA LANGUE
+     */
+    private function getDayTranslations(): array
+    {
+        return [
+            'fr' => [
+                'full' => [
+                    'Monday' => 'lundi', 'Tuesday' => 'mardi', 'Wednesday' => 'mercredi', 'Thursday' => 'jeudi',
+                    'Friday' => 'vendredi', 'Saturday' => 'samedi', 'Sunday' => 'dimanche'
+                ],
+                'short' => [
+                    'Mon' => 'lun', 'Tue' => 'mar', 'Wed' => 'mer', 'Thu' => 'jeu',
+                    'Fri' => 'ven', 'Sat' => 'sam', 'Sun' => 'dim'
+                ]
+            ],
+            'en' => [
+                'full' => [
+                    'Monday' => 'Monday', 'Tuesday' => 'Tuesday', 'Wednesday' => 'Wednesday', 'Thursday' => 'Thursday',
+                    'Friday' => 'Friday', 'Saturday' => 'Saturday', 'Sunday' => 'Sunday'
+                ],
+                'short' => [
+                    'Mon' => 'Mon', 'Tue' => 'Tue', 'Wed' => 'Wed', 'Thu' => 'Thu',
+                    'Fri' => 'Fri', 'Sat' => 'Sat', 'Sun' => 'Sun'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * ✅ NOUVEAU: OBTENIR LE NOM D'UN MOIS TRADUIT
+     */
+    private function getLocalizedMonthName(int $month, int $year, string $language, bool $short = false): string
+    {
+        $translations = $this->getMonthTranslations();
+        $lang = isset($translations[$language]) ? $language : 'fr'; // Fallback vers français
+        
+        $type = $short ? 'short' : 'full';
+        $monthName = $translations[$lang][$type][$month] ?? '';
+        
+        return $short ? $monthName : "$monthName $year";
+    }
+
+    /**
+     * ✅ NOUVEAU: OBTENIR LE NOM D'UN JOUR TRADUIT
+     */
+    private function getLocalizedDayName(string $englishDay, string $language, bool $short = false): string
+    {
+        $translations = $this->getDayTranslations();
+        $lang = isset($translations[$language]) ? $language : 'fr'; // Fallback vers français
+        
+        $type = $short ? 'short' : 'full';
+        return $translations[$lang][$type][$englishDay] ?? $englishDay;
+    }
+
+    /**
      * ✅ DICTIONNAIRE DE TRADUCTIONS POUR LES CATÉGORIES
      */
     private function getCategoryTranslations(): array
@@ -109,6 +164,39 @@ class AnalyticsController
         
         // Défaut : français
         return 'fr';
+    }
+
+    /**
+     * ✅ NOUVEAU: TRADUCTIONS DES MOIS SELON LA LANGUE
+     */
+    private function getMonthTranslations(): array
+    {
+        return [
+            'fr' => [
+                'full' => [
+                    1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
+                    5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
+                    9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre'
+                ],
+                'short' => [
+                    1 => 'jan', 2 => 'fév', 3 => 'mar', 4 => 'avr',
+                    5 => 'mai', 6 => 'jun', 7 => 'jul', 8 => 'aoû',
+                    9 => 'sep', 10 => 'oct', 11 => 'nov', 12 => 'déc'
+                ]
+            ],
+            'en' => [
+                'full' => [
+                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                ],
+                'short' => [
+                    1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
+                    5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug',
+                    9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'
+                ]
+            ]
+        ];
     }
 
     /**
@@ -533,12 +621,12 @@ class AnalyticsController
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
             
-            $weeks = min((int)($params['weeks'] ?? 12), 52); // Max 52 semaines
+            $weeks = min((int)($params['weeks'] ?? 12), 52);
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request);
+            $language = $this->getUserLanguage($request); // ✅ UTILISER LA LANGUE DÉTECTÉE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("📊 Weekly history - User: $user_id, Weeks: $weeks, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log("📊 Weekly history - User: $user_id, Weeks: $weeks, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             if (!$user) {
@@ -561,8 +649,8 @@ class AnalyticsController
             }
 
             // Calculer les dates (semaines complètes)
-            $endDate = Carbon::now()->endOfWeek(); // Fin de la semaine actuelle
-            $startDate = Carbon::now()->subWeeks($weeks - 1)->startOfWeek(); // Début de la première semaine
+            $endDate = Carbon::now()->endOfWeek();
+            $startDate = Carbon::now()->subWeeks($weeks - 1)->startOfWeek();
 
             error_log("📊 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
 
@@ -576,7 +664,7 @@ class AnalyticsController
                 });
             }
 
-            // Créer les données par semaine
+            // ✅ CORRECTION: Créer les données par semaine AVEC TRADUCTION
             $weeklyData = [];
             $currentDate = $startDate->copy();
             
@@ -586,8 +674,21 @@ class AnalyticsController
                 $weekNumber = $currentDate->weekOfYear;
                 $year = $currentDate->year;
                 
-                // Clé unique pour la semaine
                 $weekKey = $year . '-W' . sprintf('%02d', $weekNumber);
+                
+                // ✅ FORMATER LES LABELS SELON LA LANGUE
+                $weekLabel = '';
+                $weekShort = '';
+                
+                if ($language === 'en') {
+                    $weekLabel = $weekStart->format('M j') . ' - ' . $weekEnd->format('M j');
+                    $weekShort = 'W' . sprintf('%02d', $weekNumber);
+                } else { // français
+                    $startMonth = $this->getLocalizedMonthName($weekStart->month, $weekStart->year, $language, true);
+                    $endMonth = $this->getLocalizedMonthName($weekEnd->month, $weekEnd->year, $language, true);
+                    $weekLabel = $startMonth . ' ' . $weekStart->day . ' - ' . $endMonth . ' ' . $weekEnd->day;
+                    $weekShort = 'S' . sprintf('%02d', $weekNumber);
+                }
                 
                 $weeklyData[$weekKey] = [
                     'year' => $year,
@@ -595,8 +696,8 @@ class AnalyticsController
                     'week_key' => $weekKey,
                     'week_start' => $weekStart->toDateString(),
                     'week_end' => $weekEnd->toDateString(),
-                    'week_label' => $weekStart->format('j M') . ' - ' . $weekEnd->format('j M'),
-                    'week_short' => 'S' . sprintf('%02d', $weekNumber),
+                    'week_label' => $weekLabel,      // ✅ TRADUIT
+                    'week_short' => $weekShort,      // ✅ TRADUIT
                     'is_current_week' => $currentDate->isSameWeek(Carbon::now()),
                     'total_spent' => 0.0,
                     'total_transactions' => 0,
@@ -711,7 +812,7 @@ class AnalyticsController
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => (string)$language,
+                    'language' => (string)$language, // ✅ INCLURE LA LANGUE
                     'include_shared' => $includeShared,
                     'weekly_data' => $sortedWeeklyData,
                     'summary' => [
@@ -751,17 +852,17 @@ class AnalyticsController
     /**
      * ✅ DASHBOARD PRINCIPAL
      */
-    public function dashboard(Request $request, Response $response): Response
+public function dashboard(Request $request, Response $response): Response
     {
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
             
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request);
+            $language = $this->getUserLanguage($request); // ✅ DÉTECTER LA LANGUE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("🎯 Dashboard - User: $user_id, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log("🎯 Dashboard - User: $user_id, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
@@ -849,7 +950,7 @@ class AnalyticsController
 
             error_log("📊 Shopping sessions: $shoppingSessions");
 
-            // ===== STATS DES 7 DERNIERS JOURS =====
+            // ===== STATS DES 7 DERNIERS JOURS AVEC TRADUCTION =====
             $last7Days = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
@@ -877,15 +978,21 @@ class AnalyticsController
                 
                 $dayItemsCount = $dayItems->sum('quantity');
 
+                // ✅ TRADUIRE LES NOMS DE JOURS
+                $dayNameEnglish = $date->format('l');      // "Monday", "Tuesday", etc.
+                $dayName = $this->getLocalizedDayName($dayNameEnglish, $language, false);
+
                 $last7Days[] = [
                     'date' => $date->toDateString(),
-                    'day_name' => $date->format('l'),
+                    'day_name' => $dayName,          // ✅ TRADUIT: "Monday" ou "lundi"
                     'total_spent' => round($dayTotal, 2),
                     'items_count' => $dayItemsCount,
                     'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                         ? $targetCurrency->formatAmountDisplay($dayTotal)
                         : '$' . number_format($dayTotal, 2)
                 ];
+                
+                error_log("📊 Day $i: {$date->toDateString()} → $dayNameEnglish → $dayName");
             }
 
             // ===== STATISTIQUES DES FACTURES POUR LE MOIS =====
@@ -945,6 +1052,15 @@ class AnalyticsController
             error_log("📊 Spending change: $spendingChange ({$spendingChangePercentage}%)");
             error_log("📊 Trend: $trend");
 
+            // ✅ TRADUIRE LES NOMS DE MOIS DANS LA COMPARAISON
+            $currentMonthName = $this->getLocalizedMonthName(Carbon::now()->month, Carbon::now()->year, $language, false);
+            $previousMonthName = $this->getLocalizedMonthName(
+                Carbon::now()->subMonth()->month, 
+                Carbon::now()->subMonth()->year, 
+                $language, 
+                false
+            );
+
             $comparisonData = [
                 'current_period' => round($currentTotal, 2),
                 'previous_period' => round($previousTotal, 2),
@@ -954,15 +1070,15 @@ class AnalyticsController
                 'items_change' => (int)$itemsPurchased - (int)$previousItemsPurchased,
                 'products_change' => (int)$uniqueProducts - (int)$previousUniqueProducts,
                 'period_type' => 'month',
-                'current_period_name' => Carbon::now()->format('F Y'),
-                'previous_period_name' => Carbon::now()->subMonth()->format('F Y')
+                'current_period_name' => $currentMonthName,      // ✅ TRADUIT: "January 2024" ou "janvier 2024"
+                'previous_period_name' => $previousMonthName     // ✅ TRADUIT: "December 2023" ou "décembre 2023"
             ];
 
             // ===== RÉPONSE FINALE =====
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => $language,
+                    'language' => $language,        // ✅ LANGUE DÉTECTÉE
                     'currency' => $targetCurrency->code,
                     'include_shared' => $includeShared,
                     
@@ -973,14 +1089,15 @@ class AnalyticsController
                         'shopping_sessions' => (int)$shoppingSessions,
                         'receipts_count' => (int)$receiptsCount,
                         'unique_stores' => (int)$uniqueStores,
+                        'month_name' => $currentMonthName,        // ✅ TRADUIT
                         'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                             ? $targetCurrency->formatAmountDisplay($currentTotal)
                             : '$' . number_format($currentTotal, 2)
                     ],
                     
-                    'last_7_days' => $last7Days,
+                    'last_7_days' => $last7Days,                 // ✅ JOURS TRADUITS
                     
-                    'comparison_with_last_month' => $comparisonData,
+                    'comparison_with_last_month' => $comparisonData,  // ✅ NOMS DE MOIS TRADUITS
                     
                     'data_breakdown' => [
                         'own_lists_total' => round($breakdown['totals']['own_lists_total'], 2),
@@ -1001,7 +1118,8 @@ class AnalyticsController
                         'average_daily_spending' => round(array_sum(array_column($last7Days, 'total_spent')) / 7, 2),
                         'data_source' => $includeShared ? 'own_and_shared' : 'own_only',
                         'lists_count' => count($listIds),
-                        'active_month' => $itemsPurchased > 0 || $currentTotal > 0
+                        'active_month' => $itemsPurchased > 0 || $currentTotal > 0,
+                        'busiest_day' => $this->getBusiestDay($last7Days, $language) // ✅ JOUR LE PLUS ACTIF TRADUIT
                     ],
 
                     // ===== DEBUGGING INFO (à retirer en production) =====
@@ -1010,7 +1128,9 @@ class AnalyticsController
                         'current_month_items_count' => $currentMonthItems->count(),
                         'items_with_quantity' => $currentMonthItems->where('quantity', '>', 0)->count(),
                         'receipts_this_month' => $receiptsCount,
-                        'calculation_method' => 'direct_item_queries'
+                        'calculation_method' => 'direct_item_queries',
+                        'detected_language' => $language,
+                        'sample_day_names' => array_slice(array_column($last7Days, 'day_name'), 0, 3)
                     ]
                 ]
             ]));
@@ -1030,6 +1150,24 @@ class AnalyticsController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    /**
+     * ✅ HELPER: OBTENIR LE JOUR LE PLUS ACTIF TRADUIT
+     */
+    private function getBusiestDay(array $last7Days, string $language): ?string
+    {
+        if (empty($last7Days)) {
+            return null;
+        }
+
+        // Trouver le jour avec le plus de dépenses
+        $busiestDay = array_reduce($last7Days, function($carry, $day) {
+            return ($carry === null || $day['total_spent'] > $carry['total_spent']) ? $day : $carry;
+        });
+
+        // Retourner le nom du jour traduit
+        return $busiestDay ? $busiestDay['day_name'] : null;
     }
 
     /**
@@ -1449,6 +1587,9 @@ class AnalyticsController
     /**
      * ✅ HISTORIQUE MENSUEL
      */
+    /**
+     * ✅ HISTORIQUE MENSUEL COMPLET AVEC TRADUCTIONS
+     */
     public function monthlySpendingHistory(Request $request, Response $response): Response
     {
         try {
@@ -1457,10 +1598,10 @@ class AnalyticsController
             
             $months = min((int)($params['months'] ?? 12), 24);
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request);
+            $language = $this->getUserLanguage($request); // ✅ DÉTECTER LA LANGUE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("📊 Monthly history - User: $user_id, Months: $months, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log("📊 Monthly history - User: $user_id, Months: $months, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
@@ -1481,6 +1622,8 @@ class AnalyticsController
             $endDate = Carbon::now()->endOfMonth();
             $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
 
+            error_log("📊 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+
             // Récupérer les données de dépenses
             $allSpendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
             
@@ -1490,45 +1633,72 @@ class AnalyticsController
                 $allSpendingData = array_filter($allSpendingData, function($spending) use ($ownListIds) {
                     return in_array($spending['list_id'], $ownListIds);
                 });
+                error_log("📊 Filtered to own lists only: " . count($allSpendingData) . " entries");
             }
 
-            // Noms des mois
-            $monthNames = [
-                1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
-                5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
-                9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre'
-            ];
-            
-            // Créer les données mensuelles
+            // ✅ CRÉER LES DONNÉES MENSUELLES AVEC TRADUCTIONS COMPLÈTES
             $monthlyData = [];
             $currentDate = $startDate->copy();
             
             while ($currentDate->lte($endDate)) {
                 $monthKey = $currentDate->format('Y-m');
-                $monthName = $monthNames[$currentDate->month] ?? 'mois';
+                $month = $currentDate->month;
+                $year = $currentDate->year;
+                
+                // ✅ OBTENIR LES TRADUCTIONS SELON LA LANGUE
+                $monthNameFull = $this->getLocalizedMonthName($month, $year, $language, false); // "January 2024" ou "janvier 2024"
+                $monthNameShort = $this->getLocalizedMonthName($month, $year, $language, true);  // "Jan" ou "jan"
+                
+                // ✅ DÉTERMINER SI C'EST LE MOIS ACTUEL
+                $isCurrentMonth = $currentDate->isSameMonth(Carbon::now());
                 
                 $monthlyData[$monthKey] = [
-                    'year' => (int)$currentDate->year,
-                    'month' => (int)$currentDate->month,
-                    'month_name' => $monthName . ' ' . $currentDate->year,
-                    'month_short' => substr($monthName, 0, 4) . '.',
+                    'year' => (int)$year,
+                    'month' => (int)$month,
+                    'month_key' => $monthKey,
+                    'month_name' => $monthNameFull,        // ✅ TRADUIT: "January 2024" ou "janvier 2024"
+                    'month_short' => $monthNameShort,      // ✅ TRADUIT: "Jan" ou "jan"
+                    'is_current_month' => $isCurrentMonth,
                     'total_spent' => 0.0,
                     'total_transactions' => 0,
                     'receipts_total' => 0.0,
                     'items_total' => 0.0,
                     'receipts_count' => 0,
                     'items_sessions' => 0,
-                    'currency' => (string)$targetCurrency->code
+                    'shopping_days' => 0,
+                    'unique_stores' => 0,
+                    'average_transaction' => 0.0,
+                    'currency' => (string)$targetCurrency->code,
+                    'data_quality' => 'none'
                 ];
+                
+                error_log("📊 Month created: $monthKey → Full: '$monthNameFull', Short: '$monthNameShort'");
                 $currentDate->addMonth();
             }
 
-            // Calculer les totaux par mois
+            // ===== CALCULER LES TOTAUX PAR MOIS =====
+            $storesByMonth = [];
+            $daysByMonth = [];
+            
             foreach ($allSpendingData as $spending) {
-                $monthKey = $spending['date']->format('Y-m');
-                
-                if (isset($monthlyData[$monthKey])) {
+                try {
+                    if (!isset($spending['date']) || !isset($spending['amount'])) {
+                        continue;
+                    }
+                    
+                    $monthKey = $spending['date']->format('Y-m');
+                    
+                    if (!isset($monthlyData[$monthKey])) {
+                        error_log("⚠️ Month key $monthKey not found in monthlyData");
+                        continue;
+                    }
+                    
                     $amount = (float)$spending['amount'];
+                    if ($amount <= 0) {
+                        continue;
+                    }
+                    
+                    // Ajouter aux totaux
                     $monthlyData[$monthKey]['total_spent'] += $amount;
                     $monthlyData[$monthKey]['total_transactions']++;
                     
@@ -1540,24 +1710,88 @@ class AnalyticsController
                         $monthlyData[$monthKey]['items_total'] += $amount;
                         $monthlyData[$monthKey]['items_sessions']++;
                     }
+                    
+                    // Compter les magasins uniques
+                    $storeName = $spending['store_name'] ?? 'Non spécifié';
+                    $storesByMonth[$monthKey][$storeName] = true;
+                    
+                    // Compter les jours uniques
+                    $dayKey = $spending['date']->format('Y-m-d');
+                    $daysByMonth[$monthKey][$dayKey] = true;
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error processing spending entry for month: " . $e->getMessage());
+                    continue;
                 }
             }
 
-            // Formater les données finales
-            foreach ($monthlyData as &$month) {
-                $month['total_spent'] = round((float)$month['total_spent'], 2);
-                $month['receipts_total'] = round((float)$month['receipts_total'], 2);
-                $month['items_total'] = round((float)$month['items_total'], 2);
-                
-                $month['formatted_total'] = is_callable([$targetCurrency, 'formatAmountDisplay']) 
-                    ? $targetCurrency->formatAmountDisplay($month['total_spent'])
-                    : '$' . number_format($month['total_spent'], 2);
-                
-                $month['data_quality'] = $month['receipts_total'] > 0 ? 'high' : 
-                    ($month['items_total'] > 0 ? 'medium' : 'none');
+            // ===== FINALISER LES CALCULS =====
+            foreach ($monthlyData as $monthKey => &$month) {
+                try {
+                    // Comptes finaux
+                    $month['unique_stores'] = count($storesByMonth[$monthKey] ?? []);
+                    $month['shopping_days'] = count($daysByMonth[$monthKey] ?? []);
+                    
+                    // Moyenne par transaction
+                    if ($month['total_transactions'] > 0) {
+                        $month['average_transaction'] = round($month['total_spent'] / $month['total_transactions'], 2);
+                    }
+                    
+                    // Arrondir les totaux
+                    $month['total_spent'] = round($month['total_spent'], 2);
+                    $month['receipts_total'] = round($month['receipts_total'], 2);
+                    $month['items_total'] = round($month['items_total'], 2);
+                    
+                    // Formatage sécurisé
+                    if (is_callable([$targetCurrency, 'formatAmountDisplay'])) {
+                        $month['formatted_total'] = (string)$targetCurrency->formatAmountDisplay($month['total_spent']);
+                        $month['formatted_receipts'] = (string)$targetCurrency->formatAmountDisplay($month['receipts_total']);
+                        $month['formatted_items'] = (string)$targetCurrency->formatAmountDisplay($month['items_total']);
+                        $month['formatted_average'] = (string)$targetCurrency->formatAmountDisplay($month['average_transaction']);
+                    } else {
+                        $symbol = $targetCurrency->symbol ?? '$';
+                        $month['formatted_total'] = $symbol . number_format($month['total_spent'], 2);
+                        $month['formatted_receipts'] = $symbol . number_format($month['receipts_total'], 2);
+                        $month['formatted_items'] = $symbol . number_format($month['items_total'], 2);
+                        $month['formatted_average'] = $symbol . number_format($month['average_transaction'], 2);
+                    }
+                    
+                    // ✅ QUALITÉ DES DONNÉES AVEC TRADUCTION
+                    if ($month['receipts_total'] > 0 && $month['items_total'] > 0) {
+                        $month['data_quality'] = 'excellent';
+                        $month['data_quality_label'] = $language === 'en' ? 'Excellent' : 'Excellente';
+                    } elseif ($month['receipts_total'] > 0) {
+                        $month['data_quality'] = 'high';
+                        $month['data_quality_label'] = $language === 'en' ? 'High' : 'Élevée';
+                    } elseif ($month['items_total'] > 0) {
+                        $month['data_quality'] = 'medium';
+                        $month['data_quality_label'] = $language === 'en' ? 'Medium' : 'Moyenne';
+                    } else {
+                        $month['data_quality'] = 'none';
+                        $month['data_quality_label'] = $language === 'en' ? 'No data' : 'Aucune donnée';
+                    }
+                    
+                    // ✅ POURCENTAGE DE RÉPARTITION DES SOURCES
+                    if ($month['total_spent'] > 0) {
+                        $month['receipts_percentage'] = round(($month['receipts_total'] / $month['total_spent']) * 100, 1);
+                        $month['items_percentage'] = round(($month['items_total'] / $month['total_spent']) * 100, 1);
+                    } else {
+                        $month['receipts_percentage'] = 0;
+                        $month['items_percentage'] = 0;
+                    }
+                    
+                    // ✅ STATISTIQUES ADDITIONNELLES
+                    $month['has_activity'] = $month['total_spent'] > 0;
+                    $month['primary_source'] = $month['receipts_total'] > $month['items_total'] ? 'receipts' : 'items';
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error finalizing month $monthKey data: " . $e->getMessage());
+                    $month['data_quality'] = 'error';
+                    $month['data_quality_label'] = $language === 'en' ? 'Error' : 'Erreur';
+                }
             }
 
-            // Trier chronologiquement
+            // ===== TRIER CHRONOLOGIQUEMENT =====
             $sortedMonthlyData = array_values($monthlyData);
             usort($sortedMonthlyData, function($a, $b) {
                 if ($a['year'] !== $b['year']) {
@@ -1566,29 +1800,117 @@ class AnalyticsController
                 return $a['month'] <=> $b['month'];
             });
 
-            // Calculs de résumé
+            // ===== CALCULS DE RÉSUMÉ ET TENDANCES =====
             $values = array_column($sortedMonthlyData, 'total_spent');
             $totalSpent = array_sum($values);
-            $averageMonthly = count($values) > 0 ? $totalSpent / count($values) : 0;
+            $monthsWithData = count(array_filter($values, fn($v) => $v > 0));
+            $averageMonthly = $monthsWithData > 0 ? $totalSpent / $monthsWithData : 0;
+            
+            // Trouver le mois le plus élevé et le plus bas
+            $highestMonth = null;
+            $lowestMonth = null;
+            $maxSpent = 0;
+            $minSpent = PHP_FLOAT_MAX;
+            
+            foreach ($sortedMonthlyData as $monthData) {
+                if ($monthData['total_spent'] > 0) {
+                    if ($monthData['total_spent'] > $maxSpent) {
+                        $maxSpent = $monthData['total_spent'];
+                        $highestMonth = $monthData;
+                    }
+                    if ($monthData['total_spent'] < $minSpent) {
+                        $minSpent = $monthData['total_spent'];
+                        $lowestMonth = $monthData;
+                    }
+                }
+            }
+            
+            // ✅ CALCUL DE TENDANCE (comparaison 3 derniers mois vs 3 premiers mois)
+            $trend = 'stable';
+            $trendPercentage = 0;
+            
+            if ($monthsWithData >= 6) {
+                $firstThreeMonths = array_slice(array_filter($sortedMonthlyData, fn($m) => $m['total_spent'] > 0), 0, 3);
+                $lastThreeMonths = array_slice(array_filter($sortedMonthlyData, fn($m) => $m['total_spent'] > 0), -3);
+                
+                $firstAverage = array_sum(array_column($firstThreeMonths, 'total_spent')) / count($firstThreeMonths);
+                $lastAverage = array_sum(array_column($lastThreeMonths, 'total_spent')) / count($lastThreeMonths);
+                
+                if ($firstAverage > 0) {
+                    $trendPercentage = round((($lastAverage - $firstAverage) / $firstAverage) * 100, 1);
+                    if ($trendPercentage > 5) {
+                        $trend = 'increasing';
+                    } elseif ($trendPercentage < -5) {
+                        $trend = 'decreasing';
+                    }
+                }
+            }
 
+            error_log("📊 Monthly summary - Total: $totalSpent, Average: $averageMonthly, Trend: $trend");
+            error_log("📊 Sample month data: " . json_encode($sortedMonthlyData[0] ?? []));
+
+            // ===== RÉPONSE FINALE =====
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => $language,
+                    'language' => $language,                    // ✅ LANGUE DÉTECTÉE
                     'include_shared' => $includeShared,
-                    'monthly_data' => $sortedMonthlyData,
+                    'monthly_data' => $sortedMonthlyData,       // ✅ DONNÉES AVEC TRADUCTIONS
+                    
                     'summary' => [
                         'total_spent' => round($totalSpent, 2),
                         'average_monthly' => round($averageMonthly, 2),
+                        'months_with_data' => $monthsWithData,
+                        'months_requested' => $months,
                         'currency' => $targetCurrency->code,
+                        'trend' => $trend,
+                        'trend_percentage' => $trendPercentage,
                         'period' => [
                             'start' => $startDate->toDateString(),
                             'end' => $endDate->toDateString(),
-                            'months' => $months
+                            'start_month_name' => $this->getLocalizedMonthName($startDate->month, $startDate->year, $language, false),
+                            'end_month_name' => $this->getLocalizedMonthName($endDate->month, $endDate->year, $language, false)
                         ],
                         'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                             ? $targetCurrency->formatAmountDisplay($totalSpent)
-                            : '$' . number_format($totalSpent, 2)
+                            : '$' . number_format($totalSpent, 2),
+                        'formatted_average' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                            ? $targetCurrency->formatAmountDisplay($averageMonthly)
+                            : '$' . number_format($averageMonthly, 2)
+                    ],
+                    
+                    'insights' => [
+                        'highest_month' => $highestMonth ? [
+                            'month_name' => $highestMonth['month_name'],
+                            'total_spent' => $highestMonth['total_spent'],
+                            'formatted_total' => $highestMonth['formatted_total']
+                        ] : null,
+                        'lowest_month' => $lowestMonth ? [
+                            'month_name' => $lowestMonth['month_name'],
+                            'total_spent' => $lowestMonth['total_spent'],
+                            'formatted_total' => $lowestMonth['formatted_total']
+                        ] : null,
+                        'data_quality_overview' => [
+                            'excellent_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['data_quality'] === 'excellent')),
+                            'high_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['data_quality'] === 'high')),
+                            'medium_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['data_quality'] === 'medium')),
+                            'no_data_months' => count(array_filter($sortedMonthlyData, fn($m) => $m['data_quality'] === 'none'))
+                        ]
+                    ],
+                    
+                    // ===== DEBUGGING INFO (à retirer en production) =====
+                    'debug_info' => [
+                        'total_spending_entries' => count($allSpendingData),
+                        'months_processed' => count($monthlyData),
+                        'detected_language' => $language,
+                        'sample_translations' => [
+                            'first_month' => $sortedMonthlyData[0]['month_name'] ?? 'N/A',
+                            'last_month' => end($sortedMonthlyData)['month_name'] ?? 'N/A'
+                        ],
+                        'data_sources' => [
+                            'receipts_entries' => count(array_filter($allSpendingData, fn($s) => $s['source'] === 'receipt')),
+                            'items_entries' => count(array_filter($allSpendingData, fn($s) => $s['source'] === 'items'))
+                        ]
                     ]
                 ]
             ]));
@@ -1596,11 +1918,12 @@ class AnalyticsController
 
         } catch (\Exception $e) {
             error_log("❌ Error in monthlySpendingHistory: " . $e->getMessage());
+            error_log("❌ Stack trace: " . $e->getTraceAsString());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
-                    'code' => 'ANALYTICS_ERROR',
+                    'code' => 'MONTHLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving monthly spending data',
                     'details' => $e->getMessage()
                 ]
