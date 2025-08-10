@@ -554,33 +554,85 @@ class AnalyticsController
                 ];
             }
 
-            // Période actuelle
+            // ===== PÉRIODE ACTUELLE =====
             $currentMonthStart = Carbon::now()->startOfMonth();
             $currentMonthEnd = Carbon::now()->endOfMonth();
 
-            // Obtenir les données avec breakdown
-            $breakdown = $this->getSpendingDataWithBreakdown($user_id, $currentMonthStart, $currentMonthEnd);
-            
-            // Choisir les données selon le filtre
-            $currentTotal = $includeShared ? 
-                $breakdown['totals']['grand_total'] : 
-                $breakdown['totals']['own_lists_total'];
-
-            // Obtenir les listes pour les stats
+            // ===== OBTENIR LES LISTES ACCESSIBLES =====
             if ($includeShared) {
                 $listIds = $this->getUserAccessibleListIds($user_id);
             } else {
                 $listIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
             }
 
-            // Stats des 7 derniers jours
+            if (empty($listIds)) {
+                error_log("⚠️ No accessible lists found for user $user_id");
+                
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => [
+                        'language' => $language,
+                        'currency' => $targetCurrency->code,
+                        'include_shared' => $includeShared,
+                        'current_month' => [
+                            'total_spent' => 0,
+                            'items_purchased' => 0,
+                            'unique_products' => 0,
+                            'shopping_sessions' => 0,
+                            'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                                ? $targetCurrency->formatAmountDisplay(0)
+                                : '$0.00'
+                        ],
+                        'last_7_days' => [],
+                        'quick_stats' => [
+                            'average_daily_spending' => 0,
+                            'data_source' => $includeShared ? 'own_and_shared' : 'own_only'
+                        ]
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
+            // ===== CALCULS POUR LE MOIS ACTUEL =====
+            
+            // 1. Total des dépenses via les données combinées
+            $breakdown = $this->getSpendingDataWithBreakdown($user_id, $currentMonthStart, $currentMonthEnd);
+            $currentTotal = $includeShared ? 
+                $breakdown['totals']['grand_total'] : 
+                $breakdown['totals']['own_lists_total'];
+
+            // 2. Statistiques des items achetés pour le mois actuel
+            $currentMonthItems = ListItem::whereIn('list_id', $listIds)
+                ->where('is_purchased', true)
+                ->whereBetween('updated_at', [$currentMonthStart, $currentMonthEnd])
+                ->get();
+
+            $itemsPurchased = $currentMonthItems->sum('quantity');
+            $uniqueProducts = $currentMonthItems->unique('product_name')->count();
+
+            error_log("📊 Current month items: " . $currentMonthItems->count());
+            error_log("📊 Items purchased (quantity): $itemsPurchased");
+            error_log("📊 Unique products: $uniqueProducts");
+
+            // 3. Sessions de shopping (groupées par liste et jour)
+            $shoppingSessions = 0;
+            if ($currentMonthItems->isNotEmpty()) {
+                $sessionGroups = $currentMonthItems->groupBy(function($item) {
+                    return $item->list_id . '-' . $item->updated_at->format('Y-m-d');
+                });
+                $shoppingSessions = $sessionGroups->count();
+            }
+
+            error_log("📊 Shopping sessions: $shoppingSessions");
+
+            // ===== STATS DES 7 DERNIERS JOURS =====
             $last7Days = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
                 $dayStart = $date->copy()->startOfDay();
                 $dayEnd = $date->copy()->endOfDay();
                 
-                // Récupérer les données de ce jour
+                // Récupérer les données de dépenses de ce jour
                 $daySpendingData = $this->getCombinedSpendingDataSafe($user_id, $dayStart, $dayEnd);
                 
                 // Filtrer selon includeShared
@@ -592,41 +644,97 @@ class AnalyticsController
                 }
                 
                 $dayTotal = array_sum(array_column($daySpendingData, 'amount'));
-                $itemsCount = 0;
                 
-                // Compter les items
-                foreach ($daySpendingData as $spending) {
-                    if ($spending['source'] === 'items' && isset($spending['details']['items_count'])) {
-                        $itemsCount += $spending['details']['items_count'];
-                    } else {
-                        $itemsCount += 1; // Pour les factures, on compte 1 "transaction"
-                    }
-                }
+                // Compter les items de ce jour
+                $dayItems = ListItem::whereIn('list_id', $listIds)
+                    ->where('is_purchased', true)
+                    ->whereBetween('updated_at', [$dayStart, $dayEnd])
+                    ->get();
+                
+                $dayItemsCount = $dayItems->sum('quantity');
 
                 $last7Days[] = [
                     'date' => $date->toDateString(),
                     'day_name' => $date->format('l'),
                     'total_spent' => round($dayTotal, 2),
-                    'items_count' => $itemsCount,
+                    'items_count' => $dayItemsCount,
                     'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                         ? $targetCurrency->formatAmountDisplay($dayTotal)
                         : '$' . number_format($dayTotal, 2)
                 ];
             }
 
-            // Calculs pour le mois actuel
-            $currentMonthData = $this->getCombinedSpendingDataSafe($user_id, $currentMonthStart, $currentMonthEnd);
-            
-            if (!$includeShared) {
-                $ownListIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
-                $currentMonthData = array_filter($currentMonthData, function($spending) use ($ownListIds) {
-                    return in_array($spending['list_id'], $ownListIds);
-                });
-            }
-            
-            $monthlyTransactions = count($currentMonthData);
-            $uniqueStores = count(array_unique(array_column($currentMonthData, 'store_name')));
+            // ===== STATISTIQUES DES FACTURES POUR LE MOIS =====
+            $receiptsCount = ListReceipt::whereIn('list_id', $listIds)
+                ->whereBetween('purchase_date', [$currentMonthStart, $currentMonthEnd])
+                ->count();
 
+            $uniqueStores = ListReceipt::whereIn('list_id', $listIds)
+                ->whereBetween('purchase_date', [$currentMonthStart, $currentMonthEnd])
+                ->distinct('store_name')
+                ->count('store_name');
+
+            // Si pas de factures, compter les magasins des items
+            if ($uniqueStores === 0) {
+                $uniqueStores = $currentMonthItems->whereNotNull('store_name')
+                    ->unique('store_name')
+                    ->count();
+            }
+
+            error_log("📊 Receipts count: $receiptsCount");
+            error_log("📊 Unique stores: $uniqueStores");
+
+            // ===== COMPARAISON AVEC LE MOIS PRÉCÉDENT =====
+            $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
+            $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+            error_log("📊 Previous month: {$previousMonthStart->toDateString()} to {$previousMonthEnd->toDateString()}");
+
+            // Obtenir les données du mois précédent
+            $previousBreakdown = $this->getSpendingDataWithBreakdown($user_id, $previousMonthStart, $previousMonthEnd);
+            $previousTotal = $includeShared ? 
+                $previousBreakdown['totals']['grand_total'] : 
+                $previousBreakdown['totals']['own_lists_total'];
+
+            // Calculer les changements
+            $spendingChange = $currentTotal - $previousTotal;
+            $spendingChangePercentage = $previousTotal > 0 ? 
+                round((($spendingChange / $previousTotal) * 100), 1) : 0;
+
+            $trend = 'stable';
+            if ($spendingChangePercentage > 2) {
+                $trend = 'increased';
+            } elseif ($spendingChangePercentage < -2) {
+                $trend = 'decreased';
+            }
+
+            // Statistiques des items du mois précédent pour comparaison
+            $previousMonthItems = ListItem::whereIn('list_id', $listIds)
+                ->where('is_purchased', true)
+                ->whereBetween('updated_at', [$previousMonthStart, $previousMonthEnd])
+                ->get();
+
+            $previousItemsPurchased = $previousMonthItems->sum('quantity');
+            $previousUniqueProducts = $previousMonthItems->unique('product_name')->count();
+
+            error_log("📊 Previous month total: $previousTotal");
+            error_log("📊 Spending change: $spendingChange ({$spendingChangePercentage}%)");
+            error_log("📊 Trend: $trend");
+
+            $comparisonData = [
+                'current_period' => round($currentTotal, 2),
+                'previous_period' => round($previousTotal, 2),
+                'absolute_change' => round($spendingChange, 2),
+                'spending_change_percentage' => $spendingChangePercentage,
+                'spending_trend' => $trend,
+                'items_change' => (int)$itemsPurchased - (int)$previousItemsPurchased,
+                'products_change' => (int)$uniqueProducts - (int)$previousUniqueProducts,
+                'period_type' => 'month',
+                'current_period_name' => Carbon::now()->format('F Y'),
+                'previous_period_name' => Carbon::now()->subMonth()->format('F Y')
+            ];
+
+            // ===== RÉPONSE FINALE =====
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
@@ -636,14 +744,19 @@ class AnalyticsController
                     
                     'current_month' => [
                         'total_spent' => round($currentTotal, 2),
-                        'transactions' => $monthlyTransactions,
-                        'unique_stores' => $uniqueStores,
+                        'items_purchased' => (int)$itemsPurchased,
+                        'unique_products' => (int)$uniqueProducts,
+                        'shopping_sessions' => (int)$shoppingSessions,
+                        'receipts_count' => (int)$receiptsCount,
+                        'unique_stores' => (int)$uniqueStores,
                         'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                             ? $targetCurrency->formatAmountDisplay($currentTotal)
                             : '$' . number_format($currentTotal, 2)
                     ],
                     
                     'last_7_days' => $last7Days,
+                    
+                    'comparison_with_last_month' => $comparisonData,
                     
                     'data_breakdown' => [
                         'own_lists_total' => round($breakdown['totals']['own_lists_total'], 2),
@@ -662,7 +775,18 @@ class AnalyticsController
                     
                     'quick_stats' => [
                         'average_daily_spending' => round(array_sum(array_column($last7Days, 'total_spent')) / 7, 2),
-                        'data_source' => $includeShared ? 'own_and_shared' : 'own_only'
+                        'data_source' => $includeShared ? 'own_and_shared' : 'own_only',
+                        'lists_count' => count($listIds),
+                        'active_month' => $itemsPurchased > 0 || $currentTotal > 0
+                    ],
+
+                    // ===== DEBUGGING INFO (à retirer en production) =====
+                    'debug_info' => [
+                        'accessible_lists_count' => count($listIds),
+                        'current_month_items_count' => $currentMonthItems->count(),
+                        'items_with_quantity' => $currentMonthItems->where('quantity', '>', 0)->count(),
+                        'receipts_this_month' => $receiptsCount,
+                        'calculation_method' => 'direct_item_queries'
                     ]
                 ]
             ]));
