@@ -6990,6 +6990,180 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dim'**
   String get sundayShort;
+
+  /// No description provided for @support.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support'**
+  String get support;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer un feedback'**
+  String get sendFeedback;
+
+  /// No description provided for @feedbackSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aidez-nous à améliorer EpiList'**
+  String get feedbackSubtitle;
+
+  /// No description provided for @feedbackDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre feedback nous aide à améliorer EpiList. Décrivez votre expérience, signalez un bug ou proposez une amélioration.'**
+  String get feedbackDescription;
+
+  /// No description provided for @feedbackType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de feedback'**
+  String get feedbackType;
+
+  /// No description provided for @priority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Priorité'**
+  String get priority;
+
+  /// No description provided for @subject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sujet'**
+  String get subject;
+
+  /// No description provided for @message.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// No description provided for @subjectHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décrivez brièvement votre feedback...'**
+  String get subjectHint;
+
+  /// No description provided for @subjectRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le sujet est requis'**
+  String get subjectRequired;
+
+  /// No description provided for @subjectTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le sujet doit contenir au moins 5 caractères'**
+  String get subjectTooShort;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décrivez en détail votre feedback, problème rencontré ou suggestion d\'amélioration...'**
+  String get messageHint;
+
+  /// No description provided for @messageRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le message est requis'**
+  String get messageRequired;
+
+  /// No description provided for @messageTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le message doit contenir au moins 10 caractères'**
+  String get messageTooShort;
+
+  /// No description provided for @feedbackPrivacyNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre feedback sera envoyé à notre équipe technique. Aucune information personnelle sensible ne sera partagée.'**
+  String get feedbackPrivacyNote;
+
+  /// No description provided for @bugReport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signaler un bug'**
+  String get bugReport;
+
+  /// No description provided for @bugReportDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problème technique ou dysfonctionnement'**
+  String get bugReportDescription;
+
+  /// No description provided for @newFeature.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle fonctionnalité'**
+  String get newFeature;
+
+  /// No description provided for @newFeatureDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion d\'amélioration ou nouvelle fonctionnalité'**
+  String get newFeatureDescription;
+
+  /// No description provided for @improvement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Amélioration'**
+  String get improvement;
+
+  /// No description provided for @improvementDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Amélioration d\'une fonctionnalité existante'**
+  String get improvementDescription;
+
+  /// No description provided for @question.
+  ///
+  /// In fr, this message translates to:
+  /// **'Question'**
+  String get question;
+
+  /// No description provided for @questionDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aide ou question sur l\'utilisation'**
+  String get questionDescription;
+
+  /// No description provided for @other.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get other;
+
+  /// No description provided for @otherDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre type de feedback'**
+  String get otherDescription;
+
+  /// No description provided for @priorityLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faible'**
+  String get priorityLow;
+
+  /// No description provided for @priorityNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Normal'**
+  String get priorityNormal;
+
+  /// No description provided for @priorityHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élevée'**
+  String get priorityHigh;
+
+  /// No description provided for @priorityUrgent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgente'**
+  String get priorityUrgent;
 }
 
 class _AppLocalizationsDelegate

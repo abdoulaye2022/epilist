@@ -1,9 +1,10 @@
-// screens/profile_screen.dart - VERSION PRODUCTION
+// screens/profile_screen.dart - VERSION AVEC FEEDBACK
 
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/currency/currency_state.dart';
+import 'package:epilist/blocs/contact/contact_bloc.dart'; // ✅ NOUVEAU
 import 'package:epilist/models/currency.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
@@ -16,6 +17,7 @@ import 'package:epilist/widgets/currency/currency_selector_dialog.dart';
 import 'package:epilist/widgets/profile/edit_profile_dialog.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:epilist/widgets/dialogs/security_settings_dialog.dart';
+import 'package:epilist/widgets/dialogs/feedback_dialog.dart'; // ✅ NOUVEAU
 import 'package:epilist/widgets/profile/account_deletion_status_widget.dart';
 import 'package:epilist/widgets/profile/logout_button.dart';
 import 'package:epilist/widgets/profile/profile_action_tile.dart';
@@ -169,6 +171,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildSettingsSection(l10n),
             const SizedBox(height: 16),
 
+            // ✅ NOUVELLE SECTION SUPPORT
+            _buildSupportSection(l10n),
+            const SizedBox(height: 16),
+
             _buildInfoSection(l10n),
             const SizedBox(height: 24),
             LogoutButton(onLogout: _showLogoutDialog),
@@ -191,7 +197,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ProfileActionTile(
           icon: Icons.auto_awesome,
           title: l10n.manageSuggestions,
+          subtitle:
+              'Gérer vos suggestions personnalisées', // Exemple de sous-titre
           onTap: _navigateToSuggestionManagement,
+          iconColor: Colors.orange[600],
+          iconBackgroundColor: Colors.orange.withOpacity(0.1),
         ),
       ],
     );
@@ -352,7 +362,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: Icons.security_outlined,
           title: l10n.security,
           onTap: _showSecurityDialog,
+          // Utilise les couleurs par défaut (pas besoin de spécifier)
         ),
+      ],
+    );
+  }
+
+  // ✅ NOUVELLE SECTION SUPPORT AVEC BOUTON FEEDBACK
+  Widget _buildSupportSection(AppLocalizations l10n) {
+    return ProfileSection(
+      title: l10n.support ?? 'Support',
+      children: [
+        ProfileActionTile(
+          icon: Icons.feedback_outlined,
+          title: l10n.sendFeedback ?? 'Envoyer un feedback',
+          subtitle: l10n.feedbackSubtitle ?? 'Aidez-nous à améliorer EpiList',
+          onTap: _showFeedbackDialog,
+          iconColor: Colors.green[600], // Couleur verte pour l'icône
+          iconBackgroundColor: Colors.green.withOpacity(0.1), // Fond vert clair
+        ),
+        // Vous pouvez ajouter d'autres éléments de support ici si nécessaire
       ],
     );
   }
@@ -432,6 +461,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => const SecuritySettingsDialog(),
+    );
+  }
+
+  // ✅ NOUVELLE MÉTHODE POUR AFFICHER LE DIALOG DE FEEDBACK
+  void _showFeedbackDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<ContactBloc>(),
+            child: const FeedbackDialog(),
+          ),
     );
   }
 

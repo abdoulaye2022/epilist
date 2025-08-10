@@ -3712,4 +3712,97 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sundayShort => 'Dim';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get sendFeedback => 'Envoyer un feedback';
+
+  @override
+  String get feedbackSubtitle => 'Aidez-nous à améliorer EpiList';
+
+  @override
+  String get feedbackDescription =>
+      'Votre feedback nous aide à améliorer EpiList. Décrivez votre expérience, signalez un bug ou proposez une amélioration.';
+
+  @override
+  String get feedbackType => 'Type de feedback';
+
+  @override
+  String get priority => 'Priorité';
+
+  @override
+  String get subject => 'Sujet';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get subjectHint => 'Décrivez brièvement votre feedback...';
+
+  @override
+  String get subjectRequired => 'Le sujet est requis';
+
+  @override
+  String get subjectTooShort => 'Le sujet doit contenir au moins 5 caractères';
+
+  @override
+  String get messageHint =>
+      'Décrivez en détail votre feedback, problème rencontré ou suggestion d\'amélioration...';
+
+  @override
+  String get messageRequired => 'Le message est requis';
+
+  @override
+  String get messageTooShort =>
+      'Le message doit contenir au moins 10 caractères';
+
+  @override
+  String get feedbackPrivacyNote =>
+      'Votre feedback sera envoyé à notre équipe technique. Aucune information personnelle sensible ne sera partagée.';
+
+  @override
+  String get bugReport => 'Signaler un bug';
+
+  @override
+  String get bugReportDescription => 'Problème technique ou dysfonctionnement';
+
+  @override
+  String get newFeature => 'Nouvelle fonctionnalité';
+
+  @override
+  String get newFeatureDescription =>
+      'Suggestion d\'amélioration ou nouvelle fonctionnalité';
+
+  @override
+  String get improvement => 'Amélioration';
+
+  @override
+  String get improvementDescription =>
+      'Amélioration d\'une fonctionnalité existante';
+
+  @override
+  String get question => 'Question';
+
+  @override
+  String get questionDescription => 'Aide ou question sur l\'utilisation';
+
+  @override
+  String get other => 'Autre';
+
+  @override
+  String get otherDescription => 'Autre type de feedback';
+
+  @override
+  String get priorityLow => 'Faible';
+
+  @override
+  String get priorityNormal => 'Normal';
+
+  @override
+  String get priorityHigh => 'Élevée';
+
+  @override
+  String get priorityUrgent => 'Urgente';
 }

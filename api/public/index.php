@@ -1,5 +1,5 @@
 <?php
-// public/index.php - VERSION AVEC ROUTES CORRIGÉES
+// public/index.php - VERSION AVEC IMPORT CONTACTCONTROLLER
 
 // ✅ SUPPRESSION DES WARNINGS DEPRECATED POUR BREVO
 error_reporting(E_ALL & ~E_DEPRECATED);
@@ -18,7 +18,8 @@ use App\Controllers\{
     ListReceiptsController,
     DeviceController,
     BudgetController,
-    CampaignController
+    CampaignController,
+    ContactController  // ✅ AJOUT DE L'IMPORT MANQUANT
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -149,6 +150,10 @@ $app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
 $app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
 $app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']);
 
+// ✅ ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
+$app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);
+$app->post('/contact/feedback-anonymous', [ContactController::class, 'sendFeedback']);
+
 // ✅ GROUPE DE ROUTES PROTÉGÉES (avec authentification)
 $app->group('', function ($group) {
     // ✅ ROUTES D'AUTHENTIFICATION PROTÉGÉES
@@ -231,12 +236,12 @@ $app->group('', function ($group) {
     $group->get('/analytics/spending/trends', [AnalyticsController::class, 'spendingTrends']);
     $group->get('/analytics/spending/comparison', [AnalyticsController::class, 'periodComparison']);
     $group->get('/analytics/spending/categories', [AnalyticsController::class, 'spendingByCategory']);
-    $group->get('/analytics/spending/stores', [AnalyticsController::class, 'spendingByStore']); // ✅ NOUVELLE
+    $group->get('/analytics/spending/stores', [AnalyticsController::class, 'spendingByStore']);
     $group->get('/analytics/products/top', [AnalyticsController::class, 'topProducts']);
     $group->get('/analytics/spending/daily', [AnalyticsController::class, 'dailySpendingHistory']);
     $group->get('/analytics/spending/weekly', [AnalyticsController::class, 'weeklySpendingHistory']);
     $group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
-    $group->get('/analytics/data-quality', [AnalyticsController::class, 'dataQualityReport']); // ✅ NOUVELLE
+    $group->get('/analytics/data-quality', [AnalyticsController::class, 'dataQualityReport']);
 
     // ✅ ROUTES POUR LES BUDGETS (dans le groupe protégé)
     $group->get('/budgets', [BudgetController::class, 'index']);
@@ -276,6 +281,8 @@ $app->group('', function ($group) {
     $group->put('/user/email-preferences', [AuthController::class, 'updateEmailPreferences']);
     $group->post('/user/resubscribe-marketing', [AuthController::class, 'resubscribeToMarketing']);
 
+    // ✅ ROUTES DE CONTACT PROTÉGÉES
+    $group->post('/contact/feedback', [ContactController::class, 'sendFeedback']);
 })->add($jwtMiddleware);
 
 $app->run();

@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
+import 'package:epilist/blocs/contact/contact_bloc.dart';
+import 'package:epilist/blocs/contact/contact_event.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
@@ -19,6 +21,7 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/contact_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
@@ -190,6 +193,13 @@ void main() async {
                   authService: context.read<AuthService>(),
                 ),
           ),
+          RepositoryProvider<ContactService>(
+            create:
+                (context) => ContactService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -246,6 +256,12 @@ void main() async {
                   (context) => AnalyticsBloc(
                     analyticsService: context.read<AnalyticsService>(),
                     localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+            ),
+            BlocProvider(
+              create:
+                  (context) => ContactBloc(
+                    contactService: context.read<ContactService>(),
                   ),
             ),
           ],
