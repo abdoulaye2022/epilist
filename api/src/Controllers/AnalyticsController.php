@@ -525,6 +525,230 @@ class AnalyticsController
     }
 
     /**
+     * ✅ HISTORIQUE DES DÉPENSES PAR SEMAINE
+     */
+    public function weeklySpendingHistory(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $params = $request->getQueryParams();
+            
+            $weeks = min((int)($params['weeks'] ?? 12), 52); // Max 52 semaines
+            $currency_code = $params['currency'] ?? null;
+            $language = $this->getUserLanguage($request);
+            $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
+            
+            error_log("📊 Weekly history - User: $user_id, Weeks: $weeks, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            
+            $user = User::with('currency')->find($user_id);
+            if (!$user) {
+                throw new \Exception('User not found');
+            }
+
+            // Déterminer la devise cible
+            $targetCurrency = $currency_code ? 
+                Currency::where('code', strtoupper($currency_code))->first() : 
+                ($user->currency ?? Currency::where('code', 'CAD')->first());
+
+            if (!$targetCurrency) {
+                $targetCurrency = (object)[
+                    'code' => 'CAD',
+                    'symbol' => '$',
+                    'formatAmountDisplay' => function($amount) {
+                        return '$' . number_format($amount, 2);
+                    }
+                ];
+            }
+
+            // Calculer les dates (semaines complètes)
+            $endDate = Carbon::now()->endOfWeek(); // Fin de la semaine actuelle
+            $startDate = Carbon::now()->subWeeks($weeks - 1)->startOfWeek(); // Début de la première semaine
+
+            error_log("📊 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+
+            // Récupérer toutes les données de dépenses
+            $allSpendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
+
+            if (!$includeShared) {
+                $ownListIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
+                $allSpendingData = array_filter($allSpendingData, function($spending) use ($ownListIds) {
+                    return in_array($spending['list_id'], $ownListIds);
+                });
+            }
+
+            // Créer les données par semaine
+            $weeklyData = [];
+            $currentDate = $startDate->copy();
+            
+            while ($currentDate->lte($endDate)) {
+                $weekStart = $currentDate->copy()->startOfWeek();
+                $weekEnd = $currentDate->copy()->endOfWeek();
+                $weekNumber = $currentDate->weekOfYear;
+                $year = $currentDate->year;
+                
+                // Clé unique pour la semaine
+                $weekKey = $year . '-W' . sprintf('%02d', $weekNumber);
+                
+                $weeklyData[$weekKey] = [
+                    'year' => $year,
+                    'week_number' => $weekNumber,
+                    'week_key' => $weekKey,
+                    'week_start' => $weekStart->toDateString(),
+                    'week_end' => $weekEnd->toDateString(),
+                    'week_label' => $weekStart->format('j M') . ' - ' . $weekEnd->format('j M'),
+                    'week_short' => 'S' . sprintf('%02d', $weekNumber),
+                    'is_current_week' => $currentDate->isSameWeek(Carbon::now()),
+                    'total_spent' => 0.0,
+                    'total_transactions' => 0,
+                    'receipts_total' => 0.0,
+                    'items_total' => 0.0,
+                    'receipts_count' => 0,
+                    'items_sessions' => 0,
+                    'shopping_days' => 0,
+                    'currency' => (string)$targetCurrency->code
+                ];
+                
+                $currentDate->addWeek();
+            }
+
+            // Calculer les totaux par semaine
+            $daysByWeek = [];
+            
+            foreach ($allSpendingData as $spending) {
+                try {
+                    if (!isset($spending['date']) || !isset($spending['amount'])) {
+                        continue;
+                    }
+                    
+                    $spendingDate = $spending['date'];
+                    $weekNumber = $spendingDate->weekOfYear;
+                    $year = $spendingDate->year;
+                    $weekKey = $year . '-W' . sprintf('%02d', $weekNumber);
+                    
+                    if (!isset($weeklyData[$weekKey])) {
+                        error_log("⚠️ Week key $weekKey not found in weeklyData");
+                        continue;
+                    }
+                    
+                    $amount = (float)$spending['amount'];
+                    if ($amount <= 0) {
+                        continue;
+                    }
+                    
+                    // Ajouter aux totaux
+                    $weeklyData[$weekKey]['total_spent'] += $amount;
+                    $weeklyData[$weekKey]['total_transactions']++;
+                    
+                    $source = $spending['source'] ?? 'unknown';
+                    if ($source === 'receipt') {
+                        $weeklyData[$weekKey]['receipts_total'] += $amount;
+                        $weeklyData[$weekKey]['receipts_count']++;
+                    } else {
+                        $weeklyData[$weekKey]['items_total'] += $amount;
+                        $weeklyData[$weekKey]['items_sessions']++;
+                    }
+                    
+                    // Compter les jours uniques
+                    $dayKey = $spendingDate->format('Y-m-d');
+                    $daysByWeek[$weekKey][$dayKey] = true;
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error processing spending entry for week: " . $e->getMessage());
+                    continue;
+                }
+            }
+
+            // Finaliser les calculs
+            foreach ($weeklyData as $weekKey => &$data) {
+                try {
+                    $data['shopping_days'] = count($daysByWeek[$weekKey] ?? []);
+                    
+                    // Arrondir les totaux
+                    $data['total_spent'] = round($data['total_spent'], 2);
+                    $data['receipts_total'] = round($data['receipts_total'], 2);
+                    $data['items_total'] = round($data['items_total'], 2);
+                    
+                    // Formatage sécurisé
+                    if (is_callable([$targetCurrency, 'formatAmountDisplay'])) {
+                        $data['formatted_total'] = (string)$targetCurrency->formatAmountDisplay($data['total_spent']);
+                    } else {
+                        $symbol = $targetCurrency->symbol ?? '$';
+                        $data['formatted_total'] = $symbol . number_format($data['total_spent'], 2);
+                    }
+                    
+                    // Qualité des données
+                    if ($data['receipts_total'] > 0) {
+                        $data['data_quality'] = 'high';
+                    } elseif ($data['items_total'] > 0) {
+                        $data['data_quality'] = 'medium';
+                    } else {
+                        $data['data_quality'] = 'none';
+                    }
+                    
+                } catch (\Exception $e) {
+                    error_log("⚠️ Error finalizing week $weekKey data: " . $e->getMessage());
+                    $data['data_quality'] = 'error';
+                }
+            }
+
+            // Trier par année et semaine
+            $sortedWeeklyData = array_values($weeklyData);
+            usort($sortedWeeklyData, function($a, $b) {
+                if ($a['year'] !== $b['year']) {
+                    return $a['year'] <=> $b['year'];
+                }
+                return $a['week_number'] <=> $b['week_number'];
+            });
+
+            // Calculs de tendance
+            $values = array_column($sortedWeeklyData, 'total_spent');
+            $totalSpent = array_sum($values);
+            $averageWeekly = count(array_filter($values)) > 0 ? 
+                $totalSpent / count(array_filter($values)) : 0;
+
+            error_log("📊 Weekly summary - Total: $totalSpent, Average: $averageWeekly");
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'language' => (string)$language,
+                    'include_shared' => $includeShared,
+                    'weekly_data' => $sortedWeeklyData,
+                    'summary' => [
+                        'total_spent' => round($totalSpent, 2),
+                        'average_weekly' => round($averageWeekly, 2),
+                        'currency' => (string)$targetCurrency->code,
+                        'period' => [
+                            'start_date' => $startDate->toDateString(),
+                            'end_date' => $endDate->toDateString(),
+                            'weeks_requested' => (int)$weeks,
+                            'weeks_with_data' => count(array_filter($values))
+                        ],
+                        'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
+                            ? $targetCurrency->formatAmountDisplay($totalSpent)
+                            : ($targetCurrency->symbol ?? '$') . number_format($totalSpent, 2)
+                    ]
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            error_log("❌ Error in weeklySpendingHistory: " . $e->getMessage());
+            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'WEEKLY_ANALYTICS_ERROR',
+                    'message' => 'Error retrieving weekly spending data',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
      * ✅ DASHBOARD PRINCIPAL
      */
     public function dashboard(Request $request, Response $response): Response
