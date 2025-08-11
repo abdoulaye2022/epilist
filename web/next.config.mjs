@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   // Configuration pour Vercel
   output: "standalone",
@@ -30,11 +31,36 @@ const nextConfig = {
   async redirects() {
     return [
       // Redirection de l'ancienne URL vers la nouvelle si besoin
-      // {
-      //   source: '/old-share/:token',
-      //   destination: '/share/:token',
-      //   permanent: true,
-      // },
+      {
+        source: "/terms",
+        destination: "/conditions-utilisation",
+        permanent: true,
+      },
+      {
+        source: "/privacy",
+        destination: "/politique-confidentialite",
+        permanent: true,
+      },
+      {
+        source: "/download",
+        destination: "/telecharger",
+        permanent: true,
+      },
+      {
+        source: "/features",
+        destination: "/fonctionnalites",
+        permanent: true,
+      },
+      {
+        source: "/help",
+        destination: "/aide",
+        permanent: true,
+      },
+      {
+        source: "/about",
+        destination: "/a-propos",
+        permanent: true,
+      },
     ];
   },
 };

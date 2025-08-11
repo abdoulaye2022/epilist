@@ -179,17 +179,43 @@ export default function DownloadContent() {
             Aperçu de l'application
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[1, 2, 3].map((i) => (
+            {[
+              {
+                src: "liste.png",
+                alt: "EpiList - Gestion des listes de courses",
+                title: "Listes intelligentes",
+                desc: "Créez et organisez vos listes facilement",
+              },
+              {
+                src: "analyse.png",
+                alt: "EpiList - Analyse des dépenses",
+                title: "Analyse détaillée",
+                desc: "Suivez vos habitudes d'achat",
+              },
+              {
+                src: "budget.png",
+                alt: "EpiList - Gestion du budget",
+                title: "Budget maîtrisé",
+                desc: "Contrôlez vos dépenses en temps réel",
+              },
+            ].map((screenshot, i) => (
               <div key={i} className="relative group">
                 <div className="absolute -inset-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity" />
                 <div className="relative bg-white rounded-3xl p-4 shadow-2xl">
                   <Image
-                    src={`/screenshot-${i}.png`}
-                    alt={`EpiList Screenshot ${i}`}
+                    src={`/${screenshot.src}`}
+                    alt={screenshot.alt}
                     width={300}
                     height={600}
                     className="w-full h-auto rounded-2xl"
+                    priority={i === 0} // Optimisation pour la première image
                   />
+                  <div className="text-center mt-4">
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {screenshot.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm">{screenshot.desc}</p>
+                  </div>
                 </div>
               </div>
             ))}
