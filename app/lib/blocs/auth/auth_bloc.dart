@@ -1,10 +1,10 @@
-// blocs/auth/auth_bloc.dart - VERSION OPTIMISÉE POUR FCM
-
+// blocs/auth/auth_bloc.dart - VERSION CORRIGÉE GESTION TOKENS
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/notification_service.dart';
+import 'package:epilist/services/sso_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/models/user.dart';
@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.accountDeletionService,
     required this.localizationBloc,
   }) : super(AuthInitial()) {
+    // Événements existants
     on<LoginButtonPressed>(_onLoginButtonPressed);
     on<LogoutRequested>(_onLogoutRequested);
     on<CheckAuthentication>(_onCheckAuthentication);
@@ -42,6 +43,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CancelAccountDeletion>(_onCancelAccountDeletion);
     on<GetAccountDeletionStatus>(_onGetAccountDeletionStatus);
     on<UpdateUserData>(_onUpdateUserData);
+
+    // ✅ NOUVEAUX ÉVÉNEMENTS SSO
+    on<GoogleSignInRequested>(_onGoogleSignInRequested);
+    on<AppleSignInRequested>(_onAppleSignInRequested);
+    on<SSOLoginCompleted>(_onSSOLoginCompleted);
+    on<SSORegisterCompleted>(_onSSORegisterCompleted);
+    on<LinkSSOAccount>(_onLinkSSOAccount);
+    on<UnlinkSSOAccount>(_onUnlinkSSOAccount);
   }
 
   @override
@@ -50,6 +59,416 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 
+  // ===================== ÉVÉNEMENTS SSO CORRIGÉS =====================
+
+  /// ✅ CONNEXION GOOGLE CORRIGÉE
+  Future<void> _onGoogleSignInRequested(
+    GoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const SSOLoading(provider: 'google', action: 'login'));
+
+    try {
+      print('🔵 [AuthBloc] Début de la connexion Google...');
+
+      // 1. ✅ CONNEXION GOOGLE ET SAUVEGARDE AUTOMATIQUE DES TOKENS
+      final tokens = await authService.loginWithGoogle();
+      print(
+        '🔵 [AuthBloc] Tokens Google reçus: ${tokens['access_token']?.substring(0, 20)}...',
+      );
+
+      // 2. ✅ VÉRIFICATION QUE LES TOKENS SONT BIEN SAUVEGARDÉS
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        print('❌ [AuthBloc] PROBLÈME: Token non sauvegardé après login Google');
+        throw AuthenticationException(
+          'Token non sauvegardé',
+          'TOKEN_SAVE_FAILED',
+        );
+      }
+      print(
+        '✅ [AuthBloc] Token sauvegardé confirmé: ${savedToken.substring(0, 20)}...',
+      );
+
+      // 3. ✅ RÉCUPÉRATION UTILISATEUR
+      final user = await authService.getCurrentUser();
+      if (user == null) {
+        print('❌ [AuthBloc] PROBLÈME: Utilisateur null après login Google');
+        final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
+        emit(SSOError(provider: 'google', error: errorMessage));
+        return;
+      }
+      print('✅ [AuthBloc] Utilisateur récupéré: ${user.fullName}');
+
+      // 4. ✅ FINALISATION
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: user, authMethod: 'google'));
+      print('✅ [AuthBloc] Connexion Google terminée avec succès');
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur lors de la connexion Google: $e');
+      final errorMessage = _extractAndTranslateError(e, 'google');
+      emit(
+        SSOError(
+          provider: 'google',
+          error: errorMessage,
+          details: e.toString(),
+        ),
+      );
+    }
+  }
+
+  /// ✅ CONNEXION APPLE CORRIGÉE
+  Future<void> _onAppleSignInRequested(
+    AppleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    // ❌ APPLE SIGN-IN DÉSACTIVÉ POUR ANDROID
+    emit(
+      const SSOError(
+        provider: 'apple',
+        error: 'Apple Sign-In non disponible sur Android',
+      ),
+    );
+
+    /* ❌ CODE APPLE COMMENTÉ POUR ANDROID
+    // Vérifier la disponibilité d'Apple Sign-In
+    if (!Platform.isIOS) {
+      emit(
+        const SSOError(
+          provider: 'apple',
+          error: 'Apple Sign-In est uniquement disponible sur iOS',
+        ),
+      );
+      return;
+    }
+
+    final isAvailable = await SSOService.isAppleSignInAvailable();
+    if (!isAvailable) {
+      emit(
+        const SSOError(
+          provider: 'apple',
+          error: 'Apple Sign-In n\'est pas disponible sur cet appareil',
+        ),
+      );
+      return;
+    }
+
+    emit(const SSOLoading(provider: 'apple', action: 'login'));
+
+    try {
+      print('🍎 [AuthBloc] Début de la connexion Apple...');
+
+      // 1. ✅ CONNEXION APPLE ET SAUVEGARDE AUTOMATIQUE DES TOKENS
+      final tokens = await authService.loginWithApple();
+      print('🍎 [AuthBloc] Tokens Apple reçus');
+
+      // 2. ✅ VÉRIFICATION QUE LES TOKENS SONT BIEN SAUVEGARDÉS
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        print('❌ [AuthBloc] PROBLÈME: Token non sauvegardé après login Apple');
+        throw AuthenticationException(
+          'Token non sauvegardé',
+          'TOKEN_SAVE_FAILED',
+        );
+      }
+      print('✅ [AuthBloc] Token sauvegardé confirmé');
+
+      // 3. ✅ RÉCUPÉRATION UTILISATEUR
+      final user = await authService.getCurrentUser();
+      if (user == null) {
+        print('❌ [AuthBloc] PROBLÈME: Utilisateur null après login Apple');
+        final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
+        emit(SSOError(provider: 'apple', error: errorMessage));
+        return;
+      }
+
+      // 4. ✅ FINALISATION
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: user, authMethod: 'apple'));
+      print('✅ [AuthBloc] Connexion Apple terminée avec succès');
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur lors de la connexion Apple: $e');
+      final errorMessage = _extractAndTranslateError(e, 'apple');
+      emit(
+        SSOError(provider: 'apple', error: errorMessage, details: e.toString()),
+      );
+    }
+    */
+  }
+
+  /// ✅ CONNEXION SSO GÉNÉRALISÉE CORRIGÉE
+  Future<void> _onSSOLoginCompleted(
+    SSOLoginCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(SSOLoading(provider: event.provider, action: 'login'));
+
+    try {
+      print('🔐 [AuthBloc] Traitement de la connexion SSO ${event.provider}');
+
+      Map<String, String> tokens;
+
+      if (event.provider == 'google') {
+        tokens = await authService.loginWithGoogle();
+      } else if (event.provider == 'apple') {
+        tokens = await authService.loginWithApple();
+      } else {
+        throw Exception('Provider SSO non supporté: ${event.provider}');
+      }
+
+      // ✅ VÉRIFICATION CRITIQUE: LES TOKENS SONT-ILS SAUVEGARDÉS ?
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        print(
+          '❌ [AuthBloc] CRITIQUE: Token non sauvegardé après SSO ${event.provider}',
+        );
+
+        // ✅ TENTATIVE DE SAUVEGARDE MANUELLE
+        if (tokens['access_token'] != null && tokens['refresh_token'] != null) {
+          print('🔄 [AuthBloc] Tentative de sauvegarde manuelle des tokens...');
+          await authService.saveTokens(
+            tokens['access_token']!,
+            tokens['refresh_token']!,
+          );
+
+          // Vérifier de nouveau
+          final reCheckToken = await authService.getToken();
+          if (reCheckToken == null) {
+            throw AuthenticationException(
+              'Impossible de sauvegarder les tokens',
+              'TOKEN_SAVE_CRITICAL_FAILED',
+            );
+          }
+          print('✅ [AuthBloc] Sauvegarde manuelle réussie');
+        } else {
+          throw AuthenticationException(
+            'Tokens invalides reçus du serveur',
+            'INVALID_TOKENS_RECEIVED',
+          );
+        }
+      }
+
+      final user = await authService.getCurrentUser();
+      if (user == null) {
+        final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
+        emit(SSOError(provider: event.provider, error: errorMessage));
+        return;
+      }
+
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: user, authMethod: event.provider));
+      print('✅ [AuthBloc] SSO ${event.provider} terminé avec succès');
+    } catch (e) {
+      print(
+        '❌ [AuthBloc] Erreur lors de la connexion SSO ${event.provider}: $e',
+      );
+      final errorMessage = _extractAndTranslateError(e, event.provider);
+      emit(
+        SSOError(
+          provider: event.provider,
+          error: errorMessage,
+          details: e.toString(),
+        ),
+      );
+    }
+  }
+
+  /// ✅ INSCRIPTION SSO CORRIGÉE
+  Future<void> _onSSORegisterCompleted(
+    SSORegisterCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(SSOLoading(provider: event.provider, action: 'register'));
+
+    try {
+      print('📝 [AuthBloc] Traitement de l\'inscription SSO ${event.provider}');
+
+      if (event.provider == 'google') {
+        await authService.registerWithGoogle();
+      } else if (event.provider == 'apple') {
+        await authService.registerWithApple();
+      } else {
+        throw Exception('Provider SSO non supporté: ${event.provider}');
+      }
+
+      // ✅ APRÈS INSCRIPTION, ESSAYER DE SE CONNECTER AUTOMATIQUEMENT
+      print(
+        '🔄 [AuthBloc] Inscription ${event.provider} terminée, connexion automatique...',
+      );
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      Map<String, String> tokens;
+      if (event.provider == 'google') {
+        tokens = await authService.loginWithGoogle();
+      } else {
+        tokens = await authService.loginWithApple();
+      }
+
+      // ✅ VÉRIFICATION DES TOKENS APRÈS INSCRIPTION
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        print(
+          '❌ [AuthBloc] Token non sauvegardé après inscription ${event.provider}',
+        );
+
+        if (tokens['access_token'] != null && tokens['refresh_token'] != null) {
+          await authService.saveTokens(
+            tokens['access_token']!,
+            tokens['refresh_token']!,
+          );
+          print(
+            '✅ [AuthBloc] Tokens sauvegardés manuellement après inscription',
+          );
+        } else {
+          // ✅ Si pas de tokens, créer un utilisateur temporaire
+          emit(
+            SSORegistrationSuccess(
+              provider: event.provider,
+              user: _createTemporaryUser(event.provider),
+            ),
+          );
+          return;
+        }
+      }
+
+      final user = await authService.getCurrentUser();
+      if (user == null) {
+        emit(
+          SSORegistrationSuccess(
+            provider: event.provider,
+            user: _createTemporaryUser(event.provider),
+          ),
+        );
+        return;
+      }
+
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: user, authMethod: event.provider));
+      print(
+        '✅ [AuthBloc] Inscription et connexion ${event.provider} terminées',
+      );
+    } catch (e) {
+      print(
+        '❌ [AuthBloc] Erreur lors de l\'inscription SSO ${event.provider}: $e',
+      );
+      final errorMessage = _extractAndTranslateError(e, event.provider);
+      emit(
+        SSOError(
+          provider: event.provider,
+          error: errorMessage,
+          details: e.toString(),
+        ),
+      );
+    }
+  }
+
+  /// ✅ MÉTHODE POUR CRÉER UN UTILISATEUR TEMPORAIRE
+  User _createTemporaryUser(String provider) {
+    return User(
+      id: DateTime.now().millisecondsSinceEpoch,
+      firstName: 'Utilisateur',
+      lastName: provider == 'google' ? 'Google' : 'Apple',
+      email: 'temp_${provider}@sso.com',
+      emailVerified: true,
+      accessToken: null,
+      refreshToken: null,
+      emailVerifiedAt: DateTime.now(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      currency: null,
+      isActive: true,
+    );
+  }
+
+  // ===================== ÉVÉNEMENTS DE LIAISON SSO =====================
+
+  Future<void> _onLinkSSOAccount(
+    LinkSSOAccount event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      print('🔗 [AuthBloc] Liaison du compte ${event.provider}');
+
+      SSOResult ssoResult;
+      if (event.provider == 'google') {
+        ssoResult = await SSOService.signInWithGoogle();
+      } else if (event.provider == 'apple') {
+        // ❌ APPLE DÉSACTIVÉ POUR ANDROID
+        emit(
+          SSOAccountLinkError(
+            provider: event.provider,
+            error: 'Apple Sign-In non disponible sur Android',
+          ),
+        );
+        return;
+
+        // ssoResult = await SSOService.signInWithApple(); // ❌ COMMENTÉ
+      } else {
+        throw Exception('Provider non supporté: ${event.provider}');
+      }
+
+      if (!ssoResult.success) {
+        throw Exception(ssoResult.error ?? 'Erreur SSO');
+      }
+
+      await authService.linkSSOAccount(event.provider, ssoResult);
+
+      emit(
+        SSOAccountLinked(
+          provider: event.provider,
+          message: 'Compte ${event.provider} lié avec succès',
+        ),
+      );
+
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        emit(AuthSuccess(user: user));
+      }
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur lors de la liaison ${event.provider}: $e');
+      final errorMessage = _extractAndTranslateError(e, event.provider);
+      emit(SSOAccountLinkError(provider: event.provider, error: errorMessage));
+    }
+  }
+
+  Future<void> _onUnlinkSSOAccount(
+    UnlinkSSOAccount event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      print('🔗❌ [AuthBloc] Déliaison du compte ${event.provider}');
+
+      await authService.unlinkSSOAccount(event.provider);
+
+      emit(
+        SSOAccountUnlinked(
+          provider: event.provider,
+          message: 'Compte ${event.provider} délié avec succès',
+        ),
+      );
+
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        emit(AuthSuccess(user: user));
+      }
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur lors de la déliaison ${event.provider}: $e');
+      final errorMessage = _extractAndTranslateError(e, event.provider);
+      emit(SSOAccountLinkError(provider: event.provider, error: errorMessage));
+    }
+  }
+
+  // ===================== ÉVÉNEMENTS EXISTANTS CORRIGÉS =====================
+
+  /// ✅ LOGIN CLASSIQUE CORRIGÉ
   Future<void> _onLoginButtonPressed(
     LoginButtonPressed event,
     Emitter<AuthState> emit,
@@ -57,84 +476,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      print('🟦 Début de _onLoginButtonPressed');
+      print('🔐 [AuthBloc] Début du login classique');
 
       final loginResponse = await authService.login(
         event.email,
         event.password,
       );
+      print('🔐 [AuthBloc] Login réussi, tokens reçus');
 
-      print('🟦 Login réussi, tokens reçus');
+      // ✅ VÉRIFICATION QUE LES TOKENS SONT SAUVEGARDÉS
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        print(
+          '❌ [AuthBloc] PROBLÈME: Token non sauvegardé après login classique',
+        );
 
-      await authService.saveTokens(
-        loginResponse['access_token']!,
-        loginResponse['refresh_token']!,
-      );
+        // Sauvegarde manuelle
+        await authService.saveTokens(
+          loginResponse['access_token']!,
+          loginResponse['refresh_token']!,
+        );
+        print('✅ [AuthBloc] Tokens sauvegardés manuellement');
+      }
 
       final user = await authService.getCurrentUser();
       if (user == null) {
         final errorMessage = _getTranslatedErrorMessage('USER_INFO_ERROR', '');
-        print('🟦 Erreur utilisateur null: $errorMessage');
         emit(AuthFailure(error: errorMessage));
         return;
       }
 
       _scheduleTokenRefresh();
-
-      // ✅ OPTIMISATION: Enregistrement FCM UNIQUEMENT après connexion réussie
       await _registerFCMAfterSuccessfulLogin();
 
-      emit(AuthSuccess(user: user));
-      print('🟦 AuthSuccess émis avec succès');
+      emit(AuthSuccess(user: user, authMethod: 'email'));
+      print('✅ [AuthBloc] Login classique terminé avec succès');
     } on AuthenticationException catch (e) {
-      print('🔴 AuthenticationException attrapée dans _onLoginButtonPressed:');
-      print('   Code: ${e.code}');
-      print('   Message: ${e.message}');
-      print('   Email: ${e.email}');
-
+      print('❌ [AuthBloc] AuthenticationException: ${e.code} - ${e.message}');
       await _handleAuthenticationException(e, event.email, emit);
     } catch (e) {
-      print('🔴 Autre exception attrapée dans _onLoginButtonPressed: $e');
-      print('🔴 Type de l\'exception: ${e.runtimeType}');
+      print('❌ [AuthBloc] Erreur générale login: $e');
 
       if (e is AuthenticationException) {
-        print(
-          '🔴 ATTENTION: AuthenticationException catchée dans le catch général !',
-        );
         await _handleAuthenticationException(e, event.email, emit);
         return;
       }
 
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
-
-      print('🔴 Code extrait: $errorCode');
-      print('🔴 Message traduit: $errorMessage');
-      print('🔴 Émission de AuthFailure avec: $errorMessage');
-
       emit(AuthFailure(error: errorMessage));
     }
   }
 
-  // ✅ NOUVELLE MÉTHODE: Enregistrement FCM optimisé après connexion
-  Future<void> _registerFCMAfterSuccessfulLogin() async {
-    try {
-      print('🔔 [AUTH] Démarrage de l\'enregistrement FCM après connexion...');
-
-      // Délai court pour s'assurer que les tokens sont sauvegardés
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Enregistrer le device avec le token FCM
-      await NotificationService.registerAfterLogin();
-
-      print('✅ [AUTH] Enregistrement FCM terminé avec succès');
-    } catch (e) {
-      print('⚠️ [AUTH] Erreur lors de l\'enregistrement FCM: $e');
-      // ✅ IMPORTANT: Ne pas bloquer la connexion si FCM échoue
-      // L'utilisateur peut quand même utiliser l'app sans notifications
-    }
-  }
-
+  /// ✅ CHECK AUTHENTICATION CORRIGÉ
   Future<void> _onCheckAuthentication(
     CheckAuthentication event,
     Emitter<AuthState> emit,
@@ -142,37 +536,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
+      print('🔍 [AuthBloc] Vérification de l\'authentification...');
+
       final isAuthenticated = await authService.isAuthenticated();
+      print('🔍 [AuthBloc] Authentifié: $isAuthenticated');
+
       if (isAuthenticated) {
         final user = await authService.getCurrentUser();
         if (user != null) {
+          print('✅ [AuthBloc] Utilisateur trouvé: ${user.fullName}');
+
           _scheduleTokenRefresh();
 
-          // ✅ OPTIMISATION: Vérifier si le device est déjà enregistré
-          // Si non, l'enregistrer (cas où l'utilisateur était déjà connecté)
           try {
             await Future.delayed(const Duration(milliseconds: 500));
             final isRegistered = await NotificationService.isDeviceRegistered();
             if (!isRegistered) {
-              print('📱 [AUTH] Device non enregistré, enregistrement...');
+              print('📱 [AuthBloc] Device non enregistré, enregistrement...');
               await NotificationService.registerAfterLogin();
-            } else {
-              print('📱 [AUTH] Device déjà enregistré');
             }
           } catch (fcmError) {
-            print('⚠️ [AUTH] Erreur FCM lors de la vérification: $fcmError');
-            // Continuer malgré l'erreur FCM
+            print(
+              '⚠️ [AuthBloc] Erreur FCM lors de la vérification: $fcmError',
+            );
           }
 
-          emit(AuthSuccess(user: user));
+          final ssoProvider = await authService.getCurrentSSOProvider();
+          emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
         } else {
+          print('❌ [AuthBloc] Utilisateur null, nettoyage...');
           await authService.clearUserData();
           emit(Unauthenticated());
         }
       } else {
+        print('❌ [AuthBloc] Non authentifié');
         emit(Unauthenticated());
       }
     } catch (e) {
+      print('❌ [AuthBloc] Erreur check authentication: $e');
       final errorMessage = _getTranslatedErrorMessage(
         'AUTH_CHECK_ERROR',
         e.toString(),
@@ -180,6 +581,75 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(error: errorMessage));
       await Future.delayed(const Duration(seconds: 2));
       emit(Unauthenticated());
+    }
+  }
+
+  /// ✅ CONFIRMATION EMAIL CORRIGÉE
+  Future<void> _onConfirmEmailRequested(
+    ConfirmEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      print('📧 [AuthBloc] Confirmation d\'email...');
+
+      final tokens = await authService.confirmEmail(
+        email: event.email,
+        code: event.code,
+      );
+
+      if (tokens != null) {
+        print('📧 [AuthBloc] Tokens reçus après confirmation email');
+
+        // ✅ VÉRIFICATION DES TOKENS
+        final savedToken = await authService.getToken();
+        if (savedToken == null || savedToken.isEmpty) {
+          print('❌ [AuthBloc] Token non sauvegardé après confirmation email');
+          await authService.saveTokens(
+            tokens['access_token']!,
+            tokens['refresh_token']!,
+          );
+          print(
+            '✅ [AuthBloc] Tokens sauvegardés manuellement après confirmation',
+          );
+        }
+
+        final user = await authService.getCurrentUser();
+        if (user != null) {
+          _scheduleTokenRefresh();
+          await _registerFCMAfterSuccessfulLogin();
+          emit(AuthSuccess(user: user, authMethod: 'email'));
+        } else {
+          final errorMessage = _getTranslatedErrorMessage(
+            'USER_INFO_ERROR',
+            '',
+          );
+          emit(AuthFailure(error: errorMessage));
+        }
+      } else {
+        emit(EmailConfirmationSuccess());
+      }
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur confirmation email: $e');
+      final errorCode = _extractErrorCode(e);
+      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
+      emit(AuthFailure(error: errorMessage));
+    }
+  }
+
+  // ===================== MÉTHODES UTILITAIRES =====================
+
+  Future<void> _registerFCMAfterSuccessfulLogin() async {
+    try {
+      print(
+        '🔔 [AuthBloc] Démarrage de l\'enregistrement FCM après connexion...',
+      );
+      await Future.delayed(const Duration(milliseconds: 500));
+      await NotificationService.registerAfterLogin();
+      print('✅ [AuthBloc] Enregistrement FCM terminé avec succès');
+    } catch (e) {
+      print('⚠️ [AuthBloc] Erreur lors de l\'enregistrement FCM: $e');
     }
   }
 
@@ -208,13 +678,67 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthFailure(error: errorMessage));
   }
 
+  String _extractAndTranslateError(dynamic error, String provider) {
+    if (error is AuthenticationException) {
+      return _getTranslatedErrorMessage(error.code, error.message);
+    }
+
+    final errorString = error.toString().toLowerCase();
+
+    // Erreurs spécifiques Google
+    if (provider == 'google') {
+      if (errorString.contains('canceled') ||
+          errorString.contains('cancelled')) {
+        return _getTranslatedErrorMessage('GOOGLE_SIGNIN_CANCELLED', '');
+      }
+      if (errorString.contains('network')) {
+        return _getTranslatedErrorMessage('GOOGLE_NETWORK_ERROR', '');
+      }
+      if (errorString.contains('account_exists_with_different_credential')) {
+        return _getTranslatedErrorMessage('GOOGLE_ACCOUNT_EXISTS', '');
+      }
+    }
+
+    // Erreurs spécifiques Apple
+    if (provider == 'apple') {
+      if (errorString.contains('canceled') ||
+          errorString.contains('cancelled')) {
+        return _getTranslatedErrorMessage('APPLE_SIGNIN_CANCELLED', '');
+      }
+      if (errorString.contains('not available')) {
+        return _getTranslatedErrorMessage('APPLE_NOT_AVAILABLE', '');
+      }
+    }
+
+    // Erreurs génériques SSO
+    if (errorString.contains('email_already_exists')) {
+      return _getTranslatedErrorMessage('EMAIL_ALREADY_EXISTS', '');
+    }
+    if (errorString.contains('invalid_token')) {
+      return _getTranslatedErrorMessage('INVALID_SSO_TOKEN', '');
+    }
+    if (errorString.contains('network')) {
+      return _getTranslatedErrorMessage('NETWORK_ERROR', '');
+    }
+
+    return _getTranslatedErrorMessage('SSO_UNKNOWN_ERROR', error.toString());
+  }
+
+  // ===================== AUTRES ÉVÉNEMENTS (inchangés) =====================
+
   Future<void> _onUpdateUserData(
     UpdateUserData event,
     Emitter<AuthState> emit,
   ) async {
     if (state is AuthSuccess) {
       final currentState = state as AuthSuccess;
-      emit(AuthSuccess(user: event.user, message: currentState.message));
+      emit(
+        AuthSuccess(
+          user: event.user,
+          message: currentState.message,
+          authMethod: currentState.authMethod,
+        ),
+      );
 
       try {
         await authService.saveUserToCache(event.user);
@@ -259,37 +783,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       _tokenRefreshTimer?.cancel();
 
-      // ✅ OPTIMISATION: Nettoyage FCM lors de la déconnexion
       try {
-        print('🔄 [AUTH] Nettoyage des données FCM lors de la déconnexion...');
+        print(
+          '🔄 [AuthBloc] Nettoyage des données FCM lors de la déconnexion...',
+        );
         NotificationService.clearDeviceData();
-        print('✅ [AUTH] Données FCM nettoyées');
+        print('✅ [AuthBloc] Données FCM nettoyées');
       } catch (fcmError) {
-        print('⚠️ [AUTH] Erreur lors du nettoyage FCM: $fcmError');
-        // Non bloquant
+        print('⚠️ [AuthBloc] Erreur lors du nettoyage FCM: $fcmError');
       }
 
       try {
         await authService.logout();
       } catch (logoutError) {
-        print('⚠️ [AUTH] Erreur lors du logout serveur: $logoutError');
-        // Continuer le logout même si le serveur échoue
+        print('⚠️ [AuthBloc] Erreur lors du logout serveur: $logoutError');
       }
 
       try {
         await authService.clearUserData();
       } catch (clearError) {
-        print('⚠️ [AUTH] Erreur lors du nettoyage des données: $clearError');
-        // Continuer
+        print(
+          '⚠️ [AuthBloc] Erreur lors du nettoyage des données: $clearError',
+        );
+      }
+
+      try {
+        await SSOService.signOutAll();
+        print('✅ [AuthBloc] Déconnexion SSO terminée');
+      } catch (ssoError) {
+        print('⚠️ [AuthBloc] Erreur lors de la déconnexion SSO: $ssoError');
       }
 
       await Future.delayed(const Duration(milliseconds: 300));
       emit(Unauthenticated());
     } catch (e) {
-      print('❌ [AUTH] Erreur générale lors du logout: $e');
+      print('❌ [AuthBloc] Erreur générale lors du logout: $e');
       try {
         _tokenRefreshTimer?.cancel();
         await authService.clearUserData();
+        await SSOService.signOutAll();
         NotificationService.clearDeviceData();
         emit(Unauthenticated());
       } catch (clearError) {
@@ -328,7 +860,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await authService.getCurrentUser();
       if (user != null) {
-        emit(AuthSuccess(user: user));
+        final ssoProvider = await authService.getCurrentSSOProvider();
+        emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
       } else {
         emit(Unauthenticated());
       }
@@ -356,7 +889,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       emit(ProfileUpdated(updatedUser));
-      emit(AuthSuccess(user: updatedUser));
+
+      final ssoProvider = await authService.getCurrentSSOProvider();
+      emit(AuthSuccess(user: updatedUser, authMethod: ssoProvider ?? 'email'));
     } catch (e) {
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
@@ -365,7 +900,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         final currentUser = await authService.getCurrentUser();
         if (currentUser != null) {
-          emit(AuthSuccess(user: currentUser));
+          final ssoProvider = await authService.getCurrentSSOProvider();
+          emit(
+            AuthSuccess(user: currentUser, authMethod: ssoProvider ?? 'email'),
+          );
         } else {
           emit(Unauthenticated());
         }
@@ -376,7 +914,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onClearAuthError(ClearAuthError event, Emitter<AuthState> emit) {
-    if (state is AuthFailure) {
+    if (state is AuthFailure || state is SSOError) {
       emit(AuthInitial());
     }
   }
@@ -417,49 +955,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onConfirmEmailRequested(
-    ConfirmEmailRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
-
-    try {
-      final tokens = await authService.confirmEmail(
-        email: event.email,
-        code: event.code,
-      );
-
-      if (tokens != null) {
-        await authService.saveTokens(
-          tokens['access_token']!,
-          tokens['refresh_token']!,
-        );
-
-        final user = await authService.getCurrentUser();
-        if (user != null) {
-          _scheduleTokenRefresh();
-
-          // ✅ OPTIMISATION: Enregistrement FCM après confirmation d'email
-          await _registerFCMAfterSuccessfulLogin();
-
-          emit(AuthSuccess(user: user));
-        } else {
-          final errorMessage = _getTranslatedErrorMessage(
-            'USER_INFO_ERROR',
-            '',
-          );
-          emit(AuthFailure(error: errorMessage));
-        }
-      } else {
-        emit(EmailConfirmationSuccess());
-      }
-    } catch (e) {
-      final errorCode = _extractErrorCode(e);
-      final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
-      emit(AuthFailure(error: errorMessage));
-    }
-  }
-
   Future<void> _onResendVerificationCode(
     ResendVerificationCode event,
     Emitter<AuthState> emit,
@@ -476,6 +971,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  // Événements de suppression de compte (inchangés)
   Future<void> _onRequestAccountDeletion(
     RequestAccountDeletion event,
     Emitter<AuthState> emit,
@@ -526,6 +1022,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _tokenRefreshTimer?.cancel();
       NotificationService.clearDeviceData();
       await authService.clearUserData();
+      await SSOService.signOutAll();
       emit(Unauthenticated());
     } catch (e) {
       final errorCode = _extractErrorCode(e);
@@ -547,7 +1044,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       final user = await authService.getCurrentUser();
       if (user != null) {
-        emit(AuthSuccess(user: user));
+        final ssoProvider = await authService.getCurrentSSOProvider();
+        emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
       } else {
         emit(Unauthenticated());
       }
@@ -647,6 +1145,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'TOO_MANY_ATTEMPTS': 'Trop de tentatives. Veuillez réessayer plus tard',
       'RATE_LIMITED': 'Trop de tentatives. Veuillez réessayer plus tard',
       'ACCOUNT_DISABLED': 'Ce compte utilisateur est désactivé',
+
+      // Messages SSO
+      'GOOGLE_SIGNIN_CANCELLED': 'Connexion Google annulée',
+      'GOOGLE_NETWORK_ERROR': 'Erreur de réseau lors de la connexion Google',
+      'GOOGLE_ACCOUNT_EXISTS': 'Un compte existe déjà avec cet email',
+      'APPLE_SIGNIN_CANCELLED': 'Connexion Apple annulée',
+      'APPLE_NOT_AVAILABLE': 'Apple Sign-In non disponible sur cet appareil',
+      'INVALID_SSO_TOKEN': 'Token d\'authentification invalide',
+      'SSO_UNKNOWN_ERROR': 'Erreur inattendue lors de la connexion SSO',
+      'SSO_ACCOUNT_ALREADY_LINKED': 'Ce compte est déjà lié',
+      'SSO_EMAIL_MISMATCH': 'L\'email ne correspond pas au compte actuel',
+      'SSO_ACCOUNT_CONFLICT': 'Conflit avec un autre compte',
+      'SSO_NETWORK_ERROR': 'Erreur de réseau lors de l\'authentification SSO',
+
+      // ✅ NOUVEAUX MESSAGES POUR LES TOKENS
+      'TOKEN_SAVE_FAILED': 'Erreur lors de la sauvegarde des tokens',
+      'TOKEN_SAVE_CRITICAL_FAILED':
+          'Erreur critique: impossible de sauvegarder les tokens',
+      'INVALID_TOKENS_RECEIVED': 'Tokens invalides reçus du serveur',
     };
 
     const Map<String, String> englishMessages = {
@@ -680,6 +1197,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'TOO_MANY_ATTEMPTS': 'Too many attempts. Please try again later',
       'RATE_LIMITED': 'Too many attempts. Please try again later',
       'ACCOUNT_DISABLED': 'This user account is disabled',
+
+      // SSO Messages in English
+      'GOOGLE_SIGNIN_CANCELLED': 'Google sign-in cancelled',
+      'GOOGLE_NETWORK_ERROR': 'Network error during Google sign-in',
+      'GOOGLE_ACCOUNT_EXISTS': 'An account already exists with this email',
+      'APPLE_SIGNIN_CANCELLED': 'Apple Sign-In cancelled',
+      'APPLE_NOT_AVAILABLE': 'Apple Sign-In not available on this device',
+      'INVALID_SSO_TOKEN': 'Invalid authentication token',
+      'SSO_UNKNOWN_ERROR': 'Unexpected error during SSO sign-in',
+      'SSO_ACCOUNT_ALREADY_LINKED': 'This account is already linked',
+      'SSO_EMAIL_MISMATCH': 'Email does not match current account',
+      'SSO_ACCOUNT_CONFLICT': 'Conflict with another account',
+      'SSO_NETWORK_ERROR': 'Network error during SSO authentication',
+
+      // Token error messages in English
+      'TOKEN_SAVE_FAILED': 'Error saving authentication tokens',
+      'TOKEN_SAVE_CRITICAL_FAILED': 'Critical error: unable to save tokens',
+      'INVALID_TOKENS_RECEIVED': 'Invalid tokens received from server',
     };
 
     final isEnglish =
@@ -697,6 +1232,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   String _extractErrorCode(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
+    // Codes d'erreur SSO
+    if (errorString.contains('google') && errorString.contains('cancel')) {
+      return 'GOOGLE_SIGNIN_CANCELLED';
+    } else if (errorString.contains('apple') &&
+        errorString.contains('cancel')) {
+      return 'APPLE_SIGNIN_CANCELLED';
+    } else if (errorString.contains('apple') &&
+        errorString.contains('not available')) {
+      return 'APPLE_NOT_AVAILABLE';
+    }
+
+    // ✅ NOUVEAUX CODES D'ERREUR POUR LES TOKENS
+    if (errorString.contains('token') && errorString.contains('save')) {
+      return 'TOKEN_SAVE_FAILED';
+    }
+
+    // Codes d'erreur existants
     if (errorString.contains('invalid') &&
         (errorString.contains('credentials') ||
             errorString.contains('password'))) {

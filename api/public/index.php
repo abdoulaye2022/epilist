@@ -32,6 +32,7 @@ use App\Services\MailSender;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Carbon\Carbon;
+use App\Middleware\DebugMiddleware;
 
 // Charger les variables d'environnement
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
@@ -153,6 +154,12 @@ $app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe
 // ✅ ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
 $app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);
 $app->post('/contact/feedback-anonymous', [ContactController::class, 'sendFeedback']);
+
+// ✅ ROUTES SSO PUBLIQUES (sans authentification)
+$app->post('/auth/sso/google/login', [AuthController::class, 'googleLogin']);
+$app->post('/auth/sso/google/register', [AuthController::class, 'googleRegister']);
+$app->post('/auth/sso/apple/login', [AuthController::class, 'appleLogin']);
+$app->post('/auth/sso/apple/register', [AuthController::class, 'appleRegister']);
 
 // ✅ GROUPE DE ROUTES PROTÉGÉES (avec authentification)
 $app->group('', function ($group) {

@@ -1507,5 +1507,14 @@
   "messageRequired": "Le message est requis",
   "messageTooShort": "Le message doit contenir au moins 10 caractères",
   "send": "Envoyer",
-  "cancel": "Annuler"
+  "cancel": "Annuler",
+  "continueWithGoogle": "Continuer avec Google",
+  "continueWithApple": "Continuer avec Apple",
+  "signUpWithGoogle": "S'inscrire avec Google", 
+  "signUpWithApple": "S'inscrire avec Apple",
+  "ssoDisclaimer": "En utilisant SSO, vous acceptez nos conditions d'utilisation",
+  "ssoSignupDisclaimer": "En vous inscrivant via SSO, vous acceptez nos conditions",
+  "quickSignupWithSSO": "Inscription rapide avec SSO",
+  "loginSuccessful": "Connexion réussie",
+  "dontHaveAccount": "Vous n'avez pas de compte ?"
 }

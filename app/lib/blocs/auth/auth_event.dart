@@ -1,4 +1,4 @@
-// blocs/auth/auth_event.dart - VERSION COMPLÈTE CORRIGÉE
+// blocs/auth/auth_event.dart - VERSION AVEC SSO
 part of 'auth_bloc.dart';
 
 abstract class AuthEvent extends Equatable {
@@ -16,6 +16,32 @@ class LoginButtonPressed extends AuthEvent {
 
   @override
   List<Object> get props => [email, password];
+}
+
+// ✅ NOUVEAUX ÉVÉNEMENTS SSO
+class GoogleSignInRequested extends AuthEvent {
+  const GoogleSignInRequested();
+}
+
+class AppleSignInRequested extends AuthEvent {
+  const AppleSignInRequested();
+}
+
+class SSOLoginCompleted extends AuthEvent {
+  final String provider; // 'google' ou 'apple'
+  final String idToken;
+  final String? accessToken;
+  final Map<String, dynamic> userInfo;
+
+  const SSOLoginCompleted({
+    required this.provider,
+    required this.idToken,
+    this.accessToken,
+    required this.userInfo,
+  });
+
+  @override
+  List<Object> get props => [provider, idToken, accessToken ?? '', userInfo];
 }
 
 class LogoutRequested extends AuthEvent {}
@@ -37,6 +63,24 @@ class RegisterRequested extends AuthEvent {
 
   @override
   List<Object> get props => [firstName, lastName, email, password];
+}
+
+// ✅ NOUVEL ÉVÉNEMENT pour inscription SSO
+class SSORegisterCompleted extends AuthEvent {
+  final String provider; // 'google' ou 'apple'
+  final String idToken;
+  final String? accessToken;
+  final Map<String, dynamic> userInfo;
+
+  const SSORegisterCompleted({
+    required this.provider,
+    required this.idToken,
+    this.accessToken,
+    required this.userInfo,
+  });
+
+  @override
+  List<Object> get props => [provider, idToken, accessToken ?? '', userInfo];
 }
 
 class RefreshTokenRequested extends AuthEvent {
@@ -131,7 +175,6 @@ class CancelAccountDeletion extends AuthEvent {}
 
 class GetAccountDeletionStatus extends AuthEvent {}
 
-// ✅ NOUVEL ÉVÉNEMENT pour mettre à jour les données utilisateur
 class UpdateUserData extends AuthEvent {
   final User user;
 
@@ -139,4 +182,29 @@ class UpdateUserData extends AuthEvent {
 
   @override
   List<Object> get props => [user];
+}
+
+// ✅ NOUVEAUX ÉVÉNEMENTS pour lier/délier des comptes SSO
+class LinkSSOAccount extends AuthEvent {
+  final String provider;
+  final String idToken;
+  final String? accessToken;
+
+  const LinkSSOAccount({
+    required this.provider,
+    required this.idToken,
+    this.accessToken,
+  });
+
+  @override
+  List<Object> get props => [provider, idToken, accessToken ?? ''];
+}
+
+class UnlinkSSOAccount extends AuthEvent {
+  final String provider;
+
+  const UnlinkSSOAccount({required this.provider});
+
+  @override
+  List<Object> get props => [provider];
 }

@@ -3746,4 +3746,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priorityUrgent => 'Urgent';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String get signUpWithGoogle => 'Sign up with Google';
+
+  @override
+  String get signUpWithApple => 'Sign up with Apple';
+
+  @override
+  String get ssoDisclaimer => 'By using SSO, you agree to our terms of service';
+
+  @override
+  String get ssoSignupDisclaimer =>
+      'By signing up via SSO, you agree to our terms';
+
+  @override
+  String get quickSignupWithSSO => 'Quick signup with SSO';
+
+  @override
+  String get loginSuccessful => 'Login successful';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
 }

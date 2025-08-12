@@ -1,4 +1,4 @@
-// blocs/auth/auth_state.dart - VERSION COMPLÈTE CORRIGÉE
+// blocs/auth/auth_state.dart - VERSION AVEC SSO
 part of 'auth_bloc.dart';
 
 abstract class AuthState extends Equatable {
@@ -12,14 +12,37 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
+// ✅ NOUVEAUX ÉTATS SSO
+class SSOLoading extends AuthState {
+  final String provider; // 'google' ou 'apple'
+  final String action; // 'login' ou 'register'
+
+  const SSOLoading({required this.provider, required this.action});
+
+  @override
+  List<Object> get props => [provider, action];
+}
+
+class SSOError extends AuthState {
+  final String provider;
+  final String error;
+  final String? details;
+
+  const SSOError({required this.provider, required this.error, this.details});
+
+  @override
+  List<Object> get props => [provider, error, details ?? ''];
+}
+
 class AuthSuccess extends AuthState {
   final User user;
   final String? message;
+  final String? authMethod; // 'email', 'google', 'apple'
 
-  const AuthSuccess({required this.user, this.message});
+  const AuthSuccess({required this.user, this.message, this.authMethod});
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => [user, authMethod ?? ''];
 }
 
 class AuthFailure extends AuthState {
@@ -34,6 +57,17 @@ class AuthFailure extends AuthState {
 class Unauthenticated extends AuthState {}
 
 class RegistrationSuccess extends AuthState {}
+
+// ✅ NOUVEL ÉTAT pour inscription SSO réussie
+class SSORegistrationSuccess extends AuthState {
+  final String provider;
+  final User user;
+
+  const SSORegistrationSuccess({required this.provider, required this.user});
+
+  @override
+  List<Object> get props => [provider, user];
+}
 
 class TokensRefreshed extends AuthState {
   final String accessToken;
@@ -131,4 +165,35 @@ class AccountDeletionStatusLoaded extends AuthState {
 
   @override
   List<Object> get props => [status];
+}
+
+// ✅ NOUVEAUX ÉTATS pour la gestion des comptes SSO
+class SSOAccountLinked extends AuthState {
+  final String provider;
+  final String message;
+
+  const SSOAccountLinked({required this.provider, required this.message});
+
+  @override
+  List<Object> get props => [provider, message];
+}
+
+class SSOAccountUnlinked extends AuthState {
+  final String provider;
+  final String message;
+
+  const SSOAccountUnlinked({required this.provider, required this.message});
+
+  @override
+  List<Object> get props => [provider, message];
+}
+
+class SSOAccountLinkError extends AuthState {
+  final String provider;
+  final String error;
+
+  const SSOAccountLinkError({required this.provider, required this.error});
+
+  @override
+  List<Object> get props => [provider, error];
 }

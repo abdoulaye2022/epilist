@@ -7164,6 +7164,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Urgente'**
   String get priorityUrgent;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @continueWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Apple'**
+  String get continueWithApple;
+
+  /// No description provided for @signUpWithGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'S\'inscrire avec Google'**
+  String get signUpWithGoogle;
+
+  /// No description provided for @signUpWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'S\'inscrire avec Apple'**
+  String get signUpWithApple;
+
+  /// No description provided for @ssoDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'En utilisant SSO, vous acceptez nos conditions d\'utilisation'**
+  String get ssoDisclaimer;
+
+  /// No description provided for @ssoSignupDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'En vous inscrivant via SSO, vous acceptez nos conditions'**
+  String get ssoSignupDisclaimer;
+
+  /// No description provided for @quickSignupWithSSO.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inscription rapide avec SSO'**
+  String get quickSignupWithSSO;
+
+  /// No description provided for @loginSuccessful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion réussie'**
+  String get loginSuccessful;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas de compte ?'**
+  String get dontHaveAccount;
 }
 
 class _AppLocalizationsDelegate

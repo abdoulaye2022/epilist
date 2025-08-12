@@ -1501,5 +1501,14 @@
   "messageRequired": "Message is required",
   "messageTooShort": "Message must be at least 10 characters",
   "send": "Send",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "continueWithGoogle": "Continue with Google",
+  "continueWithApple": "Continue with Apple", 
+  "signUpWithGoogle": "Sign up with Google",
+  "signUpWithApple": "Sign up with Apple",
+  "ssoDisclaimer": "By using SSO, you agree to our terms of service",
+  "ssoSignupDisclaimer": "By signing up via SSO, you agree to our terms",
+  "quickSignupWithSSO": "Quick signup with SSO",
+  "loginSuccessful": "Login successful",
+  "dontHaveAccount": "Don't have an account?"
 }
