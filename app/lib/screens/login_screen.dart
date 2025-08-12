@@ -1,4 +1,4 @@
-// screens/login_screen.dart - VERSION AVEC DIALOG MODERNE
+// screens/login_screen.dart - VERSION AVEC APPLE SIGN-IN RESTAURÉ
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 40),
 
-                // ✅ BOUTONS SSO NORMAUX
+                // ✅ BOUTONS SSO AVEC APPLE RESTAURÉ
                 _buildSSOButtons(l10n),
 
                 const SizedBox(height: 24),
@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ✅ BOUTONS SSO NORMAUX
+  // ✅ BOUTONS SSO AVEC APPLE CACHÉ SUR ANDROID
   Widget _buildSSOButtons(AppLocalizations l10n) {
     return Column(
       children: [
@@ -207,42 +207,42 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
 
-        // Bouton Apple normal (iOS seulement)
-        // if (Platform.isIOS) ...[
-        //   const SizedBox(height: 12),
-        //   SizedBox(
-        //     width: double.infinity,
-        //     height: 48,
-        //     child: ElevatedButton.icon(
-        //       onPressed: _isLoading ? null : _signInWithApple,
-        //       style: ElevatedButton.styleFrom(
-        //         backgroundColor: Colors.black,
-        //         foregroundColor: Colors.white,
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(12),
-        //         ),
-        //       ),
-        //       icon:
-        //           _isLoading
-        //               ? const SizedBox(
-        //                 width: 16,
-        //                 height: 16,
-        //                 child: CircularProgressIndicator(
-        //                   strokeWidth: 2,
-        //                   color: Colors.white,
-        //                 ),
-        //               )
-        //               : const Icon(Icons.apple, size: 18),
-        //       label: Text(
-        //         _isLoading ? 'Connexion...' : l10n.continueWithApple,
-        //         style: const TextStyle(
-        //           fontSize: 15,
-        //           fontWeight: FontWeight.w500,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ],
+        // ✅ Bouton Apple uniquement sur iOS
+        if (Platform.isIOS) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : _signInWithApple,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon:
+                  _isLoading
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Icon(Icons.apple, size: 18),
+              label: Text(
+                _isLoading ? 'Connexion...' : l10n.continueWithApple,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -429,7 +429,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ✅ MÉTHODES SIMPLIFIÉES
+  // ✅ MÉTHODES SSO SIMPLIFIÉES
+
   void _signInWithGoogle() async {
     try {
       context.read<AuthBloc>().add(const GoogleSignInRequested());
@@ -441,16 +442,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // ✅ MÉTHODE APPLE SIGN-IN RESTAURÉE AVEC VÉRIFICATION
   void _signInWithApple() async {
     try {
+      // Vérifier la disponibilité d'Apple Sign-In
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!isAvailable) {
-        SmartSnackBarManager.showErrorSnackBar(
-          context,
-          'Apple Sign-In non disponible',
-        );
+        String errorMessage =
+            Platform.isIOS
+                ? 'Apple Sign-In non disponible sur cet appareil'
+                : 'Apple Sign-In est uniquement disponible sur iOS';
+
+        SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
+
+      // Déclencher la connexion Apple
       context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(

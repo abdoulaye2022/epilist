@@ -1,4 +1,4 @@
-// services/auth_service.dart - VERSION ANDROID UNIQUEMENT (APPLE COMMENTÉ)
+// services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/user.dart';
@@ -32,7 +32,7 @@ class AuthService {
 
   AuthService({required this.dio, required this.sharedPreferences});
 
-  // ===================== GESTION DES TOKENS CORRIGÉE =====================
+  // ===================== GESTION DES TOKENS =====================
 
   DateTime? _getTokenExpiration(String token) {
     try {
@@ -174,9 +174,9 @@ class AuthService {
     }
   }
 
-  // ===================== MÉTHODES SSO CORRIGÉES =====================
+  // ===================== MÉTHODES SSO COMPLÈTES =====================
 
-  /// ✅ CONNEXION GOOGLE CORRIGÉE (inchangée)
+  /// ✅ CONNEXION GOOGLE
   Future<Map<String, String>> loginWithGoogle() async {
     try {
       print('🔵 [AuthService] Début de la connexion Google...');
@@ -291,20 +291,18 @@ class AuthService {
     }
   }
 
-  /// ❌ CONNEXION APPLE COMMENTÉE POUR ANDROID
+  /// ✅ CONNEXION APPLE RESTAURÉE COMPLÈTEMENT
   Future<Map<String, String>> loginWithApple() async {
-    // ❌ APPLE SIGN-IN DÉSACTIVÉ POUR ANDROID
-    print('🍎 [AuthService] Apple Sign-In non disponible sur Android');
-    throw AuthenticationException(
-      'Apple Sign-In non disponible sur Android',
-      'APPLE_NOT_AVAILABLE',
-    );
-
-    /* ❌ CODE APPLE COMMENTÉ POUR ANDROID
     try {
       print('🍎 [AuthService] Début de la connexion Apple...');
 
-      // 1. Obtenir les credentials Apple
+      // 1. Vérification de plateforme
+      if (!Platform.isIOS) {
+        print('⚠️ [AuthService] Apple Sign-In tenté sur plateforme non-iOS');
+        // Ne pas lancer d'exception, essayer quand même
+      }
+
+      // 2. Obtenir les credentials Apple
       final SSOResult result = await SSOService.signInWithApple();
 
       if (!result.success) {
@@ -324,8 +322,10 @@ class AuthService {
       }
 
       print('✅ [AuthService] Credentials Apple obtenus, envoi au serveur...');
+      print('  ID Token: ${result.idToken!.substring(0, 30)}...');
+      print('  User Info: ${result.userInfo!.email ?? "privé"}');
 
-      // 2. Envoyer les credentials au serveur
+      // 3. Envoyer les credentials au serveur
       final response = await dio.post(
         '/auth/sso/apple/login',
         data: {
@@ -352,6 +352,10 @@ class AuthService {
             'MISSING_TOKENS',
           );
         }
+
+        print('✅ [AuthService] Tokens Apple reçus:');
+        print('  Access: ${accessToken.substring(0, 30)}...');
+        print('  Refresh: ${refreshToken.substring(0, 30)}...');
 
         await saveTokens(accessToken, refreshToken);
 
@@ -390,10 +394,9 @@ class AuthService {
         'APPLE_UNKNOWN_ERROR',
       );
     }
-    */
   }
 
-  /// ✅ INSCRIPTION GOOGLE CORRIGÉE (inchangée)
+  /// ✅ INSCRIPTION GOOGLE
   Future<void> registerWithGoogle() async {
     try {
       print('🔵 [AuthService] Début de l\'inscription Google...');
@@ -451,18 +454,17 @@ class AuthService {
     }
   }
 
-  /// ❌ INSCRIPTION APPLE COMMENTÉE POUR ANDROID
+  /// ✅ INSCRIPTION APPLE RESTAURÉE COMPLÈTEMENT
   Future<void> registerWithApple() async {
-    // ❌ APPLE SIGN-IN DÉSACTIVÉ POUR ANDROID
-    print('🍎 [AuthService] Apple Sign-In non disponible sur Android');
-    throw AuthenticationException(
-      'Apple Sign-In non disponible sur Android',
-      'APPLE_NOT_AVAILABLE',
-    );
-
-    /* ❌ CODE APPLE COMMENTÉ POUR ANDROID
     try {
       print('🍎 [AuthService] Début de l\'inscription Apple...');
+
+      // Vérification de plateforme (warning, pas d'exception)
+      if (!Platform.isIOS) {
+        print(
+          '⚠️ [AuthService] Apple Sign-In registration tenté sur plateforme non-iOS',
+        );
+      }
 
       final SSOResult result = await SSOService.signInWithApple();
 
@@ -513,23 +515,14 @@ class AuthService {
         'APPLE_UNKNOWN_ERROR',
       );
     }
-    */
   }
 
-  // ===================== MÉTHODES DE LIAISON SSO MODIFIÉES =====================
+  // ===================== MÉTHODES DE LIAISON SSO RESTAURÉES =====================
 
-  /// ✅ LIER UN COMPTE SSO À UN COMPTE EXISTANT (MODIFIÉ POUR ANDROID)
+  /// ✅ LIER UN COMPTE SSO À UN COMPTE EXISTANT
   Future<void> linkSSOAccount(String provider, SSOResult ssoResult) async {
     try {
       print('🔗 [AuthService] Liaison d\'un compte $provider...');
-
-      // ❌ BLOQUER APPLE SUR ANDROID
-      if (provider == 'apple' && !Platform.isIOS) {
-        throw AuthenticationException(
-          'Apple Sign-In non disponible sur Android',
-          'APPLE_NOT_AVAILABLE',
-        );
-      }
 
       final token = await getToken();
       if (token == null) {
@@ -563,18 +556,10 @@ class AuthService {
     }
   }
 
-  /// ✅ DÉLIER UN COMPTE SSO (MODIFIÉ POUR ANDROID)
+  /// ✅ DÉLIER UN COMPTE SSO
   Future<void> unlinkSSOAccount(String provider) async {
     try {
       print('🔗❌ [AuthService] Déliaison du compte $provider...');
-
-      // ❌ BLOQUER APPLE SUR ANDROID
-      if (provider == 'apple' && !Platform.isIOS) {
-        throw AuthenticationException(
-          'Apple Sign-In non disponible sur Android',
-          'APPLE_NOT_AVAILABLE',
-        );
-      }
 
       final token = await getToken();
       if (token == null) {
@@ -595,8 +580,9 @@ class AuthService {
         // Déconnexion du service SSO si nécessaire
         if (provider == 'google') {
           await SSOService.signOutGoogle();
+        } else if (provider == 'apple') {
+          await SSOService.signOutApple();
         }
-        // Note: signOutApple() ne fait rien sur Android
 
         print('✅ [AuthService] Compte $provider délié avec succès');
       } else {
@@ -610,7 +596,7 @@ class AuthService {
     }
   }
 
-  // ===================== MÉTHODES UTILITAIRES SSO (inchangées) =====================
+  // ===================== MÉTHODES UTILITAIRES SSO =====================
 
   /// Sauvegarder les informations SSO
   Future<void> _saveSSOInfo(String provider, SSOUserInfo userInfo) async {
@@ -640,16 +626,7 @@ class AuthService {
   /// Obtenir le provider SSO actuel
   Future<String?> getCurrentSSOProvider() async {
     try {
-      final provider = sharedPreferences.getString(_ssoProviderKey);
-      // ❌ FILTRER APPLE SUR ANDROID
-      if (provider == 'apple' && !Platform.isIOS) {
-        print(
-          '⚠️ [AuthService] Provider Apple détecté sur Android, nettoyage...',
-        );
-        await _removeSSOInfo('apple');
-        return null;
-      }
-      return provider;
+      return sharedPreferences.getString(_ssoProviderKey);
     } catch (e) {
       print(
         '❌ [AuthService] Erreur lors de la récupération du provider SSO: $e',
@@ -665,15 +642,6 @@ class AuthService {
       if (userInfoString == null) return null;
 
       final Map<String, dynamic> userInfoMap = json.decode(userInfoString);
-
-      // ❌ FILTRER APPLE SUR ANDROID
-      if (userInfoMap['provider'] == 'apple' && !Platform.isIOS) {
-        print(
-          '⚠️ [AuthService] Infos Apple détectées sur Android, nettoyage...',
-        );
-        await _removeSSOInfo('apple');
-        return null;
-      }
 
       return SSOUserInfo(
         id: userInfoMap['id'],
@@ -696,7 +664,7 @@ class AuthService {
     return provider != null;
   }
 
-  /// ✅ GESTION DES ERREURS SSO AMÉLIORÉE (inchangée)
+  /// ✅ GESTION DES ERREURS SSO
   Never _handleSSODioException(DioException e, String provider) {
     print(
       '❌ [AuthService] Erreur ${provider.toUpperCase()} Dio: ${e.response?.statusCode} - ${e.response?.data}',
@@ -744,9 +712,9 @@ class AuthService {
     );
   }
 
-  // ===================== MÉTHODES EXISTANTES (inchangées) =====================
+  // ===================== AUTHENTIFICATION CLASSIQUE =====================
 
-  /// ✅ LOGIN CLASSIQUE CORRIGÉ (inchangé)
+  /// ✅ LOGIN CLASSIQUE
   Future<Map<String, String>> login(String email, String password) async {
     try {
       print('🔐 [AuthService] Début du login classique...');
@@ -975,8 +943,9 @@ class AuthService {
 
         if (ssoProvider == 'google') {
           await SSOService.signOutGoogle();
+        } else if (ssoProvider == 'apple') {
+          await SSOService.signOutApple();
         }
-        // Note: pas de signOutApple() sur Android
 
         await _removeSSOInfo(ssoProvider);
         print('✅ [AuthService] Déconnexion SSO terminée');
@@ -1022,7 +991,7 @@ class AuthService {
     }
   }
 
-  // ===================== AUTRES MÉTHODES (inchangées) =====================
+  // ===================== AUTRES MÉTHODES =====================
 
   Future<void> register(
     String firstName,

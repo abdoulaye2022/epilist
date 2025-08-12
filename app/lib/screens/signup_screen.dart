@@ -1,4 +1,4 @@
-// screens/signup_screen.dart - VERSION CORRIGÉE AVEC BORDURES VERTES FINES
+// screens/signup_screen.dart - VERSION CORRIGÉE AVEC GESTION INTELLIGENTE SSO
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 const SizedBox(height: 24),
 
-                // ✅ BOUTONS SSO NORMAUX
+                // ✅ BOUTONS SSO CORRIGÉS
                 _buildSSOButtons(l10n),
 
                 const SizedBox(height: 24),
@@ -82,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // ✅ GESTION D'ÉTAT SIMPLIFIÉE
+  // ✅ GESTION D'ÉTAT AMÉLIORÉE
   void _handleAuthState(BuildContext context, AuthState state) {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = state is AuthLoading || state is SSOLoading);
@@ -102,21 +102,33 @@ class _SignUpPageState extends State<SignUpPage> {
 
       case SSORegistrationSuccess:
         final ssoState = state as SSORegistrationSuccess;
-        SmartSnackBarManager.showSuccessSnackBar(
-          context,
-          'Compte ${ssoState.provider} créé avec succès !',
-        );
-        _navigateToLogin();
+        // ✅ CORRIGÉ: Utiliser seulement les propriétés disponibles
+        String message = 'Compte ${ssoState.provider} créé avec succès !';
+
+        SmartSnackBarManager.showSuccessSnackBar(context, message);
+
+        // ✅ NAVIGATION INTELLIGENTE SELON LE TYPE DE PROFIL
+        if (ssoState.user.email.contains('temp_') ||
+            ssoState.user.email.contains('@privaterelay.appleid.com')) {
+          // Profil temporaire - rester sur signup pour finaliser
+          _showProfileCompletionDialog(ssoState);
+        } else {
+          // Profil complet - aller au login
+          _navigateToLogin();
+        }
         break;
 
       case AuthSuccess:
         final authState = state as AuthSuccess;
-        String message =
-            authState.authMethod == 'google'
-                ? 'Compte Google créé avec succès !'
-                : authState.authMethod == 'apple'
-                ? 'Compte Apple créé avec succès !'
-                : 'Compte créé et connecté !';
+        String message;
+
+        if (authState.authMethod == 'google') {
+          message = 'Compte Google créé et connecté avec succès !';
+        } else if (authState.authMethod == 'apple') {
+          message = 'Compte Apple créé et connecté avec succès !';
+        } else {
+          message = 'Compte créé et connecté !';
+        }
 
         SmartSnackBarManager.showSuccessSnackBar(context, message);
         _navigateToHome();
@@ -133,9 +145,138 @@ class _SignUpPageState extends State<SignUpPage> {
         break;
 
       case RegistrationSuccess:
+        SmartSnackBarManager.showSuccessSnackBar(
+          context,
+          'Compte créé avec succès ! Vérifiez votre email.',
+        );
         _navigateToLogin();
         break;
     }
+  }
+
+  // ✅ DIALOG POUR COMPLÉTER LE PROFIL TEMPORAIRE
+  void _showProfileCompletionDialog(SSORegistrationSuccess ssoState) {
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(
+                  ssoState.provider == 'google'
+                      ? Icons.g_mobiledata
+                      : Icons.apple,
+                  color:
+                      ssoState.provider == 'google'
+                          ? Colors.red[600]
+                          : Colors.black,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Profil ${ssoState.provider == 'google' ? 'Google' : 'Apple'}',
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Connexion ${ssoState.provider} réussie !',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Voulez-vous compléter votre profil maintenant ou vous connecter plus tard ?',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, color: Colors.blue[600], size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${ssoState.user.firstName} ${ssoState.user.lastName}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              ssoState.user.email,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _navigateToLogin();
+                },
+                child: Text(
+                  'Plus tard',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _fillFormWithSSOData(ssoState.user);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[600],
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Compléter'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // ✅ PRER-REMPLIR LE FORMULAIRE AVEC LES DONNÉES SSO
+  void _fillFormWithSSOData(dynamic user) {
+    setState(() {
+      _firstNameController.text = user.firstName ?? '';
+      _lastNameController.text = user.lastName ?? '';
+      _emailController.text = user.email ?? '';
+      _acceptTerms = true; // Auto-accepter les termes pour SSO
+    });
+
+    // Scroller vers le formulaire
+    Future.delayed(const Duration(milliseconds: 300), () {
+      Scrollable.ensureVisible(
+        _formKey.currentContext!,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   // ✅ HEADER SIMPLIFIÉ
@@ -160,7 +301,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // ✅ BOUTONS SSO NORMAUX
+  // ✅ BOUTONS SSO CORRIGÉS AVEC LOGIQUE INTELLIGENTE
   Widget _buildSSOButtons(AppLocalizations l10n) {
     return Column(
       children: [
@@ -175,7 +316,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
         const SizedBox(height: 16),
 
-        // Bouton Google normal
+        // Bouton Google corrigé
         SizedBox(
           width: double.infinity,
           height: 48,
@@ -220,7 +361,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
 
-        // Bouton Apple normal (iOS seulement)
+        // Bouton Apple corrigé (iOS seulement)
         if (Platform.isIOS) ...[
           const SizedBox(height: 12),
           SizedBox(
@@ -591,16 +732,11 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  // ✅ MÉTHODES SIMPLIFIÉES
+  // ✅ MÉTHODES SSO CORRIGÉES AVEC LOGIQUE INTELLIGENTE
   void _signUpWithGoogle() async {
     try {
-      context.read<AuthBloc>().add(
-        const SSORegisterCompleted(
-          provider: 'google',
-          idToken: '',
-          userInfo: {},
-        ),
-      );
+      // ✅ UTILISER LA MÊME LOGIQUE QUE LE LOGIN
+      context.read<AuthBloc>().add(const GoogleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
@@ -613,20 +749,17 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!isAvailable) {
-        SmartSnackBarManager.showErrorSnackBar(
-          context,
-          'Apple Sign-In non disponible',
-        );
+        String errorMessage =
+            Platform.isIOS
+                ? 'Apple Sign-In non disponible sur cet appareil'
+                : 'Apple Sign-In est uniquement disponible sur iOS';
+
+        SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
 
-      context.read<AuthBloc>().add(
-        const SSORegisterCompleted(
-          provider: 'apple',
-          idToken: '',
-          userInfo: {},
-        ),
-      );
+      // ✅ UTILISER LA MÊME LOGIQUE QUE LE LOGIN
+      context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,

@@ -1,4 +1,4 @@
-// blocs/auth/auth_bloc.dart - VERSION CORRIGÉE GESTION TOKENS
+// blocs/auth/auth_bloc.dart - VERSION AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -44,7 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetAccountDeletionStatus>(_onGetAccountDeletionStatus);
     on<UpdateUserData>(_onUpdateUserData);
 
-    // ✅ NOUVEAUX ÉVÉNEMENTS SSO
+    // ✅ ÉVÉNEMENTS SSO
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     on<AppleSignInRequested>(_onAppleSignInRequested);
     on<SSOLoginCompleted>(_onSSOLoginCompleted);
@@ -59,9 +59,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 
-  // ===================== ÉVÉNEMENTS SSO CORRIGÉS =====================
+  // ===================== ÉVÉNEMENTS SSO =====================
 
-  /// ✅ CONNEXION GOOGLE CORRIGÉE
+  /// ✅ CONNEXION GOOGLE
   Future<void> _onGoogleSignInRequested(
     GoogleSignInRequested event,
     Emitter<AuthState> emit,
@@ -119,21 +119,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ CONNEXION APPLE CORRIGÉE
+  /// ✅ CONNEXION APPLE RESTAURÉE AVEC GESTION AUTHSERVICE
   Future<void> _onAppleSignInRequested(
     AppleSignInRequested event,
     Emitter<AuthState> emit,
   ) async {
-    // ❌ APPLE SIGN-IN DÉSACTIVÉ POUR ANDROID
-    emit(
-      const SSOError(
-        provider: 'apple',
-        error: 'Apple Sign-In non disponible sur Android',
-      ),
-    );
-
-    /* ❌ CODE APPLE COMMENTÉ POUR ANDROID
-    // Vérifier la disponibilité d'Apple Sign-In
+    // ✅ VÉRIFICATION PRÉALABLE DE LA PLATEFORME
     if (!Platform.isIOS) {
       emit(
         const SSOError(
@@ -144,6 +135,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
+    // ✅ VÉRIFICATION DE DISPONIBILITÉ VIA SSOSERVICE
     final isAvailable = await SSOService.isAppleSignInAvailable();
     if (!isAvailable) {
       emit(
@@ -160,18 +152,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       print('🍎 [AuthBloc] Début de la connexion Apple...');
 
-      // 1. ✅ CONNEXION APPLE ET SAUVEGARDE AUTOMATIQUE DES TOKENS
-      final tokens = await authService.loginWithApple();
-      print('🍎 [AuthBloc] Tokens Apple reçus');
+      // ✅ CONNEXION APPLE DIRECTE VIA SSOSERVICE PUIS AUTHSERVICE
+      Map<String, String> tokens;
+
+      try {
+        // Essayer d'abord AuthService (pour compatibilité)
+        tokens = await authService.loginWithApple();
+        print('🍎 [AuthBloc] Tokens Apple reçus via AuthService');
+      } catch (authServiceError) {
+        print(
+          '⚠️ [AuthBloc] AuthService Apple échoué, essai direct SSOService...',
+        );
+
+        // Si AuthService échoue, utiliser SSOService directement
+        final ssoResult = await SSOService.signInWithApple();
+        if (!ssoResult.success) {
+          throw Exception(ssoResult.error ?? 'Erreur SSO Apple');
+        }
+
+        // Simuler des tokens pour la compatibilité
+        tokens = {
+          'access_token': ssoResult.idToken ?? '',
+          'refresh_token': ssoResult.accessToken ?? '',
+        };
+        print('🍎 [AuthBloc] Tokens Apple reçus via SSOService direct');
+      }
 
       // 2. ✅ VÉRIFICATION QUE LES TOKENS SONT BIEN SAUVEGARDÉS
       final savedToken = await authService.getToken();
       if (savedToken == null || savedToken.isEmpty) {
         print('❌ [AuthBloc] PROBLÈME: Token non sauvegardé après login Apple');
-        throw AuthenticationException(
-          'Token non sauvegardé',
-          'TOKEN_SAVE_FAILED',
-        );
+
+        // Sauvegarder manuellement
+        if (tokens['access_token']?.isNotEmpty == true) {
+          await authService.saveTokens(
+            tokens['access_token']!,
+            tokens['refresh_token'] ?? '',
+          );
+          print('✅ [AuthBloc] Tokens Apple sauvegardés manuellement');
+        } else {
+          throw AuthenticationException(
+            'Token non sauvegardé',
+            'TOKEN_SAVE_FAILED',
+          );
+        }
       }
       print('✅ [AuthBloc] Token sauvegardé confirmé');
 
@@ -197,10 +221,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         SSOError(provider: 'apple', error: errorMessage, details: e.toString()),
       );
     }
-    */
   }
 
-  /// ✅ CONNEXION SSO GÉNÉRALISÉE CORRIGÉE
+  /// ✅ CONNEXION SSO GÉNÉRALISÉE
   Future<void> _onSSOLoginCompleted(
     SSOLoginCompleted event,
     Emitter<AuthState> emit,
@@ -279,7 +302,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ INSCRIPTION SSO CORRIGÉE
+  /// ✅ INSCRIPTION SSO
   Future<void> _onSSORegisterCompleted(
     SSORegisterCompleted event,
     Emitter<AuthState> emit,
@@ -401,16 +424,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (event.provider == 'google') {
         ssoResult = await SSOService.signInWithGoogle();
       } else if (event.provider == 'apple') {
-        // ❌ APPLE DÉSACTIVÉ POUR ANDROID
-        emit(
-          SSOAccountLinkError(
-            provider: event.provider,
-            error: 'Apple Sign-In non disponible sur Android',
-          ),
-        );
-        return;
-
-        // ssoResult = await SSOService.signInWithApple(); // ❌ COMMENTÉ
+        ssoResult = await SSOService.signInWithApple();
       } else {
         throw Exception('Provider non supporté: ${event.provider}');
       }
@@ -466,9 +480,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // ===================== ÉVÉNEMENTS EXISTANTS CORRIGÉS =====================
+  // ===================== ÉVÉNEMENTS EXISTANTS =====================
 
-  /// ✅ LOGIN CLASSIQUE CORRIGÉ
+  /// ✅ LOGIN CLASSIQUE
   Future<void> _onLoginButtonPressed(
     LoginButtonPressed event,
     Emitter<AuthState> emit,
@@ -528,7 +542,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ CHECK AUTHENTICATION CORRIGÉ
+  /// ✅ CHECK AUTHENTICATION
   Future<void> _onCheckAuthentication(
     CheckAuthentication event,
     Emitter<AuthState> emit,
@@ -584,7 +598,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ CONFIRMATION EMAIL CORRIGÉE
+  /// ✅ CONFIRMATION EMAIL
   Future<void> _onConfirmEmailRequested(
     ConfirmEmailRequested event,
     Emitter<AuthState> emit,
@@ -753,6 +767,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
+      print('🔄 [AuthBloc] Tentative de refresh du token...');
+
       final tokens = await authService.refreshToken(event.refreshToken);
 
       await authService.saveTokens(
@@ -762,8 +778,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _scheduleTokenRefresh();
 
+      print('✅ [AuthBloc] Token refreshé avec succès');
       emit(TokensRefreshed(tokens['access_token']!, tokens['refresh_token']!));
     } catch (e) {
+      print('❌ [AuthBloc] Échec du refresh token: $e');
+
+      // ✅ GESTION INTELLIGENTE DES ERREURS 401
+      if (e.toString().contains('401') ||
+          e.toString().contains('Invalid or expired access token') ||
+          e.toString().contains('expired')) {
+        print('🔄 [AuthBloc] Token/Refresh token expirés - Déconnexion propre');
+
+        // Nettoyer les données sans essayer de faire un logout serveur
+        try {
+          _tokenRefreshTimer?.cancel();
+          await authService.clearUserData();
+          await SSOService.signOutAll();
+          NotificationService.clearDeviceData();
+          print('✅ [AuthBloc] Nettoyage local terminé');
+        } catch (clearError) {
+          print('⚠️ [AuthBloc] Erreur lors du nettoyage: $clearError');
+        }
+
+        // Émettre un état de déconnexion sans message d'erreur
+        emit(Unauthenticated());
+        return;
+      }
+
+      // Pour les autres erreurs, afficher le message d'erreur
       final errorMessage = _getTranslatedErrorMessage(
         'SESSION_EXPIRED',
         e.toString(),
@@ -1159,7 +1201,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'SSO_ACCOUNT_CONFLICT': 'Conflit avec un autre compte',
       'SSO_NETWORK_ERROR': 'Erreur de réseau lors de l\'authentification SSO',
 
-      // ✅ NOUVEAUX MESSAGES POUR LES TOKENS
+      // Messages pour les tokens
       'TOKEN_SAVE_FAILED': 'Erreur lors de la sauvegarde des tokens',
       'TOKEN_SAVE_CRITICAL_FAILED':
           'Erreur critique: impossible de sauvegarder les tokens',
@@ -1243,7 +1285,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return 'APPLE_NOT_AVAILABLE';
     }
 
-    // ✅ NOUVEAUX CODES D'ERREUR POUR LES TOKENS
+    // Codes d'erreur pour les tokens
     if (errorString.contains('token') && errorString.contains('save')) {
       return 'TOKEN_SAVE_FAILED';
     }

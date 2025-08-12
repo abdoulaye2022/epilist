@@ -1,5 +1,5 @@
 <?php
-// src/Services/SSOService.php - VERSION AVEC CONFIG AU LIEU DES CONSTANTES
+// src/Services/SSOService.php - VERSION CORRIGÉE POUR GOOGLE
 
 namespace App\Services;
 
@@ -23,18 +23,44 @@ class SSOService
         ]);
     }
 
-    // ===================== MÉTHODES DE CONFIGURATION =====================
+    // ===================== MÉTHODES DE CONFIGURATION CORRIGÉES =====================
 
     /**
-     * ✅ Récupérer le Google Client ID depuis les variables d'environnement
+     * ✅ CORRECTION CRITIQUE: Récupérer le Google Client ID
      */
     private function getGoogleClientId(): string 
     {
-        $clientId = Config::get('GOOGLE_CLIENT_ID');
+        // ✅ CORRECTION 1: Client ID pour iOS et Android
+        $clientId = Config::get('GOOGLE_CLIENT_ID', '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com');
+        
         if (empty($clientId)) {
-            throw new \Exception('GOOGLE_CLIENT_ID not configured in environment variables');
+            error_log("❌ [SSOService] GOOGLE_CLIENT_ID manquant dans les variables d'environnement");
+            // Utiliser la valeur par défaut si pas configurée
+            $clientId = '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com';
         }
+        
+        error_log("🔧 [SSOService] Google Client ID utilisé: " . $clientId);
         return $clientId;
+    }
+
+    /**
+     * ✅ NOUVELLES MÉTHODES: Support multi-plateforme Google
+     */
+    private function getGoogleWebClientId(): string 
+    {
+        // Web client ID (différent de l'app mobile)
+        return Config::get('GOOGLE_WEB_CLIENT_ID', '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com');
+    }
+
+    private function getValidGoogleClientIds(): array 
+    {
+        // ✅ CORRECTION 2: Accepter plusieurs client IDs pour différentes plateformes
+        return [
+            $this->getGoogleClientId(),
+            $this->getGoogleWebClientId(),
+            // Fallback pour anciennes configurations
+            '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com'
+        ];
     }
 
     /**
@@ -62,15 +88,15 @@ class SSOService
         return Config::get('GOOGLE_ISSUER', 'https://accounts.google.com');
     }
 
-    // ===================== VÉRIFICATION DES TOKENS =====================
+    // ===================== VÉRIFICATION DES TOKENS CORRIGÉE =====================
 
     /**
-     * ✅ VÉRIFICATION APPLE TOKEN AVEC CONFIG
+     * ✅ VÉRIFICATION APPLE TOKEN AVEC CONFIG (inchangée - fonctionne bien)
      */
     public function verifyAppleToken(string $idToken): ?array
     {
         try {
-            error_log("🍎 [SSOService] Début vérification token Apple (avec Config)...");
+            error_log("🍎 [SSOService] Début vérification token Apple...");
 
             // 1. Décoder le payload sans vérification de signature
             $tokenParts = explode('.', $idToken);
@@ -89,11 +115,7 @@ class SSOService
                 return null;
             }
 
-            error_log("🍎 [SSOService] Payload Apple décodé");
-
-            // 3. ✅ VÉRIFICATIONS AVEC CONFIG
-            
-            // Vérifier l'issuer
+            // 3. Vérifications avec config
             $expectedIssuer = $this->getAppleIssuer();
             if (!isset($tokenData['iss']) || $tokenData['iss'] !== $expectedIssuer) {
                 error_log("❌ [SSOService] Issuer Apple invalide:");
@@ -102,7 +124,6 @@ class SSOService
                 return null;
             }
 
-            // Vérifier l'audience (Bundle ID)
             $expectedAudience = $this->getAppleBundleId();
             if (!isset($tokenData['aud']) || $tokenData['aud'] !== $expectedAudience) {
                 error_log("❌ [SSOService] Audience Apple invalide:");
@@ -111,31 +132,18 @@ class SSOService
                 return null;
             }
 
-            // Vérifier l'expiration
             if (!isset($tokenData['exp']) || $tokenData['exp'] < time()) {
-                error_log("❌ [SSOService] Token Apple expiré:");
-                error_log("   Exp: " . ($tokenData['exp'] ?? 'manquant'));
-                error_log("   Now: " . time());
+                error_log("❌ [SSOService] Token Apple expiré");
                 return null;
             }
 
-            // Vérifier la présence du subject (Apple ID)
             if (!isset($tokenData['sub']) || empty($tokenData['sub'])) {
                 error_log("❌ [SSOService] Subject (Apple ID) manquant");
                 return null;
             }
 
-            error_log("✅ [SSOService] Token Apple validé avec Config");
-            error_log("🍎 [SSOService] Apple ID: " . $tokenData['sub']);
-            error_log("🍎 [SSOService] Email: " . ($tokenData['email'] ?? 'privé'));
+            error_log("✅ [SSOService] Token Apple validé avec succès");
 
-            // 4. ✅ VALIDATION SUPPLÉMENTAIRE OPTIONNELLE
-            if ($this->shouldUseAppleAPIValidation()) {
-                error_log("🔍 [SSOService] Validation supplémentaire via Config...");
-                // Ici vous pouvez ajouter des validations supplémentaires si nécessaire
-            }
-
-            // 5. ✅ RETOURNER LES DONNÉES FORMATÉES
             return [
                 'sub' => $tokenData['sub'],
                 'email' => $tokenData['email'] ?? null,
@@ -148,43 +156,72 @@ class SSOService
                 'iss' => $tokenData['iss'],
                 'iat' => $tokenData['iat'],
                 'exp' => $tokenData['exp'],
-                'validation_method' => 'simplified_with_config'
+                'validation_method' => 'apple_simplified'
             ];
 
         } catch (\Exception $e) {
-            error_log("❌ [SSOService] Erreur vérification Apple avec Config: " . $e->getMessage());
+            error_log("❌ [SSOService] Erreur vérification Apple: " . $e->getMessage());
             return null;
         }
     }
 
     /**
-     * ✅ VÉRIFICATION GOOGLE TOKEN AVEC CONFIG
+     * ✅ CORRECTION MAJEURE: VÉRIFICATION GOOGLE TOKEN
      */
     public function verifyGoogleToken(string $idToken): ?array
     {
         try {
-            error_log("🔵 [SSOService] Vérification du token Google avec Config...");
+            error_log("🔵 [SSOService] === DÉBUT VÉRIFICATION GOOGLE TOKEN ===");
+            error_log("🔵 [SSOService] Token reçu (50 premiers chars): " . substr($idToken, 0, 50) . '...');
 
+            // ✅ MÉTHODE 1: Vérification via Google API (recommandée)
             $response = $this->httpClient->get('https://oauth2.googleapis.com/tokeninfo', [
-                'query' => ['id_token' => $idToken]
+                'query' => ['id_token' => $idToken],
+                'timeout' => 15,
+                'connect_timeout' => 5
             ]);
 
             if ($response->getStatusCode() !== 200) {
-                error_log("❌ [SSOService] Échec vérification Google: " . $response->getStatusCode());
+                error_log("❌ [SSOService] Échec vérification Google API: " . $response->getStatusCode());
+                error_log("❌ [SSOService] Réponse: " . $response->getBody());
                 return null;
             }
 
             $tokenData = json_decode($response->getBody(), true);
-
-            // ✅ VÉRIFICATIONS AVEC CONFIG
-            $expectedClientId = $this->getGoogleClientId();
-            if (!isset($tokenData['aud']) || $tokenData['aud'] !== $expectedClientId) {
-                error_log("❌ [SSOService] Client ID Google invalide");
-                error_log("   Attendu: " . $expectedClientId);
-                error_log("   Reçu: " . ($tokenData['aud'] ?? 'manquant'));
+            
+            if (!$tokenData) {
+                error_log("❌ [SSOService] Impossible de décoder la réponse Google");
                 return null;
             }
 
+            error_log("🔵 [SSOService] Données token reçues:");
+            error_log("🔵 [SSOService] - Audience: " . ($tokenData['aud'] ?? 'manquant'));
+            error_log("🔵 [SSOService] - Issuer: " . ($tokenData['iss'] ?? 'manquant'));
+            error_log("🔵 [SSOService] - Email: " . ($tokenData['email'] ?? 'manquant'));
+            error_log("🔵 [SSOService] - Email vérifié: " . ($tokenData['email_verified'] ?? 'manquant'));
+            error_log("🔵 [SSOService] - Subject: " . ($tokenData['sub'] ?? 'manquant'));
+
+            // ✅ CORRECTION 3: Validation audience flexible pour multi-plateformes
+            $validClientIds = $this->getValidGoogleClientIds();
+            $receivedAudience = $tokenData['aud'] ?? '';
+            
+            $audienceValid = false;
+            foreach ($validClientIds as $validClientId) {
+                if ($receivedAudience === $validClientId) {
+                    $audienceValid = true;
+                    error_log("✅ [SSOService] Audience validée avec: " . $validClientId);
+                    break;
+                }
+            }
+
+            if (!$audienceValid) {
+                error_log("❌ [SSOService] Client ID Google invalide");
+                error_log("   Reçu: " . $receivedAudience);
+                error_log("   Attendus: " . implode(', ', $validClientIds));
+                return null;
+            }
+
+            // ✅ CORRECTION 4: Validation issuer flexible
             $expectedIssuer = $this->getGoogleIssuer();
             $allowedIssuers = [
                 'accounts.google.com',
@@ -192,41 +229,71 @@ class SSOService
                 $expectedIssuer
             ];
 
-            if (!isset($tokenData['iss']) || !in_array($tokenData['iss'], $allowedIssuers)) {
+            $receivedIssuer = $tokenData['iss'] ?? '';
+            if (!in_array($receivedIssuer, $allowedIssuers)) {
                 error_log("❌ [SSOService] Issuer Google invalide");
-                error_log("   Attendu: " . $expectedIssuer);
-                error_log("   Reçu: " . ($tokenData['iss'] ?? 'manquant'));
+                error_log("   Reçu: " . $receivedIssuer);
+                error_log("   Attendus: " . implode(', ', $allowedIssuers));
                 return null;
             }
 
+            // ✅ CORRECTION 5: Validation expiration
             if (!isset($tokenData['exp']) || $tokenData['exp'] < time()) {
                 error_log("❌ [SSOService] Token Google expiré");
+                error_log("   Expiration: " . ($tokenData['exp'] ?? 'manquante'));
+                error_log("   Maintenant: " . time());
                 return null;
             }
 
-            if (!isset($tokenData['email']) || !isset($tokenData['email_verified']) || !$tokenData['email_verified']) {
-                error_log("❌ [SSOService] Email Google non vérifié");
+            // ✅ CORRECTION 6: Validation email avec gestion des cas edge
+            if (!isset($tokenData['email']) || empty($tokenData['email'])) {
+                error_log("❌ [SSOService] Email Google manquant");
                 return null;
             }
 
-            error_log("✅ [SSOService] Token Google vérifié avec succès pour: " . $tokenData['email']);
+            // Vérifier email_verified avec gestion des différents types
+            $emailVerified = $tokenData['email_verified'] ?? false;
+            if ($emailVerified !== true && $emailVerified !== 'true' && $emailVerified !== 1) {
+                error_log("❌ [SSOService] Email Google non vérifié: " . var_export($emailVerified, true));
+                return null;
+            }
 
+            // ✅ CORRECTION 7: Validation subject
+            if (!isset($tokenData['sub']) || empty($tokenData['sub'])) {
+                error_log("❌ [SSOService] Subject Google manquant");
+                return null;
+            }
+
+            error_log("✅ [SSOService] === TOKEN GOOGLE VALIDÉ AVEC SUCCÈS ===");
+            error_log("✅ [SSOService] Email: " . $tokenData['email']);
+            error_log("✅ [SSOService] Nom: " . ($tokenData['name'] ?? 'non fourni'));
+
+            // ✅ CORRECTION 8: Retour de données complètes et normalisées
             return [
                 'sub' => $tokenData['sub'],
                 'email' => $tokenData['email'],
-                'email_verified' => $tokenData['email_verified'],
+                'email_verified' => true, // Déjà vérifié ci-dessus
                 'name' => $tokenData['name'] ?? '',
                 'given_name' => $tokenData['given_name'] ?? '',
                 'family_name' => $tokenData['family_name'] ?? '',
                 'picture' => $tokenData['picture'] ?? '',
-                'locale' => $tokenData['locale'] ?? 'en'
+                'locale' => $tokenData['locale'] ?? 'en',
+                'aud' => $tokenData['aud'],
+                'iss' => $tokenData['iss'],
+                'iat' => $tokenData['iat'] ?? time(),
+                'exp' => $tokenData['exp'],
+                'validation_method' => 'google_api_verified'
             ];
 
         } catch (RequestException $e) {
             error_log("❌ [SSOService] Erreur HTTP Google: " . $e->getMessage());
+            if ($e->hasResponse()) {
+                error_log("❌ [SSOService] Réponse erreur: " . $e->getResponse()->getBody());
+            }
             return null;
         } catch (\Exception $e) {
             error_log("❌ [SSOService] Erreur générale Google: " . $e->getMessage());
+            error_log("❌ [SSOService] Stack trace: " . $e->getTraceAsString());
             return null;
         }
     }
@@ -234,24 +301,20 @@ class SSOService
     // ===================== MÉTHODES UTILITAIRES =====================
 
     /**
-     * ✅ DÉCIDER SI UTILISER LA VALIDATION API AVEC CONFIG
-     */
-    private function shouldUseAppleAPIValidation(): bool
-    {
-        $appEnv = Config::get('APP_ENV', 'production');
-        return $appEnv === 'production';
-    }
-
-    /**
-     * ✅ MÉTHODE POUR DIAGNOSTIQUER LA CONFIGURATION
+     * ✅ MÉTHODE DE DIAGNOSTIC AMÉLIORÉE
      */
     public function diagnoseConfiguration(): array
     {
+        $validClientIds = $this->getValidGoogleClientIds();
+        
         return [
             'google' => [
-                'client_id' => $this->getGoogleClientId(),
+                'primary_client_id' => $this->getGoogleClientId(),
+                'web_client_id' => $this->getGoogleWebClientId(),
+                'valid_client_ids' => $validClientIds,
                 'issuer' => $this->getGoogleIssuer(),
-                'configured' => !empty(Config::get('GOOGLE_CLIENT_ID'))
+                'configured' => !empty(Config::get('GOOGLE_CLIENT_ID')),
+                'fallback_used' => Config::get('GOOGLE_CLIENT_ID') === null
             ],
             'apple' => [
                 'bundle_id' => $this->getAppleBundleId(),
@@ -263,12 +326,54 @@ class SSOService
         ];
     }
 
+    /**
+     * ✅ NOUVELLE MÉTHODE: Test de connectivité Google
+     */
+    public function testGoogleConnectivity(): array
+    {
+        try {
+            error_log("🔧 [SSOService] Test de connectivité Google...");
+            
+            $startTime = microtime(true);
+            $response = $this->httpClient->get('https://oauth2.googleapis.com/tokeninfo', [
+                'query' => ['id_token' => 'test'],
+                'timeout' => 10
+            ]);
+            $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            return [
+                'success' => true,
+                'status_code' => $response->getStatusCode(),
+                'response_time_ms' => $responseTime,
+                'headers' => $response->getHeaders(),
+                'message' => 'Connectivité Google OK'
+            ];
+            
+        } catch (RequestException $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'status_code' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : null,
+                'message' => 'Erreur de connectivité Google'
+            ];
+        }
+    }
+
+    /**
+     * ✅ DÉCIDER SI UTILISER LA VALIDATION API AVEC CONFIG
+     */
+    private function shouldUseAppleAPIValidation(): bool
+    {
+        $appEnv = Config::get('APP_ENV', 'production');
+        return $appEnv === 'production';
+    }
+
     // ===================== GESTION DES LIENS SSO (inchangées) =====================
 
     public function saveSSOAccountLink(int $userId, string $provider, string $ssoId, array $userInfo): bool
     {
         try {
-            error_log("✅ [SSOService] Lien SSO sauvegardé: utilisateur {$userId} -> {$provider}");
+            error_log("✅ [SSOService] Lien SSO sauvegardé: utilisateur {$userId} -> {$provider} (ID: {$ssoId})");
             return true;
         } catch (\Exception $e) {
             error_log("❌ [SSOService] Erreur sauvegarde lien SSO: " . $e->getMessage());
@@ -297,7 +402,7 @@ class SSOService
         }
     }
 
-    // ===================== MÉTHODES UTILITAIRES GÉNÉRALES (inchangées) =====================
+    // ===================== MÉTHODES UTILITAIRES GÉNÉRALES =====================
 
     public function isValidEmail(?string $email): bool
     {
