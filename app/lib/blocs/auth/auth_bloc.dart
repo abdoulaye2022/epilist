@@ -1,4 +1,4 @@
-// blocs/auth/auth_bloc.dart - VERSION AVEC APPLE SIGN-IN RESTAURÉ
+// blocs/auth/auth_bloc.dart - VERSION ANDROID (GOOGLE SSO SEULEMENT)
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -44,9 +44,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GetAccountDeletionStatus>(_onGetAccountDeletionStatus);
     on<UpdateUserData>(_onUpdateUserData);
 
-    // ✅ ÉVÉNEMENTS SSO
+    // ✅ ÉVÉNEMENTS SSO - GOOGLE SEULEMENT
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
-    on<AppleSignInRequested>(_onAppleSignInRequested);
+    // ❌ APPLE COMMENTÉ POUR ANDROID
+    // on<AppleSignInRequested>(_onAppleSignInRequested);
     on<SSOLoginCompleted>(_onSSOLoginCompleted);
     on<SSORegisterCompleted>(_onSSORegisterCompleted);
     on<LinkSSOAccount>(_onLinkSSOAccount);
@@ -119,6 +120,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  // ❌ APPLE SIGN-IN COMMENTÉ POUR ANDROID
+  /*
   /// ✅ CONNEXION APPLE RESTAURÉE AVEC GESTION AUTHSERVICE
   Future<void> _onAppleSignInRequested(
     AppleSignInRequested event,
@@ -222,8 +225,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     }
   }
+  */
 
-  /// ✅ CONNEXION SSO GÉNÉRALISÉE
+  /// ✅ CONNEXION SSO GÉNÉRALISÉE - GOOGLE SEULEMENT
   Future<void> _onSSOLoginCompleted(
     SSOLoginCompleted event,
     Emitter<AuthState> emit,
@@ -237,9 +241,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (event.provider == 'google') {
         tokens = await authService.loginWithGoogle();
-      } else if (event.provider == 'apple') {
+      }
+      // ❌ APPLE COMMENTÉ POUR ANDROID
+      /* 
+      else if (event.provider == 'apple') {
         tokens = await authService.loginWithApple();
-      } else {
+      } 
+      */
+      else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
 
@@ -302,7 +311,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// ✅ INSCRIPTION SSO
+  /// ✅ INSCRIPTION SSO - GOOGLE SEULEMENT
   Future<void> _onSSORegisterCompleted(
     SSORegisterCompleted event,
     Emitter<AuthState> emit,
@@ -314,9 +323,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (event.provider == 'google') {
         await authService.registerWithGoogle();
-      } else if (event.provider == 'apple') {
+      }
+      // ❌ APPLE COMMENTÉ POUR ANDROID
+      /*
+      else if (event.provider == 'apple') {
         await authService.registerWithApple();
-      } else {
+      } 
+      */
+      else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
 
@@ -329,8 +343,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Map<String, String> tokens;
       if (event.provider == 'google') {
         tokens = await authService.loginWithGoogle();
-      } else {
+      }
+      // ❌ APPLE COMMENTÉ POUR ANDROID
+      /*
+      else {
         tokens = await authService.loginWithApple();
+      }
+      */
+      else {
+        throw Exception('Provider SSO non supporté: ${event.provider}');
       }
 
       // ✅ VÉRIFICATION DES TOKENS APRÈS INSCRIPTION
@@ -398,7 +419,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return User(
       id: DateTime.now().millisecondsSinceEpoch,
       firstName: 'Utilisateur',
-      lastName: provider == 'google' ? 'Google' : 'Apple',
+      lastName: provider == 'google' ? 'Google' : 'Unknown',
       email: 'temp_${provider}@sso.com',
       emailVerified: true,
       accessToken: null,
@@ -423,9 +444,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       SSOResult ssoResult;
       if (event.provider == 'google') {
         ssoResult = await SSOService.signInWithGoogle();
-      } else if (event.provider == 'apple') {
+      }
+      // ❌ APPLE COMMENTÉ POUR ANDROID
+      /*
+      else if (event.provider == 'apple') {
         ssoResult = await SSOService.signInWithApple();
-      } else {
+      } 
+      */
+      else {
         throw Exception('Provider non supporté: ${event.provider}');
       }
 
@@ -480,7 +506,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // ===================== ÉVÉNEMENTS EXISTANTS =====================
+  // ===================== ÉVÉNEMENTS EXISTANTS (inchangés) =====================
 
   /// ✅ LOGIN CLASSIQUE
   Future<void> _onLoginButtonPressed(
@@ -713,6 +739,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     }
 
+    // ❌ ERREURS APPLE COMMENTÉES POUR ANDROID
+    /*
     // Erreurs spécifiques Apple
     if (provider == 'apple') {
       if (errorString.contains('canceled') ||
@@ -723,6 +751,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return _getTranslatedErrorMessage('APPLE_NOT_AVAILABLE', '');
       }
     }
+    */
 
     // Erreurs génériques SSO
     if (errorString.contains('email_already_exists')) {
@@ -1188,12 +1217,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RATE_LIMITED': 'Trop de tentatives. Veuillez réessayer plus tard',
       'ACCOUNT_DISABLED': 'Ce compte utilisateur est désactivé',
 
-      // Messages SSO
+      // Messages SSO - GOOGLE SEULEMENT
       'GOOGLE_SIGNIN_CANCELLED': 'Connexion Google annulée',
       'GOOGLE_NETWORK_ERROR': 'Erreur de réseau lors de la connexion Google',
       'GOOGLE_ACCOUNT_EXISTS': 'Un compte existe déjà avec cet email',
-      'APPLE_SIGNIN_CANCELLED': 'Connexion Apple annulée',
-      'APPLE_NOT_AVAILABLE': 'Apple Sign-In non disponible sur cet appareil',
+      // ❌ APPLE MESSAGES COMMENTÉS
+      // 'APPLE_SIGNIN_CANCELLED': 'Connexion Apple annulée',
+      // 'APPLE_NOT_AVAILABLE': 'Apple Sign-In non disponible sur cet appareil',
       'INVALID_SSO_TOKEN': 'Token d\'authentification invalide',
       'SSO_UNKNOWN_ERROR': 'Erreur inattendue lors de la connexion SSO',
       'SSO_ACCOUNT_ALREADY_LINKED': 'Ce compte est déjà lié',
@@ -1240,12 +1270,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'RATE_LIMITED': 'Too many attempts. Please try again later',
       'ACCOUNT_DISABLED': 'This user account is disabled',
 
-      // SSO Messages in English
+      // SSO Messages in English - GOOGLE SEULEMENT
       'GOOGLE_SIGNIN_CANCELLED': 'Google sign-in cancelled',
       'GOOGLE_NETWORK_ERROR': 'Network error during Google sign-in',
       'GOOGLE_ACCOUNT_EXISTS': 'An account already exists with this email',
-      'APPLE_SIGNIN_CANCELLED': 'Apple Sign-In cancelled',
-      'APPLE_NOT_AVAILABLE': 'Apple Sign-In not available on this device',
+      // ❌ APPLE MESSAGES COMMENTÉS
+      // 'APPLE_SIGNIN_CANCELLED': 'Apple Sign-In cancelled',
+      // 'APPLE_NOT_AVAILABLE': 'Apple Sign-In not available on this device',
       'INVALID_SSO_TOKEN': 'Invalid authentication token',
       'SSO_UNKNOWN_ERROR': 'Unexpected error during SSO sign-in',
       'SSO_ACCOUNT_ALREADY_LINKED': 'This account is already linked',
@@ -1274,16 +1305,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   String _extractErrorCode(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
-    // Codes d'erreur SSO
+    // Codes d'erreur SSO - GOOGLE SEULEMENT
     if (errorString.contains('google') && errorString.contains('cancel')) {
       return 'GOOGLE_SIGNIN_CANCELLED';
-    } else if (errorString.contains('apple') &&
+    }
+    // ❌ APPLE ERROR CODES COMMENTÉS
+    /*
+    else if (errorString.contains('apple') &&
         errorString.contains('cancel')) {
       return 'APPLE_SIGNIN_CANCELLED';
     } else if (errorString.contains('apple') &&
         errorString.contains('not available')) {
       return 'APPLE_NOT_AVAILABLE';
     }
+    */
 
     // Codes d'erreur pour les tokens
     if (errorString.contains('token') && errorString.contains('save')) {

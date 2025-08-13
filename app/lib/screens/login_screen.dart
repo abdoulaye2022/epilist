@@ -1,4 +1,4 @@
-// screens/login_screen.dart - VERSION AVEC APPLE SIGN-IN RESTAURÉ
+// screens/login_screen.dart - VERSION CORRIGÉE SANS OVERFLOW
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                // ✅ LIENS SIMPLIFIÉS
+                // ✅ LIENS CORRIGÉS SANS OVERFLOW
                 _buildFooterLinks(l10n),
               ],
             ),
@@ -399,15 +399,56 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ✅ LIENS DU FOOTER SIMPLIFIÉS
+  // ✅ LIENS DU FOOTER CORRIGÉS SANS OVERFLOW
   Widget _buildFooterLinks(AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            l10n.dontHaveAccount,
+            style: TextStyle(color: Colors.grey[600], fontSize: 15),
+            textAlign: TextAlign.center,
+          ),
+          TextButton(
+            onPressed:
+                _isLoading
+                    ? null
+                    : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignUpPage()),
+                    ),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              l10n.createAccount,
+              style: TextStyle(
+                color: Colors.green[600],
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ ALTERNATIVE: Version en colonnes pour très petits écrans
+  Widget _buildFooterLinksAlternative(AppLocalizations l10n) {
+    return Column(
       children: [
         Text(
           l10n.dontHaveAccount,
           style: TextStyle(color: Colors.grey[600], fontSize: 15),
+          textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 4),
         TextButton(
           onPressed:
               _isLoading

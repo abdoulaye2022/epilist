@@ -1,8 +1,9 @@
-// services/sso_service.dart - VERSION CORRIGÉE POUR GOOGLE SIGN-IN IOS
+// services/sso_service.dart - VERSION AVEC APPLE COMMENTÉ POUR ANDROID
 import 'dart:io';
 import 'dart:math';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+// ❌ APPLE IMPORT COMMENTÉ POUR ANDROID
+// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -86,57 +87,50 @@ class SSOResult {
 class SSOService {
   static GoogleSignIn? _googleSignIn;
 
-  // ✅ CORRECTION CRITIQUE: Configuration Google Sign-In spécifique iOS
+  // ✅ Configuration Google Sign-In pour iOS/Android
   static GoogleSignIn _getGoogleSignIn() {
     if (_googleSignIn == null) {
-      print('🔵 [SSOService] Initialisation GoogleSignIn pour iOS...');
+      print('🔵 [SSOService] Initialisation GoogleSignIn...');
 
       try {
         _googleSignIn = GoogleSignIn(
-          // ✅ CORRECTION 1: Scopes optimisés pour iOS
-          scopes: <String>['email', 'profile', 'openid'],
-
-          // ✅ CORRECTION 2: Options spécifiques iOS
+          scopes: <String>['email', 'profile'], // ✅ Scopes basiques
           signInOption: SignInOption.standard,
 
-          // ✅ CORRECTION 3: Force le refresh token (CRITIQUE pour iOS)
-          forceCodeForRefreshToken: true,
-
-          // ✅ CORRECTION 4: Configuration serveur pour iOS
+          // ✅ FORCE Android Client ID explicitement
           serverClientId:
-              Platform.isIOS
-                  ? '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com'
-                  : null,
+              '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com',
         );
 
-        print('✅ [SSOService] GoogleSignIn initialisé pour iOS');
-        print('🔵 [SSOService] Plateforme: ${Platform.operatingSystem}');
         print(
-          '🔵 [SSOService] Server Client ID: ${Platform.isIOS ? "Configuré" : "Non requis"}',
+          '✅ [SSOService] GoogleSignIn initialisé AVEC Android Client ID forcé',
+        );
+        print(
+          '🔧 [DEBUG] ServerClientId configuré: ${_googleSignIn!.serverClientId}',
         );
       } catch (e) {
-        print('❌ [SSOService] Erreur initialisation GoogleSignIn iOS: $e');
+        print('❌ [SSOService] Erreur initialisation: $e');
         rethrow;
       }
     }
     return _googleSignIn!;
   }
 
-  // ===================== GOOGLE SIGN-IN CORRIGÉ POUR IOS =====================
+  // ===================== GOOGLE SIGN-IN =====================
 
-  /// ✅ Connexion Google optimisée pour iOS
+  /// ✅ Connexion Google optimisée pour iOS/Android
   static Future<SSOResult> signInWithGoogle() async {
-    print('🔵 [SSOService] === DÉBUT CONNEXION GOOGLE IOS CORRIGÉE ===');
+    print('🔵 [SSOService] === DÉBUT CONNEXION GOOGLE ===');
 
     try {
       // ✅ ÉTAPE 1: Vérification plateforme
       print('🔵 [SSOService] Plateforme détectée: ${Platform.operatingSystem}');
 
-      // ✅ ÉTAPE 2: Nettoyage OBLIGATOIRE pour iOS
+      // ✅ ÉTAPE 2: Nettoyage OBLIGATOIRE
       print('🔵 [SSOService] Nettoyage Google Sign-In...');
       await _forceCleanGoogleSignIn();
 
-      // ✅ ÉTAPE 3: Nouvelle instance avec config iOS
+      // ✅ ÉTAPE 3: Nouvelle instance avec config
       print('🔵 [SSOService] Création nouvelle instance GoogleSignIn...');
       final googleSignIn = _getGoogleSignIn();
 
@@ -150,11 +144,11 @@ class SSOService {
         );
       }
 
-      // ✅ ÉTAPE 5: Tentative de connexion avec timeout étendu pour iOS
+      // ✅ ÉTAPE 5: Tentative de connexion avec timeout adapté
       final timeoutDuration =
           Platform.isIOS
               ? const Duration(minutes: 3) // Plus long sur iOS
-              : const Duration(minutes: 2);
+              : const Duration(minutes: 2); // Standard sur Android
 
       print(
         '🔵 [SSOService] Lancement connexion Google (timeout: ${timeoutDuration.inMinutes}min)...',
@@ -182,14 +176,14 @@ class SSOService {
         '🔵 [SSOService] Nom affiché: ${googleUser.displayName ?? "Non fourni"}',
       );
 
-      // ✅ ÉTAPE 6: Récupération tokens avec stratégie iOS spécifique
+      // ✅ ÉTAPE 6: Récupération tokens avec stratégie de retry
       print('🔵 [SSOService] Récupération des tokens d\'authentification...');
 
       GoogleSignInAuthentication? googleAuth;
       String? validIdToken;
       String? validAccessToken;
 
-      // ✅ STRATÉGIE DE RETRY SPÉCIFIQUE IOS
+      // ✅ STRATÉGIE DE RETRY
       for (int attempt = 1; attempt <= 3; attempt++) {
         try {
           print('🔵 [SSOService] Tentative $attempt/3 récupération tokens...');
@@ -224,7 +218,7 @@ class SSOService {
               if (_isTokenNotExpired(googleAuth.idToken!)) {
                 print('✅ [SSOService] Token non expiré');
 
-                // ✅ VALIDATION SPÉCIFIQUE IOS
+                // ✅ VALIDATION SPÉCIFIQUE iOS
                 if (Platform.isIOS &&
                     _validateTokenForIOS(googleAuth.idToken!)) {
                   validIdToken = googleAuth.idToken!;
@@ -306,7 +300,7 @@ class SSOService {
         provider: 'google',
       );
 
-      print('✅ [SSOService] === CONNEXION GOOGLE IOS RÉUSSIE ===');
+      print('✅ [SSOService] === CONNEXION GOOGLE RÉUSSIE ===');
       print('🔵 [SSOService] Email: ${userInfo.email}');
       print('🔵 [SSOService] Nom: ${userInfo.displayName ?? "Non fourni"}');
       print('🔵 [SSOService] Token longueur: ${validIdToken.length} chars');
@@ -317,9 +311,9 @@ class SSOService {
         userInfo: userInfo,
       );
     } catch (e) {
-      print('❌ [SSOService] ERREUR CRITIQUE GOOGLE iOS: $e');
+      print('❌ [SSOService] ERREUR CRITIQUE GOOGLE: $e');
 
-      // ✅ Messages d'erreur spécifiques iOS
+      // ✅ Messages d'erreur spécifiques
       String errorMessage = 'Erreur lors de la connexion Google';
 
       if (e.toString().contains('network')) {
@@ -337,12 +331,12 @@ class SSOService {
     }
   }
 
-  // ✅ NOUVELLES MÉTHODES DE VALIDATION IOS
+  // ✅ MÉTHODES DE VALIDATION
 
-  /// Nettoyage complet forcé spécifique iOS
+  /// Nettoyage complet forcé
   static Future<void> _forceCleanGoogleSignIn() async {
     try {
-      print('🧹 [SSOService] Nettoyage complet Google Sign-In iOS...');
+      print('🧹 [SSOService] Nettoyage complet Google Sign-In...');
 
       if (_googleSignIn != null) {
         try {
@@ -365,9 +359,9 @@ class SSOService {
               : const Duration(seconds: 1);
       await Future.delayed(waitTime);
 
-      print('✅ [SSOService] Nettoyage iOS terminé');
+      print('✅ [SSOService] Nettoyage terminé');
     } catch (e) {
-      print('⚠️ [SSOService] Erreur nettoyage iOS (peut être ignorée): $e');
+      print('⚠️ [SSOService] Erreur nettoyage (peut être ignorée): $e');
     }
   }
 
@@ -512,8 +506,10 @@ class SSOService {
     }
   }
 
-  // ===================== APPLE SIGN-IN (inchangé) =====================
+  // ===================== APPLE SIGN-IN COMMENTÉ POUR ANDROID =====================
 
+  // ❌ APPLE SIGN-IN COMPLÈTEMENT COMMENTÉ
+  /*
   static Future<SSOResult> signInWithApple() async {
     try {
       print('🍎 [SSOService] Début connexion Apple...');
@@ -578,9 +574,22 @@ class SSOService {
   static Future<void> signOutApple() async {
     print('🍎 [SSOService] Apple Sign-Out (géré automatiquement)');
   }
+  */
+
+  // ✅ MÉTHODES APPLE STUB POUR COMPATIBILITÉ ANDROID
+  static Future<SSOResult> signInWithApple() async {
+    print('❌ [SSOService] Apple Sign-In non disponible sur Android');
+    return SSOResult.error('Apple Sign-In non disponible sur Android');
+  }
+
+  static Future<void> signOutApple() async {
+    print('❌ [SSOService] Apple Sign-Out non disponible sur Android');
+  }
 
   // ===================== MÉTHODES UTILITAIRES =====================
 
+  // ❌ MÉTHODES UTILITAIRES APPLE COMMENTÉES
+  /*
   static String _generateNonce([int length = 32]) {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
@@ -596,20 +605,110 @@ class SSOService {
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
+  */
+
+  // ✅ STUBS POUR COMPATIBILITÉ
+  static String _generateNonce([int length = 32]) {
+    // Méthode stub pour compatibilité
+    return '';
+  }
+
+  static String _sha256ofString(String input) {
+    // Méthode stub pour compatibilité
+    return '';
+  }
 
   static Future<void> signOutAll() async {
     try {
       await signOutGoogle();
-      await signOutApple();
+      await signOutApple(); // Stub pour Android
       print('✅ [SSOService] Déconnexion complète SSO');
     } catch (e) {
       print('❌ [SSOService] Erreur déconnexion SSO: $e');
     }
   }
 
-  // ✅ MÉTHODES DE DIAGNOSTIC AMÉLIORÉES
+  // ✅ MÉTHODES DE DIAGNOSTIC
 
-  /// Diagnostic spécifique iOS
+  /// Diagnostic général (iOS/Android)
+  static Future<void> diagnoseGoogleProblem() async {
+    print('🔍 === DIAGNOSTIC SSO GOOGLE ===');
+
+    try {
+      print('📱 Plateforme: ${Platform.operatingSystem}');
+      print('📱 Version: ${Platform.operatingSystemVersion}');
+      print('📱 Mode debug: $kDebugMode');
+
+      // Test configuration
+      print('\n🔧 === TEST CONFIGURATION ===');
+      final googleSignIn = _getGoogleSignIn();
+      print('✅ GoogleSignIn initialisé');
+      print('📱 Scopes: ${googleSignIn.scopes}');
+      print(
+        '📱 Server Client ID configuré: ${googleSignIn.serverClientId != null}',
+      );
+
+      // Test disponibilité
+      print('\n🔵 === TEST DISPONIBILITÉ ===');
+      try {
+        final isSignedIn = await googleSignIn.isSignedIn();
+        print('📱 État actuel: $isSignedIn');
+
+        if (isSignedIn) {
+          final user = googleSignIn.currentUser;
+          if (user != null) {
+            print('📱 Utilisateur actuel: ${user.email}');
+
+            try {
+              final auth = await user.authentication;
+              if (auth.idToken != null) {
+                print('📱 Token présent: ${auth.idToken!.length} chars');
+
+                final isValid = _isValidJWT(auth.idToken!);
+                final notExpired = _isTokenNotExpired(auth.idToken!);
+                final tokenValid =
+                    Platform.isIOS ? _validateTokenForIOS(auth.idToken!) : true;
+
+                print('📱 JWT valide: $isValid');
+                print('📱 Non expiré: $notExpired');
+                print('📱 Compatible serveur: $tokenValid');
+
+                if (!tokenValid) {
+                  final payload = _decodeJWT(auth.idToken!);
+                  print('📱 Token details: $payload');
+                }
+              }
+            } catch (tokenError) {
+              print('❌ Erreur récupération token: $tokenError');
+            }
+          }
+        }
+      } catch (e) {
+        print('❌ Erreur test disponibilité: $e');
+      }
+
+      print('\n💡 === RECOMMANDATIONS ===');
+      if (Platform.isAndroid) {
+        print('📱 1. Vérifiez google-services.json dans android/app/');
+        print('📱 2. Vérifiez SHA-1 fingerprints dans Firebase Console');
+        print('📱 3. Vérifiez les permissions dans AndroidManifest.xml');
+      } else if (Platform.isIOS) {
+        print('📱 1. Vérifiez GoogleService-Info.plist dans Bundle Resources');
+        print('📱 2. Vérifiez URL Schemes dans Info.plist');
+        print('📱 3. Vérifiez serverClientId dans la configuration');
+      }
+      print('📱 4. Testez après nettoyage complet et redémarrage app');
+      print('📱 5. Vérifiez la connexion internet');
+    } catch (e) {
+      print('❌ ERREUR DIAGNOSTIC: $e');
+    }
+
+    print('🔍 === FIN DIAGNOSTIC ===');
+  }
+
+  /// Diagnostic spécifique iOS (commenté mais gardé pour référence)
+  // ❌ DIAGNOSTIC iOS COMMENTÉ
+  /*
   static Future<void> diagnoseIOSProblem() async {
     print('🔍 === DIAGNOSTIC SSO GOOGLE IOS ===');
 
@@ -679,6 +778,7 @@ class SSOService {
 
     print('🔍 === FIN DIAGNOSTIC IOS ===');
   }
+  */
 
   // Méthodes existantes inchangées...
   static Future<bool> isSignedInWithGoogle() async {
@@ -720,17 +820,26 @@ class SSOService {
     }
   }
 
+  // ❌ APPLE AVAILABILITY STUB POUR ANDROID
   static Future<bool> isAppleSignInAvailable() async {
+    // ❌ TOUJOURS FALSE SUR ANDROID
+    /*
     try {
       if (!Platform.isIOS) return false;
       return await SignInWithApple.isAvailable();
     } catch (e) {
       return false;
     }
+    */
+
+    // ✅ STUB POUR ANDROID
+    return false;
   }
 
   static Future<void> initialize() async {
-    print('✅ [SSOService] Services SSO initialisés avec validation iOS');
+    print(
+      '✅ [SSOService] Services SSO initialisés (Google seulement pour Android)',
+    );
   }
 
   static bool get isInitialized => true;
