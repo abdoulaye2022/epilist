@@ -100,24 +100,6 @@ class _SignUpPageState extends State<SignUpPage> {
         _navigateToEmailVerification(emailState.email);
         break;
 
-      case SSORegistrationSuccess:
-        final ssoState = state as SSORegistrationSuccess;
-        // ✅ CORRIGÉ: Utiliser seulement les propriétés disponibles
-        String message = 'Compte ${ssoState.provider} créé avec succès !';
-
-        SmartSnackBarManager.showSuccessSnackBar(context, message);
-
-        // ✅ NAVIGATION INTELLIGENTE SELON LE TYPE DE PROFIL
-        if (ssoState.user.email.contains('temp_') ||
-            ssoState.user.email.contains('@privaterelay.appleid.com')) {
-          // Profil temporaire - rester sur signup pour finaliser
-          _showProfileCompletionDialog(ssoState);
-        } else {
-          // Profil complet - aller au login
-          _navigateToLogin();
-        }
-        break;
-
       case AuthSuccess:
         final authState = state as AuthSuccess;
         String message;
@@ -136,12 +118,53 @@ class _SignUpPageState extends State<SignUpPage> {
 
       case AuthFailure:
         final failure = state as AuthFailure;
-        SmartSnackBarManager.showErrorSnackBar(context, failure.error);
+
+        // ✅ ANDROID: Messages d'erreur spécifiques pour inscription
+        String errorMessage = failure.error;
+        if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
+            errorMessage.contains('Un compte existe déjà')) {
+          errorMessage =
+              'Un compte existe déjà avec cet email. Essayez de vous connecter.';
+
+          // Suggérer de passer à l'écran de connexion
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            }
+          });
+        }
+
+        SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         break;
 
       case SSOError:
         final ssoError = state as SSOError;
-        SmartSnackBarManager.showErrorSnackBar(context, ssoError.error);
+
+        // ✅ ANDROID: Traiter les erreurs SSO d'inscription
+        String errorMessage = ssoError.error;
+
+        if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
+            errorMessage.contains('Un compte existe déjà')) {
+          errorMessage =
+              'Un compte Google existe déjà. Redirection vers la connexion...';
+
+          SmartSnackBarManager.showInfoSnackBar(context, errorMessage);
+
+          // Rediriger vers l'écran de connexion
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            }
+          });
+        } else {
+          SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
+        }
         break;
 
       case RegistrationSuccess:
@@ -361,7 +384,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
 
-        // Bouton Apple corrigé (iOS seulement)
+        // Bouton Apple corrigé (iOS seulement) - PRÉSERVÉ
         if (Platform.isIOS) ...[
           const SizedBox(height: 12),
           SizedBox(
@@ -734,18 +757,23 @@ class _SignUpPageState extends State<SignUpPage> {
 
   // ✅ MÉTHODES SSO CORRIGÉES AVEC LOGIQUE INTELLIGENTE
   void _signUpWithGoogle() async {
+    if (_isLoading) return;
+
     try {
-      // ✅ UTILISER LA MÊME LOGIQUE QUE LE LOGIN
+      // ✅ ANDROID: Utiliser GoogleSignInRequested même pour l'inscription
+      // Le serveur gère maintenant la création automatique
       context.read<AuthBloc>().add(const GoogleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Erreur lors de l\'inscription Google',
+        'Erreur lors de l\'inscription Google: ${e.toString()}',
       );
     }
   }
 
   void _signUpWithApple() async {
+    if (_isLoading) return;
+
     try {
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!isAvailable) {
@@ -758,12 +786,12 @@ class _SignUpPageState extends State<SignUpPage> {
         return;
       }
 
-      // ✅ UTILISER LA MÊME LOGIQUE QUE LE LOGIN
+      // ✅ Utiliser AppleSignInRequested pour l'inscription (PRÉSERVÉ)
       context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Erreur lors de l\'inscription Apple',
+        'Erreur lors de l\'inscription Apple: ${e.toString()}',
       );
     }
   }

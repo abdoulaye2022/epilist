@@ -109,14 +109,94 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       print('✅ [AuthBloc] Connexion Google terminée avec succès');
     } catch (e) {
       print('❌ [AuthBloc] Erreur lors de la connexion Google: $e');
-      final errorMessage = _extractAndTranslateError(e, 'google');
-      emit(
-        SSOError(
-          provider: 'google',
-          error: errorMessage,
-          details: e.toString(),
-        ),
-      );
+
+      // ✅ CORRECTION ANDROID: Gestion intelligente des erreurs
+      if (e.toString().contains('EMAIL_ALREADY_EXISTS') ||
+          e.toString().contains('Un compte existe déjà')) {
+        // L'utilisateur existe mais pas avec Google SSO - proposer de lier le compte
+        final errorMessage = _getTranslatedErrorMessage(
+          'GOOGLE_ACCOUNT_EXISTS',
+          '',
+        );
+        emit(
+          SSOError(
+            provider: 'google',
+            error:
+                'Un compte existe avec cet email. Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.',
+            details: e.toString(),
+          ),
+        );
+      } else if (e.toString().contains('USER_NOT_FOUND') ||
+          e.toString().contains('No account found')) {
+        // ✅ ANDROID: Utilisateur n'existe pas - créer automatiquement
+        print(
+          '🔄 [AuthBloc] Utilisateur Google non trouvé - création automatique...',
+        );
+        try {
+          await _createGoogleAccountAutomatically(emit);
+        } catch (createError) {
+          print('❌ [AuthBloc] Échec création automatique: $createError');
+          final errorMessage = _extractAndTranslateError(createError, 'google');
+          emit(
+            SSOError(
+              provider: 'google',
+              error: errorMessage,
+              details: createError.toString(),
+            ),
+          );
+        }
+      } else {
+        final errorMessage = _extractAndTranslateError(e, 'google');
+        emit(
+          SSOError(
+            provider: 'google',
+            error: errorMessage,
+            details: e.toString(),
+          ),
+        );
+      }
+    }
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Création automatique de compte Google
+  Future<void> _createGoogleAccountAutomatically(
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      print('🆕 [AuthBloc] Création automatique de compte Google...');
+
+      // Essayer d'abord l'inscription
+      await authService.registerWithGoogle();
+      print('✅ [AuthBloc] Inscription Google automatique réussie');
+
+      // Puis se connecter
+      await Future.delayed(const Duration(milliseconds: 500));
+      final tokens = await authService.loginWithGoogle();
+
+      final savedToken = await authService.getToken();
+      if (savedToken == null || savedToken.isEmpty) {
+        await authService.saveTokens(
+          tokens['access_token']!,
+          tokens['refresh_token']!,
+        );
+      }
+
+      final user = await authService.getCurrentUser();
+      if (user == null) {
+        throw AuthenticationException(
+          'Utilisateur non trouvé après création',
+          'USER_CREATION_FAILED',
+        );
+      }
+
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: user, authMethod: 'google'));
+      print('✅ [AuthBloc] Création et connexion Google automatique terminées');
+    } catch (e) {
+      print('❌ [AuthBloc] Erreur création automatique Google: $e');
+      rethrow;
     }
   }
 
@@ -244,10 +324,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
       /* 
-      else if (event.provider == 'apple') {
-        tokens = await authService.loginWithApple();
-      } 
-      */
+    else if (event.provider == 'apple') {
+      tokens = await authService.loginWithApple();
+    } 
+    */
       else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
@@ -326,10 +406,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
       /*
-      else if (event.provider == 'apple') {
-        await authService.registerWithApple();
-      } 
-      */
+    else if (event.provider == 'apple') {
+      await authService.registerWithApple();
+    } 
+    */
       else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
@@ -346,10 +426,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
       /*
-      else {
-        tokens = await authService.loginWithApple();
-      }
-      */
+    else {
+      tokens = await authService.loginWithApple();
+    }
+    */
       else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
@@ -737,21 +817,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (errorString.contains('account_exists_with_different_credential')) {
         return _getTranslatedErrorMessage('GOOGLE_ACCOUNT_EXISTS', '');
       }
+      // ✅ ANDROID: Nouvelles gestions d'erreur
+      if (errorString.contains('user_not_found') ||
+          errorString.contains('no account found')) {
+        return 'Aucun compte trouvé. Création automatique en cours...';
+      }
+      if (errorString.contains('invalid_token') ||
+          errorString.contains('token invalide')) {
+        return _getTranslatedErrorMessage('INVALID_SSO_TOKEN', '');
+      }
     }
 
-    // ❌ ERREURS APPLE COMMENTÉES POUR ANDROID
+    // ❌ ERREURS APPLE COMMENTÉES POUR ANDROID (GARDÉES POUR RÉFÉRENCE)
     /*
-    // Erreurs spécifiques Apple
-    if (provider == 'apple') {
-      if (errorString.contains('canceled') ||
-          errorString.contains('cancelled')) {
-        return _getTranslatedErrorMessage('APPLE_SIGNIN_CANCELLED', '');
-      }
-      if (errorString.contains('not available')) {
-        return _getTranslatedErrorMessage('APPLE_NOT_AVAILABLE', '');
-      }
+  // Erreurs spécifiques Apple
+  if (provider == 'apple') {
+    if (errorString.contains('canceled') ||
+        errorString.contains('cancelled')) {
+      return _getTranslatedErrorMessage('APPLE_SIGNIN_CANCELLED', '');
     }
-    */
+    if (errorString.contains('not available')) {
+      return _getTranslatedErrorMessage('APPLE_NOT_AVAILABLE', '');
+    }
+  }
+  */
 
     // Erreurs génériques SSO
     if (errorString.contains('email_already_exists')) {

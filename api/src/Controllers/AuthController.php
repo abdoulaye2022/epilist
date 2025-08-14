@@ -56,25 +56,32 @@ class AuthController
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🔵 Début de la connexion Google");
+            error_log("🔵 [AuthController] === DÉBUT CONNEXION GOOGLE ANDROID ===");
+            error_log("🔵 [AuthController] ID Token: " . substr($idToken, 0, 50) . '...');
+            error_log("🔵 [AuthController] User Info: " . json_encode($userInfo));
 
             // 1. Vérifier le token Google
             $googleUserData = $this->ssoService->verifyGoogleToken($idToken);
             if (!$googleUserData) {
+                error_log("❌ [AuthController] Token Google invalide");
                 return $this->createErrorResponse(
-                    'Token Google invalide',
+                    'Token Google invalide ou expiré',
                     401,
                     'INVALID_SSO_TOKEN'
                 );
             }
+
+            error_log("✅ [AuthController] Token Google validé:");
+            error_log("   Email: " . $googleUserData['email']);
+            error_log("   Méthode: " . $googleUserData['validation_method']);
 
             // 2. Chercher l'utilisateur par email
             $email = $googleUserData['email'];
             $user = User::with('currency')->where('email', $email)->first();
 
             if ($user) {
-                // Utilisateur existant - connexion
-                error_log("   Utilisateur existant trouvé: {$user->email}");
+                // ✅ UTILISATEUR EXISTANT - CONNEXION
+                error_log("✅ [AuthController] Utilisateur existant trouvé: {$user->email}");
 
                 if (!$user->isActive()) {
                     return $this->createErrorResponse(
@@ -88,62 +95,78 @@ class AuthController
                 if (!$user->isEmailVerified()) {
                     $user->markEmailAsVerified();
                     $user->save();
+                    error_log("✅ [AuthController] Email marqué comme vérifié");
                 }
 
                 // Sauvegarder/mettre à jour les informations Google
                 $this->ssoService->saveSSOAccountLink($user->id, 'google', $googleUserData['sub'], $userInfo);
 
             } else {
-                // Nouvel utilisateur - créer le compte
-                error_log("   Nouvel utilisateur Google: {$email}");
+                // ✅ ANDROID: NOUVEL UTILISATEUR - CRÉATION AUTOMATIQUE
+                error_log("🆕 [AuthController] Nouvel utilisateur Google Android - création automatique");
 
                 $firstName = $userInfo['first_name'] ?? $googleUserData['given_name'] ?? '';
                 $lastName = $userInfo['last_name'] ?? $googleUserData['family_name'] ?? '';
 
+                // Fallback intelligent pour le nom
                 if (empty($firstName) && !empty($googleUserData['name'])) {
                     $nameParts = explode(' ', $googleUserData['name'], 2);
                     $firstName = $nameParts[0];
                     $lastName = $nameParts[1] ?? '';
                 }
 
-                $user = User::create([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'email' => $email,
-                    'password_hash' => null, // Pas de mot de passe pour SSO
-                    'terms_accepted' => true,
-                    'currency_id' => 1, // CAD par défaut
-                    'email_verified' => true, // Google vérifie déjà l'email
-                    'email_verified_at' => Carbon::now(),
-                    'created_at' => new \DateTime(),
-                    'updated_at' => new \DateTime()
-                ]);
-
-                $user->load('currency');
-
-                // Sauvegarder les informations Google
-                $this->ssoService->saveSSOAccountLink($user->id, 'google', $googleUserData['sub'], $userInfo);
-
-                // Envoyer email de bienvenue
-                if(Config::get('APP_ENV') == 'dev') {
-                    $user->email = 'm2atodev@gmail.com';
-                }
+                // Valeurs par défaut si nom manquant
+                if (empty($firstName)) $firstName = 'Utilisateur';
+                if (empty($lastName)) $lastName = 'Google';
 
                 try {
-                    $mailSender = new MailSender();
-                    $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-                } catch (\Exception $emailError) {
-                    error_log("⚠️ Erreur lors de l'envoi de l'email de bienvenue: " . $emailError->getMessage());
+                    $user = User::create([
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'email' => $email,
+                        'password_hash' => null, // Pas de mot de passe pour SSO
+                        'terms_accepted' => true,
+                        'currency_id' => 1, // CAD par défaut
+                        'email_verified' => true, // Google vérifie déjà l'email
+                        'email_verified_at' => Carbon::now(),
+                        'created_at' => new \DateTime(),
+                        'updated_at' => new \DateTime()
+                    ]);
+
+                    $user->load('currency');
+                    error_log("✅ [AuthController] Nouvel utilisateur créé: {$user->email} (ID: {$user->id})");
+
+                    // Sauvegarder les informations Google
+                    $this->ssoService->saveSSOAccountLink($user->id, 'google', $googleUserData['sub'], $userInfo);
+
+                    // ✅ ANDROID: Envoyer email de bienvenue
+                    $this->sendWelcomeEmailSafely($user);
+
+                } catch (\Exception $createError) {
+                    error_log("❌ [AuthController] Erreur création utilisateur: " . $createError->getMessage());
+                    
+                    // ✅ ANDROID: Vérifier si l'utilisateur a été créé entre temps (race condition)
+                    $existingUser = User::with('currency')->where('email', $email)->first();
+                    if ($existingUser) {
+                        error_log("🔄 [AuthController] Utilisateur créé par processus concurrent - utilisation");
+                        $user = $existingUser;
+                    } else {
+                        return $this->createErrorResponse(
+                            'Erreur lors de la création du compte: ' . $createError->getMessage(),
+                            500,
+                            'USER_CREATION_FAILED'
+                        );
+                    }
                 }
             }
 
             // 3. Gérer le token FCM si fourni
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Mise à jour FCM lors du login Google pour utilisateur: {$user->id}");
+                error_log("🔔 [AuthController] Mise à jour FCM pour utilisateur: {$user->id}");
                 $this->updateUserFCMToken($user->id, $data['fcm_data']);
             }
 
-            // 4. ✅ CORRECTION: Générer les tokens JWT pour toutes les connexions SSO
+            // 4. ✅ Générer les tokens JWT
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
             ]);
@@ -152,23 +175,28 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            error_log("✅ Connexion Google réussie pour: {$user->email}");
+            error_log("✅ [AuthController] === CONNEXION GOOGLE ANDROID RÉUSSIE ===");
+            error_log("✅ [AuthController] Utilisateur: {$user->email}");
+            error_log("✅ [AuthController] Access token généré: " . substr($accessToken, 0, 30) . '...');
 
-            // 5. ✅ CORRECTION: Réponse cohérente avec login classique
+            // 5. ✅ Réponse cohérente
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Connexion Google réussie',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'data' => $this->formatUserData($user),
-                'auth_method' => 'google'
+                'auth_method' => 'google',
+                'is_new_user' => !isset($data['is_existing_user']) // Indiquer si c'est un nouvel utilisateur
             ]));
+            
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la connexion Google: " . $e->getMessage());
+            error_log("❌ [AuthController] Erreur générale Google Android: " . $e->getMessage());
+            error_log("❌ [AuthController] Stack trace: " . $e->getTraceAsString());
 
             return $this->createErrorResponse(
                 'Erreur lors de la connexion Google: ' . $e->getMessage(),
@@ -198,11 +226,12 @@ class AuthController
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🔵 Début de l'inscription Google");
+            error_log("🔵 [AuthController] === DÉBUT INSCRIPTION GOOGLE ANDROID ===");
 
             // 1. Vérifier le token Google
             $googleUserData = $this->ssoService->verifyGoogleToken($idToken);
             if (!$googleUserData) {
+                error_log("❌ [AuthController] Token Google invalide pour inscription");
                 return $this->createErrorResponse(
                     'Token Google invalide',
                     401,
@@ -212,13 +241,17 @@ class AuthController
 
             $email = $googleUserData['email'];
 
-            // 2. Vérifier que l'utilisateur n'existe pas déjà
+            // 2. ✅ ANDROID: Vérifier que l'utilisateur n'existe pas déjà
             $existingUser = User::where('email', $email)->first();
             if ($existingUser) {
+                error_log("⚠️ [AuthController] Utilisateur Google existe déjà: {$email}");
+                
+                // ✅ ANDROID: Rediriger vers login au lieu d'erreur
                 return $this->createErrorResponse(
-                    'Un compte existe déjà avec cet email',
-                    400,
-                    'EMAIL_ALREADY_EXISTS'
+                    'Un compte existe déjà avec cet email. Redirection vers la connexion.',
+                    409, // 409 Conflict pour indiquer que l'utilisateur doit se connecter
+                    'EMAIL_ALREADY_EXISTS_REDIRECT_LOGIN',
+                    ['existing_email' => $email]
                 );
             }
 
@@ -231,6 +264,10 @@ class AuthController
                 $firstName = $nameParts[0];
                 $lastName = $nameParts[1] ?? '';
             }
+
+            // Valeurs par défaut
+            if (empty($firstName)) $firstName = 'Utilisateur';
+            if (empty($lastName)) $lastName = 'Google';
 
             // Déterminer la devise (si fournie)
             $currencyId = 1; // CAD par défaut
@@ -261,11 +298,11 @@ class AuthController
 
             // 5. Gérer le token FCM si fourni
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Enregistrement FCM lors de l'inscription Google pour utilisateur: {$user->id}");
+                error_log("🔔 [AuthController] Enregistrement FCM inscription Google: {$user->id}");
                 $this->updateUserFCMToken($user->id, $data['fcm_data']);
             }
 
-            // 6. ✅ CORRECTION: Générer les tokens JWT pour l'inscription aussi
+            // 6. ✅ Générer les tokens JWT pour inscription
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
             ]);
@@ -274,41 +311,55 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            error_log("✅ Inscription Google réussie pour: {$user->email}");
+            error_log("✅ [AuthController] Inscription Google Android réussie: {$user->email}");
 
             // 7. Envoyer email de bienvenue
-            if(Config::get('APP_ENV') == 'dev') {
-                $user->email = 'm2atodev@gmail.com';
-            }
+            $this->sendWelcomeEmailSafely($user);
 
-            try {
-                $mailSender = new MailSender();
-                $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-            } catch (\Exception $emailError) {
-                error_log("⚠️ Erreur lors de l'envoi de l'email de bienvenue: " . $emailError->getMessage());
-            }
-
-            // 8. ✅ CORRECTION: Réponse cohérente avec login classique
+            // 8. ✅ Réponse cohérente
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Inscription Google réussie',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'data' => $this->formatUserData($user),
-                'auth_method' => 'google'
+                'auth_method' => 'google',
+                'is_new_user' => true
             ]));
+            
             return $response
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(201);
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de l'inscription Google: " . $e->getMessage());
+            error_log("❌ [AuthController] Erreur inscription Google Android: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de l\'inscription Google: ' . $e->getMessage(),
                 500,
                 'GOOGLE_REGISTER_ERROR'
             );
+        }
+    }
+
+    private function sendWelcomeEmailSafely(User $user): void
+    {
+        try {
+            $emailToSend = $user->email;
+            
+            // ✅ ANDROID: En développement, rediriger vers l'email de test
+            if (Config::get('APP_ENV') == 'dev') {
+                $emailToSend = 'm2atodev@gmail.com';
+                error_log("📧 [AuthController] Email de bienvenue redirigé vers: " . $emailToSend);
+            }
+
+            $mailSender = new MailSender();
+            $mailSender->sendWelcomeEmail($emailToSend, $user->first_name);
+            error_log("✅ [AuthController] Email de bienvenue envoyé");
+            
+        } catch (\Exception $emailError) {
+            error_log("⚠️ [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
+            // Ne pas faire échouer la connexion pour un problème d'email
         }
     }
 
@@ -978,16 +1029,16 @@ class AuthController
     private function updateUserFCMToken(int $userId, array $fcmData): bool
     {
         try {
-            error_log("🔔 Mise à jour FCM pour utilisateur: {$userId}");
+            error_log("🔔 [AuthController] Mise à jour FCM pour utilisateur: {$userId}");
             
             if (empty($fcmData['device_id']) || empty($fcmData['push_token'])) {
-                error_log("⚠️ Données FCM incomplètes - ignoré");
+                error_log("⚠️ [AuthController] Données FCM incomplètes - ignoré");
                 return false;
             }
 
             $platform = $fcmData['platform'] ?? 'unknown';
             if (!in_array($platform, ['android', 'ios'])) {
-                error_log("⚠️ Plateforme invalide: {$platform} - ignoré");
+                error_log("⚠️ [AuthController] Plateforme invalide: {$platform} - ignoré");
                 return false;
             }
 
@@ -1004,7 +1055,7 @@ class AuthController
                 $newToken = $fcmData['push_token'];
                 
                 if ($oldToken !== $newToken) {
-                    error_log("🔄 Token FCM différent détecté - mise à jour");
+                    error_log("🔄 [AuthController] Token FCM différent détecté - mise à jour");
                     
                     $existingDevice->update([
                         'push_token' => $newToken,
@@ -1016,26 +1067,26 @@ class AuthController
                         'last_active_at' => Carbon::now()
                     ]);
                     
-                    error_log("✅ Token FCM mis à jour avec succès");
+                    error_log("✅ [AuthController] Token FCM mis à jour avec succès");
                     return true;
                 } else {
-                    error_log("✅ Token FCM identique - activité mise à jour");
+                    error_log("✅ [AuthController] Token FCM identique - activité mise à jour");
                     $existingDevice->markAsActive();
                     return true;
                 }
             } else {
-                error_log("🆕 Nouvel appareil détecté - enregistrement");
+                error_log("🆕 [AuthController] Nouvel appareil détecté - enregistrement");
                 
                 $device = UserDevice::registerDevice(array_merge($fcmData, [
                     'user_id' => $userId
                 ]));
                 
-                error_log("✅ Nouvel appareil enregistré avec ID: {$device->id}");
+                error_log("✅ [AuthController] Nouvel appareil enregistré avec ID: {$device->id}");
                 return true;
             }
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la mise à jour FCM: " . $e->getMessage());
+            error_log("❌ [AuthController] Erreur lors de la mise à jour FCM: " . $e->getMessage());
             return false;
         }
     }

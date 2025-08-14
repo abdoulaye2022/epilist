@@ -83,12 +83,19 @@ class _LoginScreenState extends State<LoginScreen> {
         final authState = state as AuthSuccess;
         SmartSnackBarManager.clearAll(context);
 
-        String message =
-            authState.authMethod == 'google'
-                ? 'Connexion Google réussie !'
-                : authState.authMethod == 'apple'
-                ? 'Connexion Apple réussie !'
-                : l10n.loginSuccessful;
+        String message;
+        if (authState.authMethod == 'google') {
+          // ✅ ANDROID: Message intelligent selon le contexte
+          if (authState.message?.contains('créé') == true) {
+            message = 'Compte Google créé et connecté avec succès !';
+          } else {
+            message = 'Connexion Google réussie !';
+          }
+        } else if (authState.authMethod == 'apple') {
+          message = 'Connexion Apple réussie !';
+        } else {
+          message = l10n.loginSuccessful;
+        }
 
         SmartSnackBarManager.showSuccessSnackBar(context, message);
         _navigateToHome();
@@ -101,7 +108,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
       case SSOError:
         final ssoError = state as SSOError;
-        SmartSnackBarManager.showErrorSnackBar(context, ssoError.error);
+
+        // ✅ ANDROID: Gestion intelligente des erreurs SSO
+        String errorMessage = ssoError.error;
+
+        // Messages plus conviviaux pour Android
+        if (errorMessage.contains('Aucun compte trouvé')) {
+          errorMessage =
+              'Aucun compte trouvé avec cet email Google. Création automatique en cours...';
+
+          // ✅ Retry automatique après une courte pause
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted && !_isLoading) {
+              _signInWithGoogle();
+            }
+          });
+        } else if (errorMessage.contains('Un compte existe déjà')) {
+          errorMessage =
+              'Un compte existe avec cet email. Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.';
+
+          // ✅ Pré-remplir l'email si disponible
+          if (ssoError.details?.isNotEmpty == true) {
+            try {
+              final email = _extractEmailFromError(ssoError.details!);
+              if (email.isNotEmpty) {
+                _emailController.text = email;
+              }
+            } catch (e) {
+              // Ignorer les erreurs d'extraction
+            }
+          }
+        } else if (errorMessage.contains('network') ||
+            errorMessage.contains('réseau')) {
+          errorMessage =
+              'Problème de connexion. Vérifiez votre internet et réessayez.';
+        }
+
+        SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         break;
 
       case EmailVerificationRequired:
@@ -112,6 +155,19 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         _navigateToEmailVerification(emailState.email);
         break;
+    }
+  }
+
+  // ✅ NOUVELLE MÉTHODE: Extraire email des détails d'erreur
+  String _extractEmailFromError(String errorDetails) {
+    try {
+      final emailRegex = RegExp(
+        r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+      );
+      final match = emailRegex.firstMatch(errorDetails);
+      return match?.group(0) ?? '';
+    } catch (e) {
+      return '';
     }
   }
 
@@ -207,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
 
-        // ✅ Bouton Apple uniquement sur iOS
+        // ✅ Bouton Apple uniquement sur iOS (PRÉSERVÉ)
         if (Platform.isIOS) ...[
           const SizedBox(height: 12),
           SizedBox(
@@ -473,12 +529,15 @@ class _LoginScreenState extends State<LoginScreen> {
   // ✅ MÉTHODES SSO SIMPLIFIÉES
 
   void _signInWithGoogle() async {
+    if (_isLoading) return;
+
     try {
+      // ✅ ANDROID: Utiliser toujours GoogleSignInRequested (logique unifiée côté serveur)
       context.read<AuthBloc>().add(const GoogleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Erreur lors de la connexion Google',
+        'Erreur lors de la connexion Google: ${e.toString()}',
       );
     }
   }

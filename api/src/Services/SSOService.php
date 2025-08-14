@@ -30,25 +30,25 @@ class SSOService
      */
     private function getGoogleClientIds(): array 
     {
-        // ✅ CONFIGURATION ANDROID CORRIGÉE
+        // ✅ CONFIGURATION ANDROID CORRIGÉE - ORDRE IMPORTANT
         return [
-            // iOS Client ID (depuis GoogleService-Info.plist)
-            '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com',
-            
-            // ✅ ANDROID Client ID (depuis google-services.json)
+            // ✅ ANDROID Client ID (priorité 1 - depuis google-services.json)
             '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com',
             
-            // Web Client ID (optionnel)
+            // iOS Client ID (priorité 2 - depuis GoogleService-Info.plist)
+            '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com',
+            
+            // Web Client ID (optionnel - depuis Firebase Console)
             Config::get('GOOGLE_WEB_CLIENT_ID', '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com')
         ];
     }
 
     /**
-     * ✅ Client ID principal pour l'API
+     * ✅ Client ID principal pour l'API - ANDROID EN PRIORITÉ
      */
     private function getPrimaryGoogleClientId(): string 
     {
-        // Utiliser Android par défaut car c'est votre plateforme principale
+        // ✅ Utiliser Android par défaut car c'est votre plateforme principale
         return Config::get('GOOGLE_CLIENT_ID', '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com');
     }
 
@@ -175,14 +175,16 @@ class SSOService
             if ($response->getStatusCode() !== 200) {
                 error_log("❌ [SSOService] Échec vérification Google API: " . $response->getStatusCode());
                 error_log("❌ [SSOService] Réponse: " . $response->getBody());
-                return null;
+                
+                // ✅ ANDROID: Fallback si l'API échoue
+                return $this->fallbackGoogleTokenValidation($idToken);
             }
 
             $tokenData = json_decode($response->getBody(), true);
             
             if (!$tokenData) {
                 error_log("❌ [SSOService] Impossible de décoder la réponse Google");
-                return null;
+                return $this->fallbackGoogleTokenValidation($idToken);
             }
 
             error_log("🔵 [SSOService] Données token reçues:");
