@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:google_sign_in/google_sign_in.dart';
 // ❌ APPLE IMPORT COMMENTÉ POUR ANDROID
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -509,7 +509,6 @@ class SSOService {
   // ===================== APPLE SIGN-IN COMMENTÉ POUR ANDROID =====================
 
   // ❌ APPLE SIGN-IN COMPLÈTEMENT COMMENTÉ
-  /*
   static Future<SSOResult> signInWithApple() async {
     try {
       print('🍎 [SSOService] Début connexion Apple...');
@@ -574,22 +573,20 @@ class SSOService {
   static Future<void> signOutApple() async {
     print('🍎 [SSOService] Apple Sign-Out (géré automatiquement)');
   }
-  */
 
   // ✅ MÉTHODES APPLE STUB POUR COMPATIBILITÉ ANDROID
-  static Future<SSOResult> signInWithApple() async {
-    print('❌ [SSOService] Apple Sign-In non disponible sur Android');
-    return SSOResult.error('Apple Sign-In non disponible sur Android');
-  }
+  // static Future<SSOResult> signInWithApple() async {
+  //   print('❌ [SSOService] Apple Sign-In non disponible sur Android');
+  //   return SSOResult.error('Apple Sign-In non disponible sur Android');
+  // }
 
-  static Future<void> signOutApple() async {
-    print('❌ [SSOService] Apple Sign-Out non disponible sur Android');
-  }
+  // static Future<void> signOutApple() async {
+  //   print('❌ [SSOService] Apple Sign-Out non disponible sur Android');
+  // }
 
   // ===================== MÉTHODES UTILITAIRES =====================
 
   // ❌ MÉTHODES UTILITAIRES APPLE COMMENTÉES
-  /*
   static String _generateNonce([int length = 32]) {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
@@ -605,18 +602,17 @@ class SSOService {
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
-  */
 
   // ✅ STUBS POUR COMPATIBILITÉ
-  static String _generateNonce([int length = 32]) {
-    // Méthode stub pour compatibilité
-    return '';
-  }
+  // static String _generateNonce([int length = 32]) {
+  //   // Méthode stub pour compatibilité
+  //   return '';
+  // }
 
-  static String _sha256ofString(String input) {
-    // Méthode stub pour compatibilité
-    return '';
-  }
+  // static String _sha256ofString(String input) {
+  //   // Méthode stub pour compatibilité
+  //   return '';
+  // }
 
   static Future<void> signOutAll() async {
     try {
@@ -708,7 +704,6 @@ class SSOService {
 
   /// Diagnostic spécifique iOS (commenté mais gardé pour référence)
   // ❌ DIAGNOSTIC iOS COMMENTÉ
-  /*
   static Future<void> diagnoseIOSProblem() async {
     print('🔍 === DIAGNOSTIC SSO GOOGLE IOS ===');
 
@@ -778,7 +773,6 @@ class SSOService {
 
     print('🔍 === FIN DIAGNOSTIC IOS ===');
   }
-  */
 
   // Méthodes existantes inchangées...
   static Future<bool> isSignedInWithGoogle() async {
@@ -823,17 +817,15 @@ class SSOService {
   // ❌ APPLE AVAILABILITY STUB POUR ANDROID
   static Future<bool> isAppleSignInAvailable() async {
     // ❌ TOUJOURS FALSE SUR ANDROID
-    /*
     try {
       if (!Platform.isIOS) return false;
       return await SignInWithApple.isAvailable();
     } catch (e) {
       return false;
     }
-    */
 
     // ✅ STUB POUR ANDROID
-    return false;
+    // return false;
   }
 
   static Future<void> initialize() async {

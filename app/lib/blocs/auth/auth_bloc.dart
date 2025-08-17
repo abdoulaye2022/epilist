@@ -47,7 +47,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // ✅ ÉVÉNEMENTS SSO - GOOGLE SEULEMENT
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     // ❌ APPLE COMMENTÉ POUR ANDROID
-    // on<AppleSignInRequested>(_onAppleSignInRequested);
+    on<AppleSignInRequested>(_onAppleSignInRequested);
     on<SSOLoginCompleted>(_onSSOLoginCompleted);
     on<SSORegisterCompleted>(_onSSORegisterCompleted);
     on<LinkSSOAccount>(_onLinkSSOAccount);
@@ -201,7 +201,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   // ❌ APPLE SIGN-IN COMMENTÉ POUR ANDROID
-  /*
   /// ✅ CONNEXION APPLE RESTAURÉE AVEC GESTION AUTHSERVICE
   Future<void> _onAppleSignInRequested(
     AppleSignInRequested event,
@@ -305,7 +304,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
     }
   }
-  */
 
   /// ✅ CONNEXION SSO GÉNÉRALISÉE - GOOGLE SEULEMENT
   Future<void> _onSSOLoginCompleted(
@@ -405,12 +403,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await authService.registerWithGoogle();
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
-      /*
-    else if (event.provider == 'apple') {
-      await authService.registerWithApple();
-    } 
-    */
-      else {
+      else if (event.provider == 'apple') {
+        await authService.registerWithApple();
+      } else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
 
@@ -425,12 +420,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         tokens = await authService.loginWithGoogle();
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
-      /*
-    else {
-      tokens = await authService.loginWithApple();
-    }
-    */
-      else {
+      else if (event.provider == 'apple') {
+        tokens = await authService.loginWithApple();
+      } else {
         throw Exception('Provider SSO non supporté: ${event.provider}');
       }
 
@@ -526,12 +518,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ssoResult = await SSOService.signInWithGoogle();
       }
       // ❌ APPLE COMMENTÉ POUR ANDROID
-      /*
       else if (event.provider == 'apple') {
         ssoResult = await SSOService.signInWithApple();
-      } 
-      */
-      else {
+      } else {
         throw Exception('Provider non supporté: ${event.provider}');
       }
 
@@ -1311,8 +1300,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'GOOGLE_NETWORK_ERROR': 'Erreur de réseau lors de la connexion Google',
       'GOOGLE_ACCOUNT_EXISTS': 'Un compte existe déjà avec cet email',
       // ❌ APPLE MESSAGES COMMENTÉS
-      // 'APPLE_SIGNIN_CANCELLED': 'Connexion Apple annulée',
-      // 'APPLE_NOT_AVAILABLE': 'Apple Sign-In non disponible sur cet appareil',
+      'APPLE_SIGNIN_CANCELLED': 'Connexion Apple annulée',
+      'APPLE_NOT_AVAILABLE': 'Apple Sign-In non disponible sur cet appareil',
       'INVALID_SSO_TOKEN': 'Token d\'authentification invalide',
       'SSO_UNKNOWN_ERROR': 'Erreur inattendue lors de la connexion SSO',
       'SSO_ACCOUNT_ALREADY_LINKED': 'Ce compte est déjà lié',
@@ -1364,8 +1353,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       'GOOGLE_NETWORK_ERROR': 'Network error during Google sign-in',
       'GOOGLE_ACCOUNT_EXISTS': 'An account already exists with this email',
       // ❌ APPLE MESSAGES COMMENTÉS
-      // 'APPLE_SIGNIN_CANCELLED': 'Apple Sign-In cancelled',
-      // 'APPLE_NOT_AVAILABLE': 'Apple Sign-In not available on this device',
+      'APPLE_SIGNIN_CANCELLED': 'Apple Sign-In cancelled',
+      'APPLE_NOT_AVAILABLE': 'Apple Sign-In not available on this device',
       'INVALID_SSO_TOKEN': 'Invalid authentication token',
       'SSO_UNKNOWN_ERROR': 'Unexpected error during SSO sign-in',
       'SSO_ACCOUNT_ALREADY_LINKED': 'This account is already linked',
@@ -1399,15 +1388,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return 'GOOGLE_SIGNIN_CANCELLED';
     }
     // ❌ APPLE ERROR CODES COMMENTÉS
-    /*
-    else if (errorString.contains('apple') &&
-        errorString.contains('cancel')) {
+    else if (errorString.contains('apple') && errorString.contains('cancel')) {
       return 'APPLE_SIGNIN_CANCELLED';
     } else if (errorString.contains('apple') &&
         errorString.contains('not available')) {
       return 'APPLE_NOT_AVAILABLE';
     }
-    */
 
     // Codes d'erreur pour les tokens
     if (errorString.contains('token') && errorString.contains('save')) {

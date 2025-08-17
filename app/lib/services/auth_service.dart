@@ -292,109 +292,109 @@ class AuthService {
   }
 
   /// ✅ CONNEXION APPLE RESTAURÉE COMPLÈTEMENT
-  // Future<Map<String, String>> loginWithApple() async {
-  //   try {
-  //     print('🍎 [AuthService] Début de la connexion Apple...');
+  Future<Map<String, String>> loginWithApple() async {
+    try {
+      print('🍎 [AuthService] Début de la connexion Apple...');
 
-  //     // 1. Vérification de plateforme
-  //     if (!Platform.isIOS) {
-  //       print('⚠️ [AuthService] Apple Sign-In tenté sur plateforme non-iOS');
-  //       // Ne pas lancer d'exception, essayer quand même
-  //     }
+      // 1. Vérification de plateforme
+      if (!Platform.isIOS) {
+        print('⚠️ [AuthService] Apple Sign-In tenté sur plateforme non-iOS');
+        // Ne pas lancer d'exception, essayer quand même
+      }
 
-  //     // 2. Obtenir les credentials Apple
-  //     final SSOResult result = await SSOService.signInWithApple();
+      // 2. Obtenir les credentials Apple
+      final SSOResult result = await SSOService.signInWithApple();
 
-  //     if (!result.success) {
-  //       print('❌ [AuthService] Échec SSO Apple: ${result.error}');
-  //       throw AuthenticationException(
-  //         result.error ?? 'Erreur lors de la connexion Apple',
-  //         'APPLE_SIGNIN_FAILED',
-  //       );
-  //     }
+      if (!result.success) {
+        print('❌ [AuthService] Échec SSO Apple: ${result.error}');
+        throw AuthenticationException(
+          result.error ?? 'Erreur lors de la connexion Apple',
+          'APPLE_SIGNIN_FAILED',
+        );
+      }
 
-  //     if (result.idToken == null || result.userInfo == null) {
-  //       print('❌ [AuthService] Données Apple incomplètes');
-  //       throw AuthenticationException(
-  //         'Informations Apple incomplètes',
-  //         'APPLE_INCOMPLETE_DATA',
-  //       );
-  //     }
+      if (result.idToken == null || result.userInfo == null) {
+        print('❌ [AuthService] Données Apple incomplètes');
+        throw AuthenticationException(
+          'Informations Apple incomplètes',
+          'APPLE_INCOMPLETE_DATA',
+        );
+      }
 
-  //     print('✅ [AuthService] Credentials Apple obtenus, envoi au serveur...');
-  //     print('  ID Token: ${result.idToken!.substring(0, 30)}...');
-  //     print('  User Info: ${result.userInfo!.email ?? "privé"}');
+      print('✅ [AuthService] Credentials Apple obtenus, envoi au serveur...');
+      print('  ID Token: ${result.idToken!.substring(0, 30)}...');
+      print('  User Info: ${result.userInfo!.email ?? "privé"}');
 
-  //     // 3. Envoyer les credentials au serveur
-  //     final response = await dio.post(
-  //       '/auth/sso/apple/login',
-  //       data: {
-  //         'id_token': result.idToken,
-  //         'authorization_code': result.accessToken,
-  //         'user_info': result.userInfo!.toMap(),
-  //       },
-  //     );
+      // 3. Envoyer les credentials au serveur
+      final response = await dio.post(
+        '/auth/sso/apple/login',
+        data: {
+          'id_token': result.idToken,
+          'authorization_code': result.accessToken,
+          'user_info': result.userInfo!.toMap(),
+        },
+      );
 
-  //     print('📡 [AuthService] Réponse serveur Apple: ${response.statusCode}');
+      print('📡 [AuthService] Réponse serveur Apple: ${response.statusCode}');
 
-  //     if (response.statusCode == 200) {
-  //       final data = response.data;
+      if (response.statusCode == 200) {
+        final data = response.data;
 
-  //       final accessToken = data['access_token'] as String?;
-  //       final refreshToken = data['refresh_token'] as String?;
+        final accessToken = data['access_token'] as String?;
+        final refreshToken = data['refresh_token'] as String?;
 
-  //       if (accessToken == null ||
-  //           accessToken.isEmpty ||
-  //           refreshToken == null ||
-  //           refreshToken.isEmpty) {
-  //         throw AuthenticationException(
-  //           'Tokens manquants dans la réponse serveur',
-  //           'MISSING_TOKENS',
-  //         );
-  //       }
+        if (accessToken == null ||
+            accessToken.isEmpty ||
+            refreshToken == null ||
+            refreshToken.isEmpty) {
+          throw AuthenticationException(
+            'Tokens manquants dans la réponse serveur',
+            'MISSING_TOKENS',
+          );
+        }
 
-  //       print('✅ [AuthService] Tokens Apple reçus:');
-  //       print('  Access: ${accessToken.substring(0, 30)}...');
-  //       print('  Refresh: ${refreshToken.substring(0, 30)}...');
+        print('✅ [AuthService] Tokens Apple reçus:');
+        print('  Access: ${accessToken.substring(0, 30)}...');
+        print('  Refresh: ${refreshToken.substring(0, 30)}...');
 
-  //       await saveTokens(accessToken, refreshToken);
+        await saveTokens(accessToken, refreshToken);
 
-  //       final user = User.fromLoginResponse({
-  //         'access_token': accessToken,
-  //         'refresh_token': refreshToken,
-  //         'data': data['data'],
-  //       });
+        final user = User.fromLoginResponse({
+          'access_token': accessToken,
+          'refresh_token': refreshToken,
+          'data': data['data'],
+        });
 
-  //       await saveUserToCache(user);
-  //       await _saveSSOInfo('apple', result.userInfo!);
+        await saveUserToCache(user);
+        await _saveSSOInfo('apple', result.userInfo!);
 
-  //       print('✅ [AuthService] Connexion Apple terminée avec succès');
+        print('✅ [AuthService] Connexion Apple terminée avec succès');
 
-  //       return {'access_token': accessToken, 'refresh_token': refreshToken};
-  //     } else {
-  //       throw AuthenticationException(
-  //         'Erreur de connexion Apple',
-  //         'APPLE_LOGIN_FAILED',
-  //       );
-  //     }
-  //   } on DioException catch (e) {
-  //     print(
-  //       '❌ [AuthService] Erreur Dio Apple: ${e.response?.statusCode} - ${e.response?.data}',
-  //     );
-  //     return _handleSSODioException(e, 'apple');
-  //   } catch (e) {
-  //     print('❌ [AuthService] Erreur générale Apple: $e');
+        return {'access_token': accessToken, 'refresh_token': refreshToken};
+      } else {
+        throw AuthenticationException(
+          'Erreur de connexion Apple',
+          'APPLE_LOGIN_FAILED',
+        );
+      }
+    } on DioException catch (e) {
+      print(
+        '❌ [AuthService] Erreur Dio Apple: ${e.response?.statusCode} - ${e.response?.data}',
+      );
+      return _handleSSODioException(e, 'apple');
+    } catch (e) {
+      print('❌ [AuthService] Erreur générale Apple: $e');
 
-  //     if (e is AuthenticationException) {
-  //       rethrow;
-  //     }
+      if (e is AuthenticationException) {
+        rethrow;
+      }
 
-  //     throw AuthenticationException(
-  //       'Erreur inattendue lors de la connexion Apple: $e',
-  //       'APPLE_UNKNOWN_ERROR',
-  //     );
-  //   }
-  // }
+      throw AuthenticationException(
+        'Erreur inattendue lors de la connexion Apple: $e',
+        'APPLE_UNKNOWN_ERROR',
+      );
+    }
+  }
 
   /// ✅ INSCRIPTION GOOGLE
   Future<void> registerWithGoogle() async {
@@ -455,67 +455,67 @@ class AuthService {
   }
 
   /// ✅ INSCRIPTION APPLE RESTAURÉE COMPLÈTEMENT
-  // Future<void> registerWithApple() async {
-  //   try {
-  //     print('🍎 [AuthService] Début de l\'inscription Apple...');
+  Future<void> registerWithApple() async {
+    try {
+      print('🍎 [AuthService] Début de l\'inscription Apple...');
 
-  //     // Vérification de plateforme (warning, pas d'exception)
-  //     if (!Platform.isIOS) {
-  //       print(
-  //         '⚠️ [AuthService] Apple Sign-In registration tenté sur plateforme non-iOS',
-  //       );
-  //     }
+      // Vérification de plateforme (warning, pas d'exception)
+      if (!Platform.isIOS) {
+        print(
+          '⚠️ [AuthService] Apple Sign-In registration tenté sur plateforme non-iOS',
+        );
+      }
 
-  //     final SSOResult result = await SSOService.signInWithApple();
+      final SSOResult result = await SSOService.signInWithApple();
 
-  //     if (!result.success) {
-  //       throw AuthenticationException(
-  //         result.error ?? 'Erreur lors de l\'inscription Apple',
-  //         'APPLE_SIGNUP_FAILED',
-  //       );
-  //     }
+      if (!result.success) {
+        throw AuthenticationException(
+          result.error ?? 'Erreur lors de l\'inscription Apple',
+          'APPLE_SIGNUP_FAILED',
+        );
+      }
 
-  //     if (result.idToken == null || result.userInfo == null) {
-  //       throw AuthenticationException(
-  //         'Informations Apple incomplètes',
-  //         'APPLE_INCOMPLETE_DATA',
-  //       );
-  //     }
+      if (result.idToken == null || result.userInfo == null) {
+        throw AuthenticationException(
+          'Informations Apple incomplètes',
+          'APPLE_INCOMPLETE_DATA',
+        );
+      }
 
-  //     print('✅ [AuthService] Credentials Apple obtenus, création du compte...');
+      print('✅ [AuthService] Credentials Apple obtenus, création du compte...');
 
-  //     final response = await dio.post(
-  //       '/auth/sso/apple/register',
-  //       data: {
-  //         'id_token': result.idToken,
-  //         'authorization_code': result.accessToken,
-  //         'user_info': result.userInfo!.toMap(),
-  //       },
-  //     );
+      final response = await dio.post(
+        '/auth/sso/apple/register',
+        data: {
+          'id_token': result.idToken,
+          'authorization_code': result.accessToken,
+          'user_info': result.userInfo!.toMap(),
+        },
+      );
 
-  //     if (response.statusCode != 201) {
-  //       throw AuthenticationException(
-  //         'Erreur lors de la création du compte Apple',
-  //         'APPLE_REGISTRATION_FAILED',
-  //       );
-  //     }
+      if (response.statusCode != 201) {
+        throw AuthenticationException(
+          'Erreur lors de la création du compte Apple',
+          'APPLE_REGISTRATION_FAILED',
+        );
+      }
 
-  //     print('✅ [AuthService] Inscription Apple réussie');
-  //   } on DioException catch (e) {
-  //     print(
-  //       '❌ [AuthService] Erreur Dio inscription Apple: ${e.response?.data}',
-  //     );
-  //     _handleSSODioException(e, 'apple');
-  //   } catch (e) {
-  //     if (e is AuthenticationException) {
-  //       rethrow;
-  //     }
-  //     throw AuthenticationException(
-  //       'Erreur inattendue lors de l\'inscription Apple',
-  //       'APPLE_UNKNOWN_ERROR',
-  //     );
-  //   }
-  // }
+      print('✅ [AuthService] Inscription Apple réussie');
+    } on DioException catch (e) {
+      print(
+        '❌ [AuthService] Erreur Dio inscription Apple: ${e.response?.data}',
+      );
+      _handleSSODioException(e, 'apple');
+    } catch (e) {
+      if (e is AuthenticationException) {
+        rethrow;
+      }
+      throw AuthenticationException(
+        'Erreur inattendue lors de l\'inscription Apple',
+        'APPLE_UNKNOWN_ERROR',
+      );
+    }
+  }
 
   // ===================== MÉTHODES DE LIAISON SSO RESTAURÉES =====================
 
@@ -580,10 +580,9 @@ class AuthService {
         // Déconnexion du service SSO si nécessaire
         if (provider == 'google') {
           await SSOService.signOutGoogle();
+        } else if (provider == 'apple') {
+          await SSOService.signOutApple();
         }
-        // else if (provider == 'apple') {
-        //   await SSOService.signOutApple();
-        // }
 
         print('✅ [AuthService] Compte $provider délié avec succès');
       } else {
@@ -944,10 +943,9 @@ class AuthService {
 
         if (ssoProvider == 'google') {
           await SSOService.signOutGoogle();
+        } else if (ssoProvider == 'apple') {
+          await SSOService.signOutApple();
         }
-        // else if (ssoProvider == 'apple') {
-        //   await SSOService.signOutApple();
-        // }
 
         await _removeSSOInfo(ssoProvider);
         print('✅ [AuthService] Déconnexion SSO terminée');
