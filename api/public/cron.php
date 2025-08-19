@@ -34,51 +34,48 @@ $notificationService = new NotificationService();
 echo "=== EpiList Notification Cron Started at " . Carbon::now()->toDateTimeString() . " ===\n";
 
 try {
-    // 1. ✅ RÉSUMÉ QUOTIDIEN (9h00 du matin)
-    if (Carbon::now()->hour === 9 && Carbon::now()->minute < 30) {
+    // 1. ✅ RÉSUMÉ QUOTIDIEN (9h58 du matin) - CORRIGÉ
+    if (Carbon::now()->hour === 9) {
         echo "Sending daily budget summaries...\n";
         sendDailySummaries($notificationService);
     }
 
-    // 2. ✅ ALERTES BUDGETS DÉPASSÉS (toutes les heures 9h-21h)
+    // 2. ✅ ALERTES BUDGETS DÉPASSÉS (toutes les heures 9h-21h) - DÉJÀ OK
     $currentHour = Carbon::now()->hour;
     if ($currentHour >= 9 && $currentHour <= 21) {
         echo "Checking for budget alerts...\n";
         checkBudgetAlerts($notificationService);
     }
 
-    // 3. ✅ BUDGETS EXPIRANT BIENTÔT (une fois par jour à 18h)
-    if (Carbon::now()->hour === 18 && Carbon::now()->minute < 30) {
+    // 3. ✅ BUDGETS EXPIRANT BIENTÔT (18h58) - CORRIGÉ
+    if (Carbon::now()->hour === 18) {
         echo "Checking for expiring budgets...\n";
         checkExpiringBudgets($notificationService);
     }
 
-    // 4. ✅ RAPPEL UTILISATEURS INACTIFS (une fois par semaine le mardi à 10h)
-    if (Carbon::now()->dayOfWeek === Carbon::TUESDAY && Carbon::now()->hour === 10 && Carbon::now()->minute < 30) {
+    // 4. ✅ RAPPEL UTILISATEURS INACTIFS (mardi à 10h58) - CORRIGÉ
+    if (Carbon::now()->dayOfWeek === Carbon::TUESDAY && Carbon::now()->hour === 10) {
         echo "Checking for inactive users (no lists in 2 weeks)...\n";
         checkInactiveUsers($notificationService);
     }
 
-    // 5. ✅ CORRECTION: VÉRIFICATION LISTES COMPLÉTÉES SANS FACTURE (toutes les 2 heures, 8h-22h)
-    if ($currentHour >= 8 && $currentHour <= 22 && $currentHour % 2 === 0 && Carbon::now()->minute < 30) {
+    // 5. ✅ LISTES COMPLÉTÉES SANS FACTURE (heures paires, 8h-22h) - CORRIGÉ
+    if ($currentHour >= 8 && $currentHour <= 22 && $currentHour % 2 === 0) {
         echo "Checking for completed lists without receipts...\n";
         checkCompletedLists();
     }
 
-    // 6. ✅ NETTOYAGE DES APPAREILS INACTIFS (une fois par semaine le dimanche à 2h)
+    // 6. ✅ NETTOYAGE DES APPAREILS INACTIFS (dimanche à 2h58) - DÉJÀ OK
     if (Carbon::now()->dayOfWeek === Carbon::SUNDAY && Carbon::now()->hour === 2) {
         echo "Cleaning up inactive devices...\n";
         cleanupInactiveDevices();
         
-        // ✅ NOUVEAU: Nettoyer aussi les fichiers de cache de notifications
         echo "Cleaning up old notification cache files...\n";
         cleanupNotificationCacheFiles();
     }
 
-    /**
-     * ✅ NOUVELLE: VÉRIFICATION UTILISATEURS SANS LISTE CETTE SEMAINE (une fois par semaine le vendredi à 19h)
-     */
-    if (Carbon::now()->dayOfWeek === Carbon::FRIDAY && Carbon::now()->hour === 19 && Carbon::now()->minute < 30) {
+    // 7. ✅ UTILISATEURS SANS LISTE CETTE SEMAINE (vendredi à 19h58) - CORRIGÉ
+    if (Carbon::now()->dayOfWeek === Carbon::FRIDAY && Carbon::now()->hour === 19) {
         echo "Checking for users with no lists this week...\n";
         checkUsersWithoutWeeklyLists($notificationService);
     }
@@ -96,6 +93,14 @@ try {
 function sendDailySummaries(NotificationService $service): void
 {
     echo "Starting daily summaries...\n";
+
+    // 🔒 NOUVEAU VERROU: Une seule fois par jour
+    $lockFile = __DIR__ . "/../storage/daily_summary_" . Carbon::now()->format('Y-m-d') . ".lock";
+    
+    if (file_exists($lockFile)) {
+        echo "Daily summaries already sent today, skipping...\n";
+        return;
+    }
     
     try {
         // ✅ CORRECTION: Utiliser query directe au lieu de scopes potentiellement inexistants
@@ -139,6 +144,10 @@ function sendDailySummaries(NotificationService $service): void
             }
         }
         
+        echo "Daily summaries sent: {$sentCount}\n";
+
+        // 🔒 Créer le verrou à la fin si succès
+        touch($lockFile);
         echo "Daily summaries sent: {$sentCount}\n";
         
     } catch (\Exception $e) {
@@ -236,6 +245,14 @@ function checkBudgetAlerts(NotificationService $service): void
 function checkExpiringBudgets(NotificationService $service): void
 {
     echo "Checking for expiring budgets...\n";
+
+    // 🔒 NOUVEAU VERROU: Une seule fois par jour
+    $lockFile = __DIR__ . "/../storage/expiring_budgets_" . Carbon::now()->format('Y-m-d') . ".lock";
+    
+    if (file_exists($lockFile)) {
+        echo "Expiring budgets already checked today, skipping...\n";
+        return;
+    }
     
     try {
         // ✅ CORRECTION: Vérifier l'existence de la classe Budget
@@ -296,6 +313,10 @@ function checkExpiringBudgets(NotificationService $service): void
         }
         
         echo "Expiration notifications sent: {$sentCount}\n";
+
+        // 🔒 Créer le verrou à la fin
+        touch($lockFile);
+        echo "Expiration notifications sent: {$sentCount}\n";
         
     } catch (\Exception $e) {
         echo "Error in checkExpiringBudgets: " . $e->getMessage() . "\n";
@@ -309,6 +330,15 @@ function checkExpiringBudgets(NotificationService $service): void
 function checkInactiveUsers(NotificationService $service): void
 {
     echo "Starting inactive users check...\n";
+
+    // 🔒 NOUVEAU VERROU: Une seule fois par semaine
+    $weekNumber = Carbon::now()->format('Y-W'); // 2025-33 par exemple
+    $lockFile = __DIR__ . "/../storage/inactive_users_week_{$weekNumber}.lock";
+    
+    if (file_exists($lockFile)) {
+        echo "Inactive users already checked this week, skipping...\n";
+        return;
+    }
     
     try {
         $twoWeeksAgo = Carbon::now()->subWeeks(2);
@@ -374,6 +404,10 @@ function checkInactiveUsers(NotificationService $service): void
                 echo "- {$error}\n";
             }
         }
+
+        // 🔒 Créer le verrou à la fin
+        touch($lockFile);
+        echo "Inactivity reminders sent: {$sentCount}\n";
         
     } catch (\Exception $e) {
         echo "Error in checkInactiveUsers: " . $e->getMessage() . "\n";
@@ -662,6 +696,15 @@ function cleanupBudgetAlertsCacheFiles(): int
 function checkUsersWithoutWeeklyLists(NotificationService $service): void
 {
     echo "Starting weekly lists check...\n";
+
+    // 🔒 NOUVEAU VERROU: Une seule fois par semaine
+    $weekNumber = Carbon::now()->format('Y-W');
+    $lockFile = __DIR__ . "/../storage/weekly_lists_check_week_{$weekNumber}.lock";
+    
+    if (file_exists($lockFile)) {
+        echo "Weekly lists check already done this week, skipping...\n";
+        return;
+    }
     
     try {
         $startOfWeek = Carbon::now()->startOfWeek(); // Lundi de cette semaine
@@ -730,11 +773,50 @@ function checkUsersWithoutWeeklyLists(NotificationService $service): void
                 echo "- {$error}\n";
             }
         }
+
+        // 🧹 NOUVEAU: Nettoyer les fichiers de verrous
+        $locksCleaned = cleanupLockFiles();
+        echo "Lock files cleaned: {$locksCleaned}\n";
+
+        // 🔒 Créer le verrou à la fin
+        touch($lockFile);
+        echo "Weekly reminders sent: {$sentCount}\n";
         
     } catch (\Exception $e) {
         echo "Error in checkUsersWithoutWeeklyLists: " . $e->getMessage() . "\n";
         error_log("Weekly lists check error: " . $e->getMessage());
     }
+}
+
+// ✅ 6. NOUVELLE FONCTION: Nettoyer les verrous anciens
+function cleanupLockFiles(): int
+{
+    $cleaned = 0;
+    $storageDir = __DIR__ . "/../storage";
+    
+    if (!is_dir($storageDir)) {
+        return 0;
+    }
+    
+    try {
+        $files = glob($storageDir . "/*.lock");
+        $now = time();
+        
+        foreach ($files as $file) {
+            $lastModified = filemtime($file);
+            
+            // Supprimer les verrous plus anciens que 7 jours
+            if (($now - $lastModified) > (7 * 24 * 60 * 60)) {
+                unlink($file);
+                $cleaned++;
+            }
+        }
+        
+    } catch (\Exception $e) {
+        error_log("Error cleaning lock files: " . $e->getMessage());
+    }
+    
+    return $cleaned;
 }
 
 /**
