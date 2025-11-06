@@ -88,11 +88,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             // ✅ LISTENER CORRIGÉ
             BlocListener<ListItemBloc, ListItemState>(
               listener: (context, state) {
-                print('🎯 AddItemDialog - State changé: ${state.runtimeType}');
-
                 if (state is ListItemDuplicateDetected) {
-                  print('🔍 Doublon détecté dans le dialog!');
-
                   // ✅ CORRECTION: Fermer le dialog avec un délai pour éviter les conflits
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) {
@@ -106,7 +102,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       state.message.contains('added') ||
                       state.message.contains('fusionné') ||
                       state.message.contains('merged')) {
-                    print('✅ Opération réussie: ${state.message}');
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
                         Navigator.pop(context);
@@ -173,8 +168,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
               storeName: state.storeName,
               listId: state.listId,
               onActionSelected: (action, {existingItemId}) {
-                print('🎯 Action sélectionnée: $action');
-
                 // ✅ CORRECTION: Fermer le dialog de doublon d'abord
                 Navigator.pop(dialogContext);
 
@@ -969,8 +962,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
       );
       return;
     }
-
-    print('🚀 Tentative d\'ajout: ${productController.text.trim()}');
 
     // ✅ Utiliser le BLoC sauvegardé pour éviter les erreurs
     _listItemBloc.add(
