@@ -36,6 +36,7 @@ import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
+import 'package:epilist/widgets/common/network_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -166,13 +167,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ],
         child: ConnectedRefreshIndicator(
           onRefresh: () async => _loadShoppingLists(),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const WelcomeCard(),
-                const SizedBox(height: 24),
+          child: Column(
+            children: [
+              // Indicateur de statut réseau
+              const NetworkStatusIndicator(),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const WelcomeCard(),
+                      const SizedBox(height: 24),
 
                 // ✅ SUPPRIMÉ : Widget de test notifications
                 // if (_showNotificationTest) ...[
@@ -194,8 +201,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                 // Section des listes de courses
                 _buildShoppingListsSection(context),
-              ],
-            ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -57,6 +57,8 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:epilist/services/notification_service.dart';
+import 'package:epilist/services/offline_cache_service.dart';
+import 'package:epilist/services/offline_sync_service.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -83,6 +85,11 @@ void main() async {
 
     final sharedPreferences = await SharedPreferences.getInstance();
     await ConnectivityService().initialize();
+
+    // ✅ ÉTAPE 4: Initialiser le cache hors ligne avec Hive
+    print('💾 Initialisation du cache hors ligne...');
+    await OfflineCacheService().initialize();
+    print('✅ Cache hors ligne initialisé');
 
     final dio = Dio(
       BaseOptions(
@@ -114,6 +121,25 @@ void main() async {
       dio: dio,
       authService: authService,
     );
+
+    // ✅ ÉTAPE 5: Créer les services pour les listes et items (nécessaires pour le sync)
+    final shoppingListService = ShoppingListService(
+      dio: dio,
+      authService: authService,
+    );
+
+    final listItemService = ListItemService(
+      dio: dio,
+      authService: authService,
+    );
+
+    // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne
+    print('🔄 Initialisation du service de synchronisation...');
+    await OfflineSyncService().initialize(
+      shoppingListService: shoppingListService,
+      listItemService: listItemService,
+    );
+    print('✅ Service de synchronisation initialisé');
 
     final localizationBloc = LocalizationBloc(
       sharedPreferences: sharedPreferences,
@@ -159,19 +185,17 @@ void main() async {
           RepositoryProvider<CurrencyService>.value(value: currencyService),
           RepositoryProvider<CategoryService>.value(value: categoryService),
           RepositoryProvider<AnalyticsService>.value(value: analyticsService),
-          RepositoryProvider(
-            create:
-                (context) => ShoppingListService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+          RepositoryProvider<ShoppingListService>.value(
+            value: shoppingListService,
           ),
-          RepositoryProvider(
-            create:
-                (context) => ListItemService(
-                  dio: dio,
-                  authService: context.read<AuthService>(),
-                ),
+          RepositoryProvider<ListItemService>.value(
+            value: listItemService,
+          ),
+          RepositoryProvider<OfflineCacheService>.value(
+            value: OfflineCacheService(),
+          ),
+          RepositoryProvider<OfflineSyncService>.value(
+            value: OfflineSyncService(),
           ),
           RepositoryProvider(
             create:
