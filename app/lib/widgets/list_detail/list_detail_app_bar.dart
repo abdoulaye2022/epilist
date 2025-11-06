@@ -16,6 +16,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onShare;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onOpenChat;
 
   const ListDetailAppBar({
     super.key,
@@ -25,6 +26,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onShare,
     this.onEdit,
     this.onDelete,
+    this.onOpenChat,
   });
 
   @override
@@ -87,6 +89,17 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: onAddItem,
           icon: const Icon(Icons.add, color: Colors.black87),
           tooltip: l10n.addItemTooltip,
+        ),
+      );
+    }
+
+    // Bouton de chat (seulement pour les listes partagées)
+    if (shoppingList.isShared && onOpenChat != null) {
+      actions.add(
+        IconButton(
+          onPressed: onOpenChat,
+          icon: const Icon(Icons.chat_bubble_outline, color: Colors.black87),
+          tooltip: l10n.openChat,
         ),
       );
     }

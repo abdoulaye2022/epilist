@@ -133,51 +133,6 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ DEBUG: Affichage des valeurs actives pour test
-                    if (hasActiveFilters) ...[
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Filtres actifs:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[700],
-                                fontSize: 12,
-                              ),
-                            ),
-                            if (widget.activeStatusFilter != null)
-                              Text(
-                                'Statut: ${widget.activeStatusFilter}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.activePeriodFilter != null)
-                              Text(
-                                'Période: ${widget.activePeriodFilter}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.activeScopeFilter != null)
-                              Text(
-                                'Portée: ${widget.activeScopeFilter}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.activeSortBy != null)
-                              Text(
-                                'Tri: ${widget.activeSortBy} (${widget.activeSortAscending == true ? 'ASC' : 'DESC'})',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-
                     // Filtres par statut
                     _buildFilterSection(l10n.status, _buildStatusFilters(l10n)),
                     const SizedBox(height: 16),

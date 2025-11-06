@@ -1,5 +1,6 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
 import 'package:epilist/blocs/category/category_bloc.dart';
+import 'package:epilist/blocs/chat/chat_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/screens/chat_screen.dart';
+import 'package:epilist/services/chat_service.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/screens/receipts_screen.dart';
@@ -92,6 +95,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         onShare: currentList.canShare ? _showShareDialog : null,
         onEdit: currentList.canEdit ? _showEditListDialog : null,
         onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
+        onOpenChat: currentList.isShared ? _openChatScreen : null,
       ),
       body: MultiBlocListener(
         listeners: [
@@ -646,6 +650,30 @@ class _ListDetailViewState extends State<_ListDetailView> {
     ).then((_) {
       _refreshListData();
     });
+  }
+
+  void _openChatScreen() {
+    if (!currentList.isShared) {
+      _showPermissionDenied('accéder au chat');
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => BlocProvider(
+              create:
+                  (context) => ChatBloc(
+                    chatService: ChatService(dio: context.read()),
+                  ),
+              child: ChatScreen(
+                listId: currentList.id,
+                listName: currentList.name,
+              ),
+            ),
+      ),
+    );
   }
 
   void _showManageSharesDialog() {

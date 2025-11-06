@@ -237,61 +237,6 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Boîte de debug pour les filtres actifs (identique à budget_filters)
-                    if (hasActiveFilters) ...[
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${l10n.activeFilters}:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[700],
-                                fontSize: 12,
-                              ),
-                            ),
-                            if (widget.criteria.storeName != null)
-                              Text(
-                                'Magasin: ${widget.criteria.storeName}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.criteria.minPrice != null ||
-                                widget.criteria.maxPrice != null)
-                              Text(
-                                'Prix: ${widget.criteria.minPrice ?? '?'} - ${widget.criteria.maxPrice ?? '?'}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.criteria.categoryId != null)
-                              Text(
-                                'Catégorie: ${_getCategoryName(widget.criteria.categoryId!)}',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                            if (widget.criteria.showOnlyPurchased)
-                              const Text(
-                                'Statut: Achetés uniquement',
-                                style: TextStyle(fontSize: 11),
-                              ),
-                            if (widget.criteria.showOnlyUnpurchased)
-                              const Text(
-                                'Statut: Non achetés uniquement',
-                                style: TextStyle(fontSize: 11),
-                              ),
-                            Text(
-                              'Tri: ${_getSortLabel()} (${widget.criteria.ascending ? 'ASC' : 'DESC'})',
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-
                     // Tri (style vertical identique à budget_filters)
                     _buildFilterSection(l10n.sortBy, _buildSortOptions()),
                     const SizedBox(height: 16),
