@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use App\Models\ListMessage;
-use App\Models\MessageReadStatus;
 use App\Models\ShoppingList;
-use App\Models\SharedList;
+use App\Models\User;
+use App\Services\NotificationService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Valitron\Validator;
@@ -13,143 +13,249 @@ use Valitron\Validator;
 class MessageController
 {
     /**
-     * Get all messages for a shopping list
-     * GET /api/lists/{listId}/messages
+     * Get messages for a shopping list
      */
     public function getMessages(Request $request, Response $response, array $args): Response
     {
-        $listId = (int) $args['listId'];
-        $userId = $request->getAttribute('user_id');
-
-        // Verify user has access to this list
-        if (!$this->userHasAccessToList($userId, $listId)) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Access denied to this list'
-            ]));
-            return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Get query parameters for pagination
-        $params = $request->getQueryParams();
-        $limit = isset($params['limit']) ? (int) $params['limit'] : 50;
-        $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
-
-        // Get messages with user information
-        $messages = ListMessage::where('list_id', $listId)
-            ->with(['user', 'readStatus'])
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->offset($offset)
-            ->get();
-
-        // Get unread count
-        $unreadCount = ListMessage::getUnreadCountForList($listId, $userId);
-
-        $response->getBody()->write(json_encode([
-            'success' => true,
-            'data' => [
-                'messages' => $messages,
-                'unread_count' => $unreadCount,
-                'total' => ListMessage::where('list_id', $listId)->count()
-            ]
-        ]));
-
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * Send a new message
-     * POST /api/lists/{listId}/messages
-     */
-    public function sendMessage(Request $request, Response $response, array $args): Response
-    {
-        $listId = (int) $args['listId'];
-        $userId = $request->getAttribute('user_id');
-        $data = $request->getParsedBody();
-
-        // Verify user has access to this list
-        if (!$this->userHasAccessToList($userId, $listId)) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Access denied to this list'
-            ]));
-            return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Validate message data
-        $errors = $this->validateMessageData($data);
-        if (!empty($errors)) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $errors
-            ]));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-
         try {
-            // Create message
-            $message = ListMessage::create([
-                'list_id' => $listId,
-                'user_id' => $userId,
-                'message' => $data['message'],
-                'message_type' => $data['message_type'] ?? 'text',
-                'image_url' => $data['image_url'] ?? null,
-            ]);
+            $listId = (int) $args['listId'];
+            $userId = $request->getAttribute('user_id');
 
-            // Load user relation
-            $message->load('user');
+            // Get query parameters
+            $params = $request->getQueryParams();
+            $limit = isset($params['limit']) ? (int) $params['limit'] : 50;
+            $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
 
-            // Mark as read by sender
-            $message->markAsReadBy($userId);
+            // Check if user has access to this list
+            $list = ShoppingList::find($listId);
+            if (!$list) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'List not found'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check access
+            if (!$list->canBeAccessedBy($userId)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'You do not have access to this list'
+                ]));
+                return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Get total count
+            $total = ListMessage::where('list_id', $listId)->count();
+
+            // Get messages with pagination (newest first)
+            $messages = ListMessage::with('user')
+                ->where('list_id', $listId)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->offset($offset)
+                ->get();
+
+            // Get unread count for this user
+            $unreadCount = ListMessage::getUnreadCountForList($listId, $userId);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
-                'message' => 'Message sent successfully',
-                'data' => $message
+                'data' => [
+                    'messages' => $messages->toArray(),
+                    'total' => $total,
+                    'unread_count' => $unreadCount
+                ]
             ]));
 
-            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log("Error getting messages: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to send message: ' . $e->getMessage()
+                'message' => 'Failed to get messages'
             ]));
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
     /**
-     * Mark message as read
-     * POST /api/messages/{messageId}/read
+     * Send a message to a shopping list
+     */
+    public function sendMessage(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $listId = (int) $args['listId'];
+            $userId = $request->getAttribute('user_id');
+
+            $data = $request->getParsedBody();
+
+            // Validate input
+            $v = new Validator($data);
+            $v->rule('required', 'message')->message('Message is required');
+            $v->rule('in', 'message_type', ['text', 'image'])->message('Invalid message type');
+
+            if (!$v->validate()) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $v->errors()
+                ]));
+                return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check if user has access to this list
+            $list = ShoppingList::find($listId);
+            if (!$list) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'List not found'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check access
+            if (!$list->canBeAccessedBy($userId)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'You do not have access to this list'
+                ]));
+                return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Create message
+            $message = ListMessage::create([
+                'list_id' => $listId,
+                'user_id' => $userId,
+                'message' => $data['message'],
+                'message_type' => $data['message_type'] ?? 'text',
+                'image_url' => $data['image_url'] ?? null
+            ]);
+
+            // Load user relation
+            $message->load('user');
+
+            // Send push notifications to all users who have access to this list
+            try {
+                $sender = User::find($userId);
+                $recipientUserIds = $list->getAllAccessUsers();
+
+                // Prepare message preview
+                $messagePreview = $data['message_type'] === 'image'
+                    ? '📷 Photo'
+                    : substr($data['message'], 0, 100);
+
+                $notificationService = new NotificationService();
+                $notificationResult = $notificationService->sendNewMessageNotification(
+                    $sender,
+                    $list,
+                    $messagePreview,
+                    $recipientUserIds
+                );
+
+                error_log("Notification sent for new message: " . json_encode($notificationResult));
+            } catch (\Exception $e) {
+                // Log error but don't fail the request
+                error_log("Failed to send notification for new message: " . $e->getMessage());
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Message sent successfully',
+                'data' => $message->toArray()
+            ]));
+
+            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            error_log("Error sending message: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Failed to send message'
+            ]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * Get unread message count for a list
+     */
+    public function getUnreadCount(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $listId = (int) $args['listId'];
+            $userId = $request->getAttribute('user_id');
+
+            // Check if user has access to this list
+            $list = ShoppingList::find($listId);
+            if (!$list) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'List not found'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check access
+            if (!$list->canBeAccessedBy($userId)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'You do not have access to this list'
+                ]));
+                return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+            }
+
+            $unreadCount = ListMessage::getUnreadCountForList($listId, $userId);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'unread_count' => $unreadCount
+                ]
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (\Exception $e) {
+            error_log("Error getting unread count: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Failed to get unread count'
+            ]));
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * Mark a message as read
      */
     public function markAsRead(Request $request, Response $response, array $args): Response
     {
-        $messageId = (int) $args['messageId'];
-        $userId = $request->getAttribute('user_id');
-
-        $message = ListMessage::find($messageId);
-
-        if (!$message) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Message not found'
-            ]));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Verify user has access to this list
-        if (!$this->userHasAccessToList($userId, $message->list_id)) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Access denied'
-            ]));
-            return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
-        }
-
         try {
+            $messageId = (int) $args['messageId'];
+            $userId = $request->getAttribute('user_id');
+
+            $message = ListMessage::find($messageId);
+            if (!$message) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Message not found'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check if user has access to the list
+            $list = $message->shoppingList;
+            if (!$list || !$list->canBeAccessedBy($userId)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'You do not have access to this list'
+                ]));
+                return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Mark as read
             $message->markAsReadBy($userId);
 
             $response->getBody()->write(json_encode([
@@ -160,9 +266,10 @@ class MessageController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log("Error marking message as read: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to mark message as read: ' . $e->getMessage()
+                'message' => 'Failed to mark message as read'
             ]));
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
@@ -170,34 +277,32 @@ class MessageController
 
     /**
      * Delete a message
-     * DELETE /api/messages/{messageId}
      */
     public function deleteMessage(Request $request, Response $response, array $args): Response
     {
-        $messageId = (int) $args['messageId'];
-        $userId = $request->getAttribute('user_id');
-
-        $message = ListMessage::find($messageId);
-
-        if (!$message) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Message not found'
-            ]));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Only message creator or list owner can delete
-        $list = ShoppingList::find($message->list_id);
-        if ($message->user_id !== $userId && $list->user_id !== $userId) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'You can only delete your own messages'
-            ]));
-            return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
-        }
-
         try {
+            $messageId = (int) $args['messageId'];
+            $userId = $request->getAttribute('user_id');
+
+            $message = ListMessage::find($messageId);
+            if (!$message) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Message not found'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Check if user owns the message
+            if ($message->user_id !== $userId) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'You can only delete your own messages'
+                ]));
+                return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
+            }
+
+            // Soft delete the message
             $message->delete();
 
             $response->getBody()->write(json_encode([
@@ -208,93 +313,12 @@ class MessageController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log("Error deleting message: " . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to delete message: ' . $e->getMessage()
+                'message' => 'Failed to delete message'
             ]));
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
-    }
-
-    /**
-     * Get unread message count for a list
-     * GET /api/lists/{listId}/messages/unread-count
-     */
-    public function getUnreadCount(Request $request, Response $response, array $args): Response
-    {
-        $listId = (int) $args['listId'];
-        $userId = $request->getAttribute('user_id');
-
-        // Verify user has access to this list
-        if (!$this->userHasAccessToList($userId, $listId)) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Access denied to this list'
-            ]));
-            return $response->withStatus(403)->withHeader('Content-Type', 'application/json');
-        }
-
-        $unreadCount = ListMessage::getUnreadCountForList($listId, $userId);
-
-        $response->getBody()->write(json_encode([
-            'success' => true,
-            'data' => [
-                'unread_count' => $unreadCount
-            ]
-        ]));
-
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    /**
-     * Validate message data
-     */
-    private function validateMessageData(array $data): array
-    {
-        $validator = new Validator($data);
-        $validator->lang('en');
-
-        $validator->rule('required', 'message')->message('Message content is required');
-        $validator->rule('lengthMin', 'message', 1)->message('Message cannot be empty');
-        $validator->rule('lengthMax', 'message', 5000)->message('Message cannot exceed 5000 characters');
-
-        $validator->rule('in', 'message_type', ['text', 'image', 'system'])
-            ->message('Message type must be text, image, or system');
-
-        if (isset($data['message_type']) && $data['message_type'] === 'image') {
-            $validator->rule('required', 'image_url')->message('Image URL is required for image messages');
-            $validator->rule('url', 'image_url')->message('Image URL must be a valid URL');
-        }
-
-        if (!$validator->validate()) {
-            return $validator->errors();
-        }
-
-        return [];
-    }
-
-    /**
-     * Check if user has access to a list (owner or shared with)
-     */
-    private function userHasAccessToList(int $userId, int $listId): bool
-    {
-        $list = ShoppingList::find($listId);
-
-        if (!$list) {
-            return false;
-        }
-
-        // Check if user is the owner
-        if ($list->user_id === $userId) {
-            return true;
-        }
-
-        // Check if list is shared with user
-        $sharedList = SharedList::where('list_id', $listId)
-            ->where('shared_with_user_id', $userId)
-            ->where('status', 'accepted')
-            ->first();
-
-        return $sharedList !== null;
     }
 }

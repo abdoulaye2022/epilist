@@ -1572,6 +1572,7 @@
   "errorLoadingMessages": "Failed to load messages",
   "deleteMessage": "Delete message",
   "deleteMessageConfirmation": "Are you sure you want to delete this message?",
+  "yesterday": "Yesterday",
   "chatWithTeam": "Chat with team",
   "openChat": "Open chat",
   "smartSuggestions": "Smart Suggestions",

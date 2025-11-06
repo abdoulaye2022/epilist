@@ -36,6 +36,7 @@ class NotificationService {
   static const String _channelBudgetAlerts = 'budget_alerts';
   static const String _channelListUpdates = 'list_updates';
   static const String _channelReminders = 'reminders';
+  static const String _channelMessages = 'messages';
   static const String _channelGeneral = 'general';
 
   // ✅ NOUVELLE MÉTHODE: Initialisation basique au démarrage (sans permissions)
@@ -530,6 +531,15 @@ class NotificationService {
           ledColor: Color(0xFF2196F3),
         ),
         const AndroidNotificationChannel(
+          _channelMessages,
+          'Messages',
+          description: 'Notifications de nouveaux messages',
+          importance: Importance.high,
+          enableVibration: true,
+          enableLights: true,
+          ledColor: Color(0xFF9C27B0),
+        ),
+        const AndroidNotificationChannel(
           _channelReminders,
           'Rappels',
           description: 'Rappels et alertes importantes',
@@ -828,14 +838,67 @@ class NotificationService {
 
   static Future<void> _handleNotificationOpened(RemoteMessage message) async {
     print('👆 [EPILIST] Notification opened: ${message.data}');
-    // Handle notification opened
+
+    try {
+      final action = message.data['action'];
+
+      if (action == 'open_chat' && _context != null) {
+        final listId = message.data['list_id'];
+        final listName = message.data['list_name'];
+
+        if (listId != null && listName != null) {
+          // Navigate to chat screen
+          await _navigateToChat(int.parse(listId), listName);
+        }
+      }
+    } catch (e) {
+      print('❌ [EPILIST] Error handling notification: $e');
+    }
   }
 
   static Future<void> _onNotificationTapped(
     NotificationResponse response,
   ) async {
     print('👆 [EPILIST] Local notification tapped: ${response.payload}');
-    // Handle local notification tapped
+
+    try {
+      if (response.payload != null) {
+        final data = jsonDecode(response.payload!);
+        final action = data['action'];
+
+        if (action == 'open_chat' && _context != null) {
+          final listId = data['list_id'];
+          final listName = data['list_name'];
+
+          if (listId != null && listName != null) {
+            // Navigate to chat screen
+            await _navigateToChat(int.parse(listId.toString()), listName.toString());
+          }
+        }
+      }
+    } catch (e) {
+      print('❌ [EPILIST] Error handling notification tap: $e');
+    }
+  }
+
+  static Future<void> _navigateToChat(int listId, String listName) async {
+    if (_context == null) return;
+
+    try {
+      // Dynamic import to avoid circular dependencies
+      final navigator = Navigator.of(_context!);
+
+      // Use a placeholder navigation - the actual implementation will depend on your routing
+      // For now, just print the action
+      print('📱 [EPILIST] Navigating to chat for list $listId: $listName');
+
+      // TODO: Implement actual navigation to ChatScreen
+      // This would typically be done through your app's router/navigation system
+      // Example:
+      // navigator.pushNamed('/chat', arguments: {'listId': listId, 'listName': listName});
+    } catch (e) {
+      print('❌ [EPILIST] Error navigating to chat: $e');
+    }
   }
 
   static void dispose() {

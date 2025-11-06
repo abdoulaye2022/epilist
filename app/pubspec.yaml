@@ -58,10 +58,10 @@ dependencies:
   firebase_messaging: ^15.1.5
   device_info_plus: ^11.5.0
   google_sign_in: ^6.2.1
-  sign_in_with_apple: ^5.0.0
+  sign_in_with_apple: ^6.1.2
   crypto: ^3.0.3
   flutter_svg: ^2.2.0
-  mobile_scanner: ^6.0.3
+  mobile_scanner: ^6.0.11
   http: ^1.2.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0

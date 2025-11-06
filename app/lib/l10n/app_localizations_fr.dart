@@ -581,7 +581,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get today => 'aujourd\'hui';
 
   @override
-  String get yesterday => 'hier';
+  String get yesterday => 'Hier';
 
   @override
   String daysAgo(int days) {

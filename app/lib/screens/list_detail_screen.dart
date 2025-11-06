@@ -1,4 +1,5 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
+import 'package:dio/dio.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
@@ -7,8 +8,10 @@ import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/config/app_config.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/chat_screen.dart';
+import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/chat_service.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
@@ -652,20 +655,30 @@ class _ListDetailViewState extends State<_ListDetailView> {
     });
   }
 
-  void _openChatScreen() {
+  void _openChatScreen() async {
     if (!currentList.isShared) {
       _showPermissionDenied('accéder au chat');
       return;
     }
 
+    // Créer un Dio configuré avec l'authentification
+    final authService = context.read<AuthService>();
+    final token = await authService.getToken();
+
+    final dio = Dio();
+    dio.options.baseUrl = AppConfig.baseUrl;
+    dio.options.headers['Authorization'] = 'Bearer $token';
+
+    if (!mounted) return;
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder:
-            (context) => BlocProvider(
+            (newContext) => BlocProvider(
               create:
-                  (context) => ChatBloc(
-                    chatService: ChatService(dio: context.read()),
+                  (blocContext) => ChatBloc(
+                    chatService: ChatService(dio: dio),
                   ),
               child: ChatScreen(
                 listId: currentList.id,

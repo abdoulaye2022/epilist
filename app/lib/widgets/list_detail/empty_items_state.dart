@@ -18,20 +18,28 @@ class EmptyItemsState extends StatelessWidget {
     return Container(
       // ✅ AJOUT: Fond blanc pour le conteneur principal
       color: Colors.white,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildIcon(),
-              const SizedBox(height: 24),
-              _buildTitle(context),
-              const SizedBox(height: 12),
-              _buildDescription(context),
-              const SizedBox(height: 32),
-              _buildActionButton(context),
-            ],
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.3,
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildIcon(),
+                  const SizedBox(height: 24),
+                  _buildTitle(context),
+                  const SizedBox(height: 12),
+                  _buildDescription(context),
+                  const SizedBox(height: 32),
+                  _buildActionButton(context),
+                ],
+              ),
+            ),
           ),
         ),
       ),

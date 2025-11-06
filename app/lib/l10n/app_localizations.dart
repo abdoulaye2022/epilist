@@ -1157,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @yesterday.
   ///
   /// In fr, this message translates to:
-  /// **'hier'**
+  /// **'Hier'**
   String get yesterday;
 
   /// No description provided for @daysAgo.

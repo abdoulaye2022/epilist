@@ -589,7 +589,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 icon: Icons.attach_money,
                 title: 'Estimated budget',
                 value:
-                    '\${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} CAD',
+                    '${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} CAD',
                 color: Colors.orange,
               ),
             ],

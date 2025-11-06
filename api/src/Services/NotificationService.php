@@ -30,6 +30,7 @@ class NotificationService
     const TYPE_LIST_COMPLETED = 'list_completed';
     const TYPE_WEEKLY_LIST_REMINDER = 'weekly_list_reminder';
     const TYPE_DAILY_LIST_REMINDER = 'daily_list_reminder';
+    const TYPE_NEW_MESSAGE = 'new_message';
 
     public function __construct()
     {
@@ -656,6 +657,7 @@ class NotificationService
             self::TYPE_LIST_COMPLETED => 'success_chime',
             self::TYPE_WEEKLY_LIST_REMINDER => 'weekly_reminder', //  NOUVEAU
             self::TYPE_DAILY_LIST_REMINDER => 'daily_reminder',
+            self::TYPE_NEW_MESSAGE => 'message_received',
             default => 'default'
         };
     }
@@ -673,6 +675,7 @@ class NotificationService
             self::TYPE_USER_INACTIVE,
             self::TYPE_WEEKLY_LIST_REMINDER => 'reminders', //  NOUVEAU
             self::TYPE_DAILY_LIST_REMINDER => 'reminders',
+            self::TYPE_NEW_MESSAGE => 'messages',
             default => 'general'
         };
     }
@@ -850,5 +853,60 @@ class NotificationService
                 return " On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
             }
         }
+    }
+
+    /**
+     *  NOUVELLE MÉTHODE: Envoyer notification de nouveau message
+     */
+    public function sendNewMessageNotification(
+        User $sender,
+        $list,
+        string $messagePreview,
+        array $recipientUserIds
+    ): array {
+        $title = "💬 {$sender->name}";
+        $body = "{$list->name}: {$messagePreview}";
+
+        $data = [
+            'list_id' => (string) $list->id,
+            'list_name' => (string) $list->name,
+            'sender_id' => (string) $sender->id,
+            'sender_name' => (string) $sender->name,
+            'message_preview' => (string) $messagePreview,
+            'action' => 'open_chat'
+        ];
+
+        $results = [];
+        $totalSent = 0;
+        $totalDevices = 0;
+
+        // Envoyer à tous les destinataires sauf l'expéditeur
+        foreach ($recipientUserIds as $recipientId) {
+            if ($recipientId === $sender->id) {
+                continue; // Ne pas envoyer à soi-même
+            }
+
+            $result = $this->sendToUser(
+                $recipientId,
+                self::TYPE_NEW_MESSAGE,
+                $title,
+                $body,
+                $data,
+                'high' // Priorité haute pour les messages
+            );
+
+            $results[$recipientId] = $result;
+            if ($result['success']) {
+                $totalSent += $result['sent_count'];
+            }
+            $totalDevices += $result['total_devices'];
+        }
+
+        return [
+            'success' => $totalSent > 0,
+            'total_sent' => $totalSent,
+            'total_devices' => $totalDevices,
+            'recipient_results' => $results
+        ];
     }
 }

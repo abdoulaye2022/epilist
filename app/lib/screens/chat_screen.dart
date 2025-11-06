@@ -411,7 +411,7 @@ class _MessageBubble extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _formatTime(message.createdAt),
+                      _formatTime(message.createdAt, context),
                       style: TextStyle(
                         fontSize: 11,
                         color: isCurrentUser
@@ -459,7 +459,8 @@ class _MessageBubble extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
+  String _formatTime(DateTime dateTime, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
@@ -468,7 +469,7 @@ class _MessageBubble extends StatelessWidget {
       return DateFormat('HH:mm').format(dateTime);
     } else if (difference.inDays == 1) {
       // Yesterday
-      return 'Yesterday ${DateFormat('HH:mm').format(dateTime)}';
+      return '${l10n.yesterday} ${DateFormat('HH:mm').format(dateTime)}';
     } else if (difference.inDays < 7) {
       // This week - show day and time
       return DateFormat('EEE HH:mm').format(dateTime);

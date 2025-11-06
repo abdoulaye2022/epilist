@@ -105,11 +105,16 @@ class ListMessage extends Model
         $data = parent::toArray();
 
         // Add user info
-        if ($this->relationLoaded('user')) {
+        if ($this->relationLoaded('user') && $this->user) {
+            $fullName = trim(($this->user->first_name ?? '') . ' ' . ($this->user->last_name ?? ''));
+            if (empty($fullName)) {
+                $fullName = $this->user->email ?? 'Unknown User';
+            }
+
             $data['user'] = [
                 'id' => $this->user->id,
-                'name' => $this->user->name,
-                'email' => $this->user->email,
+                'name' => $fullName,
+                'email' => $this->user->email ?? '',
             ];
         }
 

@@ -1578,6 +1578,7 @@
   "errorLoadingMessages": "Erreur lors du chargement des messages",
   "deleteMessage": "Supprimer le message",
   "deleteMessageConfirmation": "Êtes-vous sûr de vouloir supprimer ce message ?",
+  "yesterday": "Hier",
   "chatWithTeam": "Discuter avec l'équipe",
   "openChat": "Ouvrir la discussion",
   "smartSuggestions": "Suggestions Intelligentes",

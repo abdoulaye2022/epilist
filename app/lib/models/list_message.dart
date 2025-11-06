@@ -39,8 +39,12 @@ class ListMessage {
       messageType: MessageType.fromString(json['message_type'] as String? ?? 'text'),
       imageUrl: json['image_url'] as String?,
       isRead: json['is_read'] == 1 || json['is_read'] == true,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : DateTime.now(),
       user: json['user'] != null
           ? MessageUser.fromJson(json['user'] as Map<String, dynamic>)
           : null,
@@ -134,8 +138,8 @@ class MessageUser {
   factory MessageUser.fromJson(Map<String, dynamic> json) {
     return MessageUser(
       id: json['id'] as int,
-      name: json['name'] as String,
-      email: json['email'] as String,
+      name: (json['name'] as String?) ?? 'Unknown User',
+      email: (json['email'] as String?) ?? '',
     );
   }
 

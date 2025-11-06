@@ -127,13 +127,15 @@ class ShoppingListController
             // ✅ 4. Transformer les listes propres avec les métadonnées
             $ownListsFormatted = $ownLists->map(function($list) {
                 $listArray = $list->toArray();
-                $listArray['is_shared'] = false;
+                // Vérifier si cette liste a des partages actifs
+                $hasActiveShares = $list->activeSharedLists()->count() > 0;
+                $listArray['is_shared'] = $hasActiveShares;
                 $listArray['is_owner'] = true;
                 $listArray['share_permission'] = 'admin';
                 $listArray['permission_display_name'] = 'Propriétaire';
                 $listArray['can_edit'] = true;
                 $listArray['can_delete'] = true;
-                
+
                 return $listArray;
             });
 
@@ -183,7 +185,8 @@ class ShoppingListController
             if ($ownList) {
                 // C'est une liste propre
                 $listArray = $ownList->toArray();
-                $listArray['is_shared'] = false;
+                $hasActiveShares = $ownList->activeSharedLists()->count() > 0;
+                $listArray['is_shared'] = $hasActiveShares;
                 $listArray['is_owner'] = true;
                 $listArray['share_permission'] = 'admin';
                 $listArray['permission_display_name'] = 'Propriétaire';

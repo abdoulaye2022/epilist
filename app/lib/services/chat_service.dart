@@ -16,7 +16,7 @@ class ChatService {
   }) async {
     try {
       final response = await dio.get(
-        '${AppConfig.baseUrl}/api/lists/$listId/messages',
+        '${AppConfig.baseUrl}/lists/$listId/messages',
         queryParameters: {
           'limit': limit,
           'offset': offset,
@@ -52,7 +52,7 @@ class ChatService {
   }) async {
     try {
       final response = await dio.post(
-        '${AppConfig.baseUrl}/api/lists/$listId/messages',
+        '${AppConfig.baseUrl}/lists/$listId/messages',
         data: {
           'message': message,
           'message_type': 'text',
@@ -82,7 +82,7 @@ class ChatService {
   }) async {
     try {
       final response = await dio.post(
-        '${AppConfig.baseUrl}/api/lists/$listId/messages',
+        '${AppConfig.baseUrl}/lists/$listId/messages',
         data: {
           'message': message,
           'message_type': 'image',
@@ -104,7 +104,7 @@ class ChatService {
   Future<void> markMessageAsRead(int messageId) async {
     try {
       final response = await dio.post(
-        '${AppConfig.baseUrl}/api/messages/$messageId/read',
+        '${AppConfig.baseUrl}/messages/$messageId/read',
       );
 
       if (response.statusCode != 200 || response.data['success'] != true) {
@@ -120,7 +120,7 @@ class ChatService {
   Future<void> deleteMessage(int messageId) async {
     try {
       final response = await dio.delete(
-        '${AppConfig.baseUrl}/api/messages/$messageId',
+        '${AppConfig.baseUrl}/messages/$messageId',
       );
 
       if (response.statusCode != 200 || response.data['success'] != true) {
@@ -138,7 +138,7 @@ class ChatService {
   Future<int> getUnreadCount(int listId) async {
     try {
       final response = await dio.get(
-        '${AppConfig.baseUrl}/api/lists/$listId/messages/unread-count',
+        '${AppConfig.baseUrl}/lists/$listId/messages/unread-count',
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {

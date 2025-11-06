@@ -102,12 +102,28 @@ class ShoppingList extends Model
     public function getAllAccessUsers(): array
     {
         $users = [$this->user_id]; // Owner always has access
-                
+
         $sharedUsers = $this->activeSharedLists()
                            ->pluck('shared_with_user_id')
                            ->toArray();
-                
+
         return array_unique(array_merge($users, $sharedUsers));
+    }
+
+    /**
+     * Check if a user can access this list
+     */
+    public function canBeAccessedBy(int $userId): bool
+    {
+        // Owner always has access
+        if ($this->user_id === $userId) {
+            return true;
+        }
+
+        // Check if user has active share access
+        return $this->activeSharedLists()
+                    ->where('shared_with_user_id', $userId)
+                    ->exists();
     }
 
     /**
