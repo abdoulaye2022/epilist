@@ -26,30 +26,29 @@ class SSOService
     // ===================== MÉTHODES DE CONFIGURATION CORRIGÉES =====================
 
     /**
-     *  CORRECTION ANDROID: Configuration client IDs pour multi-plateforme
+     *  Configuration client IDs Firebase pour multi-plateforme
+     *  Client IDs configurés dans Firebase Console et fichiers de configuration
      */
-    private function getGoogleClientIds(): array 
+    private function getGoogleClientIds(): array
     {
-        //  CONFIGURATION ANDROID CORRIGÉE - ORDRE IMPORTANT
+        //  Configuration Firebase - ORDRE IMPORTANT
         return [
-            //  ANDROID Client ID (priorité 1 - depuis google-services.json)
+            //  ANDROID Client ID (priorité 1 - depuis google-services.json Firebase)
             '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com',
-            
-            // iOS Client ID (priorité 2 - depuis GoogleService-Info.plist)
-            '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com',
-            
-            // Web Client ID (optionnel - depuis Firebase Console)
-            Config::get('GOOGLE_WEB_CLIENT_ID', '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com')
+
+            // iOS Client ID (priorité 2 - depuis GoogleService-Info.plist Firebase)
+            '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com'
         ];
     }
 
     /**
      *  Client ID principal pour l'API - ANDROID EN PRIORITÉ
+     *  Utilise directement le client ID Firebase Android (pas besoin de variable d'environnement)
      */
-    private function getPrimaryGoogleClientId(): string 
+    private function getPrimaryGoogleClientId(): string
     {
-        //  Utiliser Android par défaut car c'est votre plateforme principale
-        return Config::get('GOOGLE_CLIENT_ID', '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com');
+        //  Client ID Android de Firebase (depuis google-services.json)
+        return '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com';
     }
 
     /**
@@ -69,11 +68,13 @@ class SSOService
     }
 
     /**
-     *  Récupérer le Google Issuer depuis les variables d'environnement
+     *  Google Issuer pour la vérification des tokens Firebase
+     *  Utilise directement la valeur standard Google/Firebase
      */
-    private function getGoogleIssuer(): string 
+    private function getGoogleIssuer(): string
     {
-        return Config::get('GOOGLE_ISSUER', 'https://accounts.google.com');
+        // Issuer standard pour les tokens Google/Firebase
+        return 'https://accounts.google.com';
     }
 
     // ===================== VÉRIFICATION DES TOKENS CORRIGÉE =====================
@@ -396,7 +397,7 @@ class SSOService
     public function diagnoseConfiguration(): array
     {
         $validClientIds = $this->getGoogleClientIds();
-        
+
         return [
             'google' => [
                 'primary_client_id' => $this->getPrimaryGoogleClientId(),
@@ -404,8 +405,8 @@ class SSOService
                 'issuer' => $this->getGoogleIssuer(),
                 'android_client_id' => '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com',
                 'ios_client_id' => '695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo.apps.googleusercontent.com',
-                'configured' => !empty(Config::get('GOOGLE_CLIENT_ID')),
-                'environment_client_id' => Config::get('GOOGLE_CLIENT_ID')
+                'configured' => true,
+                'source' => 'firebase_hardcoded'
             ],
             'apple' => [
                 'bundle_id' => $this->getAppleBundleId(),
@@ -414,7 +415,7 @@ class SSOService
             ],
             'environment' => Config::get('APP_ENV', 'unknown'),
             'timestamp' => Carbon::now()->toISOString(),
-            'platform_focus' => 'android_optimized'
+            'platform_focus' => 'firebase_sso'
         ];
     }
 

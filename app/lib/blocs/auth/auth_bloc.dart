@@ -67,10 +67,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     GoogleSignInRequested event,
     Emitter<AuthState> emit,
   ) async {
+    print('🔵 [AuthBloc] === EVENT GoogleSignInRequested REÇU ===');
+    print('🔵 [AuthBloc] Émission de SSOLoading state...');
     emit(const SSOLoading(provider: 'google', action: 'login'));
+    print('🔵 [AuthBloc] SSOLoading state émis avec succès');
 
     try {
       print('🔵 [AuthBloc] Début de la connexion Google...');
+      print('🔵 [AuthBloc] Appel de authService.loginWithGoogle()...');
 
       // 1. ✅ CONNEXION GOOGLE ET SAUVEGARDE AUTOMATIQUE DES TOKENS
       final tokens = await authService.loginWithGoogle();

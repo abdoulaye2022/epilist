@@ -532,9 +532,16 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_isLoading) return;
 
     try {
+      print('🔵 [LoginScreen] === DÉBUT CONNEXION GOOGLE ===');
+      print('🔵 [LoginScreen] Déclenchement GoogleSignInRequested event...');
+
       // ✅ ANDROID: Utiliser toujours GoogleSignInRequested (logique unifiée côté serveur)
       context.read<AuthBloc>().add(const GoogleSignInRequested());
+
+      print('🔵 [LoginScreen] Event GoogleSignInRequested envoyé au Bloc');
     } catch (e) {
+      print('❌ [LoginScreen] ERREUR CRITIQUE: $e');
+      print('❌ [LoginScreen] Stack trace: ${StackTrace.current}');
       SmartSnackBarManager.showErrorSnackBar(
         context,
         'Erreur lors de la connexion Google: ${e.toString()}',

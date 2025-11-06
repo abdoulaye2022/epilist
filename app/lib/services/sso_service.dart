@@ -379,12 +379,15 @@ class SSOService {
       final email = payload['email'] as String?;
       final emailVerified = payload['email_verified'];
 
-      // Vérifier audience (doit contenir votre client ID)
-      if (audience == null ||
-          !audience.contains('695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo')) {
+      // ✅ CORRECTION: Accepter TOUS les client IDs du même projet Firebase
+      // Android: 695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6
+      // iOS: 695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo
+      if (audience == null || !audience.contains('695717834998-')) {
         print('❌ [SSOService] Audience iOS invalide: $audience');
         return false;
       }
+
+      print('✅ [SSOService] Audience Firebase acceptée: $audience');
 
       // Vérifier issuer Google
       if (issuer != 'https://accounts.google.com' &&
