@@ -160,8 +160,28 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   ) async {
     try {
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
+      debugPrint('Error refreshing categories: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedCategories = await OfflineStorageService.getCategories();
+        if (cachedCategories != null && cachedCategories.isNotEmpty) {
+          debugPrint('📦 Loading ${cachedCategories.length} categories from cache (offline mode)');
+          final categories = cachedCategories.map((json) => Category.fromJson(json)).toList();
+          emit(CategoryLoaded(categories: categories));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Categories cache load failed: $cacheError');
+      }
+
       final currentState = state;
       if (currentState is CategoryLoaded) {
         emit(CategoryError(
@@ -199,6 +219,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       );
 
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryOperationSuccess(
         categories: categories,
         message: _getTranslatedSuccessMessage('create'),
@@ -235,13 +260,21 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           updatedAt: now,
         );
 
+        // ✅ Récupérer les catégories actuelles depuis le state
         final currentState = state;
         List<Category> currentCategories = [];
         if (currentState is CategoryLoaded) {
           currentCategories = currentState.categories;
+        } else if (currentState is CategoryOperationInProgress) {
+          currentCategories = currentState.categories;
         }
 
         final updatedCategories = [...currentCategories, tempCategory];
+
+        // ✅ Sauvegarder dans le cache
+        final categoriesJson = updatedCategories.map((c) => c.toJson()).toList();
+        await OfflineStorageService.saveCategories(categoriesJson);
+
         emit(CategoryOperationSuccess(
           categories: updatedCategories,
           message: _getTranslatedSuccessMessage('create'),
@@ -290,6 +323,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       );
 
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryOperationSuccess(
         categories: categories,
         message: _getTranslatedSuccessMessage('update'),
@@ -319,6 +357,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         List<Category> currentCategories = [];
         if (currentState is CategoryLoaded) {
           currentCategories = currentState.categories;
+        } else if (currentState is CategoryOperationInProgress) {
+          currentCategories = currentState.categories;
         }
 
         final updatedCategories = currentCategories.map((cat) {
@@ -336,6 +376,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           }
           return cat;
         }).toList();
+
+        // ✅ Sauvegarder dans le cache
+        final categoriesJson = updatedCategories.map((c) => c.toJson()).toList();
+        await OfflineStorageService.saveCategories(categoriesJson);
 
         emit(CategoryOperationSuccess(
           categories: updatedCategories,
@@ -379,6 +423,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       await _categoryService.deleteCategory(event.categoryId);
 
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryOperationSuccess(
         categories: categories,
         message: _getTranslatedSuccessMessage('delete'),
@@ -404,11 +453,17 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         List<Category> currentCategories = [];
         if (currentState is CategoryLoaded) {
           currentCategories = currentState.categories;
+        } else if (currentState is CategoryOperationInProgress) {
+          currentCategories = currentState.categories;
         }
 
         final updatedCategories = currentCategories
             .where((cat) => cat.id != event.categoryId)
             .toList();
+
+        // ✅ Sauvegarder dans le cache
+        final categoriesJson = updatedCategories.map((c) => c.toJson()).toList();
+        await OfflineStorageService.saveCategories(categoriesJson);
 
         emit(CategoryOperationSuccess(
           categories: updatedCategories,
@@ -452,6 +507,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       await _categoryService.reorderCategories(event.categoryIds);
 
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryOperationSuccess(
         categories: categories,
         message: _getTranslatedSuccessMessage('reorder'),
@@ -481,6 +541,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       emit(const CategoryLoading());
       final categories = await _categoryService.initializeDefaultCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryOperationSuccess(
         categories: categories,
         message: _getTranslatedSuccessMessage('initialize'),

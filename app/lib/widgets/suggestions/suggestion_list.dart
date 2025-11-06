@@ -7,6 +7,7 @@ import 'package:epilist/blocs/suggestion/suggestion_event.dart';
 import 'package:epilist/blocs/suggestion/suggestion_state.dart';
 import 'package:epilist/widgets/suggestions/suggestion_card.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 
 class SuggestionList extends StatefulWidget {
   final String currencySymbol;
@@ -41,14 +42,9 @@ class _SuggestionListState extends State<SuggestionList> {
       listener: (context, state) {
         // Show snackbar when suggestion is accepted
         if (state is SuggestionAccepted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n?.suggestionAdded ?? 'Suggestion added to list',
-              ),
-              backgroundColor: theme.colorScheme.primary,
-              behavior: SnackBarBehavior.floating,
-            ),
+          SmartSnackBarManager.showSuccessSnackBar(
+            context,
+            l10n?.suggestionAdded ?? 'Suggestion added to list',
           );
         }
       },

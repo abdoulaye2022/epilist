@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/email_preference.dart';
 import '../services/email_preference_service.dart';
+import '../utils/smart_snackbar_manager.dart';
 
 class EmailPreferencesScreen extends StatefulWidget {
   const EmailPreferencesScreen({super.key});
@@ -45,16 +46,17 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
 
     if (mounted) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            success
-              ? l10n.preferencesSavedSuccessfully
-              : l10n.errorSavingPreferences,
-          ),
-          backgroundColor: success ? Colors.green : Colors.red,
-        ),
-      );
+      if (success) {
+        SmartSnackBarManager.showSuccessSnackBar(
+          context,
+          l10n.preferencesSavedSuccessfully,
+        );
+      } else {
+        SmartSnackBarManager.showErrorSnackBar(
+          context,
+          l10n.errorSavingPreferences,
+        );
+      }
     }
   }
 
@@ -85,11 +87,9 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       if (success) {
         await _loadPreferences();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Preferences reset successfully'),
-              backgroundColor: Colors.green,
-            ),
+          SmartSnackBarManager.showSuccessSnackBar(
+            context,
+            'Preferences reset successfully',
           );
         }
       }

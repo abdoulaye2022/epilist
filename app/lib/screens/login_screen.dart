@@ -26,6 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isObscure = true;
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
+  bool _isAppleLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,26 @@ class _LoginScreenState extends State<LoginScreen> {
   // ✅ GESTION D'ÉTAT SIMPLIFIÉE
   void _handleAuthState(BuildContext context, AuthState state) {
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _isLoading = state is AuthLoading || state is SSOLoading);
+
+    // Gestion du loading par type d'authentification
+    setState(() {
+      if (state is SSOLoading) {
+        // Loading SSO spécifique
+        _isGoogleLoading = state.provider == 'google';
+        _isAppleLoading = state.provider == 'apple';
+        _isLoading = false; // Pas de loading pour le formulaire classique
+      } else if (state is AuthLoading) {
+        // Loading classique (email/password)
+        _isLoading = true;
+        _isGoogleLoading = false;
+        _isAppleLoading = false;
+      } else {
+        // Reset de tous les loading (success, error, initial, etc.)
+        _isLoading = false;
+        _isGoogleLoading = false;
+        _isAppleLoading = false;
+      }
+    });
 
     switch (state.runtimeType) {
       case AuthSuccess:
@@ -223,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
           width: double.infinity,
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: _isLoading ? null : _signInWithGoogle,
+            onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signInWithGoogle,
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
               side: BorderSide(color: Colors.grey[300]!),
@@ -232,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             icon:
-                _isLoading
+                _isGoogleLoading
                     ? SizedBox(
                       width: 16,
                       height: 16,
@@ -247,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       size: 20,
                     ),
             label: Text(
-              _isLoading ? 'Connexion...' : l10n.continueWithGoogle,
+              _isGoogleLoading ? 'Connexion...' : l10n.continueWithGoogle,
               style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
@@ -264,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _signInWithApple,
+              onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signInWithApple,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -273,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               icon:
-                  _isLoading
+                  _isAppleLoading
                       ? const SizedBox(
                         width: 16,
                         height: 16,
@@ -284,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                       : const Icon(Icons.apple, size: 18),
               label: Text(
-                _isLoading ? 'Connexion...' : l10n.continueWithApple,
+                _isAppleLoading ? 'Connexion...' : l10n.continueWithApple,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,

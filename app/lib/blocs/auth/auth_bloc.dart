@@ -116,14 +116,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       print('❌ [AuthBloc] Erreur lors de la connexion Google: $e');
 
+      // ✅ GESTION DE L'ANNULATION: Ne pas afficher d'erreur si l'utilisateur annule
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('annulée') ||
+          errorString.contains('cancelled') ||
+          errorString.contains('canceled')) {
+        print('ℹ️ [AuthBloc] Connexion Google annulée par l\'utilisateur - retour à l\'état initial');
+        emit(AuthInitial());
+        return;
+      }
+
       // ✅ CORRECTION ANDROID: Gestion intelligente des erreurs
       if (e.toString().contains('EMAIL_ALREADY_EXISTS') ||
           e.toString().contains('Un compte existe déjà')) {
         // L'utilisateur existe mais pas avec Google SSO - proposer de lier le compte
-        final errorMessage = _getTranslatedErrorMessage(
-          'GOOGLE_ACCOUNT_EXISTS',
-          '',
-        );
         emit(
           SSOError(
             provider: 'google',
@@ -304,6 +310,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       print('✅ [AuthBloc] Connexion Apple terminée avec succès');
     } catch (e) {
       print('❌ [AuthBloc] Erreur lors de la connexion Apple: $e');
+
+      // ✅ GESTION DE L'ANNULATION: Ne pas afficher d'erreur si l'utilisateur annule
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('annulée') ||
+          errorString.contains('cancelled') ||
+          errorString.contains('canceled')) {
+        print('ℹ️ [AuthBloc] Connexion Apple annulée par l\'utilisateur - retour à l\'état initial');
+        emit(AuthInitial());
+        return;
+      }
+
       final errorMessage = _extractAndTranslateError(e, 'apple');
       emit(
         SSOError(provider: 'apple', error: errorMessage, details: e.toString()),
@@ -1021,6 +1038,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     GetCurrentUser event,
     Emitter<AuthState> emit,
   ) async {
+    // ✅ Si déjà authentifié, ne pas recharger inutilement
+    if (state is AuthSuccess || state is ProfileUpdated) {
+      debugPrint('ℹ️ User already authenticated, skipping reload');
+      return;
+    }
+
     emit(AuthLoading());
 
     try {
@@ -1062,13 +1085,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         debugPrint('❌ Profile cache load failed: $cacheError');
       }
 
-      final errorMessage = _getTranslatedErrorMessage(
-        'USER_INFO_ERROR',
-        e.toString(),
-      );
-      emit(AuthFailure(error: errorMessage));
-      await Future.delayed(const Duration(seconds: 2));
-      emit(Unauthenticated());
+      // ✅ En mode offline sans cache, ne pas déconnecter l'utilisateur
+      // Juste afficher une erreur mais rester dans l'état initial
+      debugPrint('⚠️ Cannot load profile - staying in current state');
+      // Ne rien émettre pour rester dans l'état actuel (AuthInitial ou autre)
     }
   }
 
@@ -1084,11 +1104,54 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         lastName: event.lastName,
       );
 
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveUserProfile(updatedUser.toJson());
+
       emit(ProfileUpdated(updatedUser));
 
       final ssoProvider = await authService.getCurrentSSOProvider();
       emit(AuthSuccess(user: updatedUser, authMethod: ssoProvider ?? 'email'));
     } catch (e) {
+      debugPrint('❌ Error updating profile: $e');
+
+      // ✅ MODE HORS LIGNE: Mettre à jour le cache local
+      try {
+        // Charger le profil actuel depuis le cache
+        final cachedProfile = await OfflineStorageService.getUserProfile();
+        if (cachedProfile != null) {
+          final currentUser = User.fromJson(cachedProfile);
+
+          // Créer un utilisateur mis à jour avec les nouvelles informations
+          final updatedUser = currentUser.copyWith(
+            firstName: event.firstName,
+            lastName: event.lastName,
+          );
+
+          // Sauvegarder dans le cache pour usage immédiat
+          await OfflineStorageService.saveUserProfile(updatedUser.toJson());
+
+          debugPrint('📦 Profile updated in cache (offline mode)');
+
+          // ✅ TODO: Ajouter à la queue de synchronisation pour mise à jour ultérieure
+          // await OfflineQueueService.queueProfileUpdate(event.firstName, event.lastName);
+
+          emit(ProfileUpdated(updatedUser));
+
+          String? ssoProvider;
+          try {
+            ssoProvider = await authService.getCurrentSSOProvider();
+          } catch (_) {
+            ssoProvider = 'email';
+          }
+
+          emit(AuthSuccess(user: updatedUser, authMethod: ssoProvider ?? 'email'));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Failed to update profile in cache: $cacheError');
+      }
+
+      // Si tout échoue, afficher l'erreur
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));

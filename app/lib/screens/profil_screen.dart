@@ -58,7 +58,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } else if (authState is ProfileUpdated) {
         _currentUser = authState.user;
       } else {
-        context.read<AuthBloc>().add(GetCurrentUser());
+        // ✅ Seulement recharger si on n'a vraiment pas d'utilisateur
+        // En mode offline, cela évitera des erreurs inutiles
+        if (_currentUser == null) {
+          context.read<AuthBloc>().add(GetCurrentUser());
+        }
       }
     });
   }
@@ -129,7 +133,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return _buildProfileView(user, l10n);
     }
 
+    // ✅ Ne pas afficher ProfileErrorState en mode offline sans cache
+    // L'utilisateur est authentifié (sinon AuthWrapper l'aurait redirigé)
+    // On affiche juste un loading ou on attend
     if (state is AuthFailure && _currentUser == null) {
+      // Vérifier si on est offline
       return ProfileErrorState(
         onRetry: () {
           context.read<AuthBloc>().add(GetCurrentUser());
@@ -144,6 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return _buildProfileView(_currentUser!, l10n);
     }
 
+    // ✅ Si on arrive ici sans utilisateur, essayer de charger
     return const ProfileLoadingState();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/category/category_bloc.dart';
 import '../../models/category.dart';
+import '../../utils/smart_snackbar_manager.dart';
 import 'icon_picker.dart';
 import 'color_picker.dart';
 import '../../l10n/app_localizations.dart';
@@ -299,20 +300,16 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                             ? null
                             : () {
                                 if (_nameController.text.trim().isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.categoryNameRequired),
-                                      backgroundColor: Colors.red,
-                                    ),
+                                  SmartSnackBarManager.showErrorSnackBar(
+                                    context,
+                                    l10n.categoryNameRequired,
                                   );
                                   return;
                                 }
                                 if (_nameController.text.trim().length < 2) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.categoryNameTooShort),
-                                      backgroundColor: Colors.red,
-                                    ),
+                                  SmartSnackBarManager.showErrorSnackBar(
+                                    context,
+                                    l10n.categoryNameTooShort,
                                   );
                                   return;
                                 }

@@ -3,8 +3,10 @@ import 'package:epilist/models/currency.dart';
 import 'package:epilist/models/user_currency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/currency_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'currency_event.dart';
 import 'currency_state.dart';
 
@@ -88,6 +90,10 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
 
     try {
       final userCurrency = await currencyService.getUserCurrency();
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveCurrency(userCurrency.toJson());
+
       emit(UserCurrencyLoaded(userCurrency));
 
       // ✅ SYNCHRONISATION: Mettre à jour AuthBloc avec la devise chargée
@@ -99,6 +105,46 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
         authBloc.add(UpdateUserData(updatedUser));
       }
     } catch (e) {
+      debugPrint('Error loading user currency: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedCurrency = await OfflineStorageService.getCurrency();
+        if (cachedCurrency != null) {
+          debugPrint('📦 Loading user currency from cache (offline mode)');
+          final userCurrency = UserCurrency.fromJson(cachedCurrency);
+          emit(UserCurrencyLoaded(userCurrency));
+
+          // ✅ SYNCHRONISATION avec AuthBloc
+          if (authBloc.state is AuthSuccess) {
+            final currentUser = (authBloc.state as AuthSuccess).user;
+            final updatedUser = currentUser.withDisplayCurrency(
+              userCurrency.currency,
+            );
+            authBloc.add(UpdateUserData(updatedUser));
+          }
+          return;
+        } else {
+          debugPrint('ℹ️ No cached currency available');
+          // ✅ Fallback vers la devise du profil utilisateur si disponible
+          if (authBloc.state is AuthSuccess) {
+            final currentUser = (authBloc.state as AuthSuccess).user;
+            if (currentUser.currency != null) {
+              debugPrint('📦 Using currency from user profile');
+              final userCurrency = UserCurrency(
+                userId: currentUser.id,
+                currency: currentUser.currency!,
+                setAt: DateTime.now(),
+              );
+              emit(UserCurrencyLoaded(userCurrency));
+              return;
+            }
+          }
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Currency cache load failed: $cacheError');
+      }
+
       emit(
         CurrencyError(
           _getTranslatedErrorMessage('LOAD_USER_CURRENCY_ERROR', e.toString()),

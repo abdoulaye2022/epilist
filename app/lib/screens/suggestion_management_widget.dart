@@ -8,6 +8,7 @@ import 'package:epilist/widgets/suggestion/suggestion_empty_state.dart';
 import 'package:epilist/widgets/suggestion/suggestion_loading_state.dart';
 import 'package:epilist/widgets/suggestion/suggestion_error_state.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -152,28 +153,9 @@ class _SuggestionManagementWidgetState
                     DeleteSuggestion(suggestion.id),
                   );
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.suggestionDeleted,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      backgroundColor: Colors.green[600],
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  SmartSnackBarManager.showSuccessSnackBar(
+                    context,
+                    l10n.suggestionDeleted,
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -269,28 +251,9 @@ class _SuggestionManagementWidgetState
                     const ClearSuggestions(),
                   );
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.suggestionsCleared,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      backgroundColor: Colors.green[600],
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  SmartSnackBarManager.showSuccessSnackBar(
+                    context,
+                    l10n.suggestionsCleared,
                   );
                 },
                 style: ElevatedButton.styleFrom(

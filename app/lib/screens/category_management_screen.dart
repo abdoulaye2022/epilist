@@ -6,6 +6,7 @@ import '../models/category.dart';
 import '../widgets/category/category_list_item.dart';
 import '../widgets/category/add_edit_category_dialog.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/smart_snackbar_manager.dart';
 
 class CategoryManagementScreen extends StatefulWidget {
   const CategoryManagementScreen({Key? key}) : super(key: key);
@@ -44,20 +45,16 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
       body: BlocConsumer<CategoryBloc, CategoryState>(
         listener: (context, state) {
           if (state is CategoryOperationSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
+            SmartSnackBarManager.showSuccessSnackBar(
+              context,
+              state.message,
+              duration: const Duration(seconds: 2),
             );
           } else if (state is CategoryError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.message,
+              duration: const Duration(seconds: 3),
             );
           }
         },
