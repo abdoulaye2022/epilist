@@ -1334,13 +1334,75 @@ class MailSender
     public static function sendUnsubscribeConfirmation(string $email, string $firstName): bool
     {
         $subject = " Désabonnement confirmé - EpiList";
-        
+
         $htmlContent = self::unsubscribeConfirmationEmail($firstName);
-        
+
         return self::sendMail(
             $subject,
             [['email' => $email]],
             $htmlContent
         );
+    }
+
+    /**
+     * Vérifier si un utilisateur a activé un type d'email spécifique
+     *
+     * @param int $userId ID de l'utilisateur
+     * @param string $emailType Type d'email (ex: 'email_verification', 'password_changed', 'list_shared_with_me', etc.)
+     * @return bool True si l'email est activé, false sinon
+     */
+    public static function canSendEmail(int $userId, string $emailType): bool
+    {
+        try {
+            // Importer le modèle
+            $emailPreference = \App\Models\EmailPreference::where('user_id', $userId)->first();
+
+            // Si pas de préférences définies, on autorise l'envoi par défaut
+            if (!$emailPreference) {
+                return true;
+            }
+
+            // Vérifier si le type d'email est activé
+            if (property_exists($emailPreference, $emailType) || isset($emailPreference->$emailType)) {
+                return (bool) $emailPreference->$emailType;
+            }
+
+            // Si le type n'existe pas dans les préférences, autoriser par défaut
+            return true;
+
+        } catch (\Exception $e) {
+            error_log("⚠️ [MailSender] Erreur vérification préférences email: " . $e->getMessage());
+            // En cas d'erreur, autoriser l'envoi par défaut
+            return true;
+        }
+    }
+
+    /**
+     * Envoyer un email en vérifiant d'abord les préférences de l'utilisateur
+     *
+     * @param int $userId ID de l'utilisateur
+     * @param string $emailType Type d'email à vérifier
+     * @param string $subject Sujet de l'email
+     * @param array $recipients Destinataires
+     * @param string $htmlBody Corps HTML de l'email
+     * @param array $attachments Pièces jointes
+     * @return bool True si envoyé, false si bloqué par les préférences
+     */
+    public static function sendMailWithPreferences(
+        int $userId,
+        string $emailType,
+        string $subject,
+        array $recipients,
+        string $htmlBody,
+        array $attachments = []
+    ): bool {
+        // Vérifier les préférences
+        if (!self::canSendEmail($userId, $emailType)) {
+            error_log("✉️ [MailSender] Email '$emailType' bloqué par les préférences de l'utilisateur $userId");
+            return false;
+        }
+
+        // Envoyer l'email
+        return self::sendMail($subject, $recipients, $htmlBody, $attachments);
     }
 }

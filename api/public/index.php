@@ -22,7 +22,8 @@ use App\Controllers\{
     ContactController,  //  AJOUT DE L'IMPORT MANQUANT
     CategoryController,
     MessageController,
-    SuggestionController
+    SuggestionController,
+    EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -287,9 +288,11 @@ $app->group('', function ($group) {
     $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats']);
     $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail']);
 
-    $group->get('/user/email-preferences', [AuthController::class, 'getEmailPreferences']);
-    $group->put('/user/email-preferences', [AuthController::class, 'updateEmailPreferences']);
-    $group->post('/user/resubscribe-marketing', [AuthController::class, 'resubscribeToMarketing']);
+    // 📧 ROUTES DE PRÉFÉRENCES D'EMAIL
+    $group->get('/user/email-preferences', [EmailPreferenceController::class, 'getPreferences']);
+    $group->put('/user/email-preferences', [EmailPreferenceController::class, 'updatePreferences']);
+    $group->post('/user/email-preferences/reset', [EmailPreferenceController::class, 'resetPreferences']);
+    $group->post('/user/email-preferences/unsubscribe-marketing', [EmailPreferenceController::class, 'unsubscribeMarketing']);
 
     //  ROUTES DE CONTACT PROTÉGÉES
     $group->post('/contact/feedback', [ContactController::class, 'sendFeedback']);

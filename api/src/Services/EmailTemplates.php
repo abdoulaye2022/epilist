@@ -144,6 +144,116 @@ class EmailTemplates
                     'closing' => 'Best regards,<br>The EpiList Team',
                 ],
             ],
+            'password_changed' => [
+                'fr' => [
+                    'subject' => '✅ Votre mot de passe EpiList a été changé',
+                    'title' => '✅ Mot de passe changé avec succès',
+                    'greeting' => 'Bonjour',
+                    'intro' => 'Votre mot de passe EpiList a été changé avec succès.',
+                    'change_time' => 'Date et heure du changement :',
+                    'security_title' => '🔐 Sécurité de votre compte',
+                    'security_text' => 'Si vous n\'êtes pas à l\'origine de ce changement, veuillez nous contacter immédiatement.',
+                    'tips_title' => '💡 Conseils de sécurité :',
+                    'tip_1' => 'Utilisez un mot de passe unique pour EpiList',
+                    'tip_2' => 'Ne partagez jamais votre mot de passe',
+                    'tip_3' => 'Changez votre mot de passe régulièrement',
+                    'tip_4' => 'Utilisez un gestionnaire de mots de passe sécurisé',
+                    'action_required' => 'Action requise :',
+                    'action_text' => 'Si ce n\'était pas vous, changez immédiatement votre mot de passe et contactez notre support.',
+                    'closing' => 'Votre sécurité est notre priorité.<br><br>Cordialement,<br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => '✅ Your EpiList password has been changed',
+                    'title' => '✅ Password changed successfully',
+                    'greeting' => 'Hello',
+                    'intro' => 'Your EpiList password has been successfully changed.',
+                    'change_time' => 'Date and time of change:',
+                    'security_title' => '🔐 Account Security',
+                    'security_text' => 'If you did not make this change, please contact us immediately.',
+                    'tips_title' => '💡 Security Tips:',
+                    'tip_1' => 'Use a unique password for EpiList',
+                    'tip_2' => 'Never share your password',
+                    'tip_3' => 'Change your password regularly',
+                    'tip_4' => 'Use a secure password manager',
+                    'action_required' => 'Action Required:',
+                    'action_text' => 'If this wasn\'t you, change your password immediately and contact our support.',
+                    'closing' => 'Your security is our priority.<br><br>Best regards,<br>The EpiList Team',
+                ],
+            ],
+            'list_shared' => [
+                'fr' => [
+                    'subject' => '📋 {sharer_name} a partagé une liste avec vous',
+                    'title' => '📋 Nouvelle liste partagée',
+                    'greeting' => 'Bonjour',
+                    'intro' => '{sharer_name} a partagé la liste "<strong>{list_name}</strong>" avec vous.',
+                    'list_info_title' => 'Informations sur la liste :',
+                    'list_name_label' => 'Nom :',
+                    'shared_by_label' => 'Partagée par :',
+                    'shared_at_label' => 'Date de partage :',
+                    'permission_label' => 'Vos permissions :',
+                    'permission_edit' => 'Vous pouvez modifier cette liste',
+                    'permission_view' => 'Vous pouvez seulement consulter cette liste',
+                    'cta_title' => '🚀 Commencez à collaborer',
+                    'cta_text' => 'Ouvrez EpiList pour voir la liste et commencer à collaborer avec {sharer_name}.',
+                    'features_title' => '✨ Avec les listes partagées, vous pouvez :',
+                    'feature_1' => 'Voir les modifications en temps réel',
+                    'feature_2' => 'Ajouter et cocher des articles ensemble',
+                    'feature_3' => 'Suivre les dépenses en commun',
+                    'feature_4' => 'Communiquer via le chat intégré',
+                    'closing' => 'Bonne collaboration !<br><br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => '📋 {sharer_name} shared a list with you',
+                    'title' => '📋 New shared list',
+                    'greeting' => 'Hello',
+                    'intro' => '{sharer_name} has shared the list "<strong>{list_name}</strong>" with you.',
+                    'list_info_title' => 'List information:',
+                    'list_name_label' => 'Name:',
+                    'shared_by_label' => 'Shared by:',
+                    'shared_at_label' => 'Shared on:',
+                    'permission_label' => 'Your permissions:',
+                    'permission_edit' => 'You can edit this list',
+                    'permission_view' => 'You can only view this list',
+                    'cta_title' => '🚀 Start collaborating',
+                    'cta_text' => 'Open EpiList to view the list and start collaborating with {sharer_name}.',
+                    'features_title' => '✨ With shared lists, you can:',
+                    'feature_1' => 'See real-time updates',
+                    'feature_2' => 'Add and check off items together',
+                    'feature_3' => 'Track expenses together',
+                    'feature_4' => 'Communicate via integrated chat',
+                    'closing' => 'Happy collaborating!<br><br>The EpiList Team',
+                ],
+            ],
+            'list_completed' => [
+                'fr' => [
+                    'subject' => '🎉 Liste "{list_name}" complétée !',
+                    'title' => '🎉 Liste complétée !',
+                    'greeting' => 'Bonjour',
+                    'intro' => 'Bonne nouvelle ! La liste "<strong>{list_name}</strong>" a été complétée.',
+                    'completed_by' => 'Complétée par : {completed_by}',
+                    'stats_title' => '📊 Statistiques de la liste :',
+                    'total_items' => 'Articles au total',
+                    'total_amount' => 'Montant total',
+                    'shared_with' => 'Partagée avec',
+                    'cta_title' => '📈 Voir les détails',
+                    'cta_text' => 'Ouvrez EpiList pour voir tous les détails et l\'historique de cette liste.',
+                    'closing' => 'Félicitations pour cette liste complétée !<br><br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => '🎉 List "{list_name}" completed!',
+                    'title' => '🎉 List completed!',
+                    'greeting' => 'Hello',
+                    'intro' => 'Great news! The list "<strong>{list_name}</strong>" has been completed.',
+                    'completed_by' => 'Completed by: {completed_by}',
+                    'stats_title' => '📊 List statistics:',
+                    'total_items' => 'Total items',
+                    'total_amount' => 'Total amount',
+                    'shared_with' => 'Shared with',
+                    'cta_title' => '📈 View details',
+                    'cta_text' => 'Open EpiList to see all details and history of this list.',
+                    'closing' => 'Congratulations on completing this list!<br><br>The EpiList Team',
+                ],
+            ],
         ];
 
         return $translations[$template] ?? [];
@@ -325,6 +435,265 @@ class EmailTemplates
 
                     <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
                         <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Générer le template de confirmation de changement de mot de passe
+     */
+    public static function passwordChangedEmail(string $firstName, string $changeDateTime, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('password_changed')[$lang] ?? self::getTranslations('password_changed')['fr'];
+
+        $header = self::headerContent($t['title'], $lang);
+        $footer = self::footerContent($lang);
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} <strong>{$firstName}</strong>,
+                    </p>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['intro']}
+                    </p>
+
+                    <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
+                        <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600;'>
+                            {$t['change_time']}
+                        </p>
+                        <p style='margin: 0; font-size: 18px; color: #059669; font-weight: bold;'>
+                            {$changeDateTime}
+                        </p>
+                    </div>
+
+                    <div style='background: #fef2f2; border: 2px solid #f87171; border-radius: 12px; padding: 20px; margin: 25px 0;'>
+                        <h3 style='margin: 0 0 12px; font-size: 16px; color: #dc2626;'>{$t['security_title']}</h3>
+                        <p style='margin: 0; font-size: 14px; color: #991b1b; line-height: 1.6;'>
+                            {$t['security_text']}
+                        </p>
+                    </div>
+
+                    <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'>{$t['tips_title']}</h3>
+
+                    <div style='margin: 20px 0;'>
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_1']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_2']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_3']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start;'>
+                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_4']}</div>
+                        </div>
+                    </div>
+
+                    <div style='background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                        <p style='margin: 0 0 8px; font-size: 14px; color: #92400e; font-weight: 600;'>
+                            {$t['action_required']}
+                        </p>
+                        <p style='margin: 0; font-size: 13px; color: #92400e; line-height: 1.6;'>
+                            {$t['action_text']}
+                        </p>
+                    </div>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-size: 15px; line-height: 1.6;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Générer le template pour notification de liste partagée
+     */
+    public static function listSharedEmail(string $recipientName, string $sharerName, string $listName, string $sharedAt, bool $canEdit, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('list_shared')[$lang] ?? self::getTranslations('list_shared')['fr'];
+
+        // Remplacer les placeholders
+        $subject = str_replace('{sharer_name}', $sharerName, $t['subject']);
+        $intro = str_replace(['{sharer_name}', '{list_name}'], [$sharerName, $listName], $t['intro']);
+        $ctaText = str_replace('{sharer_name}', $sharerName, $t['cta_text']);
+
+        $header = self::headerContent($t['title'], $lang);
+        $footer = self::footerContent($lang);
+
+        $permissionText = $canEdit ? $t['permission_edit'] : $t['permission_view'];
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} <strong>{$recipientName}</strong>,
+                    </p>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$intro}
+                    </p>
+
+                    <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0;'>
+                        <h3 style='margin: 0 0 16px; font-size: 16px; color: #047857;'>{$t['list_info_title']}</h3>
+
+                        <div style='margin-bottom: 12px;'>
+                            <strong style='color: #059669;'>{$t['list_name_label']}</strong>
+                            <span style='color: #374151;'>{$listName}</span>
+                        </div>
+
+                        <div style='margin-bottom: 12px;'>
+                            <strong style='color: #059669;'>{$t['shared_by_label']}</strong>
+                            <span style='color: #374151;'>{$sharerName}</span>
+                        </div>
+
+                        <div style='margin-bottom: 12px;'>
+                            <strong style='color: #059669;'>{$t['shared_at_label']}</strong>
+                            <span style='color: #374151;'>{$sharedAt}</span>
+                        </div>
+
+                        <div>
+                            <strong style='color: #059669;'>{$t['permission_label']}</strong>
+                            <span style='color: #374151;'>{$permissionText}</span>
+                        </div>
+                    </div>
+
+                    <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
+                        <h3 style='margin: 0 0 16px; font-size: 18px; color: #047857;'>{$t['cta_title']}</h3>
+                        <p style='margin: 0; font-size: 14px; color: #059669;'>
+                            {$ctaText}
+                        </p>
+                    </div>
+
+                    <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'>{$t['features_title']}</h3>
+
+                    <div style='margin: 20px 0;'>
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <span style='margin-right: 8px; font-size: 18px;'>🔄</span>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['feature_1']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <span style='margin-right: 8px; font-size: 18px;'>✅</span>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['feature_2']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
+                            <span style='margin-right: 8px; font-size: 18px;'>💰</span>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['feature_3']}</div>
+                        </div>
+
+                        <div style='display: flex; align-items: flex-start;'>
+                            <span style='margin-right: 8px; font-size: 18px;'>💬</span>
+                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['feature_4']}</div>
+                        </div>
+                    </div>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-size: 15px; line-height: 1.6;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return $header . $content . $footer;
+    }
+
+    /**
+     * Générer le template pour notification de liste complétée
+     */
+    public static function listCompletedEmail(string $recipientName, string $listName, string $completedBy, int $totalItems, string $totalAmount, int $sharedWithCount, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('list_completed')[$lang] ?? self::getTranslations('list_completed')['fr'];
+
+        // Remplacer les placeholders
+        $subject = str_replace('{list_name}', $listName, $t['subject']);
+        $intro = str_replace('{list_name}', $listName, $t['intro']);
+        $completedByText = str_replace('{completed_by}', $completedBy, $t['completed_by']);
+
+        $header = self::headerContent($t['title'], $lang);
+        $footer = self::footerContent($lang);
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} <strong>{$recipientName}</strong>,
+                    </p>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$intro}
+                    </p>
+
+                    <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
+                        <p style='margin: 0; font-size: 16px; color: #059669; font-weight: 600;'>
+                            {$completedByText}
+                        </p>
+                    </div>
+
+                    <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'>{$t['stats_title']}</h3>
+
+                    <div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0;'>
+                        <div style='background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center;'>
+                            <div style='font-size: 32px; font-weight: bold; color: #047857;'>{$totalItems}</div>
+                            <div style='font-size: 12px; color: #6b7280; margin-top: 4px;'>{$t['total_items']}</div>
+                        </div>
+
+                        <div style='background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center;'>
+                            <div style='font-size: 24px; font-weight: bold; color: #047857;'>{$totalAmount}</div>
+                            <div style='font-size: 12px; color: #6b7280; margin-top: 4px;'>{$t['total_amount']}</div>
+                        </div>
+
+                        <div style='background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center;'>
+                            <div style='font-size: 32px; font-weight: bold; color: #047857;'>{$sharedWithCount}</div>
+                            <div style='font-size: 12px; color: #6b7280; margin-top: 4px;'>{$t['shared_with']}</div>
+                        </div>
+                    </div>
+
+                    <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
+                        <h3 style='margin: 0 0 16px; font-size: 18px; color: #047857;'>{$t['cta_title']}</h3>
+                        <p style='margin: 0; font-size: 14px; color: #059669;'>
+                            {$t['cta_text']}
+                        </p>
+                    </div>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-size: 15px; line-height: 1.6;'>
                             {$t['closing']}
                         </p>
                     </div>

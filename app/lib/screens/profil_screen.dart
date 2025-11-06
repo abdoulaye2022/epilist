@@ -28,6 +28,7 @@ import 'package:epilist/widgets/profile/profile_loading_state.dart';
 import 'package:epilist/widgets/profile/profile_section.dart';
 import 'package:epilist/widgets/profile/language_setting_tile.dart';
 import 'package:epilist/screens/suggestion_management_widget.dart';
+import 'package:epilist/screens/email_preferences_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -214,6 +215,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _buildCurrencySettingTile(l10n),
         const SizedBox(height: 12),
         const LanguageSettingTile(),
+        const SizedBox(height: 12),
+        ProfileActionTile(
+          icon: Icons.mail_outline,
+          title: 'Email Preferences',
+          subtitle: 'Manage email notifications',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const EmailPreferencesScreen(),
+              ),
+            );
+          },
+        ),
       ],
     );
   }

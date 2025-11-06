@@ -2150,9 +2150,21 @@ class AuthController
             // 🌍 Envoyer l'email dans la langue de l'utilisateur
             $subject = EmailTemplates::getSubject('verification', $user->language);
             $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language);
-            MailSender::sendMail($subject, [['email' => $user->email]], $htmlContent);
 
-            error_log("📧 [AuthController] Email de vérification envoyé en {$user->language} à {$user->email}");
+            // Utiliser sendMailWithPreferences pour respecter les préférences
+            $sent = MailSender::sendMailWithPreferences(
+                $user->id,
+                'email_verification',
+                $subject,
+                [['email' => $user->email]],
+                $htmlContent
+            );
+
+            if ($sent) {
+                error_log("📧 [AuthController] Email de vérification envoyé en {$user->language} à {$user->email}");
+            } else {
+                error_log("ℹ️ [AuthController] Email de vérification bloqué par les préférences de l'utilisateur");
+            }
 
             error_log("✅ [AuthController] Inscription réussie depuis IP: {$ipAddress}");
 
@@ -2388,7 +2400,15 @@ class AuthController
 
             $subject = EmailTemplates::getSubject('verification', $user->language ?? 'fr');
             $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language ?? 'fr');
-            MailSender::sendMail($subject, [['email' => $emailToSend]], $htmlContent);
+
+            // Utiliser sendMailWithPreferences pour respecter les préférences
+            MailSender::sendMailWithPreferences(
+                $user->id,
+                'email_verification',
+                $subject,
+                [['email' => $emailToSend]],
+                $htmlContent
+            );
 
             return new JsonResponse(
                 200,
@@ -2485,7 +2505,15 @@ class AuthController
             // 🌍 Envoyer l'email dans la langue appropriée
             $subject = EmailTemplates::getSubject('password_change', $emailLanguage);
             $htmlContent = EmailTemplates::passwordChangeEmail($code, $emailLanguage);
-            MailSender::sendMail($subject, [['email' => $user->email]], $htmlContent);
+
+            // Utiliser sendMailWithPreferences pour respecter les préférences
+            MailSender::sendMailWithPreferences(
+                $user->id,
+                'password_change_request',
+                $subject,
+                [['email' => $user->email]],
+                $htmlContent
+            );
 
             error_log("📧 [AuthController] Email de changement de mot de passe envoyé en {$emailLanguage}");
 
@@ -2566,6 +2594,36 @@ class AuthController
             $user->password_change_code = null;
             $user->password_change_code_expires_at = null;
             $user->save();
+
+            // 🌍 Envoyer l'email de confirmation de changement de mot de passe
+            try {
+                $emailToSend = $user->email;
+                if(Config::get('APP_ENV') == 'dev') {
+                    $emailToSend = 'm2atodev@gmail.com';
+                }
+
+                $changeDateTime = Carbon::now()->setTimezone('America/Moncton')->format('Y-m-d H:i:s') . ' (AT)';
+                $subject = EmailTemplates::getSubject('password_changed', $user->language ?? 'fr');
+                $htmlContent = EmailTemplates::passwordChangedEmail($user->first_name, $changeDateTime, $user->language ?? 'fr');
+
+                // Utiliser sendMailWithPreferences pour respecter les préférences de l'utilisateur
+                $sent = MailSender::sendMailWithPreferences(
+                    $user->id,
+                    'password_changed',
+                    $subject,
+                    [['email' => $emailToSend]],
+                    $htmlContent
+                );
+
+                if ($sent) {
+                    error_log("✅ [AuthController] Email de confirmation de changement de mot de passe envoyé");
+                } else {
+                    error_log("ℹ️ [AuthController] Email de confirmation bloqué par les préférences de l'utilisateur");
+                }
+            } catch (\Exception $emailError) {
+                error_log("⚠️ [AuthController] Erreur email confirmation changement mot de passe: " . $emailError->getMessage());
+                // On ne bloque pas la réponse si l'email échoue
+            }
 
             return new JsonResponse(
                 200,
