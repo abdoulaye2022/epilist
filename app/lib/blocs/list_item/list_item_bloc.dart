@@ -2,6 +2,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
+import 'package:epilist/services/offline_queue_service.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -11,6 +14,7 @@ part 'list_item_state.dart';
 class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
   final ListItemService _listItemService;
   final LocalizationBloc _localizationBloc;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   ListItemBloc({
     required ListItemService listItemService,
@@ -112,6 +116,24 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       emit(ListItemLoaded(items));
     } catch (e) {
       print("Error loading items: $e");
+
+      // ✅ Fallback: Essayer de charger depuis le cache (mode offline)
+      // Note: Les items sont dans la liste en cache
+      try {
+        final cachedLists = await OfflineStorageService.getShoppingLists();
+        if (cachedLists != null) {
+          final cachedList = cachedLists.firstWhere(
+            (list) => list.id == event.listId,
+            orElse: () => throw Exception('List not found in cache'),
+          );
+          print('📦 Loading ${cachedList.items.length} items from cache (offline mode)');
+          emit(ListItemLoaded(cachedList.items));
+          return;
+        }
+      } catch (cacheError) {
+        print('❌ Cache load failed: $cacheError');
+      }
+
       final errorMessage = _getTranslatedOperationError('load');
       emit(ListItemError(errorMessage));
     }
@@ -172,6 +194,46 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error adding item: $e");
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_CREATE_ITEM,
+          payload: {
+            'list_id': event.listId,
+            'product_name': event.productName,
+            'quantity': event.quantity,
+            'price': event.price,
+            'store_name': event.storeName,
+            'category_id': event.categoryId,
+          },
+        );
+
+        // Créer un item temporaire local avec ID négatif
+        final tempItem = ListItem(
+          id: -DateTime.now().millisecondsSinceEpoch,
+          listId: event.listId,
+          productName: event.productName,
+          quantity: event.quantity,
+          price: event.price,
+          storeName: event.storeName,
+          categoryId: event.categoryId,
+          isPurchased: false,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        if (state is ListItemLoaded) {
+          final currentState = state as ListItemLoaded;
+          final updatedItems = [tempItem, ...currentState.items];
+
+          final successMessage = _getTranslatedSuccessMessage('add');
+          emit(ListItemOperationSuccess(successMessage));
+          emit(ListItemLoaded(updatedItems));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedOperationError('add');
       emit(ListItemError(errorMessage));
     }
@@ -388,6 +450,46 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error updating item: $e");
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_UPDATE_ITEM,
+          payload: {
+            'list_id': event.listId,
+            'item_id': event.itemId,
+            'product_name': event.productName,
+            'quantity': event.quantity,
+            'price': event.price,
+            'store_name': event.storeName,
+            'category_id': event.categoryId,
+          },
+        );
+
+        // Mettre à jour localement l'item
+        if (state is ListItemLoaded) {
+          final currentState = state as ListItemLoaded;
+          final updatedItems =
+              currentState.items.map((item) {
+                if (item.id == event.itemId) {
+                  return item.copyWith(
+                    productName: event.productName,
+                    quantity: event.quantity,
+                    price: event.price,
+                    storeName: event.storeName,
+                    categoryId: event.categoryId,
+                  );
+                }
+                return item;
+              }).toList();
+
+          final successMessage = _getTranslatedSuccessMessage('update');
+          emit(ListItemOperationSuccess(successMessage));
+          emit(ListItemLoaded(updatedItems));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedOperationError('update');
       emit(ListItemError(errorMessage));
     }
@@ -418,6 +520,34 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error toggling status: $e");
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_TOGGLE_ITEM,
+          payload: {
+            'list_id': event.listId,
+            'item_id': event.itemId,
+            'is_purchased': event.isPurchased,
+          },
+        );
+
+        // Toggle localement le statut
+        if (state is ListItemLoaded) {
+          final currentState = state as ListItemLoaded;
+          final updatedItems =
+              currentState.items.map((item) {
+                if (item.id == event.itemId) {
+                  return item.copyWith(isPurchased: event.isPurchased);
+                }
+                return item;
+              }).toList();
+
+          emit(ListItemLoaded(updatedItems));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedOperationError('toggle');
       emit(ListItemError(errorMessage));
     }
@@ -446,6 +576,32 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error deleting item: $e");
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_DELETE_ITEM,
+          payload: {
+            'list_id': event.listId,
+            'item_id': event.itemId,
+          },
+        );
+
+        // Supprimer localement l'item
+        if (state is ListItemLoaded) {
+          final currentState = state as ListItemLoaded;
+          final updatedItems =
+              currentState.items
+                  .where((item) => item.id != event.itemId)
+                  .toList();
+
+          final successMessage = _getTranslatedSuccessMessage('delete');
+          emit(ListItemOperationSuccess(successMessage));
+          emit(ListItemLoaded(updatedItems));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedOperationError('delete');
       emit(ListItemError(errorMessage));
     }

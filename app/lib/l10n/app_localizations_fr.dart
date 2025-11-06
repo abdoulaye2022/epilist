@@ -4153,4 +4153,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncNow => 'Synchroniser maintenant';
+
+  @override
+  String get offlineModeModificationsWillSync =>
+      'Mode hors ligne - Les modifications seront synchronisées plus tard';
+
+  @override
+  String get connectionRestored => 'Connexion rétablie';
 }

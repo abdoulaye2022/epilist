@@ -3,11 +3,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 import '../models/email_preference.dart';
 import '../config/app_config.dart';
+import 'offline_storage_service.dart';
+import 'offline_queue_service.dart';
+import 'connectivity_service.dart';
 
 class EmailPreferenceService {
   static const String baseUrl = AppConfig.baseUrl;
+  static final ConnectivityService _connectivityService = ConnectivityService();
 
   /// Get authentication token from SharedPreferences
   static Future<String?> _getToken() async {
@@ -34,13 +39,30 @@ class EmailPreferenceService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         if (jsonData['success'] == true && jsonData['data'] != null) {
-          return EmailPreference.fromJson(jsonData['data']);
+          final preference = EmailPreference.fromJson(jsonData['data']);
+
+          // ✅ Sauvegarder dans le cache
+          await OfflineStorageService.saveEmailPreferences(preference.toJson());
+
+          return preference;
         }
       }
 
       return null;
     } catch (e) {
-      print('Error getting email preferences: $e');
+      debugPrint('Error getting email preferences: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedPrefs = await OfflineStorageService.getEmailPreferences();
+        if (cachedPrefs != null) {
+          debugPrint('📦 Loading email preferences from cache (offline mode)');
+          return EmailPreference.fromJson(cachedPrefs);
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Email preferences cache load failed: $cacheError');
+      }
+
       return null;
     }
   }
@@ -64,12 +86,31 @@ class EmailPreferenceService {
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        return jsonData['success'] == true;
+        if (jsonData['success'] == true) {
+          // ✅ Mettre à jour le cache
+          await OfflineStorageService.saveEmailPreferences(preferences.toJson());
+          return true;
+        }
       }
 
       return false;
     } catch (e) {
-      print('Error updating email preferences: $e');
+      debugPrint('Error updating email preferences: $e');
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_UPDATE_EMAIL_PREFERENCES,
+          payload: preferences.toJson(),
+        );
+
+        // Mettre à jour localement le cache
+        await OfflineStorageService.saveEmailPreferences(preferences.toJson());
+
+        debugPrint('📥 [EmailPrefs] Update queued for offline sync');
+        return true; // Success locally
+      }
+
       return false;
     }
   }

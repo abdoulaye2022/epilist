@@ -4,6 +4,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import '../../models/category.dart';
 import '../../services/category_service.dart';
+import '../../services/offline_storage_service.dart';
+import '../../services/offline_queue_service.dart';
+import '../../services/connectivity_service.dart';
 import '../localization/localization_bloc.dart';
 
 part 'category_event.dart';
@@ -12,6 +15,7 @@ part 'category_state.dart';
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryService _categoryService;
   final LocalizationBloc _localizationBloc;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   CategoryBloc({
     required CategoryService categoryService,
@@ -123,8 +127,28 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     try {
       emit(const CategoryLoading());
       final categories = await _categoryService.getCategories();
+
+      // ✅ Sauvegarder dans le cache
+      final categoriesJson = categories.map((c) => c.toJson()).toList();
+      await OfflineStorageService.saveCategories(categoriesJson);
+
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
+      debugPrint('Error loading categories: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedCategories = await OfflineStorageService.getCategories();
+        if (cachedCategories != null && cachedCategories.isNotEmpty) {
+          debugPrint('📦 Loading ${cachedCategories.length} categories from cache (offline mode)');
+          final categories = cachedCategories.map((json) => Category.fromJson(json)).toList();
+          emit(CategoryLoaded(categories: categories));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Categories cache load failed: $cacheError');
+      }
+
       emit(CategoryError(message: _getTranslatedErrorMessage(e)));
     }
   }
@@ -184,6 +208,50 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       await Future.delayed(const Duration(milliseconds: 500));
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
+      debugPrint('Error creating category: $e');
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_CREATE_CATEGORY,
+          payload: {
+            'name': event.name,
+            'icon_code': event.iconCode,
+            'color_hex': event.colorHex,
+            'order_index': event.orderIndex,
+          },
+        );
+
+        // Créer une catégorie temporaire locale avec ID négatif
+        final now = DateTime.now();
+        final tempCategory = Category(
+          id: -now.millisecondsSinceEpoch,
+          userId: 0, // Temporaire
+          name: event.name,
+          iconCode: event.iconCode,
+          colorHex: event.colorHex,
+          orderIndex: event.orderIndex ?? 0,
+          createdAt: now,
+          updatedAt: now,
+        );
+
+        final currentState = state;
+        List<Category> currentCategories = [];
+        if (currentState is CategoryLoaded) {
+          currentCategories = currentState.categories;
+        }
+
+        final updatedCategories = [...currentCategories, tempCategory];
+        emit(CategoryOperationSuccess(
+          categories: updatedCategories,
+          message: _getTranslatedSuccessMessage('create'),
+        ));
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        emit(CategoryLoaded(categories: updatedCategories));
+        return;
+      }
+
       final currentState = state;
       List<Category>? currentCategories;
       if (currentState is CategoryOperationInProgress) {
@@ -231,6 +299,54 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       await Future.delayed(const Duration(milliseconds: 500));
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
+      debugPrint('Error updating category: $e');
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_UPDATE_CATEGORY,
+          payload: {
+            'category_id': event.categoryId,
+            'name': event.name,
+            'icon_code': event.iconCode,
+            'color_hex': event.colorHex,
+            'order_index': event.orderIndex,
+          },
+        );
+
+        // Mettre à jour localement la catégorie
+        final currentState = state;
+        List<Category> currentCategories = [];
+        if (currentState is CategoryLoaded) {
+          currentCategories = currentState.categories;
+        }
+
+        final updatedCategories = currentCategories.map((cat) {
+          if (cat.id == event.categoryId) {
+            return Category(
+              id: cat.id,
+              userId: cat.userId,
+              name: event.name ?? cat.name,
+              iconCode: event.iconCode ?? cat.iconCode,
+              colorHex: event.colorHex ?? cat.colorHex,
+              orderIndex: event.orderIndex ?? cat.orderIndex,
+              createdAt: cat.createdAt,
+              updatedAt: DateTime.now(),
+            );
+          }
+          return cat;
+        }).toList();
+
+        emit(CategoryOperationSuccess(
+          categories: updatedCategories,
+          message: _getTranslatedSuccessMessage('update'),
+        ));
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        emit(CategoryLoaded(categories: updatedCategories));
+        return;
+      }
+
       final currentState = state;
       List<Category>? currentCategories;
       if (currentState is CategoryOperationInProgress) {
@@ -272,6 +388,38 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       await Future.delayed(const Duration(milliseconds: 500));
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
+      debugPrint('Error deleting category: $e');
+
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_DELETE_CATEGORY,
+          payload: {
+            'category_id': event.categoryId,
+          },
+        );
+
+        // Supprimer localement la catégorie
+        final currentState = state;
+        List<Category> currentCategories = [];
+        if (currentState is CategoryLoaded) {
+          currentCategories = currentState.categories;
+        }
+
+        final updatedCategories = currentCategories
+            .where((cat) => cat.id != event.categoryId)
+            .toList();
+
+        emit(CategoryOperationSuccess(
+          categories: updatedCategories,
+          message: _getTranslatedSuccessMessage('delete'),
+        ));
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        emit(CategoryLoaded(categories: updatedCategories));
+        return;
+      }
+
       final currentState = state;
       List<Category>? currentCategories;
       if (currentState is CategoryOperationInProgress) {

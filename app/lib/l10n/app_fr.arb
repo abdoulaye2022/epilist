@@ -1628,5 +1628,7 @@
   "idle": "Inactif",
   "offlineDataWillSync": "Vos modifications seront synchronisées automatiquement lorsque vous serez de nouveau en ligne",
   "syncNow": "Synchroniser maintenant",
-  "close": "Fermer"
+  "close": "Fermer",
+  "offlineModeModificationsWillSync": "Mode hors ligne - Les modifications seront synchronisées plus tard",
+  "connectionRestored": "Connexion rétablie"
 }

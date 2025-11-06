@@ -4083,4 +4083,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncNow => 'Sync Now';
+
+  @override
+  String get offlineModeModificationsWillSync =>
+      'Offline mode - Changes will be synced later';
+
+  @override
+  String get connectionRestored => 'Connection restored';
 }

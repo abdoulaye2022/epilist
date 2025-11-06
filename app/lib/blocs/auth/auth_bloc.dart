@@ -5,11 +5,13 @@ import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/notification_service.dart';
 import 'package:epilist/services/sso_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/models/user.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -1024,12 +1026,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await authService.getCurrentUser();
       if (user != null) {
+        // ✅ Sauvegarder dans le cache
+        await OfflineStorageService.saveUserProfile(user.toJson());
+
         final ssoProvider = await authService.getCurrentSSOProvider();
         emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
       } else {
         emit(Unauthenticated());
       }
     } catch (e) {
+      debugPrint('Error loading user profile: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedProfile = await OfflineStorageService.getUserProfile();
+        if (cachedProfile != null) {
+          debugPrint('📦 Loading user profile from cache (offline mode)');
+          final user = User.fromJson(cachedProfile);
+          final ssoProvider = await authService.getCurrentSSOProvider();
+          emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Profile cache load failed: $cacheError');
+      }
+
       final errorMessage = _getTranslatedErrorMessage(
         'USER_INFO_ERROR',
         e.toString(),

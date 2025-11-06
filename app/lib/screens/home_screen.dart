@@ -470,50 +470,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   // Navigation vers la page Budget
   void _goToBudget(BuildContext context) {
-    context.requireConnection(
-      onConnected: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const BudgetScreen()),
-        );
-      },
+    // ✅ Mode offline supporté: Les budgets en cache peuvent être consultés
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BudgetScreen()),
     );
   }
 
   // Navigation vers la page Analytics
   void _goToAnalytics(BuildContext context) {
-    context.requireConnection(
-      onConnected: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
-        );
-      },
+    // ✅ Mode offline supporté: Les analytics en cache peuvent être consultés
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
     );
   }
 
   void _openListDetails(BuildContext context, ShoppingList list) {
-    context.requireConnection(
-      onConnected: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ListDetailScreen(shoppingList: list),
-          ),
-        ).then((_) => _loadShoppingLists());
-      },
-    );
+    // ✅ Mode offline supporté: Pas besoin de connexion pour voir une liste en cache
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListDetailScreen(shoppingList: list),
+      ),
+    ).then((_) => _loadShoppingLists());
   }
 
   void _goToAllLists(BuildContext context) {
-    context.requireConnection(
-      onConnected: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
-        ).then((_) => _loadShoppingLists());
-      },
-    );
+    // ✅ Mode offline supporté: Les listes en cache peuvent être consultées
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
+    ).then((_) => _loadShoppingLists());
   }
 
   void _goToProfile(BuildContext context) {
@@ -542,9 +530,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     switch (action) {
       case 'edit':
         if (list.canEdit) {
-          context.requireConnection(
-            onConnected: () => _showEditListDialog(list, context),
-          );
+          // ✅ Mode offline: Les modifications seront mises en queue
+          _showEditListDialog(list, context);
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -554,19 +541,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         break;
 
       case 'duplicate':
-        context.requireConnection(
-          onConnected:
-              () => context.read<ShoppingListBloc>().add(
-                DuplicateShoppingList(list.id),
-              ),
+        // ✅ Mode offline: La duplication sera mise en queue
+        context.read<ShoppingListBloc>().add(
+          DuplicateShoppingList(list.id),
         );
         break;
 
       case 'share':
         if (list.canShare) {
-          context.requireConnection(
-            onConnected: () => _showShareDialog(list, context),
-          );
+          // ⚠️ Partage: Nécessite une connexion (envoyer des invitations)
+          if (context.isConnected) {
+            _showShareDialog(list, context);
+          } else {
+            SmartSnackBarManager.showWarningSnackBar(
+              context,
+              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+            );
+          }
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -577,9 +568,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'manage_shares':
         if (list.isOwner && list.isShared) {
-          context.requireConnection(
-            onConnected: () => _showManageSharesDialog(list, context),
-          );
+          // ⚠️ Gestion partage: Nécessite une connexion
+          if (context.isConnected) {
+            _showManageSharesDialog(list, context);
+          } else {
+            SmartSnackBarManager.showWarningSnackBar(
+              context,
+              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+            );
+          }
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -590,9 +587,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'leave':
         if (!list.isOwner) {
-          context.requireConnection(
-            onConnected: () => _showLeaveSharedListDialog(list, context),
-          );
+          // ⚠️ Quitter liste partagée: Nécessite une connexion
+          if (context.isConnected) {
+            _showLeaveSharedListDialog(list, context);
+          } else {
+            SmartSnackBarManager.showWarningSnackBar(
+              context,
+              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+            );
+          }
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,
@@ -603,9 +606,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       case 'delete':
         if (list.canDelete) {
-          context.requireConnection(
-            onConnected: () => _showDeleteListDialog(list, context),
-          );
+          // ✅ Mode offline: La suppression sera mise en queue
+          _showDeleteListDialog(list, context);
         } else {
           SmartSnackBarManager.showWarningSnackBar(
             context,

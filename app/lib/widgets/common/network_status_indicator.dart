@@ -1,6 +1,7 @@
 // widgets/common/network_status_indicator.dart
 import 'package:flutter/material.dart';
 import 'package:epilist/services/connectivity_service.dart';
+import 'package:epilist/l10n/app_localizations.dart';
 
 /// Widget affichant le statut de la connexion réseau
 class NetworkStatusIndicator extends StatefulWidget {
@@ -50,6 +51,8 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -75,8 +78,8 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
           Expanded(
             child: Text(
               _isConnected
-                  ? 'Connexion rétablie'
-                  : 'Mode hors ligne - Les modifications seront synchronisées plus tard',
+                  ? l10n.connectionRestored
+                  : l10n.offlineModeModificationsWillSync,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
@@ -124,6 +127,8 @@ class _NetworkStatusBadgeState extends State<NetworkStatusBadge> {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -139,9 +144,9 @@ class _NetworkStatusBadgeState extends State<NetworkStatusBadge> {
             size: 14,
           ),
           const SizedBox(width: 4),
-          const Text(
-            'Hors ligne',
-            style: TextStyle(
+          Text(
+            l10n.offline,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 11,
               fontWeight: FontWeight.w600,

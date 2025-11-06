@@ -7818,6 +7818,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Synchroniser maintenant'**
   String get syncNow;
+
+  /// No description provided for @offlineModeModificationsWillSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode hors ligne - Les modifications seront synchronisées plus tard'**
+  String get offlineModeModificationsWillSync;
+
+  /// No description provided for @connectionRestored.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion rétablie'**
+  String get connectionRestored;
 }
 
 class _AppLocalizationsDelegate

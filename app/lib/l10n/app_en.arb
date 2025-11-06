@@ -1622,5 +1622,7 @@
   "idle": "Idle",
   "offlineDataWillSync": "Your changes will be automatically synced when you're back online",
   "syncNow": "Sync Now",
-  "close": "Close"
+  "close": "Close",
+  "offlineModeModificationsWillSync": "Offline mode - Changes will be synced later",
+  "connectionRestored": "Connection restored"
 }

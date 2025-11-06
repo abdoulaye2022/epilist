@@ -19,6 +19,11 @@ class OfflineStorageService {
   static const String _userProfileKey = 'cached_user_profile';
   static const String _currencyKey = 'cached_currency';
   static const String _categoriesKey = 'cached_categories';
+  static const String _analyticsKey = 'cached_analytics';
+  static const String _analyticsMonthlyKey = 'cached_analytics_monthly';
+  static const String _analyticsCategoriesKey = 'cached_analytics_categories';
+  static const String _analyticsTopProductsKey = 'cached_analytics_top_products';
+  static const String _emailPreferencesKey = 'cached_email_preferences';
   static const String _lastSyncKey = 'last_sync_timestamp';
 
   // ============================================================================
@@ -314,6 +319,183 @@ class OfflineStorageService {
   }
 
   // ============================================================================
+  // ANALYTICS - CACHE
+  // ============================================================================
+
+  /// Sauvegarder les analytics
+  static Future<bool> saveAnalytics(Map<String, dynamic> analytics) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(analytics);
+
+      await prefs.setString(_analyticsKey, encoded);
+      await updateLastSync();
+
+      print('💾 [OfflineStorage] Saved analytics');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving analytics: $e');
+      return false;
+    }
+  }
+
+  /// Charger les analytics depuis le cache
+  static Future<Map<String, dynamic>?> getAnalytics() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_analyticsKey);
+
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached analytics');
+        return null;
+      }
+
+      final analytics = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded analytics from cache');
+      return analytics;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading analytics: $e');
+      return null;
+    }
+  }
+
+  /// Sauvegarder les analytics mensuelles (Trends)
+  static Future<bool> saveAnalyticsMonthly(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(data);
+      await prefs.setString(_analyticsMonthlyKey, encoded);
+      await updateLastSync();
+      print('💾 [OfflineStorage] Saved analytics monthly');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving analytics monthly: $e');
+      return false;
+    }
+  }
+
+  /// Charger les analytics mensuelles depuis le cache
+  static Future<Map<String, dynamic>?> getAnalyticsMonthly() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_analyticsMonthlyKey);
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached analytics monthly');
+        return null;
+      }
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded analytics monthly from cache');
+      return data;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading analytics monthly: $e');
+      return null;
+    }
+  }
+
+  /// Sauvegarder les catégories analytics
+  static Future<bool> saveAnalyticsCategories(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(data);
+      await prefs.setString(_analyticsCategoriesKey, encoded);
+      await updateLastSync();
+      print('💾 [OfflineStorage] Saved analytics categories');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving analytics categories: $e');
+      return false;
+    }
+  }
+
+  /// Charger les catégories analytics depuis le cache
+  static Future<Map<String, dynamic>?> getAnalyticsCategories() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_analyticsCategoriesKey);
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached analytics categories');
+        return null;
+      }
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded analytics categories from cache');
+      return data;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading analytics categories: $e');
+      return null;
+    }
+  }
+
+  /// Sauvegarder les top products analytics
+  static Future<bool> saveAnalyticsTopProducts(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(data);
+      await prefs.setString(_analyticsTopProductsKey, encoded);
+      await updateLastSync();
+      print('💾 [OfflineStorage] Saved analytics top products');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving analytics top products: $e');
+      return false;
+    }
+  }
+
+  /// Charger les top products analytics depuis le cache
+  static Future<Map<String, dynamic>?> getAnalyticsTopProducts() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_analyticsTopProductsKey);
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached analytics top products');
+        return null;
+      }
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded analytics top products from cache');
+      return data;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading analytics top products: $e');
+      return null;
+    }
+  }
+
+  // ============================================================================
+  // EMAIL PREFERENCES
+  // ============================================================================
+
+  /// Sauvegarder les préférences email dans le cache
+  static Future<bool> saveEmailPreferences(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(data);
+      await prefs.setString(_emailPreferencesKey, encoded);
+      await updateLastSync();
+      print('💾 [OfflineStorage] Saved email preferences');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving email preferences: $e');
+      return false;
+    }
+  }
+
+  /// Charger les préférences email depuis le cache
+  static Future<Map<String, dynamic>?> getEmailPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_emailPreferencesKey);
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached email preferences');
+        return null;
+      }
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded email preferences from cache');
+      return data;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading email preferences: $e');
+      return null;
+    }
+  }
+
+  // ============================================================================
   // NETTOYAGE
   // ============================================================================
 
@@ -329,6 +511,11 @@ class OfflineStorageService {
         _userProfileKey,
         _currencyKey,
         _categoriesKey,
+        _analyticsKey,
+        _analyticsMonthlyKey,
+        _analyticsCategoriesKey,
+        _analyticsTopProductsKey,
+        _emailPreferencesKey,
         _lastSyncKey,
       ];
 

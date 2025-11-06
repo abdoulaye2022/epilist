@@ -37,7 +37,14 @@ class OfflineQueueService {
   static const String ACTION_UPDATE_BUDGET = 'update_budget';
   static const String ACTION_DELETE_BUDGET = 'delete_budget';
 
+  static const String ACTION_CREATE_CATEGORY = 'create_category';
+  static const String ACTION_UPDATE_CATEGORY = 'update_category';
+  static const String ACTION_DELETE_CATEGORY = 'delete_category';
+  static const String ACTION_REORDER_CATEGORIES = 'reorder_categories';
+
   static const String ACTION_UPDATE_PROFILE = 'update_profile';
+  static const String ACTION_UPDATE_EMAIL_PREFERENCES = 'update_email_preferences';
+  static const String ACTION_SEND_FEEDBACK = 'send_feedback';
 
   // ============================================================================
   // INITIALISATION

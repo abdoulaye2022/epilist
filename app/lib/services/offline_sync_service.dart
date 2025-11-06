@@ -1,11 +1,15 @@
 // services/offline_sync_service.dart
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/services/offline_queue_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/config/app_config.dart';
 
 /// Service de synchronisation pour le mode hors ligne
 /// Gère la queue d'actions en attente et la synchronisation avec le serveur
@@ -268,6 +272,55 @@ class OfflineSyncService {
           print('⚠️ [OfflineSync] ACTION_UPDATE_PROFILE not yet implemented');
           return true; // Ignorer pour l'instant
 
+        // Email Preferences
+        case OfflineQueueService.ACTION_UPDATE_EMAIL_PREFERENCES:
+          final token = await _getToken();
+          if (token == null) return false;
+
+          final response = await http.put(
+            Uri.parse('${AppConfig.baseUrl}/user/email-preferences'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(payload),
+          );
+
+          if (response.statusCode == 200) {
+            final jsonData = json.decode(response.body);
+            return jsonData['success'] == true;
+          }
+          return false;
+
+        // Send Feedback
+        case OfflineQueueService.ACTION_SEND_FEEDBACK:
+          final token = await _getToken();
+          // Déterminer l'endpoint selon si l'utilisateur est connecté
+          final endpoint = token != null
+              ? '${AppConfig.baseUrl}/contact/feedback'
+              : '${AppConfig.baseUrl}/contact/feedback-anonymous';
+
+          final headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          };
+
+          if (token != null) {
+            headers['Authorization'] = 'Bearer $token';
+          }
+
+          final response = await http.post(
+            Uri.parse(endpoint),
+            headers: headers,
+            body: json.encode(payload),
+          );
+
+          if (response.statusCode == 200) {
+            final jsonData = json.decode(response.body);
+            return jsonData['success'] == true;
+          }
+          return false;
+
         default:
           print('⚠️ [OfflineSync] Type d\'action inconnu: $type');
           return false;
@@ -275,6 +328,17 @@ class OfflineSyncService {
     } catch (e) {
       print('❌ [OfflineSync] Erreur sync $type: $e');
       return false;
+    }
+  }
+
+  /// Get authentication token from SharedPreferences
+  Future<String?> _getToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('access_token');
+    } catch (e) {
+      print('❌ [OfflineSync] Error getting token: $e');
+      return null;
     }
   }
 

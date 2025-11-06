@@ -3,7 +3,9 @@ import 'package:bloc/bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/services/analytics_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
+import 'package:flutter/foundation.dart';
 
 class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   final AnalyticsService _analyticsService;
@@ -85,8 +87,26 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         event.currencyCode,
         event.includeShared,
       );
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveAnalytics(data);
+
       emit(DashboardLoaded(data));
     } catch (e) {
+      debugPrint('Error loading analytics dashboard: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedData = await OfflineStorageService.getAnalytics();
+        if (cachedData != null) {
+          debugPrint('📦 Loading analytics from cache (offline mode)');
+          emit(DashboardLoaded(cachedData));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Analytics cache load failed: $cacheError');
+      }
+
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
   }
@@ -102,8 +122,26 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         currencyCode: event.currencyCode,
         includeShared: event.includeShared,
       );
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveAnalyticsMonthly(data);
+
       emit(MonthlySpendingLoaded(data));
     } catch (e) {
+      debugPrint('Error loading monthly spending: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedData = await OfflineStorageService.getAnalyticsMonthly();
+        if (cachedData != null) {
+          debugPrint('📦 Loading monthly spending from cache (offline mode)');
+          emit(MonthlySpendingLoaded(cachedData));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Monthly spending cache load failed: $cacheError');
+      }
+
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
   }
@@ -204,8 +242,26 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         currencyCode: event.currencyCode,
         includeShared: event.includeShared,
       );
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveAnalyticsCategories(data);
+
       emit(SpendingCategoriesLoaded(data));
     } catch (e) {
+      debugPrint('Error loading spending categories: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedData = await OfflineStorageService.getAnalyticsCategories();
+        if (cachedData != null) {
+          debugPrint('📦 Loading spending categories from cache (offline mode)');
+          emit(SpendingCategoriesLoaded(cachedData));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Categories cache load failed: $cacheError');
+      }
+
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
   }
@@ -223,8 +279,26 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         currencyCode: event.currencyCode,
         includeShared: event.includeShared,
       );
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveAnalyticsTopProducts(data);
+
       emit(TopProductsLoaded(data));
     } catch (e) {
+      debugPrint('Error loading top products: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedData = await OfflineStorageService.getAnalyticsTopProducts();
+        if (cachedData != null) {
+          debugPrint('📦 Loading top products from cache (offline mode)');
+          emit(TopProductsLoaded(cachedData));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Top products cache load failed: $cacheError');
+      }
+
       emit(AnalyticsError(_getTranslatedErrorMessage(e)));
     }
   }

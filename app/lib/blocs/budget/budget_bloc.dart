@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -136,9 +137,26 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     emit(BudgetLoading());
     try {
       final budgets = await _budgetService.getBudgets();
+
+      // ✅ Sauvegarder dans le cache
+      await OfflineStorageService.saveBudgets(budgets);
+
       emit(BudgetLoaded(budgets: budgets, allBudgets: budgets));
     } catch (e) {
       debugPrint('Error loading budgets: $e');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedBudgets = await OfflineStorageService.getBudgets();
+        if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
+          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Cache load failed: $cacheError');
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(BudgetError(errorMessage));
     }

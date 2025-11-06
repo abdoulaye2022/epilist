@@ -4,10 +4,13 @@ import 'package:epilist/blocs/contact/contact_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import '../models/feedback_models.dart';
+import 'offline_queue_service.dart';
+import 'connectivity_service.dart';
 
 class ContactValidationException implements Exception {
   final String message;
@@ -22,6 +25,7 @@ class ContactValidationException implements Exception {
 class ContactService {
   final Dio dio;
   final AuthService authService;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   ContactService({required this.dio, required this.authService});
 
@@ -120,16 +124,19 @@ class ContactService {
     String? platform,
     String? deviceInfo,
   }) async {
+    // ✅ Déclarer en dehors du try pour l'accès dans le catch
+    final currentLanguage = _getCurrentLanguage();
+    Map<String, dynamic>? data;
+
     try {
-      final currentLanguage = _getCurrentLanguage();
-      print('🚀 Sending feedback in language: $currentLanguage');
+      debugPrint('🚀 Sending feedback in language: $currentLanguage');
 
       // Récupérer les informations de l'appareil automatiquement
       final deviceData = await _getDeviceInfo();
       final packageInfo = await PackageInfo.fromPlatform();
 
       // Préparer les données
-      final data = {
+      data = {
         'subject': subject,
         'message': message,
         'feedback_type': feedbackType,
@@ -150,8 +157,8 @@ class ContactService {
         data['email'] = 'anonymous@example.com';
       }
 
-      print('📤 Sending to endpoint: $endpoint');
-      print('📊 Feedback data: ${data.keys.join(', ')}');
+      debugPrint('📤 Sending to endpoint: $endpoint');
+      debugPrint('📊 Feedback data: ${data.keys.join(', ')}');
 
       // Configurer les headers avec la langue
       final headers = _createHeaders(authToken: token);
@@ -163,7 +170,7 @@ class ContactService {
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        print('✅ Feedback envoyé avec succès');
+        debugPrint('✅ Feedback envoyé avec succès');
         return {
           'message': response.data['message'],
           'feedbackId': response.data['data']?['feedback_id'] ?? '',
@@ -172,7 +179,7 @@ class ContactService {
         throw Exception(response.data['message'] ?? 'Erreur lors de l\'envoi');
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ Erreur réseau sendFeedback: ${e.response?.statusCode} - ${e.message}',
       );
 
@@ -191,12 +198,28 @@ class ContactService {
         }
       }
 
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected && data != null) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_SEND_FEEDBACK,
+          payload: data,
+        );
+
+        debugPrint('📥 [Feedback] Feedback queued for offline sync');
+        return {
+          'message': currentLanguage == 'en'
+              ? 'Feedback will be sent when you are back online'
+              : 'Votre feedback sera envoyé une fois la connexion rétablie',
+          'feedbackId': 'offline_${DateTime.now().millisecondsSinceEpoch}',
+        };
+      }
+
       throw Exception(
         e.response?.data?['message'] ??
             'Erreur réseau lors de l\'envoi : ${e.message}',
       );
     } catch (e) {
-      print('❌ Erreur inattendue sendFeedback: $e');
+      debugPrint('❌ Erreur inattendue sendFeedback: $e');
       if (e is ContactValidationException) {
         rethrow;
       }
