@@ -469,14 +469,20 @@ class NotificationService
      */
     public function sendBudgetAlert(User $user, $budget, string $alertType): bool
     {
+        // ✅ ANTI-SPAM: Vérifier le cooldown avant d'envoyer
+        if (!$this->checkBudgetAlertCooldown($budget->id, $alertType)) {
+            error_log("⏱️ Budget alert cooldown active for budget {$budget->id} ({$alertType})");
+            return false;
+        }
+
         $title = $this->getBudgetAlertTitle($alertType);
         $body = $this->getBudgetAlertBody($user, $budget, $alertType);
-        
+
         //  Formater les montants selon la devise de l'utilisateur avec conversions explicites
         $budgetAmount = method_exists($budget, 'getBudgetAmount') ? (float) $budget->getBudgetAmount() : 0.0;
         $spentAmount = method_exists($budget, 'getSpentAmount') ? (float) $budget->getSpentAmount() : 0.0;
         $remainingAmount = $budgetAmount - $spentAmount;
-        
+
         $data = [
             'budget_id' => (string) $budget->id,
             'budget_name' => (string) $budget->name,
@@ -501,7 +507,83 @@ class NotificationService
             $alertType === 'exceeded' ? 'high' : 'normal'
         );
 
+        // ✅ Sauvegarder le timestamp de cette alerte
+        if ($result['success']) {
+            $this->saveBudgetAlertTimestamp($budget->id, $alertType);
+        }
+
         return $result['success'];
+    }
+
+    /**
+     * ✅ NOUVEAU: Vérifier le cooldown des alertes budget
+     * - Alertes "exceeded": max 1 par heure
+     * - Alertes "warning": max 1 par 4 heures
+     * - Alertes "daily_summary": max 1 par jour
+     */
+    private function checkBudgetAlertCooldown(int $budgetId, string $alertType): bool
+    {
+        $cacheFile = $this->getStoragePath() . "/alerts_{$budgetId}_{$alertType}.txt";
+
+        if (!file_exists($cacheFile)) {
+            return true; // Pas de cooldown, on peut envoyer
+        }
+
+        try {
+            $timestamp = file_get_contents($cacheFile);
+
+            if (!$timestamp || !is_numeric($timestamp)) {
+                @unlink($cacheFile);
+                return true;
+            }
+
+            $lastAlert = \Carbon\Carbon::createFromTimestamp($timestamp, 'UTC');
+            $now = \Carbon\Carbon::now('UTC');
+            $hoursSinceLastAlert = $lastAlert->diffInHours($now);
+
+            // Définir le cooldown selon le type d'alerte
+            $cooldownHours = match($alertType) {
+                'exceeded' => 1,           // 1 heure pour budget dépassé
+                'warning' => 4,            // 4 heures pour avertissement
+                'daily_summary' => 24,     // 24 heures pour résumé quotidien
+                default => 1
+            };
+
+            return $hoursSinceLastAlert >= $cooldownHours;
+
+        } catch (\Exception $e) {
+            error_log("Error checking budget alert cooldown: " . $e->getMessage());
+            @unlink($cacheFile);
+            return true;
+        }
+    }
+
+    /**
+     * ✅ NOUVEAU: Sauvegarder le timestamp de la dernière alerte
+     */
+    private function saveBudgetAlertTimestamp(int $budgetId, string $alertType): void
+    {
+        $cacheFile = $this->getStoragePath() . "/alerts_{$budgetId}_{$alertType}.txt";
+
+        try {
+            $storageDir = dirname($cacheFile);
+            if (!is_dir($storageDir)) {
+                mkdir($storageDir, 0755, true);
+            }
+
+            file_put_contents($cacheFile, \Carbon\Carbon::now('UTC')->getTimestamp());
+
+        } catch (\Exception $e) {
+            error_log("Error saving budget alert timestamp: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * ✅ HELPER: Obtenir le chemin du dossier storage
+     */
+    private function getStoragePath(): string
+    {
+        return dirname(__DIR__, 2) . '/storage';
     }
 
     /**

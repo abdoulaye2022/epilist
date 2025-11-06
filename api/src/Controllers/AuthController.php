@@ -8,6 +8,7 @@ use App\Models\UserDevice;
 use App\Models\Currency;
 use App\Services\JwtService;
 use App\Services\SSOService;
+use App\Services\RateLimiter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
@@ -27,11 +28,13 @@ class AuthController
 {
     private $jwtService;
     private $ssoService;
+    private $rateLimiter;
 
     public function __construct()
     {
         $this->jwtService = new JwtService();
         $this->ssoService = new SSOService();
+        $this->rateLimiter = new RateLimiter();
     }
 
     // ===================== MÉTHODES SSO =====================
@@ -1157,6 +1160,42 @@ class AuthController
         );
     }
 
+    /**
+     * 🔒 Obtenir l'adresse IP du client (avec support proxy/load balancer)
+     */
+    private function getClientIP(Request $request): string
+    {
+        // Vérifier les headers de proxy
+        $headers = $request->getHeaders();
+
+        // X-Forwarded-For (le plus commun)
+        if (!empty($headers['X-Forwarded-For'])) {
+            $ips = is_array($headers['X-Forwarded-For'])
+                ? $headers['X-Forwarded-For'][0]
+                : $headers['X-Forwarded-For'];
+            $ipList = explode(',', $ips);
+            return trim($ipList[0]); // Premier IP = client original
+        }
+
+        // X-Real-IP
+        if (!empty($headers['X-Real-IP'])) {
+            return is_array($headers['X-Real-IP'])
+                ? $headers['X-Real-IP'][0]
+                : $headers['X-Real-IP'];
+        }
+
+        // CF-Connecting-IP (Cloudflare)
+        if (!empty($headers['CF-Connecting-IP'])) {
+            return is_array($headers['CF-Connecting-IP'])
+                ? $headers['CF-Connecting-IP'][0]
+                : $headers['CF-Connecting-IP'];
+        }
+
+        // Fallback sur REMOTE_ADDR
+        $serverParams = $request->getServerParams();
+        return $serverParams['REMOTE_ADDR'] ?? '0.0.0.0';
+    }
+
     // ===================== AUTHENTIFICATION CLASSIQUE =====================
 
     public function login(Request $request, Response $response)
@@ -1951,17 +1990,51 @@ class AuthController
     {
         $data = $request->getParsedBody();
 
+        // 🔒 PROTECTION BOT: Obtenir l'IP du client
+        $ipAddress = $this->getClientIP($request);
+
+        // 🔒 PROTECTION BOT: Vérifier si l'IP est bloquée
+        if ($this->rateLimiter->isIPBlocked($ipAddress)) {
+            error_log("🚫 [AuthController] Tentative d'inscription depuis IP bloquée: {$ipAddress}");
+            return $this->createErrorResponse(
+                'Trop de tentatives. Votre IP a été temporairement bloquée.',
+                429,
+                'IP_BLOCKED'
+            );
+        }
+
+        // 🔒 PROTECTION BOT: Vérifier si l'IP est suspecte
+        if ($this->rateLimiter->isSuspiciousIP($ipAddress)) {
+            error_log("⚠️  [AuthController] IP suspecte détectée lors de l'inscription: {$ipAddress}");
+            $this->rateLimiter->blockIP($ipAddress, 60); // Bloquer 1 heure
+            return $this->createErrorResponse(
+                'Activité suspecte détectée. Veuillez réessayer plus tard.',
+                429,
+                'SUSPICIOUS_ACTIVITY'
+            );
+        }
+
+        // 🔒 PROTECTION BOT: Vérifier limite globale (anti-spam massif)
+        if (!$this->rateLimiter->checkGlobalRegistrationLimit()) {
+            error_log("🚫 [AuthController] Limite globale d'inscriptions atteinte");
+            return $this->createErrorResponse(
+                'Trop d\'inscriptions en cours. Veuillez réessayer dans quelques minutes.',
+                429,
+                'GLOBAL_LIMIT_REACHED'
+            );
+        }
+
         $validator = new Validator($data);
-        
+
         $validator->rule('required', ['first_name', 'last_name', 'email', 'password'])
             ->message('{field} is required');
-        
+
         $validator->rule('email', 'email')
             ->message('Invalid email address');
-        
+
         $validator->rule('lengthMax', 'email', 255)
             ->message('Email is too long (max 255 characters)');
-        
+
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
 
@@ -1987,11 +2060,37 @@ class AuthController
                 ->withStatus(400);
         }
 
+        // 🔒 PROTECTION BOT: Vérifier limite par IP
+        if (!$this->rateLimiter->checkIPLimit('registration', $ipAddress)) {
+            $retryAfter = $this->rateLimiter->getRetryAfter('registration', $ipAddress);
+            error_log("🚫 [AuthController] Limite d'inscriptions atteinte pour IP: {$ipAddress}");
+
+            return $this->createErrorResponse(
+                'Trop de tentatives d\'inscription. Veuillez réessayer dans ' . ceil($retryAfter / 60) . ' minutes.',
+                429,
+                'RATE_LIMIT_EXCEEDED',
+                ['retry_after' => $retryAfter]
+            );
+        }
+
+        // 🔒 PROTECTION BOT: Vérifier limite par email
+        if (!$this->rateLimiter->checkEmailLimit('registration_email', $data['email'])) {
+            error_log("🚫 [AuthController] Trop de tentatives pour email: {$data['email']}");
+            return $this->createErrorResponse(
+                'Cet email a été utilisé trop de fois. Veuillez réessayer plus tard.',
+                429,
+                'EMAIL_RATE_LIMIT'
+            );
+        }
+
         try {
             // Vérifier si l'email existe déjà
             if (User::findByEmail($data['email'])) {
+                // 🔒 Enregistrer la tentative même en cas d'échec
+                $this->rateLimiter->recordAttempt('registration', $ipAddress);
+
                 return $this->createErrorResponse(
-                    'This email is already registered', 
+                    'This email is already registered',
                     400,
                     'EMAIL_ALREADY_EXISTS'
                 );
@@ -2026,6 +2125,11 @@ class AuthController
 
             $user->load('currency');
 
+            // 🔒 PROTECTION BOT: Enregistrer la tentative réussie
+            $this->rateLimiter->recordAttempt('registration', $ipAddress);
+            $this->rateLimiter->recordAttempt('registration_email', md5(strtolower($data['email'])));
+            $this->rateLimiter->recordGlobalAttempt('registration');
+
             // Envoyer l'email de vérification
             if(Config::get('APP_ENV') == 'dev') {
                 $user->email = 'm2atodev@gmail.com';
@@ -2033,6 +2137,8 @@ class AuthController
 
             $mailSender = new MailSender();
             $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
+
+            error_log("✅ [AuthController] Inscription réussie depuis IP: {$ipAddress}");
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -2046,6 +2152,9 @@ class AuthController
                 ->withStatus(201);
 
         } catch (\Exception $e) {
+            // 🔒 Enregistrer la tentative même en cas d'erreur
+            $this->rateLimiter->recordAttempt('registration', $ipAddress);
+
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'code' => 'SERVER_ERROR',
@@ -2061,6 +2170,19 @@ class AuthController
     {
         $data = $request->getParsedBody();
 
+        // 🔒 PROTECTION BOT: Obtenir l'IP du client
+        $ipAddress = $this->getClientIP($request);
+
+        // 🔒 PROTECTION BOT: Vérifier si l'IP est bloquée
+        if ($this->rateLimiter->isIPBlocked($ipAddress)) {
+            error_log("🚫 [AuthController] Tentative de vérification email depuis IP bloquée: {$ipAddress}");
+            return $this->createErrorResponse(
+                'Trop de tentatives. Votre IP a été temporairement bloquée.',
+                429,
+                'IP_BLOCKED'
+            );
+        }
+
         $validator = new Validator($data);
         $validator->rule('required', ['email', 'code'])
             ->message('{field} is required');
@@ -2069,17 +2191,17 @@ class AuthController
 
         if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
             $fcmData = $data['fcm_data'];
-            
+
             if (isset($fcmData['device_id'])) {
                 $validator->rule('lengthMax', 'fcm_data.device_id', 255)
                     ->message('Device ID too long');
             }
-            
+
             if (isset($fcmData['push_token'])) {
                 $validator->rule('lengthMax', 'fcm_data.push_token', 512)
                     ->message('Push token too long');
             }
-            
+
             if (isset($fcmData['platform'])) {
                 $validator->rule('in', 'fcm_data.platform', ['android', 'ios'])
                     ->message('Platform must be android or ios');
@@ -2098,12 +2220,28 @@ class AuthController
                 ->withStatus(400);
         }
 
+        // 🔒 PROTECTION BOT: Vérifier limite par IP pour les codes de vérification
+        if (!$this->rateLimiter->checkIPLimit('verification_code', $ipAddress)) {
+            $retryAfter = $this->rateLimiter->getRetryAfter('verification_code', $ipAddress);
+            error_log("🚫 [AuthController] Trop de tentatives de vérification depuis IP: {$ipAddress}");
+
+            return $this->createErrorResponse(
+                'Trop de tentatives de vérification. Veuillez réessayer dans ' . ceil($retryAfter / 60) . ' minutes.',
+                429,
+                'RATE_LIMIT_EXCEEDED',
+                ['retry_after' => $retryAfter]
+            );
+        }
+
         try {
             $user = User::with('currency')->where('email', $data['email'])->first();
-            
+
             if (!$user) {
+                // 🔒 Enregistrer tentative échouée
+                $this->rateLimiter->recordAttempt('verification_code', $ipAddress);
+
                 return $this->createErrorResponse(
-                    'User not found', 
+                    'User not found',
                     404,
                     'USER_NOT_FOUND'
                 );
@@ -2111,15 +2249,18 @@ class AuthController
 
             if ($user->isEmailVerified()) {
                 return $this->createErrorResponse(
-                    'Email already verified', 
+                    'Email already verified',
                     400,
                     'EMAIL_ALREADY_VERIFIED'
                 );
             }
 
             if ($user->email_verification_code !== $data['code']) {
+                // 🔒 Enregistrer tentative échouée
+                $this->rateLimiter->recordAttempt('verification_code', $ipAddress);
+
                 return $this->createErrorResponse(
-                    'Invalid verification code', 
+                    'Invalid verification code',
                     400,
                     'INVALID_VERIFICATION_CODE'
                 );
@@ -2136,10 +2277,13 @@ class AuthController
             $user->markEmailAsVerified();
             $user->save();
 
+            // 🔒 PROTECTION BOT: Réinitialiser les tentatives après succès
+            $this->rateLimiter->resetAttempts('verification_code', $ipAddress);
+
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
                 error_log(" Mise à jour FCM lors de la confirmation d'email pour utilisateur: {$user->id}");
                 $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
-                
+
                 if ($fcmUpdateSuccess) {
                     error_log(" Token FCM mis à jour avec succès lors de la confirmation");
                 } else {
@@ -2249,6 +2393,19 @@ class AuthController
     {
         $data = $request->getParsedBody();
 
+        // 🔒 PROTECTION BOT: Obtenir l'IP du client
+        $ipAddress = $this->getClientIP($request);
+
+        // 🔒 PROTECTION BOT: Vérifier si l'IP est bloquée
+        if ($this->rateLimiter->isIPBlocked($ipAddress)) {
+            error_log("🚫 [AuthController] Tentative de reset mot de passe depuis IP bloquée: {$ipAddress}");
+            return $this->createErrorResponse(
+                'Trop de tentatives. Votre IP a été temporairement bloquée.',
+                429,
+                'IP_BLOCKED'
+            );
+        }
+
         $validator = new Validator($data);
         $validator->rule('required', ['email'])
             ->message('{field} is required');
@@ -2266,10 +2423,27 @@ class AuthController
                 ->withStatus(400);
         }
 
+        // 🔒 PROTECTION BOT: Vérifier limite par IP
+        if (!$this->rateLimiter->checkIPLimit('password_reset', $ipAddress)) {
+            $retryAfter = $this->rateLimiter->getRetryAfter('password_reset', $ipAddress);
+            error_log("🚫 [AuthController] Limite de reset mot de passe atteinte pour IP: {$ipAddress}");
+
+            return $this->createErrorResponse(
+                'Trop de tentatives. Veuillez réessayer dans ' . ceil($retryAfter / 60) . ' minutes.',
+                429,
+                'RATE_LIMIT_EXCEEDED',
+                ['retry_after' => $retryAfter]
+            );
+        }
+
         try {
+            // 🔒 Enregistrer la tentative
+            $this->rateLimiter->recordAttempt('password_reset', $ipAddress);
+
             $user = User::findByEmail($data['email']);
-            
+
             if (!$user) {
+                // Toujours retourner succès pour ne pas révéler si l'email existe
                 return $this->createErrorResponse('If this email exists, a password change code has been sent.', 200);
             }
 
