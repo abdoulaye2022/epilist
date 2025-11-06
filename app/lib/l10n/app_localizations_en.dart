@@ -4090,4 +4090,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get connectionRestored => 'Connection restored';
+
+  @override
+  String get preferencesSavedSuccessfully => 'Preferences saved successfully';
+
+  @override
+  String get errorSavingPreferences => 'Error saving preferences';
+
+  @override
+  String get emailPreferencesUnavailableOffline =>
+      'Email preferences unavailable offline';
+
+  @override
+  String get visitPageOnlineToCache =>
+      'Please visit this page while online to cache your preferences';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get loadingOptions => 'Loading options...';
+
+  @override
+  String get pleaseSelectFeedbackTypeAndPriority =>
+      'Please select a feedback type and priority';
 }

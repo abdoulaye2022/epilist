@@ -44,12 +44,13 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     setState(() => _isSaving = false);
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             success
-              ? 'Preferences saved successfully'
-              : 'Error saving preferences',
+              ? l10n.preferencesSavedSuccessfully
+              : l10n.errorSavingPreferences,
           ),
           backgroundColor: success ? Colors.green : Colors.red,
         ),
@@ -118,17 +119,27 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                      const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
                       const SizedBox(height: 16),
                       Text(
-                        'Failed to load preferences',
+                        l10n.emailPreferencesUnavailableOffline,
                         style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          l10n.visitPageOnlineToCache,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         onPressed: _loadPreferences,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
+                        label: Text(l10n.tryAgain),
                       ),
                     ],
                   ),

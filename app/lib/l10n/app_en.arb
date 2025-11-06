@@ -1624,5 +1624,12 @@
   "syncNow": "Sync Now",
   "close": "Close",
   "offlineModeModificationsWillSync": "Offline mode - Changes will be synced later",
-  "connectionRestored": "Connection restored"
+  "connectionRestored": "Connection restored",
+  "preferencesSavedSuccessfully": "Preferences saved successfully",
+  "errorSavingPreferences": "Error saving preferences",
+  "emailPreferencesUnavailableOffline": "Email preferences unavailable offline",
+  "visitPageOnlineToCache": "Please visit this page while online to cache your preferences",
+  "tryAgain": "Try Again",
+  "loadingOptions": "Loading options...",
+  "pleaseSelectFeedbackTypeAndPriority": "Please select a feedback type and priority"
 }

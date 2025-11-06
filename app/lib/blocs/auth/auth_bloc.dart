@@ -1043,9 +1043,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (cachedProfile != null) {
           debugPrint('📦 Loading user profile from cache (offline mode)');
           final user = User.fromJson(cachedProfile);
-          final ssoProvider = await authService.getCurrentSSOProvider();
+
+          // ✅ Gérer l'échec de getCurrentSSOProvider
+          String? ssoProvider;
+          try {
+            ssoProvider = await authService.getCurrentSSOProvider();
+          } catch (ssoError) {
+            debugPrint('⚠️ Could not get SSO provider: $ssoError');
+            ssoProvider = 'email'; // Fallback
+          }
+
           emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
           return;
+        } else {
+          debugPrint('ℹ️ No cached profile available (visit profile page online first)');
         }
       } catch (cacheError) {
         debugPrint('❌ Profile cache load failed: $cacheError');

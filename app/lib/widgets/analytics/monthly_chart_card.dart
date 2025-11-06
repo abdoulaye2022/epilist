@@ -1,7 +1,11 @@
 // widgets/analytics/monthly_chart_card.dart - VERSION CORRIGÉE TRADUCTION MOIS
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
+import 'package:epilist/blocs/currency/currency_bloc.dart';
+import 'package:epilist/blocs/currency/currency_state.dart';
+import 'package:epilist/blocs/auth/auth_bloc.dart';
 
 class MonthlyChartCard extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -14,45 +18,52 @@ class MonthlyChartCard extends StatelessWidget {
     final monthlyData = data['monthly_data'] as List<dynamic>? ?? [];
     final summary = data['summary'] ?? {};
 
-    return Container(
-      decoration: const BoxDecoration(color: Colors.transparent),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.show_chart, color: Colors.blue[600], size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n.monthlyTrends,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const CurrencyIndicator(),
-              ],
-            ),
-            const SizedBox(height: 20),
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
+      builder: (context, currencyState) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            // Obtenir le code de devise actuel
+            final currencyCode = _getCurrencyCode(currencyState, authState);
 
-            // Graphique avec contraintes strictes
-            Container(
-              height: 200,
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue[100]!),
-              ),
-              child: _buildSimpleChart(monthlyData, l10n),
-            ),
+            return Container(
+              decoration: const BoxDecoration(color: Colors.transparent),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.show_chart, color: Colors.blue[600], size: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            l10n.monthlyTrends,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const CurrencyIndicator(),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Graphique avec contraintes strictes
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue[100]!),
+                      ),
+                      child: _buildSimpleChart(monthlyData, l10n, currencyCode),
+                    ),
 
             const SizedBox(height: 20),
 
@@ -81,11 +92,15 @@ class MonthlyChartCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Informations sur les données
-            _buildDataInfo(monthlyData, l10n),
-          ],
-        ),
-      ),
+                    // Informations sur les données
+                    _buildDataInfo(monthlyData, l10n),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -404,7 +419,7 @@ class MonthlyChartCard extends StatelessWidget {
     return total / (monthlyData.length > 0 ? monthlyData.length : 12);
   }
 
-  Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n) {
+  Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n, String currencyCode) {
     if (monthlyData.isEmpty) {
       return Center(
         child: Text(
@@ -480,7 +495,7 @@ class MonthlyChartCard extends StatelessWidget {
                     children: [
                       // Barre du graphique
                       Tooltip(
-                        message: _buildTooltipMessage(month, l10n),
+                        message: _buildTooltipMessage(month, l10n, currencyCode),
                         child: Container(
                           width: 24,
                           height: height < 5 ? 5 : height,
@@ -531,8 +546,8 @@ class MonthlyChartCard extends StatelessWidget {
     return value.toString();
   }
 
-  /// ✅ MODIFIÉ: Tooltip avec traduction du nom de mois
-  String _buildTooltipMessage(dynamic month, AppLocalizations l10n) {
+  /// ✅ MODIFIÉ: Tooltip avec traduction du nom de mois et devise dynamique
+  String _buildTooltipMessage(dynamic month, AppLocalizations l10n, String currencyCode) {
     if (month is! Map<String, dynamic>) return 'Données invalides';
 
     final monthName =
@@ -548,13 +563,13 @@ class MonthlyChartCard extends StatelessWidget {
     final dataQuality = _getStringValue(month, 'data_quality') ?? 'none';
 
     String message = '$translatedMonthName\n';
-    message += 'Total: ${totalSpent.toStringAsFixed(2)} XOF\n';
+    message += 'Total: ${totalSpent.toStringAsFixed(2)} $currencyCode\n';
 
     if (receiptsTotal > 0) {
-      message += 'Factures: ${receiptsTotal.toStringAsFixed(2)} XOF\n';
+      message += 'Factures: ${receiptsTotal.toStringAsFixed(2)} $currencyCode\n';
     }
     if (itemsTotal > 0) {
-      message += 'Items: ${itemsTotal.toStringAsFixed(2)} XOF\n';
+      message += 'Items: ${itemsTotal.toStringAsFixed(2)} $currencyCode\n';
     }
 
     message += 'Qualité: $dataQuality';
@@ -720,5 +735,27 @@ class MonthlyChartCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Obtenir le code de devise actuel depuis les BLoCs
+  String _getCurrencyCode(CurrencyState currencyState, AuthState authState) {
+    // 1. Depuis CurrencyState
+    if (currencyState is UserCurrencyUpdated) {
+      return currencyState.userCurrency.currency.code.toUpperCase();
+    }
+    if (currencyState is UserCurrencyLoaded) {
+      return currencyState.userCurrency.currency.code.toUpperCase();
+    }
+    if (currencyState is CurrencySelected) {
+      return currencyState.currency.code.toUpperCase();
+    }
+
+    // 2. Depuis AuthState
+    if (authState is AuthSuccess && authState.user.currency != null) {
+      return authState.user.currency!.code.toUpperCase();
+    }
+
+    // 3. Fallback: CAD
+    return 'CAD';
   }
 }

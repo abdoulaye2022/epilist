@@ -1,6 +1,5 @@
 // services/contact_service.dart - VERSION AVEC LANGUE
 import 'package:dio/dio.dart';
-import 'package:epilist/blocs/contact/contact_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -11,6 +10,7 @@ import 'dart:ui' as ui;
 import '../models/feedback_models.dart';
 import 'offline_queue_service.dart';
 import 'connectivity_service.dart';
+import 'offline_storage_service.dart';
 
 class ContactValidationException implements Exception {
   final String message;
@@ -46,7 +46,7 @@ class ContactService {
           return 'fr';
       }
     } catch (e) {
-      print('⚠️ Erreur lors de la détection de la langue: $e');
+      debugPrint('⚠️ Erreur lors de la détection de la langue: $e');
       return 'fr'; // Fallback
     }
   }
@@ -67,9 +67,10 @@ class ContactService {
   }
 
   Future<Map<String, dynamic>> getFeedbackTypes() async {
+    final currentLanguage = _getCurrentLanguage();
+
     try {
-      final currentLanguage = _getCurrentLanguage();
-      print('🌐 Requesting feedback types in language: $currentLanguage');
+      debugPrint('🌐 Requesting feedback types in language: $currentLanguage');
 
       final response = await dio.get(
         '/contact/feedback-types',
@@ -82,7 +83,7 @@ class ContactService {
         final data = response.data['data'];
         final serverLanguage = data['language'] ?? currentLanguage;
 
-        print('📋 Server returned data in language: $serverLanguage');
+        debugPrint('📋 Server returned data in language: $serverLanguage');
 
         final feedbackTypes =
             (data['feedback_types'] as List)
@@ -94,23 +95,59 @@ class ContactService {
                 .map((item) => PriorityLevel.fromJson(item))
                 .toList();
 
-        print(
+        debugPrint(
           '✅ Loaded ${feedbackTypes.length} feedback types and ${priorities.length} priorities',
         );
 
-        return {
+        final result = {
           'feedbackTypes': feedbackTypes,
           'priorities': priorities,
           'language': serverLanguage,
         };
+
+        // ✅ Sauvegarder dans le cache
+        await OfflineStorageService.saveFeedbackTypes({
+          'feedback_types': data['feedback_types'],
+          'priorities': data['priorities'],
+          'language': serverLanguage,
+        });
+
+        return result;
       } else {
         throw Exception('Erreur lors du chargement des types de feedback');
       }
     } on DioException catch (e) {
-      print('❌ Erreur réseau getFeedbackTypes: ${e.message}');
+      debugPrint('❌ Erreur réseau getFeedbackTypes: ${e.message}');
+
+      // ✅ Fallback: Charger depuis le cache (mode offline)
+      try {
+        final cachedData = await OfflineStorageService.getFeedbackTypes();
+        if (cachedData != null) {
+          debugPrint('📦 Loading feedback types from cache (offline mode)');
+
+          final feedbackTypes =
+              (cachedData['feedback_types'] as List)
+                  .map((item) => FeedbackType.fromJson(item))
+                  .toList();
+
+          final priorities =
+              (cachedData['priorities'] as List)
+                  .map((item) => PriorityLevel.fromJson(item))
+                  .toList();
+
+          return {
+            'feedbackTypes': feedbackTypes,
+            'priorities': priorities,
+            'language': cachedData['language'] ?? currentLanguage,
+          };
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Feedback types cache load failed: $cacheError');
+      }
+
       throw Exception('Erreur réseau : ${e.message}');
     } catch (e) {
-      print('❌ Erreur inattendue getFeedbackTypes: $e');
+      debugPrint('❌ Erreur inattendue getFeedbackTypes: $e');
       throw Exception('Erreur inattendue : $e');
     }
   }

@@ -1630,5 +1630,12 @@
   "syncNow": "Synchroniser maintenant",
   "close": "Fermer",
   "offlineModeModificationsWillSync": "Mode hors ligne - Les modifications seront synchronisées plus tard",
-  "connectionRestored": "Connexion rétablie"
+  "connectionRestored": "Connexion rétablie",
+  "preferencesSavedSuccessfully": "Préférences enregistrées avec succès",
+  "errorSavingPreferences": "Erreur lors de l'enregistrement des préférences",
+  "emailPreferencesUnavailableOffline": "Préférences email indisponibles hors ligne",
+  "visitPageOnlineToCache": "Veuillez visiter cette page en ligne pour mettre en cache vos préférences",
+  "tryAgain": "Réessayer",
+  "loadingOptions": "Chargement des options...",
+  "pleaseSelectFeedbackTypeAndPriority": "Veuillez sélectionner un type de feedback et une priorité"
 }

@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
+import 'package:epilist/blocs/currency/currency_bloc.dart';
+import 'package:epilist/blocs/currency/currency_state.dart';
+import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 
 class PeriodChartCard extends StatefulWidget {
@@ -64,52 +67,59 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
 
     final currentColor = _periodColors[_selectedPeriod] ?? Colors.green;
 
-    return Container(
-      decoration: const BoxDecoration(color: Colors.transparent),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // En-tête avec titre et sélecteur de période
-            Row(
-              children: [
-                Icon(
-                  _periodIcons[_selectedPeriod] ?? Icons.show_chart,
-                  color: currentColor[600],
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _getPeriodTitle(l10n),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const CurrencyIndicator(),
-                const SizedBox(width: 8),
-                _buildPeriodSelector(l10n),
-              ],
-            ),
-            const SizedBox(height: 20),
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
+      builder: (context, currencyState) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            // Obtenir le code de devise actuel
+            final currencyCode = _getCurrencyCode(currencyState, authState);
 
-            // Graphique principal
-            Container(
-              height: 200,
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: currentColor[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: currentColor[100]!),
-              ),
-              child: _buildChart(periodData, l10n, currentColor),
-            ),
+            return Container(
+              decoration: const BoxDecoration(color: Colors.transparent),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // En-tête avec titre et sélecteur de période
+                    Row(
+                      children: [
+                        Icon(
+                          _periodIcons[_selectedPeriod] ?? Icons.show_chart,
+                          color: currentColor[600],
+                          size: 28,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _getPeriodTitle(l10n),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const CurrencyIndicator(),
+                        const SizedBox(width: 8),
+                        _buildPeriodSelector(l10n),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Graphique principal
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: currentColor[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: currentColor[100]!),
+                      ),
+                      child: _buildChart(periodData, l10n, currentColor, currencyCode),
+                    ),
 
             const SizedBox(height: 20),
 
@@ -136,13 +146,17 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               ],
             ),
 
-            const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-            // Informations sur les données
-            _buildDataInfo(periodData, l10n),
-          ],
-        ),
-      ),
+                    // Informations sur les données
+                    _buildDataInfo(periodData, l10n),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -701,6 +715,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     List<dynamic> periodData,
     AppLocalizations l10n,
     MaterialColor chartColor,
+    String currencyCode,
   ) {
     if (periodData.isEmpty) {
       return Center(
@@ -757,7 +772,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                     children: [
                       // Barre du graphique
                       Tooltip(
-                        message: '${value.toStringAsFixed(2)} XOF',
+                        message: '${value.toStringAsFixed(2)} $currencyCode',
                         child: Container(
                           width: 24,
                           height: height < 5 ? 5 : height,
@@ -1013,5 +1028,27 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         context.read<AnalyticsBloc>().add(const LoadMonthlySpending());
         break;
     }
+  }
+
+  /// Obtenir le code de devise actuel depuis les BLoCs
+  String _getCurrencyCode(CurrencyState currencyState, AuthState authState) {
+    // 1. Depuis CurrencyState
+    if (currencyState is UserCurrencyUpdated) {
+      return currencyState.userCurrency.currency.code.toUpperCase();
+    }
+    if (currencyState is UserCurrencyLoaded) {
+      return currencyState.userCurrency.currency.code.toUpperCase();
+    }
+    if (currencyState is CurrencySelected) {
+      return currencyState.currency.code.toUpperCase();
+    }
+
+    // 2. Depuis AuthState
+    if (authState is AuthSuccess && authState.user.currency != null) {
+      return authState.user.currency!.code.toUpperCase();
+    }
+
+    // 3. Fallback: CAD
+    return 'CAD';
   }
 }

@@ -24,6 +24,7 @@ class OfflineStorageService {
   static const String _analyticsCategoriesKey = 'cached_analytics_categories';
   static const String _analyticsTopProductsKey = 'cached_analytics_top_products';
   static const String _emailPreferencesKey = 'cached_email_preferences';
+  static const String _feedbackTypesKey = 'cached_feedback_types';
   static const String _lastSyncKey = 'last_sync_timestamp';
 
   // ============================================================================
@@ -496,6 +497,43 @@ class OfflineStorageService {
   }
 
   // ============================================================================
+  // FEEDBACK TYPES
+  // ============================================================================
+
+  /// Sauvegarder les types de feedback dans le cache
+  static Future<bool> saveFeedbackTypes(Map<String, dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = json.encode(data);
+      await prefs.setString(_feedbackTypesKey, encoded);
+      await updateLastSync();
+      print('💾 [OfflineStorage] Saved feedback types');
+      return true;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error saving feedback types: $e');
+      return false;
+    }
+  }
+
+  /// Charger les types de feedback depuis le cache
+  static Future<Map<String, dynamic>?> getFeedbackTypes() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_feedbackTypesKey);
+      if (encoded == null || encoded.isEmpty) {
+        print('ℹ️ [OfflineStorage] No cached feedback types');
+        return null;
+      }
+      final data = json.decode(encoded) as Map<String, dynamic>;
+      print('📦 [OfflineStorage] Loaded feedback types from cache');
+      return data;
+    } catch (e) {
+      print('❌ [OfflineStorage] Error loading feedback types: $e');
+      return null;
+    }
+  }
+
+  // ============================================================================
   // NETTOYAGE
   // ============================================================================
 
@@ -516,6 +554,7 @@ class OfflineStorageService {
         _analyticsCategoriesKey,
         _analyticsTopProductsKey,
         _emailPreferencesKey,
+        _feedbackTypesKey,
         _lastSyncKey,
       ];
 

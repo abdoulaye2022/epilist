@@ -7830,6 +7830,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Connexion rétablie'**
   String get connectionRestored;
+
+  /// No description provided for @preferencesSavedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences enregistrées avec succès'**
+  String get preferencesSavedSuccessfully;
+
+  /// No description provided for @errorSavingPreferences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'enregistrement des préférences'**
+  String get errorSavingPreferences;
+
+  /// No description provided for @emailPreferencesUnavailableOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences email indisponibles hors ligne'**
+  String get emailPreferencesUnavailableOffline;
+
+  /// No description provided for @visitPageOnlineToCache.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez visiter cette page en ligne pour mettre en cache vos préférences'**
+  String get visitPageOnlineToCache;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get tryAgain;
+
+  /// No description provided for @loadingOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des options...'**
+  String get loadingOptions;
+
+  /// No description provided for @pleaseSelectFeedbackTypeAndPriority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez sélectionner un type de feedback et une priorité'**
+  String get pleaseSelectFeedbackTypeAndPriority;
 }
 
 class _AppLocalizationsDelegate

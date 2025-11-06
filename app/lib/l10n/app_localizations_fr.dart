@@ -4160,4 +4160,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get connectionRestored => 'Connexion rétablie';
+
+  @override
+  String get preferencesSavedSuccessfully =>
+      'Préférences enregistrées avec succès';
+
+  @override
+  String get errorSavingPreferences =>
+      'Erreur lors de l\'enregistrement des préférences';
+
+  @override
+  String get emailPreferencesUnavailableOffline =>
+      'Préférences email indisponibles hors ligne';
+
+  @override
+  String get visitPageOnlineToCache =>
+      'Veuillez visiter cette page en ligne pour mettre en cache vos préférences';
+
+  @override
+  String get tryAgain => 'Réessayer';
+
+  @override
+  String get loadingOptions => 'Chargement des options...';
+
+  @override
+  String get pleaseSelectFeedbackTypeAndPriority =>
+      'Veuillez sélectionner un type de feedback et une priorité';
 }

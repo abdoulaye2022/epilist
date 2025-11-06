@@ -326,7 +326,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           ),
           const SizedBox(width: 12),
           Text(
-            'Chargement des options...',
+            AppLocalizations.of(context)!.loadingOptions,
             style: TextStyle(color: Colors.grey[600]),
           ),
         ],
@@ -651,9 +651,10 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     if (_formKey.currentState?.validate() ?? false) {
       // Validation côté client pour s'assurer que les valeurs sont définies
       if (_selectedFeedbackType == null || _selectedPriority == null) {
+        final l10n = AppLocalizations.of(context)!;
         SmartSnackBarManager.showWarningSnackBar(
           context,
-          'Veuillez sélectionner un type de feedback et une priorité',
+          l10n.pleaseSelectFeedbackTypeAndPriority,
           duration: const Duration(seconds: 2),
         );
         return;
