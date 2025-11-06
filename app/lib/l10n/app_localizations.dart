@@ -2591,7 +2591,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineMode.
   ///
   /// In fr, this message translates to:
-  /// **'Mode hors ligne - Connexion requise'**
+  /// **'Mode hors ligne'**
   String get offlineMode;
 
   /// No description provided for @backOnline.
@@ -7722,6 +7722,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aucune modification détectée'**
   String get noChangeDetected;
+
+  /// No description provided for @synchronizing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation'**
+  String get synchronizing;
+
+  /// No description provided for @offlineWithPendingActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne avec actions en attente'**
+  String get offlineWithPendingActions;
+
+  /// No description provided for @pendingActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions en attente'**
+  String get pendingActions;
+
+  /// No description provided for @allSynced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est synchronisé'**
+  String get allSynced;
+
+  /// No description provided for @syncInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation en cours...'**
+  String get syncInProgress;
+
+  /// No description provided for @willSyncWhenOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sera synchronisé au retour en ligne'**
+  String get willSyncWhenOnline;
+
+  /// No description provided for @tapToViewDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyer pour voir les détails'**
+  String get tapToViewDetails;
+
+  /// No description provided for @syncStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut de synchronisation'**
+  String get syncStatus;
+
+  /// No description provided for @connectionStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion'**
+  String get connectionStatus;
+
+  /// No description provided for @online.
+  ///
+  /// In fr, this message translates to:
+  /// **'En ligne'**
+  String get online;
+
+  /// No description provided for @offline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne'**
+  String get offline;
+
+  /// No description provided for @syncState.
+  ///
+  /// In fr, this message translates to:
+  /// **'État de synchronisation'**
+  String get syncState;
+
+  /// No description provided for @syncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'En cours'**
+  String get syncing;
+
+  /// No description provided for @idle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get idle;
+
+  /// No description provided for @offlineDataWillSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos modifications seront synchronisées automatiquement lorsque vous serez de nouveau en ligne'**
+  String get offlineDataWillSync;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchroniser maintenant'**
+  String get syncNow;
 }
 
 class _AppLocalizationsDelegate

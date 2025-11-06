@@ -2,7 +2,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/services/shopping_list_service.dart';
-import 'package:epilist/blocs/localization/localization_bloc.dart'; // NOUVEAU
+import 'package:epilist/services/offline_storage_service.dart';
+import 'package:epilist/services/offline_queue_service.dart';
+import 'package:epilist/services/connectivity_service.dart';
+import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -11,14 +14,14 @@ part 'shopping_list_state.dart';
 
 class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
   final ShoppingListService _shoppingListService;
-  final LocalizationBloc
-  _localizationBloc; // ✅ NOUVEAU: Injection du LocalizationBloc
+  final LocalizationBloc _localizationBloc;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   ShoppingListBloc({
     required ShoppingListService shoppingListService,
-    required LocalizationBloc localizationBloc, // ✅ NOUVEAU
+    required LocalizationBloc localizationBloc,
   }) : _shoppingListService = shoppingListService,
-       _localizationBloc = localizationBloc, // ✅ NOUVEAU
+       _localizationBloc = localizationBloc,
        super(ShoppingListInitial()) {
     on<LoadShoppingLists>(_onLoadShoppingLists);
     on<CreateShoppingList>(_onCreateShoppingList);
@@ -133,11 +136,24 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     emit(ShoppingListLoading());
     try {
       final lists = await _shoppingListService.getShoppingLists();
+
+      // ✅ Sauvegarder dans le cache via OfflineStorageService
+      await OfflineStorageService.saveShoppingLists(lists);
+
       emit(ShoppingListLoaded(lists));
     } catch (e) {
       print("Error loading shopping lists: $e");
 
-      // ✅ UTILISER la nouvelle méthode sans context
+      // ✅ Fallback: Charger depuis le cache si erreur réseau
+      final cachedLists = await OfflineStorageService.getShoppingLists();
+
+      if (cachedLists != null && cachedLists.isNotEmpty) {
+        print("📦 Loading ${cachedLists.length} shopping lists from cache (offline mode)");
+        emit(ShoppingListLoaded(cachedLists));
+        return;
+      }
+
+      // ✅ Aucune donnée disponible
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -150,12 +166,12 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     try {
       final newList = await _shoppingListService.createShoppingList(event.name);
 
-      // Ajouter la nouvelle liste à la liste existante
+      // Sauvegarder dans le cache
       if (state is ShoppingListLoaded) {
         final currentState = state as ShoppingListLoaded;
         final updatedLists = [newList, ...currentState.lists];
+        await OfflineStorageService.saveShoppingLists(updatedLists);
 
-        // ✅ UTILISER la nouvelle méthode sans context
         final successMessage = _getTranslatedSuccessMessage('create');
         emit(ShoppingListOperationSuccess(successMessage));
         emit(ShoppingListLoaded(updatedLists));
@@ -167,7 +183,35 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     } catch (e) {
       print("Error creating shopping list: $e");
 
-      // ✅ UTILISER la nouvelle méthode sans context
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_CREATE_LIST,
+          payload: {'name': event.name},
+        );
+
+        // Créer une liste temporaire locale avec ID négatif
+        final tempList = ShoppingList(
+          id: -DateTime.now().millisecondsSinceEpoch,
+          name: event.name,
+          userId: 0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          items: [],
+        );
+
+        if (state is ShoppingListLoaded) {
+          final currentState = state as ShoppingListLoaded;
+          final updatedLists = [tempList, ...currentState.lists];
+          await OfflineStorageService.saveShoppingLists(updatedLists);
+
+          final successMessage = _getTranslatedSuccessMessage('create');
+          emit(ShoppingListOperationSuccess(successMessage));
+          emit(ShoppingListLoaded(updatedLists));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -193,7 +237,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
               return list;
             }).toList();
 
-        // ✅ UTILISER la nouvelle méthode sans context
+        await OfflineStorageService.saveShoppingLists(updatedLists);
+
         final successMessage = _getTranslatedSuccessMessage('update');
         emit(ShoppingListOperationSuccess(successMessage));
         emit(ShoppingListLoaded(updatedLists));
@@ -201,7 +246,37 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     } catch (e) {
       print("Error updating shopping list: $e");
 
-      // ✅ UTILISER la nouvelle méthode sans context
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected && state is ShoppingListLoaded) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_UPDATE_LIST,
+          payload: {'id': event.id, 'name': event.name},
+        );
+
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists =
+            currentState.lists.map((list) {
+              if (list.id == event.id) {
+                return ShoppingList(
+                  id: list.id,
+                  name: event.name,
+                  userId: list.userId,
+                  createdAt: list.createdAt,
+                  updatedAt: DateTime.now(),
+                  items: list.items,
+                );
+              }
+              return list;
+            }).toList();
+
+        await OfflineStorageService.saveShoppingLists(updatedLists);
+
+        final successMessage = _getTranslatedSuccessMessage('update');
+        emit(ShoppingListOperationSuccess(successMessage));
+        emit(ShoppingListLoaded(updatedLists));
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -219,7 +294,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         final updatedLists =
             currentState.lists.where((list) => list.id != event.id).toList();
 
-        // ✅ UTILISER la nouvelle méthode sans context
+        await OfflineStorageService.saveShoppingLists(updatedLists);
+
         final successMessage = _getTranslatedSuccessMessage('delete');
         emit(ShoppingListOperationSuccess(successMessage));
         emit(ShoppingListLoaded(updatedLists));
@@ -227,7 +303,25 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     } catch (e) {
       print("Error deleting shopping list: $e");
 
-      // ✅ UTILISER la nouvelle méthode sans context
+      // ✅ Si hors ligne, mettre en queue
+      if (!_connectivityService.isConnected && state is ShoppingListLoaded) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.ACTION_DELETE_LIST,
+          payload: {'id': event.id},
+        );
+
+        final currentState = state as ShoppingListLoaded;
+        final updatedLists =
+            currentState.lists.where((list) => list.id != event.id).toList();
+
+        await OfflineStorageService.saveShoppingLists(updatedLists);
+
+        final successMessage = _getTranslatedSuccessMessage('delete');
+        emit(ShoppingListOperationSuccess(successMessage));
+        emit(ShoppingListLoaded(updatedLists));
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -246,7 +340,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         final currentState = state as ShoppingListLoaded;
         final updatedLists = [duplicatedList, ...currentState.lists];
 
-        // ✅ UTILISER la nouvelle méthode sans context
+        await OfflineStorageService.saveShoppingLists(updatedLists);
+
         final successMessage = _getTranslatedSuccessMessage('duplicate');
         emit(ShoppingListOperationSuccess(successMessage));
         emit(ShoppingListLoaded(updatedLists));
@@ -254,7 +349,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     } catch (e) {
       print("Error duplicating shopping list: $e");
 
-      // ✅ UTILISER la nouvelle méthode sans context
+      // ✅ Si hors ligne, mettre en queue (note: duplication hors ligne complexe, on peut ignorer)
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }

@@ -352,8 +352,9 @@ class NotificationService {
       dio.options.baseUrl = AppConfig.baseUrl;
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       dio.options.headers['Content-Type'] = 'application/json';
-      dio.options.connectTimeout = const Duration(seconds: 30);
-      dio.options.receiveTimeout = const Duration(seconds: 30);
+      dio.options.connectTimeout = const Duration(seconds: 20);
+      dio.options.receiveTimeout = const Duration(seconds: 120); // TEMPORARY: Very high for debugging
+      dio.options.sendTimeout = const Duration(seconds: 20);
 
       final deviceData = {
         'device_id': deviceInfo['device_id'],
@@ -384,6 +385,21 @@ class NotificationService {
         print('✅ [EPILIST] Device registered successfully!');
       } else {
         print('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.receiveTimeout) {
+        print('⏱️ [EPILIST] Device registration timeout - Server is slow, will retry later');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        print('⏱️ [EPILIST] Connection timeout - Network is slow');
+      } else if (e.type == DioExceptionType.connectionError) {
+        print('📡 [EPILIST] Connection error - Network unavailable');
+      } else {
+        print('❌ [EPILIST] Device registration failed: ${e.message}');
+      }
+      // Don't print full stack trace for timeout errors to avoid log spam
+      if (e.type != DioExceptionType.receiveTimeout &&
+          e.type != DioExceptionType.connectionTimeout) {
+        print('📍 [EPILIST] Error details: ${e.response?.data}');
       }
     } catch (e, stackTrace) {
       print('❌ [EPILIST] Device registration failed: $e');

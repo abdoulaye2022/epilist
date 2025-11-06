@@ -37,6 +37,7 @@ import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:epilist/widgets/common/network_status_indicator.dart';
+import 'package:epilist/widgets/common/offline_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -169,6 +170,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           onRefresh: () async => _loadShoppingLists(),
           child: Column(
             children: [
+              // Indicateur de mode hors ligne avec actions en attente
+              const OfflineIndicator(),
+
               // Indicateur de statut réseau
               const NetworkStatusIndicator(),
 

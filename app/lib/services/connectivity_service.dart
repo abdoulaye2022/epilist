@@ -65,14 +65,18 @@ class ConnectivityService {
 
     if (!hasNetworkConnection) {
       _isConnected = false;
-      _connectivityController.add(false);
+      if (!_connectivityController.isClosed) {
+        _connectivityController.add(false);
+      }
       return;
     }
 
     // Vérifier si on peut réellement accéder à internet
     bool hasInternetConnection = await _checkInternetConnection();
     _isConnected = hasInternetConnection;
-    _connectivityController.add(hasInternetConnection);
+    if (!_connectivityController.isClosed) {
+      _connectivityController.add(hasInternetConnection);
+    }
   }
 
   /// Vérifie si on peut réellement accéder à internet en testant plusieurs endpoints

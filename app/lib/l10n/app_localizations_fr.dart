@@ -1382,7 +1382,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restartRouter => 'Redémarrez votre routeur si nécessaire';
 
   @override
-  String get offlineMode => 'Mode hors ligne - Connexion requise';
+  String get offlineMode => 'Mode hors ligne';
 
   @override
   String get backOnline => 'Connexion rétablie !';
@@ -4104,4 +4104,53 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noChangeDetected => 'Aucune modification détectée';
+
+  @override
+  String get synchronizing => 'Synchronisation';
+
+  @override
+  String get offlineWithPendingActions => 'Hors ligne avec actions en attente';
+
+  @override
+  String get pendingActions => 'Actions en attente';
+
+  @override
+  String get allSynced => 'Tout est synchronisé';
+
+  @override
+  String get syncInProgress => 'Synchronisation en cours...';
+
+  @override
+  String get willSyncWhenOnline => 'Sera synchronisé au retour en ligne';
+
+  @override
+  String get tapToViewDetails => 'Appuyer pour voir les détails';
+
+  @override
+  String get syncStatus => 'Statut de synchronisation';
+
+  @override
+  String get connectionStatus => 'Connexion';
+
+  @override
+  String get online => 'En ligne';
+
+  @override
+  String get offline => 'Hors ligne';
+
+  @override
+  String get syncState => 'État de synchronisation';
+
+  @override
+  String get syncing => 'En cours';
+
+  @override
+  String get idle => 'Inactif';
+
+  @override
+  String get offlineDataWillSync =>
+      'Vos modifications seront synchronisées automatiquement lorsque vous serez de nouveau en ligne';
+
+  @override
+  String get syncNow => 'Synchroniser maintenant';
 }

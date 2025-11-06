@@ -57,7 +57,8 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:epilist/services/notification_service.dart';
-import 'package:epilist/services/offline_cache_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
+import 'package:epilist/services/offline_queue_service.dart';
 import 'package:epilist/services/offline_sync_service.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -86,19 +87,26 @@ void main() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     await ConnectivityService().initialize();
 
-    // ✅ ÉTAPE 4: Initialiser le cache hors ligne avec Hive
-    print('💾 Initialisation du cache hors ligne...');
-    await OfflineCacheService().initialize();
-    print('✅ Cache hors ligne initialisé');
+    // ETAPE 4: Initialiser le nouveau systeme de cache
+    print('[OfflineMode] Initialisation du cache hors ligne...');
+    await OfflineStorageService.initialize();
+    print('[OfflineMode] Cache hors ligne initialise');
+
+    // ETAPE 5: Initialiser la queue d'actions
+    print('[OfflineMode] Initialisation de la queue...');
+    await OfflineQueueService.initialize();
+    print('[OfflineMode] Queue initialisee');
 
     final dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.baseUrl,
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 120), // TEMPORARY: Very high for debugging slow server
+        sendTimeout: const Duration(seconds: 20),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true', // Skip ngrok browser warning
         },
       ),
     );
@@ -190,9 +198,6 @@ void main() async {
           ),
           RepositoryProvider<ListItemService>.value(
             value: listItemService,
-          ),
-          RepositoryProvider<OfflineCacheService>.value(
-            value: OfflineCacheService(),
           ),
           RepositoryProvider<OfflineSyncService>.value(
             value: OfflineSyncService(),

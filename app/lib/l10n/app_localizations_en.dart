@@ -1356,7 +1356,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restartRouter => 'Restart your router if necessary';
 
   @override
-  String get offlineMode => 'Offline mode - Connection required';
+  String get offlineMode => 'Offline Mode';
 
   @override
   String get backOnline => 'Connection restored!';
@@ -4034,4 +4034,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noChangeDetected => 'No changes detected';
+
+  @override
+  String get synchronizing => 'Synchronizing';
+
+  @override
+  String get offlineWithPendingActions => 'Offline with pending actions';
+
+  @override
+  String get pendingActions => 'Pending Actions';
+
+  @override
+  String get allSynced => 'All synced';
+
+  @override
+  String get syncInProgress => 'Sync in progress...';
+
+  @override
+  String get willSyncWhenOnline => 'Will sync when back online';
+
+  @override
+  String get tapToViewDetails => 'Tap to view details';
+
+  @override
+  String get syncStatus => 'Sync Status';
+
+  @override
+  String get connectionStatus => 'Connection';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get offline => 'Offline';
+
+  @override
+  String get syncState => 'Sync State';
+
+  @override
+  String get syncing => 'Syncing';
+
+  @override
+  String get idle => 'Idle';
+
+  @override
+  String get offlineDataWillSync =>
+      'Your changes will be automatically synced when you\'re back online';
+
+  @override
+  String get syncNow => 'Sync Now';
 }
