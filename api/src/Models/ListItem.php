@@ -41,22 +41,38 @@ class ListItem extends Model
     ];
 
     /**
-     * ✅ HOOK: Mettre à jour purchased_at automatiquement
+     * ✅ HOOK: Mettre à jour purchased_at automatiquement + Normalisation
      */
     protected static function boot()
     {
         parent::boot();
 
-        // Avant de sauvegarder, vérifier si is_purchased change
+        // Avant de sauvegarder, appliquer toutes les transformations
         static::saving(function ($item) {
-            // Si is_purchased passe de false à true, enregistrer la date
+            // 1. Gérer purchased_at automatiquement
             if ($item->isDirty('is_purchased') && $item->is_purchased && !$item->purchased_at) {
                 $item->purchased_at = now();
             }
 
-            // Si is_purchased passe de true à false, réinitialiser purchased_at
             if ($item->isDirty('is_purchased') && !$item->is_purchased) {
                 $item->purchased_at = null;
+            }
+
+            // 2. Normaliser et valider les données
+            if ($item->product_name) {
+                $item->product_name = self::normalizeProductName($item->product_name);
+            }
+
+            if ($item->store_name) {
+                $item->store_name = self::normalizeStoreName($item->store_name);
+            }
+
+            if ($item->price !== null) {
+                $item->price = self::validatePrice($item->price);
+            }
+
+            if ($item->quantity !== null) {
+                $item->quantity = self::validateQuantity($item->quantity);
             }
         });
     }
@@ -320,29 +336,6 @@ class ListItem extends Model
         }
         
         return $query->get()->toArray();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        
-        static::saving(function ($item) {
-            if ($item->product_name) {
-                $item->product_name = self::normalizeProductName($item->product_name);
-            }
-            
-            if ($item->store_name) {
-                $item->store_name = self::normalizeStoreName($item->store_name);
-            }
-            
-            if ($item->price !== null) {
-                $item->price = self::validatePrice($item->price);
-            }
-            
-            if ($item->quantity !== null) {
-                $item->quantity = self::validateQuantity($item->quantity);
-            }
-        });
     }
 
     public function scopeSearchByName($query, string $search)
