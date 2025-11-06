@@ -1,4 +1,5 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
+import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
@@ -67,6 +68,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
   void initState() {
     super.initState();
     currentList = widget.shoppingList;
+
+    // Charger les catégories
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CategoryBloc>().add(const LoadCategories());
+    });
   }
 
   // Méthode pour rafraîchir les données de la liste
@@ -233,14 +239,29 @@ class _ListDetailViewState extends State<_ListDetailView> {
           ),
         ),
         // Widget de filtres
-        ItemFiltersBar(
-          criteria: _filterCriteria,
-          onCriteriaChanged: (newCriteria) {
-            setState(() {
-              _filterCriteria = newCriteria;
-            });
+        BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, categoryState) {
+            final categories = categoryState is CategoryLoaded
+                ? categoryState.categories
+                    .where((cat) => cat.deletedAt == null)
+                    .map((cat) => {
+                          'id': cat.id,
+                          'name': cat.name,
+                        })
+                    .toList()
+                : <Map<String, dynamic>>[];
+
+            return ItemFiltersBar(
+              criteria: _filterCriteria,
+              onCriteriaChanged: (newCriteria) {
+                setState(() {
+                  _filterCriteria = newCriteria;
+                });
+              },
+              availableStores: availableStores,
+              availableCategories: categories,
+            );
           },
-          availableStores: availableStores,
         ),
         Expanded(child: _buildContent(filteredItems, isLoading)),
       ],

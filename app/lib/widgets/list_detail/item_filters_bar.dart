@@ -14,6 +14,7 @@ class ItemFilterCriteria {
   String? storeName;
   double? minPrice;
   double? maxPrice;
+  int? categoryId;
   ItemSortBy sortBy;
   bool ascending;
   bool showOnlyPurchased;
@@ -23,6 +24,7 @@ class ItemFilterCriteria {
     this.storeName,
     this.minPrice,
     this.maxPrice,
+    this.categoryId,
     this.sortBy = ItemSortBy.dateAdded,
     this.ascending = true,
     this.showOnlyPurchased = false,
@@ -33,6 +35,7 @@ class ItemFilterCriteria {
       storeName != null ||
       minPrice != null ||
       maxPrice != null ||
+      categoryId != null ||
       showOnlyPurchased ||
       showOnlyUnpurchased;
 
@@ -40,6 +43,7 @@ class ItemFilterCriteria {
     int count = 0;
     if (storeName != null) count++;
     if (minPrice != null || maxPrice != null) count++;
+    if (categoryId != null) count++;
     if (showOnlyPurchased || showOnlyUnpurchased) count++;
     return count;
   }
@@ -67,6 +71,13 @@ class ItemFilterCriteria {
     if (maxPrice != null) {
       filtered = filtered
           .where((item) => item.price != null && item.price! <= maxPrice!)
+          .toList();
+    }
+
+    // Filtrer par catégorie
+    if (categoryId != null) {
+      filtered = filtered
+          .where((item) => item.categoryId == categoryId)
           .toList();
     }
 
@@ -112,12 +123,14 @@ class ItemFiltersBar extends StatefulWidget {
   final ItemFilterCriteria criteria;
   final ValueChanged<ItemFilterCriteria> onCriteriaChanged;
   final List<String> availableStores;
+  final List<Map<String, dynamic>> availableCategories;
 
   const ItemFiltersBar({
     super.key,
     required this.criteria,
     required this.onCriteriaChanged,
     required this.availableStores,
+    this.availableCategories = const [],
   });
 
   @override
@@ -255,6 +268,11 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                                 'Prix: ${widget.criteria.minPrice ?? '?'} - ${widget.criteria.maxPrice ?? '?'}',
                                 style: const TextStyle(fontSize: 11),
                               ),
+                            if (widget.criteria.categoryId != null)
+                              Text(
+                                'Catégorie: ${_getCategoryName(widget.criteria.categoryId!)}',
+                                style: const TextStyle(fontSize: 11),
+                              ),
                             if (widget.criteria.showOnlyPurchased)
                               const Text(
                                 'Statut: Achetés uniquement',
@@ -282,6 +300,12 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                     _buildFilterSection(
                         l10n.filterByStore, _buildStoreFilter()),
                     const SizedBox(height: 16),
+
+                    // Filtre par catégorie
+                    if (widget.availableCategories.isNotEmpty)
+                      _buildFilterSection('Catégorie', _buildCategoryFilter()),
+                    if (widget.availableCategories.isNotEmpty)
+                      const SizedBox(height: 16),
 
                     // Filtre par statut
                     _buildFilterSection(l10n.status, _buildStatusFilters()),
@@ -353,6 +377,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                       storeName: widget.criteria.storeName,
                       minPrice: widget.criteria.minPrice,
                       maxPrice: widget.criteria.maxPrice,
+                      categoryId: widget.criteria.categoryId,
                       sortBy: option['key'] as ItemSortBy,
                       ascending: !isAscending,
                       showOnlyPurchased: widget.criteria.showOnlyPurchased,
@@ -366,6 +391,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                       storeName: widget.criteria.storeName,
                       minPrice: widget.criteria.minPrice,
                       maxPrice: widget.criteria.maxPrice,
+                      categoryId: widget.criteria.categoryId,
                       sortBy: option['key'] as ItemSortBy,
                       ascending: true,
                       showOnlyPurchased: widget.criteria.showOnlyPurchased,
@@ -480,6 +506,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                   storeName: value,
                   minPrice: widget.criteria.minPrice,
                   maxPrice: widget.criteria.maxPrice,
+                  categoryId: widget.criteria.categoryId,
                   sortBy: widget.criteria.sortBy,
                   ascending: widget.criteria.ascending,
                   showOnlyPurchased: widget.criteria.showOnlyPurchased,
@@ -511,6 +538,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 storeName: widget.criteria.storeName,
                 minPrice: widget.criteria.minPrice,
                 maxPrice: widget.criteria.maxPrice,
+                categoryId: widget.criteria.categoryId,
                 sortBy: widget.criteria.sortBy,
                 ascending: widget.criteria.ascending,
                 showOnlyPurchased: value == 'purchased',
@@ -532,6 +560,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 storeName: widget.criteria.storeName,
                 minPrice: widget.criteria.minPrice,
                 maxPrice: widget.criteria.maxPrice,
+                categoryId: widget.criteria.categoryId,
                 sortBy: widget.criteria.sortBy,
                 ascending: widget.criteria.ascending,
                 showOnlyPurchased: false,
@@ -612,6 +641,70 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryFilter() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        // Option "Toutes les catégories"
+        _buildFilterChip(
+          label: 'Toutes',
+          value: null,
+          activeValue: widget.criteria.categoryId?.toString(),
+          onChanged: (value) {
+            widget.onCriteriaChanged(
+              ItemFilterCriteria(
+                storeName: widget.criteria.storeName,
+                minPrice: widget.criteria.minPrice,
+                maxPrice: widget.criteria.maxPrice,
+                categoryId: null,
+                sortBy: widget.criteria.sortBy,
+                ascending: widget.criteria.ascending,
+                showOnlyPurchased: widget.criteria.showOnlyPurchased,
+                showOnlyUnpurchased: widget.criteria.showOnlyUnpurchased,
+              ),
+            );
+          },
+          icon: Icons.all_inclusive,
+        ),
+        // Catégories disponibles
+        ...widget.availableCategories.map((category) {
+          return _buildFilterChip(
+            label: category['name'] as String,
+            value: category['id'].toString(),
+            activeValue: widget.criteria.categoryId?.toString(),
+            onChanged: (value) {
+              widget.onCriteriaChanged(
+                ItemFilterCriteria(
+                  storeName: widget.criteria.storeName,
+                  minPrice: widget.criteria.minPrice,
+                  maxPrice: widget.criteria.maxPrice,
+                  categoryId: value != null ? int.tryParse(value) : null,
+                  sortBy: widget.criteria.sortBy,
+                  ascending: widget.criteria.ascending,
+                  showOnlyPurchased: widget.criteria.showOnlyPurchased,
+                  showOnlyUnpurchased: widget.criteria.showOnlyUnpurchased,
+                ),
+              );
+            },
+            icon: Icons.category,
+          );
+        }),
+      ],
+    );
+  }
+
+  String _getCategoryName(int categoryId) {
+    try {
+      final category = widget.availableCategories.firstWhere(
+        (cat) => cat['id'] == categoryId,
+      );
+      return category['name'] as String;
+    } catch (e) {
+      return 'Catégorie $categoryId';
+    }
   }
 
   String _getSortLabel() {

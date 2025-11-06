@@ -15,6 +15,7 @@ import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:epilist/screens/barcode_scanner_screen.dart';
 import 'package:epilist/services/product_api_service.dart';
 import 'package:epilist/widgets/list_detail/barcode_input_dialog.dart';
+import 'package:epilist/widgets/dialogs/product_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -893,25 +894,34 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
         if (mounted) {
           if (product != null) {
-            // Remplir les champs avec les informations du produit
-            setState(() {
-              productController.text = product.displayName;
-              if (product.quantity != null) {
-                // Le quantity du produit est une description, pas la quantité à acheter
-                // On garde la quantité par défaut à 1
-              }
-            });
-
-            SmartSnackBarManager.showSuccessSnackBar(
-              context,
-              'Produit trouve: ${product.name}',
-              duration: const Duration(seconds: 2),
+            // Afficher le dialogue de confirmation avec l'image du produit
+            final confirmed = await showDialog<bool>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => ProductConfirmationDialog(
+                product: product,
+                onConfirm: () => Navigator.of(context).pop(true),
+                onCancel: () => Navigator.of(context).pop(false),
+              ),
             );
+
+            if (confirmed == true && mounted) {
+              // Remplir les champs avec les informations du produit
+              setState(() {
+                productController.text = product.displayName;
+              });
+
+              SmartSnackBarManager.showSuccessSnackBar(
+                context,
+                'Produit ajouté: ${product.name}',
+                duration: const Duration(seconds: 2),
+              );
+            }
           } else {
             // Produit non trouvé, mais on garde le code-barres
             SmartSnackBarManager.showWarningSnackBar(
               context,
-              'Produit non trouve. Code-barres: $barcode',
+              'Produit non trouvé. Code-barres: $barcode',
               duration: const Duration(seconds: 3),
             );
           }
