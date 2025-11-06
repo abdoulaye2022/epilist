@@ -193,18 +193,30 @@ class Budget extends Model
 
         // Si pas de factures, calculer depuis les items achetés
         if ($receiptsTotal == 0) {
-            $itemsTotal = ListItem::where('list_id', $this->list_id)
+            $query = ListItem::where('list_id', $this->list_id)
                 ->where('is_purchased', true)
-                ->whereNotNull('price')
-                ->whereBetween('updated_at', [
+                ->whereNotNull('price');
+
+            // ✅ AMÉLIORATION: Utiliser purchased_at si disponible, sinon fallback sur updated_at
+            $query->where(function($q) {
+                $q->whereBetween('purchased_at', [
                     $this->start_date->startOfDay(),
                     $this->end_date->endOfDay()
                 ])
-                ->get()
-                ->sum(function($item) {
-                    return $item->price * $item->quantity;
+                ->orWhere(function($q2) {
+                    // Fallback si purchased_at est NULL (anciens items)
+                    $q2->whereNull('purchased_at')
+                       ->whereBetween('updated_at', [
+                           $this->start_date->startOfDay(),
+                           $this->end_date->endOfDay()
+                       ]);
                 });
-            
+            });
+
+            $itemsTotal = $query->get()->sum(function($item) {
+                return $item->price * $item->quantity;
+            });
+
             return $itemsTotal;
         }
 
@@ -225,18 +237,30 @@ class Budget extends Model
 
         // Si pas de factures, calculer depuis les items
         if ($receiptsTotal == 0) {
-            $itemsTotal = ListItem::whereIn('list_id', $userLists)
+            $query = ListItem::whereIn('list_id', $userLists)
                 ->where('is_purchased', true)
-                ->whereNotNull('price')
-                ->whereBetween('updated_at', [
+                ->whereNotNull('price');
+
+            // ✅ AMÉLIORATION: Utiliser purchased_at si disponible, sinon fallback sur updated_at
+            $query->where(function($q) {
+                $q->whereBetween('purchased_at', [
                     $this->start_date->startOfDay(),
                     $this->end_date->endOfDay()
                 ])
-                ->get()
-                ->sum(function($item) {
-                    return $item->price * $item->quantity;
+                ->orWhere(function($q2) {
+                    // Fallback si purchased_at est NULL (anciens items)
+                    $q2->whereNull('purchased_at')
+                       ->whereBetween('updated_at', [
+                           $this->start_date->startOfDay(),
+                           $this->end_date->endOfDay()
+                       ]);
                 });
-            
+            });
+
+            $itemsTotal = $query->get()->sum(function($item) {
+                return $item->price * $item->quantity;
+            });
+
             return $itemsTotal;
         }
 
@@ -251,13 +275,25 @@ class Budget extends Model
         return max(0, $this->budget_amount - $this->getSpentAmount());
     }
 
+    /**
+     * ✅ Retourne le vrai pourcentage dépensé (peut être > 100%)
+     */
     public function getSpentPercentage(): float
     {
         if ($this->budget_amount <= 0) {
             return 0;
         }
 
-        return min(100, ($this->getSpentAmount() / $this->budget_amount) * 100);
+        // Retourner le vrai pourcentage sans plafond
+        return round(($this->getSpentAmount() / $this->budget_amount) * 100, 1);
+    }
+
+    /**
+     * ✅ Retourne le pourcentage pour l'affichage des barres (plafonné à 100%)
+     */
+    public function getDisplayPercentage(): float
+    {
+        return min(100, $this->getSpentPercentage());
     }
 
     public function getAlertStatus(): string
@@ -475,7 +511,8 @@ class Budget extends Model
             'formatted_spent_amount' => $currency->formatAmount($spentAmount),
             'remaining_amount' => round($remainingAmount, 2),
             'formatted_remaining_amount' => $currency->formatAmount($remainingAmount),
-            'spent_percentage' => round($spentPercentage, 1),
+            'spent_percentage' => round($spentPercentage, 1), // ✅ Vrai pourcentage (peut être > 100%)
+            'display_percentage' => round($this->getDisplayPercentage(), 1), // ✅ Pour les barres (plafonné à 100%)
             'days_remaining' => $this->getDaysRemaining(),
             'status' => $status,
             'is_exceeded' => $this->isExceeded(),

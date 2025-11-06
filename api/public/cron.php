@@ -999,3 +999,24 @@ function cleanupDailyReminderCacheFiles(): int
     
     return $cleaned;
 }
+/**
+ * ✅ Cron Job: Budget Alerts
+ * Exécuter toutes les heures: 0 * * * * php /path/to/cron.php budget-alerts
+ */
+if ($argv[1] ?? '' === 'budget-alerts') {
+    error_log("🔔 [CRON] Starting budget alerts check...");
+    
+    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/../config/database.php';
+    
+    use App\Services\BudgetAlertService;
+    
+    $results = BudgetAlertService::checkAndSendAlerts();
+    
+    error_log("✅ [CRON] Budget alerts completed:");
+    error_log("   - Checked: {$results['checked']} budgets");
+    error_log("   - Alerts sent: {$results['alerts_sent']}");
+    error_log("   - Errors: {$results['errors']}");
+    
+    exit(0);
+}

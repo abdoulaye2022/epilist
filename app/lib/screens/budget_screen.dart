@@ -12,6 +12,7 @@ import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/budget/quick_budget_dialog.dart' as quick;
+import 'package:epilist/screens/budget_details_screen.dart'; // ✅ Nouveau import
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -1200,7 +1201,18 @@ class _BudgetScreenState extends State<BudgetScreen>
   }
 
   void _openBudgetDetails(Budget budget) {
-    // TODO: Implémenter la navigation vers les détails du budget
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: context.read<BudgetBloc>(),
+          child: BudgetDetailsScreen(budget: budget),
+        ),
+      ),
+    ).then((_) {
+      // Rafraîchir les budgets au retour
+      context.read<BudgetBloc>().add(const RefreshBudgets());
+    });
   }
 
   void _editBudget(Budget budget) {

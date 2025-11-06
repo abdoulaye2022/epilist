@@ -22,6 +22,7 @@ class ListItem extends Model
         'price',
         'store_name',
         'is_purchased',
+        'purchased_at', // ✅ Nouvelle colonne
         'barcode',
         'category_id',
         'created_at',
@@ -33,10 +34,32 @@ class ListItem extends Model
         'is_purchased' => 'boolean',
         'quantity' => 'integer',
         'price' => 'float',
+        'purchased_at' => 'datetime', // ✅ Cast datetime
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime'
     ];
+
+    /**
+     * ✅ HOOK: Mettre à jour purchased_at automatiquement
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Avant de sauvegarder, vérifier si is_purchased change
+        static::saving(function ($item) {
+            // Si is_purchased passe de false à true, enregistrer la date
+            if ($item->isDirty('is_purchased') && $item->is_purchased && !$item->purchased_at) {
+                $item->purchased_at = now();
+            }
+
+            // Si is_purchased passe de true à false, réinitialiser purchased_at
+            if ($item->isDirty('is_purchased') && !$item->is_purchased) {
+                $item->purchased_at = null;
+            }
+        });
+    }
 
     /**
      *  VALIDATION RULES WITH ENGLISH MESSAGES (inchangé)

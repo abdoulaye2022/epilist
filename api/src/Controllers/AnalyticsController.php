@@ -1115,7 +1115,7 @@ public function dashboard(Request $request, Response $response): Response
                     ],
                     
                     'quick_stats' => [
-                        'average_daily_spending' => round(array_sum(array_column($last7Days, 'total_spent')) / 7, 2),
+                        'average_daily_spending' => $this->calculateAverageDailySpending($last7Days),
                         'data_source' => $includeShared ? 'own_and_shared' : 'own_only',
                         'lists_count' => count($listIds),
                         'active_month' => $itemsPurchased > 0 || $currentTotal > 0,
@@ -1168,6 +1168,33 @@ public function dashboard(Request $request, Response $response): Response
 
         // Retourner le nom du jour traduit
         return $busiestDay ? $busiestDay['day_name'] : null;
+    }
+
+    /**
+     * ✅ HELPER: CALCULER LA DÉPENSE MOYENNE QUOTIDIENNE
+     * Divise par le nombre de jours actifs au lieu de 7 pour plus de précision
+     */
+    private function calculateAverageDailySpending(array $last7Days): float
+    {
+        if (empty($last7Days)) {
+            return 0.0;
+        }
+
+        // Calculer le total des dépenses
+        $totalSpent = array_sum(array_column($last7Days, 'total_spent'));
+
+        // Compter le nombre de jours avec des dépenses > 0
+        $activeDays = count(array_filter($last7Days, function($day) {
+            return isset($day['total_spent']) && $day['total_spent'] > 0;
+        }));
+
+        // Si aucun jour actif, retourner 0
+        if ($activeDays === 0) {
+            return 0.0;
+        }
+
+        // Diviser par le nombre de jours actifs pour une moyenne plus précise
+        return round($totalSpent / $activeDays, 2);
     }
 
     /**
