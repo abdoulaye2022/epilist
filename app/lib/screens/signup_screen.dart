@@ -362,16 +362,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         color: Colors.grey[600],
                       ),
                     )
-                    : Image.asset(
-                      'assets/images/google_logo.png',
-                      width: 16,
-                      height: 16,
-                      errorBuilder:
-                          (_, __, ___) => Icon(
-                            Icons.g_mobiledata,
-                            color: Colors.red[600],
-                            size: 20,
-                          ),
+                    : Icon(
+                      Icons.g_mobiledata,
+                      color: Colors.red[600],
+                      size: 20,
                     ),
             label: Text(
               _isLoading ? 'Création...' : l10n.signUpWithGoogle,

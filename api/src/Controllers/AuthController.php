@@ -9,6 +9,7 @@ use App\Models\Currency;
 use App\Services\JwtService;
 use App\Services\SSOService;
 use App\Services\RateLimiter;
+use App\Services\EmailTemplates;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
@@ -349,17 +350,20 @@ class AuthController
     {
         try {
             $emailToSend = $user->email;
-            
+
             //  ANDROID: En développement, rediriger vers l'email de test
             if (Config::get('APP_ENV') == 'dev') {
                 $emailToSend = 'm2atodev@gmail.com';
                 error_log(" [AuthController] Email de bienvenue redirigé vers: " . $emailToSend);
             }
 
-            $mailSender = new MailSender();
-            $mailSender->sendWelcomeEmail($emailToSend, $user->first_name);
-            error_log(" [AuthController] Email de bienvenue envoyé");
-            
+            // 🌍 Envoyer l'email dans la langue de l'utilisateur
+            $subject = EmailTemplates::getSubject('welcome', $user->language ?? 'fr');
+            $htmlContent = EmailTemplates::welcomeEmail($user->first_name, $user->language ?? 'fr');
+            MailSender::sendMail($subject, [['email' => $emailToSend]], $htmlContent);
+
+            error_log("📧 [AuthController] Email de bienvenue envoyé en " . ($user->language ?? 'fr'));
+
         } catch (\Exception $emailError) {
             error_log(" [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
             // Ne pas faire échouer la connexion pour un problème d'email
@@ -2105,6 +2109,13 @@ class AuthController
                 }
             }
 
+            // 🌍 Déterminer la langue (depuis l'app ou défaut)
+            $language = $data['language'] ?? 'fr';
+            if (!in_array($language, ['fr', 'en'])) {
+                $language = 'fr';
+            }
+            error_log("🌍 [AuthController] Inscription avec langue: {$language}");
+
             // Générer le code de vérification
             $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
@@ -2117,6 +2128,7 @@ class AuthController
                 'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'terms_accepted' => true,
                 'currency_id' => $currencyId,
+                'language' => $language, // 🌍 Langue de l'utilisateur
                 'email_verification_code' => $verificationCode,
                 'email_verification_code_expires_at' => $expiration,
                 'created_at' => new \DateTime(),
@@ -2135,8 +2147,12 @@ class AuthController
                 $user->email = 'm2atodev@gmail.com';
             }
 
-            $mailSender = new MailSender();
-            $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
+            // 🌍 Envoyer l'email dans la langue de l'utilisateur
+            $subject = EmailTemplates::getSubject('verification', $user->language);
+            $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language);
+            MailSender::sendMail($subject, [['email' => $user->email]], $htmlContent);
+
+            error_log("📧 [AuthController] Email de vérification envoyé en {$user->language} à {$user->email}");
 
             error_log("✅ [AuthController] Inscription réussie depuis IP: {$ipAddress}");
 
@@ -2291,12 +2307,8 @@ class AuthController
                 }
             }
 
-            if(Config::get('APP_ENV') == 'dev') {
-                $user->email = 'm2atodev@gmail.com';
-            }
-
-            $mailSender = new MailSender();
-            $mailSender->sendWelcomeEmail($user->email, $user->first_name);
+            // 🌍 Envoyer l'email de bienvenue dans la langue de l'utilisateur
+            $this->sendWelcomeEmailSafely($user);
 
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
@@ -2368,12 +2380,15 @@ class AuthController
             $user->email_verification_code_expires_at = $expiration;
             $user->save();
 
+            // 🌍 Envoyer l'email de vérification dans la langue de l'utilisateur
+            $emailToSend = $user->email;
             if(Config::get('APP_ENV')=='dev') {
-                $user->email = 'm2atodev@gmail.com';
+                $emailToSend = 'm2atodev@gmail.com';
             }
 
-            $mailSender = new MailSender();
-            $mailSender->sendVerificationEmail($user->email, $user->first_name, $verificationCode);
+            $subject = EmailTemplates::getSubject('verification', $user->language ?? 'fr');
+            $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language ?? 'fr');
+            MailSender::sendMail($subject, [['email' => $emailToSend]], $htmlContent);
 
             return new JsonResponse(
                 200,
@@ -2450,6 +2465,15 @@ class AuthController
             $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
+            // 🌍 Déterminer la langue (depuis la requête, l'utilisateur ou défaut)
+            $requestLanguage = $data['language'] ?? null;
+            if ($requestLanguage && in_array($requestLanguage, ['fr', 'en'])) {
+                // Mettre à jour la langue de l'utilisateur si fournie
+                $user->language = $requestLanguage;
+                error_log("🌍 [AuthController] Langue mise à jour: {$requestLanguage}");
+            }
+            $emailLanguage = $user->language ?? 'fr';
+
             $user->password_change_code = $code;
             $user->password_change_code_expires_at = $expiration;
             $user->save();
@@ -2458,8 +2482,12 @@ class AuthController
                 $user->email = 'm2atodev@gmail.com';
             }
 
-            $mailSender = new MailSender();
-            $mailSender->sendPasswordChangeCode($user->email, $code);
+            // 🌍 Envoyer l'email dans la langue appropriée
+            $subject = EmailTemplates::getSubject('password_change', $emailLanguage);
+            $htmlContent = EmailTemplates::passwordChangeEmail($code, $emailLanguage);
+            MailSender::sendMail($subject, [['email' => $user->email]], $htmlContent);
+
+            error_log("📧 [AuthController] Email de changement de mot de passe envoyé en {$emailLanguage}");
 
             return new JsonResponse(
                 200,

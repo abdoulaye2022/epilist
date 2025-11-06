@@ -181,7 +181,7 @@ class DeepLinkHandler {
           builder:
               (context) => ConnectivityWrapper(
                 showOfflineBanner: true,
-                blockActionsWhenOffline: true,
+                blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
                 onConnectivityLost: () {
                   print('❌ Connexion perdue durant l\'invitation');
                   // Gestion silencieuse via le wrapper
@@ -427,7 +427,7 @@ class DeepLinkHandler {
         builder:
             (context) => ConnectivityWrapper(
               showOfflineBanner: true,
-              blockActionsWhenOffline: true,
+              blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
               child: const LoginScreen(),
             ),
       ),

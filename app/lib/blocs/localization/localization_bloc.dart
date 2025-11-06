@@ -64,35 +64,42 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       Locale locale;
 
       if (savedLanguage != null) {
-        // Utiliser la langue sauvegardée
+        // Utiliser la langue sauvegardée (préférence de l'utilisateur)
         locale = Locale(savedLanguage);
-        print('Langue sauvegardée trouvée: $savedLanguage');
+        print('🌍 [Localisation] Langue sauvegardée trouvée: $savedLanguage');
       } else {
-        // Détecter la langue du système
+        // 🔍 PREMIER LANCEMENT: Détecter automatiquement la langue du système
         final systemLocale = PlatformDispatcher.instance.locale;
         final systemLanguage = systemLocale.languageCode;
 
-        // Vérifier si la langue du système est supportée
+        print('🔍 [Localisation] Premier lancement - détection langue système');
+        print('🌍 [Localisation] Langue système détectée: $systemLanguage');
+
+        // Vérifier si la langue du système est supportée (fr ou en)
         if (['fr', 'en'].contains(systemLanguage)) {
           locale = Locale(systemLanguage);
-          print('Langue du système détectée: $systemLanguage');
+          print('✅ [Localisation] Langue système supportée - utilisation de: $systemLanguage');
         } else {
-          // Par défaut: français
+          // Par défaut: français si langue non supportée
           locale = const Locale('fr');
           print(
-            'Langue du système non supportée ($systemLanguage), utilisation du français par défaut',
+            '⚠️  [Localisation] Langue système non supportée ($systemLanguage)',
           );
+          print('✅ [Localisation] Utilisation du français par défaut');
         }
 
-        // Sauvegarder cette langue comme préférence
+        // Sauvegarder cette langue comme préférence initiale
         await sharedPreferences.setString(_languageKey, locale.languageCode);
+        print('💾 [Localisation] Langue sauvegardée: ${locale.languageCode}');
       }
 
       emit(LocalizationLoaded(locale));
+      print('✅ [Localisation] Langue chargée avec succès: ${locale.languageCode}');
     } catch (e) {
-      print('Erreur lors du chargement de la langue: $e');
+      print('❌ [Localisation] Erreur lors du chargement de la langue: $e');
       // En cas d'erreur, utiliser le français par défaut
       emit(const LocalizationLoaded(Locale('fr')));
+      print('✅ [Localisation] Utilisation du français par défaut (fallback)');
     }
   }
 
@@ -101,15 +108,24 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     Emitter<LocalizationState> emit,
   ) async {
     try {
+      print('🔄 [Localisation] Changement de langue demandé: ${event.languageCode}');
+
+      // Vérifier que la langue est supportée
+      if (!['fr', 'en'].contains(event.languageCode)) {
+        print('❌ [Localisation] Langue non supportée: ${event.languageCode}');
+        return;
+      }
+
       // Sauvegarder la nouvelle langue
       await sharedPreferences.setString(_languageKey, event.languageCode);
+      print('💾 [Localisation] Langue sauvegardée: ${event.languageCode}');
 
       // Émettre le nouvel état
       emit(LocalizationLoaded(Locale(event.languageCode)));
 
-      print('Langue changée pour: ${event.languageCode}');
+      print('✅ [Localisation] Langue changée avec succès pour: ${event.languageCode}');
     } catch (e) {
-      print('Erreur lors du changement de langue: $e');
+      print('❌ [Localisation] Erreur lors du changement de langue: $e');
       // En cas d'erreur, garder la langue actuelle
       if (state is LocalizationLoaded) {
         emit(state as LocalizationLoaded);

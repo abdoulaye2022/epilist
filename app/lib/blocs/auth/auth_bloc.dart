@@ -990,11 +990,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
+      // 🌍 Obtenir la langue depuis LocalizationBloc
+      final localizationState = localizationBloc.state;
+      String userLanguage = 'fr';
+
+      if (localizationState is LocalizationLoaded) {
+        userLanguage = localizationState.locale.languageCode;
+      }
+
+      print('🌍 [AuthBloc] Inscription avec langue: $userLanguage');
+
       await authService.register(
         event.firstName,
         event.lastName,
         event.email,
         event.password,
+        language: userLanguage, // 🌍 Passer la langue à l'API
       );
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {
@@ -1079,7 +1090,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      await authService.requestPasswordChangeCode(event.email);
+      // 🌍 Obtenir la langue depuis LocalizationBloc
+      final localizationState = localizationBloc.state;
+      String userLanguage = 'fr';
+
+      if (localizationState is LocalizationLoaded) {
+        userLanguage = localizationState.locale.languageCode;
+      }
+
+      print('🌍 [AuthBloc] Demande de changement de mot de passe avec langue: $userLanguage');
+
+      await authService.requestPasswordChangeCode(event.email, language: userLanguage);
       emit(PasswordChangeCodeSent(event.email));
     } catch (e) {
       final errorCode = _extractErrorCode(e);

@@ -423,7 +423,7 @@ class MyApp extends StatelessWidget {
   Widget _wrapWithConnectivity(Widget child, {bool showBanner = true}) {
     return ConnectivityWrapper(
       showOfflineBanner: showBanner,
-      blockActionsWhenOffline: true,
+      blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
       child: child,
     );
   }
@@ -635,7 +635,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
             return ConnectivityWrapper(
               showOfflineBanner: false,
-              blockActionsWhenOffline: true,
+              blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
               child: const HomeScreen(),
             );
           }

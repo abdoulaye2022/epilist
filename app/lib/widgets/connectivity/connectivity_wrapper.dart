@@ -17,7 +17,7 @@ class ConnectivityWrapper extends StatefulWidget {
     super.key,
     required this.child,
     this.showOfflineBanner = true,
-    this.blockActionsWhenOffline = true,
+    this.blockActionsWhenOffline = false, // 🔓 Par défaut: permettre le fonctionnement hors ligne
     this.onConnectivityRestored,
     this.onConnectivityLost,
   });
@@ -52,9 +52,8 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
         _isConnected = isConnected;
       });
 
-      if (!isConnected && widget.blockActionsWhenOffline) {
-        _showNoInternetDialog();
-      }
+      // 🔓 Ne jamais afficher le popup au démarrage, seulement la bannière
+      // Le popup bloquant est désactivé par défaut (blockActionsWhenOffline = false)
     }
 
     // Écouter les changements de connectivité

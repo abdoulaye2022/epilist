@@ -19,9 +19,9 @@ class User extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'first_name', 
-        'last_name', 
-        'email', 
+        'first_name',
+        'last_name',
+        'email',
         'password_hash',
         'terms_accepted',
         'password_change_code',
@@ -31,6 +31,7 @@ class User extends Model
         'email_verified_at',
         'email_verified',
         'currency_id',
+        'language', // Langue préférée de l'utilisateur (fr, en)
         // Champs pour la suppression
         'account_deletion_code',
         'account_deletion_code_expires_at',

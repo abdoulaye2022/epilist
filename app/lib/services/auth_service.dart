@@ -997,8 +997,9 @@ class AuthService {
     String firstName,
     String lastName,
     String email,
-    String password,
-  ) async {
+    String password, {
+    String? language, // 🌍 Langue de l'utilisateur
+  }) async {
     try {
       final response = await dio.post(
         '/auth/register',
@@ -1007,6 +1008,7 @@ class AuthService {
           'last_name': lastName,
           'email': email,
           'password': password,
+          if (language != null) 'language': language, // 🌍 Envoyer la langue
         },
       );
 
@@ -1236,9 +1238,12 @@ class AuthService {
     }
   }
 
-  Future<void> requestPasswordChangeCode(String email) async {
+  Future<void> requestPasswordChangeCode(String email, {String? language}) async {
     try {
-      await dio.post('/auth/request-password-change', data: {'email': email});
+      await dio.post('/auth/request-password-change', data: {
+        'email': email,
+        if (language != null) 'language': language, // 🌍 Envoyer la langue
+      });
     } on DioException catch (e) {
       throw Exception('Erreur lors de la demande: ${e.message}');
     }
