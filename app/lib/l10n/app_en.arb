@@ -1601,5 +1601,8 @@
   "oftenBoughtWith": "Often bought with {item}",
   "seasonalProduct": "Seasonal product",
   "confidenceScore": "Confidence",
-  "buyRegularly": "You buy this regularly"
+  "buyRegularly": "You buy this regularly",
+  "addReceiptDescription": "Add a new receipt to your list",
+  "editReceiptDescription": "Edit your receipt information",
+  "noChangeDetected": "No changes detected"
 }

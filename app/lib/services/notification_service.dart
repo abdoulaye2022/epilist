@@ -203,10 +203,24 @@ class NotificationService {
           }
 
           // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
+          // Lance l'enregistrement en arrière-plan après un délai de 3 secondes
           final prefs = await SharedPreferences.getInstance();
           final authToken = prefs.getString('access_token');
           if (authToken != null && authToken.isNotEmpty) {
-            await _registerDeviceWithToken();
+            // Attendre 3 secondes avant d'enregistrer pour ne pas bloquer le démarrage
+            Future.delayed(const Duration(seconds: 3), () {
+              // ignore: unawaited_futures
+              _registerDeviceWithToken().then((_) {
+                print('✅ [EPILIST] Device registration completed in background');
+              }).catchError((e) {
+                print('⚠️ [EPILIST] Background device registration failed: $e');
+                // Réessayer dans 60 secondes
+                Future.delayed(const Duration(seconds: 60), () {
+                  _registerDeviceWithToken();
+                });
+              });
+            });
+            print('⏰ [EPILIST] Device registration scheduled in 3 seconds');
           } else {
             print(
               'ℹ️ [EPILIST] Utilisateur non connecté, token stocké pour plus tard',
@@ -338,8 +352,8 @@ class NotificationService {
       dio.options.baseUrl = AppConfig.baseUrl;
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       dio.options.headers['Content-Type'] = 'application/json';
-      dio.options.connectTimeout = const Duration(seconds: 15);
-      dio.options.receiveTimeout = const Duration(seconds: 15);
+      dio.options.connectTimeout = const Duration(seconds: 30);
+      dio.options.receiveTimeout = const Duration(seconds: 30);
 
       final deviceData = {
         'device_id': deviceInfo['device_id'],

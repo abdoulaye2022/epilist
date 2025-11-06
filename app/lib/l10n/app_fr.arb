@@ -1607,5 +1607,8 @@
   "oftenBoughtWith": "Souvent acheté avec {item}",
   "seasonalProduct": "Produit saisonnier",
   "confidenceScore": "Confiance",
-  "buyRegularly": "Vous achetez ceci régulièrement"
+  "buyRegularly": "Vous achetez ceci régulièrement",
+  "addReceiptDescription": "Ajoutez une nouvelle facture à votre liste",
+  "editReceiptDescription": "Modifiez les informations de votre facture",
+  "noChangeDetected": "Aucune modification détectée"
 }

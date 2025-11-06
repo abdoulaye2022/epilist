@@ -7704,6 +7704,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous achetez ceci régulièrement'**
   String get buyRegularly;
+
+  /// No description provided for @addReceiptDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez une nouvelle facture à votre liste'**
+  String get addReceiptDescription;
+
+  /// No description provided for @editReceiptDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifiez les informations de votre facture'**
+  String get editReceiptDescription;
+
+  /// No description provided for @noChangeDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune modification détectée'**
+  String get noChangeDetected;
 }
 
 class _AppLocalizationsDelegate

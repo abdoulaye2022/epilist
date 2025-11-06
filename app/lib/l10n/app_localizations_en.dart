@@ -4025,4 +4025,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buyRegularly => 'You buy this regularly';
+
+  @override
+  String get addReceiptDescription => 'Add a new receipt to your list';
+
+  @override
+  String get editReceiptDescription => 'Edit your receipt information';
+
+  @override
+  String get noChangeDetected => 'No changes detected';
 }

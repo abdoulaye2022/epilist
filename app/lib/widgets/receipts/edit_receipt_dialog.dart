@@ -175,7 +175,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
 
   Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      "Modifiez les informations de votre facture",
+      l10n.editReceiptDescription,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );
@@ -347,7 +347,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              "Aucune modification détectée",
+              l10n.noChangeDetected,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.amber[700],

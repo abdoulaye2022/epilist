@@ -67,6 +67,60 @@ class BudgetAlertService
     }
 
     /**
+     * ✅ Vérifier et envoyer une alerte après un achat (facture ou item)
+     * Cette méthode est appelée quand une facture est ajoutée ou un item est acheté
+     */
+    public static function checkPurchaseAlert(Budget $budget, float $purchaseAmount): ?array
+    {
+        // Vérifier si le budget nécessite une alerte après cet achat
+        if (!$budget->shouldShowAlert()) {
+            return null;
+        }
+
+        $user = $budget->user;
+        if (!$user) {
+            return null;
+        }
+
+        // Vérifier les préférences email de l'utilisateur
+        if (!MailSender::canSendEmail($user->id, 'budget_alert')) {
+            error_log("📧 [BudgetAlertService] Budget alert email disabled for user {$user->id}");
+            return null;
+        }
+
+        // Vérifier si une alerte a déjà été envoyée récemment (éviter spam)
+        if (self::wasAlertRecentlySent($budget)) {
+            error_log("⏰ [BudgetAlertService] Alert already sent recently for budget {$budget->id}");
+            return null;
+        }
+
+        // Envoyer l'alerte appropriée
+        $alertSent = false;
+        $alertType = '';
+
+        if ($budget->isExceeded()) {
+            $alertSent = self::sendExceededAlert($budget, $user);
+            $alertType = 'exceeded';
+        } elseif ($budget->isNearLimit()) {
+            $alertSent = self::sendWarningAlert($budget, $user);
+            $alertType = 'warning';
+        }
+
+        if ($alertSent) {
+            return [
+                'notification_sent' => true,
+                'alert_type' => $alertType,
+                'message' => "Budget {$budget->name} alert sent ({$alertType})",
+                'purchase_amount' => $purchaseAmount,
+                'budget_spent' => $budget->getSpentAmount(),
+                'budget_limit' => $budget->budget_amount
+            ];
+        }
+
+        return null;
+    }
+
+    /**
      * ✅ Vérifier et envoyer une alerte pour un budget spécifique
      */
     private static function checkBudgetAlert(Budget $budget): bool

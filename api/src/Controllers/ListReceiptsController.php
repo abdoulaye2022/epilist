@@ -8,6 +8,7 @@ use App\Models\ShoppingList;
 use App\Models\SharedList;
 use App\Models\User;
 use App\Models\Currency;
+use App\Services\ReceiptExportService;
 use Carbon\Carbon;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +16,16 @@ use Valitron\Validator;
 
 class ListReceiptsController
 {
+    /**
+     * ✅ LOG HELPER - Only log in development mode
+     */
+    private function debugLog(string $message): void
+    {
+        if (getenv('APP_ENV') === 'development') {
+            error_log($message);
+        }
+    }
+
     /**
      * ✅ CHECK LIST ACCESS PERMISSIONS
      */
@@ -169,7 +180,7 @@ class ListReceiptsController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            error_log("Receipt index error: " . $e->getMessage());
+            error_log("❌ [ERROR] Receipt index error: " . $e->getMessage());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -236,7 +247,7 @@ class ListReceiptsController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (\Exception $e) {
-            error_log("Receipt store error: " . $e->getMessage());
+            error_log("❌ [ERROR] Receipt store error: " . $e->getMessage());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -301,7 +312,7 @@ class ListReceiptsController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
-            error_log("Receipt show error: " . $e->getMessage());
+            error_log("❌ [ERROR] Receipt show error: " . $e->getMessage());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -325,20 +336,20 @@ class ListReceiptsController
         $receiptId = (int) $args['receiptId'];
 
         // ✅ LOGS DE DÉBOGAGE DÉTAILLÉS
-        error_log("🔄 DÉBUT UPDATE RECEIPT");
-        error_log("📥 Raw request data: " . json_encode($data));
-        error_log("🆔 List ID: " . $listId);
-        error_log("🆔 Receipt ID: " . $receiptId);
+        $this->debugLog("🔄 DÉBUT UPDATE RECEIPT");
+        $this->debugLog("📥 Raw request data: " . json_encode($data));
+        $this->debugLog("🆔 List ID: " . $listId);
+        $this->debugLog("🆔 Receipt ID: " . $receiptId);
 
         try {
             $user_id = $request->getAttribute('auth_id');
-            error_log("👤 User ID: " . $user_id);
+            $this->debugLog("👤 User ID: " . $user_id);
 
             // Check permissions
             $access = $this->checkListAccess($user_id, $listId, 'edit');
-            
+
             if (!$access) {
-                error_log("❌ Access denied for user $user_id on list $listId");
+                error_log("❌ [SECURITY] Access denied for user $user_id on list $listId");
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'error' => [
@@ -349,7 +360,7 @@ class ListReceiptsController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
-            error_log("✅ Access granted - Permission: " . $access['permission']);
+            $this->debugLog("✅ Access granted - Permission: " . $access['permission']);
 
             // Find receipt
             $receipt = ListReceipt::where('list_id', $listId)
@@ -357,7 +368,7 @@ class ListReceiptsController
                 ->first();
 
             if (!$receipt) {
-                error_log("❌ Receipt not found: listId=$listId, receiptId=$receiptId");
+                $this->debugLog("❌ Receipt not found: listId=$listId, receiptId=$receiptId");
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'error' => [
@@ -368,7 +379,7 @@ class ListReceiptsController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            error_log("✅ Receipt found: " . json_encode([
+            $this->debugLog("✅ Receipt found: " . json_encode([
                 'id' => $receipt->id,
                 'store_name' => $receipt->store_name,
                 'total_amount' => $receipt->total_amount,
@@ -379,7 +390,7 @@ class ListReceiptsController
             // ✅ VALIDATION AVEC LOGS
             $errors = $this->validateReceiptData($data, true);
             if (!empty($errors)) {
-                error_log("❌ Validation errors: " . json_encode($errors));
+                $this->debugLog("❌ Validation errors: " . json_encode($errors));
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'error' => [
@@ -391,39 +402,39 @@ class ListReceiptsController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
             }
 
-            error_log("✅ Validation passed");
+            $this->debugLog("✅ Validation passed");
 
             // ✅ PRÉPARER LES DONNÉES POUR LA MISE À JOUR
             $updateData = [];
-            
+
             if (isset($data['store_name']) && !empty(trim($data['store_name']))) {
                 $updateData['store_name'] = trim($data['store_name']);
-                error_log("📝 Updating store_name: " . $updateData['store_name']);
+                $this->debugLog("📝 Updating store_name: " . $updateData['store_name']);
             }
-            
+
             if (isset($data['total_amount']) && is_numeric($data['total_amount'])) {
                 $updateData['total_amount'] = (float) $data['total_amount'];
-                error_log("💰 Updating total_amount: " . $updateData['total_amount']);
+                $this->debugLog("💰 Updating total_amount: " . $updateData['total_amount']);
             }
-            
+
             if (isset($data['purchase_date']) && !empty($data['purchase_date'])) {
                 try {
                     $updateData['purchase_date'] = $data['purchase_date'];
-                    error_log("📅 Updating purchase_date: " . $updateData['purchase_date']);
+                    $this->debugLog("📅 Updating purchase_date: " . $updateData['purchase_date']);
                 } catch (\Exception $e) {
-                    error_log("❌ Invalid date format: " . $data['purchase_date']);
+                    $this->debugLog("❌ Invalid date format: " . $data['purchase_date']);
                 }
             }
-            
+
             if (isset($data['notes'])) {
                 $updateData['notes'] = !empty(trim($data['notes'])) ? trim($data['notes']) : null;
-                error_log("📝 Updating notes: " . ($updateData['notes'] ?? 'NULL'));
+                $this->debugLog("📝 Updating notes: " . ($updateData['notes'] ?? 'NULL'));
             }
 
-            error_log("📦 Final update data: " . json_encode($updateData));
+            $this->debugLog("📦 Final update data: " . json_encode($updateData));
 
             if (empty($updateData)) {
-                error_log("⚠️ No data to update");
+                $this->debugLog("⚠️ No data to update");
                 $user = User::with('currency')->find($user_id);
                 $response->getBody()->write(json_encode([
                     'success' => true,
@@ -434,12 +445,12 @@ class ListReceiptsController
             }
 
             // ✅ EFFECTUER LA MISE À JOUR
-            error_log("🔄 Calling updateClean method...");
+            $this->debugLog("🔄 Calling updateClean method...");
             $updateResult = $receipt->updateClean($updateData);
-            error_log("✅ UpdateClean result: " . ($updateResult ? 'SUCCESS' : 'FAILED'));
+            $this->debugLog("✅ UpdateClean result: " . ($updateResult ? 'SUCCESS' : 'FAILED'));
 
             if (!$updateResult) {
-                error_log("❌ Update failed");
+                error_log("❌ [ERROR] Receipt update failed for receipt ID: $receiptId");
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'error' => [
@@ -733,6 +744,107 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving statistics',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ EXPORT RECEIPTS TO PDF
+     */
+    public function exportPDF(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $list_id = (int) $args['listId'];
+            $user_id = $request->getAttribute('user_id');
+
+            error_log("📄 [EXPORT] PDF export requested for list {$list_id} by user {$user_id}");
+
+            // Vérifier l'accès
+            $access = $this->checkListAccess($user_id, $list_id, 'read');
+            if (!$access) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'ACCESS_DENIED',
+                        'message' => 'You do not have permission to access this list'
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $user = User::findOrFail($user_id);
+            $htmlContent = ReceiptExportService::exportToPDF($list_id, $user);
+
+            // Retourner le HTML (le client peut utiliser une librairie comme react-native-html-to-pdf)
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'html' => $htmlContent,
+                    'filename' => 'receipts_' . date('Y-m-d') . '.pdf'
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+        } catch (\Exception $e) {
+            error_log("❌ [EXPORT] PDF error: " . $e->getMessage());
+
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'EXPORT_ERROR',
+                    'message' => 'Failed to generate PDF export',
+                    'details' => $e->getMessage()
+                ]
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * ✅ EXPORT RECEIPTS TO CSV
+     */
+    public function exportCSV(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $list_id = (int) $args['listId'];
+            $user_id = $request->getAttribute('user_id');
+
+            error_log("📊 [EXPORT] CSV export requested for list {$list_id} by user {$user_id}");
+
+            // Vérifier l'accès
+            $access = $this->checkListAccess($user_id, $list_id, 'read');
+            if (!$access) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'ACCESS_DENIED',
+                        'message' => 'You do not have permission to access this list'
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $user = User::findOrFail($user_id);
+            $csvContent = ReceiptExportService::exportToCSV($list_id, $user);
+
+            // Retourner le CSV
+            $response->getBody()->write($csvContent);
+            return $response
+                ->withHeader('Content-Type', 'text/csv')
+                ->withHeader('Content-Disposition', 'attachment; filename="receipts_' . date('Y-m-d') . '.csv"')
+                ->withStatus(200);
+
+        } catch (\Exception $e) {
+            error_log("❌ [EXPORT] CSV error: " . $e->getMessage());
+
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'EXPORT_ERROR',
+                    'message' => 'Failed to generate CSV export',
                     'details' => $e->getMessage()
                 ]
             ]));

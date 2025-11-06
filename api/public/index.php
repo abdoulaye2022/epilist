@@ -237,6 +237,8 @@ $app->group('', function ($group) {
     $group->post('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'store']);
     $group->get('/shopping-lists/{listId}/receipts/by-store', [ListReceiptsController::class, 'byStore']);
     $group->get('/shopping-lists/{listId}/receipts/stats', [ListReceiptsController::class, 'stats']);
+    $group->get('/shopping-lists/{listId}/receipts/export/pdf', [ListReceiptsController::class, 'exportPDF']);
+    $group->get('/shopping-lists/{listId}/receipts/export/csv', [ListReceiptsController::class, 'exportCSV']);
     $group->get('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'show']);
     $group->put('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'update']);
     $group->delete('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'destroy']);

@@ -111,7 +111,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
 
   Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      "Ajoutez une nouvelle facture à votre liste",
+      l10n.addReceiptDescription,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
     );

@@ -4093,4 +4093,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get buyRegularly => 'Vous achetez ceci régulièrement';
+
+  @override
+  String get addReceiptDescription =>
+      'Ajoutez une nouvelle facture à votre liste';
+
+  @override
+  String get editReceiptDescription =>
+      'Modifiez les informations de votre facture';
+
+  @override
+  String get noChangeDetected => 'Aucune modification détectée';
 }

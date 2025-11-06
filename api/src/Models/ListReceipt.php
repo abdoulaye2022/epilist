@@ -369,6 +369,9 @@ class ListReceipt extends Model
         static::saved(function ($receipt) {
             error_log(" ListReceipt saved successfully");
             error_log(" Final saved data: " . json_encode($receipt->toArray()));
+
+            // Vérifier si des budgets sont affectés et envoyer des alertes si nécessaire
+            self::checkAffectedBudgets($receipt);
         });
     }
 
