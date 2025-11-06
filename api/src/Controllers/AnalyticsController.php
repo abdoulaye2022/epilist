@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 class AnalyticsController
 {
     /**
-     * ✅ NOUVEAU: TRADUCTIONS DES JOURS SELON LA LANGUE
+     *  NOUVEAU: TRADUCTIONS DES JOURS SELON LA LANGUE
      */
     private function getDayTranslations(): array
     {
@@ -46,7 +46,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ NOUVEAU: OBTENIR LE NOM D'UN MOIS TRADUIT
+     *  NOUVEAU: OBTENIR LE NOM D'UN MOIS TRADUIT
      */
     private function getLocalizedMonthName(int $month, int $year, string $language, bool $short = false): string
     {
@@ -60,7 +60,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ NOUVEAU: OBTENIR LE NOM D'UN JOUR TRADUIT
+     *  NOUVEAU: OBTENIR LE NOM D'UN JOUR TRADUIT
      */
     private function getLocalizedDayName(string $englishDay, string $language, bool $short = false): string
     {
@@ -72,7 +72,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ DICTIONNAIRE DE TRADUCTIONS POUR LES CATÉGORIES
+     *  DICTIONNAIRE DE TRADUCTIONS POUR LES CATÉGORIES
      */
     private function getCategoryTranslations(): array
     {
@@ -137,7 +137,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ DÉTECTION DE LA LANGUE UTILISATEUR
+     *  DÉTECTION DE LA LANGUE UTILISATEUR
      */
     private function getUserLanguage(Request $request): string
     {
@@ -167,7 +167,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ NOUVEAU: TRADUCTIONS DES MOIS SELON LA LANGUE
+     *  NOUVEAU: TRADUCTIONS DES MOIS SELON LA LANGUE
      */
     private function getMonthTranslations(): array
     {
@@ -200,7 +200,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ RÉCUPÉRER LES IDS DES LISTES ACCESSIBLES
+     *  RÉCUPÉRER LES IDS DES LISTES ACCESSIBLES
      */
     private function getUserAccessibleListIds(int $user_id): array
     {
@@ -220,7 +220,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ VÉRIFICATION D'ACCÈS À UNE LISTE
+     *  VÉRIFICATION D'ACCÈS À UNE LISTE
      */
     private function checkListAccess(int $user_id, int $list_id): ?array
     {
@@ -249,7 +249,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ QUERY BUILDER POUR LES ITEMS ACCESSIBLES
+     *  QUERY BUILDER POUR LES ITEMS ACCESSIBLES
      */
     private function getUserAccessibleItemsQuery(int $user_id): Builder
     {
@@ -258,38 +258,38 @@ class AnalyticsController
     }
 
     /**
-     * ✅ OBTENIR LES DONNÉES DE DÉPENSES COMBINÉES (FACTURES + ITEMS)
+     *  OBTENIR LES DONNÉES DE DÉPENSES COMBINÉES (FACTURES + ITEMS)
      */
     private function getCombinedSpendingDataSafe(int $user_id, Carbon $startDate, Carbon $endDate): array
     {
         try {
-            error_log("🔍 getCombinedSpendingDataSafe START - User: $user_id");
-            error_log("📅 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+            error_log(" getCombinedSpendingDataSafe START - User: $user_id");
+            error_log(" Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
             
             $accessibleListIds = $this->getUserAccessibleListIds($user_id);
             
             if (empty($accessibleListIds)) {
-                error_log("⚠️ No accessible lists found!");
+                error_log(" No accessible lists found!");
                 return [];
             }
 
             $spendingData = [];
 
             // ===== ÉTAPE 1: FACTURES (PRIORITAIRES) =====
-            error_log("💳 === ANALYZING RECEIPTS ===");
+            error_log(" === ANALYZING RECEIPTS ===");
             
             $receipts = ListReceipt::whereIn('list_id', $accessibleListIds)
                 ->whereBetween('purchase_date', [$startDate, $endDate])
                 ->orderBy('purchase_date', 'desc')
                 ->get();
             
-            error_log("💳 Found " . $receipts->count() . " receipts");
+            error_log(" Found " . $receipts->count() . " receipts");
             
             $listsWithReceipts = [];
             
             foreach ($receipts as $receipt) {
                 if (!$receipt->purchase_date || !is_numeric($receipt->total_amount) || $receipt->total_amount <= 0) {
-                    error_log("💳 ❌ SKIPPED: Invalid receipt {$receipt->id}");
+                    error_log("  SKIPPED: Invalid receipt {$receipt->id}");
                     continue;
                 }
                 
@@ -309,17 +309,17 @@ class AnalyticsController
                 ];
                 
                 $listsWithReceipts[] = $receipt->list_id;
-                error_log("💳 ✅ Receipt {$receipt->id}: {$receipt->total_amount}$ on {$receipt->purchase_date->toDateString()}");
+                error_log("  Receipt {$receipt->id}: {$receipt->total_amount}$ on {$receipt->purchase_date->toDateString()}");
             }
             
             $listsWithReceipts = array_unique($listsWithReceipts);
-            error_log("📦 Lists with receipts: " . json_encode($listsWithReceipts));
+            error_log(" Lists with receipts: " . json_encode($listsWithReceipts));
 
             // ===== ÉTAPE 2: ITEMS (FALLBACK POUR LISTES SANS FACTURES) =====
-            error_log("📦 === ANALYZING ITEMS ===");
+            error_log(" === ANALYZING ITEMS ===");
             
             $listsForItemsAnalysis = array_diff($accessibleListIds, $listsWithReceipts);
-            error_log("📦 Lists for items analysis: " . json_encode($listsForItemsAnalysis));
+            error_log(" Lists for items analysis: " . json_encode($listsForItemsAnalysis));
             
             if (!empty($listsForItemsAnalysis)) {
                 $items = ListItem::whereIn('list_id', $listsForItemsAnalysis)
@@ -329,7 +329,7 @@ class AnalyticsController
                     ->whereBetween('updated_at', [$startDate, $endDate])
                     ->get();
 
-                error_log("📦 Found " . $items->count() . " items with prices");
+                error_log(" Found " . $items->count() . " items with prices");
                 
                 // Grouper les items par date et liste
                 $itemGroups = [];
@@ -365,7 +365,7 @@ class AnalyticsController
                         'total' => $itemTotal
                     ];
                     
-                    error_log("📦 ✅ Item {$item->id}: {$item->product_name} = $itemTotal");
+                    error_log("  Item {$item->id}: {$item->product_name} = $itemTotal");
                 }
                 
                 // Ajouter les groupes d'items aux données de dépenses
@@ -381,28 +381,28 @@ class AnalyticsController
             $receiptCount = count(array_filter($finalData, fn($item) => $item['source'] === 'receipt'));
             $itemGroupCount = count(array_filter($finalData, fn($item) => $item['source'] === 'items'));
             
-            error_log("💰 === FINAL SUMMARY ===");
-            error_log("💰 Total spending entries: " . count($finalData));
-            error_log("💰 Receipt entries: $receiptCount");
-            error_log("💰 Item group entries: $itemGroupCount");
-            error_log("💰 Grand total amount: $totalAmount");
-            error_log("🔍 getCombinedSpendingDataSafe END");
+            error_log(" === FINAL SUMMARY ===");
+            error_log(" Total spending entries: " . count($finalData));
+            error_log(" Receipt entries: $receiptCount");
+            error_log(" Item group entries: $itemGroupCount");
+            error_log(" Grand total amount: $totalAmount");
+            error_log(" getCombinedSpendingDataSafe END");
             
             return $finalData;
             
         } catch (\Exception $e) {
-            error_log("❌ Error in getCombinedSpendingDataSafe: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Error in getCombinedSpendingDataSafe: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             return [];
         }
     }
 
     /**
-     * ✅ OBTENIR LES DONNÉES AVEC SÉPARATION PROPRES/PARTAGÉES
+     *  OBTENIR LES DONNÉES AVEC SÉPARATION PROPRES/PARTAGÉES
      */
     private function getSpendingDataWithBreakdown(int $user_id, Carbon $startDate, Carbon $endDate): array
     {
-        error_log("🔍 getSpendingDataWithBreakdown START");
+        error_log(" getSpendingDataWithBreakdown START");
         
         // Récupérer les IDs des listes propres et partagées
         $ownListIds = ShoppingList::where('user_id', $user_id)->pluck('id')->toArray();
@@ -411,8 +411,8 @@ class AnalyticsController
                                 ->where('is_active', true)
                                 ->pluck('list_id')->toArray();
         
-        error_log("📊 Own lists: " . json_encode($ownListIds));
-        error_log("📊 Shared lists: " . json_encode($sharedListIds));
+        error_log(" Own lists: " . json_encode($ownListIds));
+        error_log(" Shared lists: " . json_encode($sharedListIds));
         
         // Récupérer toutes les données de dépenses
         $allSpendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
@@ -436,29 +436,29 @@ class AnalyticsController
                 // Liste propre
                 $breakdown['own_lists'][] = $spending;
                 $breakdown['totals']['own_lists_total'] += $amount;
-                error_log("📊 Own list $listId: +$amount");
+                error_log(" Own list $listId: +$amount");
             } elseif (in_array($listId, $sharedListIds)) {
                 // Liste partagée
                 $breakdown['shared_lists'][] = $spending;
                 $breakdown['totals']['shared_lists_total'] += $amount;
-                error_log("📊 Shared list $listId: +$amount");
+                error_log(" Shared list $listId: +$amount");
             } else {
-                error_log("⚠️ Unknown list $listId for user $user_id");
+                error_log(" Unknown list $listId for user $user_id");
             }
             
             $breakdown['totals']['grand_total'] += $amount;
         }
         
-        error_log("📊 BREAKDOWN TOTALS:");
-        error_log("📊 Own: {$breakdown['totals']['own_lists_total']}$");
-        error_log("📊 Shared: {$breakdown['totals']['shared_lists_total']}$");
-        error_log("📊 Grand: {$breakdown['totals']['grand_total']}$");
+        error_log(" BREAKDOWN TOTALS:");
+        error_log(" Own: {$breakdown['totals']['own_lists_total']}$");
+        error_log(" Shared: {$breakdown['totals']['shared_lists_total']}$");
+        error_log(" Grand: {$breakdown['totals']['grand_total']}$");
         
         return $breakdown;
     }
 
     /**
-     * ✅ CATÉGORISER LES PRODUITS AVEC I18N
+     *  CATÉGORISER LES PRODUITS AVEC I18N
      */
     private function categorizeProducts($items, string $language = 'fr'): array
     {
@@ -613,7 +613,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ HISTORIQUE DES DÉPENSES PAR SEMAINE
+     *  HISTORIQUE DES DÉPENSES PAR SEMAINE
      */
     public function weeklySpendingHistory(Request $request, Response $response): Response
     {
@@ -623,10 +623,10 @@ class AnalyticsController
             
             $weeks = min((int)($params['weeks'] ?? 12), 52);
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request); // ✅ UTILISER LA LANGUE DÉTECTÉE
+            $language = $this->getUserLanguage($request); //  UTILISER LA LANGUE DÉTECTÉE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("📊 Weekly history - User: $user_id, Weeks: $weeks, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log(" Weekly history - User: $user_id, Weeks: $weeks, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             if (!$user) {
@@ -652,7 +652,7 @@ class AnalyticsController
             $endDate = Carbon::now()->endOfWeek();
             $startDate = Carbon::now()->subWeeks($weeks - 1)->startOfWeek();
 
-            error_log("📊 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+            error_log(" Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
 
             // Récupérer toutes les données de dépenses
             $allSpendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
@@ -664,7 +664,7 @@ class AnalyticsController
                 });
             }
 
-            // ✅ CORRECTION: Créer les données par semaine AVEC TRADUCTION
+            //  CORRECTION: Créer les données par semaine AVEC TRADUCTION
             $weeklyData = [];
             $currentDate = $startDate->copy();
             
@@ -676,7 +676,7 @@ class AnalyticsController
                 
                 $weekKey = $year . '-W' . sprintf('%02d', $weekNumber);
                 
-                // ✅ FORMATER LES LABELS SELON LA LANGUE
+                //  FORMATER LES LABELS SELON LA LANGUE
                 $weekLabel = '';
                 $weekShort = '';
                 
@@ -696,8 +696,8 @@ class AnalyticsController
                     'week_key' => $weekKey,
                     'week_start' => $weekStart->toDateString(),
                     'week_end' => $weekEnd->toDateString(),
-                    'week_label' => $weekLabel,      // ✅ TRADUIT
-                    'week_short' => $weekShort,      // ✅ TRADUIT
+                    'week_label' => $weekLabel,      //  TRADUIT
+                    'week_short' => $weekShort,      //  TRADUIT
                     'is_current_week' => $currentDate->isSameWeek(Carbon::now()),
                     'total_spent' => 0.0,
                     'total_transactions' => 0,
@@ -727,7 +727,7 @@ class AnalyticsController
                     $weekKey = $year . '-W' . sprintf('%02d', $weekNumber);
                     
                     if (!isset($weeklyData[$weekKey])) {
-                        error_log("⚠️ Week key $weekKey not found in weeklyData");
+                        error_log(" Week key $weekKey not found in weeklyData");
                         continue;
                     }
                     
@@ -754,7 +754,7 @@ class AnalyticsController
                     $daysByWeek[$weekKey][$dayKey] = true;
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error processing spending entry for week: " . $e->getMessage());
+                    error_log(" Error processing spending entry for week: " . $e->getMessage());
                     continue;
                 }
             }
@@ -787,7 +787,7 @@ class AnalyticsController
                     }
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error finalizing week $weekKey data: " . $e->getMessage());
+                    error_log(" Error finalizing week $weekKey data: " . $e->getMessage());
                     $data['data_quality'] = 'error';
                 }
             }
@@ -807,12 +807,12 @@ class AnalyticsController
             $averageWeekly = count(array_filter($values)) > 0 ? 
                 $totalSpent / count(array_filter($values)) : 0;
 
-            error_log("📊 Weekly summary - Total: $totalSpent, Average: $averageWeekly");
+            error_log(" Weekly summary - Total: $totalSpent, Average: $averageWeekly");
 
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => (string)$language, // ✅ INCLURE LA LANGUE
+                    'language' => (string)$language, //  INCLURE LA LANGUE
                     'include_shared' => $includeShared,
                     'weekly_data' => $sortedWeeklyData,
                     'summary' => [
@@ -834,8 +834,8 @@ class AnalyticsController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
-            error_log("❌ Error in weeklySpendingHistory: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Error in weeklySpendingHistory: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -850,7 +850,7 @@ class AnalyticsController
     }
 
     /**
-     * ✅ DASHBOARD PRINCIPAL
+     *  DASHBOARD PRINCIPAL
      */
 public function dashboard(Request $request, Response $response): Response
     {
@@ -859,10 +859,10 @@ public function dashboard(Request $request, Response $response): Response
             $params = $request->getQueryParams();
             
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request); // ✅ DÉTECTER LA LANGUE
+            $language = $this->getUserLanguage($request); //  DÉTECTER LA LANGUE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("🎯 Dashboard - User: $user_id, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log(" Dashboard - User: $user_id, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
@@ -891,7 +891,7 @@ public function dashboard(Request $request, Response $response): Response
             }
 
             if (empty($listIds)) {
-                error_log("⚠️ No accessible lists found for user $user_id");
+                error_log(" No accessible lists found for user $user_id");
                 
                 $response->getBody()->write(json_encode([
                     'success' => true,
@@ -935,9 +935,9 @@ public function dashboard(Request $request, Response $response): Response
             $itemsPurchased = $currentMonthItems->sum('quantity');
             $uniqueProducts = $currentMonthItems->unique('product_name')->count();
 
-            error_log("📊 Current month items: " . $currentMonthItems->count());
-            error_log("📊 Items purchased (quantity): $itemsPurchased");
-            error_log("📊 Unique products: $uniqueProducts");
+            error_log(" Current month items: " . $currentMonthItems->count());
+            error_log(" Items purchased (quantity): $itemsPurchased");
+            error_log(" Unique products: $uniqueProducts");
 
             // 3. Sessions de shopping (groupées par liste et jour)
             $shoppingSessions = 0;
@@ -948,7 +948,7 @@ public function dashboard(Request $request, Response $response): Response
                 $shoppingSessions = $sessionGroups->count();
             }
 
-            error_log("📊 Shopping sessions: $shoppingSessions");
+            error_log(" Shopping sessions: $shoppingSessions");
 
             // ===== STATS DES 7 DERNIERS JOURS AVEC TRADUCTION =====
             $last7Days = [];
@@ -978,13 +978,13 @@ public function dashboard(Request $request, Response $response): Response
                 
                 $dayItemsCount = $dayItems->sum('quantity');
 
-                // ✅ TRADUIRE LES NOMS DE JOURS
+                //  TRADUIRE LES NOMS DE JOURS
                 $dayNameEnglish = $date->format('l');      // "Monday", "Tuesday", etc.
                 $dayName = $this->getLocalizedDayName($dayNameEnglish, $language, false);
 
                 $last7Days[] = [
                     'date' => $date->toDateString(),
-                    'day_name' => $dayName,          // ✅ TRADUIT: "Monday" ou "lundi"
+                    'day_name' => $dayName,          //  TRADUIT: "Monday" ou "lundi"
                     'total_spent' => round($dayTotal, 2),
                     'items_count' => $dayItemsCount,
                     'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
@@ -992,7 +992,7 @@ public function dashboard(Request $request, Response $response): Response
                         : '$' . number_format($dayTotal, 2)
                 ];
                 
-                error_log("📊 Day $i: {$date->toDateString()} → $dayNameEnglish → $dayName");
+                error_log(" Day $i: {$date->toDateString()}  $dayNameEnglish  $dayName");
             }
 
             // ===== STATISTIQUES DES FACTURES POUR LE MOIS =====
@@ -1012,14 +1012,14 @@ public function dashboard(Request $request, Response $response): Response
                     ->count();
             }
 
-            error_log("📊 Receipts count: $receiptsCount");
-            error_log("📊 Unique stores: $uniqueStores");
+            error_log(" Receipts count: $receiptsCount");
+            error_log(" Unique stores: $uniqueStores");
 
             // ===== COMPARAISON AVEC LE MOIS PRÉCÉDENT =====
             $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
             $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
 
-            error_log("📊 Previous month: {$previousMonthStart->toDateString()} to {$previousMonthEnd->toDateString()}");
+            error_log(" Previous month: {$previousMonthStart->toDateString()} to {$previousMonthEnd->toDateString()}");
 
             // Obtenir les données du mois précédent
             $previousBreakdown = $this->getSpendingDataWithBreakdown($user_id, $previousMonthStart, $previousMonthEnd);
@@ -1048,11 +1048,11 @@ public function dashboard(Request $request, Response $response): Response
             $previousItemsPurchased = $previousMonthItems->sum('quantity');
             $previousUniqueProducts = $previousMonthItems->unique('product_name')->count();
 
-            error_log("📊 Previous month total: $previousTotal");
-            error_log("📊 Spending change: $spendingChange ({$spendingChangePercentage}%)");
-            error_log("📊 Trend: $trend");
+            error_log(" Previous month total: $previousTotal");
+            error_log(" Spending change: $spendingChange ({$spendingChangePercentage}%)");
+            error_log(" Trend: $trend");
 
-            // ✅ TRADUIRE LES NOMS DE MOIS DANS LA COMPARAISON
+            //  TRADUIRE LES NOMS DE MOIS DANS LA COMPARAISON
             $currentMonthName = $this->getLocalizedMonthName(Carbon::now()->month, Carbon::now()->year, $language, false);
             $previousMonthName = $this->getLocalizedMonthName(
                 Carbon::now()->subMonth()->month, 
@@ -1070,15 +1070,15 @@ public function dashboard(Request $request, Response $response): Response
                 'items_change' => (int)$itemsPurchased - (int)$previousItemsPurchased,
                 'products_change' => (int)$uniqueProducts - (int)$previousUniqueProducts,
                 'period_type' => 'month',
-                'current_period_name' => $currentMonthName,      // ✅ TRADUIT: "January 2024" ou "janvier 2024"
-                'previous_period_name' => $previousMonthName     // ✅ TRADUIT: "December 2023" ou "décembre 2023"
+                'current_period_name' => $currentMonthName,      //  TRADUIT: "January 2024" ou "janvier 2024"
+                'previous_period_name' => $previousMonthName     //  TRADUIT: "December 2023" ou "décembre 2023"
             ];
 
             // ===== RÉPONSE FINALE =====
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => $language,        // ✅ LANGUE DÉTECTÉE
+                    'language' => $language,        //  LANGUE DÉTECTÉE
                     'currency' => $targetCurrency->code,
                     'include_shared' => $includeShared,
                     
@@ -1089,15 +1089,15 @@ public function dashboard(Request $request, Response $response): Response
                         'shopping_sessions' => (int)$shoppingSessions,
                         'receipts_count' => (int)$receiptsCount,
                         'unique_stores' => (int)$uniqueStores,
-                        'month_name' => $currentMonthName,        // ✅ TRADUIT
+                        'month_name' => $currentMonthName,        //  TRADUIT
                         'formatted_total' => is_callable([$targetCurrency, 'formatAmountDisplay']) 
                             ? $targetCurrency->formatAmountDisplay($currentTotal)
                             : '$' . number_format($currentTotal, 2)
                     ],
                     
-                    'last_7_days' => $last7Days,                 // ✅ JOURS TRADUITS
+                    'last_7_days' => $last7Days,                 //  JOURS TRADUITS
                     
-                    'comparison_with_last_month' => $comparisonData,  // ✅ NOMS DE MOIS TRADUITS
+                    'comparison_with_last_month' => $comparisonData,  //  NOMS DE MOIS TRADUITS
                     
                     'data_breakdown' => [
                         'own_lists_total' => round($breakdown['totals']['own_lists_total'], 2),
@@ -1119,7 +1119,7 @@ public function dashboard(Request $request, Response $response): Response
                         'data_source' => $includeShared ? 'own_and_shared' : 'own_only',
                         'lists_count' => count($listIds),
                         'active_month' => $itemsPurchased > 0 || $currentTotal > 0,
-                        'busiest_day' => $this->getBusiestDay($last7Days, $language) // ✅ JOUR LE PLUS ACTIF TRADUIT
+                        'busiest_day' => $this->getBusiestDay($last7Days, $language) //  JOUR LE PLUS ACTIF TRADUIT
                     ],
 
                     // ===== DEBUGGING INFO (à retirer en production) =====
@@ -1137,8 +1137,8 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
-            error_log("❌ Dashboard error: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Dashboard error: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -1153,7 +1153,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ HELPER: OBTENIR LE JOUR LE PLUS ACTIF TRADUIT
+     *  HELPER: OBTENIR LE JOUR LE PLUS ACTIF TRADUIT
      */
     private function getBusiestDay(array $last7Days, string $language): ?string
     {
@@ -1171,7 +1171,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ TENDANCES DE DÉPENSES
+     *  TENDANCES DE DÉPENSES
      */
     public function spendingTrends(Request $request, Response $response): Response
     {
@@ -1316,7 +1316,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ DÉPENSES PAR CATÉGORIE
+     *  DÉPENSES PAR CATÉGORIE
      */
     public function spendingByCategory(Request $request, Response $response): Response
     {
@@ -1428,7 +1428,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ DÉPENSES PAR MAGASIN
+     *  DÉPENSES PAR MAGASIN
      */
     public function spendingByStore(Request $request, Response $response): Response
     {
@@ -1442,7 +1442,7 @@ public function dashboard(Request $request, Response $response): Response
             $language = $this->getUserLanguage($request);
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("🏪 spendingByStore - User: $user_id, Period: $period, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log(" spendingByStore - User: $user_id, Period: $period, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
@@ -1479,7 +1479,7 @@ public function dashboard(Request $request, Response $response): Response
                 $spendingData = array_filter($spendingData, function($spending) use ($ownListIds) {
                     return in_array($spending['list_id'], $ownListIds);
                 });
-                error_log("🏪 Filtered to own lists only: " . count($spendingData) . " entries");
+                error_log(" Filtered to own lists only: " . count($spendingData) . " entries");
             }
 
             // Grouper par magasin
@@ -1570,7 +1570,7 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
-            error_log("❌ Store analytics error: " . $e->getMessage());
+            error_log(" Store analytics error: " . $e->getMessage());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -1585,10 +1585,10 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ HISTORIQUE MENSUEL
+     *  HISTORIQUE MENSUEL
      */
     /**
-     * ✅ HISTORIQUE MENSUEL COMPLET AVEC TRADUCTIONS
+     *  HISTORIQUE MENSUEL COMPLET AVEC TRADUCTIONS
      */
     public function monthlySpendingHistory(Request $request, Response $response): Response
     {
@@ -1598,10 +1598,10 @@ public function dashboard(Request $request, Response $response): Response
             
             $months = min((int)($params['months'] ?? 12), 24);
             $currency_code = $params['currency'] ?? null;
-            $language = $this->getUserLanguage($request); // ✅ DÉTECTER LA LANGUE
+            $language = $this->getUserLanguage($request); //  DÉTECTER LA LANGUE
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("📊 Monthly history - User: $user_id, Months: $months, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
+            error_log(" Monthly history - User: $user_id, Months: $months, Language: $language, Include shared: " . ($includeShared ? 'YES' : 'NO'));
             
             $user = User::with('currency')->find($user_id);
             $targetCurrency = $currency_code ? 
@@ -1622,7 +1622,7 @@ public function dashboard(Request $request, Response $response): Response
             $endDate = Carbon::now()->endOfMonth();
             $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
 
-            error_log("📊 Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
+            error_log(" Date range: {$startDate->toDateString()} to {$endDate->toDateString()}");
 
             // Récupérer les données de dépenses
             $allSpendingData = $this->getCombinedSpendingDataSafe($user_id, $startDate, $endDate);
@@ -1633,10 +1633,10 @@ public function dashboard(Request $request, Response $response): Response
                 $allSpendingData = array_filter($allSpendingData, function($spending) use ($ownListIds) {
                     return in_array($spending['list_id'], $ownListIds);
                 });
-                error_log("📊 Filtered to own lists only: " . count($allSpendingData) . " entries");
+                error_log(" Filtered to own lists only: " . count($allSpendingData) . " entries");
             }
 
-            // ✅ CRÉER LES DONNÉES MENSUELLES AVEC TRADUCTIONS COMPLÈTES
+            //  CRÉER LES DONNÉES MENSUELLES AVEC TRADUCTIONS COMPLÈTES
             $monthlyData = [];
             $currentDate = $startDate->copy();
             
@@ -1645,19 +1645,19 @@ public function dashboard(Request $request, Response $response): Response
                 $month = $currentDate->month;
                 $year = $currentDate->year;
                 
-                // ✅ OBTENIR LES TRADUCTIONS SELON LA LANGUE
+                //  OBTENIR LES TRADUCTIONS SELON LA LANGUE
                 $monthNameFull = $this->getLocalizedMonthName($month, $year, $language, false); // "January 2024" ou "janvier 2024"
                 $monthNameShort = $this->getLocalizedMonthName($month, $year, $language, true);  // "Jan" ou "jan"
                 
-                // ✅ DÉTERMINER SI C'EST LE MOIS ACTUEL
+                //  DÉTERMINER SI C'EST LE MOIS ACTUEL
                 $isCurrentMonth = $currentDate->isSameMonth(Carbon::now());
                 
                 $monthlyData[$monthKey] = [
                     'year' => (int)$year,
                     'month' => (int)$month,
                     'month_key' => $monthKey,
-                    'month_name' => $monthNameFull,        // ✅ TRADUIT: "January 2024" ou "janvier 2024"
-                    'month_short' => $monthNameShort,      // ✅ TRADUIT: "Jan" ou "jan"
+                    'month_name' => $monthNameFull,        //  TRADUIT: "January 2024" ou "janvier 2024"
+                    'month_short' => $monthNameShort,      //  TRADUIT: "Jan" ou "jan"
                     'is_current_month' => $isCurrentMonth,
                     'total_spent' => 0.0,
                     'total_transactions' => 0,
@@ -1672,7 +1672,7 @@ public function dashboard(Request $request, Response $response): Response
                     'data_quality' => 'none'
                 ];
                 
-                error_log("📊 Month created: $monthKey → Full: '$monthNameFull', Short: '$monthNameShort'");
+                error_log(" Month created: $monthKey  Full: '$monthNameFull', Short: '$monthNameShort'");
                 $currentDate->addMonth();
             }
 
@@ -1689,7 +1689,7 @@ public function dashboard(Request $request, Response $response): Response
                     $monthKey = $spending['date']->format('Y-m');
                     
                     if (!isset($monthlyData[$monthKey])) {
-                        error_log("⚠️ Month key $monthKey not found in monthlyData");
+                        error_log(" Month key $monthKey not found in monthlyData");
                         continue;
                     }
                     
@@ -1720,7 +1720,7 @@ public function dashboard(Request $request, Response $response): Response
                     $daysByMonth[$monthKey][$dayKey] = true;
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error processing spending entry for month: " . $e->getMessage());
+                    error_log(" Error processing spending entry for month: " . $e->getMessage());
                     continue;
                 }
             }
@@ -1756,7 +1756,7 @@ public function dashboard(Request $request, Response $response): Response
                         $month['formatted_average'] = $symbol . number_format($month['average_transaction'], 2);
                     }
                     
-                    // ✅ QUALITÉ DES DONNÉES AVEC TRADUCTION
+                    //  QUALITÉ DES DONNÉES AVEC TRADUCTION
                     if ($month['receipts_total'] > 0 && $month['items_total'] > 0) {
                         $month['data_quality'] = 'excellent';
                         $month['data_quality_label'] = $language === 'en' ? 'Excellent' : 'Excellente';
@@ -1771,7 +1771,7 @@ public function dashboard(Request $request, Response $response): Response
                         $month['data_quality_label'] = $language === 'en' ? 'No data' : 'Aucune donnée';
                     }
                     
-                    // ✅ POURCENTAGE DE RÉPARTITION DES SOURCES
+                    //  POURCENTAGE DE RÉPARTITION DES SOURCES
                     if ($month['total_spent'] > 0) {
                         $month['receipts_percentage'] = round(($month['receipts_total'] / $month['total_spent']) * 100, 1);
                         $month['items_percentage'] = round(($month['items_total'] / $month['total_spent']) * 100, 1);
@@ -1780,12 +1780,12 @@ public function dashboard(Request $request, Response $response): Response
                         $month['items_percentage'] = 0;
                     }
                     
-                    // ✅ STATISTIQUES ADDITIONNELLES
+                    //  STATISTIQUES ADDITIONNELLES
                     $month['has_activity'] = $month['total_spent'] > 0;
                     $month['primary_source'] = $month['receipts_total'] > $month['items_total'] ? 'receipts' : 'items';
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error finalizing month $monthKey data: " . $e->getMessage());
+                    error_log(" Error finalizing month $monthKey data: " . $e->getMessage());
                     $month['data_quality'] = 'error';
                     $month['data_quality_label'] = $language === 'en' ? 'Error' : 'Erreur';
                 }
@@ -1825,7 +1825,7 @@ public function dashboard(Request $request, Response $response): Response
                 }
             }
             
-            // ✅ CALCUL DE TENDANCE (comparaison 3 derniers mois vs 3 premiers mois)
+            //  CALCUL DE TENDANCE (comparaison 3 derniers mois vs 3 premiers mois)
             $trend = 'stable';
             $trendPercentage = 0;
             
@@ -1846,16 +1846,16 @@ public function dashboard(Request $request, Response $response): Response
                 }
             }
 
-            error_log("📊 Monthly summary - Total: $totalSpent, Average: $averageMonthly, Trend: $trend");
-            error_log("📊 Sample month data: " . json_encode($sortedMonthlyData[0] ?? []));
+            error_log(" Monthly summary - Total: $totalSpent, Average: $averageMonthly, Trend: $trend");
+            error_log(" Sample month data: " . json_encode($sortedMonthlyData[0] ?? []));
 
             // ===== RÉPONSE FINALE =====
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => [
-                    'language' => $language,                    // ✅ LANGUE DÉTECTÉE
+                    'language' => $language,                    //  LANGUE DÉTECTÉE
                     'include_shared' => $includeShared,
-                    'monthly_data' => $sortedMonthlyData,       // ✅ DONNÉES AVEC TRADUCTIONS
+                    'monthly_data' => $sortedMonthlyData,       //  DONNÉES AVEC TRADUCTIONS
                     
                     'summary' => [
                         'total_spent' => round($totalSpent, 2),
@@ -1917,8 +1917,8 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
-            error_log("❌ Error in monthlySpendingHistory: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Error in monthlySpendingHistory: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -1933,7 +1933,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ STATISTIQUES DE RÉPARTITION DES LISTES
+     *  STATISTIQUES DE RÉPARTITION DES LISTES
      */
     public function getListsBreakdown(Request $request, Response $response): Response
     {
@@ -2021,7 +2021,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ TOP PRODUITS
+     *  TOP PRODUITS
      */
     public function topProducts(Request $request, Response $response): Response
     {
@@ -2160,7 +2160,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ COMPARAISON ENTRE PÉRIODES
+     *  COMPARAISON ENTRE PÉRIODES
      */
     public function periodComparison(Request $request, Response $response): Response
     {
@@ -2283,7 +2283,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ HISTORIQUE DES DÉPENSES PAR JOUR
+     *  HISTORIQUE DES DÉPENSES PAR JOUR
      */
     public function dailySpendingHistory(Request $request, Response $response): Response
     {
@@ -2424,7 +2424,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ HISTORIQUE DES DÉPENSES PAR ANNÉE
+     *  HISTORIQUE DES DÉPENSES PAR ANNÉE
      */
     public function yearlySpendingHistory(Request $request, Response $response): Response
     {
@@ -2437,7 +2437,7 @@ public function dashboard(Request $request, Response $response): Response
             $language = $this->getUserLanguage($request);
             $includeShared = ($params['include_shared'] ?? 'true') !== 'false';
             
-            error_log("🔍 yearlySpendingHistory - User ID: $user_id, Years: $years");
+            error_log(" yearlySpendingHistory - User ID: $user_id, Years: $years");
             
             $user = User::with('currency')->find($user_id);
             if (!$user) {
@@ -2538,7 +2538,7 @@ public function dashboard(Request $request, Response $response): Response
                     $daysByYear[$spendingYear][$dayKey] = true;
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error processing spending entry: " . $e->getMessage());
+                    error_log(" Error processing spending entry: " . $e->getMessage());
                     continue;
                 }
             }
@@ -2580,7 +2580,7 @@ public function dashboard(Request $request, Response $response): Response
                     }
                     
                 } catch (\Exception $e) {
-                    error_log("⚠️ Error finalizing year $year data: " . $e->getMessage());
+                    error_log(" Error finalizing year $year data: " . $e->getMessage());
                     $data['data_quality'] = 'error';
                 }
             }
@@ -2621,7 +2621,7 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
-            error_log("❌ Error in yearlySpendingHistory: " . $e->getMessage());
+            error_log(" Error in yearlySpendingHistory: " . $e->getMessage());
             
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -2636,7 +2636,7 @@ public function dashboard(Request $request, Response $response): Response
     }
 
     /**
-     * ✅ RAPPORT DE QUALITÉ DES DONNÉES
+     *  RAPPORT DE QUALITÉ DES DONNÉES
      */
     public function dataQualityReport(Request $request, Response $response): Response
     {

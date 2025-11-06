@@ -19,7 +19,7 @@ use Valitron\Validator;
 class ContactController
 {
     /**
-     * ✅ NOUVEAU: Détecter la langue de l'utilisateur
+     *  NOUVEAU: Détecter la langue de l'utilisateur
      */
     private function getUserLanguage(Request $request): string
     {
@@ -49,7 +49,7 @@ class ContactController
     }
 
     /**
-     * ✅ NOUVEAU: Traductions des types de feedback
+     *  NOUVEAU: Traductions des types de feedback
      */
     private function getFeedbackTypeTranslations(): array
     {
@@ -108,7 +108,7 @@ class ContactController
     }
 
     /**
-     * ✅ NOUVEAU: Traductions des niveaux de priorité
+     *  NOUVEAU: Traductions des niveaux de priorité
      */
     private function getPriorityTranslations(): array
     {
@@ -133,7 +133,7 @@ class ContactController
     }
 
     /**
-     * ✅ MÉTHODE DE TEST: Simple test pour vérifier que la classe fonctionne
+     *  MÉTHODE DE TEST: Simple test pour vérifier que la classe fonctionne
      */
     public function test(Request $request, Response $response): Response
     {
@@ -146,13 +146,13 @@ class ContactController
     }
 
     /**
-     * ✅ MÉTHODE CORRIGÉE: Obtenir les types de feedback disponibles
+     *  MÉTHODE CORRIGÉE: Obtenir les types de feedback disponibles
      */
     public function getFeedbackTypes(Request $request, Response $response): Response
     {
         try {
             $language = $this->getUserLanguage($request);
-            error_log("🌐 Feedback types requested in language: $language");
+            error_log(" Feedback types requested in language: $language");
             
             // Récupérer les traductions
             $feedbackTypeTranslations = $this->getFeedbackTypeTranslations();
@@ -160,11 +160,11 @@ class ContactController
             
             // Icônes communes à toutes les langues
             $feedbackIcons = [
-                'bug' => '🐛',
-                'feature' => '💡',
-                'improvement' => '🚀',
-                'question' => '❓',
-                'other' => '💬'
+                'bug' => '',
+                'feature' => '',
+                'improvement' => '',
+                'question' => '',
+                'other' => ''
             ];
             
             // Construire les types de feedback traduits
@@ -187,7 +187,7 @@ class ContactController
                 ];
             }
             
-            error_log("✅ Returning " . count($feedbackTypes) . " feedback types and " . count($priorities) . " priorities in $language");
+            error_log(" Returning " . count($feedbackTypes) . " feedback types and " . count($priorities) . " priorities in $language");
             
             return $this->createSuccessResponse([
                 'language' => $language,
@@ -196,7 +196,7 @@ class ContactController
             ], 'Types de feedback récupérés avec succès');
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la récupération des types de feedback: " . $e->getMessage());
+            error_log(" Erreur lors de la récupération des types de feedback: " . $e->getMessage());
             return $this->createErrorResponse(
                 'Erreur lors du chargement des types de feedback',
                 500,
@@ -206,7 +206,7 @@ class ContactController
     }
 
     /**
-     * ✅ ROUTE PRINCIPALE: Envoyer un feedback/contact
+     *  ROUTE PRINCIPALE: Envoyer un feedback/contact
      */
     public function sendFeedback(Request $request, Response $response): Response
     {
@@ -307,14 +307,14 @@ class ContactController
 
             if ($emailSent) {
                 // Log du feedback envoyé
-                error_log("✅ Feedback envoyé avec succès de: {$userEmail} - Sujet: {$feedbackData['subject']}");
+                error_log(" Feedback envoyé avec succès de: {$userEmail} - Sujet: {$feedbackData['subject']}");
                 
                 return $this->createSuccessResponse([
                     'feedback_id' => uniqid('feedback_', true),
                     'submitted_at' => $feedbackData['submitted_at']
                 ], 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
             } else {
-                error_log("❌ Échec de l'envoi du feedback de: {$userEmail}");
+                error_log(" Échec de l'envoi du feedback de: {$userEmail}");
                 return $this->createErrorResponse(
                     'Erreur lors de l\'envoi du message. Veuillez réessayer plus tard.',
                     500,
@@ -323,7 +323,7 @@ class ContactController
             }
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors du traitement du feedback: " . $e->getMessage());
+            error_log(" Erreur lors du traitement du feedback: " . $e->getMessage());
             return $this->createErrorResponse(
                 'Une erreur inattendue s\'est produite. Veuillez réessayer plus tard.',
                 500,
@@ -365,7 +365,7 @@ class ContactController
     }
 
     /**
-     * ✅ MÉTHODE UTILITAIRE: Envoyer l'email de feedback
+     *  MÉTHODE UTILITAIRE: Envoyer l'email de feedback
      */
     private function sendFeedbackEmail(array $feedbackData): bool
     {
@@ -374,11 +374,11 @@ class ContactController
             
             // Déterminer l'icône selon le type
             $typeIcons = [
-                'bug' => '🐛',
-                'feature' => '💡',
-                'improvement' => '🚀',
-                'question' => '❓',
-                'other' => '💬'
+                'bug' => '',
+                'feature' => '',
+                'improvement' => '',
+                'question' => '',
+                'other' => ''
             ];
             
             $priorityColors = [
@@ -388,7 +388,7 @@ class ContactController
                 'urgent' => '#ef4444'
             ];
             
-            $typeIcon = $typeIcons[$feedbackData['feedback_type']] ?? '💬';
+            $typeIcon = $typeIcons[$feedbackData['feedback_type']] ?? '';
             $priorityColor = $priorityColors[$feedbackData['priority']] ?? '#3b82f6';
             
             // Construire le contenu HTML
@@ -402,13 +402,13 @@ class ContactController
             );
             
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la construction de l'email de feedback: " . $e->getMessage());
+            error_log(" Erreur lors de la construction de l'email de feedback: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * ✅ MÉTHODE UTILITAIRE: Construire le contenu HTML de l'email
+     *  MÉTHODE UTILITAIRE: Construire le contenu HTML de l'email
      */
     private function buildFeedbackEmailContent(array $data, string $typeIcon, string $priorityColor): string
     {
@@ -455,7 +455,7 @@ class ContactController
                         <h2 style='margin: 0 0 20px; color: #1f2937; font-size: 20px;'>{$data['subject']}</h2>
                         
                         <div class='user-info'>
-                            <h3 style='margin: 0 0 12px; color: #374151; font-size: 16px;'>👤 Informations utilisateur</h3>
+                            <h3 style='margin: 0 0 12px; color: #374151; font-size: 16px;'> Informations utilisateur</h3>
                             <p style='margin: 0 0 8px;'><strong>Nom:</strong> {$data['user_name']}</p>
                             <p style='margin: 0 0 8px;'><strong>Email:</strong> {$data['user_email']}</p>
                             <p style='margin: 0 0 8px;'><strong>Statut:</strong> {$userStatus}</p>
@@ -463,7 +463,7 @@ class ContactController
                         </div>
                         
                         <div class='message-content'>
-                            <h3 style='margin: 0 0 12px; color: #047857; font-size: 16px;'>💬 Message</h3>
+                            <h3 style='margin: 0 0 12px; color: #047857; font-size: 16px;'> Message</h3>
                             <div style='white-space: pre-wrap; color: #374151;'>{$data['message']}</div>
                         </div>
         ";
@@ -473,7 +473,7 @@ class ContactController
         if ($data['app_version'] || $data['platform'] || $data['device_info']) {
             $technicalInfo = "
                         <div class='meta-info'>
-                            <h3 style='margin: 0 0 12px; color: #6b7280; font-size: 14px;'>📱 Informations techniques</h3>
+                            <h3 style='margin: 0 0 12px; color: #6b7280; font-size: 14px;'> Informations techniques</h3>
             ";
             
             if ($data['app_version']) {
@@ -510,7 +510,7 @@ class ContactController
     }
 
     /**
-     * ✅ MÉTHODE UTILITAIRE: Récupérer l'adresse IP du client
+     *  MÉTHODE UTILITAIRE: Récupérer l'adresse IP du client
      */
     private function getClientIpAddress(Request $request): string
     {

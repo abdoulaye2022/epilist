@@ -50,7 +50,7 @@ class UserDevice extends Model
     ];
 
     /**
-     * ✅ RELATIONS
+     *  RELATIONS
      */
     public function user(): BelongsTo
     {
@@ -58,7 +58,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ VALIDATION RULES
+     *  VALIDATION RULES
      */
     public static function getValidationRules(): array
     {
@@ -88,7 +88,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ ENREGISTRER OU METTRE À JOUR UN APPAREIL
+     *  ENREGISTRER OU METTRE À JOUR UN APPAREIL
      */
     public static function registerDevice(array $deviceData): self
     {
@@ -120,7 +120,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ MARQUER L'APPAREIL COMME ACTIF
+     *  MARQUER L'APPAREIL COMME ACTIF
      */
     public function markAsActive(): void
     {
@@ -131,7 +131,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ DÉSACTIVER L'APPAREIL
+     *  DÉSACTIVER L'APPAREIL
      */
     public function deactivate(): void
     {
@@ -139,7 +139,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ METTRE À JOUR LE TOKEN PUSH
+     *  METTRE À JOUR LE TOKEN PUSH
      */
     public function updatePushToken(string $newToken): bool
     {
@@ -150,7 +150,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ PRÉFÉRENCES DE NOTIFICATION
+     *  PRÉFÉRENCES DE NOTIFICATION
      */
     public function hasNotificationPreference(string $type): bool
     {
@@ -198,7 +198,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ VÉRIFICATIONS D'ÉTAT
+     *  VÉRIFICATIONS D'ÉTAT
      */
     public function isActive(): bool
     {
@@ -221,7 +221,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ INFORMATIONS APPAREIL
+     *  INFORMATIONS APPAREIL
      */
     public function getDeviceInfo(): array
     {
@@ -238,7 +238,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ NETTOYER LES ANCIENS APPAREILS
+     *  NETTOYER LES ANCIENS APPAREILS
      */
     public static function cleanupInactiveDevices(): int
     {
@@ -250,7 +250,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ OBTENIR LES STATISTIQUES DES APPAREILS
+     *  OBTENIR LES STATISTIQUES DES APPAREILS
      */
     public static function getDeviceStats(): array
     {
@@ -269,7 +269,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ SCOPES
+     *  SCOPES
      */
     public function scopeActive($query)
     {
@@ -300,7 +300,7 @@ class UserDevice extends Model
     }
 
     /**
-     * ✅ BOOT METHOD
+     *  BOOT METHOD
      */
     protected static function boot()
     {

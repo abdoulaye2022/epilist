@@ -31,6 +31,7 @@ class ListItemService {
     int quantity = 1,
     double? price,
     String? storeName,
+    int? categoryId,
   }) async {
     final token = await _authService.getToken();
 
@@ -42,6 +43,7 @@ class ListItemService {
           'quantity': quantity,
           'price': price,
           'store_name': storeName,
+          'category_id': categoryId,
         },
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
@@ -192,6 +194,7 @@ class ListItemService {
     int quantity = 1,
     double? price,
     String? storeName,
+    int? categoryId,
   }) async {
     final token = await _authService.getToken();
     final response = await _dio.put(
@@ -201,6 +204,7 @@ class ListItemService {
         'quantity': quantity,
         'price': price,
         'store_name': storeName,
+        'category_id': categoryId,
       },
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );

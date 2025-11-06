@@ -1,11 +1,13 @@
 // widgets/dialogs/edit_item_dialog.dart - VERSION CORRIGÉE SANS CAD
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
+import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/product_suggestion.dart';
+import 'package:epilist/models/category.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +29,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
   bool _showSuggestions = false;
   ProductSuggestion? _selectedSuggestion;
+  Category? _selectedCategory;
   late String _originalProductName;
 
   @override
@@ -41,6 +44,37 @@ class _EditItemDialogState extends State<EditItemDialog> {
       text: widget.item.price?.toStringAsFixed(2) ?? '',
     );
     storeController = TextEditingController(text: widget.item.storeName ?? '');
+
+    // Charger les catégories
+    context.read<CategoryBloc>().add(const LoadCategories());
+  }
+
+  void _tryInitializeCategory() {
+    if (widget.item.categoryId == null || _selectedCategory != null) return;
+
+    final categoryState = context.read<CategoryBloc>().state;
+    List<Category> categories = [];
+
+    if (categoryState is CategoryLoaded) {
+      categories = categoryState.categories;
+    } else if (categoryState is CategoryOperationSuccess) {
+      categories = categoryState.categories;
+    }
+
+    if (categories.isNotEmpty) {
+      try {
+        final itemCategory = categories.firstWhere(
+          (cat) => cat.id == widget.item.categoryId,
+        );
+        if (mounted) {
+          setState(() {
+            _selectedCategory = itemCategory;
+          });
+        }
+      } catch (e) {
+        // Catégorie non trouvée dans la liste
+      }
+    }
   }
 
   @override
@@ -56,25 +90,34 @@ class _EditItemDialogState extends State<EditItemDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      elevation: 10,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Container(
-        width: double.infinity,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-          maxWidth: 500,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: SingleChildScrollView(
+    return BlocListener<CategoryBloc, CategoryState>(
+      listener: (context, state) {
+        // Initialiser la catégorie quand elles sont chargées
+        if ((state is CategoryLoaded || state is CategoryOperationSuccess) &&
+            _selectedCategory == null &&
+            widget.item.categoryId != null) {
+          _tryInitializeCategory();
+        }
+      },
+      child: Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 10,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Container(
+          width: double.infinity,
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: 500,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -98,6 +141,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -137,6 +181,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
     return Column(
       children: [
         _buildProductNameFieldWithSuggestions(l10n),
+        const SizedBox(height: 16),
+        _buildCategorySelector(l10n),
         const SizedBox(height: 16),
         _buildQuantityAndPriceRow(l10n),
         const SizedBox(height: 16),
@@ -252,14 +298,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
           }
 
           if (state is ProductSuggestionEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Aucune suggestion trouvée',
-                style: TextStyle(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
-            );
+            // Ne rien afficher si aucune suggestion n'est trouvée
+            return const SizedBox.shrink();
           }
 
           return const SizedBox.shrink();
@@ -386,14 +426,14 @@ class _EditItemDialogState extends State<EditItemDialog> {
       decoration: InputDecoration(
         labelText: l10n.storeOptional,
         hintText: l10n.storeHint,
-        prefixIcon: Icon(Icons.store, color: Colors.purple[600]),
+        prefixIcon: Icon(Icons.store, color: Theme.of(context).primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.purple[600]!, width: 2),
+          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -559,8 +599,233 @@ class _EditItemDialogState extends State<EditItemDialog> {
             storeController.text.trim().isEmpty
                 ? null
                 : storeController.text.trim(),
+        categoryId: _selectedCategory?.id,
       ),
     );
     Navigator.pop(context);
+  }
+
+  Widget _buildCategorySelector(AppLocalizations l10n) {
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (context, state) {
+        List<Category> categories = [];
+        if (state is CategoryLoaded) {
+          categories = state.categories;
+        } else if (state is CategoryOperationSuccess) {
+          categories = state.categories;
+        }
+
+        // Initialiser la catégorie après le build si elle n'est pas encore définie
+        if (categories.isNotEmpty &&
+            _selectedCategory == null &&
+            widget.item.categoryId != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _selectedCategory == null) {
+              try {
+                final category = categories.firstWhere(
+                  (cat) => cat.id == widget.item.categoryId,
+                );
+                setState(() {
+                  _selectedCategory = category;
+                });
+              } catch (e) {
+                // Category not found
+              }
+            }
+          });
+        }
+
+        return InkWell(
+          onTap: () => _showCategoryPicker(context, categories, l10n),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey[50],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.category,
+                  color: _selectedCategory != null
+                      ? _selectedCategory!.color
+                      : Theme.of(context).primaryColor,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.selectCategory,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _selectedCategory?.name ?? l10n.noCategorySelected,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: _selectedCategory != null
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: _selectedCategory != null
+                              ? Colors.black87
+                              : Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_selectedCategory != null) ...[
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: _selectedCategory!.color.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: _selectedCategory!.color.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Icon(
+                      _selectedCategory!.icon,
+                      color: _selectedCategory!.color,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.clear, size: 20),
+                    onPressed: () {
+                      setState(() {
+                        _selectedCategory = null;
+                      });
+                    },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ] else
+                  const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCategoryPicker(
+    BuildContext context,
+    List<Category> categories,
+    AppLocalizations l10n,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.category,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    l10n.selectCategory,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (categories.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.category_outlined,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.noCategoriesYet,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      final isSelected = _selectedCategory?.id == category.id;
+
+                      return ListTile(
+                        leading: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: category.color.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: category.color.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          child: Icon(
+                            category.icon,
+                            color: category.color,
+                            size: 22,
+                          ),
+                        ),
+                        title: Text(
+                          category.name,
+                          style: TextStyle(
+                            fontWeight:
+                                isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                                Icons.check_circle,
+                                color: Theme.of(context).primaryColor,
+                              )
+                            : null,
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = category;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -4,12 +4,14 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
+import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/contact/contact_bloc.dart';
 import 'package:epilist/blocs/contact/contact_event.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
+import 'package:epilist/blocs/suggestion/suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -21,11 +23,13 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/category_service.dart';
 import 'package:epilist/services/contact_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
 import 'package:epilist/services/receipt_service.dart';
+import 'package:epilist/services/suggestion_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';
@@ -104,6 +108,8 @@ void main() async {
 
     final currencyService = CurrencyService(dio: dio, authService: authService);
 
+    final categoryService = CategoryService(authService);
+
     final analyticsService = AnalyticsService(
       dio: dio,
       authService: authService,
@@ -127,17 +133,18 @@ void main() async {
       ),
     );
 
-    if (kDebugMode) {
-      dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-          error: true,
-          requestHeader: true,
-          responseHeader: false,
-        ),
-      );
-    }
+    // Désactivé pour réduire les logs HTTP
+    // if (kDebugMode) {
+    //   dio.interceptors.add(
+    //     LogInterceptor(
+    //       requestBody: true,
+    //       responseBody: true,
+    //       error: true,
+    //       requestHeader: true,
+    //       responseHeader: false,
+    //     ),
+    //   );
+    // }
 
     runApp(
       MultiRepositoryProvider(
@@ -150,6 +157,7 @@ void main() async {
             value: ConnectivityService(),
           ),
           RepositoryProvider<CurrencyService>.value(value: currencyService),
+          RepositoryProvider<CategoryService>.value(value: categoryService),
           RepositoryProvider<AnalyticsService>.value(value: analyticsService),
           RepositoryProvider(
             create:
@@ -199,6 +207,9 @@ void main() async {
                   dio: dio,
                   authService: context.read<AuthService>(),
                 ),
+          ),
+          RepositoryProvider<SuggestionService>(
+            create: (context) => SuggestionService(dio: dio),
           ),
         ],
         child: MultiBlocProvider(
@@ -264,6 +275,19 @@ void main() async {
                     contactService: context.read<ContactService>(),
                   ),
             ),
+            BlocProvider(
+              create:
+                  (context) => CategoryBloc(
+                    categoryService: context.read<CategoryService>(),
+                    localizationBloc: context.read<LocalizationBloc>(),
+                  ),
+            ),
+            BlocProvider(
+              create:
+                  (context) => SuggestionBloc(
+                    suggestionService: context.read<SuggestionService>(),
+                  ),
+            ),
           ],
           child: const MyApp(),
         ),
@@ -300,7 +324,15 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('fr', ''), Locale('en', '')],
-          theme: ThemeData(primarySwatch: Colors.green, useMaterial3: true),
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.green,
+              primary: Colors.green[600]!,
+              secondary: Colors.green[600]!,
+            ),
+          ),
           routes: {
             '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),

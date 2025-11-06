@@ -43,7 +43,10 @@ class ListItemController
         
         // Store validation
         $validator->rule('lengthMax', 'store_name', 255)->message('Store name cannot exceed 255 characters');
-        
+
+        // Barcode validation
+        $validator->rule('lengthMax', 'barcode', 50)->message('Barcode cannot exceed 50 characters');
+
         // Purchase status validation
         $validator->rule('boolean', 'is_purchased')->message('Purchase status must be true or false');
         
@@ -164,11 +167,19 @@ class ListItemController
         if (isset($data['store_name'])) {
             $cleanData['store_name'] = ListItem::normalizeStoreName($data['store_name']);
         }
-        
+
+        if (isset($data['barcode'])) {
+            $cleanData['barcode'] = !empty($data['barcode']) ? trim($data['barcode']) : null;
+        }
+
         if (isset($data['is_purchased'])) {
             $cleanData['is_purchased'] = (bool)$data['is_purchased'];
         }
-        
+
+        if (isset($data['category_id'])) {
+            $cleanData['category_id'] = !empty($data['category_id']) ? (int)$data['category_id'] : null;
+        }
+
         return $cleanData;
     }
 

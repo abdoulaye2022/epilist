@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @hello.
   ///
   /// In fr, this message translates to:
-  /// **'Bonjour ! 👋'**
+  /// **'Bonjour !'**
   String get hello;
 
   /// No description provided for @manageGroceryLists.
@@ -227,13 +227,13 @@ abstract class AppLocalizations {
   /// No description provided for @completed.
   ///
   /// In fr, this message translates to:
-  /// **'✅ Terminée'**
+  /// **'Terminée'**
   String get completed;
 
   /// No description provided for @inProgress.
   ///
   /// In fr, this message translates to:
-  /// **'🛒 En cours'**
+  /// **'En cours'**
   String get inProgress;
 
   /// No description provided for @created.
@@ -551,7 +551,7 @@ abstract class AppLocalizations {
   /// No description provided for @information.
   ///
   /// In fr, this message translates to:
-  /// **'Informations'**
+  /// **'Information'**
   String get information;
 
   /// No description provided for @aboutEpiList.
@@ -1793,7 +1793,7 @@ abstract class AppLocalizations {
   /// No description provided for @attention.
   ///
   /// In fr, this message translates to:
-  /// **'⚠️ ATTENTION'**
+  /// **'ATTENTION'**
   String get attention;
 
   /// No description provided for @actionDefinitiveIrreversible.
@@ -2753,7 +2753,7 @@ abstract class AppLocalizations {
   /// No description provided for @basedOnHistory.
   ///
   /// In fr, this message translates to:
-  /// **'Basé sur votre historique'**
+  /// **'Basé sur votre historique d\'achats'**
   String get basedOnHistory;
 
   /// No description provided for @autoComplete.
@@ -5416,7 +5416,7 @@ abstract class AppLocalizations {
   /// No description provided for @sortByStore.
   ///
   /// In fr, this message translates to:
-  /// **'Trier par magasin'**
+  /// **'Magasin'**
   String get sortByStore;
 
   /// No description provided for @newestFirst.
@@ -5938,7 +5938,7 @@ abstract class AppLocalizations {
   /// No description provided for @sortByName.
   ///
   /// In fr, this message translates to:
-  /// **'Trier par nom'**
+  /// **'Nom'**
   String get sortByName;
 
   /// No description provided for @filters.
@@ -7218,6 +7218,492 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous n\'avez pas de compte ?'**
   String get dontHaveAccount;
+
+  /// No description provided for @activeFilters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtres actifs'**
+  String get activeFilters;
+
+  /// No description provided for @allStores.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les magasins'**
+  String get allStores;
+
+  /// No description provided for @noStoresAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun magasin disponible'**
+  String get noStoresAvailable;
+
+  /// No description provided for @purchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achetés'**
+  String get purchased;
+
+  /// No description provided for @unpurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non achetés'**
+  String get unpurchased;
+
+  /// No description provided for @sortByPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix'**
+  String get sortByPrice;
+
+  /// No description provided for @sortByDateAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date d\'ajout'**
+  String get sortByDateAdded;
+
+  /// No description provided for @category.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get category;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une catégorie'**
+  String get addCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la catégorie'**
+  String get editCategory;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la catégorie'**
+  String get deleteCategory;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une catégorie'**
+  String get selectCategory;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la catégorie'**
+  String get categoryName;
+
+  /// No description provided for @categoryIcon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Icône de la catégorie'**
+  String get categoryIcon;
+
+  /// No description provided for @categoryColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couleur de la catégorie'**
+  String get categoryColor;
+
+  /// No description provided for @noCategorySelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune catégorie sélectionnée'**
+  String get noCategorySelected;
+
+  /// No description provided for @manageCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les catégories'**
+  String get manageCategories;
+
+  /// No description provided for @categoryCreatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie créée avec succès'**
+  String get categoryCreatedSuccessfully;
+
+  /// No description provided for @categoryUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie mise à jour avec succès'**
+  String get categoryUpdatedSuccessfully;
+
+  /// No description provided for @categoryDeletedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie supprimée avec succès'**
+  String get categoryDeletedSuccessfully;
+
+  /// No description provided for @errorLoadingCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des catégories'**
+  String get errorLoadingCategories;
+
+  /// No description provided for @errorCreatingCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création de la catégorie'**
+  String get errorCreatingCategory;
+
+  /// No description provided for @errorUpdatingCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour de la catégorie'**
+  String get errorUpdatingCategory;
+
+  /// No description provided for @errorDeletingCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la suppression de la catégorie'**
+  String get errorDeletingCategory;
+
+  /// No description provided for @categoryNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom de la catégorie est requis'**
+  String get categoryNameRequired;
+
+  /// No description provided for @categoryNameTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom doit contenir au moins 2 caractères'**
+  String get categoryNameTooShort;
+
+  /// No description provided for @noCategoriesYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune catégorie pour le moment'**
+  String get noCategoriesYet;
+
+  /// No description provided for @createFirstCategoryDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez votre première catégorie pour organiser vos articles'**
+  String get createFirstCategoryDescription;
+
+  /// No description provided for @deleteCategoryConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer cette catégorie ?'**
+  String get deleteCategoryConfirm;
+
+  /// No description provided for @selectIcon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une icône'**
+  String get selectIcon;
+
+  /// No description provided for @selectColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une couleur'**
+  String get selectColor;
+
+  /// No description provided for @categoryFruitsVegetables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fruits & Légumes'**
+  String get categoryFruitsVegetables;
+
+  /// No description provided for @categoryMeatFish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Viandes & Poissons'**
+  String get categoryMeatFish;
+
+  /// No description provided for @categoryDairy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits laitiers'**
+  String get categoryDairy;
+
+  /// No description provided for @categoryBakery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boulangerie'**
+  String get categoryBakery;
+
+  /// No description provided for @categoryBeverages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Boissons'**
+  String get categoryBeverages;
+
+  /// No description provided for @categorySnacksSweets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Snacks & Sucreries'**
+  String get categorySnacksSweets;
+
+  /// No description provided for @categoryHygieneBeauty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hygiène & Beauté'**
+  String get categoryHygieneBeauty;
+
+  /// No description provided for @categoryHouseholdCleaning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien ménager'**
+  String get categoryHouseholdCleaning;
+
+  /// No description provided for @categoryBabyKids.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bébé & Enfants'**
+  String get categoryBabyKids;
+
+  /// No description provided for @categoryPets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Animaux'**
+  String get categoryPets;
+
+  /// No description provided for @categoryHealthPharmacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Santé & Pharmacie'**
+  String get categoryHealthPharmacy;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get categoryOther;
+
+  /// No description provided for @filterByCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par catégorie'**
+  String get filterByCategory;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les catégories'**
+  String get allCategories;
+
+  /// No description provided for @modifyCategoryInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier les informations de la catégorie'**
+  String get modifyCategoryInfo;
+
+  /// No description provided for @createNewCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer une nouvelle catégorie pour organiser vos articles'**
+  String get createNewCategory;
+
+  /// No description provided for @searchIcon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher une icône...'**
+  String get searchIcon;
+
+  /// No description provided for @noIconFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune icône trouvée'**
+  String get noIconFound;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Discussion'**
+  String get chatTitle;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écrivez un message...'**
+  String get typeMessage;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun message pour le moment'**
+  String get noMessagesYet;
+
+  /// No description provided for @startConversation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencez la conversation en envoyant un message'**
+  String get startConversation;
+
+  /// No description provided for @errorLoadingMessages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des messages'**
+  String get errorLoadingMessages;
+
+  /// No description provided for @deleteMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le message'**
+  String get deleteMessage;
+
+  /// No description provided for @deleteMessageConfirmation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer ce message ?'**
+  String get deleteMessageConfirmation;
+
+  /// No description provided for @chatWithTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Discuter avec l\'équipe'**
+  String get chatWithTeam;
+
+  /// No description provided for @openChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la discussion'**
+  String get openChat;
+
+  /// No description provided for @smartSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions Intelligentes'**
+  String get smartSuggestions;
+
+  /// No description provided for @loadingSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des suggestions...'**
+  String get loadingSuggestions;
+
+  /// No description provided for @buySoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'À acheter bientôt'**
+  String get buySoon;
+
+  /// No description provided for @reject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter'**
+  String get reject;
+
+  /// No description provided for @addToList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter à la liste'**
+  String get addToList;
+
+  /// No description provided for @suggestionAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion ajoutée à la liste'**
+  String get suggestionAdded;
+
+  /// No description provided for @noSuggestionsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencez vos achats pour obtenir des suggestions personnalisées'**
+  String get noSuggestionsDescription;
+
+  /// No description provided for @highConfidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fortement recommandé'**
+  String get highConfidence;
+
+  /// No description provided for @mediumConfidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonnes correspondances'**
+  String get mediumConfidence;
+
+  /// No description provided for @lowConfidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourrait vous plaire'**
+  String get lowConfidence;
+
+  /// No description provided for @suggestionsInfoDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous analysons votre historique d\'achats pour suggérer les produits dont vous pourriez avoir besoin.'**
+  String get suggestionsInfoDescription;
+
+  /// No description provided for @patternBased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basé sur les habitudes'**
+  String get patternBased;
+
+  /// No description provided for @patternBasedDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Selon la fréquence d\'achat de vos articles'**
+  String get patternBasedDescription;
+
+  /// No description provided for @seasonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisonnier'**
+  String get seasonal;
+
+  /// No description provided for @seasonalDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits que vous achetez pendant des périodes spécifiques'**
+  String get seasonalDescription;
+
+  /// No description provided for @associations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Associations'**
+  String get associations;
+
+  /// No description provided for @associationsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles souvent achetés ensemble'**
+  String get associationsDescription;
+
+  /// No description provided for @trending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tendances'**
+  String get trending;
+
+  /// No description provided for @trendingDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles populaires en ce moment'**
+  String get trendingDescription;
+
+  /// No description provided for @oftenBoughtWith.
+  ///
+  /// In fr, this message translates to:
+  /// **'Souvent acheté avec {item}'**
+  String oftenBoughtWith(Object item);
+
+  /// No description provided for @seasonalProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit saisonnier'**
+  String get seasonalProduct;
+
+  /// No description provided for @confidenceScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confiance'**
+  String get confidenceScore;
+
+  /// No description provided for @buyRegularly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous achetez ceci régulièrement'**
+  String get buyRegularly;
 }
 
 class _AppLocalizationsDelegate

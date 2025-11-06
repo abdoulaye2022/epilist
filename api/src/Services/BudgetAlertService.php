@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class BudgetAlertService
 {
     /**
-     * ✅ VÉRIFIER TOUS LES BUDGETS ET ENVOYER DES NOTIFICATIONS PUSH
+     *  VÉRIFIER TOUS LES BUDGETS ET ENVOYER DES NOTIFICATIONS PUSH
      */
     public static function checkAndSendAlerts(): void
     {
@@ -28,7 +28,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ TRAITER UNE ALERTE SPÉCIFIQUE
+     *  TRAITER UNE ALERTE SPÉCIFIQUE
      */
     private static function processAlert(Budget $budget): void
     {
@@ -48,7 +48,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ VÉRIFIER LES ALERTES LORS D'UN ACHAT/FACTURE
+     *  VÉRIFIER LES ALERTES LORS D'UN ACHAT/FACTURE
      */
     public static function checkPurchaseAlert(Budget $budget, float $purchaseAmount): ?array
     {
@@ -63,7 +63,7 @@ class BudgetAlertService
         $alertType = $budget->isExceeded() ? 'exceeded' : 'warning';
         $spentPercentage = round($budget->getSpentPercentage(), 1);
         
-        $title = $alertType === 'exceeded' ? '🚨 Budget Dépassé!' : '⚠️ Attention Budget';
+        $title = $alertType === 'exceeded' ? ' Budget Dépassé!' : ' Attention Budget';
         $body = $alertType === 'exceeded' 
             ? "Vous avez dépassé le budget \"{$budget->name}\"" 
             : "Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\"";
@@ -95,7 +95,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ OBTENIR LES ALERTES POUR UN UTILISATEUR (POUR API)
+     *  OBTENIR LES ALERTES POUR UN UTILISATEUR (POUR API)
      */
     public static function getUserAlerts(int $userId): array
     {
@@ -113,7 +113,7 @@ class BudgetAlertService
                     'id' => "budget_alert_{$budget->id}",
                     'type' => 'budget_alert',
                     'priority' => $budget->isExceeded() ? 'high' : 'medium',
-                    'title' => $budget->isExceeded() ? '🚨 Budget Dépassé' : '⚠️ Attention Budget',
+                    'title' => $budget->isExceeded() ? ' Budget Dépassé' : ' Attention Budget',
                     'message' => $budget->getAlertMessage(),
                     'budget_id' => $budget->id,
                     'budget_name' => $budget->name,
@@ -135,7 +135,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ PROGRAMMATEUR DE TÂCHES CRON
+     *  PROGRAMMATEUR DE TÂCHES CRON
      */
     public static function runScheduledTasks(): void
     {
@@ -163,7 +163,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ RÉSUMÉ QUOTIDIEN POUR LES UTILISATEURS ACTIFS
+     *  RÉSUMÉ QUOTIDIEN POUR LES UTILISATEURS ACTIFS
      */
     private static function sendDailySummaries(): void
     {
@@ -195,7 +195,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ VÉRIFIER LES BUDGETS EXPIRANT DANS 3 JOURS
+     *  VÉRIFIER LES BUDGETS EXPIRANT DANS 3 JOURS
      */
     private static function checkExpiringBudgets(): void
     {
@@ -222,7 +222,7 @@ class BudgetAlertService
             $notificationService->sendToUser(
                 $user->id,
                 'budget_expiring',
-                '⏰ Budget se termine bientôt',
+                ' Budget se termine bientôt',
                 "Le budget \"{$budget->name}\" se termine dans {$daysLeft} jour(s). Vous avez utilisé {$spentPercentage}%",
                 [
                     'budget_id' => (string) $budget->id,
@@ -236,7 +236,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ NETTOYAGE HEBDOMADAIRE
+     *  NETTOYAGE HEBDOMADAIRE
      */
     private static function weeklyCleanup(): void
     {
@@ -253,7 +253,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ OBTENIR LES STATISTIQUES D'ALERTES
+     *  OBTENIR LES STATISTIQUES D'ALERTES
      */
     public static function getAlertStatistics(): array
     {
@@ -295,7 +295,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ FORCER L'ENVOI D'UNE ALERTE POUR TESTS
+     *  FORCER L'ENVOI D'UNE ALERTE POUR TESTS
      */
     public static function sendTestAlert(int $userId, int $budgetId): bool
     {
@@ -311,7 +311,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ OBTENIR LA PROCHAINE ALERTE PROGRAMMÉE POUR UN BUDGET
+     *  OBTENIR LA PROCHAINE ALERTE PROGRAMMÉE POUR UN BUDGET
      */
     public static function getNextScheduledAlert(Budget $budget): ?Carbon
     {
@@ -343,7 +343,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ SUGGÉRER DES ACTIONS POUR UN BUDGET EN ALERTE
+     *  SUGGÉRER DES ACTIONS POUR UN BUDGET EN ALERTE
      */
     public static function suggestActions(Budget $budget): array
     {
@@ -383,7 +383,7 @@ class BudgetAlertService
     }
 
     /**
-     * ✅ ENVOYER NOTIFICATION IMMÉDIATE LORS D'UN ACHAT
+     *  ENVOYER NOTIFICATION IMMÉDIATE LORS D'UN ACHAT
      */
     public static function sendImmediatePurchaseAlert(User $user, Budget $budget, float $purchaseAmount): bool
     {
@@ -394,7 +394,7 @@ class BudgetAlertService
         $notificationService = new NotificationService();
         $alertType = $budget->isExceeded() ? 'exceeded' : 'warning';
         
-        $title = $alertType === 'exceeded' ? '🚨 Budget Dépassé!' : '⚠️ Attention Budget';
+        $title = $alertType === 'exceeded' ? ' Budget Dépassé!' : ' Attention Budget';
         $spentPercentage = round($budget->getSpentPercentage(), 1);
         $currency = $user->getPreferredCurrency();
         

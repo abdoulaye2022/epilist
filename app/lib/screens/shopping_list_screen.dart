@@ -16,7 +16,8 @@ import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/shopping_list_app_bar.dart';
-import 'package:epilist/widgets/dialogs/shopping_list_card.dart'; // ✅ CORRECTION: Import correct
+import 'package:epilist/widgets/dialogs/shopping_list_card.dart';
+import 'package:epilist/widgets/shopping/list_filter_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,6 +29,8 @@ class ShoppingListScreen extends StatefulWidget {
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
+  ListFilter _currentFilter = ListFilter.all;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +39,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   void _loadShoppingLists() {
     context.read<ShoppingListBloc>().add(const LoadShoppingLists());
+  }
+
+  List<ShoppingList> _filterLists(List<ShoppingList> lists) {
+    switch (_currentFilter) {
+      case ListFilter.all:
+        return lists;
+      case ListFilter.active:
+        return lists.where((list) => !list.isCompleted).toList();
+      case ListFilter.completed:
+        return lists.where((list) => list.isCompleted).toList();
+      case ListFilter.shared:
+        return lists.where((list) => list.isShared).toList();
+    }
   }
 
   @override
@@ -122,23 +138,99 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   Widget _buildListView(List<ShoppingList> lists) {
-    return RefreshIndicator(
-      onRefresh: () async => _loadShoppingLists(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: lists.length,
-        itemBuilder: (context, index) {
-          final list = lists[index];
-          return ShoppingListCard(
-            list: list,
-            onTap: () => _openListDetails(list),
-            onMenuAction:
-                (action) => _handleListAction(
-                  action,
-                  list,
-                ), // ✅ CORRECTION: Signature simple
-          );
-        },
+    final filteredLists = _filterLists(lists);
+
+    return Column(
+      children: [
+        ListFilterChips(
+          selectedFilter: _currentFilter,
+          onFilterChanged: (filter) {
+            setState(() {
+              _currentFilter = filter;
+            });
+          },
+        ),
+        Expanded(
+          child: filteredLists.isEmpty
+              ? _buildEmptyFilterState()
+              : RefreshIndicator(
+                  onRefresh: () async => _loadShoppingLists(),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filteredLists.length,
+                    itemBuilder: (context, index) {
+                      final list = filteredLists[index];
+                      return ShoppingListCard(
+                        list: list,
+                        onTap: () => _openListDetails(list),
+                        onMenuAction:
+                            (action) => _handleListAction(
+                              action,
+                              list,
+                            ),
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyFilterState() {
+    String message;
+    IconData icon;
+
+    switch (_currentFilter) {
+      case ListFilter.all:
+        message = 'Aucune liste trouvee';
+        icon = Icons.inbox_outlined;
+        break;
+      case ListFilter.active:
+        message = 'Aucune liste active';
+        icon = Icons.schedule_outlined;
+        break;
+      case ListFilter.completed:
+        message = 'Aucune liste terminee';
+        icon = Icons.check_circle_outline;
+        break;
+      case ListFilter.shared:
+        message = 'Aucune liste partagee';
+        icon = Icons.people_outline;
+        break;
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 80,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Essayez un autre filtre',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

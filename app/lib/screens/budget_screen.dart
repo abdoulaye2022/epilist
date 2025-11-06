@@ -198,33 +198,57 @@ class _BudgetScreenState extends State<BudgetScreen>
           children: [
             // ✅ Filtres avec style adapté (fond blanc)
             if (_showFilters)
-              Container(
-                color: Colors.white,
-                child: filters.BudgetFilters(
-                  onStatusFilterChanged: (value) {
-                    context.read<BudgetBloc>().add(
-                      FilterBudgets(statusFilter: value),
-                    );
-                  },
-                  onPeriodFilterChanged: (value) {
-                    context.read<BudgetBloc>().add(
-                      FilterBudgets(periodFilter: value),
-                    );
-                  },
-                  onScopeFilterChanged: (value) {
-                    context.read<BudgetBloc>().add(
-                      FilterBudgets(scopeFilter: value),
-                    );
-                  },
-                  onSortChanged: (sortBy, ascending) {
-                    context.read<BudgetBloc>().add(
-                      SortBudgets(sortBy, ascending),
-                    );
-                  },
-                  onClearFilters: () {
-                    context.read<BudgetBloc>().add(FilterBudgets());
-                  },
-                ),
+              BlocBuilder<BudgetBloc, BudgetState>(
+                builder: (context, state) {
+                  // Récupérer les filtres actifs depuis le state
+                  String? activeStatusFilter;
+                  String? activePeriodFilter;
+                  String? activeScopeFilter;
+                  String? activeSortBy;
+                  bool? activeSortAscending;
+
+                  if (state is BudgetLoaded) {
+                    activeStatusFilter = state.activeStatusFilter;
+                    activePeriodFilter = state.activePeriodFilter;
+                    activeScopeFilter = state.activeScopeFilter;
+                    activeSortBy = state.activeSortBy;
+                    activeSortAscending = state.activeSortAscending;
+                  }
+
+                  return Container(
+                    color: Colors.white,
+                    child: filters.BudgetFilters(
+                      activeStatusFilter: activeStatusFilter,
+                      activePeriodFilter: activePeriodFilter,
+                      activeScopeFilter: activeScopeFilter,
+                      activeSortBy: activeSortBy,
+                      activeSortAscending: activeSortAscending,
+                      onStatusFilterChanged: (value) {
+                        context.read<BudgetBloc>().add(
+                          FilterBudgets(statusFilter: value),
+                        );
+                      },
+                      onPeriodFilterChanged: (value) {
+                        context.read<BudgetBloc>().add(
+                          FilterBudgets(periodFilter: value),
+                        );
+                      },
+                      onScopeFilterChanged: (value) {
+                        context.read<BudgetBloc>().add(
+                          FilterBudgets(scopeFilter: value),
+                        );
+                      },
+                      onSortChanged: (sortBy, ascending) {
+                        context.read<BudgetBloc>().add(
+                          SortBudgets(sortBy, ascending),
+                        );
+                      },
+                      onClearFilters: () {
+                        context.read<BudgetBloc>().add(FilterBudgets());
+                      },
+                    ),
+                  );
+                },
               ),
 
             // Contenu principal avec onglets
@@ -857,11 +881,7 @@ class _BudgetScreenState extends State<BudgetScreen>
       child: SingleChildScrollView(
         // ✅ CORRECTION OVERFLOW: Permettre le défilement
         padding: const EdgeInsets.all(16),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.5,
-          ),
-          child: Card(
+        child: Card(
             color: Colors.white,
             elevation: 2,
             shape: RoundedRectangleBorder(
@@ -946,8 +966,7 @@ class _BudgetScreenState extends State<BudgetScreen>
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildEmptyActiveState(AppLocalizations l10n) {

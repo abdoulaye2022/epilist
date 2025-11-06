@@ -10,6 +10,7 @@ class ListItem {
   final double? price; // Nullable pour gérer les prix absents
   final String? storeName; // Nullable pour gérer les magasins absents
   final bool isPurchased;
+  final int? categoryId; // Nullable - ID de la catégorie associée
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -22,6 +23,7 @@ class ListItem {
     this.price, // Nullable
     this.storeName, // Nullable
     required this.isPurchased,
+    this.categoryId, // Nullable
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -163,6 +165,7 @@ class ListItem {
       price: _parseDouble(json['price']), // Peut être null
       storeName: _parseString(json['store_name']), // Peut être null
       isPurchased: json['is_purchased'] == true || json['is_purchased'] == 1,
+      categoryId: json['category_id'] != null ? _parseInt(json['category_id']) : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       deletedAt:
@@ -210,6 +213,7 @@ class ListItem {
       'price': price,
       'store_name': storeName,
       'is_purchased': isPurchased,
+      'category_id': categoryId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
@@ -224,6 +228,7 @@ class ListItem {
     double? price,
     String? storeName,
     bool? isPurchased,
+    int? categoryId,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? deletedAt,
@@ -236,6 +241,7 @@ class ListItem {
       price: price ?? this.price,
       storeName: storeName ?? this.storeName,
       isPurchased: isPurchased ?? this.isPurchased,
+      categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -286,6 +292,7 @@ class ListItem {
           price == other.price &&
           storeName == other.storeName &&
           isPurchased == other.isPurchased &&
+          categoryId == other.categoryId &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt &&
           deletedAt == other.deletedAt;
@@ -299,6 +306,7 @@ class ListItem {
       price.hashCode ^
       storeName.hashCode ^
       isPurchased.hashCode ^
+      categoryId.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode ^
       deletedAt.hashCode;

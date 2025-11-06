@@ -18,98 +18,98 @@ class ListCompletionNotificationService
     }
 
     /**
-     * ✅ VÉRIFIER SI UNE LISTE EST COMPLÉTÉE SANS FACTURE
+     *  VÉRIFIER SI UNE LISTE EST COMPLÉTÉE SANS FACTURE
      */
     public function shouldSendCompletionNotification(ShoppingList $list): bool
     {
-        error_log("🔍 Checking completion notification eligibility for list {$list->id}: '{$list->name}'");
+        error_log(" Checking completion notification eligibility for list {$list->id}: '{$list->name}'");
         
         // 1. Vérifier que la liste a des items
         $items = $list->items;
         if ($items->isEmpty()) {
-            error_log("❌ List {$list->id} has no items");
+            error_log(" List {$list->id} has no items");
             return false;
         }
         
-        error_log("✅ List {$list->id} has {$items->count()} items");
+        error_log(" List {$list->id} has {$items->count()} items");
 
         // 2. Vérifier que TOUS les items sont marqués comme achetés
         $totalItems = $items->count();
         $purchasedItems = $items->where('is_purchased', true)->count();
         
-        error_log("📊 List {$list->id} progress: {$purchasedItems}/{$totalItems} items purchased");
+        error_log(" List {$list->id} progress: {$purchasedItems}/{$totalItems} items purchased");
         
         if ($purchasedItems !== $totalItems) {
-            error_log("❌ List {$list->id} not completed ({$purchasedItems}/{$totalItems})");
+            error_log(" List {$list->id} not completed ({$purchasedItems}/{$totalItems})");
             return false;
         }
         
-        error_log("✅ List {$list->id} is 100% completed");
+        error_log(" List {$list->id} is 100% completed");
 
         // 3. Vérifier qu'il n'y a PAS de factures
         $receiptsCount = $list->receipts()->count();
-        error_log("🧾 List {$list->id} has {$receiptsCount} receipts");
+        error_log(" List {$list->id} has {$receiptsCount} receipts");
         
         if ($receiptsCount > 0) {
-            error_log("❌ List {$list->id} already has {$receiptsCount} receipt(s)");
+            error_log(" List {$list->id} already has {$receiptsCount} receipt(s)");
             return false;
         }
         
-        error_log("✅ List {$list->id} has no receipts");
+        error_log(" List {$list->id} has no receipts");
 
         // 4. Vérifier qu'on n'a pas déjà envoyé cette notification récemment
         $lastNotification = $this->getLastCompletionNotification($list->id);
         if ($lastNotification) {
             $hoursSinceLastNotification = $lastNotification->diffInHours(Carbon::now());
-            error_log("⏰ List {$list->id} last notification: {$hoursSinceLastNotification}h ago");
+            error_log(" List {$list->id} last notification: {$hoursSinceLastNotification}h ago");
             
             if ($hoursSinceLastNotification < 24) {
-                error_log("❌ List {$list->id} notification cooldown active ({$hoursSinceLastNotification}h < 24h)");
+                error_log(" List {$list->id} notification cooldown active ({$hoursSinceLastNotification}h < 24h)");
                 return false;
             }
         } else {
-            error_log("✅ List {$list->id} has no previous notification");
+            error_log(" List {$list->id} has no previous notification");
         }
 
         // 5. Vérifier que la liste a été complétée récemment (dans les 24 dernières heures)
         $lastItemUpdate = $items->max('updated_at');
         if ($lastItemUpdate) {
             $hoursSinceUpdate = $lastItemUpdate->diffInHours(Carbon::now());
-            error_log("⏰ List {$list->id} last item update: {$hoursSinceUpdate}h ago");
+            error_log(" List {$list->id} last item update: {$hoursSinceUpdate}h ago");
             
             if ($hoursSinceUpdate > 24) {
-                error_log("❌ List {$list->id} completed too long ago ({$hoursSinceUpdate}h > 24h)");
+                error_log(" List {$list->id} completed too long ago ({$hoursSinceUpdate}h > 24h)");
                 return false;
             }
         } else {
-            error_log("⚠️ List {$list->id} has no item update timestamp");
+            error_log(" List {$list->id} has no item update timestamp");
         }
         
-        error_log("✅ List {$list->id} is eligible for completion notification!");
+        error_log(" List {$list->id} is eligible for completion notification!");
         return true;
     }
 
     /**
-     * ✅ ENVOYER LA NOTIFICATION DE LISTE COMPLÉTÉE - CORRECTION FINALE
+     *  ENVOYER LA NOTIFICATION DE LISTE COMPLÉTÉE - CORRECTION FINALE
      */
     public function sendCompletionNotification(ShoppingList $list): bool
     {
-        error_log("📤 Attempting to send completion notification for list {$list->id}");
+        error_log(" Attempting to send completion notification for list {$list->id}");
         
         try {
             $user = $list->user;
             
             if (!$user) {
-                error_log("❌ List {$list->id} has no user");
+                error_log(" List {$list->id} has no user");
                 return false;
             }
             
-            error_log("👤 Sending to user {$user->id} ({$user->email})");
-            error_log("💰 User currency: {$user->getPreferredCurrency()->code} ({$user->getPreferredCurrency()->symbol})");
+            error_log(" Sending to user {$user->id} ({$user->email})");
+            error_log(" User currency: {$user->getPreferredCurrency()->code} ({$user->getPreferredCurrency()->symbol})");
 
             // Vérifier l'éligibilité une dernière fois
             if (!$this->shouldSendCompletionNotification($list)) {
-                error_log("❌ List {$list->id} failed final eligibility check");
+                error_log(" List {$list->id} failed final eligibility check");
                 return false;
             }
 
@@ -119,40 +119,40 @@ class ListCompletionNotificationService
                 ->whereNotNull('push_token')
                 ->count();
                 
-            error_log("📱 User {$user->id} has {$activeDevices} active device(s)");
+            error_log(" User {$user->id} has {$activeDevices} active device(s)");
             
             if ($activeDevices === 0) {
-                error_log("❌ User {$user->id} has no active devices");
+                error_log(" User {$user->id} has no active devices");
                 return false;
             }
 
             $totalAmount = $this->calculateEstimatedTotal($list);
 
-            // ✅ CORRECTION FINALE: Utiliser la méthode spécialisée du NotificationService
+            //  CORRECTION FINALE: Utiliser la méthode spécialisée du NotificationService
             $success = $this->notificationService->sendListCompletionNotification($user, $list, $totalAmount);
 
             if ($success) {
                 $this->saveLastCompletionNotification($list->id, Carbon::now());
-                error_log("✅ Completion notification sent successfully for list {$list->id} to user {$user->id}");
+                error_log(" Completion notification sent successfully for list {$list->id} to user {$user->id}");
                 return true;
             } else {
-                error_log("❌ Failed to send completion notification for list {$list->id}");
+                error_log(" Failed to send completion notification for list {$list->id}");
                 return false;
             }
 
         } catch (\Exception $e) {
-            error_log("❌ Exception sending completion notification for list {$list->id}: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Exception sending completion notification for list {$list->id}: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             return false;
         }
     }
 
     /**
-     * ✅ CORRECTION MAJEURE: VÉRIFIER TOUTES LES LISTES RÉCEMMENT COMPLÉTÉES
+     *  CORRECTION MAJEURE: VÉRIFIER TOUTES LES LISTES RÉCEMMENT COMPLÉTÉES
      */
     public function checkRecentlyCompletedLists(): array
     {
-        error_log("🔍 Starting checkRecentlyCompletedLists()");
+        error_log(" Starting checkRecentlyCompletedLists()");
         
         $results = [
             'checked' => 0,
@@ -161,7 +161,7 @@ class ListCompletionNotificationService
         ];
 
         try {
-            // ✅ CORRECTION: Récupérer TOUTES les listes avec items, sans filtrage par date
+            //  CORRECTION: Récupérer TOUTES les listes avec items, sans filtrage par date
             $potentialLists = ShoppingList::with(['items', 'receipts', 'user', 'user.currency'])
                 ->whereHas('items') // A au moins un item
                 ->whereDoesntHave('receipts') // N'a pas de factures
@@ -170,57 +170,57 @@ class ListCompletionNotificationService
                 })
                 ->get();
 
-            error_log("📋 Found {$potentialLists->count()} lists with items and no receipts to check");
+            error_log(" Found {$potentialLists->count()} lists with items and no receipts to check");
 
             foreach ($potentialLists as $list) {
                 $results['checked']++;
                 
                 try {
-                    // ✅ CORRECTION: Utiliser la même logique que le test direct
-                    error_log("🔍 Checking list {$list->id}: '{$list->name}' (User: {$list->user->email})");
-                    error_log("💰 User currency: {$list->user->getPreferredCurrency()->code}");
+                    //  CORRECTION: Utiliser la même logique que le test direct
+                    error_log(" Checking list {$list->id}: '{$list->name}' (User: {$list->user->email})");
+                    error_log(" User currency: {$list->user->getPreferredCurrency()->code}");
                     
                     // Vérifier si cette liste est 100% complétée
                     $items = $list->items;
                     $totalItems = $items->count();
                     $purchasedItems = $items->where('is_purchased', true)->count();
                     
-                    error_log("📊 List {$list->id} status: {$purchasedItems}/{$totalItems} purchased");
+                    error_log(" List {$list->id} status: {$purchasedItems}/{$totalItems} purchased");
                     
                     // Si la liste est 100% complétée, essayer d'envoyer la notification
                     if ($purchasedItems === $totalItems && $totalItems > 0) {
-                        error_log("🎯 List {$list->id} is 100% completed, checking full eligibility...");
+                        error_log(" List {$list->id} is 100% completed, checking full eligibility...");
                         
                         if ($this->sendCompletionNotification($list)) {
                             $results['notifications_sent']++;
-                            error_log("✅ Notification sent for list {$list->id}");
+                            error_log(" Notification sent for list {$list->id}");
                         } else {
-                            error_log("❌ Failed to send notification for list {$list->id}");
+                            error_log(" Failed to send notification for list {$list->id}");
                         }
                     } else {
-                        error_log("⏭️ Skipping list {$list->id} - not 100% completed");
+                        error_log(" Skipping list {$list->id} - not 100% completed");
                     }
                     
                 } catch (\Exception $e) {
                     $error = "List {$list->id}: " . $e->getMessage();
                     $results['errors'][] = $error;
-                    error_log("❌ Error processing list {$list->id}: " . $e->getMessage());
+                    error_log(" Error processing list {$list->id}: " . $e->getMessage());
                 }
             }
 
-            error_log("📊 checkRecentlyCompletedLists final results: " . json_encode($results));
+            error_log(" checkRecentlyCompletedLists final results: " . json_encode($results));
 
         } catch (\Exception $e) {
             $error = "General error: " . $e->getMessage();
             $results['errors'][] = $error;
-            error_log("❌ Critical error in checkRecentlyCompletedLists: " . $e->getMessage());
+            error_log(" Critical error in checkRecentlyCompletedLists: " . $e->getMessage());
         }
 
         return $results;
     }
 
     /**
-     * ✅ CALCULER LE TOTAL ESTIMÉ D'UNE LISTE
+     *  CALCULER LE TOTAL ESTIMÉ D'UNE LISTE
      */
     private function calculateEstimatedTotal(ShoppingList $list): float
     {
@@ -236,7 +236,7 @@ class ListCompletionNotificationService
     }
 
     /**
-     * ✅ RÉCUPÉRER LA DERNIÈRE NOTIFICATION DE COMPLETION
+     *  RÉCUPÉRER LA DERNIÈRE NOTIFICATION DE COMPLETION
      */
     private function getLastCompletionNotification(int $listId): ?Carbon
     {
@@ -273,7 +273,7 @@ class ListCompletionNotificationService
     }
 
     /**
-     * ✅ SAUVEGARDER LA DERNIÈRE NOTIFICATION DE COMPLETION
+     *  SAUVEGARDER LA DERNIÈRE NOTIFICATION DE COMPLETION
      */
     private function saveLastCompletionNotification(int $listId, Carbon $time): void
     {
@@ -288,18 +288,18 @@ class ListCompletionNotificationService
             $success = file_put_contents($cacheFile, $time->getTimestamp());
             
             if ($success) {
-                error_log("💾 Saved completion notification timestamp for list {$listId}");
+                error_log(" Saved completion notification timestamp for list {$listId}");
             } else {
-                error_log("❌ Failed to save completion notification timestamp for list {$listId}");
+                error_log(" Failed to save completion notification timestamp for list {$listId}");
             }
             
         } catch (\Exception $e) {
-            error_log("❌ Error saving completion notification timestamp for list {$listId}: " . $e->getMessage());
+            error_log(" Error saving completion notification timestamp for list {$listId}: " . $e->getMessage());
         }
     }
 
     /**
-     * ✅ NETTOYER LES ANCIENS FICHIERS CACHE
+     *  NETTOYER LES ANCIENS FICHIERS CACHE
      */
     public function cleanupOldNotificationFiles(): int
     {
@@ -332,7 +332,7 @@ class ListCompletionNotificationService
     }
 
     /**
-     * ✅ FORCER L'ENVOI D'UNE NOTIFICATION POUR DEBUG
+     *  FORCER L'ENVOI D'UNE NOTIFICATION POUR DEBUG
      */
     public function forceTestNotification(int $listId): array
     {
@@ -350,7 +350,7 @@ class ListCompletionNotificationService
             $cacheFile = __DIR__ . "/../../storage/completion_notification_{$listId}.txt";
             if (file_exists($cacheFile)) {
                 unlink($cacheFile);
-                error_log("🗑️ Removed cache file for list {$listId} to allow forced notification");
+                error_log(" Removed cache file for list {$listId} to allow forced notification");
             }
             
             $sent = $this->sendCompletionNotification($list);
@@ -374,24 +374,24 @@ class ListCompletionNotificationService
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de partage de liste AVEC DEVISE
+     *  NOUVELLE MÉTHODE: Envoyer notification de partage de liste AVEC DEVISE
      */
     public function sendListSharingNotification(ShoppingList $list, User $sharedWithUser, User $sharedByUser): bool
     {
         try {
-            error_log("📤 Sending list sharing notification for list {$list->id} to user {$sharedWithUser->id}");
+            error_log(" Sending list sharing notification for list {$list->id} to user {$sharedWithUser->id}");
             
-            // ✅ CORRECTION: Utiliser la méthode spécialisée du NotificationService
+            //  CORRECTION: Utiliser la méthode spécialisée du NotificationService
             return $this->notificationService->sendListSharingNotification($sharedWithUser, $list, $sharedByUser);
             
         } catch (\Exception $e) {
-            error_log("❌ Error sending list sharing notification: " . $e->getMessage());
+            error_log(" Error sending list sharing notification: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de mise à jour de liste partagée AVEC DEVISE
+     *  NOUVELLE MÉTHODE: Envoyer notification de mise à jour de liste partagée AVEC DEVISE
      */
     public function sendSharedListUpdateNotification(ShoppingList $list, User $updatedByUser, string $updateType = 'item_added'): bool
     {
@@ -407,7 +407,7 @@ class ListCompletionNotificationService
             $sentCount = 0;
             
             foreach ($sharedUsers as $user) {
-                // ✅ CORRECTION: Utiliser la méthode spécialisée du NotificationService
+                //  CORRECTION: Utiliser la méthode spécialisée du NotificationService
                 $success = $this->notificationService->sendSharedListUpdateNotification($user, $list, $updatedByUser, $updateType);
 
                 if ($success) {
@@ -415,11 +415,11 @@ class ListCompletionNotificationService
                 }
             }
             
-            error_log("📊 Sent shared list update notifications to {$sentCount} users");
+            error_log(" Sent shared list update notifications to {$sentCount} users");
             return $sentCount > 0;
             
         } catch (\Exception $e) {
-            error_log("❌ Error sending shared list update notification: " . $e->getMessage());
+            error_log(" Error sending shared list update notification: " . $e->getMessage());
             return false;
         }
     }

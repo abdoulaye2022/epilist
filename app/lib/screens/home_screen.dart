@@ -12,6 +12,7 @@ import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
+import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
@@ -72,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // Méthode pour initialiser les deep links une seule fois
   void _initializeDeepLinksOnce() {
     if (!_deepLinkInitialized && mounted) {
-      print('🚀 Initialisation unique des deep links depuis HomeScreen');
+      // print('🚀 Initialisation unique des deep links depuis HomeScreen');
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           DeepLinkHandler.updateContext(context);
@@ -99,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (_deepLinkInitialized) {
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (mounted && _isResuming) {
-            print('📱 App resumed - mise à jour contexte deep links');
+            // print('📱 App resumed - mise à jour contexte deep links');
             DeepLinkHandler.updateContext(context);
             _isResuming = false;
           }
@@ -126,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         onRefresh: () => _loadShoppingLists(),
         onViewAllLists: () => _goToAllLists(context),
         onProfile: () => _goToProfile(context),
+        onManageCategories: () => _goToManageCategories(context),
         onLogout: () => _showLogoutDialog(context),
       ),
       body: MultiBlocListener(
@@ -259,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           icon: Icons.list_alt,
           title: l10n.allLists,
           subtitle: l10n.manageAllLists,
-          color: Colors.purple[600]!,
+          color: Theme.of(context).primaryColor,
           onTap: () => _goToAllLists(context),
           isFullWidth: true,
         ),
@@ -504,6 +506,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ProfileScreen()),
+    );
+  }
+
+  void _goToManageCategories(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CategoryManagementScreen(),
+      ),
     );
   }
 

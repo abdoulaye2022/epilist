@@ -40,7 +40,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ Get the items for the shopping list with consistent ordering.
+     *  Get the items for the shopping list with consistent ordering.
      * Articles non achetés en premier, puis par date de création décroissante
      */
     public function items(): HasMany
@@ -51,7 +51,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ Get items without any ordering (pour des cas spéciaux si nécessaire)
+     *  Get items without any ordering (pour des cas spéciaux si nécessaire)
      */
     public function itemsRaw(): HasMany
     {
@@ -59,7 +59,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Get the receipts for this shopping list
+     *  NOUVELLE RELATION: Get the receipts for this shopping list
      */
     public function receipts(): HasMany
     {
@@ -69,7 +69,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Get the shared lists where this list is shared
+     *  NOUVELLE RELATION: Get the shared lists where this list is shared
      */
     public function sharedLists(): HasMany
     {
@@ -77,7 +77,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Get active shared lists only
+     *  NOUVELLE RELATION: Get active shared lists only
      */
     public function activeSharedLists(): HasMany
     {
@@ -87,7 +87,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ MÉTHODE UTILITAIRE: Check if this list is shared with a specific user
+     *  MÉTHODE UTILITAIRE: Check if this list is shared with a specific user
      */
     public function isSharedWith(int $userId): bool
     {
@@ -97,7 +97,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ MÉTHODE UTILITAIRE: Get all users who have access to this list
+     *  MÉTHODE UTILITAIRE: Get all users who have access to this list
      */
     public function getAllAccessUsers(): array
     {
@@ -111,7 +111,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ NOUVELLES MÉTHODES POUR LES CALCULS DE TOTAUX AVEC FACTURES
+     *  NOUVELLES MÉTHODES POUR LES CALCULS DE TOTAUX AVEC FACTURES
      */
 
     /**
@@ -286,7 +286,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ SCOPE: Lists accessible by a specific user (own + shared)
+     *  SCOPE: Lists accessible by a specific user (own + shared)
      */
     public function scopeAccessibleBy($query, int $userId)
     {
@@ -301,7 +301,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ SCOPE: Only own lists (not shared)
+     *  SCOPE: Only own lists (not shared)
      */
     public function scopeOwnedBy($query, int $userId)
     {
@@ -309,7 +309,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ SCOPE: Only shared lists for a user
+     *  SCOPE: Only shared lists for a user
      */
     public function scopeSharedWith($query, int $userId)
     {
@@ -319,7 +319,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ SCOPE: Lists with receipts data
+     *  SCOPE: Lists with receipts data
      */
     public function scopeWithReceiptsData($query)
     {
@@ -329,7 +329,7 @@ class ShoppingList extends Model
     }
 
     /**
-     * ✅ SCOPE: Lists with spending data (items or receipts)
+     *  SCOPE: Lists with spending data (items or receipts)
      */
     public function scopeWithSpendingData($query)
     {

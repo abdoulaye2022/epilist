@@ -34,38 +34,38 @@ $notificationService = new NotificationService();
 echo "=== EpiList Notification Cron Started at " . Carbon::now()->toDateTimeString() . " ===\n";
 
 try {
-    // 1. ✅ RÉSUMÉ QUOTIDIEN (9h58 du matin) - CORRIGÉ
+    // 1. RESUME QUOTIDIEN (9h58 du matin) - CORRIGE
     if (Carbon::now()->hour === 9) {
         echo "Sending daily budget summaries...\n";
         sendDailySummaries($notificationService);
     }
 
-    // 2. ✅ ALERTES BUDGETS DÉPASSÉS (toutes les heures 9h-21h) - DÉJÀ OK
+    // 2. ALERTES BUDGETS DEPASSES (toutes les heures 9h-21h) - DEJA OK
     $currentHour = Carbon::now()->hour;
     if ($currentHour >= 9 && $currentHour <= 21) {
         echo "Checking for budget alerts...\n";
         checkBudgetAlerts($notificationService);
     }
 
-    // 3. ✅ BUDGETS EXPIRANT BIENTÔT (18h58) - CORRIGÉ
+    // 3. BUDGETS EXPIRANT BIENTOT (18h58) - CORRIGE
     if (Carbon::now()->hour === 18) {
         echo "Checking for expiring budgets...\n";
         checkExpiringBudgets($notificationService);
     }
 
-    // 4. ✅ RAPPEL UTILISATEURS INACTIFS (mardi à 10h58) - CORRIGÉ
+    // 4. RAPPEL UTILISATEURS INACTIFS (mardi a 10h58) - CORRIGE
     if (Carbon::now()->dayOfWeek === Carbon::TUESDAY && Carbon::now()->hour === 10) {
         echo "Checking for inactive users (no lists in 2 weeks)...\n";
         checkInactiveUsers($notificationService);
     }
 
-    // 5. ✅ LISTES COMPLÉTÉES SANS FACTURE (heures paires, 8h-22h) - CORRIGÉ
+    // 5. LISTES COMPLETEES SANS FACTURE (heures paires, 8h-22h) - CORRIGE
     if ($currentHour >= 8 && $currentHour <= 22 && $currentHour % 2 === 0) {
         echo "Checking for completed lists without receipts...\n";
         checkCompletedLists();
     }
 
-    // 6. ✅ NETTOYAGE DES APPAREILS INACTIFS (dimanche à 2h58) - DÉJÀ OK
+    // 6. NETTOYAGE DES APPAREILS INACTIFS (dimanche a 2h58) - DEJA OK
     if (Carbon::now()->dayOfWeek === Carbon::SUNDAY && Carbon::now()->hour === 2) {
         echo "Cleaning up inactive devices...\n";
         cleanupInactiveDevices();
@@ -74,7 +74,7 @@ try {
         cleanupNotificationCacheFiles();
     }
 
-    // 7. ✅ UTILISATEURS SANS LISTE CETTE SEMAINE (vendredi à 19h58) - CORRIGÉ
+    // 7. UTILISATEURS SANS LISTE CETTE SEMAINE (vendredi a 19h58) - CORRIGE
     if (Carbon::now()->dayOfWeek === Carbon::FRIDAY && Carbon::now()->hour === 19) {
         echo "Checking for users with no lists this week...\n";
         checkUsersWithoutWeeklyLists($notificationService);
@@ -88,13 +88,13 @@ try {
 }
 
 /**
- * ✅ ENVOI DES RÉSUMÉS QUOTIDIENS - VERSION CORRIGÉE
+ * ENVOI DES RESUMES QUOTIDIENS - VERSION CORRIGEE
  */
 function sendDailySummaries(NotificationService $service): void
 {
     echo "Starting daily summaries...\n";
 
-    // 🔒 NOUVEAU VERROU: Une seule fois par jour
+    //  NOUVEAU VERROU: Une seule fois par jour
     $lockFile = __DIR__ . "/../storage/daily_summary_" . Carbon::now()->format('Y-m-d') . ".lock";
     
     if (file_exists($lockFile)) {
@@ -103,7 +103,7 @@ function sendDailySummaries(NotificationService $service): void
     }
     
     try {
-        // ✅ CORRECTION: Utiliser query directe au lieu de scopes potentiellement inexistants
+        // CORRECTION: Utiliser query directe au lieu de scopes potentiellement inexistants
         $activeUsers = User::where('is_active', true)
             ->whereHas('devices', function($q) {
                 $q->where('is_active', true)->whereNotNull('push_token');
@@ -115,7 +115,7 @@ function sendDailySummaries(NotificationService $service): void
         
         foreach ($activeUsers as $user) {
             try {
-                // ✅ CORRECTION: Vérifier l'existence de la classe Budget
+                //  CORRECTION: Vérifier l'existence de la classe Budget
                 if (!class_exists('App\Models\Budget')) {
                     echo "Budget model not found, skipping budget summaries\n";
                     break;
@@ -146,7 +146,7 @@ function sendDailySummaries(NotificationService $service): void
         
         echo "Daily summaries sent: {$sentCount}\n";
 
-        // 🔒 Créer le verrou à la fin si succès
+        //  Créer le verrou à la fin si succès
         touch($lockFile);
         echo "Daily summaries sent: {$sentCount}\n";
         
@@ -157,14 +157,14 @@ function sendDailySummaries(NotificationService $service): void
 }
 
 /**
- * ✅ VÉRIFICATION DES ALERTES BUDGET - VERSION CORRIGÉE
+ *  VÉRIFICATION DES ALERTES BUDGET - VERSION CORRIGÉE
  */
 function checkBudgetAlerts(NotificationService $service): void
 {
     echo "Starting budget alerts check...\n";
     
     try {
-        // ✅ CORRECTION: Vérifier l'existence de la classe Budget
+        //  CORRECTION: Vérifier l'existence de la classe Budget
         if (!class_exists('App\Models\Budget')) {
             echo "Budget model not found, skipping budget alerts\n";
             return;
@@ -240,13 +240,13 @@ function checkBudgetAlerts(NotificationService $service): void
 }
 
 /**
- * ✅ BUDGETS EXPIRANT BIENTÔT - VERSION CORRIGÉE
+ *  BUDGETS EXPIRANT BIENTÔT - VERSION CORRIGÉE
  */
 function checkExpiringBudgets(NotificationService $service): void
 {
     echo "Checking for expiring budgets...\n";
 
-    // 🔒 NOUVEAU VERROU: Une seule fois par jour
+    //  NOUVEAU VERROU: Une seule fois par jour
     $lockFile = __DIR__ . "/../storage/expiring_budgets_" . Carbon::now()->format('Y-m-d') . ".lock";
     
     if (file_exists($lockFile)) {
@@ -255,7 +255,7 @@ function checkExpiringBudgets(NotificationService $service): void
     }
     
     try {
-        // ✅ CORRECTION: Vérifier l'existence de la classe Budget
+        //  CORRECTION: Vérifier l'existence de la classe Budget
         if (!class_exists('App\Models\Budget')) {
             echo "Budget model not found, skipping expiring budgets check\n";
             return;
@@ -292,7 +292,7 @@ function checkExpiringBudgets(NotificationService $service): void
                 $result = $service->sendToUser(
                     $user->id,
                     'budget_expiring',
-                    '⏰ Budget se termine bientôt',
+                    'Budget se termine bientot',
                     "Le budget \"{$budget->name}\" se termine dans {$daysLeft} jour(s). Vous avez utilisé {$spentPercentage}%",
                     [
                         'budget_id' => (string) $budget->id,
@@ -314,7 +314,7 @@ function checkExpiringBudgets(NotificationService $service): void
         
         echo "Expiration notifications sent: {$sentCount}\n";
 
-        // 🔒 Créer le verrou à la fin
+        //  Créer le verrou à la fin
         touch($lockFile);
         echo "Expiration notifications sent: {$sentCount}\n";
         
@@ -325,13 +325,13 @@ function checkExpiringBudgets(NotificationService $service): void
 }
 
 /**
- * ✅ VÉRIFICATION DES UTILISATEURS INACTIFS - VERSION CORRIGÉE
+ *  VÉRIFICATION DES UTILISATEURS INACTIFS - VERSION CORRIGÉE
  */
 function checkInactiveUsers(NotificationService $service): void
 {
     echo "Starting inactive users check...\n";
 
-    // 🔒 NOUVEAU VERROU: Une seule fois par semaine
+    //  NOUVEAU VERROU: Une seule fois par semaine
     $weekNumber = Carbon::now()->format('Y-W'); // 2025-33 par exemple
     $lockFile = __DIR__ . "/../storage/inactive_users_week_{$weekNumber}.lock";
     
@@ -343,7 +343,7 @@ function checkInactiveUsers(NotificationService $service): void
     try {
         $twoWeeksAgo = Carbon::now()->subWeeks(2);
         
-        // ✅ CORRECTION: Query plus robuste
+        //  CORRECTION: Query plus robuste
         $inactiveUsers = User::where('is_active', true)
             ->whereHas('devices', function($q) {
                 $q->where('is_active', true)->whereNotNull('push_token');
@@ -379,7 +379,7 @@ function checkInactiveUsers(NotificationService $service): void
                     $lastList->created_at->diffInDays($now) : 
                     $user->created_at->diffInDays($now);
                 
-                // ✅ CORRECTION: Utiliser la méthode du service
+                //  CORRECTION: Utiliser la méthode du service
                 $success = $service->sendInactivityReminder($user, $daysSinceLastList);
                 
                 if ($success) {
@@ -405,7 +405,7 @@ function checkInactiveUsers(NotificationService $service): void
             }
         }
 
-        // 🔒 Créer le verrou à la fin
+        //  Créer le verrou à la fin
         touch($lockFile);
         echo "Inactivity reminders sent: {$sentCount}\n";
         
@@ -416,14 +416,14 @@ function checkInactiveUsers(NotificationService $service): void
 }
 
 /**
- * ✅ CORRECTION MAJEURE: VÉRIFICATION DES LISTES COMPLÉTÉES SANS FACTURE
+ *  CORRECTION MAJEURE: VÉRIFICATION DES LISTES COMPLÉTÉES SANS FACTURE
  */
 function checkCompletedLists(): void
 {
     echo "Starting completed lists check...\n";
     
     try {
-        // ✅ CORRECTION: Vérifier que la classe existe
+        //  CORRECTION: Vérifier que la classe existe
         if (!class_exists('App\Services\ListCompletionNotificationService')) {
             echo "ListCompletionNotificationService not found, skipping completed lists check\n";
             return;
@@ -452,14 +452,14 @@ function checkCompletedLists(): void
 }
 
 /**
- * ✅ NETTOYAGE DES APPAREILS INACTIFS - VERSION CORRIGÉE
+ *  NETTOYAGE DES APPAREILS INACTIFS - VERSION CORRIGÉE
  */
 function cleanupInactiveDevices(): void
 {
     echo "Cleaning up inactive devices...\n";
     
     try {
-        // ✅ CORRECTION: Vérifier que la méthode existe
+        //  CORRECTION: Vérifier que la méthode existe
         if (method_exists('App\Models\UserDevice', 'cleanupInactiveDevices')) {
             $cleaned = UserDevice::cleanupInactiveDevices();
             echo "Inactive devices cleaned: {$cleaned}\n";
@@ -479,14 +479,14 @@ function cleanupInactiveDevices(): void
 }
 
 /**
- * ✅ NETTOYAGE DES FICHIERS CACHE DE NOTIFICATIONS - VERSION CORRIGÉE
+ *  NETTOYAGE DES FICHIERS CACHE DE NOTIFICATIONS - VERSION CORRIGÉE
  */
 function cleanupNotificationCacheFiles(): void
 {
     echo "Starting notification cache cleanup...\n";
     
     try {
-        // ✅ CORRECTION: Nettoyer les fichiers de completion si le service existe
+        //  CORRECTION: Nettoyer les fichiers de completion si le service existe
         if (class_exists('App\Services\ListCompletionNotificationService')) {
             $completionService = new ListCompletionNotificationService();
             $cleaned = $completionService->cleanupOldNotificationFiles();
@@ -497,11 +497,11 @@ function cleanupNotificationCacheFiles(): void
         $inactivityCleaned = cleanupInactivityCacheFiles();
         echo "Inactivity notification cache files cleaned: {$inactivityCleaned}\n";
         
-        // ✅ ANCIEN: Nettoyer aussi les fichiers d'alertes budget
+        //  ANCIEN: Nettoyer aussi les fichiers d'alertes budget
         $budgetAlertsCleaned = cleanupBudgetAlertsCacheFiles();
         echo "Budget alerts cache files cleaned: {$budgetAlertsCleaned}\n";
         
-        // ✅ NOUVEAU: Nettoyer les fichiers de rappels hebdomadaires
+        //  NOUVEAU: Nettoyer les fichiers de rappels hebdomadaires
         $weeklyReminderCleaned = cleanupWeeklyReminderCacheFiles();
         echo "Weekly reminder cache files cleaned: {$weeklyReminderCleaned}\n";
         
@@ -514,7 +514,7 @@ function cleanupNotificationCacheFiles(): void
 }
 
 /**
- * ✅ HELPERS POUR ÉVITER LES SPAMS DE NOTIFICATIONS
+ *  HELPERS POUR ÉVITER LES SPAMS DE NOTIFICATIONS
  */
 function getLastAlertTime(int $budgetId, string $alertType): ?Carbon
 {
@@ -568,7 +568,7 @@ function saveLastAlertTime(int $budgetId, string $alertType, Carbon $time): void
 }
 
 /**
- * ✅ HELPER: Récupérer la dernière alerte d'inactivité
+ *  HELPER: Récupérer la dernière alerte d'inactivité
  */
 function getLastInactivityAlert(int $userId): ?Carbon
 {
@@ -605,7 +605,7 @@ function getLastInactivityAlert(int $userId): ?Carbon
 }
 
 /**
- * ✅ HELPER: Sauvegarder la dernière alerte d'inactivité
+ *  HELPER: Sauvegarder la dernière alerte d'inactivité
  */
 function saveLastInactivityAlert(int $userId, Carbon $time): void
 {
@@ -625,7 +625,7 @@ function saveLastInactivityAlert(int $userId, Carbon $time): void
 }
 
 /**
- * ✅ HELPER: Nettoyer les anciens fichiers cache d'inactivité
+ *  HELPER: Nettoyer les anciens fichiers cache d'inactivité
  */
 function cleanupInactivityCacheFiles(): int
 {
@@ -658,7 +658,7 @@ function cleanupInactivityCacheFiles(): int
 }
 
 /**
- * ✅ NOUVEAU: HELPER pour nettoyer les fichiers cache d'alertes budget
+ *  NOUVEAU: HELPER pour nettoyer les fichiers cache d'alertes budget
  */
 function cleanupBudgetAlertsCacheFiles(): int
 {
@@ -691,13 +691,13 @@ function cleanupBudgetAlertsCacheFiles(): int
 }
 
 /**
- * ✅ NOUVELLE FONCTION: Vérifier les utilisateurs sans liste cette semaine
+ *  NOUVELLE FONCTION: Vérifier les utilisateurs sans liste cette semaine
  */
 function checkUsersWithoutWeeklyLists(NotificationService $service): void
 {
     echo "Starting weekly lists check...\n";
 
-    // 🔒 NOUVEAU VERROU: Une seule fois par semaine
+    //  NOUVEAU VERROU: Une seule fois par semaine
     $weekNumber = Carbon::now()->format('Y-W');
     $lockFile = __DIR__ . "/../storage/weekly_lists_check_week_{$weekNumber}.lock";
     
@@ -712,7 +712,7 @@ function checkUsersWithoutWeeklyLists(NotificationService $service): void
         
         echo "Checking for lists created between {$startOfWeek->toDateString()} and {$endOfWeek->toDateString()}\n";
         
-        // ✅ Trouver les utilisateurs actifs qui n'ont PAS créé de liste cette semaine
+        //  Trouver les utilisateurs actifs qui n'ont PAS créé de liste cette semaine
         $usersWithoutWeeklyLists = User::where('is_active', true)
             ->whereHas('devices', function($q) {
                 $q->where('is_active', true)->whereNotNull('push_token');
@@ -774,11 +774,11 @@ function checkUsersWithoutWeeklyLists(NotificationService $service): void
             }
         }
 
-        // 🧹 NOUVEAU: Nettoyer les fichiers de verrous
+        //  NOUVEAU: Nettoyer les fichiers de verrous
         $locksCleaned = cleanupLockFiles();
         echo "Lock files cleaned: {$locksCleaned}\n";
 
-        // 🔒 Créer le verrou à la fin
+        //  Créer le verrou à la fin
         touch($lockFile);
         echo "Weekly reminders sent: {$sentCount}\n";
         
@@ -788,7 +788,7 @@ function checkUsersWithoutWeeklyLists(NotificationService $service): void
     }
 }
 
-// ✅ 6. NOUVELLE FONCTION: Nettoyer les verrous anciens
+//  6. NOUVELLE FONCTION: Nettoyer les verrous anciens
 function cleanupLockFiles(): int
 {
     $cleaned = 0;
@@ -820,7 +820,7 @@ function cleanupLockFiles(): int
 }
 
 /**
- * ✅ HELPER: Récupérer le dernier rappel hebdomadaire
+ *  HELPER: Récupérer le dernier rappel hebdomadaire
  */
 function getLastWeeklyReminder(int $userId): ?Carbon
 {
@@ -857,7 +857,7 @@ function getLastWeeklyReminder(int $userId): ?Carbon
 }
 
 /**
- * ✅ HELPER: Sauvegarder le dernier rappel hebdomadaire
+ *  HELPER: Sauvegarder le dernier rappel hebdomadaire
  */
 function saveLastWeeklyReminder(int $userId, Carbon $time): void
 {
@@ -877,7 +877,7 @@ function saveLastWeeklyReminder(int $userId, Carbon $time): void
 }
 
 /**
- * ✅ HELPER: Nettoyer les anciens fichiers cache de rappels hebdomadaires (à ajouter dans cleanupNotificationCacheFiles)
+ *  HELPER: Nettoyer les anciens fichiers cache de rappels hebdomadaires (à ajouter dans cleanupNotificationCacheFiles)
  */
 function cleanupWeeklyReminderCacheFiles(): int
 {
@@ -910,7 +910,7 @@ function cleanupWeeklyReminderCacheFiles(): int
 }
 
 /**
- * ✅ HELPER: Récupérer le dernier rappel quotidien
+ *  HELPER: Récupérer le dernier rappel quotidien
  */
 function getLastDailyReminder(int $userId): ?Carbon
 {
@@ -947,7 +947,7 @@ function getLastDailyReminder(int $userId): ?Carbon
 }
 
 /**
- * ✅ HELPER: Sauvegarder le dernier rappel quotidien
+ *  HELPER: Sauvegarder le dernier rappel quotidien
  */
 function saveLastDailyReminder(int $userId, Carbon $time): void
 {
@@ -967,7 +967,7 @@ function saveLastDailyReminder(int $userId, Carbon $time): void
 }
 
 /**
- * ✅ HELPER: Nettoyer les anciens fichiers cache de rappels quotidiens
+ *  HELPER: Nettoyer les anciens fichiers cache de rappels quotidiens
  * (À ajouter dans la fonction cleanupNotificationCacheFiles existante)
  */
 function cleanupDailyReminderCacheFiles(): int

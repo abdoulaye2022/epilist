@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome => 'Welcome';
 
   @override
-  String get hello => 'Hello! 👋';
+  String get hello => 'Hello!';
 
   @override
   String get manageGroceryLists => 'Manage your grocery lists easily';
@@ -72,10 +72,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedBy => 'Shared by';
 
   @override
-  String get completed => '✅ Completed';
+  String get completed => 'Completed';
 
   @override
-  String get inProgress => '🛒 In progress';
+  String get inProgress => 'In progress';
 
   @override
   String get created => 'Created';
@@ -926,7 +926,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAccount => 'Delete account';
 
   @override
-  String get attention => '⚠️ WARNING';
+  String get attention => 'WARNING';
 
   @override
   String get actionDefinitiveIrreversible =>
@@ -1433,7 +1433,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggestionsCleared => 'All suggestions have been cleared';
 
   @override
-  String get errorLoadingSuggestions => 'Error loading suggestions';
+  String get errorLoadingSuggestions => 'Failed to load suggestions';
 
   @override
   String get errorSavingSuggestion => 'Error saving suggestion';
@@ -1449,7 +1449,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Start typing to see your suggestions';
 
   @override
-  String get basedOnHistory => 'Based on your history';
+  String get basedOnHistory => 'Based on your shopping history';
 
   @override
   String get autoComplete => 'Auto-complete';
@@ -2846,7 +2846,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByDate => 'Sort by date';
 
   @override
-  String get sortByStore => 'Sort by store';
+  String get sortByStore => 'Store';
 
   @override
   String get newestFirst => 'Newest first';
@@ -3117,7 +3117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get warning => 'Warning';
 
   @override
-  String get sortByName => 'Sort by name';
+  String get sortByName => 'Name';
 
   @override
   String get filters => 'Filters';
@@ -3774,4 +3774,255 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get activeFilters => 'Active filters';
+
+  @override
+  String get allStores => 'All stores';
+
+  @override
+  String get noStoresAvailable => 'No stores available';
+
+  @override
+  String get purchased => 'Purchased';
+
+  @override
+  String get unpurchased => 'Unpurchased';
+
+  @override
+  String get sortByPrice => 'Price';
+
+  @override
+  String get sortByDateAdded => 'Date added';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get addCategory => 'Add category';
+
+  @override
+  String get editCategory => 'Edit category';
+
+  @override
+  String get deleteCategory => 'Delete category';
+
+  @override
+  String get selectCategory => 'Select category';
+
+  @override
+  String get categoryName => 'Category name';
+
+  @override
+  String get categoryIcon => 'Category icon';
+
+  @override
+  String get categoryColor => 'Category color';
+
+  @override
+  String get noCategorySelected => 'No category selected';
+
+  @override
+  String get manageCategories => 'Manage categories';
+
+  @override
+  String get categoryCreatedSuccessfully => 'Category created successfully';
+
+  @override
+  String get categoryUpdatedSuccessfully => 'Category updated successfully';
+
+  @override
+  String get categoryDeletedSuccessfully => 'Category deleted successfully';
+
+  @override
+  String get errorLoadingCategories => 'Error loading categories';
+
+  @override
+  String get errorCreatingCategory => 'Error creating category';
+
+  @override
+  String get errorUpdatingCategory => 'Error updating category';
+
+  @override
+  String get errorDeletingCategory => 'Error deleting category';
+
+  @override
+  String get categoryNameRequired => 'Category name is required';
+
+  @override
+  String get categoryNameTooShort => 'Name must be at least 2 characters';
+
+  @override
+  String get noCategoriesYet => 'No categories yet';
+
+  @override
+  String get createFirstCategoryDescription =>
+      'Create your first category to organize your items';
+
+  @override
+  String get deleteCategoryConfirm =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get selectIcon => 'Select icon';
+
+  @override
+  String get selectColor => 'Select color';
+
+  @override
+  String get categoryFruitsVegetables => 'Fruits & Vegetables';
+
+  @override
+  String get categoryMeatFish => 'Meat & Fish';
+
+  @override
+  String get categoryDairy => 'Dairy Products';
+
+  @override
+  String get categoryBakery => 'Bakery';
+
+  @override
+  String get categoryBeverages => 'Beverages';
+
+  @override
+  String get categorySnacksSweets => 'Snacks & Sweets';
+
+  @override
+  String get categoryHygieneBeauty => 'Hygiene & Beauty';
+
+  @override
+  String get categoryHouseholdCleaning => 'Household Cleaning';
+
+  @override
+  String get categoryBabyKids => 'Baby & Kids';
+
+  @override
+  String get categoryPets => 'Pets';
+
+  @override
+  String get categoryHealthPharmacy => 'Health & Pharmacy';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get filterByCategory => 'Filter by category';
+
+  @override
+  String get allCategories => 'All categories';
+
+  @override
+  String get modifyCategoryInfo => 'Modify category information';
+
+  @override
+  String get createNewCategory =>
+      'Create a new category to organize your items';
+
+  @override
+  String get searchIcon => 'Search for an icon...';
+
+  @override
+  String get noIconFound => 'No icon found';
+
+  @override
+  String get chatTitle => 'Chat';
+
+  @override
+  String get typeMessage => 'Type a message...';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get startConversation => 'Start the conversation by sending a message';
+
+  @override
+  String get errorLoadingMessages => 'Failed to load messages';
+
+  @override
+  String get deleteMessage => 'Delete message';
+
+  @override
+  String get deleteMessageConfirmation =>
+      'Are you sure you want to delete this message?';
+
+  @override
+  String get chatWithTeam => 'Chat with team';
+
+  @override
+  String get openChat => 'Open chat';
+
+  @override
+  String get smartSuggestions => 'Smart Suggestions';
+
+  @override
+  String get loadingSuggestions => 'Loading suggestions...';
+
+  @override
+  String get buySoon => 'Buy Soon';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get addToList => 'Add to List';
+
+  @override
+  String get suggestionAdded => 'Suggestion added to list';
+
+  @override
+  String get noSuggestionsDescription =>
+      'Start shopping to get personalized suggestions';
+
+  @override
+  String get highConfidence => 'Highly Recommended';
+
+  @override
+  String get mediumConfidence => 'Good Matches';
+
+  @override
+  String get lowConfidence => 'You Might Like';
+
+  @override
+  String get suggestionsInfoDescription =>
+      'We analyze your shopping history to suggest products you might need.';
+
+  @override
+  String get patternBased => 'Pattern-based';
+
+  @override
+  String get patternBasedDescription => 'Based on how often you buy items';
+
+  @override
+  String get seasonal => 'Seasonal';
+
+  @override
+  String get seasonalDescription => 'Products you buy during specific periods';
+
+  @override
+  String get associations => 'Associations';
+
+  @override
+  String get associationsDescription => 'Items often bought together';
+
+  @override
+  String get trending => 'Trending';
+
+  @override
+  String get trendingDescription => 'Popular items right now';
+
+  @override
+  String oftenBoughtWith(Object item) {
+    return 'Often bought with $item';
+  }
+
+  @override
+  String get seasonalProduct => 'Seasonal product';
+
+  @override
+  String get confidenceScore => 'Confidence';
+
+  @override
+  String get buyRegularly => 'You buy this regularly';
 }

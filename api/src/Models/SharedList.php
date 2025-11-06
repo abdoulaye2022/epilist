@@ -17,7 +17,7 @@ class SharedList extends Model
 
     public $timestamps = true;
 
-    // ✅ CONSTANTES POUR LES STATUS
+    //  CONSTANTES POUR LES STATUS
     public const STATUS_PENDING = 'pending';           // En attente (invitation envoyée)
     public const STATUS_ACCEPTED = 'accepted';         // Acceptée
     public const STATUS_DECLINED = 'declined';         // Refusée
@@ -25,7 +25,7 @@ class SharedList extends Model
     public const STATUS_REVOKED = 'revoked';           // Révoquée par le propriétaire
     public const STATUS_LEFT = 'left';                 // Utilisateur a quitté
 
-    // ✅ CONSTANTES POUR LES PERMISSIONS
+    //  CONSTANTES POUR LES PERMISSIONS
     public const PERMISSION_READ_ONLY = 'readOnly';
     public const PERMISSION_EDIT = 'edit';
     public const PERMISSION_ADMIN = 'admin';
@@ -36,12 +36,12 @@ class SharedList extends Model
         'shared_with_user_id',
         'permission',
         'share_token',
-        'status',           // ✅ Nouveau champ
+        'status',           //  Nouveau champ
         'is_active',
         'expires_at',
-        'accepted_at',      // ✅ Date d'acceptation
-        'declined_at',      // ✅ Date de refus
-        'revoked_at',       // ✅ Date de révocation
+        'accepted_at',      //  Date d'acceptation
+        'declined_at',      //  Date de refus
+        'revoked_at',       //  Date de révocation
     ];
 
     protected $casts = [
@@ -86,7 +86,7 @@ class SharedList extends Model
         return $this->belongsTo(User::class, 'shared_with_user_id');
     }
 
-    // ✅ SCOPES AVANCÉS
+    //  SCOPES AVANCÉS
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -120,7 +120,7 @@ class SharedList extends Model
         return $query->where('share_token', $token);
     }
 
-    // ✅ MÉTHODES UTILITAIRES
+    //  MÉTHODES UTILITAIRES
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();
@@ -165,7 +165,7 @@ class SharedList extends Model
                $this->permission === self::PERMISSION_ADMIN;
     }
 
-    // ✅ MÉTHODES D'ACTION
+    //  MÉTHODES D'ACTION
     public function accept(): bool
     {
         if (!$this->canBeAccepted()) {
@@ -217,7 +217,7 @@ class SharedList extends Model
         ]);
     }
 
-    // ✅ ACCESSEURS
+    //  ACCESSEURS
     public function getStatusDisplayNameAttribute(): string
     {
         return match($this->status) {
@@ -241,7 +241,7 @@ class SharedList extends Model
         };
     }
 
-    // ✅ BOOT METHOD pour gérer l'expiration automatique
+    //  BOOT METHOD pour gérer l'expiration automatique
     protected static function boot()
     {
         parent::boot();
@@ -254,7 +254,7 @@ class SharedList extends Model
         });
     }
 
-    // ✅ MÉTHODES STATIQUES UTILES
+    //  MÉTHODES STATIQUES UTILES
     public static function getValidStatuses(): array
     {
         return [
@@ -276,7 +276,7 @@ class SharedList extends Model
         ];
     }
 
-    // ✅ QUERY HELPERS
+    //  QUERY HELPERS
     public static function findByToken(string $token): ?self
     {
         return static::where('share_token', $token)->first();

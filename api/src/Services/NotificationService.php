@@ -18,7 +18,7 @@ class NotificationService
 {
     protected $messaging;
     
-    // ✅ CONSTANTES TYPES DE NOTIFICATIONS
+    //  CONSTANTES TYPES DE NOTIFICATIONS
     const TYPE_BUDGET_ALERT = 'budget_alert';
     const TYPE_BUDGET_WARNING = 'budget_warning';
     const TYPE_BUDGET_EXCEEDED = 'budget_exceeded';
@@ -50,16 +50,16 @@ class NotificationService
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Formater un montant selon la devise de l'utilisateur
+     *  NOUVELLE MÉTHODE: Formater un montant selon la devise de l'utilisateur
      */
     private function formatAmountForUser(float $amount, User $user, bool $showCode = false): string
     {
         try {
-            // ✅ S'assurer que $amount est bien un float
+            //  S'assurer que $amount est bien un float
             $amount = (float) $amount;
             $currency = $user->getPreferredCurrency();
             
-            // ✅ Utiliser le formatage international de FormattedAmount
+            //  Utiliser le formatage international de FormattedAmount
             return $this->formatAmountInternational($amount, $currency, $showCode);
             
         } catch (\Exception $e) {
@@ -70,7 +70,7 @@ class NotificationService
     }
 
     /**
-     * ✅ FORMATAGE INTERNATIONAL (même logique que FormattedAmount)
+     *  FORMATAGE INTERNATIONAL (même logique que FormattedAmount)
      */
     private function formatAmountInternational(float $amount, Currency $currency, bool $showCode = false): string
     {
@@ -92,7 +92,7 @@ class NotificationService
     }
 
     /**
-     * ✅ Obtenir le nombre de décimales selon la norme ISO 4217
+     *  Obtenir le nombre de décimales selon la norme ISO 4217
      */
     private function getDecimalsForCurrency(string $currencyCode): int
     {
@@ -107,12 +107,12 @@ class NotificationService
             default => 2
         };
         
-        // ✅ S'assurer explicitement que c'est un entier
+        //  S'assurer explicitement que c'est un entier
         return (int) $decimals;
     }
 
     /**
-     * ✅ Appliquer les séparateurs localisés selon VOS devises
+     *  Appliquer les séparateurs localisés selon VOS devises
      */
     private function applyLocalizedSeparators(string $formattedNumber, string $currencyCode): string
     {
@@ -125,7 +125,7 @@ class NotificationService
         $thousandSeparator = ',';
         $decimalSeparator = '.';
 
-        // ✅ Régions utilisant virgule comme séparateur décimal selon VOTRE base
+        //  Régions utilisant virgule comme séparateur décimal selon VOTRE base
         $commaDecimalCountries = [
             'EUR',    // Euro (Europe)
             'CHF',    // Franc suisse
@@ -141,7 +141,7 @@ class NotificationService
             $decimalSeparator = ',';
         }
 
-        // ✅ Cas spéciaux pour certaines devises de votre base
+        //  Cas spéciaux pour certaines devises de votre base
         if (in_array($currencyCode, ['JPY', 'KRW'])) {
             // Pas de décimales, donc pas besoin de séparateur décimal
             $decimalPart = '';
@@ -158,7 +158,7 @@ class NotificationService
     }
 
     /**
-     * ✅ Ajouter les séparateurs de milliers
+     *  Ajouter les séparateurs de milliers
      */
     private function addThousandSeparators(string $number, string $separator): string
     {
@@ -178,12 +178,12 @@ class NotificationService
     }
 
     /**
-     * ✅ Appliquer le placement du symbole selon VOS devises en base
+     *  Appliquer le placement du symbole selon VOS devises en base
      */
     private function applySymbolPlacement(string $formattedNumber, Currency $currency): string
     {
         $code = strtoupper($currency->code);
-        $symbol = (string) $currency->symbol; // ✅ Conversion explicite
+        $symbol = (string) $currency->symbol; //  Conversion explicite
         
         // Devises avec symbole APRÈS le montant (avec espace)
         $symbolAfterWithSpace = [
@@ -214,7 +214,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE PRINCIPALE: Envoyer une notification à un appareil - VERSION CORRIGÉE
+     *  MÉTHODE PRINCIPALE: Envoyer une notification à un appareil - VERSION CORRIGÉE
      */
     public function sendEpiListNotification(
         UserDevice $device,
@@ -233,7 +233,7 @@ class NotificationService
 
             $token = $device->push_token;
 
-            // ✅ CORRECTION: Nettoyer les données pour éviter les arrays dans les valeurs
+            //  CORRECTION: Nettoyer les données pour éviter les arrays dans les valeurs
             $cleanData = $this->cleanNotificationData($data);
 
             // Préparer les données de base - TOUTES LES VALEURS DOIVENT ÊTRE DES STRINGS
@@ -243,9 +243,9 @@ class NotificationService
                 'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
             ], $cleanData);
 
-            // ✅ LOG POUR DEBUG
-            error_log("📱 Sending notification to device {$device->id}");
-            error_log("📦 Notification data: " . json_encode($notificationData));
+            //  LOG POUR DEBUG
+            error_log(" Sending notification to device {$device->id}");
+            error_log(" Notification data: " . json_encode($notificationData));
 
             // Créer le message de base
             $message = CloudMessage::withTarget('token', $token)
@@ -297,18 +297,18 @@ class NotificationService
             // Marquer l'appareil comme actif
             $device->markAsActive();
             
-            error_log("✅ Notification sent successfully to device {$device->id}");
+            error_log(" Notification sent successfully to device {$device->id}");
             return true;
 
         } catch (\Exception $e) {
-            error_log("❌ Failed to send notification to device {$device->id}: " . $e->getMessage());
-            error_log("❌ Stack trace: " . $e->getTraceAsString());
+            error_log(" Failed to send notification to device {$device->id}: " . $e->getMessage());
+            error_log(" Stack trace: " . $e->getTraceAsString());
             return false;
         }
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Nettoyer les données de notification
+     *  NOUVELLE MÉTHODE: Nettoyer les données de notification
      */
     private function cleanNotificationData(array $data): array
     {
@@ -316,14 +316,14 @@ class NotificationService
         
         foreach ($data as $key => $value) {
             if (is_array($value)) {
-                // ✅ CORRECTION: Convertir les arrays en JSON strings
+                //  CORRECTION: Convertir les arrays en JSON strings
                 $cleanData[$key] = json_encode($value);
-                error_log("🔧 Converted array to JSON for key '{$key}': " . $cleanData[$key]);
+                error_log(" Converted array to JSON for key '{$key}': " . $cleanData[$key]);
             } elseif (is_bool($value)) {
                 // Convertir les booleans en strings
                 $cleanData[$key] = $value ? 'true' : 'false';
             } elseif (is_numeric($value)) {
-                // ✅ CORRECTION: Convertir les nombres en strings (source probable du problème)
+                //  CORRECTION: Convertir les nombres en strings (source probable du problème)
                 if (is_float($value)) {
                     $cleanData[$key] = number_format($value, 2, '.', ''); // Formatage pour éviter la perte de précision
                 } else {
@@ -342,7 +342,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE PRINCIPALE: Envoyer à tous les appareils d'un utilisateur
+     *  MÉTHODE PRINCIPALE: Envoyer à tous les appareils d'un utilisateur
      */
     public function sendToUser(
         int $userId,
@@ -352,17 +352,17 @@ class NotificationService
         array $data = [],
         string $priority = 'normal'
     ): array {
-        error_log("📤 Sending notification to user {$userId}: '{$title}'");
+        error_log(" Sending notification to user {$userId}: '{$title}'");
         
         $devices = UserDevice::where('user_id', $userId)
             ->where('is_active', true)
             ->whereNotNull('push_token')
             ->get();
 
-        error_log("📱 Found {$devices->count()} active devices for user {$userId}");
+        error_log(" Found {$devices->count()} active devices for user {$userId}");
 
         if ($devices->isEmpty()) {
-            error_log("❌ No active devices found for user {$userId}");
+            error_log(" No active devices found for user {$userId}");
             return [
                 'success' => false,
                 'message' => 'No active devices found for user',
@@ -387,14 +387,14 @@ class NotificationService
 
                 if ($success) {
                     $sentCount++;
-                    error_log("✅ Sent to device {$device->id}");
+                    error_log(" Sent to device {$device->id}");
                 } else {
                     $errors[] = "Failed to send to device {$device->id}";
-                    error_log("❌ Failed to send to device {$device->id}");
+                    error_log(" Failed to send to device {$device->id}");
                 }
             } catch (\Exception $e) {
                 $errors[] = "Error with device {$device->id}: " . $e->getMessage();
-                error_log("❌ Error with device {$device->id}: " . $e->getMessage());
+                error_log(" Error with device {$device->id}: " . $e->getMessage());
             }
         }
 
@@ -405,28 +405,28 @@ class NotificationService
             'errors' => $errors
         ];
 
-        error_log("📊 Final result for user {$userId}: " . json_encode($result));
+        error_log(" Final result for user {$userId}: " . json_encode($result));
         return $result;
     }
 
     /**
-     * ✅ MÉTHODE SPÉCIALISÉE: Envoyer notification de liste complétée - VERSION CORRIGÉE
+     *  MÉTHODE SPÉCIALISÉE: Envoyer notification de liste complétée - VERSION CORRIGÉE
      */
     public function sendListCompletionNotification(User $user, $list, float $estimatedTotal = 0): bool
     {
-        $totalItems = (int) $list->items->count(); // ✅ Conversion explicite
+        $totalItems = (int) $list->items->count(); //  Conversion explicite
         
-        $title = "🎉 Liste terminée !";
+        $title = " Liste terminée !";
         $body = $this->getListCompletionBody($user, $list->name, $totalItems, $estimatedTotal);
         
-        // ✅ CORRECTION: Formater les montants selon la devise de l'utilisateur
+        //  CORRECTION: Formater les montants selon la devise de l'utilisateur
         $formattedTotal = $this->formatAmountForUser($estimatedTotal, $user);
         
         $data = [
             'list_id' => (string) $list->id,
             'list_name' => (string) $list->name,
             'total_items' => (string) $totalItems,
-            'estimated_total' => number_format($estimatedTotal, 2, '.', ''), // ✅ Format string avec précision
+            'estimated_total' => number_format($estimatedTotal, 2, '.', ''), //  Format string avec précision
             'formatted_total' => (string) $formattedTotal,
             'currency_code' => (string) $user->getPreferredCurrency()->code,
             'currency_symbol' => (string) $user->getPreferredCurrency()->symbol,
@@ -447,7 +447,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE CORRIGÉE: Générer le message de completion avec devise
+     *  MÉTHODE CORRIGÉE: Générer le message de completion avec devise
      */
     private function getListCompletionBody(User $user, string $listName, int $totalItems, float $estimatedTotal): string
     {
@@ -464,14 +464,14 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE CORRIGÉE: Envoyer alertes budget avec devise
+     *  MÉTHODE CORRIGÉE: Envoyer alertes budget avec devise
      */
     public function sendBudgetAlert(User $user, $budget, string $alertType): bool
     {
         $title = $this->getBudgetAlertTitle($alertType);
         $body = $this->getBudgetAlertBody($user, $budget, $alertType);
         
-        // ✅ Formater les montants selon la devise de l'utilisateur avec conversions explicites
+        //  Formater les montants selon la devise de l'utilisateur avec conversions explicites
         $budgetAmount = method_exists($budget, 'getBudgetAmount') ? (float) $budget->getBudgetAmount() : 0.0;
         $spentAmount = method_exists($budget, 'getSpentAmount') ? (float) $budget->getSpentAmount() : 0.0;
         $remainingAmount = $budgetAmount - $spentAmount;
@@ -480,9 +480,9 @@ class NotificationService
             'budget_id' => (string) $budget->id,
             'budget_name' => (string) $budget->name,
             'alert_type' => (string) $alertType,
-            'budget_amount' => number_format($budgetAmount, 2, '.', ''), // ✅ Format string avec précision
-            'spent_amount' => number_format($spentAmount, 2, '.', ''),   // ✅ Format string avec précision
-            'remaining_amount' => number_format($remainingAmount, 2, '.', ''), // ✅ Format string avec précision
+            'budget_amount' => number_format($budgetAmount, 2, '.', ''), //  Format string avec précision
+            'spent_amount' => number_format($spentAmount, 2, '.', ''),   //  Format string avec précision
+            'remaining_amount' => number_format($remainingAmount, 2, '.', ''), //  Format string avec précision
             'formatted_budget' => (string) $this->formatAmountForUser($budgetAmount, $user),
             'formatted_spent' => (string) $this->formatAmountForUser($spentAmount, $user),
             'formatted_remaining' => (string) $this->formatAmountForUser($remainingAmount, $user),
@@ -504,12 +504,12 @@ class NotificationService
     }
 
     /**
-     * ✅ VERSION AVEC TOUS LES TESTS POSSIBLES
+     *  VERSION AVEC TOUS LES TESTS POSSIBLES
      */
     private function getBudgetAlertBody(User $user, $budget, string $alertType): string
     {
-        // ✅ DEBUG: Vérifier toutes les possibilités pour le montant budget
-        error_log("🔍 Debug getBudgetAlertBody for budget {$budget->id}:");
+        //  DEBUG: Vérifier toutes les possibilités pour le montant budget
+        error_log(" Debug getBudgetAlertBody for budget {$budget->id}:");
         error_log("  - Budget name: {$budget->name}");
         error_log("  - Budget object type: " . get_class($budget));
         
@@ -528,17 +528,17 @@ class NotificationService
         foreach ($possibleBudgetFields as $field) {
             if (method_exists($budget, $field)) {
                 $budgetAmount = $budget->$field();
-                error_log("  - ✅ Found method {$field}(): {$budgetAmount}");
+                error_log("  -  Found method {$field}(): {$budgetAmount}");
                 break;
             } elseif (property_exists($budget, $field) || isset($budget->$field)) {
                 $budgetAmount = $budget->$field;
-                error_log("  - ✅ Found property {$field}: {$budgetAmount}");
+                error_log("  -  Found property {$field}: {$budgetAmount}");
                 break;
             }
         }
         
         if ($budgetAmount == 0) {
-            error_log("  - ❌ No budget amount found in any standard field!");
+            error_log("  -  No budget amount found in any standard field!");
             // Dump de toutes les valeurs pour debug
             foreach ($budgetVars as $key => $value) {
                 if (is_numeric($value) && $value > 0) {
@@ -558,11 +558,11 @@ class NotificationService
         foreach ($possibleSpentFields as $field) {
             if (method_exists($budget, $field)) {
                 $spentAmount = $budget->$field();
-                error_log("  - ✅ Found spent method {$field}(): {$spentAmount}");
+                error_log("  -  Found spent method {$field}(): {$spentAmount}");
                 break;
             } elseif (property_exists($budget, $field) || isset($budget->$field)) {
                 $spentAmount = $budget->$field;
-                error_log("  - ✅ Found spent property {$field}: {$spentAmount}");
+                error_log("  -  Found spent property {$field}: {$spentAmount}");
                 break;
             }
         }
@@ -570,12 +570,12 @@ class NotificationService
         // Calculer le pourcentage
         $spentPercentage = 0;
         if (method_exists($budget, 'getSpentPercentage')) {
-            // ✅ CORRECTION: Conversion explicite en float puis formatage
+            //  CORRECTION: Conversion explicite en float puis formatage
             $rawPercentage = (float) $budget->getSpentPercentage();
             $spentPercentage = number_format($rawPercentage, 1, '.', '');
             error_log("  - getSpentPercentage(): {$spentPercentage}%");
         } elseif ($budgetAmount > 0) {
-            // ✅ CORRECTION: Éviter round() qui peut retourner un float
+            //  CORRECTION: Éviter round() qui peut retourner un float
             $rawPercentage = ($spentAmount / $budgetAmount) * 100;
             $spentPercentage = number_format($rawPercentage, 1, '.', '');
             error_log("  - Calculated percentage: {$spentPercentage}%");
@@ -604,11 +604,11 @@ class NotificationService
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer rappel d'inactivité avec devise
+     *  NOUVELLE MÉTHODE: Envoyer rappel d'inactivité avec devise
      */
     public function sendInactivityReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = "🛒 On vous a manqué !";
+        $title = " On vous a manqué !";
         $body = $this->getInactivityReminderBody($daysSinceLastList);
         
         $data = [
@@ -643,7 +643,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODES UTILITAIRES (inchangées)
+     *  MÉTHODES UTILITAIRES (inchangées)
      */
     private function getNotificationSound(string $type): string
     {
@@ -654,7 +654,7 @@ class NotificationService
             self::TYPE_PURCHASE_REMINDER => 'reminder',
             self::TYPE_USER_INACTIVE => 'gentle_reminder',
             self::TYPE_LIST_COMPLETED => 'success_chime',
-            self::TYPE_WEEKLY_LIST_REMINDER => 'weekly_reminder', // ✅ NOUVEAU
+            self::TYPE_WEEKLY_LIST_REMINDER => 'weekly_reminder', //  NOUVEAU
             self::TYPE_DAILY_LIST_REMINDER => 'daily_reminder',
             default => 'default'
         };
@@ -671,7 +671,7 @@ class NotificationService
             self::TYPE_LIST_COMPLETED => 'list_updates',
             self::TYPE_PURCHASE_REMINDER,
             self::TYPE_USER_INACTIVE,
-            self::TYPE_WEEKLY_LIST_REMINDER => 'reminders', // ✅ NOUVEAU
+            self::TYPE_WEEKLY_LIST_REMINDER => 'reminders', //  NOUVEAU
             self::TYPE_DAILY_LIST_REMINDER => 'reminders',
             default => 'general'
         };
@@ -680,15 +680,15 @@ class NotificationService
     private function getBudgetAlertTitle(string $alertType): string
     {
         return match($alertType) {
-            'exceeded' => '🚨 Budget Dépassé!',
-            'warning' => '⚠️ Attention Budget',
-            'daily_summary' => '📊 Résumé Budget',
-            default => '💰 Budget'
+            'exceeded' => ' Budget Dépassé!',
+            'warning' => ' Attention Budget',
+            'daily_summary' => ' Résumé Budget',
+            default => ' Budget'
         };
     }
 
     /**
-     * ✅ CORRECTION PRINCIPALE: getBadgeCount avec conversion float vers int sécurisée
+     *  CORRECTION PRINCIPALE: getBadgeCount avec conversion float vers int sécurisée
      */
     private function getBadgeCount(int $userId): int
     {
@@ -708,12 +708,12 @@ class NotificationService
             $alertCount = 0;
             
             foreach ($budgets as $budget) {
-                // ✅ CORRECTION: Vérifier explicitement chaque budget individuellement
+                //  CORRECTION: Vérifier explicitement chaque budget individuellement
                 if (method_exists($budget, 'shouldShowAlert')) {
                     try {
                         $shouldAlert = $budget->shouldShowAlert();
                         
-                        // ✅ CORRECTION: Conversion sécurisée en évitant les floats
+                        //  CORRECTION: Conversion sécurisée en évitant les floats
                         if ($shouldAlert === true || $shouldAlert === 1 || $shouldAlert === '1') {
                             $alertCount++;
                         } elseif (is_numeric($shouldAlert)) {
@@ -732,7 +732,7 @@ class NotificationService
                 }
             }
             
-            // ✅ S'assurer que le résultat final est bien un entier
+            //  S'assurer que le résultat final est bien un entier
             return (int) $alertCount;
             
         } catch (\Exception $e) {
@@ -742,11 +742,11 @@ class NotificationService
     }
 
     /**
-     * ✅ CORRECTION: Méthode sendWeeklyListReminder - ligne ~728
+     *  CORRECTION: Méthode sendWeeklyListReminder - ligne ~728
      */
     public function sendWeeklyListReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = "📝 Votre liste de la semaine";
+        $title = " Votre liste de la semaine";
         $body = $this->getWeeklyReminderBody($daysSinceLastList);
         
         $data = [
@@ -772,7 +772,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE PRIVÉE: Générer le message de rappel hebdomadaire
+     *  MÉTHODE PRIVÉE: Générer le message de rappel hebdomadaire
      */
     private function getWeeklyReminderBody(int $daysSinceLastList): string
     {
@@ -783,13 +783,13 @@ class NotificationService
         } elseif ($daysSinceLastList <= 14) {
             return "Hello ! Cela fait {$daysSinceLastList} jours sans nouvelle liste. Que diriez-vous de créer votre liste hebdomadaire ?";
         } else {
-            return "📋 EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
+            return " EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
         }
     }
 
     public function sendDailyListReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = "📝 N'oubliez pas votre liste !";
+        $title = " N'oubliez pas votre liste !";
         $body = $this->getDailyReminderBody($daysSinceLastList);
         
         $data = [
@@ -815,7 +815,7 @@ class NotificationService
     }
 
     /**
-     * ✅ MÉTHODE PRIVÉE: Générer le message de rappel quotidien
+     *  MÉTHODE PRIVÉE: Générer le message de rappel quotidien
      */
     private function getDailyReminderBody(int $daysSinceLastList): string
     {
@@ -847,7 +847,7 @@ class NotificationService
             } elseif ($daysSinceLastList <= 7) {
                 return "Coucou ! Une semaine sans EpiList, ça fait long ! Reprenez vos bonnes habitudes de courses organisées.";
             } else {
-                return "📋 On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
+                return " On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
             }
         }
     }

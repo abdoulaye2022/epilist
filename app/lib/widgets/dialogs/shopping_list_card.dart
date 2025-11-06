@@ -414,7 +414,8 @@ class ShoppingListCard extends StatelessWidget {
       icon = Icons.edit;
       text = l10n.editAccess;
     } else {
-      color = Colors.purple[600]!;
+      // ✅ Utiliser le thème au lieu du violet
+      color = Theme.of(context).primaryColor;
       icon = Icons.admin_panel_settings;
       text = l10n.adminAccess;
     }
@@ -599,12 +600,12 @@ class ShoppingListCard extends StatelessWidget {
           value: 'manage_shares',
           child: Row(
             children: [
-              Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
+              Icon(Icons.people_outline, size: 20, color: Theme.of(context).primaryColor),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.manageShares,
-                  style: TextStyle(color: Colors.purple[600]),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),

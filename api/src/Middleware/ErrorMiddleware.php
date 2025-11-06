@@ -20,9 +20,13 @@ class ErrorMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
+        error_log("ErrorMiddleware: Processing request: " . $request->getMethod() . " " . $request->getUri()->getPath());
+
         try {
             // Passe la requête au prochain middleware ou au gestionnaire de route
-            return $handler->handle($request);
+            $response = $handler->handle($request);
+            error_log("ErrorMiddleware: Request completed successfully");
+            return $response;
         } catch (HttpNotFoundException $e) {
             // Gestion spécifique de l'erreur "Not Found"
             return $this->createErrorResponse('Route non trouvée.', 404);
@@ -31,8 +35,20 @@ class ErrorMiddleware
             return $this->createErrorResponse('Méthode HTTP non autorisée pour cette route.', 405);
         } catch (\Exception $e) {
             // Gestion des autres erreurs
-            var_dump($e->getMessage()); die;
-            return $this->createErrorResponse('Une erreur interne est survenue.', 500);
+            error_log("ErrorMiddleware: EXCEPTION CAUGHT!");
+            error_log('ErrorMiddleware Exception: ' . $e->getMessage());
+            error_log('ErrorMiddleware Exception File: ' . $e->getFile());
+            error_log('ErrorMiddleware Exception Line: ' . $e->getLine());
+            error_log('ErrorMiddleware Stack trace: ' . $e->getTraceAsString());
+
+            $message = 'Une erreur interne est survenue.';
+
+            // En mode dev, afficher le message d'erreur détaillé
+            if ($_ENV['APP_ENV'] === 'dev') {
+                $message .= ' Détails: ' . $e->getMessage();
+            }
+
+            return $this->createErrorResponse($message, 500);
         }
     }
 

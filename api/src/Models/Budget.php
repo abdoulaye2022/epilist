@@ -58,7 +58,7 @@ class Budget extends Model
     ];
 
     /**
-     * ✅ VALIDATION RULES
+     *  VALIDATION RULES
      */
     public static function getValidationRules(): array
     {
@@ -95,7 +95,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ RELATIONS
+     *  RELATIONS
      */
     public function user(): BelongsTo
     {
@@ -108,7 +108,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ VALIDATION METHODS
+     *  VALIDATION METHODS
      */
     public static function validateBudgetAmount($amount): float
     {
@@ -163,7 +163,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ BUDGET CALCULATION METHODS
+     *  BUDGET CALCULATION METHODS
      */
     public function getSpentAmount(): float
     {
@@ -244,7 +244,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ BUDGET STATUS METHODS
+     *  BUDGET STATUS METHODS
      */
     public function getRemainingAmount(): float
     {
@@ -300,7 +300,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ ALERT METHODS
+     *  ALERT METHODS
      */
     public function getAlertMessage(): ?string
     {
@@ -329,7 +329,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ PERIOD HELPER METHODS
+     *  PERIOD HELPER METHODS
      */
     public static function createWeeklyBudget(int $userId, string $name, float $amount, Carbon $startDate, ?int $listId = null): self
     {
@@ -379,7 +379,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ CRUD METHODS
+     *  CRUD METHODS
      */
     public static function createClean(array $data): self
     {
@@ -445,7 +445,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ API DATA METHODS
+     *  API DATA METHODS
      */
     public function getApiDataForUser(?User $user = null): array
     {
@@ -489,7 +489,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ SCOPES
+     *  SCOPES
      */
     public function scopeActive($query)
     {
@@ -540,7 +540,7 @@ class Budget extends Model
     }
 
     /**
-     * ✅ BOOT METHOD
+     *  BOOT METHOD
      */
     protected static function boot()
     {

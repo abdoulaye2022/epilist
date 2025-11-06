@@ -36,7 +36,7 @@ class ListReceipt extends Model
     ];
 
     /**
-     * ✅ VALIDATION RULES WITH ENGLISH MESSAGES
+     *  VALIDATION RULES WITH ENGLISH MESSAGES
      */
     public static function getValidationRules(): array
     {
@@ -63,7 +63,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ NORMALIZE STORE NAME (similar to ListItem)
+     *  NORMALIZE STORE NAME (similar to ListItem)
      */
     public static function normalizeStoreName(string $store): string
     {
@@ -124,7 +124,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ VALIDATE TOTAL AMOUNT
+     *  VALIDATE TOTAL AMOUNT
      */
     public static function validateTotalAmount($amount): float
     {
@@ -143,7 +143,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ VALIDATE PURCHASE DATE
+     *  VALIDATE PURCHASE DATE
      */
     public static function validatePurchaseDate($date): Carbon
     {
@@ -169,7 +169,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ CREATE CLEAN RECEIPT
+     *  CREATE CLEAN RECEIPT
      */
     public static function createClean(array $data): self
     {
@@ -185,47 +185,47 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ UPDATE CLEAN RECEIPT - VERSION AVEC LOGS DÉTAILLÉS
+     *  UPDATE CLEAN RECEIPT - VERSION AVEC LOGS DÉTAILLÉS
      */
     public function updateClean(array $data): bool
     {
-        error_log("🔄 ListReceipt::updateClean called");
-        error_log("📥 Input data: " . json_encode($data));
+        error_log(" ListReceipt::updateClean called");
+        error_log(" Input data: " . json_encode($data));
         
         $cleanData = [];
         
         try {
             if (isset($data['store_name'])) {
                 $cleanData['store_name'] = self::normalizeStoreName($data['store_name']);
-                error_log("📝 Normalized store name: " . $cleanData['store_name']);
+                error_log(" Normalized store name: " . $cleanData['store_name']);
             }
             
             if (isset($data['total_amount'])) {
                 $cleanData['total_amount'] = self::validateTotalAmount($data['total_amount']);
-                error_log("💰 Validated amount: " . $cleanData['total_amount']);
+                error_log(" Validated amount: " . $cleanData['total_amount']);
             }
             
             if (isset($data['purchase_date'])) {
                 $cleanData['purchase_date'] = self::validatePurchaseDate($data['purchase_date']);
-                error_log("📅 Validated date: " . $cleanData['purchase_date']->toDateString());
+                error_log(" Validated date: " . $cleanData['purchase_date']->toDateString());
             }
             
             if (isset($data['notes'])) {
                 $cleanData['notes'] = !empty($data['notes']) ? trim($data['notes']) : null;
-                error_log("📝 Notes: " . ($cleanData['notes'] ?? 'NULL'));
+                error_log(" Notes: " . ($cleanData['notes'] ?? 'NULL'));
             }
             
-            error_log("📦 Clean data prepared: " . json_encode($cleanData));
+            error_log(" Clean data prepared: " . json_encode($cleanData));
             
             if (empty($cleanData)) {
-                error_log("⚠️ No data to update in updateClean");
+                error_log(" No data to update in updateClean");
                 return true; // Rien à mettre à jour, considéré comme succès
             }
             
-            // ✅ UTILISER LA MÉTHODE UPDATE D'ELOQUENT
-            error_log("🔄 Calling Eloquent update method...");
-            error_log("🆔 Current receipt ID: " . $this->id);
-            error_log("📊 Current receipt data before update: " . json_encode([
+            //  UTILISER LA MÉTHODE UPDATE D'ELOQUENT
+            error_log(" Calling Eloquent update method...");
+            error_log(" Current receipt ID: " . $this->id);
+            error_log(" Current receipt data before update: " . json_encode([
                 'store_name' => $this->store_name,
                 'total_amount' => $this->total_amount,
                 'purchase_date' => $this->purchase_date?->toDateString(),
@@ -234,12 +234,12 @@ class ListReceipt extends Model
             
             $result = $this->update($cleanData);
             
-            error_log("✅ Eloquent update result: " . ($result ? 'SUCCESS' : 'FAILED'));
+            error_log(" Eloquent update result: " . ($result ? 'SUCCESS' : 'FAILED'));
             
             if ($result) {
                 // Recharger le modèle pour vérifier les changements
                 $this->refresh();
-                error_log("📊 Receipt data after update: " . json_encode([
+                error_log(" Receipt data after update: " . json_encode([
                     'store_name' => $this->store_name,
                     'total_amount' => $this->total_amount,
                     'purchase_date' => $this->purchase_date?->toDateString(),
@@ -250,14 +250,14 @@ class ListReceipt extends Model
             return $result;
             
         } catch (\Exception $e) {
-            error_log("❌ Exception in updateClean: " . $e->getMessage());
-            error_log("❌ Exception trace: " . $e->getTraceAsString());
+            error_log(" Exception in updateClean: " . $e->getMessage());
+            error_log(" Exception trace: " . $e->getTraceAsString());
             throw $e;
         }
     }
 
     /**
-     * ✅ FORMATAGE AVEC DEVISE - VERSION CORRIGÉE
+     *  FORMATAGE AVEC DEVISE - VERSION CORRIGÉE
      */
     public function getFormattedAmountInCurrency(?Currency $currency = null): string
     {
@@ -280,7 +280,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ DONNÉES API - VERSION CORRIGÉE
+     *  DONNÉES API - VERSION CORRIGÉE
      */
     public function getApiDataAttribute(): array
     {
@@ -302,7 +302,7 @@ class ListReceipt extends Model
         $data = $this->getApiDataAttribute();
         
         if ($user) {
-            // ✅ GESTION SÉCURISÉE DES DEVISES
+            //  GESTION SÉCURISÉE DES DEVISES
             try {
                 if (method_exists($user, 'getPreferredCurrency')) {
                     $currency = $user->getPreferredCurrency();
@@ -331,21 +331,21 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ BOOT METHOD AVEC LOGS
+     *  BOOT METHOD AVEC LOGS
      */
     protected static function boot()
     {
         parent::boot();
         
         static::saving(function ($receipt) {
-            error_log("🔄 ListReceipt saving event triggered");
-            error_log("📊 Data being saved: " . json_encode($receipt->toArray()));
+            error_log(" ListReceipt saving event triggered");
+            error_log(" Data being saved: " . json_encode($receipt->toArray()));
             
             if ($receipt->store_name) {
                 $oldStoreName = $receipt->store_name;
                 $receipt->store_name = self::normalizeStoreName($receipt->store_name);
                 if ($oldStoreName !== $receipt->store_name) {
-                    error_log("📝 Store name normalized: '$oldStoreName' -> '{$receipt->store_name}'");
+                    error_log(" Store name normalized: '$oldStoreName' -> '{$receipt->store_name}'");
                 }
             }
             
@@ -353,7 +353,7 @@ class ListReceipt extends Model
                 $oldAmount = $receipt->total_amount;
                 $receipt->total_amount = self::validateTotalAmount($receipt->total_amount);
                 if ($oldAmount !== $receipt->total_amount) {
-                    error_log("💰 Amount validated: $oldAmount -> {$receipt->total_amount}");
+                    error_log(" Amount validated: $oldAmount -> {$receipt->total_amount}");
                 }
             }
             
@@ -361,19 +361,19 @@ class ListReceipt extends Model
                 $oldDate = $receipt->purchase_date;
                 $receipt->purchase_date = self::validatePurchaseDate($receipt->purchase_date);
                 if ($oldDate != $receipt->purchase_date) {
-                    error_log("📅 Date validated: $oldDate -> {$receipt->purchase_date}");
+                    error_log(" Date validated: $oldDate -> {$receipt->purchase_date}");
                 }
             }
         });
         
         static::saved(function ($receipt) {
-            error_log("✅ ListReceipt saved successfully");
-            error_log("📊 Final saved data: " . json_encode($receipt->toArray()));
+            error_log(" ListReceipt saved successfully");
+            error_log(" Final saved data: " . json_encode($receipt->toArray()));
         });
     }
 
     /**
-     * ✅ SCOPES
+     *  SCOPES
      */
     public function scopeByStore($query, string $storeName)
     {
@@ -393,7 +393,7 @@ class ListReceipt extends Model
     }
 
     /**
-     * ✅ RELATIONS
+     *  RELATIONS
      */
     public function shoppingList(): BelongsTo
     {

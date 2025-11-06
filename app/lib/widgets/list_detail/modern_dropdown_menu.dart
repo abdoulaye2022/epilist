@@ -89,7 +89,7 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'manage_shares',
           child: Row(
             children: [
-              Icon(Icons.people_outline, size: 20, color: Colors.purple[600]),
+              Icon(Icons.people_outline, size: 20, color: Theme.of(context).primaryColor),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(

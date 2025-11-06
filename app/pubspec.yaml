@@ -61,6 +61,8 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   crypto: ^3.0.3
   flutter_svg: ^2.2.0
+  mobile_scanner: ^6.0.3
+  http: ^1.2.2
   
 
 dev_dependencies:

@@ -15,7 +15,7 @@ use Carbon\Carbon;
 class CampaignController
 {
     /**
-     * ✅ Lancer la campagne de nouvelle version pour tous les utilisateurs actifs
+     *  Lancer la campagne de nouvelle version pour tous les utilisateurs actifs
      */
     public function sendNewVersionCampaign(Request $request, Response $response): Response
     {
@@ -80,9 +80,9 @@ class CampaignController
                 return $response->withHeader('Content-Type', 'application/json');
             }
 
-            // ✅ CORRECTION: Mode production avec requête directe pour utilisateurs éligibles
+            //  CORRECTION: Mode production avec requête directe pour utilisateurs éligibles
             if (Config::get('APP_ENV') == 'dev') {
-                // ✅ EN DEV: Filtrer les utilisateurs éligibles et envoyer UN SEUL EMAIL
+                //  EN DEV: Filtrer les utilisateurs éligibles et envoyer UN SEUL EMAIL
                 $users = User::where('email_marketing_consent', true)
                             ->where('email_verified_at', '!=', null)
                             ->where('is_active', true)
@@ -97,7 +97,7 @@ class CampaignController
                     $firstUser = $users->first();
                     $unsubscribeUrl = $firstUser->getUnsubscribeUrl();
                     
-                    // ✅ ENVOI D'UN SEUL EMAIL à l'adresse de dev
+                    //  ENVOI D'UN SEUL EMAIL à l'adresse de dev
                     $success = MailSender::sendNewVersionCampaign(
                         'm2atodev@gmail.com', // Email fixe en dev
                         $firstUser->first_name ?? 'Utilisateur Dev',
@@ -147,7 +147,7 @@ class CampaignController
                 }
             }
 
-            // ✅ Mode production NORMAL (pas DEV) - Requête directe
+            //  Mode production NORMAL (pas DEV) - Requête directe
             $users = User::where('email_marketing_consent', true)
                         ->where('email_verified_at', '!=', null)
                         ->where('is_active', true)
@@ -243,17 +243,17 @@ class CampaignController
     }
 
     /**
-     * ✅ MISE À JOUR getCampaignStats avec stats de consentement
+     *  MISE À JOUR getCampaignStats avec stats de consentement
      */
     public function getCampaignStats(Request $request, Response $response): Response
     {
         try {
-            // ✅ NOUVELLES statistiques avec requête directe
+            //  NOUVELLES statistiques avec requête directe
             $totalUsers = User::count();
             $activeUsers = User::where('is_active', true)->count();
             $verifiedUsers = User::where('email_verified_at', '!=', null)->count();
             
-            // ✅ CORRECTION: Requête directe au lieu du scope
+            //  CORRECTION: Requête directe au lieu du scope
             $eligibleForCampaign = User::where('email_marketing_consent', true)
                                      ->where('email_verified_at', '!=', null)
                                      ->where('is_active', true)
@@ -307,7 +307,7 @@ class CampaignController
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Gérer le désabonnement via URL
+     *  NOUVELLE MÉTHODE: Gérer le désabonnement via URL
      */
     public function handleUnsubscribe(Request $request, Response $response, array $args): Response
     {
@@ -405,7 +405,7 @@ class CampaignController
     }
 
     /**
-     * ✅ Envoyer un email de test à un utilisateur spécifique
+     *  Envoyer un email de test à un utilisateur spécifique
      */
     public function sendTestEmail(Request $request, Response $response): Response
     {
@@ -469,7 +469,7 @@ class CampaignController
     }
 
     /**
-     * ✅ Obtenir un aperçu de l'email de campagne (sans l'envoyer)
+     *  Obtenir un aperçu de l'email de campagne (sans l'envoyer)
      */
     public function previewCampaignEmail(Request $request, Response $response): Response
     {

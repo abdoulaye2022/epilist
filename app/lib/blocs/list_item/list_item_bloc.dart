@@ -129,6 +129,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         quantity: event.quantity,
         price: event.price,
         storeName: event.storeName,
+        categoryId: event.categoryId,
       );
 
       if (result.isSuccess) {
@@ -362,6 +363,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         quantity: event.quantity,
         price: event.price,
         storeName: event.storeName,
+        categoryId: event.categoryId,
       );
 
       print("Item mis à jour avec succès: ${updatedItem.toJson()}");

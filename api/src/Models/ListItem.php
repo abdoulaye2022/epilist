@@ -22,6 +22,8 @@ class ListItem extends Model
         'price',
         'store_name',
         'is_purchased',
+        'barcode',
+        'category_id',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -37,7 +39,7 @@ class ListItem extends Model
     ];
 
     /**
-     * ✅ VALIDATION RULES WITH ENGLISH MESSAGES (inchangé)
+     *  VALIDATION RULES WITH ENGLISH MESSAGES (inchangé)
      */
     public static function getValidationRules(): array
     {
@@ -63,7 +65,7 @@ class ListItem extends Model
         ];
     }
 
-    // ✅ TOUTES LES MÉTHODES EXISTANTES RESTENT IDENTIQUES
+    //  TOUTES LES MÉTHODES EXISTANTES RESTENT IDENTIQUES
     // (normalizeProductName, normalizeStoreName, validatePrice, validateQuantity, etc.)
     
     public static function normalizeProductName(string $name): string
@@ -330,7 +332,7 @@ class ListItem extends Model
         });
     }
 
-    // ✅ NOUVELLES MÉTHODES POUR LE FORMATAGE AVEC DEVISE
+    //  NOUVELLES MÉTHODES POUR LE FORMATAGE AVEC DEVISE
 
     /**
      * Obtenir le prix formaté dans une devise spécifique
@@ -419,7 +421,7 @@ class ListItem extends Model
         }
     }
 
-    // ✅ ACCESSEURS EXISTANTS AMÉLIORÉS
+    //  ACCESSEURS EXISTANTS AMÉLIORÉS
 
     public function getFormattedNameAttribute(): string
     {
@@ -443,7 +445,7 @@ class ListItem extends Model
     }
 
     /**
-     * ✅ NOUVEAUX ACCESSEURS POUR LES DONNÉES API
+     *  NOUVEAUX ACCESSEURS POUR LES DONNÉES API
      */
     public function getApiDataAttribute(): array
     {

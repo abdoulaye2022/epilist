@@ -308,7 +308,7 @@ class MailSender
                                                  onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
                                             <!-- Fallback si l'image ne charge pas -->
                                             <div style='display: none; width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 20px; margin: 0 auto; position: relative;'>
-                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 36px;'>🛒</div>
+                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 36px;'></div>
                                             </div>
                                         </div>
                                         <h1 style='margin: 0 0 8px; font-size: 28px; font-weight: bold; color: #047857;'>EpiList</h1>
@@ -322,7 +322,7 @@ class MailSender
     }
 
     /**
-     * ✅ MISE À JOUR du footerContent pour inclure le lien de désabonnement
+     *  MISE À JOUR du footerContent pour inclure le lien de désabonnement
      */
     public static function footerContent(string $unsubscribeUrl = null): string
     {
@@ -354,7 +354,7 @@ class MailSender
                                                     onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
                                                 <!-- Fallback si l'image ne charge pas -->
                                                 <div style='display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto; position: relative;'>
-                                                    <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
+                                                    <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'></div>
                                                 </div>
                                             </div>
                                             
@@ -366,19 +366,19 @@ class MailSender
                                             <!-- Fonctionnalités clés -->
                                             <div style='margin: 25px 0 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;'>
                                                 <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>✅</span>
+                                                    <span style='margin-right: 8px;'></span>
                                                     <span>Créez vos listes avant d'aller faire vos courses</span>
                                                 </div>
                                                 <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>🛍️</span>
+                                                    <span style='margin-right: 8px;'></span>
                                                     <span>Cochez vos achats en temps réel</span>
                                                 </div>
                                                 <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>💰</span>
+                                                    <span style='margin-right: 8px;'></span>
                                                     <span>Suivez vos dépenses dans votre devise préférée</span>
                                                 </div>
                                                 <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>👨‍👩‍👧‍👦</span>
+                                                    <span style='margin-right: 8px;'>‍‍‍</span>
                                                     <span>Partagez vos listes avec votre famille</span>
                                                 </div>
                                             </div>
@@ -386,7 +386,7 @@ class MailSender
                                             <!-- Bouton vers le site web -->
                                             <div style='margin: 25px 0; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);'>
                                                 <p style='margin: 0 0 12px; font-size: 15px; color: #10b981; font-weight: 600; text-align: center;'>
-                                                    🌐 Découvrez toutes nos fonctionnalités
+                                                     Découvrez toutes nos fonctionnalités
                                                 </p>
                                                 <a href='https://epilist.app' 
                                                 style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;'>
@@ -413,7 +413,7 @@ class MailSender
                                             <!-- Message local -->
                                             <div style='margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px;'>
                                                 <p style='margin: 0; font-size: 12px; color: #10b981; font-weight: 500; text-align: center;'>
-                                                    🍁 Développée avec ❤️ par M2atech Solutions Inc.<br>
+                                                     Développée avec  par M2atech Solutions Inc.<br>
                                                     <span style='font-size: 11px; color: #6b7280;'>Fièrement canadienne depuis le Nouveau-Brunswick</span>
                                                 </p>
                                             </div>
@@ -464,7 +464,7 @@ class MailSender
                                         
                                         <div style='background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                                             <p style='margin: 0; font-size: 14px; color: #92400e;'>
-                                                <strong>💡 Conseil :</strong> Gardez ce code à portée de main et retournez dans l'application EpiList pour terminer votre inscription.
+                                                <strong> Conseil :</strong> Gardez ce code à portée de main et retournez dans l'application EpiList pour terminer votre inscription.
                                             </p>
                                         </div>
                                         
@@ -494,7 +494,7 @@ class MailSender
                                 <tr>
                                     <td class='content' style='padding: 40px 30px;'>
                                         <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
-                                            Bienvenue dans la communauté EpiList ! 🎉
+                                            Bienvenue dans la communauté EpiList ! 
                                         </h2>
                                         
                                         <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -506,13 +506,13 @@ class MailSender
                                         </p>
                                         
                                         <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
-                                            <h3 style='margin: 0 0 16px; font-size: 18px; color: #047857;'>🚀 Prêt à commencer ?</h3>
+                                            <h3 style='margin: 0 0 16px; font-size: 18px; color: #047857;'> Prêt à commencer ?</h3>
                                             <p style='margin: 0; font-size: 14px; color: #059669;'>
                                                 Ouvrez votre application EpiList et créez votre première liste d'épicerie pour découvrir la simplicité de notre solution
                                             </p>
                                         </div>
                                         
-                                        <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'>🛒 Vos prochaines étapes :</h3>
+                                        <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'> Vos prochaines étapes :</h3>
                                         
                                         <div style='margin: 20px 0;'>
                                             <div style='display: flex; align-items: flex-start; margin-bottom: 16px;'>
@@ -542,7 +542,7 @@ class MailSender
                                         
                                         <div style='background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                                             <p style='margin: 0; font-size: 14px; color: #92400e;'>
-                                                <strong>💡 Astuce :</strong> Utilisez EpiList avant de partir faire vos courses pour une expérience optimale !
+                                                <strong> Astuce :</strong> Utilisez EpiList avant de partir faire vos courses pour une expérience optimale !
                                             </p>
                                         </div>
                                         
@@ -595,7 +595,7 @@ class MailSender
                                         
                                         <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                                             <p style='margin: 0; font-size: 14px; color: #dc2626;'>
-                                                <strong>🔒 Sécurité :</strong> Si vous n'avez pas demandé cette réinitialisation, ignorez cet email. Votre mot de passe actuel reste inchangé.
+                                                <strong> Sécurité :</strong> Si vous n'avez pas demandé cette réinitialisation, ignorez cet email. Votre mot de passe actuel reste inchangé.
                                             </p>
                                         </div>
                                         
@@ -624,7 +624,7 @@ class MailSender
             <tr>
                 <td class='content' style='padding: 40px 30px;'>
                     <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
-                        🔐 Code de changement de mot de passe
+                         Code de changement de mot de passe
                     </h2>
                     
                     <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -641,13 +641,13 @@ class MailSender
                     
                     <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                         <p style='margin: 0; font-size: 14px; color: #dc2626;'>
-                            <strong>⚠️ Important :</strong> Ce code expirera dans 2 heures. Ne le partagez avec personne pour votre sécurité.
+                            <strong> Important :</strong> Ce code expirera dans 2 heures. Ne le partagez avec personne pour votre sécurité.
                         </p>
                     </div>
                     
                     <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                         <p style='margin: 0; font-size: 14px; color: #047857;'>
-                            <strong>🛒 Conseil :</strong> Une fois votre mot de passe changé, vous pourrez continuer à gérer vos listes d'épicerie en toute sécurité.
+                            <strong> Conseil :</strong> Une fois votre mot de passe changé, vous pourrez continuer à gérer vos listes d'épicerie en toute sécurité.
                         </p>
                     </div>
                     
@@ -699,7 +699,7 @@ class MailSender
      */
     public static function sendWelcomeEmail(string $email, string $firstName): bool
     {
-        $subject = "Bienvenue dans la communauté EpiList ! 🎉";
+        $subject = "Bienvenue dans la communauté EpiList ! ";
         
         // Génération du contenu HTML avec le template existant
         $htmlContent = self::welcomeEmail($firstName);
@@ -724,7 +724,7 @@ class MailSender
                                 <tr>
                                     <td class='content' style='padding: 40px 30px;'>
                                         <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #dc2626;'>
-                                            🚨 Code de suppression de compte
+                                             Code de suppression de compte
                                         </h2>
                                         
                                         <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -745,7 +745,7 @@ class MailSender
                                         
                                         <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
                                             <p style='margin: 0; font-size: 14px; color: #dc2626;'>
-                                                <strong>⚠️ ATTENTION :</strong> Cette action est définitive ! Une fois confirmée, toutes vos données personnelles seront supprimées de manière irréversible.
+                                                <strong> ATTENTION :</strong> Cette action est définitive ! Une fois confirmée, toutes vos données personnelles seront supprimées de manière irréversible.
                                             </p>
                                         </div>
                                         
@@ -777,7 +777,7 @@ class MailSender
                                                 L'équipe EpiList
                                             </p>
                                             <p style='margin: 0; color: #6b7280; font-size: 14px;'>
-                                                Nous sommes tristes de vous voir partir 😢
+                                                Nous sommes tristes de vous voir partir 
                                             </p>
                                         </div>
                                     </td>
@@ -799,7 +799,7 @@ class MailSender
                                 <tr>
                                     <td class='content' style='padding: 40px 30px;'>
                                         <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #dc2626;'>
-                                            ⏳ Suppression de compte programmée
+                                             Suppression de compte programmée
                                         </h2>
                                         
                                         <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -811,21 +811,21 @@ class MailSender
                                         </p>
                                         
                                         <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #fca5a5; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
-                                            <h3 style='margin: 0 0 16px; font-size: 18px; color: #991b1b;'>📅 Date de suppression définitive</h3>
+                                            <h3 style='margin: 0 0 16px; font-size: 18px; color: #991b1b;'> Date de suppression définitive</h3>
                                             <p style='margin: 0; font-size: 20px; color: #dc2626; font-weight: bold;'>
                                                 " . Carbon::now()->addDays(30)->format('d/m/Y à H:i') . "
                                             </p>
                                         </div>
                                         
                                         <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #92400e;'>🔄 Vous pouvez encore changer d'avis !</h4>
+                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #92400e;'> Vous pouvez encore changer d'avis !</h4>
                                             <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
                                                 Pendant les 30 prochains jours, vous pouvez annuler cette suppression en vous connectant à votre compte EpiList et en accédant aux paramètres de votre profil.
                                             </p>
                                         </div>
                                         
                                         <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #047857;'>📋 Rappel de ce qui sera supprimé :</h4>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #047857;'> Rappel de ce qui sera supprimé :</h4>
                                             <ul style='margin: 0; padding-left: 20px; color: #047857; font-size: 14px;'>
                                                 <li>Votre profil et toutes vos informations personnelles</li>
                                                 <li>Toutes vos listes d'épicerie privées</li>
@@ -835,7 +835,7 @@ class MailSender
                                         </div>
                                         
                                         <div style='background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin: 25px 0; text-align: center;'>
-                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'>📞 Besoin d'aide ?</h4>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'> Besoin d'aide ?</h4>
                                             <p style='margin: 0; font-size: 14px; color: #6b7280;'>
                                                 Si vous avez des questions ou souhaitez nous faire part de vos commentaires, n'hésitez pas à nous contacter avant la suppression définitive.
                                             </p>
@@ -846,7 +846,7 @@ class MailSender
                                                 Merci d'avoir utilisé EpiList,
                                             </p>
                                             <p style='margin: 0; color: #6b7280; font-size: 14px;'>
-                                                L'équipe EpiList 💙
+                                                L'équipe EpiList 
                                             </p>
                                         </div>
                                     </td>
@@ -868,7 +868,7 @@ class MailSender
                                 <tr>
                                     <td class='content' style='padding: 40px 30px;'>
                                         <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
-                                            🎉 Suppression de compte annulée !
+                                             Suppression de compte annulée !
                                         </h2>
                                         
                                         <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -880,14 +880,14 @@ class MailSender
                                         </p>
                                         
                                         <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 24px; margin: 25px 0; text-align: center;'>
-                                            <h3 style='margin: 0 0 16px; font-size: 20px; color: #047857;'>✅ Votre compte est actif !</h3>
+                                            <h3 style='margin: 0 0 16px; font-size: 20px; color: #047857;'> Votre compte est actif !</h3>
                                             <p style='margin: 0; font-size: 16px; color: #059669; font-weight: 600;'>
                                                 Vous pouvez continuer à utiliser EpiList normalement
                                             </p>
                                         </div>
                                         
                                         <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #047857;'>🔄 Ce qui a été restauré :</h4>
+                                            <h4 style='margin: 0 0 12px; font-size: 16px; color: #047857;'> Ce qui a été restauré :</h4>
                                             <ul style='margin: 0; padding-left: 20px; color: #047857; font-size: 14px;'>
                                                 <li>Accès complet à votre profil</li>
                                                 <li>Toutes vos listes d'épicerie</li>
@@ -898,7 +898,7 @@ class MailSender
                                         </div>
                                         
                                         <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'>💡 Conseil :</h4>
+                                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'> Conseil :</h4>
                                             <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
                                                 Nous sommes ravis que vous ayez décidé de rester ! N'hésitez pas à explorer toutes les fonctionnalités d'EpiList pour optimiser vos courses.
                                             </p>
@@ -919,7 +919,7 @@ class MailSender
                                                 Bienvenue de retour !
                                             </p>
                                             <p style='margin: 0; color: #047857; font-size: 14px;'>
-                                                L'équipe EpiList 🛒💚
+                                                L'équipe EpiList 
                                             </p>
                                         </div>
                                     </td>
@@ -934,7 +934,7 @@ class MailSender
      */
     public static function sendAccountDeletionCode(string $email, string $firstName, string $code): bool
     {
-        $subject = "🚨 Code de suppression de votre compte EpiList";
+        $subject = " Code de suppression de votre compte EpiList";
         
         $htmlContent = self::accountDeletionCodeEmail($firstName, $code);
         
@@ -950,7 +950,7 @@ class MailSender
      */
     public static function sendAccountDeletionConfirmation(string $email, string $firstName): bool
     {
-        $subject = "⏳ Suppression de compte confirmée - EpiList";
+        $subject = " Suppression de compte confirmée - EpiList";
         
         $htmlContent = self::accountDeletionConfirmationEmail($firstName);
         
@@ -966,7 +966,7 @@ class MailSender
      */
     public static function sendAccountDeletionCancellation(string $email, string $firstName): bool
     {
-        $subject = "🎉 Suppression de compte annulée - EpiList";
+        $subject = " Suppression de compte annulée - EpiList";
         
         $htmlContent = self::accountDeletionCancellationEmail($firstName);
         
@@ -978,12 +978,12 @@ class MailSender
     }
 
    /**
-     * ✅ CORRECTION: Template pour campagne de nouvelle version avec URL de désabonnement
+     *  CORRECTION: Template pour campagne de nouvelle version avec URL de désabonnement
      */
     public static function newVersionCampaignEmail(string $prenom, string $unsubscribeUrl = null): string
     {
         $header = self::headerContent('EpiList 2.0 - La révolution de vos courses !');
-        $footer = self::footerContent($unsubscribeUrl); // ✅ Passer l'URL de désabonnement
+        $footer = self::footerContent($unsubscribeUrl); //  Passer l'URL de désabonnement
         
         $content = "
                 <tr>
@@ -991,7 +991,7 @@ class MailSender
                         <!-- En-tête principal -->
                         <div style='text-align: center; margin-bottom: 30px;'>
                             <h1 style='margin: 0 0 15px; font-size: 32px; font-weight: bold; color: #047857; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>
-                                🚀 EpiList 2.0 est arrivé !
+                                 EpiList 2.0 est arrivé !
                             </h1>
                             <p style='margin: 0; font-size: 18px; color: #059669; font-weight: 600;'>
                                 La révolution de vos courses commence maintenant
@@ -1008,19 +1008,19 @@ class MailSender
 
                         <!-- Badge NOUVEAU -->
                         <div style='background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;'>
-                            🔥 Nouveau
+                             Nouveau
                         </div>
 
                         <!-- Nouvelles fonctionnalités avec icônes -->
                         <h2 style='margin: 30px 0 20px; font-size: 24px; font-weight: 600; color: #047857; text-align: center;'>
-                            ✨ Découvrez les nouvelles fonctionnalités
+                             Découvrez les nouvelles fonctionnalités
                         </h2>
 
                         <div style='margin: 30px 0;'>
                             <!-- Gestion des dépenses -->
                             <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💰</div>
+                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
                                     <h3 style='margin: 0; font-size: 18px; color: #047857; font-weight: 600;'>Gestion complète des dépenses</h3>
                                 </div>
                                 <p style='margin: 0; color: #059669; font-size: 14px; line-height: 1.5;'>
@@ -1031,7 +1031,7 @@ class MailSender
                             <!-- Factures -->
                             <div style='background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🧾</div>
+                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
                                     <h3 style='margin: 0; font-size: 18px; color: #1e40af; font-weight: 600;'>Gestion des factures</h3>
                                 </div>
                                 <p style='margin: 0; color: #2563eb; font-size: 14px; line-height: 1.5;'>
@@ -1042,7 +1042,7 @@ class MailSender
                             <!-- Budgets -->
                             <div style='background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎯</div>
+                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
                                     <h3 style='margin: 0; font-size: 18px; color: #92400e; font-weight: 600;'>Budgets intelligents</h3>
                                 </div>
                                 <p style='margin: 0; color: #d97706; font-size: 14px; line-height: 1.5;'>
@@ -1053,7 +1053,7 @@ class MailSender
                             <!-- Analytics -->
                             <div style='background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📊</div>
+                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
                                     <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Statistiques avancées</h3>
                                 </div>
                                 <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
@@ -1064,7 +1064,7 @@ class MailSender
                             <!-- Notifications -->
                             <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🔔</div>
+                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
                                     <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Alertes intelligentes</h3>
                                 </div>
                                 <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
@@ -1076,7 +1076,7 @@ class MailSender
                         <!-- Section Apps mobiles -->
                         <div style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); border-radius: 16px; padding: 30px; margin: 40px 0; text-align: center;'>
                             <h2 style='margin: 0 0 15px; font-size: 24px; font-weight: bold; color: #ffffff;'>
-                                📱 Maintenant disponible sur mobile !
+                                 Maintenant disponible sur mobile !
                             </h2>
                             <p style='margin: 0 0 25px; font-size: 16px; color: #d1d5db; line-height: 1.6;'>
                                 Téléchargez l'application officielle EpiList sur votre smartphone et profitez de toutes ces fonctionnalités où que vous soyez !
@@ -1088,7 +1088,7 @@ class MailSender
                                 <a href='https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA' 
                                 style='display: inline-block; background: #000000; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 5px;'>
                                     <div style='display: flex; align-items: center;'>
-                                        <span style='font-size: 20px; margin-right: 8px;'>🍎</span>
+                                        <span style='font-size: 20px; margin-right: 8px;'></span>
                                         <div style='text-align: left;'>
                                             <div style='font-size: 10px; opacity: 0.8;'>Télécharger sur</div>
                                             <div style='font-size: 14px;'>App Store</div>
@@ -1100,7 +1100,7 @@ class MailSender
                                 <a href='https://play.google.com/store/apps/details?id=com.m2atech.epilist' 
                                 style='display: inline-block; background: #01875f; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 5px;'>
                                     <div style='display: flex; align-items: center;'>
-                                        <span style='font-size: 20px; margin-right: 8px;'>🤖</span>
+                                        <span style='font-size: 20px; margin-right: 8px;'></span>
                                         <div style='text-align: left;'>
                                             <div style='font-size: 10px; opacity: 0.8;'>Disponible sur</div>
                                             <div style='font-size: 14px;'>Google Play</div>
@@ -1113,7 +1113,7 @@ class MailSender
                         <!-- Captures d'écran -->
                         <div style='margin: 40px 0; text-align: center;'>
                             <h3 style='margin: 0 0 20px; font-size: 20px; color: #047857; font-weight: 600;'>
-                                📸 Aperçu de la nouvelle interface
+                                 Aperçu de la nouvelle interface
                             </h3>
                             
                             <!-- Grille de screenshots -->
@@ -1124,7 +1124,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>📊</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Dashboard</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Tableau de bord</p>
@@ -1136,7 +1136,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>🎯</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Budgets</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Gestion budgets</p>
@@ -1148,7 +1148,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>📈</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Analytics</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Statistiques</p>
@@ -1160,7 +1160,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>🧾</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Factures</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Factures</p>
@@ -1172,7 +1172,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>🌍</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Multi-lang</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Multi-language & Multi-device</p>
@@ -1184,7 +1184,7 @@ class MailSender
                                         style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
                                         onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
                                     <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'>📈</div>
+                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
                                         <div style='font-size: 12px;'>Charts</div>
                                     </div>
                                     <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Graphiques détaillés</p>
@@ -1195,7 +1195,7 @@ class MailSender
                         <!-- Call to Action principal -->
                         <div style='background: linear-gradient(135deg, #059669 0%, #047857 100%); border-radius: 16px; padding: 30px; margin: 40px 0; text-align: center; color: white;'>
                             <h2 style='margin: 0 0 15px; font-size: 24px; font-weight: bold; color: #ffffff;'>
-                                🚀 Mettez à jour dès maintenant !
+                                 Mettez à jour dès maintenant !
                             </h2>
                             <p style='margin: 0 0 20px; font-size: 16px; color: #d1fae5; line-height: 1.6;'>
                                 Ne manquez pas ces incroyables nouvelles fonctionnalités ! La mise à jour est gratuite et disponible immédiatement.
@@ -1203,8 +1203,8 @@ class MailSender
                             
                             <div style='background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px; margin: 20px 0;'>
                                 <p style='margin: 0; font-size: 14px; color: #d1fae5; font-weight: 500;'>
-                                    ⚡ <strong>Mise à jour automatique</strong> : Si vous avez déjà l'app, la mise à jour se fera automatiquement !<br>
-                                    📲 <strong>Nouvelle installation</strong> : Utilisez les liens ci-dessus pour télécharger
+                                     <strong>Mise à jour automatique</strong> : Si vous avez déjà l'app, la mise à jour se fera automatiquement !<br>
+                                     <strong>Nouvelle installation</strong> : Utilisez les liens ci-dessus pour télécharger
                                 </p>
                             </div>
                         </div>
@@ -1212,7 +1212,7 @@ class MailSender
                         <!-- Bénéfices utilisateur -->
                         <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; margin: 25px 0;'>
                             <h3 style='margin: 0 0 15px; font-size: 18px; color: #92400e; font-weight: 600;'>
-                                💡 Pourquoi cette mise à jour va changer votre vie
+                                 Pourquoi cette mise à jour va changer votre vie
                             </h3>
                             <ul style='margin: 0; padding-left: 20px; color: #92400e; font-size: 14px; line-height: 1.6;'>
                                 <li><strong>Économisez plus :</strong> Suivez précisément vos dépenses et identifiez où vous pouvez réduire vos coûts</li>
@@ -1224,7 +1224,7 @@ class MailSender
 
                         <!-- Section support -->
                         <div style='background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 16px; margin: 25px 0; text-align: center;'>
-                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'>❓ Besoin d'aide avec la mise à jour ?</h4>
+                            <h4 style='margin: 0 0 8px; font-size: 16px; color: #374151;'> Besoin d'aide avec la mise à jour ?</h4>
                             <p style='margin: 0; font-size: 14px; color: #6b7280;'>
                                 Notre équipe est là pour vous accompagner ! Visitez notre site web ou contactez-nous directement.
                             </p>
@@ -1236,10 +1236,10 @@ class MailSender
                                 Merci d'être un utilisateur fidèle d'EpiList ! Votre confiance nous pousse à innover constamment pour vous offrir la meilleure expérience possible.
                             </p>
                             <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
-                                Très bonne découverte et excellentes courses ! 🛒✨
+                                Très bonne découverte et excellentes courses ! 
                             </p>
                             <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
-                                L'équipe EpiList 💚
+                                L'équipe EpiList 
                             </p>
                         </div>
                     </td>
@@ -1250,13 +1250,13 @@ class MailSender
     }
 
     /**
-     * ✅ CORRECTION: sendNewVersionCampaign avec gestion du lien de désabonnement
+     *  CORRECTION: sendNewVersionCampaign avec gestion du lien de désabonnement
      */
     public static function sendNewVersionCampaign(string $email, string $firstName, string $unsubscribeUrl = null): bool
     {
-        $subject = "🚀 EpiList 2.0 - Gestion complète de vos courses + Apps mobiles !";
+        $subject = " EpiList 2.0 - Gestion complète de vos courses + Apps mobiles !";
         
-        // ✅ Passer l'URL de désabonnement au template
+        //  Passer l'URL de désabonnement au template
         $htmlContent = self::newVersionCampaignEmail($firstName, $unsubscribeUrl);
         
         return self::sendMail(
@@ -1267,7 +1267,7 @@ class MailSender
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Template pour page de désabonnement
+     *  NOUVELLE MÉTHODE: Template pour page de désabonnement
      */
     public static function unsubscribeConfirmationEmail(string $prenom): string
     {
@@ -1278,7 +1278,7 @@ class MailSender
             <tr>
                 <td class='content' style='padding: 40px 30px;'>
                     <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #059669;'>
-                        ✅ Désabonnement confirmé
+                         Désabonnement confirmé
                     </h2>
                     
                     <p style='margin: 0 0 20px; font-size: 16px; color: #374151; line-height: 1.6;'>
@@ -1290,7 +1290,7 @@ class MailSender
                     </p>
                     
                     <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0;'>
-                        <h3 style='margin: 0 0 12px; font-size: 16px; color: #047857;'>📧 Ce que cela signifie :</h3>
+                        <h3 style='margin: 0 0 12px; font-size: 16px; color: #047857;'> Ce que cela signifie :</h3>
                         <ul style='margin: 0; padding-left: 20px; color: #059669; font-size: 14px; line-height: 1.6;'>
                             <li>Vous ne recevrez plus d'emails sur les nouvelles fonctionnalités</li>
                             <li>Aucune communication marketing ou promotionnelle</li>
@@ -1300,7 +1300,7 @@ class MailSender
                     </div>
                     
                     <div style='background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                        <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'>🔄 Changé d'avis ?</h4>
+                        <h4 style='margin: 0 0 8px; font-size: 16px; color: #92400e;'> Changé d'avis ?</h4>
                         <p style='margin: 0; font-size: 14px; color: #92400e; line-height: 1.5;'>
                             Vous pouvez vous réabonner à tout moment depuis les paramètres de votre compte EpiList.
                         </p>
@@ -1318,7 +1318,7 @@ class MailSender
                             Merci d'avoir utilisé EpiList !
                         </p>
                         <p style='margin: 0; color: #6b7280; font-size: 14px;'>
-                            L'équipe EpiList 🛒
+                            L'équipe EpiList 
                         </p>
                     </div>
                 </td>
@@ -1329,11 +1329,11 @@ class MailSender
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer confirmation de désabonnement
+     *  NOUVELLE MÉTHODE: Envoyer confirmation de désabonnement
      */
     public static function sendUnsubscribeConfirmation(string $email, string $firstName): bool
     {
-        $subject = "✅ Désabonnement confirmé - EpiList";
+        $subject = " Désabonnement confirmé - EpiList";
         
         $htmlContent = self::unsubscribeConfirmationEmail($firstName);
         

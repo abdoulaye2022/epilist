@@ -10,6 +10,7 @@ class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onViewAllLists;
   final VoidCallback? onProfile;
   final VoidCallback? onLogout;
+  final VoidCallback? onManageCategories;
 
   const HomeAppBar({
     super.key,
@@ -17,6 +18,7 @@ class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.onViewAllLists,
     this.onProfile,
     this.onLogout,
+    this.onManageCategories,
   });
 
   @override
@@ -168,6 +170,9 @@ class _HomeAppBarState extends State<HomeAppBar> {
                     case 'view_all':
                       widget.onViewAllLists?.call();
                       break;
+                    case 'manage_categories':
+                      widget.onManageCategories?.call();
+                      break;
                     case 'logout':
                       widget.onLogout?.call();
                       break;
@@ -240,6 +245,28 @@ class _HomeAppBarState extends State<HomeAppBar> {
                               const Icon(Icons.list_alt, color: Colors.black87),
                               const SizedBox(width: 12),
                               Text(l10n.allLists ?? 'Toutes les listes'),
+                            ],
+                          ),
+                        ),
+
+                      // Divider
+                      if (widget.onViewAllLists != null && widget.onManageCategories != null)
+                        const PopupMenuDivider(),
+
+                      // Menu Gérer les catégories
+                      if (widget.onManageCategories != null)
+                        PopupMenuItem<String>(
+                          value: 'manage_categories',
+                          child: Row(
+                            children: [
+                              Icon(Icons.category, color: Colors.green[700]),
+                              const SizedBox(width: 12),
+                              Text(
+                                l10n.manageCategories,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         ),

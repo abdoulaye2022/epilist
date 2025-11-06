@@ -158,7 +158,7 @@ class ListItemCard extends StatelessWidget {
     // Magasin si disponible
     if (item.storeName != null && item.storeName!.isNotEmpty) {
       details.add(const SizedBox(width: 8));
-      details.add(_buildStoreChip());
+      details.add(_buildStoreChip(context));
     }
 
     return Wrap(spacing: 8, runSpacing: 4, children: details);
@@ -228,25 +228,28 @@ class ListItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStoreChip() {
+  Widget _buildStoreChip(BuildContext context) {
+    // ✅ Utiliser la couleur du thème au lieu du violet
+    final themeColor = Theme.of(context).primaryColor;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.purple[50],
+        color: themeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.purple[200]!),
+        border: Border.all(color: themeColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.store, size: 12, color: Colors.purple[600]),
+          Icon(Icons.store, size: 12, color: themeColor),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
               item.storeName!,
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.purple[600],
+                color: themeColor,
                 fontWeight: FontWeight.w500,
               ),
               overflow: TextOverflow.ellipsis,

@@ -81,7 +81,7 @@ class User extends Model
     // ===================== RELATIONS =====================
 
     /**
-     * ✅ Devise préférée de l'utilisateur
+     *  Devise préférée de l'utilisateur
      */
     public function currency(): BelongsTo
     {
@@ -89,7 +89,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Listes de courses de l'utilisateur
+     *  Listes de courses de l'utilisateur
      */
     public function shoppingLists(): HasMany
     {
@@ -97,7 +97,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Suggestions de produits de l'utilisateur
+     *  Suggestions de produits de l'utilisateur
      */
     public function productSuggestions(): HasMany
     {
@@ -105,7 +105,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Listes partagées par l'utilisateur (en tant que propriétaire)
+     *  Listes partagées par l'utilisateur (en tant que propriétaire)
      */
     public function ownedSharedLists(): HasMany
     {
@@ -113,7 +113,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Listes partagées avec l'utilisateur (en tant qu'invité)
+     *  Listes partagées avec l'utilisateur (en tant qu'invité)
      */
     public function receivedSharedLists(): HasMany
     {
@@ -121,7 +121,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Appareils de l'utilisateur
+     *  Appareils de l'utilisateur
      */
     public function devices(): HasMany
     {
@@ -129,7 +129,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Appareils actifs seulement
+     *  Appareils actifs seulement
      */
     public function activeDevices(): HasMany
     {
@@ -137,7 +137,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Budgets de l'utilisateur
+     *  NOUVELLE RELATION: Budgets de l'utilisateur
      */
     public function budgets(): HasMany
     {
@@ -145,7 +145,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Budgets actifs de l'utilisateur
+     *  NOUVELLE RELATION: Budgets actifs de l'utilisateur
      */
     public function activeBudgets(): HasMany
     {
@@ -153,7 +153,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Budgets actifs et actuels
+     *  NOUVELLE RELATION: Budgets actifs et actuels
      */
     public function currentBudgets(): HasMany
     {
@@ -161,7 +161,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE RELATION: Budgets dépassés
+     *  NOUVELLE RELATION: Budgets dépassés
      */
     public function exceededBudgets(): HasMany
     {
@@ -365,7 +365,7 @@ class User extends Model
     // ===================== MÉTHODES POUR LES BUDGETS =====================
 
     /**
-     * ✅ Obtenir les budgets qui nécessitent une alerte
+     *  Obtenir les budgets qui nécessitent une alerte
      */
     public function getBudgetsRequiringAlert(): \Illuminate\Database\Eloquent\Collection
     {
@@ -377,7 +377,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Obtenir les budgets dépassés
+     *  Obtenir les budgets dépassés
      */
     public function getExceededBudgets(): \Illuminate\Database\Eloquent\Collection
     {
@@ -389,7 +389,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Vérifier si l'utilisateur a des budgets actifs
+     *  Vérifier si l'utilisateur a des budgets actifs
      */
     public function hasActiveBudgets(): bool
     {
@@ -397,7 +397,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Obtenir le montant total budgété
+     *  Obtenir le montant total budgété
      */
     public function getTotalBudgetAmount(): float
     {
@@ -405,7 +405,7 @@ class User extends Model
     }
 
     /**
-     * ✅ Obtenir le montant total dépensé
+     *  Obtenir le montant total dépensé
      */
     public function getTotalSpentAmount(): float
     {
@@ -449,7 +449,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVEAU SCOPE: Utilisateurs avec appareils actifs
+     *  NOUVEAU SCOPE: Utilisateurs avec appareils actifs
      */
     public function scopeWithActiveDevices($query)
     {
@@ -459,7 +459,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVEAU SCOPE: Utilisateurs avec budgets actifs
+     *  NOUVEAU SCOPE: Utilisateurs avec budgets actifs
      */
     public function scopeWithActiveBudgets($query)
     {
@@ -510,7 +510,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de liste complétée
+     *  NOUVELLE MÉTHODE: Envoyer notification de liste complétée
      */
     public function sendListCompletionNotification($list, float $estimatedTotal = 0): bool
     {
@@ -523,7 +523,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de budget avec devise
+     *  NOUVELLE MÉTHODE: Envoyer notification de budget avec devise
      */
     public function sendBudgetAlert($budget, string $alertType): bool
     {
@@ -536,7 +536,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer rappel d'inactivité
+     *  NOUVELLE MÉTHODE: Envoyer rappel d'inactivité
      */
     public function sendInactivityReminder(int $daysSinceLastList): bool
     {
@@ -549,7 +549,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de partage de liste
+     *  NOUVELLE MÉTHODE: Envoyer notification de partage de liste
      */
     public function sendListSharingNotification($sharedList, User $sharedByUser): bool
     {
@@ -562,7 +562,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer notification de mise à jour de liste partagée
+     *  NOUVELLE MÉTHODE: Envoyer notification de mise à jour de liste partagée
      */
     public function sendSharedListUpdateNotification($sharedList, User $updatedByUser, string $updateType = 'item_added'): bool
     {
@@ -575,7 +575,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir toutes les notifications en attente
+     *  NOUVELLE MÉTHODE: Obtenir toutes les notifications en attente
      */
     public function getPendingNotifications(): array
     {
@@ -589,7 +589,7 @@ class User extends Model
                     'id' => "budget_alert_{$budget->id}",
                     'type' => 'budget_alert',
                     'priority' => $budget->isExceeded() ? 'high' : 'medium',
-                    'title' => $budget->isExceeded() ? '🚨 Budget Dépassé' : '⚠️ Attention Budget',
+                    'title' => $budget->isExceeded() ? ' Budget Dépassé' : ' Attention Budget',
                     'message' => $this->getBudgetAlertMessage($budget),
                     'data' => [
                         'budget_id' => $budget->id,
@@ -611,7 +611,7 @@ class User extends Model
     }
 
     /**
-     * ✅ HELPER: Générer le message d'alerte budget avec devise
+     *  HELPER: Générer le message d'alerte budget avec devise
      */
     private function getBudgetAlertMessage($budget): string
     {
@@ -630,7 +630,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir les préférences de notification
+     *  NOUVELLE MÉTHODE: Obtenir les préférences de notification
      */
     public function getNotificationPreferences(): array
     {
@@ -651,7 +651,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Mettre à jour les préférences de notification pour tous les appareils
+     *  NOUVELLE MÉTHODE: Mettre à jour les préférences de notification pour tous les appareils
      */
     public function updateNotificationPreferences(array $preferences): bool
     {
@@ -667,7 +667,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur peut recevoir un type spécifique de notification
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur peut recevoir un type spécifique de notification
      */
     public function canReceiveNotificationType(string $notificationType): bool
     {
@@ -684,7 +684,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques de notifications
+     *  NOUVELLE MÉTHODE: Obtenir les statistiques de notifications
      */
     public function getNotificationStats(): array
     {
@@ -706,7 +706,7 @@ class User extends Model
     // ===================== MÉTHODES DE FORMATAGE POUR L'API =====================
 
     /**
-     * ✅ Données API étendues avec informations de devise et notifications
+     *  Données API étendues avec informations de devise et notifications
      */
     public function getExtendedApiDataAttribute(): array
     {
@@ -816,7 +816,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer rappel hebdomadaire de liste
+     *  NOUVELLE MÉTHODE: Envoyer rappel hebdomadaire de liste
      */
     public function sendWeeklyListReminder(int $daysSinceLastList): bool
     {
@@ -829,7 +829,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste cette semaine
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste cette semaine
      */
     public function hasCreatedListThisWeek(): bool
     {
@@ -842,7 +842,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir la dernière liste créée
+     *  NOUVELLE MÉTHODE: Obtenir la dernière liste créée
      */
     public function getLastCreatedList(): ?ShoppingList
     {
@@ -852,7 +852,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir le nombre de jours depuis la dernière liste
+     *  NOUVELLE MÉTHODE: Obtenir le nombre de jours depuis la dernière liste
      */
     public function getDaysSinceLastList(): int
     {
@@ -867,7 +867,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel hebdomadaire
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel hebdomadaire
      */
     public function isEligibleForWeeklyReminder(): bool
     {
@@ -878,7 +878,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques hebdomadaires de l'utilisateur
+     *  NOUVELLE MÉTHODE: Obtenir les statistiques hebdomadaires de l'utilisateur
      */
     public function getWeeklyStats(): array
     {
@@ -919,7 +919,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels hebdomadaires
+     *  NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels hebdomadaires
      */
     public function scopeEligibleForWeeklyReminder($query)
     {
@@ -935,7 +935,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Envoyer rappel quotidien de liste
+     *  NOUVELLE MÉTHODE: Envoyer rappel quotidien de liste
      */
     public function sendDailyListReminder(int $daysSinceLastList): bool
     {
@@ -948,7 +948,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste aujourd'hui
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur a créé une liste aujourd'hui
      */
     public function hasCreatedListToday(): bool
     {
@@ -961,7 +961,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel quotidien
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur est éligible pour le rappel quotidien
      */
     public function isEligibleForDailyReminder(): bool
     {
@@ -972,7 +972,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir les statistiques quotidiennes de l'utilisateur
+     *  NOUVELLE MÉTHODE: Obtenir les statistiques quotidiennes de l'utilisateur
      */
     public function getDailyStats(): array
     {
@@ -1014,7 +1014,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels quotidiens
+     *  NOUVEAU SCOPE: Utilisateurs éligibles pour les rappels quotidiens
      */
     public function scopeEligibleForDailyReminder($query)
     {
@@ -1030,7 +1030,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir le nombre de listes créées dans les X derniers jours
+     *  NOUVELLE MÉTHODE: Obtenir le nombre de listes créées dans les X derniers jours
      */
     public function getListsCountLastDays(int $days = 7): int
     {
@@ -1043,7 +1043,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur est un utilisateur régulier
+     *  NOUVELLE MÉTHODE: Vérifier si l'utilisateur est un utilisateur régulier
      */
     public function isRegularUser(): bool
     {
@@ -1052,7 +1052,7 @@ class User extends Model
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Obtenir le pattern d'usage de l'utilisateur
+     *  NOUVELLE MÉTHODE: Obtenir le pattern d'usage de l'utilisateur
      */
     public function getUserUsagePattern(): array
     {

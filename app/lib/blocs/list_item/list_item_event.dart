@@ -22,6 +22,7 @@ class AddListItem extends ListItemEvent {
   final int quantity;
   final double? price;
   final String? storeName;
+  final int? categoryId;
 
   const AddListItem({
     required this.listId,
@@ -29,6 +30,7 @@ class AddListItem extends ListItemEvent {
     this.quantity = 1,
     this.price,
     this.storeName,
+    this.categoryId,
   });
 
   @override
@@ -129,6 +131,7 @@ class UpdateListItem extends ListItemEvent {
   final int quantity;
   final double? price;
   final String? storeName;
+  final int? categoryId;
 
   const UpdateListItem({
     required this.listId,
@@ -137,6 +140,7 @@ class UpdateListItem extends ListItemEvent {
     this.quantity = 1,
     this.price,
     this.storeName,
+    this.categoryId,
   });
 
   @override

@@ -55,6 +55,7 @@ class JwtMiddleware
 
         // Add user ID to request attributes
         $request = $request->withAttribute('auth_id', $userId);
+        $request = $request->withAttribute('user_id', $userId); // Pour la compatibilité avec les contrôleurs
         $request = $request->withAttribute('jwt_payload', $payload);
 
         return $handler->handle($request);

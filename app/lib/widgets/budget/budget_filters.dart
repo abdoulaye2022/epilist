@@ -39,6 +39,8 @@ class _BudgetFiltersState extends State<BudgetFilters> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final hasActiveFilters = _hasActiveFilters();
+    // ✅ Utiliser la couleur du thème
+    final themeColor = Theme.of(context).primaryColor;
 
     return Card(
       color: Colors.white,
@@ -61,8 +63,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                 children: [
                   Icon(
                     Icons.filter_list,
-                    color:
-                        hasActiveFilters ? Colors.green[600] : Colors.grey[600],
+                    color: hasActiveFilters ? themeColor : Colors.grey[600],
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -71,10 +72,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color:
-                            hasActiveFilters
-                                ? Colors.green[600]
-                                : Colors.black87,
+                        color: hasActiveFilters ? themeColor : Colors.black87,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -88,13 +86,13 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green[100],
+                        color: themeColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         _getActiveFiltersCount().toString(),
                         style: TextStyle(
-                          color: Colors.green[700],
+                          color: themeColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -126,7 +124,9 @@ class _BudgetFiltersState extends State<BudgetFilters> {
 
           if (_isExpanded) ...[
             const Divider(height: 1, color: Colors.grey),
-            Flexible(
+            // ✅ CORRECTION OVERFLOW: Contraindre la hauteur max
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 400),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -242,7 +242,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.play_circle,
-          color: Colors.green[600],
+          // ✅ Utiliser le thème pour "active" (pas de couleur sémantique)
         ),
         _buildFilterChip(
           l10n.exceeded,
@@ -297,7 +297,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.view_week,
-          color: Colors.purple[600],
+          // ✅ Utiliser le thème
         ),
         _buildFilterChip(
           l10n.monthly,
@@ -305,7 +305,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.calendar_month,
-          color: Colors.blue[600],
+          // ✅ Utiliser le thème
         ),
         _buildFilterChip(
           l10n.yearly,
@@ -313,7 +313,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.calendar_today,
-          color: Colors.indigo[600],
+          // ✅ Utiliser le thème
         ),
         _buildFilterChip(
           l10n.custom,
@@ -321,7 +321,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activePeriodFilter,
           widget.onPeriodFilterChanged,
           icon: Icons.tune,
-          color: Colors.teal[600],
+          // ✅ Utiliser le thème
         ),
       ],
     );
@@ -344,7 +344,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
           icon: Icons.public,
-          color: Colors.green[600],
+          // ✅ Utiliser le thème pour "general"
         ),
         _buildFilterChip(
           l10n.specificList,
@@ -352,7 +352,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
           icon: Icons.list,
-          color: Colors.orange[600],
+          color: Colors.orange[600], // ✅ Garder orange pour distinction
         ),
       ],
     );
@@ -370,6 +370,9 @@ class _BudgetFiltersState extends State<BudgetFilters> {
       },
       {'key': 'date', 'label': l10n.date, 'icon': Icons.calendar_today},
     ];
+
+    // ✅ Utiliser la couleur du thème
+    final themeColor = Theme.of(context).primaryColor;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -407,16 +410,15 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                     decoration: BoxDecoration(
                       color:
                           isActive
-                              ? Colors.green[50]
-                              : Colors
-                                  .grey[50], // ✅ CORRECTION: Fond même quand inactif
+                              ? themeColor.withValues(alpha: 0.1)
+                              : Colors.grey[50],
                       borderRadius: BorderRadius.circular(8),
                       border:
                           isActive
                               ? Border.all(
-                                color: Colors.green[300]!,
+                                color: themeColor,
                                 width: 2,
-                              ) // ✅ CORRECTION: Bordure plus visible
+                              )
                               : Border.all(color: Colors.grey[200]!),
                     ),
                     child: Row(
@@ -424,16 +426,14 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         Icon(
                           option['icon'] as IconData,
                           size: 20,
-                          color:
-                              isActive ? Colors.green[600] : Colors.grey[600],
+                          color: isActive ? themeColor : Colors.grey[600],
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             option['label'] as String,
                             style: TextStyle(
-                              color:
-                                  isActive ? Colors.green[700] : Colors.black87,
+                              color: isActive ? themeColor : Colors.black87,
                               fontWeight:
                                   isActive
                                       ? FontWeight.w600
@@ -448,7 +448,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: Colors.green[100],
+                              color: themeColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -456,7 +456,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
                               size: 16,
-                              color: Colors.green[700],
+                              color: themeColor,
                             ),
                           ),
                       ],
@@ -483,66 +483,69 @@ class _BudgetFiltersState extends State<BudgetFilters> {
         (value == null && activeValue == null) ||
         (value != null && value == activeValue);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          print(
-            '🔧 Filter chip clicked: "$label", value=$value, current activeValue=$activeValue',
-          );
-          // ✅ CORRECTION: Logique de toggle
-          if (isActive && value != null) {
-            // Si c'est actif et pas "Tous", désactiver (retour à null)
-            onChanged(null);
-          } else if (!isActive || value == null) {
-            // Si pas actif ou c'est "Tous", activer la valeur
-            onChanged(value);
-          }
-        },
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            // ✅ CORRECTION: Couleurs plus visibles
-            color: isActive ? (color ?? Colors.green[600]) : Colors.grey[100],
+    return Builder(
+      builder: (context) {
+        // ✅ Utiliser la couleur du thème de l'application
+        final themeColor = Theme.of(context).primaryColor;
+        final chipColor = color ?? themeColor;
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              print(
+                '🔧 Filter chip clicked: "$label", value=$value, current activeValue=$activeValue',
+              );
+              // ✅ CORRECTION: Logique simplifiée - toujours activer la valeur cliquée
+              // Si on clique sur le filtre déjà actif, on le désactive (retour à null)
+              if (isActive) {
+                onChanged(null);
+              } else {
+                onChanged(value);
+              }
+            },
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color:
-                  isActive ? (color ?? Colors.green[600])! : Colors.grey[300]!,
-              width:
-                  isActive
-                      ? 2
-                      : 1, // ✅ CORRECTION: Bordure plus épaisse quand actif
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(
-                  icon,
-                  size: 14,
-                  color: isActive ? Colors.white : (color ?? Colors.green[600]),
-                ),
-                const SizedBox(width: 6),
-              ],
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 120),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: isActive ? Colors.white : Colors.black87,
-                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                    fontSize: 12,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                // ✅ CORRECTION: Utiliser la couleur du thème
+                color: isActive ? chipColor : Colors.grey[100],
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isActive ? chipColor : Colors.grey[300]!,
+                  width: isActive ? 2 : 1,
                 ),
               ),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: 14,
+                      color: isActive ? Colors.white : chipColor,
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 120),
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: isActive ? Colors.white : Colors.black87,
+                        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

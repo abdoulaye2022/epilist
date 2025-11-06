@@ -1,7 +1,7 @@
 <?php
 // public/index.php - VERSION AVEC IMPORT CONTACTCONTROLLER
 
-// ✅ SUPPRESSION DES WARNINGS DEPRECATED POUR BREVO
+//  SUPPRESSION DES WARNINGS DEPRECATED POUR BREVO
 error_reporting(E_ALL & ~E_DEPRECATED);
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -19,7 +19,10 @@ use App\Controllers\{
     DeviceController,
     BudgetController,
     CampaignController,
-    ContactController  // ✅ AJOUT DE L'IMPORT MANQUANT
+    ContactController,  //  AJOUT DE L'IMPORT MANQUANT
+    CategoryController,
+    MessageController,
+    SuggestionController
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
@@ -100,7 +103,7 @@ $app->addBodyParsingMiddleware();
 // Activer le middleware d'erreurs
 $app->addErrorMiddleware(true, true, true);
 
-// ✅ ROUTES D'AUTHENTIFICATION (sans authentification)
+//  ROUTES D'AUTHENTIFICATION (sans authentification)
 $app->post('/auth/login', [AuthController::class, 'login']);
 $app->post('/auth/refresh', [AuthController::class, 'refresh_token']);
 $app->post('/auth/register', [AuthController::class, 'register']);
@@ -113,15 +116,15 @@ $app->post('/auth/logout', [AuthController::class, 'logout']);
 $app->post('/auth/request-password-change', [AuthController::class, 'requestPasswordChange']);
 $app->post('/auth/verify-password-change-code', [AuthController::class, 'verifyPasswordChangeCode']);
 
-// ✅ ROUTES DE DEVISES PUBLIQUES (ORDRE IMPORTANT: routes spécifiques AVANT les routes avec paramètres)
+//  ROUTES DE DEVISES PUBLIQUES (ORDRE IMPORTANT: routes spécifiques AVANT les routes avec paramètres)
 $app->get('/currencies', [CurrencyController::class, 'index']);
 $app->get('/currencies/popular', [CurrencyController::class, 'getPopular']);
 $app->get('/currencies/{id}', [CurrencyController::class, 'show']);
 
-// ✅ ROUTES DE PARTAGE PUBLIQUES
+//  ROUTES DE PARTAGE PUBLIQUES
 $app->get('/share/{token}', [SharedListController::class, 'showSharePage']);
 
-// ✅ ROUTES DE TEST
+//  ROUTES DE TEST
 $app->get('/', function ($request, $response) {
     $response->getBody()->write('EpiList API');
     return $response;
@@ -147,40 +150,40 @@ $app->get('/test-json', function ($request, $response) {
 
 $app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
 
-// ✅ ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
+//  ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
 $app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
 $app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']);
 
-// ✅ ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
+//  ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
 $app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);
 $app->post('/contact/feedback-anonymous', [ContactController::class, 'sendFeedback']);
 
-// ✅ ROUTES SSO PUBLIQUES (sans authentification)
+//  ROUTES SSO PUBLIQUES (sans authentification)
 $app->post('/auth/sso/google/login', [AuthController::class, 'googleLogin']);
 $app->post('/auth/sso/google/register', [AuthController::class, 'googleRegister']);
 $app->post('/auth/sso/apple/login', [AuthController::class, 'appleLogin']);
 $app->post('/auth/sso/apple/register', [AuthController::class, 'appleRegister']);
 
-// ✅ GROUPE DE ROUTES PROTÉGÉES (avec authentification)
+//  GROUPE DE ROUTES PROTÉGÉES (avec authentification)
 $app->group('', function ($group) {
-    // ✅ ROUTES D'AUTHENTIFICATION PROTÉGÉES
+    //  ROUTES D'AUTHENTIFICATION PROTÉGÉES
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
     $group->get('/auth/me', [AuthController::class, 'getCurrentUser']);
     $group->put('/auth/me', [AuthController::class, 'updateProfile']);
 
-    // ✅ ROUTES DE DEVISES PROTÉGÉES
+    //  ROUTES DE DEVISES PROTÉGÉES
     $group->get('/user/currency', [CurrencyController::class, 'getUserCurrency']);
     $group->put('/user/currency', [CurrencyController::class, 'updateUserCurrency']);
     $group->post('/currency/format', [CurrencyController::class, 'formatUserAmount']);
 
-    // ✅ ROUTES POUR LA SUPPRESSION DE COMPTE
+    //  ROUTES POUR LA SUPPRESSION DE COMPTE
     $group->post('/auth/request-account-deletion', [AuthController::class, 'requestAccountDeletion']);
     $group->post('/auth/confirm-account-deletion', [AuthController::class, 'confirmAccountDeletion']);
     $group->post('/auth/cancel-account-deletion', [AuthController::class, 'cancelAccountDeletion']);
     $group->get('/auth/account-deletion-status', [AuthController::class, 'getAccountDeletionStatus']);
     $group->put('/auth/fcm-token', [AuthController::class, 'updateFCMToken']);
 
-    // ✅ ROUTES POUR LES SUGGESTIONS DE PRODUITS
+    //  ROUTES POUR LES SUGGESTIONS DE PRODUITS
     $group->get('/product-suggestions/search', [ProductSuggestionController::class, 'search']);
     $group->get('/product-suggestions/popular', [ProductSuggestionController::class, 'getPopular']);
     $group->get('/product-suggestions/stats', [ProductSuggestionController::class, 'getStats']);
@@ -188,7 +191,7 @@ $app->group('', function ($group) {
     $group->delete('/product-suggestions/{id}', [ProductSuggestionController::class, 'delete']);
     $group->delete('/product-suggestions', [ProductSuggestionController::class, 'clear']);
 
-    // ✅ ROUTES POUR LES LISTES DE COURSES
+    //  ROUTES POUR LES LISTES DE COURSES
     $group->get('/shopping-lists', [ShoppingListController::class, 'index']);
     $group->post('/shopping-lists', [ShoppingListController::class, 'store']);
     $group->get('/shopping-lists/{id}', [ShoppingListController::class, 'show']);
@@ -197,7 +200,7 @@ $app->group('', function ($group) {
     $group->post('/shopping-lists/{id}/restore', [ShoppingListController::class, 'restore']);
     $group->post('/shopping-lists/{id}/duplicate', [ShoppingListController::class, 'duplicate']);
 
-    // ✅ ROUTES POUR LE PARTAGE DE LISTES
+    //  ROUTES POUR LE PARTAGE DE LISTES
     $group->post('/shopping-lists/{id}/share', [SharedListController::class, 'createShareLink']);
     $group->get('/share/invitation/{token}', [SharedListController::class, 'getShareInvitation']);
     $group->post('/share/accept/{token}', [SharedListController::class, 'acceptShareInvitation']);
@@ -210,7 +213,7 @@ $app->group('', function ($group) {
     $group->delete('/shopping-lists/{id}/share-links', [SharedListController::class, 'revokeAllShareLinks']);
     $group->get('/shopping-lists/{id}/share-stats', [SharedListController::class, 'getShareStats']);
 
-    // ✅ ROUTES POUR LES ARTICLES DE LISTE (ORDRE IMPORTANT: routes spécifiques AVANT paramètres)
+    //  ROUTES POUR LES ARTICLES DE LISTE (ORDRE IMPORTANT: routes spécifiques AVANT paramètres)
     $group->get('/shopping-lists/{listId}/items', [ListItemController::class, 'index']);
     $group->post('/shopping-lists/{listId}/items', [ListItemController::class, 'store']);
     
@@ -228,7 +231,7 @@ $app->group('', function ($group) {
     $group->post('/shopping-lists/{listId}/items/{itemId}/restore', [ListItemController::class, 'restore']);
     $group->put('/shopping-lists/{listId}/items/{itemId}/merge', [ListItemController::class, 'mergeWithExisting']);
 
-    // ✅ NOUVELLES ROUTES POUR LES FACTURES DE LISTES
+    //  NOUVELLES ROUTES POUR LES FACTURES DE LISTES
     $group->get('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'index']);
     $group->post('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'store']);
     $group->get('/shopping-lists/{listId}/receipts/by-store', [ListReceiptsController::class, 'byStore']);
@@ -237,7 +240,7 @@ $app->group('', function ($group) {
     $group->put('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'update']);
     $group->delete('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'destroy']);
 
-    // ✅ ROUTES D'ANALYTICS MISES À JOUR
+    //  ROUTES D'ANALYTICS MISES À JOUR
     $group->get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
     $group->get('/analytics/spending/monthly', [AnalyticsController::class, 'monthlySpendingHistory']);
     $group->get('/analytics/spending/trends', [AnalyticsController::class, 'spendingTrends']);
@@ -250,7 +253,7 @@ $app->group('', function ($group) {
     $group->get('/analytics/spending/yearly', [AnalyticsController::class, 'yearlySpendingHistory']);
     $group->get('/analytics/data-quality', [AnalyticsController::class, 'dataQualityReport']);
 
-    // ✅ ROUTES POUR LES BUDGETS (dans le groupe protégé)
+    //  ROUTES POUR LES BUDGETS (dans le groupe protégé)
     $group->get('/budgets', [BudgetController::class, 'index']);
     $group->post('/budgets', [BudgetController::class, 'store']);
     $group->get('/budgets/dashboard', [BudgetController::class, 'dashboard']);
@@ -260,26 +263,26 @@ $app->group('', function ($group) {
     $group->put('/budgets/{id}', [BudgetController::class, 'update']);
     $group->delete('/budgets/{id}', [BudgetController::class, 'destroy']);
 
-    // ✅ ROUTES DEVICES COMPLÈTES ET CORRIGÉES
+    //  ROUTES DEVICES COMPLÈTES ET CORRIGÉES
     $group->post('/devices/register', [DeviceController::class, 'register']);
     $group->put('/devices/push-token', [DeviceController::class, 'updatePushToken']);
     $group->get('/devices', [DeviceController::class, 'index']);
     $group->put('/devices/notifications', [DeviceController::class, 'updateNotificationPreferences']);
     $group->post('/devices/deactivate', [DeviceController::class, 'deactivate']);
 
-    // ✅ NOUVELLES ROUTES POUR VRAIES NOTIFICATIONS
+    //  NOUVELLES ROUTES POUR VRAIES NOTIFICATIONS
     $group->put('/devices/real-token', [DeviceController::class, 'updateWithRealToken']);
     $group->get('/devices/analyze', [DeviceController::class, 'analyzeDeviceTokens']);
     $group->post('/devices/test-advanced', [DeviceController::class, 'testAdvancedNotification']);
 
-    // ✅ ROUTES DE TEST DE NOTIFICATIONS
+    //  ROUTES DE TEST DE NOTIFICATIONS
     $group->post('/devices/test-notification', [DeviceController::class, 'testNotification']);
     $group->post('/devices/test-user-notifications', [DeviceController::class, 'testNotificationToUser']);
 
-    // ✅ ROUTE DE DEBUG
+    //  ROUTE DE DEBUG
     $group->get('/devices/debug', [DeviceController::class, 'debugDevices']);
 
-    // ✅ ROUTES POUR LES CAMPAGNES MARKETING
+    //  ROUTES POUR LES CAMPAGNES MARKETING
     $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign']);
     $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats']);
     $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail']);
@@ -288,8 +291,65 @@ $app->group('', function ($group) {
     $group->put('/user/email-preferences', [AuthController::class, 'updateEmailPreferences']);
     $group->post('/user/resubscribe-marketing', [AuthController::class, 'resubscribeToMarketing']);
 
-    // ✅ ROUTES DE CONTACT PROTÉGÉES
+    //  ROUTES DE CONTACT PROTÉGÉES
     $group->post('/contact/feedback', [ContactController::class, 'sendFeedback']);
+
+    //  ROUTES POUR LES CATÉGORIES
+    $group->get('/categories', function($request, $response) {
+        error_log("Route: GET /categories called");
+        $controller = new CategoryController();
+        return $controller->index($request, $response);
+    });
+
+    $group->post('/categories', function($request, $response) {
+        error_log("Route: POST /categories called");
+        $controller = new CategoryController();
+        return $controller->store($request, $response);
+    });
+
+    $group->post('/categories/initialize-defaults', function($request, $response) {
+        error_log("=== Route: POST /categories/initialize-defaults CALLED ===");
+        try {
+            $controller = new CategoryController();
+            error_log("Controller instantiated successfully");
+            return $controller->initializeDefaults($request, $response);
+        } catch (\Exception $e) {
+            error_log("ERROR in route handler: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw $e;
+        }
+    });
+
+    $group->put('/categories/reorder', [CategoryController::class, 'reorder']);
+    $group->get('/categories/{id}', [CategoryController::class, 'show']);
+    $group->put('/categories/{id}', [CategoryController::class, 'update']);
+    $group->delete('/categories/{id}', [CategoryController::class, 'destroy']);
+
+    // ROUTES POUR LES MESSAGES DE CHAT
+    // Get messages for a list
+    $group->get('/lists/{listId}/messages', [MessageController::class, 'getMessages']);
+    // Send a message
+    $group->post('/lists/{listId}/messages', [MessageController::class, 'sendMessage']);
+    // Get unread count
+    $group->get('/lists/{listId}/messages/unread-count', [MessageController::class, 'getUnreadCount']);
+    // Mark message as read
+    $group->post('/messages/{messageId}/read', [MessageController::class, 'markAsRead']);
+    // Delete a message
+    $group->delete('/messages/{messageId}', [MessageController::class, 'deleteMessage']);
+
+    // ROUTES POUR LES SUGGESTIONS INTELLIGENTES
+    // Get personalized suggestions
+    $group->get('/suggestions', [SuggestionController::class, 'getSuggestions']);
+    // Get suggestion for specific product (quantity/price)
+    $group->get('/suggestions/product', [SuggestionController::class, 'getProductSuggestion']);
+    // Record feedback on suggestion
+    $group->post('/suggestions/feedback', [SuggestionController::class, 'recordFeedback']);
+    // Recalculate patterns
+    $group->post('/suggestions/recalculate', [SuggestionController::class, 'recalculatePatterns']);
+    // Get statistics
+    $group->get('/suggestions/stats', [SuggestionController::class, 'getStatistics']);
+    // Get trending products
+    $group->get('/suggestions/trending', [SuggestionController::class, 'getTrending']);
 })->add($jwtMiddleware);
 
 $app->run();

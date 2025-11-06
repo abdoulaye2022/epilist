@@ -19,6 +19,7 @@ import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
+import 'package:epilist/widgets/list_detail/item_filters_bar.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
@@ -60,6 +61,7 @@ class _ListDetailView extends StatefulWidget {
 
 class _ListDetailViewState extends State<_ListDetailView> {
   late ShoppingList currentList;
+  ItemFilterCriteria _filterCriteria = ItemFilterCriteria();
 
   @override
   void initState() {
@@ -200,13 +202,23 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   Widget _buildBody(ListItemState state) {
     List<ListItem> items = [];
+    List<ListItem> filteredItems = [];
     bool isLoading = false;
 
     if (state is ListItemLoading) {
       isLoading = true;
     } else if (state is ListItemLoaded) {
       items = state.items;
+      filteredItems = _filterCriteria.apply(items);
     }
+
+    // Extraire les magasins uniques pour le filtre
+    final availableStores = items
+        .where((item) => item.storeName != null && item.storeName!.isNotEmpty)
+        .map((item) => item.storeName!)
+        .toSet()
+        .toList()
+      ..sort();
 
     return Column(
       children: [
@@ -220,7 +232,17 @@ class _ListDetailViewState extends State<_ListDetailView> {
             (sum, item) => sum + (item.price ?? 0) * item.quantity,
           ),
         ),
-        Expanded(child: _buildContent(items, isLoading)),
+        // Widget de filtres
+        ItemFiltersBar(
+          criteria: _filterCriteria,
+          onCriteriaChanged: (newCriteria) {
+            setState(() {
+              _filterCriteria = newCriteria;
+            });
+          },
+          availableStores: availableStores,
+        ),
+        Expanded(child: _buildContent(filteredItems, isLoading)),
       ],
     );
   }

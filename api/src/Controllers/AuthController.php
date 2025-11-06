@@ -37,7 +37,7 @@ class AuthController
     // ===================== MÉTHODES SSO =====================
 
         /**
-     * ✅ CORRIGÉ: Connexion avec Google - inclut les tokens JWT
+     *  CORRIGÉ: Connexion avec Google - inclut les tokens JWT
      */
     public function googleLogin(Request $request, Response $response)
     {
@@ -56,14 +56,14 @@ class AuthController
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🔵 [AuthController] === DÉBUT CONNEXION GOOGLE ANDROID ===");
-            error_log("🔵 [AuthController] ID Token: " . substr($idToken, 0, 50) . '...');
-            error_log("🔵 [AuthController] User Info: " . json_encode($userInfo));
+            error_log(" [AuthController] === DÉBUT CONNEXION GOOGLE ANDROID ===");
+            error_log(" [AuthController] ID Token: " . substr($idToken, 0, 50) . '...');
+            error_log(" [AuthController] User Info: " . json_encode($userInfo));
 
             // 1. Vérifier le token Google
             $googleUserData = $this->ssoService->verifyGoogleToken($idToken);
             if (!$googleUserData) {
-                error_log("❌ [AuthController] Token Google invalide");
+                error_log(" [AuthController] Token Google invalide");
                 return $this->createErrorResponse(
                     'Token Google invalide ou expiré',
                     401,
@@ -71,7 +71,7 @@ class AuthController
                 );
             }
 
-            error_log("✅ [AuthController] Token Google validé:");
+            error_log(" [AuthController] Token Google validé:");
             error_log("   Email: " . $googleUserData['email']);
             error_log("   Méthode: " . $googleUserData['validation_method']);
 
@@ -80,8 +80,8 @@ class AuthController
             $user = User::with('currency')->where('email', $email)->first();
 
             if ($user) {
-                // ✅ UTILISATEUR EXISTANT - CONNEXION
-                error_log("✅ [AuthController] Utilisateur existant trouvé: {$user->email}");
+                //  UTILISATEUR EXISTANT - CONNEXION
+                error_log(" [AuthController] Utilisateur existant trouvé: {$user->email}");
 
                 if (!$user->isActive()) {
                     return $this->createErrorResponse(
@@ -95,15 +95,15 @@ class AuthController
                 if (!$user->isEmailVerified()) {
                     $user->markEmailAsVerified();
                     $user->save();
-                    error_log("✅ [AuthController] Email marqué comme vérifié");
+                    error_log(" [AuthController] Email marqué comme vérifié");
                 }
 
                 // Sauvegarder/mettre à jour les informations Google
                 $this->ssoService->saveSSOAccountLink($user->id, 'google', $googleUserData['sub'], $userInfo);
 
             } else {
-                // ✅ ANDROID: NOUVEL UTILISATEUR - CRÉATION AUTOMATIQUE
-                error_log("🆕 [AuthController] Nouvel utilisateur Google Android - création automatique");
+                //  ANDROID: NOUVEL UTILISATEUR - CRÉATION AUTOMATIQUE
+                error_log(" [AuthController] Nouvel utilisateur Google Android - création automatique");
 
                 $firstName = $userInfo['first_name'] ?? $googleUserData['given_name'] ?? '';
                 $lastName = $userInfo['last_name'] ?? $googleUserData['family_name'] ?? '';
@@ -134,21 +134,21 @@ class AuthController
                     ]);
 
                     $user->load('currency');
-                    error_log("✅ [AuthController] Nouvel utilisateur créé: {$user->email} (ID: {$user->id})");
+                    error_log(" [AuthController] Nouvel utilisateur créé: {$user->email} (ID: {$user->id})");
 
                     // Sauvegarder les informations Google
                     $this->ssoService->saveSSOAccountLink($user->id, 'google', $googleUserData['sub'], $userInfo);
 
-                    // ✅ ANDROID: Envoyer email de bienvenue
+                    //  ANDROID: Envoyer email de bienvenue
                     $this->sendWelcomeEmailSafely($user);
 
                 } catch (\Exception $createError) {
-                    error_log("❌ [AuthController] Erreur création utilisateur: " . $createError->getMessage());
+                    error_log(" [AuthController] Erreur création utilisateur: " . $createError->getMessage());
                     
-                    // ✅ ANDROID: Vérifier si l'utilisateur a été créé entre temps (race condition)
+                    //  ANDROID: Vérifier si l'utilisateur a été créé entre temps (race condition)
                     $existingUser = User::with('currency')->where('email', $email)->first();
                     if ($existingUser) {
-                        error_log("🔄 [AuthController] Utilisateur créé par processus concurrent - utilisation");
+                        error_log(" [AuthController] Utilisateur créé par processus concurrent - utilisation");
                         $user = $existingUser;
                     } else {
                         return $this->createErrorResponse(
@@ -162,11 +162,11 @@ class AuthController
 
             // 3. Gérer le token FCM si fourni
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 [AuthController] Mise à jour FCM pour utilisateur: {$user->id}");
+                error_log(" [AuthController] Mise à jour FCM pour utilisateur: {$user->id}");
                 $this->updateUserFCMToken($user->id, $data['fcm_data']);
             }
 
-            // 4. ✅ Générer les tokens JWT
+            // 4.  Générer les tokens JWT
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
             ]);
@@ -175,11 +175,11 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            error_log("✅ [AuthController] === CONNEXION GOOGLE ANDROID RÉUSSIE ===");
-            error_log("✅ [AuthController] Utilisateur: {$user->email}");
-            error_log("✅ [AuthController] Access token généré: " . substr($accessToken, 0, 30) . '...');
+            error_log(" [AuthController] === CONNEXION GOOGLE ANDROID RÉUSSIE ===");
+            error_log(" [AuthController] Utilisateur: {$user->email}");
+            error_log(" [AuthController] Access token généré: " . substr($accessToken, 0, 30) . '...');
 
-            // 5. ✅ Réponse cohérente
+            // 5.  Réponse cohérente
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Connexion Google réussie',
@@ -195,8 +195,8 @@ class AuthController
                 ->withStatus(200);
 
         } catch (\Exception $e) {
-            error_log("❌ [AuthController] Erreur générale Google Android: " . $e->getMessage());
-            error_log("❌ [AuthController] Stack trace: " . $e->getTraceAsString());
+            error_log(" [AuthController] Erreur générale Google Android: " . $e->getMessage());
+            error_log(" [AuthController] Stack trace: " . $e->getTraceAsString());
 
             return $this->createErrorResponse(
                 'Erreur lors de la connexion Google: ' . $e->getMessage(),
@@ -207,7 +207,7 @@ class AuthController
     }
 
     /**
-     * ✅ CORRIGÉ: Inscription avec Google - inclut les tokens JWT
+     *  CORRIGÉ: Inscription avec Google - inclut les tokens JWT
      */
     public function googleRegister(Request $request, Response $response)
     {
@@ -226,12 +226,12 @@ class AuthController
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🔵 [AuthController] === DÉBUT INSCRIPTION GOOGLE ANDROID ===");
+            error_log(" [AuthController] === DÉBUT INSCRIPTION GOOGLE ANDROID ===");
 
             // 1. Vérifier le token Google
             $googleUserData = $this->ssoService->verifyGoogleToken($idToken);
             if (!$googleUserData) {
-                error_log("❌ [AuthController] Token Google invalide pour inscription");
+                error_log(" [AuthController] Token Google invalide pour inscription");
                 return $this->createErrorResponse(
                     'Token Google invalide',
                     401,
@@ -241,12 +241,12 @@ class AuthController
 
             $email = $googleUserData['email'];
 
-            // 2. ✅ ANDROID: Vérifier que l'utilisateur n'existe pas déjà
+            // 2.  ANDROID: Vérifier que l'utilisateur n'existe pas déjà
             $existingUser = User::where('email', $email)->first();
             if ($existingUser) {
-                error_log("⚠️ [AuthController] Utilisateur Google existe déjà: {$email}");
+                error_log(" [AuthController] Utilisateur Google existe déjà: {$email}");
                 
-                // ✅ ANDROID: Rediriger vers login au lieu d'erreur
+                //  ANDROID: Rediriger vers login au lieu d'erreur
                 return $this->createErrorResponse(
                     'Un compte existe déjà avec cet email. Redirection vers la connexion.',
                     409, // 409 Conflict pour indiquer que l'utilisateur doit se connecter
@@ -298,11 +298,11 @@ class AuthController
 
             // 5. Gérer le token FCM si fourni
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 [AuthController] Enregistrement FCM inscription Google: {$user->id}");
+                error_log(" [AuthController] Enregistrement FCM inscription Google: {$user->id}");
                 $this->updateUserFCMToken($user->id, $data['fcm_data']);
             }
 
-            // 6. ✅ Générer les tokens JWT pour inscription
+            // 6.  Générer les tokens JWT pour inscription
             $accessToken = $this->jwtService->generateToken([
                 'auth_id' => $user->id
             ]);
@@ -311,12 +311,12 @@ class AuthController
                 'auth_id' => $user->id
             ]);
 
-            error_log("✅ [AuthController] Inscription Google Android réussie: {$user->email}");
+            error_log(" [AuthController] Inscription Google Android réussie: {$user->email}");
 
             // 7. Envoyer email de bienvenue
             $this->sendWelcomeEmailSafely($user);
 
-            // 8. ✅ Réponse cohérente
+            // 8.  Réponse cohérente
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Inscription Google réussie',
@@ -332,7 +332,7 @@ class AuthController
                 ->withStatus(201);
 
         } catch (\Exception $e) {
-            error_log("❌ [AuthController] Erreur inscription Google Android: " . $e->getMessage());
+            error_log(" [AuthController] Erreur inscription Google Android: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de l\'inscription Google: ' . $e->getMessage(),
@@ -347,63 +347,63 @@ class AuthController
         try {
             $emailToSend = $user->email;
             
-            // ✅ ANDROID: En développement, rediriger vers l'email de test
+            //  ANDROID: En développement, rediriger vers l'email de test
             if (Config::get('APP_ENV') == 'dev') {
                 $emailToSend = 'm2atodev@gmail.com';
-                error_log("📧 [AuthController] Email de bienvenue redirigé vers: " . $emailToSend);
+                error_log(" [AuthController] Email de bienvenue redirigé vers: " . $emailToSend);
             }
 
             $mailSender = new MailSender();
             $mailSender->sendWelcomeEmail($emailToSend, $user->first_name);
-            error_log("✅ [AuthController] Email de bienvenue envoyé");
+            error_log(" [AuthController] Email de bienvenue envoyé");
             
         } catch (\Exception $emailError) {
-            error_log("⚠️ [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
+            error_log(" [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
             // Ne pas faire échouer la connexion pour un problème d'email
         }
     }
 
     /**
-     * ✅ CORRIGÉ: Connexion avec Apple - inclut les tokens JWT
+     *  CORRIGÉ: Connexion avec Apple - inclut les tokens JWT
      */
     public function appleLogin(Request $request, Response $response)
     {
-        error_log("🍎 [AuthController] Début appleLogin");
+        error_log(" [AuthController] Début appleLogin");
         
         try {
             $data = $request->getParsedBody();
-            error_log("🍎 [AuthController] Données reçues: " . json_encode($data));
+            error_log(" [AuthController] Données reçues: " . json_encode($data));
 
-            // ✅ VALIDATION AMÉLIORÉE
+            //  VALIDATION AMÉLIORÉE
             $validator = new Validator($data);
             $validator->rule('required', ['id_token', 'user_info'])
                 ->message('Apple token et informations utilisateur requis');
 
             if (!$validator->validate()) {
-                error_log("❌ [AuthController] Validation échouée: " . json_encode($validator->errors()));
+                error_log(" [AuthController] Validation échouée: " . json_encode($validator->errors()));
                 return $this->createErrorResponse('Données Apple invalides', 400, 'VALIDATION_ERROR', $validator->errors());
             }
 
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🍎 [AuthController] ID Token reçu: " . substr($idToken, 0, 50) . '...');
-            error_log("🍎 [AuthController] User Info: " . json_encode($userInfo));
+            error_log(" [AuthController] ID Token reçu: " . substr($idToken, 0, 50) . '...');
+            error_log(" [AuthController] User Info: " . json_encode($userInfo));
 
-            // 1. ✅ VÉRIFICATION DU TOKEN APPLE AVEC GESTION D'ERREUR
+            // 1.  VÉRIFICATION DU TOKEN APPLE AVEC GESTION D'ERREUR
             try {
                 $appleUserData = $this->ssoService->verifyAppleToken($idToken);
                 if (!$appleUserData) {
-                    error_log("❌ [AuthController] Token Apple invalide");
+                    error_log(" [AuthController] Token Apple invalide");
                     return $this->createErrorResponse(
                         'Token Apple invalide',
                         401,
                         'INVALID_SSO_TOKEN'
                     );
                 }
-                error_log("✅ [AuthController] Token Apple vérifié: " . json_encode($appleUserData));
+                error_log(" [AuthController] Token Apple vérifié: " . json_encode($appleUserData));
             } catch (\Exception $tokenError) {
-                error_log("❌ [AuthController] Erreur vérification token Apple: " . $tokenError->getMessage());
+                error_log(" [AuthController] Erreur vérification token Apple: " . $tokenError->getMessage());
                 return $this->createErrorResponse(
                     'Erreur lors de la vérification du token Apple: ' . $tokenError->getMessage(),
                     401,
@@ -411,12 +411,12 @@ class AuthController
                 );
             }
 
-            // 2. ✅ RÉCUPÉRATION EMAIL ET APPLE ID SÉCURISÉE
+            // 2.  RÉCUPÉRATION EMAIL ET APPLE ID SÉCURISÉE
             $email = $appleUserData['email'] ?? $userInfo['email'] ?? null;
             $appleId = $appleUserData['sub'] ?? null;
 
             if (empty($appleId)) {
-                error_log("❌ [AuthController] Apple ID manquant");
+                error_log(" [AuthController] Apple ID manquant");
                 return $this->createErrorResponse(
                     'Apple ID manquant dans le token',
                     400,
@@ -424,16 +424,16 @@ class AuthController
                 );
             }
 
-            error_log("🍎 [AuthController] Apple ID: " . $appleId);
-            error_log("🍎 [AuthController] Email: " . ($email ?: 'privé'));
+            error_log(" [AuthController] Apple ID: " . $appleId);
+            error_log(" [AuthController] Email: " . ($email ?: 'privé'));
 
             $user = null;
             
-            // 3. ✅ RECHERCHE UTILISATEUR AMÉLIORÉE
+            // 3.  RECHERCHE UTILISATEUR AMÉLIORÉE
             if ($email && !empty($email)) {
                 $user = User::with('currency')->where('email', $email)->first();
                 if ($user) {
-                    error_log("✅ [AuthController] Utilisateur trouvé par email: " . $user->email);
+                    error_log(" [AuthController] Utilisateur trouvé par email: " . $user->email);
                 }
             }
             
@@ -443,17 +443,17 @@ class AuthController
                 if ($ssoLink) {
                     $user = User::with('currency')->find($ssoLink['user_id']);
                     if ($user) {
-                        error_log("✅ [AuthController] Utilisateur trouvé par Apple ID: " . $user->email);
+                        error_log(" [AuthController] Utilisateur trouvé par Apple ID: " . $user->email);
                     }
                 }
             }
 
             if ($user) {
-                // ✅ UTILISATEUR EXISTANT - CONNEXION
-                error_log("✅ [AuthController] Connexion utilisateur existant: {$user->email}");
+                //  UTILISATEUR EXISTANT - CONNEXION
+                error_log(" [AuthController] Connexion utilisateur existant: {$user->email}");
 
                 if (!$user->isActive()) {
-                    error_log("❌ [AuthController] Utilisateur inactif: {$user->email}");
+                    error_log(" [AuthController] Utilisateur inactif: {$user->email}");
                     return $this->createErrorResponse(
                         'Ce compte utilisateur n\'est pas actif',
                         403,
@@ -465,20 +465,20 @@ class AuthController
                 if (!$user->isEmailVerified()) {
                     $user->markEmailAsVerified();
                     $user->save();
-                    error_log("✅ [AuthController] Email marqué comme vérifié");
+                    error_log(" [AuthController] Email marqué comme vérifié");
                 }
 
                 // Sauvegarder/mettre à jour les informations Apple
                 $this->ssoService->saveSSOAccountLink($user->id, 'apple', $appleId, $userInfo);
 
             } else {
-                // ✅ NOUVEL UTILISATEUR - CRÉATION
-                error_log("🆕 [AuthController] Création nouvel utilisateur Apple");
+                //  NOUVEL UTILISATEUR - CRÉATION
+                error_log(" [AuthController] Création nouvel utilisateur Apple");
                 
                 // Générer un email si pas fourni
                 if (empty($email)) {
                     $email = $this->ssoService->generateAppleEmail($appleId);
-                    error_log("📧 [AuthController] Email généré: " . $email);
+                    error_log(" [AuthController] Email généré: " . $email);
                 }
 
                 $firstName = $userInfo['first_name'] ?? '';
@@ -505,7 +505,7 @@ class AuthController
                     ]);
 
                     $user->load('currency');
-                    error_log("✅ [AuthController] Utilisateur créé: {$user->email} (ID: {$user->id})");
+                    error_log(" [AuthController] Utilisateur créé: {$user->email} (ID: {$user->id})");
 
                     // Sauvegarder les informations Apple
                     $this->ssoService->saveSSOAccountLink($user->id, 'apple', $appleId, $userInfo);
@@ -519,16 +519,16 @@ class AuthController
                         try {
                             $mailSender = new MailSender();
                             $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-                            error_log("📧 [AuthController] Email de bienvenue envoyé");
+                            error_log(" [AuthController] Email de bienvenue envoyé");
                         } catch (\Exception $emailError) {
-                            error_log("⚠️ [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
+                            error_log(" [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
                         }
                     } else {
-                        error_log("📧 [AuthController] Email de bienvenue non envoyé (email Apple privé)");
+                        error_log(" [AuthController] Email de bienvenue non envoyé (email Apple privé)");
                     }
 
                 } catch (\Exception $createError) {
-                    error_log("❌ [AuthController] Erreur création utilisateur: " . $createError->getMessage());
+                    error_log(" [AuthController] Erreur création utilisateur: " . $createError->getMessage());
                     return $this->createErrorResponse(
                         'Erreur lors de la création du compte: ' . $createError->getMessage(),
                         500,
@@ -537,18 +537,18 @@ class AuthController
                 }
             }
 
-            // 4. ✅ GESTION FCM TOKEN
+            // 4.  GESTION FCM TOKEN
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 [AuthController] Mise à jour FCM pour utilisateur: {$user->id}");
+                error_log(" [AuthController] Mise à jour FCM pour utilisateur: {$user->id}");
                 try {
                     $this->updateUserFCMToken($user->id, $data['fcm_data']);
                 } catch (\Exception $fcmError) {
-                    error_log("⚠️ [AuthController] Erreur FCM: " . $fcmError->getMessage());
+                    error_log(" [AuthController] Erreur FCM: " . $fcmError->getMessage());
                     // Continuer même si FCM échoue
                 }
             }
 
-            // 5. ✅ GÉNÉRATION DES TOKENS JWT
+            // 5.  GÉNÉRATION DES TOKENS JWT
             try {
                 $accessToken = $this->jwtService->generateToken([
                     'auth_id' => $user->id
@@ -558,11 +558,11 @@ class AuthController
                     'auth_id' => $user->id
                 ]);
 
-                error_log("✅ [AuthController] Tokens JWT générés pour utilisateur: {$user->id}");
-                error_log("✅ [AuthController] Access token: " . substr($accessToken, 0, 30) . '...');
+                error_log(" [AuthController] Tokens JWT générés pour utilisateur: {$user->id}");
+                error_log(" [AuthController] Access token: " . substr($accessToken, 0, 30) . '...');
 
             } catch (\Exception $tokenError) {
-                error_log("❌ [AuthController] Erreur génération tokens: " . $tokenError->getMessage());
+                error_log(" [AuthController] Erreur génération tokens: " . $tokenError->getMessage());
                 return $this->createErrorResponse(
                     'Erreur lors de la génération des tokens',
                     500,
@@ -570,7 +570,7 @@ class AuthController
                 );
             }
 
-            // 6. ✅ RÉPONSE DE SUCCÈS
+            // 6.  RÉPONSE DE SUCCÈS
             $responseData = [
                 'success' => true,
                 'message' => 'Connexion Apple réussie',
@@ -580,8 +580,8 @@ class AuthController
                 'auth_method' => 'apple'
             ];
 
-            error_log("✅ [AuthController] Connexion Apple terminée avec succès pour: {$user->email}");
-            error_log("✅ [AuthController] Réponse: " . json_encode(['success' => true, 'user_id' => $user->id]));
+            error_log(" [AuthController] Connexion Apple terminée avec succès pour: {$user->email}");
+            error_log(" [AuthController] Réponse: " . json_encode(['success' => true, 'user_id' => $user->id]));
 
             $response->getBody()->write(json_encode($responseData));
             return $response
@@ -589,8 +589,8 @@ class AuthController
                 ->withStatus(200);
 
         } catch (\Exception $e) {
-            error_log("❌ [AuthController] Erreur générale Apple Login: " . $e->getMessage());
-            error_log("❌ [AuthController] Stack trace: " . $e->getTraceAsString());
+            error_log(" [AuthController] Erreur générale Apple Login: " . $e->getMessage());
+            error_log(" [AuthController] Stack trace: " . $e->getTraceAsString());
 
             return $this->createErrorResponse(
                 'Erreur lors de la connexion Apple: ' . $e->getMessage(),
@@ -601,15 +601,15 @@ class AuthController
     }
 
     /**
-     * ✅ CORRECTION MAJEURE: Inscription avec Apple
+     *  CORRECTION MAJEURE: Inscription avec Apple
      */
     public function appleRegister(Request $request, Response $response)
     {
-        error_log("🍎 [AuthController] Début appleRegister");
+        error_log(" [AuthController] Début appleRegister");
         
         try {
             $data = $request->getParsedBody();
-            error_log("🍎 [AuthController] Données inscription reçues: " . json_encode($data));
+            error_log(" [AuthController] Données inscription reçues: " . json_encode($data));
 
             // Validation
             $validator = new Validator($data);
@@ -617,29 +617,29 @@ class AuthController
                 ->message('Apple token et informations utilisateur requis');
 
             if (!$validator->validate()) {
-                error_log("❌ [AuthController] Validation inscription échouée: " . json_encode($validator->errors()));
+                error_log(" [AuthController] Validation inscription échouée: " . json_encode($validator->errors()));
                 return $this->createErrorResponse('Données Apple invalides', 400, 'VALIDATION_ERROR', $validator->errors());
             }
 
             $idToken = $data['id_token'];
             $userInfo = $data['user_info'];
 
-            error_log("🍎 [AuthController] Inscription - ID Token: " . substr($idToken, 0, 50) . '...');
+            error_log(" [AuthController] Inscription - ID Token: " . substr($idToken, 0, 50) . '...');
 
             // 1. Vérifier le token Apple
             try {
                 $appleUserData = $this->ssoService->verifyAppleToken($idToken);
                 if (!$appleUserData) {
-                    error_log("❌ [AuthController] Token Apple invalide pour inscription");
+                    error_log(" [AuthController] Token Apple invalide pour inscription");
                     return $this->createErrorResponse(
                         'Token Apple invalide',
                         401,
                         'INVALID_SSO_TOKEN'
                     );
                 }
-                error_log("✅ [AuthController] Token Apple vérifié pour inscription");
+                error_log(" [AuthController] Token Apple vérifié pour inscription");
             } catch (\Exception $tokenError) {
-                error_log("❌ [AuthController] Erreur vérification token inscription: " . $tokenError->getMessage());
+                error_log(" [AuthController] Erreur vérification token inscription: " . $tokenError->getMessage());
                 return $this->createErrorResponse(
                     'Erreur lors de la vérification du token Apple',
                     401,
@@ -661,13 +661,13 @@ class AuthController
             // Générer un email si pas fourni par Apple
             if (empty($email)) {
                 $email = $this->ssoService->generateAppleEmail($appleId);
-                error_log("📧 [AuthController] Email généré pour inscription: " . $email);
+                error_log(" [AuthController] Email généré pour inscription: " . $email);
             }
 
             // 2. Vérifier que l'utilisateur n'existe pas déjà par email
             $existingUserByEmail = User::where('email', $email)->first();
             if ($existingUserByEmail) {
-                error_log("❌ [AuthController] Email déjà existant: " . $email);
+                error_log(" [AuthController] Email déjà existant: " . $email);
                 return $this->createErrorResponse(
                     'Un compte existe déjà avec cet email',
                     400,
@@ -678,7 +678,7 @@ class AuthController
             // 3. Vérifier que l'Apple ID n'est pas déjà lié
             $existingSSOLink = $this->ssoService->findSSOAccountLink('apple', $appleId);
             if ($existingSSOLink) {
-                error_log("❌ [AuthController] Apple ID déjà lié: " . $appleId);
+                error_log(" [AuthController] Apple ID déjà lié: " . $appleId);
                 return $this->createErrorResponse(
                     'Ce compte Apple est déjà lié à un autre utilisateur',
                     400,
@@ -719,18 +719,18 @@ class AuthController
                 ]);
 
                 $user->load('currency');
-                error_log("✅ [AuthController] Utilisateur Apple créé: {$user->email} (ID: {$user->id})");
+                error_log(" [AuthController] Utilisateur Apple créé: {$user->email} (ID: {$user->id})");
 
                 // 5. Sauvegarder les informations Apple
                 $this->ssoService->saveSSOAccountLink($user->id, 'apple', $appleId, $userInfo);
 
                 // 6. Gérer le token FCM si fourni
                 if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                    error_log("🔔 [AuthController] Enregistrement FCM inscription Apple pour utilisateur: {$user->id}");
+                    error_log(" [AuthController] Enregistrement FCM inscription Apple pour utilisateur: {$user->id}");
                     try {
                         $this->updateUserFCMToken($user->id, $data['fcm_data']);
                     } catch (\Exception $fcmError) {
-                        error_log("⚠️ [AuthController] Erreur FCM inscription: " . $fcmError->getMessage());
+                        error_log(" [AuthController] Erreur FCM inscription: " . $fcmError->getMessage());
                     }
                 }
 
@@ -743,7 +743,7 @@ class AuthController
                     'auth_id' => $user->id
                 ]);
 
-                error_log("✅ [AuthController] Inscription Apple réussie pour: {$user->email}");
+                error_log(" [AuthController] Inscription Apple réussie pour: {$user->email}");
 
                 // 8. Envoyer email de bienvenue (seulement si email réel)
                 if (!$this->ssoService->isApplePrivateEmail($email)) {
@@ -754,12 +754,12 @@ class AuthController
                     try {
                         $mailSender = new MailSender();
                         $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-                        error_log("📧 [AuthController] Email de bienvenue envoyé pour inscription Apple");
+                        error_log(" [AuthController] Email de bienvenue envoyé pour inscription Apple");
                     } catch (\Exception $emailError) {
-                        error_log("⚠️ [AuthController] Erreur email bienvenue inscription: " . $emailError->getMessage());
+                        error_log(" [AuthController] Erreur email bienvenue inscription: " . $emailError->getMessage());
                     }
                 } else {
-                    error_log("📧 [AuthController] Email bienvenue non envoyé (email Apple privé)");
+                    error_log(" [AuthController] Email bienvenue non envoyé (email Apple privé)");
                 }
 
                 // 9. Réponse de succès
@@ -779,7 +779,7 @@ class AuthController
                     ->withStatus(201);
 
             } catch (\Exception $createError) {
-                error_log("❌ [AuthController] Erreur création utilisateur inscription: " . $createError->getMessage());
+                error_log(" [AuthController] Erreur création utilisateur inscription: " . $createError->getMessage());
                 return $this->createErrorResponse(
                     'Erreur lors de la création du compte: ' . $createError->getMessage(),
                     500,
@@ -788,8 +788,8 @@ class AuthController
             }
 
         } catch (\Exception $e) {
-            error_log("❌ [AuthController] Erreur générale Apple Register: " . $e->getMessage());
-            error_log("❌ [AuthController] Stack trace: " . $e->getTraceAsString());
+            error_log(" [AuthController] Erreur générale Apple Register: " . $e->getMessage());
+            error_log(" [AuthController] Stack trace: " . $e->getTraceAsString());
 
             return $this->createErrorResponse(
                 'Erreur lors de l\'inscription Apple: ' . $e->getMessage(),
@@ -802,7 +802,7 @@ class AuthController
     // ===================== GESTION DES LIENS SSO =====================
 
     /**
-     * ✅ NOUVELLE ROUTE: Lier un compte SSO
+     *  NOUVELLE ROUTE: Lier un compte SSO
      */
     public function linkSSOAccount(Request $request, Response $response)
     {
@@ -874,7 +874,7 @@ class AuthController
             // Sauvegarder la liaison
             $this->ssoService->saveSSOAccountLink($user->id, $provider, $ssoId, $userInfo);
 
-            error_log("✅ Compte {$provider} lié avec succès pour utilisateur: {$user->id}");
+            error_log(" Compte {$provider} lié avec succès pour utilisateur: {$user->id}");
 
             return new JsonResponse(
                 200,
@@ -890,7 +890,7 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la liaison {$provider}: " . $e->getMessage());
+            error_log(" Erreur lors de la liaison {$provider}: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de la liaison du compte ' . ucfirst($provider),
@@ -900,7 +900,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Délier un compte SSO
+     *  NOUVELLE ROUTE: Délier un compte SSO
      */
     public function unlinkSSOAccount(Request $request, Response $response)
     {
@@ -940,7 +940,7 @@ class AuthController
             $success = $this->ssoService->removeSSOAccountLink($user->id, $provider);
 
             if ($success) {
-                error_log("✅ Compte {$provider} délié avec succès pour utilisateur: {$user->id}");
+                error_log(" Compte {$provider} délié avec succès pour utilisateur: {$user->id}");
 
                 return new JsonResponse(
                     200,
@@ -962,7 +962,7 @@ class AuthController
             }
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la déliaison {$provider}: " . $e->getMessage());
+            error_log(" Erreur lors de la déliaison {$provider}: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de la déliaison du compte ' . ucfirst($provider),
@@ -972,7 +972,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Obtenir les comptes SSO liés
+     *  NOUVELLE ROUTE: Obtenir les comptes SSO liés
      */
     public function getSSOLinks(Request $request, Response $response)
     {
@@ -1015,7 +1015,7 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la récupération des liens SSO: " . $e->getMessage());
+            error_log(" Erreur lors de la récupération des liens SSO: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de la récupération des comptes liés',
@@ -1029,16 +1029,16 @@ class AuthController
     private function updateUserFCMToken(int $userId, array $fcmData): bool
     {
         try {
-            error_log("🔔 [AuthController] Mise à jour FCM pour utilisateur: {$userId}");
+            error_log(" [AuthController] Mise à jour FCM pour utilisateur: {$userId}");
             
             if (empty($fcmData['device_id']) || empty($fcmData['push_token'])) {
-                error_log("⚠️ [AuthController] Données FCM incomplètes - ignoré");
+                error_log(" [AuthController] Données FCM incomplètes - ignoré");
                 return false;
             }
 
             $platform = $fcmData['platform'] ?? 'unknown';
             if (!in_array($platform, ['android', 'ios'])) {
-                error_log("⚠️ [AuthController] Plateforme invalide: {$platform} - ignoré");
+                error_log(" [AuthController] Plateforme invalide: {$platform} - ignoré");
                 return false;
             }
 
@@ -1055,7 +1055,7 @@ class AuthController
                 $newToken = $fcmData['push_token'];
                 
                 if ($oldToken !== $newToken) {
-                    error_log("🔄 [AuthController] Token FCM différent détecté - mise à jour");
+                    error_log(" [AuthController] Token FCM différent détecté - mise à jour");
                     
                     $existingDevice->update([
                         'push_token' => $newToken,
@@ -1067,32 +1067,32 @@ class AuthController
                         'last_active_at' => Carbon::now()
                     ]);
                     
-                    error_log("✅ [AuthController] Token FCM mis à jour avec succès");
+                    error_log(" [AuthController] Token FCM mis à jour avec succès");
                     return true;
                 } else {
-                    error_log("✅ [AuthController] Token FCM identique - activité mise à jour");
+                    error_log(" [AuthController] Token FCM identique - activité mise à jour");
                     $existingDevice->markAsActive();
                     return true;
                 }
             } else {
-                error_log("🆕 [AuthController] Nouvel appareil détecté - enregistrement");
+                error_log(" [AuthController] Nouvel appareil détecté - enregistrement");
                 
                 $device = UserDevice::registerDevice(array_merge($fcmData, [
                     'user_id' => $userId
                 ]));
                 
-                error_log("✅ [AuthController] Nouvel appareil enregistré avec ID: {$device->id}");
+                error_log(" [AuthController] Nouvel appareil enregistré avec ID: {$device->id}");
                 return true;
             }
 
         } catch (\Exception $e) {
-            error_log("❌ [AuthController] Erreur lors de la mise à jour FCM: " . $e->getMessage());
+            error_log(" [AuthController] Erreur lors de la mise à jour FCM: " . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * ✅ MÉTHODE MISE À JOUR: Formater les données utilisateur avec devise et SSO
+     *  MÉTHODE MISE À JOUR: Formater les données utilisateur avec devise et SSO
      */
     private function formatUserData(User $user): array
     {
@@ -1247,13 +1247,13 @@ class AuthController
             }
 
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Mise à jour FCM lors du login pour utilisateur: {$user->id}");
+                error_log(" Mise à jour FCM lors du login pour utilisateur: {$user->id}");
                 $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
                 
                 if ($fcmUpdateSuccess) {
-                    error_log("✅ Token FCM mis à jour avec succès lors du login");
+                    error_log(" Token FCM mis à jour avec succès lors du login");
                 } else {
-                    error_log("⚠️ Échec de la mise à jour FCM (connexion continue)");
+                    error_log(" Échec de la mise à jour FCM (connexion continue)");
                 }
             }
 
@@ -1289,7 +1289,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Mettre à jour le mot de passe
+     *  NOUVELLE ROUTE: Mettre à jour le mot de passe
      */
     public function updatePassword(Request $request, Response $response)
     {
@@ -1347,7 +1347,7 @@ class AuthController
             $user->updated_at = new \DateTime();
             $user->save();
 
-            error_log("✅ Mot de passe mis à jour pour utilisateur: {$user->id}");
+            error_log(" Mot de passe mis à jour pour utilisateur: {$user->id}");
 
             return new JsonResponse(
                 200,
@@ -1359,7 +1359,7 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            error_log("❌ Erreur lors de la mise à jour du mot de passe: " . $e->getMessage());
+            error_log(" Erreur lors de la mise à jour du mot de passe: " . $e->getMessage());
 
             return $this->createErrorResponse(
                 'Erreur lors de la mise à jour du mot de passe',
@@ -1369,7 +1369,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Obtenir les préférences email
+     *  NOUVELLE ROUTE: Obtenir les préférences email
      */
     public function getEmailPreferences(Request $request, Response $response)
     {
@@ -1405,7 +1405,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Mettre à jour les préférences email
+     *  NOUVELLE ROUTE: Mettre à jour les préférences email
      */
     public function updateEmailPreferences(Request $request, Response $response)
     {
@@ -1459,7 +1459,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Se réabonner au marketing
+     *  NOUVELLE ROUTE: Se réabonner au marketing
      */
     public function resubscribeToMarketing(Request $request, Response $response)
     {
@@ -1496,7 +1496,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Demander la suppression du compte
+     *  NOUVELLE ROUTE: Demander la suppression du compte
      */
     public function requestAccountDeletion(Request $request, Response $response)
     {
@@ -1537,7 +1537,7 @@ class AuthController
                 $mailSender = new MailSender();
                 $mailSender->sendAccountDeletionConfirmation($user->email, $user->first_name, $confirmationCode);
             } catch (\Exception $emailError) {
-                error_log("⚠️ Erreur lors de l'envoi de l'email de suppression: " . $emailError->getMessage());
+                error_log(" Erreur lors de l'envoi de l'email de suppression: " . $emailError->getMessage());
             }
 
             return new JsonResponse(
@@ -1558,7 +1558,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Confirmer la suppression du compte
+     *  NOUVELLE ROUTE: Confirmer la suppression du compte
      */
     public function confirmAccountDeletion(Request $request, Response $response)
     {
@@ -1613,7 +1613,7 @@ class AuthController
                 'updated_at' => new \DateTime()
             ]);
 
-            error_log("🗑️ Compte marqué pour suppression: {$user->email}");
+            error_log(" Compte marqué pour suppression: {$user->email}");
 
             return new JsonResponse(
                 200,
@@ -1630,7 +1630,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Annuler la suppression du compte
+     *  NOUVELLE ROUTE: Annuler la suppression du compte
      */
     public function cancelAccountDeletion(Request $request, Response $response)
     {
@@ -1670,7 +1670,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Statut de suppression du compte
+     *  NOUVELLE ROUTE: Statut de suppression du compte
      */
     public function getAccountDeletionStatus(Request $request, Response $response)
     {
@@ -1711,7 +1711,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Mettre à jour le token FCM
+     *  NOUVELLE ROUTE: Mettre à jour le token FCM
      */
     public function updateFCMToken(Request $request, Response $response)
     {
@@ -1772,7 +1772,7 @@ class AuthController
     }
 
     /**
-     * ✅ NOUVELLE ROUTE: Déconnexion (logout)
+     *  NOUVELLE ROUTE: Déconnexion (logout)
      */
     public function logout(Request $request, Response $response)
     {
@@ -1790,7 +1790,7 @@ class AuthController
                         
                     if ($device) {
                         $device->markAsInactive();
-                        error_log("📱 Appareil désactivé lors de la déconnexion: {$data['device_id']}");
+                        error_log(" Appareil désactivé lors de la déconnexion: {$data['device_id']}");
                     }
                 }
             }
@@ -1805,7 +1805,7 @@ class AuthController
             );
 
         } catch (\Exception $e) {
-            error_log("⚠️ Erreur lors de la déconnexion: " . $e->getMessage());
+            error_log(" Erreur lors de la déconnexion: " . $e->getMessage());
             
             // Même en cas d'erreur, on retourne un succès car la déconnexion côté client doit fonctionner
             return new JsonResponse(
@@ -1847,7 +1847,7 @@ class AuthController
             }
 
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Mise à jour FCM lors du refresh token pour utilisateur: {$user->id}");
+                error_log(" Mise à jour FCM lors du refresh token pour utilisateur: {$user->id}");
                 $this->updateUserFCMToken($user->id, $data['fcm_data']);
             }
 
@@ -1877,7 +1877,7 @@ class AuthController
     }
 
     /**
-     * ✅ MÉTHODE MISE À JOUR: Vérification d'authentification avec mise à jour FCM
+     *  MÉTHODE MISE À JOUR: Vérification d'authentification avec mise à jour FCM
      */
     public function checkAuth(Request $request, Response $response)
     {
@@ -1896,11 +1896,11 @@ class AuthController
 
             $data = $request->getParsedBody() ?? [];
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Mise à jour FCM lors de checkAuth pour utilisateur: {$user->id}");
+                error_log(" Mise à jour FCM lors de checkAuth pour utilisateur: {$user->id}");
                 $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
                 
                 if ($fcmUpdateSuccess) {
-                    error_log("✅ Token FCM mis à jour avec succès lors de checkAuth");
+                    error_log(" Token FCM mis à jour avec succès lors de checkAuth");
                 }
             }
 
@@ -1920,7 +1920,7 @@ class AuthController
     }
 
     /**
-     * ✅ ROUTE DE DEBUG: Débugger l'authentification
+     *  ROUTE DE DEBUG: Débugger l'authentification
      */
     public function debugAuth(Request $request, Response $response)
     {
@@ -2137,13 +2137,13 @@ class AuthController
             $user->save();
 
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
-                error_log("🔔 Mise à jour FCM lors de la confirmation d'email pour utilisateur: {$user->id}");
+                error_log(" Mise à jour FCM lors de la confirmation d'email pour utilisateur: {$user->id}");
                 $fcmUpdateSuccess = $this->updateUserFCMToken($user->id, $data['fcm_data']);
                 
                 if ($fcmUpdateSuccess) {
-                    error_log("✅ Token FCM mis à jour avec succès lors de la confirmation");
+                    error_log(" Token FCM mis à jour avec succès lors de la confirmation");
                 } else {
-                    error_log("⚠️ Échec de la mise à jour FCM (confirmation continue)");
+                    error_log(" Échec de la mise à jour FCM (confirmation continue)");
                 }
             }
 
