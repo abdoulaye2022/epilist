@@ -989,7 +989,7 @@ class MailSender
                 <tr>
                     <td class='content' style='padding: 40px 30px;'>
                         <!-- En-tête principal -->
-                        <div style='text-align: center; margin-bottom: 30px;'>
+                        <div style='text-align: center; margin-bottom: 20px;'>
                             <h1 style='margin: 0 0 15px; font-size: 32px; font-weight: bold; color: #047857; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>
                                 🎉 EpiList 2.0.0 est arrivé !
                             </h1>
@@ -997,6 +997,17 @@ class MailSender
                                 La révolution de vos courses commence maintenant
                             </p>
                         </div>
+
+                        <!-- Note: English version below -->
+                        <div style='background: #f3f4f6; border-left: 4px solid #6b7280; padding: 12px 16px; margin-bottom: 30px;'>
+                            <p style='margin: 0; font-size: 13px; color: #6b7280; font-style: italic;'>
+                                📄 English version below / Version anglaise ci-dessous
+                            </p>
+                        </div>
+
+                        <!-- ============================================ -->
+                        <!-- SECTION FRANÇAIS -->
+                        <!-- ============================================ -->
 
                         <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
                             Bonjour <strong>{$prenom}</strong>,
@@ -1006,7 +1017,7 @@ class MailSender
                             Grâce à <strong>vous</strong> et nos <strong>200+ utilisateurs fidèles</strong>, EpiList continue d'évoluer ! Nous sommes <strong>extrêmement fiers</strong> de vous présenter <strong>EpiList 2.0.0</strong>, une mise à jour majeure qui transforme complètement votre expérience de gestion des courses.
                         </p>
 
-                        <!-- Section communauté -->
+                        <!-- Section communauté FR -->
                         <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
                             <h3 style='margin: 0 0 12px; font-size: 20px; color: #047857; font-weight: 600;'>💚 Merci à notre communauté !</h3>
                             <p style='margin: 0; color: #059669; font-size: 15px; line-height: 1.6;'>
@@ -1018,18 +1029,13 @@ class MailSender
                             Découvrez dès maintenant <strong>10 nouvelles fonctionnalités révolutionnaires</strong> que nous avons développées spécialement pour vous :
                         </p>
 
-                        <!-- Badge NOUVEAU -->
-                        <div style='background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;'>
-                            🆕 Nouvelle version
-                        </div>
-
-                        <!-- Nouvelles fonctionnalités avec icônes -->
+                        <!-- Nouvelles fonctionnalités -->
                         <h2 style='margin: 30px 0 20px; font-size: 24px; font-weight: 600; color: #047857; text-align: center;'>
                             ✨ Découvrez les nouvelles fonctionnalités
                         </h2>
 
                         <div style='margin: 30px 0;'>
-                            <!-- Ajout vocal intelligent -->
+                            <!-- 1. Ajout vocal intelligent -->
                             <div style='background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border: 2px solid #ec4899; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
                                     <div style='background: #ec4899; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎤</div>
@@ -1040,7 +1046,7 @@ class MailSender
                                 </p>
                             </div>
 
-                            <!-- Détection des doublons -->
+                            <!-- 2. Détection des doublons -->
                             <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
                                     <div style='background: #22c55e; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>✓✓</div>
@@ -1051,7 +1057,7 @@ class MailSender
                                 </p>
                             </div>
 
-                            <!-- Suggestions d'habitudes -->
+                            <!-- 3. Suggestions d'habitudes -->
                             <div style='background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #fb923c; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
                                     <div style='background: #fb923c; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💡</div>
@@ -1237,6 +1243,199 @@ class MailSender
                             </p>
                             <p style='margin: 10px 0 0; color: #6b7280; font-size: 13px;'>
                                 Avec amour depuis le Nouveau-Brunswick, Canada 🍁
+                            </p>
+                        </div>
+
+                        <!-- ============================================ -->
+                        <!-- SÉPARATEUR ENTRE FRANÇAIS ET ANGLAIS -->
+                        <!-- ============================================ -->
+                        <div style='margin: 60px 0; text-align: center;'>
+                            <div style='border-top: 3px solid #e5e7eb; margin: 0 0 20px;'></div>
+                            <div style='background: #1f2937; color: white; padding: 12px 24px; border-radius: 8px; display: inline-block; font-size: 16px; font-weight: bold;'>
+                                📄 ENGLISH VERSION
+                            </div>
+                            <div style='border-top: 3px solid #e5e7eb; margin: 20px 0 0;'></div>
+                        </div>
+
+                        <!-- Note: French version above -->
+                        <div style='background: #f3f4f6; border-left: 4px solid #6b7280; padding: 12px 16px; margin-bottom: 30px;'>
+                            <p style='margin: 0; font-size: 13px; color: #6b7280; font-style: italic;'>
+                                📄 Version française ci-dessus / French version above
+                            </p>
+                        </div>
+
+                        <!-- ============================================ -->
+                        <!-- SECTION ENGLISH -->
+                        <!-- ============================================ -->
+
+                        <div style='text-align: center; margin-bottom: 30px;'>
+                            <h1 style='margin: 0 0 15px; font-size: 32px; font-weight: bold; color: #047857; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>
+                                🎉 EpiList 2.0.0 is here!
+                            </h1>
+                            <p style='margin: 0; font-size: 18px; color: #059669; font-weight: 600;'>
+                                The revolution of your shopping starts now
+                            </p>
+                        </div>
+
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Hello <strong>{$prenom}</strong>,
+                        </p>
+
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Thanks to <strong>you</strong> and our <strong>200+ loyal users</strong>, EpiList continues to evolve! We are <strong>extremely proud</strong> to present <strong>EpiList 2.0.0</strong>, a major update that completely transforms your shopping management experience.
+                        </p>
+
+                        <!-- Section community EN -->
+                        <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
+                            <h3 style='margin: 0 0 12px; font-size: 20px; color: #047857; font-weight: 600;'>💚 Thank you to our community!</h3>
+                            <p style='margin: 0; color: #059669; font-size: 15px; line-height: 1.6;'>
+                                You are now <strong>over 200 users</strong> trusting EpiList every day! Your feedback, suggestions, and support allow us to create the app you deserve. This version 2.0.0 is the result of your commitment and passion for better shopping management.
+                            </p>
+                        </div>
+
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Discover now <strong>10 revolutionary new features</strong> we developed especially for you:
+                        </p>
+
+                        <!-- New features EN -->
+                        <h2 style='margin: 30px 0 20px; font-size: 24px; font-weight: 600; color: #047857; text-align: center;'>
+                            ✨ Discover the new features
+                        </h2>
+
+                        <div style='margin: 30px 0;'>
+                            <!-- 1. Smart voice input -->
+                            <div style='background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border: 2px solid #ec4899; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #ec4899; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎤</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #9f1239; font-weight: 600;'>Smart voice input</h3>
+                                </div>
+                                <p style='margin: 0; color: #be185d; font-size: 14px; line-height: 1.5;'>
+                                    Add items to your lists simply by speaking! Our system automatically recognizes quantities and product names. Compatible in French and English.
+                                </p>
+                            </div>
+
+                            <!-- 2. Duplicate detection -->
+                            <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #22c55e; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>✓✓</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #15803d; font-weight: 600;'>Duplicate detection</h3>
+                                </div>
+                                <p style='margin: 0; color: #16a34a; font-size: 14px; line-height: 1.5;'>
+                                    No more duplicate items! EpiList automatically detects duplicates and suggests merging quantities to avoid unnecessary purchases.
+                                </p>
+                            </div>
+
+                            <!-- 3. Smart purchase suggestions -->
+                            <div style='background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #fb923c; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #fb923c; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💡</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #9a3412; font-weight: 600;'>Smart purchase suggestions</h3>
+                                </div>
+                                <p style='margin: 0; color: #c2410c; font-size: 14px; line-height: 1.5;'>
+                                    EpiList analyzes your habits and automatically suggests products you regularly buy. No need to re-enter everything each time!
+                                </p>
+                            </div>
+
+                            <!-- 4. Barcode scanner -->
+                            <div style='background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📱</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #1e40af; font-weight: 600;'>Barcode scanner</h3>
+                                </div>
+                                <p style='margin: 0; color: #2563eb; font-size: 14px; line-height: 1.5;'>
+                                    Scan product barcodes to add them instantly to your lists. Fast, accurate, and error-free!
+                                </p>
+                            </div>
+
+                            <!-- 5. Integrated messaging -->
+                            <div style='background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 2px solid #a855f7; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #a855f7; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💬</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Integrated list messaging</h3>
+                                </div>
+                                <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
+                                    Communicate directly with your family on each shared list. Ask questions, give details, coordinate your shopping in real time!
+                                </p>
+                            </div>
+
+                            <!-- 6. Advanced offline mode -->
+                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📶</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Advanced offline mode</h3>
+                                </div>
+                                <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
+                                    Use EpiList even without an Internet connection! Your changes are automatically synchronized as soon as you regain network access.
+                                </p>
+                            </div>
+
+                            <!-- 7. Complete expense management -->
+                            <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💰</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #047857; font-weight: 600;'>Complete expense management</h3>
+                                </div>
+                                <p style='margin: 0; color: #059669; font-size: 14px; line-height: 1.5;'>
+                                    Track your expenses accurately, analyze your habits, and optimize your shopping budget with detailed charts and smart trends.
+                                </p>
+                            </div>
+
+                            <!-- 8. Smart budgets -->
+                            <div style='background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎯</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #92400e; font-weight: 600;'>Smart budgets</h3>
+                                </div>
+                                <p style='margin: 0; color: #d97706; font-size: 14px; line-height: 1.5;'>
+                                    Set monthly, weekly, or category budgets. Receive smart alerts to stay within your financial goals.
+                                </p>
+                            </div>
+
+                            <!-- 9. Advanced analytics -->
+                            <div style='background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📊</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Advanced statistics</h3>
+                                </div>
+                                <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
+                                    Complete dashboard with detailed analysis: spending trends, most purchased products, period comparisons, and interactive charts.
+                                </p>
+                            </div>
+
+                            <!-- 10. Real-time notifications -->
+                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #f87171; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #f87171; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🔔</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Real-time notifications</h3>
+                                </div>
+                                <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
+                                    Instant push notifications: budget alerts, shopping reminders, shared list changes, and personalized suggestions based on your habits.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Thank you message EN -->
+                        <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 25px; margin: 40px 0;'>
+                            <h3 style='margin: 0 0 15px; font-size: 20px; color: #047857; font-weight: 600; text-align: center;'>
+                                💚 Together, let's continue the adventure!
+                            </h3>
+                            <p style='margin: 0 0 15px; color: #059669; font-size: 15px; line-height: 1.6; text-align: center;'>
+                                With <strong>200+ users</strong> and a community that grows every day, we're just getting started! These new features reflect your passion and needs. We will continue to listen to your feedback and innovate to provide you with the best possible experience.
+                            </p>
+                            <p style='margin: 0; color: #047857; font-size: 14px; line-height: 1.6; text-align: center; font-style: italic;'>
+                                Your trust and loyalty are our greatest motivation. Thank you for being part of the EpiList family! ❤️
+                            </p>
+                        </div>
+
+                        <div style='margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center;'>
+                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 16px;'>
+                                Happy shopping! 🛒
+                            </p>
+                            <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                                The EpiList Team 💚
+                            </p>
+                            <p style='margin: 10px 0 0; color: #6b7280; font-size: 13px;'>
+                                With love from New Brunswick, Canada 🍁
                             </p>
                         </div>
                     </td>
