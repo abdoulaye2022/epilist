@@ -105,7 +105,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
           // Listener pour les articles
           BlocListener<ListItemBloc, ListItemState>(
             listener: (context, state) {
-              SmartSnackBarManager.showForState(context, state);
+              if (state is ListItemDuplicateDetected) {
+                // Afficher un dialogue pour gérer le doublon
+                _showDuplicateDialog(state);
+              } else {
+                SmartSnackBarManager.showForState(context, state);
+              }
             },
           ),
           // Listener pour les listes (mise à jour du nom, etc.)
@@ -783,13 +788,119 @@ class _ListDetailViewState extends State<_ListDetailView> {
           ),
         );
 
-        // Afficher un message de confirmation
-        SmartSnackBarManager.showMessage(
-          context,
-          '✅ $itemName ajouté par voix',
-          type: SnackBarType.success,
-        );
+        // Le message de succès sera affiché par le listener
+        // sauf si c'est un doublon (alors le dialogue s'affichera)
       },
+    );
+  }
+
+  void _showDuplicateDialog(ListItemDuplicateDetected state) {
+    final duplicate = state.duplicates.first; // Prendre le premier doublon
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange[600], size: 28),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Article déjà présent')),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              duplicate.suggestionType == DuplicateType.exactMatch
+                  ? 'Cet article existe déjà dans votre liste :'
+                  : 'Un article similaire existe déjà dans votre liste :',
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    duplicate.productName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Quantité actuelle: ${duplicate.quantity}',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  if (duplicate.storeName != null)
+                    Text(
+                      'Magasin: ${duplicate.storeName}',
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Que souhaitez-vous faire ?',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[800],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              // Fusionner avec l'item existant (augmenter la quantité)
+              context.read<ListItemBloc>().add(
+                MergeWithExistingItem(
+                  listId: state.listId,
+                  existingItemId: duplicate.id,
+                  additionalQuantity: state.quantity,
+                ),
+              );
+              SmartSnackBarManager.showMessage(
+                context,
+                '✅ Quantité mise à jour: ${duplicate.quantity + state.quantity}',
+                type: SnackBarType.success,
+              );
+            },
+            child: Text('Augmenter la quantité (+${state.quantity})'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              // Forcer l'ajout malgré le doublon
+              context.read<ListItemBloc>().add(
+                ForceAddListItem(
+                  listId: state.listId,
+                  productName: state.productName,
+                  quantity: state.quantity,
+                  storeName: state.storeName,
+                  price: state.price,
+                ),
+              );
+            },
+            child: const Text('Ajouter quand même'),
+          ),
+        ],
+      ),
     );
   }
 

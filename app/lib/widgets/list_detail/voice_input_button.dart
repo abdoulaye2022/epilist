@@ -37,12 +37,11 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
         _isListening = false;
       });
     } else {
-      // Vérifier la permission
-      final hasPermission = await _voiceService.checkMicrophonePermission();
-
-      if (!hasPermission) {
-        final granted = await _voiceService.requestMicrophonePermission();
-        if (!granted) {
+      // Initialiser si nécessaire (cela demandera la permission automatiquement)
+      if (!_voiceService.isInitialized) {
+        final initialized = await _voiceService.initialize();
+        if (!initialized) {
+          // Permission refusée ou erreur d'initialisation
           widget.onPermissionDenied?.call();
           return;
         }
@@ -54,11 +53,11 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           setState(() {
             _currentText = recognizedText;
           });
-
-          // Si c'est le résultat final, on traite l'item
-          if (!_voiceService.isListening) {
-            _processVoiceInput(recognizedText);
-          }
+        },
+        onFinalResult: (recognizedText) {
+          // Résultat final - traiter l'item
+          debugPrint('🎯 Final result received: $recognizedText');
+          _processVoiceInput(recognizedText);
         },
         localeId: 'fr_FR', // Français
       );
@@ -68,6 +67,9 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           _isListening = true;
           _currentText = '';
         });
+      } else {
+        // Échec du démarrage (probablement permission refusée)
+        widget.onPermissionDenied?.call();
       }
     }
   }
