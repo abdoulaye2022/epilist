@@ -5,6 +5,9 @@ export const translations = {
     benefits: 'Avantages',
     testimonials: 'Témoignages',
     contact: 'Contact',
+    help: 'Aide',
+    download: 'Télécharger',
+    downloadApp: 'Télécharger l\'app',
     appStore: 'App Store',
     googlePlay: 'Google Play',
     
@@ -51,12 +54,27 @@ export const translations = {
     feature7Title: 'Collaboration familiale',
     feature7Desc: 'Invitez votre famille, gérez les permissions et collaborez en temps réel sur vos achats',
     
-    feature8Title: 'Accès hors ligne',
-    feature8Desc: 'Consultez et modifiez vos listes même sans connexion, synchronisation automatique au retour',
-    
-    feature9Title: 'Deep linking et navigation',
-    feature9Desc: 'Accès direct aux listes partagées via liens profonds et navigation intuitive',
-    
+    feature8Title: 'Mode hors ligne avancé',
+    feature8Desc: 'Travaillez sans connexion avec cache intelligent, synchronisation automatique et file d\'attente des actions',
+
+    feature9Title: 'Multi-devises international',
+    feature9Desc: 'Gérez vos budgets dans plus de 150 devises avec conversion automatique et formatage local',
+
+    feature10Title: 'Connexion SSO simplifiée',
+    feature10Desc: 'Connectez-vous rapidement avec Google ou Apple Sign-In, sécurisé et sans mot de passe',
+
+    feature11Title: 'Catégories personnalisables',
+    feature11Desc: 'Créez et gérez vos propres catégories d\'articles avec icônes et couleurs personnalisées',
+
+    feature12Title: 'Notifications temps réel',
+    feature12Desc: 'Recevez des alertes instantanées pour les partages, modifications et dépassements de budget',
+
+    feature13Title: 'Analytiques visuelles',
+    feature13Desc: 'Graphiques détaillés de vos dépenses mensuelles, top produits et tendances d\'achat',
+
+    feature14Title: 'Préférences email',
+    feature14Desc: 'Personnalisez vos notifications email par type : alertes, résumés quotidiens ou hebdomadaires',
+
     moreToDiscover: 'Et bien plus encore à découvrir...',
     
     // Feature Categories
@@ -535,6 +553,30 @@ export const translations = {
     userControl: 'Contrôle utilisateur',
     fullDataControl: 'Contrôle total de vos données',
     allRightsReserved: 'Tous droits réservés',
+
+    // Footer
+    footerTagline: 'Simplifiez vos courses',
+    footerDescription: 'L\'application de courses familiale la plus populaire au Canada. Synchronisation temps réel, mode hors ligne, 100% gratuite à vie.',
+    application: 'Application',
+    support: 'Support',
+    company: 'Entreprise',
+    legal: 'Légal',
+    helpCenter: 'Centre d\'aide',
+    contactUs: 'Nous contacter',
+    emailSupport: 'Support email',
+    about: 'À propos',
+    newBrunswick: '🍁 Nouveau-Brunswick',
+    madeInCanada: 'Made in Canada',
+    privacy: 'Confidentialité',
+    terms: 'Conditions',
+    comparison: 'Comparaison',
+    stayInformed: 'Restez informé 📬',
+    newsletterDescription: 'Nouvelles fonctionnalités, conseils courses et mises à jour exclusives',
+    emailPlaceholder: 'votre@email.com',
+    subscribe: 'S\'abonner',
+    copyright: '© 2025 EpiList Inc. Tous droits réservés.',
+    madeWith: 'Made with',
+    inNewBrunswick: 'in New Brunswick',
   },
   en: {
     // Header
@@ -542,6 +584,9 @@ export const translations = {
     benefits: 'Benefits',
     testimonials: 'Testimonials',
     contact: 'Contact',
+    help: 'Help',
+    download: 'Download',
+    downloadApp: 'Download app',
     appStore: 'App Store',
     googlePlay: 'Google Play',
     
@@ -588,12 +633,27 @@ export const translations = {
     feature7Title: 'Family Collaboration',
     feature7Desc: 'Invite your family, manage permissions and collaborate in real-time on your purchases',
     
-    feature8Title: 'Offline Access',
-    feature8Desc: 'View and edit your lists even without connection, automatic sync when back online',
-    
-    feature9Title: 'Deep Linking & Navigation',
-    feature9Desc: 'Direct access to shared lists via deep links and intuitive navigation',
-    
+    feature8Title: 'Advanced Offline Mode',
+    feature8Desc: 'Work without connection with smart cache, automatic sync and action queue',
+
+    feature9Title: 'Multi-Currency International',
+    feature9Desc: 'Manage budgets in 150+ currencies with automatic conversion and local formatting',
+
+    feature10Title: 'Simplified SSO Login',
+    feature10Desc: 'Sign in quickly with Google or Apple Sign-In, secure and password-free',
+
+    feature11Title: 'Customizable Categories',
+    feature11Desc: 'Create and manage your own item categories with custom icons and colors',
+
+    feature12Title: 'Real-Time Notifications',
+    feature12Desc: 'Receive instant alerts for sharing, changes and budget overruns',
+
+    feature13Title: 'Visual Analytics',
+    feature13Desc: 'Detailed charts of monthly expenses, top products and shopping trends',
+
+    feature14Title: 'Email Preferences',
+    feature14Desc: 'Customize your email notifications by type: alerts, daily or weekly summaries',
+
     moreToDiscover: 'And much more to discover...',
     
     // Feature Categories
@@ -1071,6 +1131,31 @@ export const translations = {
     industryStandards: 'Industry standards',
     userControl: 'User control',
     fullDataControl: 'Full control of your data',
+    allRightsReserved: 'All rights reserved',
+
+    // Footer
+    footerTagline: 'Simplify your shopping',
+    footerDescription: 'The most popular family shopping app in Canada. Real-time sync, offline mode, 100% free for life.',
+    application: 'Application',
+    support: 'Support',
+    company: 'Company',
+    legal: 'Legal',
+    helpCenter: 'Help Center',
+    contactUs: 'Contact us',
+    emailSupport: 'Email support',
+    about: 'About',
+    newBrunswick: '🍁 New Brunswick',
+    madeInCanada: 'Made in Canada',
+    privacy: 'Privacy',
+    terms: 'Terms',
+    comparison: 'Comparison',
+    stayInformed: 'Stay informed 📬',
+    newsletterDescription: 'New features, shopping tips and exclusive updates',
+    emailPlaceholder: 'your@email.com',
+    subscribe: 'Subscribe',
+    copyright: '© 2025 EpiList Inc. All rights reserved.',
+    madeWith: 'Made with',
+    inNewBrunswick: 'in New Brunswick',
     allRightsReserved: 'All rights reserved',
   }
 };

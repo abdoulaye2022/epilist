@@ -34,11 +34,11 @@ export const metadata: Metadata = {
   // Titre et description optimisés SEO
   title: {
     default:
-      "EpiList - Application de Liste de Courses Familiale | Synchronisation Temps Réel",
+      "EpiList - Application de Liste de Courses Familiale | Sync Temps Réel, Multi-Devises, Mode Hors Ligne",
     template: "%s | EpiList",
   },
   description:
-    "EpiList révolutionne vos courses avec des listes partagées en famille, synchronisation temps réel, mode hors ligne et suggestions intelligentes. 100% gratuit, sans publicité. Téléchargez maintenant !",
+    "EpiList révolutionne vos courses avec listes partagées, synchronisation temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications instantanées et analytiques visuelles. 100% gratuit, sans publicité. Téléchargez maintenant !",
 
   keywords: [
     "liste de courses",
@@ -48,6 +48,13 @@ export const metadata: Metadata = {
     "application liste courses gratuite",
     "synchronisation courses famille",
     "courses hors ligne mobile",
+    "multi-devises courses",
+    "150 devises supportées",
+    "SSO Google Apple",
+    "catégories personnalisables courses",
+    "reçus photo courses",
+    "notifications temps réel",
+    "analytiques visuelles courses",
     "organisateur courses intelligent",
     "application courses Canada",
     "liste courses Québec",
@@ -55,6 +62,7 @@ export const metadata: Metadata = {
     "alternative AnyList",
     "meilleure app courses",
     "courses collaboratives",
+    "préférences email courses",
   ].join(", "),
 
   authors: [{ name: "EpiList Team", url: "https://epilist.app" }],
@@ -83,7 +91,7 @@ export const metadata: Metadata = {
     siteName: "EpiList",
     title: "EpiList - L'App de Courses Familiale #1 au Canada",
     description:
-      "🛒 Simplifiez vos courses ! Listes partagées, sync temps réel, mode hors ligne. 50k+ familles nous font confiance. Gratuit à vie !",
+      "🛒 Simplifiez vos courses ! Listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications. 50k+ familles nous font confiance. Gratuit à vie !",
     images: [
       {
         url: "/images/og-image-main.jpg",
@@ -108,7 +116,7 @@ export const metadata: Metadata = {
     creator: "@epilistapp",
     title: "EpiList - App Courses Familiale 🛒",
     description:
-      "Synchronisation temps réel • Mode hors ligne • 100% gratuit • 4.9⭐ sur les stores",
+      "Sync temps réel • 150+ devises • Mode hors ligne avancé • SSO • Catégories • Reçus photo • Notifications • Analytiques • 100% gratuit • 4.9⭐",
     images: ["/images/twitter-card-main.jpg"],
   },
 

@@ -4,16 +4,16 @@ import PageContent from "@/components/PageContent";
 // Metadata spécifique à la page d'accueil
 export const metadata: Metadata = {
   title:
-    "EpiList - App de Liste de Courses Familiale | Sync Temps Réel, Mode Hors Ligne",
+    "EpiList - App de Liste de Courses Familiale | Sync Temps Réel, Multi-Devises, Mode Hors Ligne",
   description:
-    "🛒 EpiList révolutionne vos courses ! Créez des listes partagées avec votre famille, synchronisation instantanée, mode hors ligne. 50k+ utilisateurs, 4.9⭐, 100% gratuit. Téléchargez maintenant sur iOS & Android !",
+    "🛒 EpiList révolutionne vos courses ! Listes partagées, synchronisation temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications instantanées. 50k+ utilisateurs, 4.9⭐, 100% gratuit sur iOS & Android !",
   keywords:
-    "liste de courses gratuite, application courses famille, synchronisation temps réel, courses hors ligne, organisateur familial, EpiList Canada",
+    "liste de courses gratuite, application courses famille, synchronisation temps réel, multi-devises, courses hors ligne, catégories personnalisables, reçus photo, SSO Google Apple, notifications temps réel, analytiques visuelles, organisateur familial, EpiList Canada",
 
   openGraph: {
     title: "🛒 EpiList - L'App de Courses Familiale #1 | Gratuite & Sans Pub",
     description:
-      "Simplifiez vos courses avec des listes partagées, sync instantanée et mode hors ligne. Rejoignez 50k+ familles satisfaites !",
+      "Simplifiez vos courses avec listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo. Rejoignez 50k+ familles satisfaites !",
     url: "https://epilist.app",
     images: [
       {
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     title: "🛒 EpiList - App Courses Familiale Gratuite",
     description:
-      "Listes partagées • Sync temps réel • Mode hors ligne • 4.9⭐ • 0$ à vie",
+      "Listes partagées • Sync temps réel • 150+ devises • Mode hors ligne avancé • Reçus photo • Catégories personnalisables • 4.9⭐ • 0$ à vie",
   },
 
   alternates: {

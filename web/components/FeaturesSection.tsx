@@ -15,6 +15,13 @@ import {
   DollarSign,
   BarChart3,
   Lock,
+  WifiOff,
+  Coins,
+  KeyRound,
+  FolderOpen,
+  Bell,
+  TrendingUp,
+  Mail,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -76,7 +83,7 @@ const features = [
     category: "collaborative",
   },
   {
-    icon: Clock,
+    icon: WifiOff,
     titleKey: "feature8Title",
     descKey: "feature8Desc",
     color: "from-teal-500 to-teal-400",
@@ -84,12 +91,52 @@ const features = [
     category: "advanced",
   },
   {
-    icon: Smartphone,
+    icon: Coins,
     titleKey: "feature9Title",
     descKey: "feature9Desc",
-    color: "from-orange-500 to-orange-400",
+    color: "from-emerald-500 to-emerald-400",
     delay: 800,
+    category: "advanced",
+  },
+  {
+    icon: KeyRound,
+    titleKey: "feature10Title",
+    descKey: "feature10Desc",
+    color: "from-blue-500 to-blue-400",
+    delay: 900,
+    category: "security",
+  },
+  {
+    icon: FolderOpen,
+    titleKey: "feature11Title",
+    descKey: "feature11Desc",
+    color: "from-purple-500 to-purple-400",
+    delay: 1000,
     category: "essential",
+  },
+  {
+    icon: Bell,
+    titleKey: "feature12Title",
+    descKey: "feature12Desc",
+    color: "from-red-500 to-red-400",
+    delay: 1100,
+    category: "collaborative",
+  },
+  {
+    icon: TrendingUp,
+    titleKey: "feature13Title",
+    descKey: "feature13Desc",
+    color: "from-indigo-500 to-indigo-400",
+    delay: 1200,
+    category: "analytics",
+  },
+  {
+    icon: Mail,
+    titleKey: "feature14Title",
+    descKey: "feature14Desc",
+    color: "from-pink-500 to-pink-400",
+    delay: 1300,
+    category: "advanced",
   },
 ];
 
@@ -273,7 +320,7 @@ export default function FeaturesSection() {
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             {
-              number: "9+",
+              number: "14+",
               label:
                 t("language") === "fr"
                   ? "Fonctionnalités principales"
@@ -281,7 +328,7 @@ export default function FeaturesSection() {
             },
             { number: "50k+", label: t("downloads") },
             { number: "4.9", label: t("averageRating") },
-            { number: "24/7", label: t("availability") },
+            { number: "150+", label: t("language") === "fr" ? "Devises supportées" : "Supported Currencies" },
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">

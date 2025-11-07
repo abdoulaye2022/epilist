@@ -19,6 +19,11 @@ import {
   WifiOff,
   Bell,
   Star,
+  Coins,
+  KeyRound,
+  FolderOpen,
+  TrendingUp,
+  Mail,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import Header from "@/components/Header";
@@ -30,40 +35,88 @@ export default function FeaturesContent() {
 
   const features = [
     {
+      icon: ListChecks,
+      title: t("feature1Title"),
+      desc: t("feature1Desc"),
+      category: "essential",
+    },
+    {
+      icon: Share2,
+      title: t("feature2Title"),
+      desc: t("feature2Desc"),
+      category: "collaboration",
+    },
+    {
+      icon: Copy,
+      title: t("feature3Title"),
+      desc: t("feature3Desc"),
+      category: "essential",
+    },
+    {
+      icon: DollarSign,
+      title: t("feature4Title"),
+      desc: t("feature4Desc"),
+      category: "advanced",
+    },
+    {
+      icon: BarChart3,
+      title: t("feature5Title"),
+      desc: t("feature5Desc"),
+      category: "analytics",
+    },
+    {
+      icon: Lock,
+      title: t("feature6Title"),
+      desc: t("feature6Desc"),
+      category: "security",
+    },
+    {
       icon: Users,
-      title: "Synchronisation Familiale",
-      desc: "Partagez vos listes avec toute la famille. Modifications synchronisées en temps réel.",
+      title: t("feature7Title"),
+      desc: t("feature7Desc"),
       category: "collaboration",
     },
     {
       icon: WifiOff,
-      title: "Mode Hors Ligne",
-      desc: "Utilisez EpiList même sans connexion. Synchronisation automatique au retour.",
-      category: "essential",
+      title: t("feature8Title"),
+      desc: t("feature8Desc"),
+      category: "advanced",
     },
     {
-      icon: Zap,
-      title: "Suggestions Intelligentes",
-      desc: "IA qui apprend vos habitudes et suggère automatiquement vos produits usuels.",
-      category: "smart",
+      icon: Coins,
+      title: t("feature9Title"),
+      desc: t("feature9Desc"),
+      category: "advanced",
     },
     {
-      icon: Shield,
-      title: "Sécurité Totale",
-      desc: "Vos données familiales sont chiffrées et protégées. Conformité RGPD garantie.",
+      icon: KeyRound,
+      title: t("feature10Title"),
+      desc: t("feature10Desc"),
       category: "security",
     },
     {
-      icon: Bell,
-      title: "Notifications Contextuelles",
-      desc: "Rappels intelligents basés sur votre localisation et vos habitudes.",
-      category: "smart",
+      icon: FolderOpen,
+      title: t("feature11Title"),
+      desc: t("feature11Desc"),
+      category: "essential",
     },
     {
-      icon: Copy,
-      title: "Duplication de Listes",
-      desc: "Dupliquez vos listes récurrentes en un clic. Parfait pour les courses hebdomadaires.",
-      category: "essential",
+      icon: Bell,
+      title: t("feature12Title"),
+      desc: t("feature12Desc"),
+      category: "collaboration",
+    },
+    {
+      icon: TrendingUp,
+      title: t("feature13Title"),
+      desc: t("feature13Desc"),
+      category: "analytics",
+    },
+    {
+      icon: Mail,
+      title: t("feature14Title"),
+      desc: t("feature14Desc"),
+      category: "advanced",
     },
   ];
 
@@ -80,15 +133,16 @@ export default function FeaturesContent() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-              Toutes les{" "}
+              {t("language") === "fr" ? "Toutes les " : "All "}
               <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                fonctionnalités
+                {t("language") === "fr" ? "fonctionnalités" : "features"}
               </span>
             </h1>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Découvrez pourquoi 50k+ familles canadiennes font confiance à
-              EpiList pour simplifier leurs courses quotidiennes.
+              {t("language") === "fr"
+                ? "Découvrez pourquoi 50k+ familles canadiennes font confiance à EpiList pour simplifier leurs courses quotidiennes."
+                : "Discover why 50k+ Canadian families trust EpiList to simplify their daily shopping."}
             </p>
           </div>
 
@@ -117,10 +171,30 @@ export default function FeaturesContent() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: "6+", label: "Fonctionnalités principales" },
-              { number: "100%", label: "Gratuit à vie" },
-              { number: "24/7", label: "Synchronisation" },
-              { number: "4.9⭐", label: "Note moyenne" },
+              {
+                number: "14+",
+                label:
+                  t("language") === "fr"
+                    ? "Fonctionnalités principales"
+                    : "Main Features",
+              },
+              {
+                number: "150+",
+                label:
+                  t("language") === "fr"
+                    ? "Devises supportées"
+                    : "Supported Currencies",
+              },
+              {
+                number: "24/7",
+                label:
+                  t("language") === "fr" ? "Synchronisation" : "Sync",
+              },
+              {
+                number: "4.9⭐",
+                label:
+                  t("language") === "fr" ? "Note moyenne" : "Average Rating",
+              },
             ].map((stat, i) => (
               <div key={i}>
                 <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">

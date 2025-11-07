@@ -2,17 +2,23 @@ import FeaturesContent from "@/components/FeaturesContent";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Fonctionnalités EpiList - Synchronisation Famille, Mode Hors Ligne",
+  title: "15+ Fonctionnalités EpiList - Sync Temps Réel, Multi-Devises, Mode Hors Ligne, SSO",
   description:
-    "🚀 Découvrez toutes les fonctionnalités EpiList : synchronisation familiale temps réel, mode hors ligne, suggestions intelligentes, partage instantané. Gratuit !",
+    "🚀 Découvrez les 15+ fonctionnalités EpiList : synchronisation temps réel, 150+ devises, mode hors ligne avancé, SSO (Google/Apple), catégories personnalisables, reçus photo, notifications instantanées, analytiques visuelles, préférences email. 100% gratuit !",
   keywords:
-    "fonctionnalités EpiList, synchronisation famille courses, mode hors ligne application, partage liste courses, suggestions intelligentes achats",
+    "fonctionnalités EpiList, synchronisation famille courses, mode hors ligne application, multi-devises, SSO Google Apple, catégories personnalisables, reçus photo, notifications temps réel, analytiques visuelles, partage liste courses, suggestions intelligentes achats, préférences email",
 
   openGraph: {
-    title: "🚀 Fonctionnalités EpiList - Sync Famille & Mode Hors Ligne",
+    title: "🚀 15+ Fonctionnalités EpiList - Sync Famille, Multi-Devises & Plus",
     description:
-      "Sync temps réel • Mode hors ligne • Suggestions IA • Partage famille • Interface intuitive",
+      "Sync temps réel • 150+ devises • Mode hors ligne avancé • SSO Google/Apple • Catégories personnalisables • Reçus photo • Notifications • Analytiques • 100% gratuit",
     url: "https://epilist.app/fonctionnalites",
+  },
+
+  twitter: {
+    title: "🚀 15+ Fonctionnalités EpiList",
+    description:
+      "Sync temps réel • 150+ devises • Mode hors ligne • SSO • Catégories • Reçus photo • Notifications • Analytiques",
   },
 
   alternates: {

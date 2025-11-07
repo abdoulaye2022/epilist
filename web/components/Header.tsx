@@ -113,9 +113,7 @@ export default function Header() {
                   href={item.href}
                   className="relative text-gray-700 hover:text-green-600 transition-all duration-300 font-medium group"
                 >
-                  {item.key === "features" && "Fonctionnalités"}
-                  {item.key === "help" && "Aide"}
-                  {item.key === "contact" && t(item.key as any)}
+                  {t(item.key as any)}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 group-hover:w-full transition-all duration-300"></span>
                 </Link>
               ) : (
@@ -143,7 +141,7 @@ export default function Header() {
               >
                 <span className="relative z-10 flex items-center">
                   <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-                  Télécharger
+                  {t("download")}
                 </span>
                 <div className="absolute inset-0 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </Button>
@@ -189,16 +187,14 @@ export default function Header() {
                 {
                   key: "features",
                   href: "/fonctionnalites",
-                  label: "Fonctionnalités",
                 },
-                { key: "benefits", id: "avantages", label: t("benefits") },
+                { key: "benefits", id: "avantages" },
                 {
                   key: "testimonials",
                   id: "temoignages",
-                  label: t("testimonials"),
                 },
-                { key: "help", href: "/aide", label: "Aide" },
-                { key: "contact", href: "/contact", label: t("contact") },
+                { key: "help", href: "/aide" },
+                { key: "contact", href: "/contact" },
               ].map((item) =>
                 item.href ? (
                   <Link
@@ -207,7 +203,7 @@ export default function Header() {
                     className="text-left text-gray-700 hover:text-green-600 transition-colors duration-300 font-medium py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {item.label}
+                    {t(item.key as any)}
                   </Link>
                 ) : (
                   <button
@@ -215,7 +211,7 @@ export default function Header() {
                     onClick={() => scrollToSection(item.id!)}
                     className="text-left text-gray-700 hover:text-green-600 transition-colors duration-300 font-medium py-2"
                   >
-                    {item.label}
+                    {t(item.key as any)}
                   </button>
                 )
               )}
@@ -232,7 +228,7 @@ export default function Header() {
                     className="w-full border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all duration-300"
                   >
                     <Download className="mr-2 h-4 w-4" />
-                    Télécharger l'app
+                    {t("downloadApp")}
                   </Button>
                 </Link>
 
