@@ -324,7 +324,7 @@ class MailSender
     /**
      *  MISE À JOUR du footerContent pour inclure le lien de désabonnement
      */
-    public static function footerContent(string $unsubscribeUrl = null): string
+    public static function footerContent(?string $unsubscribeUrl = null): string
     {
         $currentYear = date('Y');
         
@@ -980,7 +980,7 @@ class MailSender
    /**
      *  CORRECTION: Template pour campagne de nouvelle version avec URL de désabonnement
      */
-    public static function newVersionCampaignEmail(string $prenom, string $unsubscribeUrl = null): string
+    public static function newVersionCampaignEmail(string $prenom, ?string $unsubscribeUrl = null): string
     {
         $header = self::headerContent('EpiList 2.0.0 - La révolution de vos courses !');
         $footer = self::footerContent($unsubscribeUrl); //  Passer l'URL de désabonnement
@@ -1448,7 +1448,7 @@ class MailSender
     /**
      *  CORRECTION: sendNewVersionCampaign avec gestion du lien de désabonnement
      */
-    public static function sendNewVersionCampaign(string $email, string $firstName, string $unsubscribeUrl = null): bool
+    public static function sendNewVersionCampaign(string $email, string $firstName, ?string $unsubscribeUrl = null): bool
     {
         $subject = "🎉 EpiList 2.0.0 - 10 nouvelles fonctionnalités révolutionnaires !";
 

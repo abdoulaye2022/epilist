@@ -36,18 +36,32 @@ class NotificationService
     {
         try {
             $serviceAccountPath = __DIR__ . '/../../service-account.json';
-            
+
             if (!file_exists($serviceAccountPath)) {
                 throw new \Exception("Service account file not found: {$serviceAccountPath}");
             }
-            
+
             $factory = (new Factory)->withServiceAccount($serviceAccountPath);
             $this->messaging = $factory->createMessaging();
-            
+
         } catch (\Exception $e) {
             error_log("Firebase initialization failed: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Obtenir la langue de l'utilisateur (français par défaut)
+     */
+    private function getUserLanguage(User $user): string
+    {
+        // Vérifier si l'utilisateur a une langue définie
+        if (isset($user->language) && in_array($user->language, ['fr', 'en'])) {
+            return $user->language;
+        }
+
+        // Par défaut: français
+        return 'fr';
     }
 
     /**
@@ -415,10 +429,11 @@ class NotificationService
      */
     public function sendListCompletionNotification(User $user, $list, float $estimatedTotal = 0): bool
     {
+        $lang = $this->getUserLanguage($user);
         $totalItems = (int) $list->items->count(); //  Conversion explicite
-        
-        $title = " Liste terminée !";
-        $body = $this->getListCompletionBody($user, $list->name, $totalItems, $estimatedTotal);
+
+        $title = $lang === 'en' ? "✅ List completed!" : "✅ Liste terminée !";
+        $body = $this->getListCompletionBody($user, $list->name, $totalItems, $estimatedTotal, $lang);
         
         //  CORRECTION: Formater les montants selon la devise de l'utilisateur
         $formattedTotal = $this->formatAmountForUser($estimatedTotal, $user);
@@ -450,17 +465,31 @@ class NotificationService
     /**
      *  MÉTHODE CORRIGÉE: Générer le message de completion avec devise
      */
-    private function getListCompletionBody(User $user, string $listName, int $totalItems, float $estimatedTotal): string
+    private function getListCompletionBody(User $user, string $listName, int $totalItems, float $estimatedTotal, string $lang = 'fr'): string
     {
+        if ($lang === 'en') {
+            $baseMessage = "Congrats! You completed your list \"{$listName}\" ({$totalItems} item" . ($totalItems > 1 ? 's' : '') . ")";
+
+            if ($estimatedTotal > 0) {
+                $formattedAmount = $this->formatAmountForUser($estimatedTotal, $user);
+                $baseMessage .= " for about {$formattedAmount}";
+            }
+
+            $baseMessage .= ". Would you like to add a receipt for precise tracking?";
+
+            return $baseMessage;
+        }
+
+        // Français
         $baseMessage = "Bravo ! Vous avez terminé votre liste \"{$listName}\" ({$totalItems} article" . ($totalItems > 1 ? 's' : '') . ")";
-        
+
         if ($estimatedTotal > 0) {
             $formattedAmount = $this->formatAmountForUser($estimatedTotal, $user);
             $baseMessage .= " pour environ {$formattedAmount}";
         }
-        
+
         $baseMessage .= ". Voulez-vous ajouter une facture pour un suivi précis ?";
-        
+
         return $baseMessage;
     }
 
@@ -475,7 +504,10 @@ class NotificationService
             return false;
         }
 
-        $title = $this->getBudgetAlertTitle($alertType);
+        // ✅ Obtenir la langue de l'utilisateur
+        $lang = $this->getUserLanguage($user);
+
+        $title = $this->getBudgetAlertTitle($alertType, $lang);
         $body = $this->getBudgetAlertBody($user, $budget, $alertType);
 
         //  Formater les montants selon la devise de l'utilisateur avec conversions explicites
@@ -671,16 +703,36 @@ class NotificationService
         error_log("  - Formatted budget: {$formattedBudget}");
         error_log("  - Formatted spent: {$formattedSpent}");
         
+        // Déterminer la langue de l'utilisateur
+        $lang = $this->getUserLanguage($user);
+
+        if ($lang === 'en') {
+            switch ($alertType) {
+                case 'exceeded':
+                    return "You exceeded the budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+
+                case 'warning':
+                    return "Warning! You used {$spentPercentage}% of budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
+
+                case 'daily_summary':
+                    return "Budget \"{$budget->name}\" summary: {$spentPercentage}% used ({$formattedSpent}/{$formattedBudget})";
+
+                default:
+                    return "Budget \"{$budget->name}\" update: {$formattedSpent}/{$formattedBudget}";
+            }
+        }
+
+        // Français par défaut
         switch ($alertType) {
             case 'exceeded':
                 return "Vous avez dépassé le budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
-            
+
             case 'warning':
                 return "Attention ! Vous avez utilisé {$spentPercentage}% du budget \"{$budget->name}\" ({$formattedSpent}/{$formattedBudget})";
-            
+
             case 'daily_summary':
                 return "Résumé du budget \"{$budget->name}\": {$spentPercentage}% utilisé ({$formattedSpent}/{$formattedBudget})";
-            
+
             default:
                 return "Mise à jour du budget \"{$budget->name}\": {$formattedSpent}/{$formattedBudget}";
         }
@@ -691,8 +743,10 @@ class NotificationService
      */
     public function sendInactivityReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = " On vous a manqué !";
-        $body = $this->getInactivityReminderBody($daysSinceLastList);
+        $lang = $this->getUserLanguage($user);
+
+        $title = $lang === 'en' ? "🛒 We missed you!" : "🛒 On vous a manqué !";
+        $body = $this->getInactivityReminderBody($daysSinceLastList, $lang);
         
         $data = [
             'reminder_type' => 'inactivity',
@@ -714,8 +768,19 @@ class NotificationService
         return $result['success'];
     }
 
-    private function getInactivityReminderBody(int $days): string
+    private function getInactivityReminderBody(int $days, string $lang = 'fr'): string
     {
+        if ($lang === 'en') {
+            if ($days <= 14) {
+                return "It's been {$days} days since you created a shopping list. Need help organizing your purchases?";
+            } elseif ($days <= 30) {
+                return "We hope everything is well! It's been {$days} days since you used EpiList. Ready for a new list?";
+            } else {
+                return "EpiList is waiting for you! It's been over a month since you created a list. Rediscover our new features!";
+            }
+        }
+
+        // Français par défaut
         if ($days <= 14) {
             return "Cela fait {$days} jours que vous n'avez pas créé de liste de courses. Besoin d'aide pour organiser vos achats ?";
         } elseif ($days <= 30) {
@@ -762,13 +827,23 @@ class NotificationService
         };
     }
 
-    private function getBudgetAlertTitle(string $alertType): string
+    private function getBudgetAlertTitle(string $alertType, string $lang = 'fr'): string
     {
+        if ($lang === 'en') {
+            return match($alertType) {
+                'exceeded' => '⚠️ Budget Exceeded!',
+                'warning' => '⚠️ Budget Warning',
+                'daily_summary' => '📊 Budget Summary',
+                default => '💰 Budget'
+            };
+        }
+
+        // Français par défaut
         return match($alertType) {
-            'exceeded' => ' Budget Dépassé!',
-            'warning' => ' Attention Budget',
-            'daily_summary' => ' Résumé Budget',
-            default => ' Budget'
+            'exceeded' => '⚠️ Budget Dépassé!',
+            'warning' => '⚠️ Attention Budget',
+            'daily_summary' => '📊 Résumé Budget',
+            default => '💰 Budget'
         };
     }
 
@@ -831,8 +906,10 @@ class NotificationService
      */
     public function sendWeeklyListReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = " Votre liste de la semaine";
-        $body = $this->getWeeklyReminderBody($daysSinceLastList);
+        $lang = $this->getUserLanguage($user);
+
+        $title = $lang === 'en' ? "📅 Your weekly list" : "📅 Votre liste de la semaine";
+        $body = $this->getWeeklyReminderBody($daysSinceLastList, $lang);
         
         $data = [
             'reminder_type' => 'weekly_list',
@@ -859,23 +936,38 @@ class NotificationService
     /**
      *  MÉTHODE PRIVÉE: Générer le message de rappel hebdomadaire
      */
-    private function getWeeklyReminderBody(int $daysSinceLastList): string
+    private function getWeeklyReminderBody(int $daysSinceLastList, string $lang = 'fr'): string
     {
+        if ($lang === 'en') {
+            $weekDay = Carbon::now()->locale('en')->dayName;
+
+            if ($daysSinceLastList <= 7) {
+                return "It's {$weekDay}! You haven't created your weekly shopping list yet. Ready to plan your purchases?";
+            } elseif ($daysSinceLastList <= 14) {
+                return "Hello! It's been {$daysSinceLastList} days without a new list. How about creating your weekly list?";
+            } else {
+                return "📅 EpiList is waiting for you! Create your first list of the week and organize your shopping efficiently.";
+            }
+        }
+
+        // Français
         $weekDay = Carbon::now()->locale('fr')->dayName;
-        
+
         if ($daysSinceLastList <= 7) {
             return "C'est {$weekDay} ! Vous n'avez pas encore créé votre liste de courses de la semaine. Prêt à planifier vos achats ?";
         } elseif ($daysSinceLastList <= 14) {
             return "Hello ! Cela fait {$daysSinceLastList} jours sans nouvelle liste. Que diriez-vous de créer votre liste hebdomadaire ?";
         } else {
-            return " EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
+            return "📅 EpiList vous attend ! Créez votre première liste de la semaine et organisez vos courses efficacement.";
         }
     }
 
     public function sendDailyListReminder(User $user, int $daysSinceLastList): bool
     {
-        $title = " N'oubliez pas votre liste !";
-        $body = $this->getDailyReminderBody($daysSinceLastList);
+        $lang = $this->getUserLanguage($user);
+
+        $title = $lang === 'en' ? "🛍 Don't forget your list!" : "🛍 N'oubliez pas votre liste !";
+        $body = $this->getDailyReminderBody($daysSinceLastList, $lang);
         
         $data = [
             'reminder_type' => 'daily_list',
@@ -902,12 +994,42 @@ class NotificationService
     /**
      *  MÉTHODE PRIVÉE: Générer le message de rappel quotidien
      */
-    private function getDailyReminderBody(int $daysSinceLastList): string
+    private function getDailyReminderBody(int $daysSinceLastList, string $lang = 'fr'): string
     {
-        $dayName = Carbon::now()->locale('fr')->dayName;
         $timeOfDay = Carbon::now()->hour;
-        
-        // Messages selon l'heure et le jour
+
+        if ($lang === 'en') {
+            // English messages
+            if ($timeOfDay >= 17 && $timeOfDay <= 20) {
+                // Evening (5 PM - 8 PM)
+                if ($daysSinceLastList === 0) {
+                    return "Good evening! You haven't created your shopping list yet today. Prepare for tomorrow?";
+                } elseif ($daysSinceLastList === 1) {
+                    return "Good evening! It's been 1 day without a new list. Any shopping to plan?";
+                } elseif ($daysSinceLastList <= 3) {
+                    return "Good evening! It's been {$daysSinceLastList} days since you created a list. Need help organizing your purchases?";
+                } elseif ($daysSinceLastList <= 7) {
+                    return "Good evening! A week without a shopping list really shows! Ready to get back on track?";
+                } else {
+                    return "Good evening! EpiList has been waiting for you for {$daysSinceLastList} days. Rediscover the joy of organized shopping!";
+                }
+            } else {
+                // General messages for other times
+                if ($daysSinceLastList === 0) {
+                    return "Hello! You haven't planned your shopping for today yet. Create your list now!";
+                } elseif ($daysSinceLastList === 1) {
+                    return "Hi! Yesterday, no shopping list... What about today? Let EpiList help you!";
+                } elseif ($daysSinceLastList <= 3) {
+                    return "Hello! {$daysSinceLastList} days without a list, it's time to get back to it. How about a new list?";
+                } elseif ($daysSinceLastList <= 7) {
+                    return "Hey! A week without EpiList is too long! Resume your organized shopping habits.";
+                } else {
+                    return "We're waiting for you! {$daysSinceLastList} days without a list is too much! Rediscover EpiList today.";
+                }
+            }
+        }
+
+        // Messages en français
         if ($timeOfDay >= 17 && $timeOfDay <= 20) {
             // En soirée (17h-20h)
             if ($daysSinceLastList === 0) {
@@ -932,7 +1054,7 @@ class NotificationService
             } elseif ($daysSinceLastList <= 7) {
                 return "Coucou ! Une semaine sans EpiList, ça fait long ! Reprenez vos bonnes habitudes de courses organisées.";
             } else {
-                return " On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
+                return "🛒 On vous attend ! {$daysSinceLastList} jours sans liste, c'est trop ! Redécouvrez EpiList aujourd'hui.";
             }
         }
     }
