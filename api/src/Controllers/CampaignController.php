@@ -307,49 +307,59 @@ class CampaignController
     }
 
     /**
-     *  NOUVELLE MÉTHODE: Gérer le désabonnement via URL
+     *  NOUVELLE MÉTHODE: Gérer le désabonnement via URL (retourne HTML bilingue)
      */
     public function handleUnsubscribe(Request $request, Response $response, array $args): Response
     {
         try {
             $token = $args['token'] ?? '';
-            
+
             if (empty($token)) {
-                $response->getBody()->write(json_encode([
-                    'success' => false,
-                    'error' => [
-                        'code' => 'MISSING_TOKEN',
-                        'message' => 'Token de désabonnement manquant'
-                    ]
-                ]));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                $html = $this->generateUnsubscribeHtml(
+                    'error',
+                    'Token manquant',
+                    'Le lien de désabonnement est invalide ou incomplet.',
+                    null,
+                    'fr'
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(400);
             }
 
             // Trouver l'utilisateur par token
             $user = User::where('unsubscribe_token', $token)->first();
-            
+
             if (!$user) {
-                $response->getBody()->write(json_encode([
-                    'success' => false,
-                    'error' => [
-                        'code' => 'INVALID_TOKEN',
-                        'message' => 'Token de désabonnement invalide'
-                    ]
-                ]));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+                $html = $this->generateUnsubscribeHtml(
+                    'error',
+                    'Token invalide',
+                    'Ce lien de désabonnement n\'est pas valide. Veuillez vérifier le lien dans votre email.',
+                    null,
+                    'fr'
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(404);
             }
+
+            // Déterminer la langue de l'utilisateur
+            $lang = (isset($user->language) && in_array($user->language, ['fr', 'en'])) ? $user->language : 'fr';
 
             // Vérifier si déjà désabonné
             if (!$user->email_marketing_consent) {
-                $response->getBody()->write(json_encode([
-                    'success' => true,
-                    'message' => 'Vous êtes déjà désabonné des emails marketing',
-                    'data' => [
-                        'already_unsubscribed' => true,
-                        'unsubscribed_at' => $user->email_marketing_unsubscribed_at?->toISOString()
-                    ]
-                ]));
-                return $response->withHeader('Content-Type', 'application/json');
+                $title = $lang === 'en' ? 'Already Unsubscribed' : 'Déjà désabonné';
+                $message = $lang === 'en'
+                    ? 'You are already unsubscribed from our marketing emails.'
+                    : 'Vous êtes déjà désabonné de nos emails marketing.';
+
+                $html = $this->generateUnsubscribeHtml(
+                    'info',
+                    $title,
+                    $message,
+                    $user->first_name,
+                    $lang
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
             }
 
             // Effectuer le désabonnement
@@ -357,7 +367,7 @@ class CampaignController
                 'email_marketing_consent' => false,
                 'email_marketing_unsubscribed_at' => Carbon::now()
             ]);
-            
+
             if ($unsubscribeSuccess) {
                 // Envoyer email de confirmation
                 if(Config::get('APP_ENV') == 'dev') {
@@ -367,41 +377,216 @@ class CampaignController
                 }
 
                 MailSender::sendUnsubscribeConfirmation($emailToSend, $user->first_name);
-                
-                $response->getBody()->write(json_encode([
-                    'success' => true,
-                    'message' => 'Désabonnement effectué avec succès',
-                    'data' => [
-                        'user_email' => $user->email,
-                        'unsubscribed_at' => Carbon::now()->toISOString(),
-                        'confirmation_email_sent' => true
-                    ]
-                ]));
-                return $response->withHeader('Content-Type', 'application/json');
+
+                $title = $lang === 'en' ? 'Unsubscribe Confirmed' : 'Désabonnement confirmé';
+                $message = $lang === 'en'
+                    ? 'You have been successfully unsubscribed from our marketing emails. You will no longer receive promotional emails from us.'
+                    : 'Vous avez été désabonné avec succès de nos emails marketing. Vous ne recevrez plus d\'emails promotionnels de notre part.';
+
+                $html = $this->generateUnsubscribeHtml(
+                    'success',
+                    $title,
+                    $message,
+                    $user->first_name,
+                    $lang
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
             } else {
-                $response->getBody()->write(json_encode([
-                    'success' => false,
-                    'error' => [
-                        'code' => 'UNSUBSCRIBE_FAILED',
-                        'message' => 'Erreur lors du désabonnement'
-                    ]
-                ]));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+                $title = $lang === 'en' ? 'Unsubscribe Error' : 'Erreur de désabonnement';
+                $message = $lang === 'en'
+                    ? 'An error occurred while processing your request. Please try again later.'
+                    : 'Une erreur s\'est produite lors du traitement de votre demande. Veuillez réessayer plus tard.';
+
+                $html = $this->generateUnsubscribeHtml(
+                    'error',
+                    $title,
+                    $message,
+                    null,
+                    $lang
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
             }
 
         } catch (Exception $e) {
             error_log("Unsubscribe error: " . $e->getMessage());
-            
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'error' => [
-                    'code' => 'INTERNAL_ERROR',
-                    'message' => 'Erreur lors du traitement du désabonnement',
-                    'details' => $e->getMessage()
-                ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+
+            $html = $this->generateUnsubscribeHtml(
+                'error',
+                'Erreur serveur',
+                'Une erreur technique s\'est produite. Veuillez réessayer plus tard ou nous contacter.',
+                null,
+                'fr'
+            );
+            $response->getBody()->write($html);
+            return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
         }
+    }
+
+    /**
+     * Générer une page HTML bilingue pour le désabonnement
+     */
+    private function generateUnsubscribeHtml(string $type, string $title, string $message, ?string $firstName = null, string $lang = 'fr'): string
+    {
+        // Définir les couleurs et icônes selon le type
+        $config = [
+            'success' => [
+                'color' => '#059669',
+                'bgColor' => '#d1fae5',
+                'icon' => '✓'
+            ],
+            'error' => [
+                'color' => '#dc2626',
+                'bgColor' => '#fee2e2',
+                'icon' => '✕'
+            ],
+            'info' => [
+                'color' => '#2563eb',
+                'bgColor' => '#dbeafe',
+                'icon' => 'ℹ'
+            ]
+        ];
+
+        $settings = $config[$type] ?? $config['info'];
+
+        // Messages bilingues
+        if ($lang === 'en') {
+            $greeting = $firstName ? "Hello {$firstName}," : "Hello,";
+            $footerText1 = "This page concerns your marketing email preferences.<br>You will continue to receive important emails about your account.";
+            $footerText2 = "Questions? Contact us at <a href='mailto:support@epilist.com'>support@epilist.com</a>";
+        } else {
+            $greeting = $firstName ? "Bonjour {$firstName}," : "Bonjour,";
+            $footerText1 = "Cette page concerne vos préférences d'emails marketing.<br>Vous continuerez à recevoir les emails importants concernant votre compte.";
+            $footerText2 = "Des questions? Contactez-nous à <a href='mailto:support@epilist.com'>support@epilist.com</a>";
+        }
+
+        return "<!DOCTYPE html>
+<html lang='{$lang}'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>{$title} - EpiList</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 48px 32px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+        }
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: {$settings['bgColor']};
+            color: {$settings['color']};
+            font-size: 40px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        h1 {
+            color: #1f2937;
+            font-size: 28px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .greeting {
+            color: #4b5563;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        .message {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .footer {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
+            margin-top: 32px;
+        }
+        .footer p {
+            color: #9ca3af;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .footer a {
+            color: #059669;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 640px) {
+            .container {
+                padding: 32px 24px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .icon-circle {
+                width: 64px;
+                height: 64px;
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='logo'>EpiList</div>
+
+        <div class='icon-circle'>
+            {$settings['icon']}
+        </div>
+
+        <h1>{$title}</h1>
+
+        " . ($firstName ? "<p class='greeting'>{$greeting}</p>" : "") . "
+
+        <p class='message'>{$message}</p>
+
+        <div class='footer'>
+            <p>
+                {$footerText1}
+            </p>
+            <p style='margin-top: 16px;'>
+                {$footerText2}
+            </p>
+        </div>
+    </div>
+</body>
+</html>";
     }
 
     /**
