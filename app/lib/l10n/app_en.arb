@@ -1636,5 +1636,6 @@
   "voiceTapToSpeak": "Tap to speak",
   "voicePermissionDenied": "Microphone permission denied",
   "voicePermissionRequired": "Microphone access is required for voice input",
-  "voiceItemAdded": "Item added by voice"
+  "voiceItemAdded": "Item added by voice",
+  "voiceRequiresInternet": "Voice recognition requires an Internet connection"
 }

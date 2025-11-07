@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:epilist/services/voice_recognition_service.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
 class VoiceInputButton extends StatefulWidget {
@@ -20,8 +21,29 @@ class VoiceInputButton extends StatefulWidget {
 
 class _VoiceInputButtonState extends State<VoiceInputButton> {
   final VoiceRecognitionService _voiceService = VoiceRecognitionService();
+  final ConnectivityService _connectivityService = ConnectivityService();
   bool _isListening = false;
   String _currentText = '';
+  bool _isOnline = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Écouter les changements de connectivité
+    _isOnline = _connectivityService.isConnected;
+    _connectivityService.connectivityStream.listen((isConnected) {
+      if (mounted) {
+        setState(() {
+          _isOnline = isConnected;
+          // Arrêter l'écoute si on perd la connexion
+          if (!isConnected && _isListening) {
+            _voiceService.stopListening();
+            _isListening = false;
+          }
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -30,6 +52,29 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
   }
 
   Future<void> _toggleListening() async {
+    // Vérifier si on est en ligne
+    if (!_isOnline) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.voiceRequiresInternet,
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.orange[700],
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
     if (_isListening) {
       // Arrêter l'écoute
       await _voiceService.stopListening();
@@ -37,6 +82,20 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
         _isListening = false;
       });
     } else {
+      // Détecter la langue de l'application AVANT les await
+      final locale = Localizations.localeOf(context);
+      final languageCode = locale.languageCode;
+
+      // Déterminer le localeId pour la reconnaissance vocale
+      String voiceLocaleId;
+      if (languageCode == 'en') {
+        voiceLocaleId = 'en_US'; // Anglais
+      } else {
+        voiceLocaleId = 'fr_FR'; // Français par défaut
+      }
+
+      debugPrint('🌐 Using voice locale: $voiceLocaleId for app language: $languageCode');
+
       // Initialiser si nécessaire (cela demandera la permission automatiquement)
       if (!_voiceService.isInitialized) {
         final initialized = await _voiceService.initialize();
@@ -59,7 +118,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           debugPrint('🎯 Final result received: $recognizedText');
           _processVoiceInput(recognizedText);
         },
-        localeId: 'fr_FR', // Français
+        localeId: voiceLocaleId,
       );
 
       if (started) {

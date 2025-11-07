@@ -24,6 +24,12 @@ import {
   FolderOpen,
   TrendingUp,
   Mail,
+  Mic,
+  CheckCheck,
+  Lightbulb,
+  ScanBarcode,
+  MessageSquare,
+  Receipt,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import Header from "@/components/Header";
@@ -118,6 +124,42 @@ export default function FeaturesContent() {
       desc: t("feature14Desc"),
       category: "advanced",
     },
+    {
+      icon: Mic,
+      title: t("feature15Title"),
+      desc: t("feature15Desc"),
+      category: "essential",
+    },
+    {
+      icon: CheckCheck,
+      title: t("feature16Title"),
+      desc: t("feature16Desc"),
+      category: "advanced",
+    },
+    {
+      icon: Lightbulb,
+      title: t("feature17Title"),
+      desc: t("feature17Desc"),
+      category: "analytics",
+    },
+    {
+      icon: ScanBarcode,
+      title: t("feature18Title"),
+      desc: t("feature18Desc"),
+      category: "essential",
+    },
+    {
+      icon: MessageSquare,
+      title: t("feature19Title"),
+      desc: t("feature19Desc"),
+      category: "collaboration",
+    },
+    {
+      icon: Receipt,
+      title: t("feature20Title"),
+      desc: t("feature20Desc"),
+      category: "advanced",
+    },
   ];
 
   return (
@@ -141,8 +183,8 @@ export default function FeaturesContent() {
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t("language") === "fr"
-                ? "Découvrez pourquoi 50k+ familles canadiennes font confiance à EpiList pour simplifier leurs courses quotidiennes."
-                : "Discover why 50k+ Canadian families trust EpiList to simplify their daily shopping."}
+                ? "Découvrez pourquoi 200+ utilisateurs font confiance à EpiList pour simplifier leurs courses quotidiennes."
+                : "Discover why 200+ users trust EpiList to simplify their daily shopping."}
             </p>
           </div>
 
@@ -172,28 +214,28 @@ export default function FeaturesContent() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               {
-                number: "14+",
+                number: "20+",
                 label:
                   t("language") === "fr"
-                    ? "Fonctionnalités principales"
-                    : "Main Features",
+                    ? "Fonctionnalités"
+                    : "Features",
               },
               {
-                number: "150+",
+                number: "200+",
                 label:
                   t("language") === "fr"
-                    ? "Devises supportées"
-                    : "Supported Currencies",
+                    ? "Utilisateurs actifs"
+                    : "Active Users",
               },
               {
-                number: "24/7",
-                label:
-                  t("language") === "fr" ? "Synchronisation" : "Sync",
-              },
-              {
-                number: "4.9⭐",
+                number: "4.9/5",
                 label:
                   t("language") === "fr" ? "Note moyenne" : "Average Rating",
+              },
+              {
+                number: "450+",
+                label:
+                  t("language") === "fr" ? "Listes créées" : "Lists Created",
               },
             ].map((stat, i) => (
               <div key={i}>

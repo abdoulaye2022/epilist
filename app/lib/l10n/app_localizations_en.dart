@@ -4130,4 +4130,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voiceItemAdded => 'Item added by voice';
+
+  @override
+  String get voiceRequiresInternet =>
+      'Voice recognition requires an Internet connection';
 }

@@ -7902,6 +7902,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Article ajouté par voix'**
   String get voiceItemAdded;
+
+  /// No description provided for @voiceRequiresInternet.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reconnaissance vocale nécessite une connexion Internet'**
+  String get voiceRequiresInternet;
 }
 
 class _AppLocalizationsDelegate

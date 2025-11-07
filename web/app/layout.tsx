@@ -10,22 +10,12 @@ import {
   epilistFAQSchema,
   epilistBusinessSchema,
 } from "@/lib/schema";
-import { Viewport } from "next/dist/lib/metadata/types/extra-types";
 
 // Configuration de l'URL de base selon l'environnement
 const baseUrl =
   process.env.NODE_ENV === "production"
     ? "https://epilist.app"
     : "http://localhost:3000";
-
-// Viewport configuration (sans themeColor)
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
-  // themeColor se gère dans le head avec des balises meta
-};
 
 // Metadata principal optimisé
 export const metadata: Metadata = {
@@ -91,7 +81,7 @@ export const metadata: Metadata = {
     siteName: "EpiList",
     title: "EpiList - L'App de Courses Familiale #1 au Canada",
     description:
-      "🛒 Simplifiez vos courses ! Listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications. 50k+ familles nous font confiance. Gratuit à vie !",
+      "🛒 Simplifiez vos courses ! Listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications. 200+ utilisateurs actifs nous font confiance. Gratuit à vie !",
     images: [
       {
         url: "/images/og-image-main.jpg",

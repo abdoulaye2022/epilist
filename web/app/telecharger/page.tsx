@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "📱 Télécharger EpiList - App Courses Familiale Gratuite",
     description:
-      "App Store & Google Play • 4.9⭐ • 50k+ familles • Gratuit à vie • Sync temps réel",
+      "App Store & Google Play • 4.9⭐ • 200+ utilisateurs actifs • Gratuit à vie • Sync temps réel",
     url: "https://epilist.app/telecharger",
     images: [
       {

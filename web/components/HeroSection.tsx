@@ -118,7 +118,7 @@ export default function HeroSection() {
               <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/20">
                 <Users className="h-4 w-4 text-blue-500" />
                 <span className="font-semibold text-gray-700">
-                  50k+ {t("activeUsers")}
+                  200+ {t("activeUsers")}
                 </span>
               </div>
               <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/20">

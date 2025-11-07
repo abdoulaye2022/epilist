@@ -75,6 +75,24 @@ export const translations = {
     feature14Title: 'Préférences email',
     feature14Desc: 'Personnalisez vos notifications email par type : alertes, résumés quotidiens ou hebdomadaires',
 
+    feature15Title: 'Ajout vocal intelligent',
+    feature15Desc: 'Ajoutez des articles à vos listes simplement en parlant. Reconnaissance vocale en français et anglais avec détection automatique des quantités',
+
+    feature16Title: 'Détection des doublons',
+    feature16Desc: 'Évitez les articles en double avec notre système intelligent qui détecte les similitudes et propose de fusionner ou d\'augmenter les quantités',
+
+    feature17Title: 'Suggestions d\'habitudes',
+    feature17Desc: 'Recevez des suggestions personnalisées basées sur vos achats récurrents et vos habitudes de consommation analysées intelligemment',
+
+    feature18Title: 'Scanner de code-barres',
+    feature18Desc: 'Scannez les codes-barres pour ajouter rapidement des produits avec informations nutritionnelles via OpenFoodFacts',
+
+    feature19Title: 'Messagerie de listes',
+    feature19Desc: 'Communiquez directement avec les membres de vos listes partagées pour coordonner vos achats en temps réel',
+
+    feature20Title: 'Gestion des reçus',
+    feature20Desc: 'Attachez des photos de reçus à vos listes pour suivre vos dépenses réelles et conserver un historique visuel',
+
     moreToDiscover: 'Et bien plus encore à découvrir...',
     
     // Feature Categories
@@ -204,7 +222,7 @@ export const translations = {
     pause: 'Pause',
     resume: 'Reprendre',
     positiveReviews: 'Plus de 2000 avis positifs',
-    downloads: '50k+ téléchargements',
+    downloads: '200+ utilisateurs actifs',
     
     // Enhanced testimonials
     testimonial1Name: 'Marie Dubois',
@@ -554,26 +572,21 @@ export const translations = {
     fullDataControl: 'Contrôle total de vos données',
     allRightsReserved: 'Tous droits réservés',
 
-    // Footer
+    // Footer additional
     footerTagline: 'Simplifiez vos courses',
-    footerDescription: 'L\'application de courses familiale la plus populaire au Canada. Synchronisation temps réel, mode hors ligne, 100% gratuite à vie.',
     application: 'Application',
     support: 'Support',
     company: 'Entreprise',
     legal: 'Légal',
-    helpCenter: 'Centre d\'aide',
     contactUs: 'Nous contacter',
-    emailSupport: 'Support email',
     about: 'À propos',
-    newBrunswick: '🍁 Nouveau-Brunswick',
-    madeInCanada: 'Made in Canada',
     privacy: 'Confidentialité',
     terms: 'Conditions',
     comparison: 'Comparaison',
     stayInformed: 'Restez informé 📬',
     newsletterDescription: 'Nouvelles fonctionnalités, conseils courses et mises à jour exclusives',
-    emailPlaceholder: 'votre@email.com',
     subscribe: 'S\'abonner',
+    newBrunswick: '🍁 Nouveau-Brunswick',
     copyright: '© 2025 EpiList Inc. Tous droits réservés.',
     madeWith: 'Made with',
     inNewBrunswick: 'in New Brunswick',
@@ -653,6 +666,24 @@ export const translations = {
 
     feature14Title: 'Email Preferences',
     feature14Desc: 'Customize your email notifications by type: alerts, daily or weekly summaries',
+
+    feature15Title: 'Smart Voice Input',
+    feature15Desc: 'Add items to your lists simply by speaking. Voice recognition in French and English with automatic quantity detection',
+
+    feature16Title: 'Duplicate Detection',
+    feature16Desc: 'Avoid duplicate items with our smart system that detects similarities and suggests merging or increasing quantities',
+
+    feature17Title: 'Habit Suggestions',
+    feature17Desc: 'Receive personalized suggestions based on your recurring purchases and intelligently analyzed consumption habits',
+
+    feature18Title: 'Barcode Scanner',
+    feature18Desc: 'Scan barcodes to quickly add products with nutritional information via OpenFoodFacts',
+
+    feature19Title: 'List Messaging',
+    feature19Desc: 'Communicate directly with members of your shared lists to coordinate your purchases in real-time',
+
+    feature20Title: 'Receipt Management',
+    feature20Desc: 'Attach receipt photos to your lists to track actual expenses and maintain a visual history',
 
     moreToDiscover: 'And much more to discover...',
     
@@ -783,7 +814,7 @@ export const translations = {
     pause: 'Pause',
     resume: 'Resume',
     positiveReviews: 'Over 2000 positive reviews',
-    downloads: '50k+ downloads',
+    downloads: '200+ active users',
     
     // Enhanced testimonials
     testimonial1Name: 'Marie Dubois',
@@ -1135,28 +1166,22 @@ export const translations = {
 
     // Footer
     footerTagline: 'Simplify your shopping',
-    footerDescription: 'The most popular family shopping app in Canada. Real-time sync, offline mode, 100% free for life.',
     application: 'Application',
     support: 'Support',
     company: 'Company',
     legal: 'Legal',
-    helpCenter: 'Help Center',
     contactUs: 'Contact us',
-    emailSupport: 'Email support',
     about: 'About',
     newBrunswick: '🍁 New Brunswick',
-    madeInCanada: 'Made in Canada',
     privacy: 'Privacy',
     terms: 'Terms',
     comparison: 'Comparison',
     stayInformed: 'Stay informed 📬',
     newsletterDescription: 'New features, shopping tips and exclusive updates',
-    emailPlaceholder: 'your@email.com',
     subscribe: 'Subscribe',
     copyright: '© 2025 EpiList Inc. All rights reserved.',
     madeWith: 'Made with',
     inNewBrunswick: 'in New Brunswick',
-    allRightsReserved: 'All rights reserved',
   }
 };
 

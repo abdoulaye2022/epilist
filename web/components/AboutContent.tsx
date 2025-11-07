@@ -21,13 +21,13 @@ export default function AboutContent() {
     {
       icon: Users,
       title: "Communauté",
-      desc: "50k+ familles nous font confiance. Chaque retour nous aide à améliorer EpiList.",
+      desc: "200+ utilisateurs actifs nous font confiance. Chaque retour nous aide à améliorer EpiList.",
     },
   ];
 
   const stats = [
     { number: "2024", label: "Année de création" },
-    { number: "50k+", label: "Familles utilisatrices" },
+    { number: "200+", label: "Utilisateurs actifs" },
     { number: "4.9⭐", label: "Note app stores" },
     { number: "100%", label: "Gratuit à vie" },
   ];

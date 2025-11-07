@@ -22,6 +22,12 @@ import {
   Bell,
   TrendingUp,
   Mail,
+  Mic,
+  CheckCheck,
+  Lightbulb,
+  ScanBarcode,
+  MessageSquare,
+  Receipt,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -136,6 +142,54 @@ const features = [
     descKey: "feature14Desc",
     color: "from-pink-500 to-pink-400",
     delay: 1300,
+    category: "advanced",
+  },
+  {
+    icon: Mic,
+    titleKey: "feature15Title",
+    descKey: "feature15Desc",
+    color: "from-green-500 to-green-400",
+    delay: 1400,
+    category: "essential",
+  },
+  {
+    icon: CheckCheck,
+    titleKey: "feature16Title",
+    descKey: "feature16Desc",
+    color: "from-blue-500 to-blue-400",
+    delay: 1500,
+    category: "advanced",
+  },
+  {
+    icon: Lightbulb,
+    titleKey: "feature17Title",
+    descKey: "feature17Desc",
+    color: "from-yellow-500 to-yellow-400",
+    delay: 1600,
+    category: "analytics",
+  },
+  {
+    icon: ScanBarcode,
+    titleKey: "feature18Title",
+    descKey: "feature18Desc",
+    color: "from-purple-500 to-purple-400",
+    delay: 1700,
+    category: "essential",
+  },
+  {
+    icon: MessageSquare,
+    titleKey: "feature19Title",
+    descKey: "feature19Desc",
+    color: "from-indigo-500 to-indigo-400",
+    delay: 1800,
+    category: "collaborative",
+  },
+  {
+    icon: Receipt,
+    titleKey: "feature20Title",
+    descKey: "feature20Desc",
+    color: "from-teal-500 to-teal-400",
+    delay: 1900,
     category: "advanced",
   },
 ];
@@ -320,15 +374,33 @@ export default function FeaturesSection() {
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             {
-              number: "14+",
+              number: "20+",
               label:
                 t("language") === "fr"
-                  ? "Fonctionnalités principales"
-                  : "Main Features",
+                  ? "Fonctionnalités"
+                  : "Features",
             },
-            { number: "50k+", label: t("downloads") },
-            { number: "4.9", label: t("averageRating") },
-            { number: "150+", label: t("language") === "fr" ? "Devises supportées" : "Supported Currencies" },
+            {
+              number: "200+",
+              label:
+                t("language") === "fr"
+                  ? "Utilisateurs actifs"
+                  : "Active Users",
+            },
+            {
+              number: "4.9/5",
+              label:
+                t("language") === "fr"
+                  ? "Note moyenne"
+                  : "Average Rating",
+            },
+            {
+              number: "450+",
+              label:
+                t("language") === "fr"
+                  ? "Listes créées"
+                  : "Lists Created",
+            },
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">

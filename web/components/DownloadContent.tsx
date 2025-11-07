@@ -103,7 +103,7 @@ export default function DownloadContent() {
               <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
                 <Users className="h-4 w-4 text-blue-500" />
                 <span className="font-semibold text-gray-700">
-                  50k+ téléchargements
+                  200+ utilisateurs actifs
                 </span>
               </div>
               <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">

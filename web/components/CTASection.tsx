@@ -142,7 +142,7 @@ export default function CTASection() {
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300">
               <CardContent className="p-8 text-center">
                 <Users className="h-12 w-12 text-white mx-auto mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">50k+</div>
+                <div className="text-3xl font-bold text-white mb-2">200+</div>
                 <div className="text-white/80">{t("activeUsers")}</div>
               </CardContent>
             </Card>

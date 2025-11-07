@@ -1642,5 +1642,6 @@
   "voiceTapToSpeak": "Appuyez pour parler",
   "voicePermissionDenied": "Permission microphone refusée",
   "voicePermissionRequired": "L'accès au microphone est requis pour l'ajout vocal",
-  "voiceItemAdded": "Article ajouté par voix"
+  "voiceItemAdded": "Article ajouté par voix",
+  "voiceRequiresInternet": "La reconnaissance vocale nécessite une connexion Internet"
 }

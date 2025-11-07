@@ -4202,4 +4202,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get voiceItemAdded => 'Article ajouté par voix';
+
+  @override
+  String get voiceRequiresInternet =>
+      'La reconnaissance vocale nécessite une connexion Internet';
 }

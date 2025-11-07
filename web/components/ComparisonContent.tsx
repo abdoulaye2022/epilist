@@ -201,7 +201,7 @@ export default function ComparisonContent() {
             <Card className="max-w-4xl mx-auto border-0 shadow-2xl bg-gradient-to-br from-green-50 to-blue-50">
               <CardContent className="p-12 text-center">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                  Pourquoi 50k+ familles choisissent EpiList
+                  Pourquoi 200+ utilisateurs choisissent EpiList
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
                   {[

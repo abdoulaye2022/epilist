@@ -982,45 +982,111 @@ class MailSender
      */
     public static function newVersionCampaignEmail(string $prenom, string $unsubscribeUrl = null): string
     {
-        $header = self::headerContent('EpiList 2.0 - La révolution de vos courses !');
+        $header = self::headerContent('EpiList 2.0.0 - La révolution de vos courses !');
         $footer = self::footerContent($unsubscribeUrl); //  Passer l'URL de désabonnement
-        
+
         $content = "
                 <tr>
                     <td class='content' style='padding: 40px 30px;'>
                         <!-- En-tête principal -->
                         <div style='text-align: center; margin-bottom: 30px;'>
                             <h1 style='margin: 0 0 15px; font-size: 32px; font-weight: bold; color: #047857; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>
-                                 EpiList 2.0 est arrivé !
+                                🎉 EpiList 2.0.0 est arrivé !
                             </h1>
                             <p style='margin: 0; font-size: 18px; color: #059669; font-weight: 600;'>
                                 La révolution de vos courses commence maintenant
                             </p>
                         </div>
-                        
+
                         <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
                             Bonjour <strong>{$prenom}</strong>,
                         </p>
-                        
+
                         <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
-                            Nous sommes <strong>extrêmement fiers</strong> de vous présenter EpiList 2.0 ! Cette mise à jour majeure transforme complètement votre expérience de gestion des courses avec des fonctionnalités révolutionnaires.
+                            Nous sommes <strong>extrêmement fiers</strong> de vous présenter <strong>EpiList 2.0.0</strong> ! Cette mise à jour majeure transforme complètement votre expérience de gestion des courses avec <strong>10 nouvelles fonctionnalités révolutionnaires</strong>.
                         </p>
 
                         <!-- Badge NOUVEAU -->
                         <div style='background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; padding: 8px 16px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;'>
-                             Nouveau
+                            🆕 Nouvelle version
                         </div>
 
                         <!-- Nouvelles fonctionnalités avec icônes -->
                         <h2 style='margin: 30px 0 20px; font-size: 24px; font-weight: 600; color: #047857; text-align: center;'>
-                             Découvrez les nouvelles fonctionnalités
+                            ✨ Découvrez les nouvelles fonctionnalités
                         </h2>
 
                         <div style='margin: 30px 0;'>
+                            <!-- Ajout vocal intelligent -->
+                            <div style='background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border: 2px solid #ec4899; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #ec4899; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎤</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #9f1239; font-weight: 600;'>Ajout vocal intelligent</h3>
+                                </div>
+                                <p style='margin: 0; color: #be185d; font-size: 14px; line-height: 1.5;'>
+                                    Ajoutez des articles à vos listes simplement en parlant ! Notre système reconnaît automatiquement les quantités et les noms de produits. Compatible en français et anglais.
+                                </p>
+                            </div>
+
+                            <!-- Détection des doublons -->
+                            <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #22c55e; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>✓✓</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #15803d; font-weight: 600;'>Détection des doublons</h3>
+                                </div>
+                                <p style='margin: 0; color: #16a34a; font-size: 14px; line-height: 1.5;'>
+                                    Fini les articles en double ! EpiList détecte automatiquement les doublons et vous propose de fusionner les quantités pour éviter les achats inutiles.
+                                </p>
+                            </div>
+
+                            <!-- Suggestions d'habitudes -->
+                            <div style='background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 2px solid #fb923c; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #fb923c; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💡</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #9a3412; font-weight: 600;'>Suggestions d'habitudes d'achat</h3>
+                                </div>
+                                <p style='margin: 0; color: #c2410c; font-size: 14px; line-height: 1.5;'>
+                                    EpiList analyse vos habitudes et vous suggère automatiquement les produits que vous achetez régulièrement. Plus besoin de tout re-saisir à chaque fois !
+                                </p>
+                            </div>
+
+                            <!-- Scanner de code-barres -->
+                            <div style='background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📱</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #1e40af; font-weight: 600;'>Scanner de code-barres</h3>
+                                </div>
+                                <p style='margin: 0; color: #2563eb; font-size: 14px; line-height: 1.5;'>
+                                    Scannez les codes-barres de vos produits pour les ajouter instantanément à vos listes. Rapide, précis et sans erreur de saisie !
+                                </p>
+                            </div>
+
+                            <!-- Messagerie de listes -->
+                            <div style='background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 2px solid #a855f7; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #a855f7; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💬</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Messagerie de listes intégrée</h3>
+                                </div>
+                                <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
+                                    Communiquez directement avec votre famille sur chaque liste partagée. Posez des questions, donnez des précisions, coordonnez vos courses en temps réel !
+                                </p>
+                            </div>
+
+                            <!-- Mode hors ligne -->
+                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
+                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📶</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Mode hors ligne avancé</h3>
+                                </div>
+                                <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
+                                    Utilisez EpiList même sans connexion Internet ! Vos modifications sont automatiquement synchronisées dès que vous retrouvez le réseau.
+                                </p>
+                            </div>
+
                             <!-- Gestion des dépenses -->
                             <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
+                                    <div style='background: #10b981; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>💰</div>
                                     <h3 style='margin: 0; font-size: 18px; color: #047857; font-weight: 600;'>Gestion complète des dépenses</h3>
                                 </div>
                                 <p style='margin: 0; color: #059669; font-size: 14px; line-height: 1.5;'>
@@ -1028,21 +1094,10 @@ class MailSender
                                 </p>
                             </div>
 
-                            <!-- Factures -->
-                            <div style='background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #3b82f6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
-                                <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #3b82f6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
-                                    <h3 style='margin: 0; font-size: 18px; color: #1e40af; font-weight: 600;'>Gestion des factures</h3>
-                                </div>
-                                <p style='margin: 0; color: #2563eb; font-size: 14px; line-height: 1.5;'>
-                                    Enregistrez et organisez vos factures par magasin, consultez vos historiques d'achats et comparez les prix entre différents commerçants.
-                                </p>
-                            </div>
-
                             <!-- Budgets -->
                             <div style='background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
+                                    <div style='background: #f59e0b; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🎯</div>
                                     <h3 style='margin: 0; font-size: 18px; color: #92400e; font-weight: 600;'>Budgets intelligents</h3>
                                 </div>
                                 <p style='margin: 0; color: #d97706; font-size: 14px; line-height: 1.5;'>
@@ -1053,22 +1108,22 @@ class MailSender
                             <!-- Analytics -->
                             <div style='background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
+                                    <div style='background: #8b5cf6; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>📊</div>
                                     <h3 style='margin: 0; font-size: 18px; color: #6b21a8; font-weight: 600;'>Statistiques avancées</h3>
                                 </div>
                                 <p style='margin: 0; color: #7c3aed; font-size: 14px; line-height: 1.5;'>
-                                    Tableau de bord complet avec analyses détaillées : évolution des dépenses, produits les plus achetés, comparaisons de périodes.
+                                    Tableau de bord complet avec analyses détaillées : évolution des dépenses, produits les plus achetés, comparaisons de périodes et graphiques interactifs.
                                 </p>
                             </div>
 
                             <!-- Notifications -->
-                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
+                            <div style='background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #f87171; border-radius: 12px; padding: 20px; margin-bottom: 16px;'>
                                 <div style='display: flex; align-items: center; margin-bottom: 12px;'>
-                                    <div style='background: #ef4444; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'></div>
-                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Alertes intelligentes</h3>
+                                    <div style='background: #f87171; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 15px;'>🔔</div>
+                                    <h3 style='margin: 0; font-size: 18px; color: #991b1b; font-weight: 600;'>Notifications temps réel</h3>
                                 </div>
                                 <p style='margin: 0; color: #dc2626; font-size: 14px; line-height: 1.5;'>
-                                    Notifications push personnalisées : alertes de budget, rappels de courses, et suggestions basées sur vos habitudes d'achat.
+                                    Notifications push instantanées : alertes de budget, rappels de courses, modifications de listes partagées et suggestions personnalisées basées sur vos habitudes.
                                 </p>
                             </div>
                         </div>
@@ -1107,88 +1162,6 @@ class MailSender
                                         </div>
                                     </div>
                                 </a>
-                            </div>
-                        </div>
-
-                        <!-- Captures d'écran -->
-                        <div style='margin: 40px 0; text-align: center;'>
-                            <h3 style='margin: 0 0 20px; font-size: 20px; color: #047857; font-weight: 600;'>
-                                 Aperçu de la nouvelle interface
-                            </h3>
-                            
-                            <!-- Grille de screenshots -->
-                            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0;'>
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/dashboard.png' 
-                                        alt='Tableau de bord' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Dashboard</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Tableau de bord</p>
-                                </div>
-                                
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/budget.png' 
-                                        alt='Gestion budgets' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Budgets</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Gestion budgets</p>
-                                </div>
-                                
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/analyse.png' 
-                                        alt='Statistiques' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Analytics</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Statistiques</p>
-                                </div>
-                                
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/facture.png' 
-                                        alt='Factures' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Factures</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Factures</p>
-                                </div>
-
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/profil.png' 
-                                        alt='Multi-language' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Multi-lang</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Multi-language & Multi-device</p>
-                                </div>
-
-                                <div style='background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center;'>
-                                    <img src='https://m2atodev.com/api.epilist/public/screenshots/chart.png' 
-                                        alt='Charts' 
-                                        style='width: 100%; max-width: 150px; height: auto; border-radius: 8px; border: 1px solid #d1d5db;'
-                                        onerror=\"this.style.display='none'; this.nextElementSibling.style.display='block';\">
-                                    <div style='display: none; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 40px 20px; border-radius: 8px;'>
-                                        <div style='font-size: 24px; margin-bottom: 8px;'></div>
-                                        <div style='font-size: 12px;'>Charts</div>
-                                    </div>
-                                    <p style='margin: 8px 0 0; font-size: 12px; color: #6b7280; font-weight: 500;'>Graphiques détaillés</p>
-                                </div>
                             </div>
                         </div>
 
@@ -1254,11 +1227,11 @@ class MailSender
      */
     public static function sendNewVersionCampaign(string $email, string $firstName, string $unsubscribeUrl = null): bool
     {
-        $subject = " EpiList 2.0 - Gestion complète de vos courses + Apps mobiles !";
-        
+        $subject = "🎉 EpiList 2.0.0 - 10 nouvelles fonctionnalités révolutionnaires !";
+
         //  Passer l'URL de désabonnement au template
         $htmlContent = self::newVersionCampaignEmail($firstName, $unsubscribeUrl);
-        
+
         return self::sendMail(
             $subject,
             [['email' => $email]],

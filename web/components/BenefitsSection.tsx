@@ -180,9 +180,9 @@ export default function BenefitsSection() {
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl max-w-4xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { number: '50k+', labelKey: 'activeUsers' },
+                { number: '200+', labelKey: 'activeUsers' },
                 { number: '4.9/5', labelKey: 'averageRating' },
-                { number: '2M+', labelKey: 'listsCreated' },
+                { number: '450+', labelKey: 'listsCreated' },
                 { number: '98%', labelKey: 'satisfaction' }
               ].map((stat, index) => (
                 <div key={index} className="text-center">

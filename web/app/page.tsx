@@ -6,14 +6,14 @@ export const metadata: Metadata = {
   title:
     "EpiList - App de Liste de Courses Familiale | Sync Temps Réel, Multi-Devises, Mode Hors Ligne",
   description:
-    "🛒 EpiList révolutionne vos courses ! Listes partagées, synchronisation temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications instantanées. 50k+ utilisateurs, 4.9⭐, 100% gratuit sur iOS & Android !",
+    "🛒 EpiList révolutionne vos courses ! Listes partagées, synchronisation temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications instantanées. 200+ utilisateurs actifs, 4.9⭐, 100% gratuit sur iOS & Android !",
   keywords:
     "liste de courses gratuite, application courses famille, synchronisation temps réel, multi-devises, courses hors ligne, catégories personnalisables, reçus photo, SSO Google Apple, notifications temps réel, analytiques visuelles, organisateur familial, EpiList Canada",
 
   openGraph: {
     title: "🛒 EpiList - L'App de Courses Familiale #1 | Gratuite & Sans Pub",
     description:
-      "Simplifiez vos courses avec listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo. Rejoignez 50k+ familles satisfaites !",
+      "Simplifiez vos courses avec listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo. Rejoignez 200+ utilisateurs actifs satisfaits !",
     url: "https://epilist.app",
     images: [
       {
