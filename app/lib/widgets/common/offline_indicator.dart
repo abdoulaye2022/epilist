@@ -21,9 +21,11 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
   final _connectivityService = ConnectivityService();
   final _syncService = OfflineSyncService();
 
-  bool _isOnline = true;
+  // Commencer par supposer hors ligne pour afficher la bannière si nécessaire
+  bool _isOnline = false;
   int _pendingCount = 0;
   bool _isSyncing = false;
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -32,8 +34,17 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
   }
 
   Future<void> _initializeStatus() async {
-    _isOnline = _connectivityService.isConnected;
-    _pendingCount = await _syncService.getPendingActionsCount();
+    // Vérifier immédiatement le statut
+    final isOnline = _connectivityService.isConnected;
+    final pendingCount = await _syncService.getPendingActionsCount();
+
+    if (mounted) {
+      setState(() {
+        _isOnline = isOnline;
+        _pendingCount = pendingCount;
+        _initialized = true;
+      });
+    }
 
     // Écouter les changements de connectivité
     _connectivityService.connectivityStream.listen((isOnline) {
@@ -54,8 +65,6 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
         _updatePendingCount();
       }
     });
-
-    setState(() {});
   }
 
   Future<void> _updatePendingCount() async {

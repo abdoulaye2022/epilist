@@ -412,11 +412,51 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     }
   }
 
-  // ✅ Méthodes existantes (inchangées)
+  // ✅ OPTIMISATION: Vérifier connectivité AVANT l'appel API
   Future<void> _onUpdateListItem(
     UpdateListItem event,
     Emitter<ListItemState> emit,
   ) async {
+    // Mode hors ligne : mettre en queue et mise à jour locale
+    if (!_connectivityService.isConnected) {
+      await OfflineQueueService.enqueueAction(
+        actionType: OfflineQueueService.ACTION_UPDATE_ITEM,
+        payload: {
+          'list_id': event.listId,
+          'item_id': event.itemId,
+          'product_name': event.productName,
+          'quantity': event.quantity,
+          'price': event.price,
+          'store_name': event.storeName,
+          'category_id': event.categoryId,
+        },
+      );
+
+      // Mettre à jour localement l'item
+      if (state is ListItemLoaded) {
+        final currentState = state as ListItemLoaded;
+        final updatedItems =
+            currentState.items.map((item) {
+              if (item.id == event.itemId) {
+                return item.copyWith(
+                  productName: event.productName,
+                  quantity: event.quantity,
+                  price: event.price,
+                  storeName: event.storeName,
+                  categoryId: event.categoryId,
+                );
+              }
+              return item;
+            }).toList();
+
+        final successMessage = _getTranslatedSuccessMessage('update');
+        emit(ListItemOperationSuccess(successMessage));
+        emit(ListItemLoaded(updatedItems));
+      }
+      return;
+    }
+
+    // Mode en ligne : appel API normal
     try {
       final updatedItem = await _listItemService.updateListItem(
         listId: event.listId,
@@ -450,46 +490,6 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error updating item: $e");
-
-      // ✅ Si hors ligne, mettre en queue
-      if (!_connectivityService.isConnected) {
-        await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_UPDATE_ITEM,
-          payload: {
-            'list_id': event.listId,
-            'item_id': event.itemId,
-            'product_name': event.productName,
-            'quantity': event.quantity,
-            'price': event.price,
-            'store_name': event.storeName,
-            'category_id': event.categoryId,
-          },
-        );
-
-        // Mettre à jour localement l'item
-        if (state is ListItemLoaded) {
-          final currentState = state as ListItemLoaded;
-          final updatedItems =
-              currentState.items.map((item) {
-                if (item.id == event.itemId) {
-                  return item.copyWith(
-                    productName: event.productName,
-                    quantity: event.quantity,
-                    price: event.price,
-                    storeName: event.storeName,
-                    categoryId: event.categoryId,
-                  );
-                }
-                return item;
-              }).toList();
-
-          final successMessage = _getTranslatedSuccessMessage('update');
-          emit(ListItemOperationSuccess(successMessage));
-          emit(ListItemLoaded(updatedItems));
-        }
-        return;
-      }
-
       final errorMessage = _getTranslatedOperationError('update');
       emit(ListItemError(errorMessage));
     }
@@ -499,6 +499,35 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     TogglePurchasedStatus event,
     Emitter<ListItemState> emit,
   ) async {
+    // ✅ OPTIMISATION: Vérifier la connectivité AVANT l'appel API
+    if (!_connectivityService.isConnected) {
+      // Mode hors ligne : mettre en queue et toggle local
+      await OfflineQueueService.enqueueAction(
+        actionType: OfflineQueueService.ACTION_TOGGLE_ITEM,
+        payload: {
+          'list_id': event.listId,
+          'item_id': event.itemId,
+          'is_purchased': event.isPurchased,
+        },
+      );
+
+      // Toggle localement le statut
+      if (state is ListItemLoaded) {
+        final currentState = state as ListItemLoaded;
+        final updatedItems =
+            currentState.items.map((item) {
+              if (item.id == event.itemId) {
+                return item.copyWith(isPurchased: event.isPurchased);
+              }
+              return item;
+            }).toList();
+
+        emit(ListItemLoaded(updatedItems));
+      }
+      return;
+    }
+
+    // Mode en ligne : appel API normal
     try {
       await _listItemService.togglePurchasedStatus(
         listId: event.listId,
@@ -520,34 +549,6 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error toggling status: $e");
-
-      // ✅ Si hors ligne, mettre en queue
-      if (!_connectivityService.isConnected) {
-        await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_TOGGLE_ITEM,
-          payload: {
-            'list_id': event.listId,
-            'item_id': event.itemId,
-            'is_purchased': event.isPurchased,
-          },
-        );
-
-        // Toggle localement le statut
-        if (state is ListItemLoaded) {
-          final currentState = state as ListItemLoaded;
-          final updatedItems =
-              currentState.items.map((item) {
-                if (item.id == event.itemId) {
-                  return item.copyWith(isPurchased: event.isPurchased);
-                }
-                return item;
-              }).toList();
-
-          emit(ListItemLoaded(updatedItems));
-        }
-        return;
-      }
-
       final errorMessage = _getTranslatedOperationError('toggle');
       emit(ListItemError(errorMessage));
     }
@@ -557,6 +558,33 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     DeleteListItem event,
     Emitter<ListItemState> emit,
   ) async {
+    // ✅ OPTIMISATION: Vérifier la connectivité AVANT l'appel API
+    if (!_connectivityService.isConnected) {
+      // Mode hors ligne : mettre en queue et supprimer localement
+      await OfflineQueueService.enqueueAction(
+        actionType: OfflineQueueService.ACTION_DELETE_ITEM,
+        payload: {
+          'list_id': event.listId,
+          'item_id': event.itemId,
+        },
+      );
+
+      // Supprimer localement l'item
+      if (state is ListItemLoaded) {
+        final currentState = state as ListItemLoaded;
+        final updatedItems =
+            currentState.items
+                .where((item) => item.id != event.itemId)
+                .toList();
+
+        final successMessage = _getTranslatedSuccessMessage('delete');
+        emit(ListItemOperationSuccess(successMessage));
+        emit(ListItemLoaded(updatedItems));
+      }
+      return;
+    }
+
+    // Mode en ligne : appel API normal
     try {
       await _listItemService.deleteListItem(
         listId: event.listId,
@@ -576,32 +604,6 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       }
     } catch (e) {
       print("Error deleting item: $e");
-
-      // ✅ Si hors ligne, mettre en queue
-      if (!_connectivityService.isConnected) {
-        await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_DELETE_ITEM,
-          payload: {
-            'list_id': event.listId,
-            'item_id': event.itemId,
-          },
-        );
-
-        // Supprimer localement l'item
-        if (state is ListItemLoaded) {
-          final currentState = state as ListItemLoaded;
-          final updatedItems =
-              currentState.items
-                  .where((item) => item.id != event.itemId)
-                  .toList();
-
-          final successMessage = _getTranslatedSuccessMessage('delete');
-          emit(ListItemOperationSuccess(successMessage));
-          emit(ListItemLoaded(updatedItems));
-        }
-        return;
-      }
-
       final errorMessage = _getTranslatedOperationError('delete');
       emit(ListItemError(errorMessage));
     }

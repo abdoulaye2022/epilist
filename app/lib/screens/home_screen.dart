@@ -213,8 +213,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
-      // ✅ FAB RESTAURÉ : Création de liste
-      floatingActionButton: ConnectedFloatingActionButton(
+      // ✅ FAB pour création de liste (fonctionne hors ligne)
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateListDialog(context),
         backgroundColor: Colors.green[600],
         tooltip: l10n.createList,

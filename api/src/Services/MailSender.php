@@ -1003,7 +1003,19 @@ class MailSender
                         </p>
 
                         <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
-                            Nous sommes <strong>extrêmement fiers</strong> de vous présenter <strong>EpiList 2.0.0</strong> ! Cette mise à jour majeure transforme complètement votre expérience de gestion des courses avec <strong>10 nouvelles fonctionnalités révolutionnaires</strong>.
+                            Grâce à <strong>vous</strong> et nos <strong>200+ utilisateurs fidèles</strong>, EpiList continue d'évoluer ! Nous sommes <strong>extrêmement fiers</strong> de vous présenter <strong>EpiList 2.0.0</strong>, une mise à jour majeure qui transforme complètement votre expérience de gestion des courses.
+                        </p>
+
+                        <!-- Section communauté -->
+                        <div style='background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
+                            <h3 style='margin: 0 0 12px; font-size: 20px; color: #047857; font-weight: 600;'>💚 Merci à notre communauté !</h3>
+                            <p style='margin: 0; color: #059669; font-size: 15px; line-height: 1.6;'>
+                                Vous êtes maintenant <strong>plus de 200 utilisateurs</strong> à faire confiance à EpiList chaque jour ! Vos retours, vos suggestions et votre soutien nous permettent de créer l'application que vous méritez. Cette version 2.0.0 est le fruit de votre engagement et de votre passion pour une meilleure gestion des courses.
+                            </p>
+                        </div>
+
+                        <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                            Découvrez dès maintenant <strong>10 nouvelles fonctionnalités révolutionnaires</strong> que nous avons développées spécialement pour vous :
                         </p>
 
                         <!-- Badge NOUVEAU -->
@@ -1203,16 +1215,28 @@ class MailSender
                             </p>
                         </div>
 
-                        <!-- Message de remerciement -->
-                        <div style='margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb;'>
-                            <p style='margin: 0 0 15px; color: #374151; font-size: 16px; line-height: 1.6;'>
-                                Merci d'être un utilisateur fidèle d'EpiList ! Votre confiance nous pousse à innover constamment pour vous offrir la meilleure expérience possible.
+                        <!-- Message de remerciement et vision future -->
+                        <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 25px; margin: 40px 0;'>
+                            <h3 style='margin: 0 0 15px; font-size: 20px; color: #047857; font-weight: 600; text-align: center;'>
+                                💚 Ensemble, continuons l'aventure !
+                            </h3>
+                            <p style='margin: 0 0 15px; color: #059669; font-size: 15px; line-height: 1.6; text-align: center;'>
+                                Avec <strong>200+ utilisateurs</strong> et une communauté qui grandit chaque jour, nous ne faisons que commencer ! Ces nouvelles fonctionnalités sont le reflet de votre passion et de vos besoins. Nous continuerons à écouter vos retours et à innover pour vous offrir la meilleure expérience possible.
                             </p>
-                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 15px;'>
-                                Très bonne découverte et excellentes courses ! 
+                            <p style='margin: 0; color: #047857; font-size: 14px; line-height: 1.6; text-align: center; font-style: italic;'>
+                                Votre confiance et votre fidélité sont notre plus grande motivation. Merci de faire partie de la famille EpiList ! ❤️
+                            </p>
+                        </div>
+
+                        <div style='margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center;'>
+                            <p style='margin: 0 0 8px; color: #374151; font-weight: 600; font-size: 16px;'>
+                                Très bonne découverte et excellentes courses ! 🛒
                             </p>
                             <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
-                                L'équipe EpiList 
+                                L'équipe EpiList 💚
+                            </p>
+                            <p style='margin: 10px 0 0; color: #6b7280; font-size: 13px;'>
+                                Avec amour depuis le Nouveau-Brunswick, Canada 🍁
                             </p>
                         </div>
                     </td>
