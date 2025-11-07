@@ -1631,5 +1631,10 @@
   "visitPageOnlineToCache": "Please visit this page while online to cache your preferences",
   "tryAgain": "Try Again",
   "loadingOptions": "Loading options...",
-  "pleaseSelectFeedbackTypeAndPriority": "Please select a feedback type and priority"
+  "pleaseSelectFeedbackTypeAndPriority": "Please select a feedback type and priority",
+  "voiceListening": "Listening...",
+  "voiceTapToSpeak": "Tap to speak",
+  "voicePermissionDenied": "Microphone permission denied",
+  "voicePermissionRequired": "Microphone access is required for voice input",
+  "voiceItemAdded": "Item added by voice"
 }

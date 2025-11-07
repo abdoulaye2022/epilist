@@ -5,6 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Services\NotificationService;
 use App\Services\ListCompletionNotificationService;
+use App\Services\UserHabitAnalysisService;
 use App\Models\User;
 use App\Models\Budget;
 use App\Models\UserDevice;
@@ -78,6 +79,12 @@ try {
     if (Carbon::now()->dayOfWeek === Carbon::FRIDAY && Carbon::now()->hour === 19) {
         echo "Checking for users with no lists this week...\n";
         checkUsersWithoutWeeklyLists($notificationService);
+    }
+
+    // 8. ANALYSE DES HABITUDES ET RAPPELS INTELLIGENTS (tous les jours a 10h) - NOUVEAU
+    if (Carbon::now()->hour === 10) {
+        echo "Analyzing user habits and sending intelligent reminders...\n";
+        analyzeUserHabitsAndSendReminders();
     }
 
     echo "=== Cron completed successfully ===\n";
@@ -504,12 +511,17 @@ function cleanupNotificationCacheFiles(): void
         //  NOUVEAU: Nettoyer les fichiers de rappels hebdomadaires
         $weeklyReminderCleaned = cleanupWeeklyReminderCacheFiles();
         echo "Weekly reminder cache files cleaned: {$weeklyReminderCleaned}\n";
-        
+
+        //  NOUVEAU: Nettoyer les analyses d'habitudes
+        $habitService = new UserHabitAnalysisService();
+        $habitAnalysesCleaned = $habitService->cleanupOldAnalyses();
+        echo "Habit analyses cleaned: {$habitAnalysesCleaned}\n";
+
     } catch (\Exception $e) {
         echo "Error cleaning notification cache files: " . $e->getMessage() . "\n";
         error_log("Notification cache cleanup error: " . $e->getMessage());
     }
-    
+
     echo "Notification cache cleanup finished.\n";
 }
 
@@ -999,24 +1011,64 @@ function cleanupDailyReminderCacheFiles(): int
     
     return $cleaned;
 }
+
+/**
+ * 🎯 NOUVELLE FONCTION: Analyser les habitudes utilisateurs et envoyer des rappels intelligents
+ */
+function analyzeUserHabitsAndSendReminders(): void
+{
+    echo "Starting user habit analysis...\n";
+
+    //  NOUVEAU VERROU: Une seule fois par jour
+    $lockFile = __DIR__ . "/../storage/habit_analysis_" . Carbon::now()->format('Y-m-d') . ".lock";
+
+    if (file_exists($lockFile)) {
+        echo "Habit analysis already done today, skipping...\n";
+        return;
+    }
+
+    try {
+        $habitService = new UserHabitAnalysisService();
+        $results = $habitService->analyzeAndNotifyAllUsers();
+
+        echo "Habit analysis results:\n";
+        echo "- Users analyzed: {$results['analyzed']}\n";
+        echo "- Notifications sent: {$results['notifications_sent']}\n";
+
+        if (!empty($results['errors'])) {
+            echo "- Errors encountered:\n";
+            foreach ($results['errors'] as $error) {
+                echo "  * {$error}\n";
+            }
+        }
+
+        //  Créer le verrou à la fin
+        touch($lockFile);
+        echo "Habit analysis completed successfully.\n";
+
+    } catch (\Exception $e) {
+        echo "Error in analyzeUserHabitsAndSendReminders: " . $e->getMessage() . "\n";
+        error_log("Habit analysis error: " . $e->getMessage());
+    }
+}
+
 /**
  * ✅ Cron Job: Budget Alerts
  * Exécuter toutes les heures: 0 * * * * php /path/to/cron.php budget-alerts
  */
-if ($argv[1] ?? '' === 'budget-alerts') {
+if (isset($argv[1]) && $argv[1] === 'budget-alerts') {
     error_log("🔔 [CRON] Starting budget alerts check...");
-    
-    require_once __DIR__ . '/../vendor/autoload.php';
-    require_once __DIR__ . '/../config/database.php';
-    
-    use App\Services\BudgetAlertService;
-    
-    $results = BudgetAlertService::checkAndSendAlerts();
-    
-    error_log("✅ [CRON] Budget alerts completed:");
-    error_log("   - Checked: {$results['checked']} budgets");
-    error_log("   - Alerts sent: {$results['alerts_sent']}");
-    error_log("   - Errors: {$results['errors']}");
-    
+
+    if (class_exists('App\Services\BudgetAlertService')) {
+        $results = App\Services\BudgetAlertService::checkAndSendAlerts();
+
+        error_log("✅ [CRON] Budget alerts completed:");
+        error_log("   - Checked: {$results['checked']} budgets");
+        error_log("   - Alerts sent: {$results['alerts_sent']}");
+        error_log("   - Errors: {$results['errors']}");
+    } else {
+        error_log("⚠️  BudgetAlertService not found");
+    }
+
     exit(0);
 }

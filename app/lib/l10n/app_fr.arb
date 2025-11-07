@@ -1637,5 +1637,10 @@
   "visitPageOnlineToCache": "Veuillez visiter cette page en ligne pour mettre en cache vos préférences",
   "tryAgain": "Réessayer",
   "loadingOptions": "Chargement des options...",
-  "pleaseSelectFeedbackTypeAndPriority": "Veuillez sélectionner un type de feedback et une priorité"
+  "pleaseSelectFeedbackTypeAndPriority": "Veuillez sélectionner un type de feedback et une priorité",
+  "voiceListening": "Écoute en cours...",
+  "voiceTapToSpeak": "Appuyez pour parler",
+  "voicePermissionDenied": "Permission microphone refusée",
+  "voicePermissionRequired": "L'accès au microphone est requis pour l'ajout vocal",
+  "voiceItemAdded": "Article ajouté par voix"
 }

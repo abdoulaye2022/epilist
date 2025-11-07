@@ -1,0 +1,157 @@
+// widgets/list_detail/voice_input_button.dart
+import 'package:flutter/material.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:epilist/services/voice_recognition_service.dart';
+import 'package:epilist/l10n/app_localizations.dart';
+
+class VoiceInputButton extends StatefulWidget {
+  final Function(String itemName, double quantity) onItemRecognized;
+  final VoidCallback? onPermissionDenied;
+
+  const VoiceInputButton({
+    super.key,
+    required this.onItemRecognized,
+    this.onPermissionDenied,
+  });
+
+  @override
+  State<VoiceInputButton> createState() => _VoiceInputButtonState();
+}
+
+class _VoiceInputButtonState extends State<VoiceInputButton> {
+  final VoiceRecognitionService _voiceService = VoiceRecognitionService();
+  bool _isListening = false;
+  String _currentText = '';
+
+  @override
+  void dispose() {
+    _voiceService.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleListening() async {
+    if (_isListening) {
+      // Arrêter l'écoute
+      await _voiceService.stopListening();
+      setState(() {
+        _isListening = false;
+      });
+    } else {
+      // Vérifier la permission
+      final hasPermission = await _voiceService.checkMicrophonePermission();
+
+      if (!hasPermission) {
+        final granted = await _voiceService.requestMicrophonePermission();
+        if (!granted) {
+          widget.onPermissionDenied?.call();
+          return;
+        }
+      }
+
+      // Démarrer l'écoute
+      final started = await _voiceService.startListening(
+        onResult: (recognizedText) {
+          setState(() {
+            _currentText = recognizedText;
+          });
+
+          // Si c'est le résultat final, on traite l'item
+          if (!_voiceService.isListening) {
+            _processVoiceInput(recognizedText);
+          }
+        },
+        localeId: 'fr_FR', // Français
+      );
+
+      if (started) {
+        setState(() {
+          _isListening = true;
+          _currentText = '';
+        });
+      }
+    }
+  }
+
+  void _processVoiceInput(String voiceText) {
+    if (voiceText.isEmpty) {
+      return;
+    }
+
+    // Parser le texte vocal pour extraire nom et quantité
+    final parsed = _voiceService.parseVoiceInput(voiceText);
+    final itemName = parsed['name'] as String;
+    final quantity = parsed['quantity'] as double;
+
+    debugPrint('📦 Item recognized: $itemName (x$quantity)');
+
+    // Callback avec les données extraites
+    widget.onItemRecognized(itemName, quantity);
+
+    // Reset
+    setState(() {
+      _currentText = '';
+      _isListening = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Bouton avec animation de glow
+        AvatarGlow(
+          animate: _isListening,
+          glowColor: Theme.of(context).primaryColor,
+          duration: const Duration(milliseconds: 2000),
+          repeat: true,
+          glowRadiusFactor: 0.7,
+          child: Material(
+            elevation: _isListening ? 8.0 : 4.0,
+            shape: const CircleBorder(),
+            child: CircleAvatar(
+              radius: 30,
+              backgroundColor: _isListening
+                  ? Theme.of(context).primaryColor
+                  : Colors.white,
+              child: IconButton(
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+                  size: 30,
+                  color:
+                      _isListening ? Colors.white : Theme.of(context).primaryColor,
+                ),
+                onPressed: _toggleListening,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // Texte d'indication
+        AnimatedOpacity(
+          opacity: _isListening ? 1.0 : 0.7,
+          duration: const Duration(milliseconds: 300),
+          child: Text(
+            _isListening
+                ? (_currentText.isEmpty
+                    ? l10n.voiceListening
+                    : _currentText)
+                : l10n.voiceTapToSpeak,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: _isListening ? FontWeight.w600 : FontWeight.normal,
+              color: _isListening
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey[600],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+}

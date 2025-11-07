@@ -27,9 +27,9 @@ import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
 import 'package:epilist/widgets/list_detail/item_filters_bar.dart';
+import 'package:epilist/widgets/list_detail/voice_input_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
-import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -181,6 +181,16 @@ class _ListDetailViewState extends State<_ListDetailView> {
           backgroundColor: Colors.blue[600],
           tooltip: l10n.receipts,
           child: const Icon(Icons.receipt_long, color: Colors.white),
+        ),
+        const SizedBox(height: 12),
+        // Bouton d'ajout vocal
+        FloatingActionButton(
+          onPressed: currentList.canEdit ? _addItemByVoice : null,
+          heroTag: "voice_fab",
+          backgroundColor:
+              currentList.canEdit ? Colors.purple[600] : Colors.grey[400],
+          tooltip: 'Ajouter par voix',
+          child: const Icon(Icons.mic, color: Colors.white),
         ),
         const SizedBox(height: 12),
         // Bouton d'ajout d'article
@@ -749,6 +759,37 @@ class _ListDetailViewState extends State<_ListDetailView> {
             value: context.read<ListItemBloc>(),
             child: AddItemDialog(listId: currentList.id),
           ),
+    );
+  }
+
+  void _addItemByVoice() {
+    if (!currentList.canManageItems) {
+      _showPermissionDenied('ajouter des articles');
+      return;
+    }
+
+    showVoiceInputDialog(
+      context,
+      onItemConfirmed: (itemName, quantity) {
+        // Ajouter l'item avec les données reconnues par voix
+        context.read<ListItemBloc>().add(
+          AddListItem(
+            listId: currentList.id,
+            productName: itemName,
+            quantity: quantity.toInt(),
+            categoryId: null,
+            storeName: null,
+            price: null,
+          ),
+        );
+
+        // Afficher un message de confirmation
+        SmartSnackBarManager.showMessage(
+          context,
+          '✅ $itemName ajouté par voix',
+          type: SnackBarType.success,
+        );
+      },
     );
   }
 

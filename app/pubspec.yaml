@@ -66,6 +66,8 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.5
+  speech_to_text: ^7.0.0
+  avatar_glow: ^3.0.1
 
 
 dev_dependencies:

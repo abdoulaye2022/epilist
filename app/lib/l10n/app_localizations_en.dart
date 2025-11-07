@@ -4114,4 +4114,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pleaseSelectFeedbackTypeAndPriority =>
       'Please select a feedback type and priority';
+
+  @override
+  String get voiceListening => 'Listening...';
+
+  @override
+  String get voiceTapToSpeak => 'Tap to speak';
+
+  @override
+  String get voicePermissionDenied => 'Microphone permission denied';
+
+  @override
+  String get voicePermissionRequired =>
+      'Microphone access is required for voice input';
+
+  @override
+  String get voiceItemAdded => 'Item added by voice';
 }

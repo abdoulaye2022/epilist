@@ -4186,4 +4186,20 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pleaseSelectFeedbackTypeAndPriority =>
       'Veuillez sélectionner un type de feedback et une priorité';
+
+  @override
+  String get voiceListening => 'Écoute en cours...';
+
+  @override
+  String get voiceTapToSpeak => 'Appuyez pour parler';
+
+  @override
+  String get voicePermissionDenied => 'Permission microphone refusée';
+
+  @override
+  String get voicePermissionRequired =>
+      'L\'accès au microphone est requis pour l\'ajout vocal';
+
+  @override
+  String get voiceItemAdded => 'Article ajouté par voix';
 }

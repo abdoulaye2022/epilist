@@ -7872,6 +7872,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Veuillez sélectionner un type de feedback et une priorité'**
   String get pleaseSelectFeedbackTypeAndPriority;
+
+  /// No description provided for @voiceListening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écoute en cours...'**
+  String get voiceListening;
+
+  /// No description provided for @voiceTapToSpeak.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyez pour parler'**
+  String get voiceTapToSpeak;
+
+  /// No description provided for @voicePermissionDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Permission microphone refusée'**
+  String get voicePermissionDenied;
+
+  /// No description provided for @voicePermissionRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'accès au microphone est requis pour l\'ajout vocal'**
+  String get voicePermissionRequired;
+
+  /// No description provided for @voiceItemAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article ajouté par voix'**
+  String get voiceItemAdded;
 }
 
 class _AppLocalizationsDelegate
