@@ -3,7 +3,6 @@
 
 namespace App\Services;
 
-use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
@@ -12,6 +11,7 @@ use Kreait\Firebase\Messaging\ApnsConfig;
 use App\Models\UserDevice;
 use App\Models\User;
 use App\Models\Currency;
+use App\Models\EmailPreference;
 use Carbon\Carbon;
 
 class NotificationService
@@ -62,6 +62,38 @@ class NotificationService
 
         // Par défaut: français
         return 'fr';
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur accepte ce type de notification
+     * Mapping des types de notifications vers les préférences email
+     */
+    private function canSendNotification(User $user, string $notificationType): bool
+    {
+        // Mapping des types de notifications vers les colonnes de préférences
+        $preferenceMap = [
+            self::TYPE_BUDGET_ALERT => 'budget_alert',
+            self::TYPE_BUDGET_WARNING => 'budget_alert',
+            self::TYPE_BUDGET_EXCEEDED => 'budget_alert',
+            self::TYPE_DAILY_SUMMARY => 'budget_summary',
+            self::TYPE_LIST_COMPLETED => 'list_completed',
+            self::TYPE_LIST_SHARED => 'list_shared_with_me',
+            self::TYPE_LIST_UPDATED => 'list_shared_with_me',
+            self::TYPE_DAILY_LIST_REMINDER => 'tips_and_tricks', // Rappels considérés comme tips
+            self::TYPE_WEEKLY_LIST_REMINDER => 'tips_and_tricks',
+            self::TYPE_USER_INACTIVE => 'tips_and_tricks',
+            self::TYPE_NEW_MESSAGE => 'list_shared_with_me', // Messages dans listes partagées
+        ];
+
+        // Si le type n'est pas mappé, autoriser par défaut
+        if (!isset($preferenceMap[$notificationType])) {
+            return true;
+        }
+
+        $preferenceKey = $preferenceMap[$notificationType];
+
+        // Vérifier les préférences de l'utilisateur
+        return EmailPreference::isEmailEnabled($user->id, $preferenceKey);
     }
 
     /**
@@ -429,6 +461,12 @@ class NotificationService
      */
     public function sendListCompletionNotification(User $user, $list, float $estimatedTotal = 0): bool
     {
+        // ✅ VÉRIFICATION DES PRÉFÉRENCES
+        if (!$this->canSendNotification($user, self::TYPE_LIST_COMPLETED)) {
+            error_log("🚫 User {$user->id} has disabled list completion notifications");
+            return false;
+        }
+
         $lang = $this->getUserLanguage($user);
         $totalItems = (int) $list->items->count(); //  Conversion explicite
 
@@ -498,6 +536,13 @@ class NotificationService
      */
     public function sendBudgetAlert(User $user, $budget, string $alertType): bool
     {
+        // ✅ VÉRIFICATION DES PRÉFÉRENCES: Ne pas envoyer si l'utilisateur a désactivé les alertes budget
+        $notificationType = $alertType === 'daily_summary' ? self::TYPE_DAILY_SUMMARY : self::TYPE_BUDGET_ALERT;
+        if (!$this->canSendNotification($user, $notificationType)) {
+            error_log("🚫 User {$user->id} has disabled budget alerts in preferences");
+            return false;
+        }
+
         // ✅ ANTI-SPAM: Vérifier le cooldown avant d'envoyer
         if (!$this->checkBudgetAlertCooldown($budget->id, $alertType)) {
             error_log("⏱️ Budget alert cooldown active for budget {$budget->id} ({$alertType})");
@@ -743,6 +788,12 @@ class NotificationService
      */
     public function sendInactivityReminder(User $user, int $daysSinceLastList): bool
     {
+        // ✅ VÉRIFICATION DES PRÉFÉRENCES
+        if (!$this->canSendNotification($user, self::TYPE_USER_INACTIVE)) {
+            error_log("🚫 User {$user->id} has disabled inactivity reminders");
+            return false;
+        }
+
         $lang = $this->getUserLanguage($user);
 
         $title = $lang === 'en' ? "🛒 We missed you!" : "🛒 On vous a manqué !";
@@ -906,6 +957,12 @@ class NotificationService
      */
     public function sendWeeklyListReminder(User $user, int $daysSinceLastList): bool
     {
+        // ✅ VÉRIFICATION DES PRÉFÉRENCES
+        if (!$this->canSendNotification($user, self::TYPE_WEEKLY_LIST_REMINDER)) {
+            error_log("🚫 User {$user->id} has disabled weekly list reminders");
+            return false;
+        }
+
         $lang = $this->getUserLanguage($user);
 
         $title = $lang === 'en' ? "📅 Your weekly list" : "📅 Votre liste de la semaine";
@@ -964,6 +1021,12 @@ class NotificationService
 
     public function sendDailyListReminder(User $user, int $daysSinceLastList): bool
     {
+        // ✅ VÉRIFICATION DES PRÉFÉRENCES
+        if (!$this->canSendNotification($user, self::TYPE_DAILY_LIST_REMINDER)) {
+            error_log("🚫 User {$user->id} has disabled daily list reminders");
+            return false;
+        }
+
         $lang = $this->getUserLanguage($user);
 
         $title = $lang === 'en' ? "🛍 Don't forget your list!" : "🛍 N'oubliez pas votre liste !";
@@ -1088,6 +1151,14 @@ class NotificationService
         foreach ($recipientUserIds as $recipientId) {
             if ($recipientId === $sender->id) {
                 continue; // Ne pas envoyer à soi-même
+            }
+
+            // ✅ VÉRIFICATION DES PRÉFÉRENCES
+            $recipientUser = User::find($recipientId);
+            if (!$recipientUser || !$this->canSendNotification($recipientUser, self::TYPE_NEW_MESSAGE)) {
+                error_log("🚫 User {$recipientId} has disabled message notifications");
+                $results[$recipientId] = ['success' => false, 'sent_count' => 0, 'total_devices' => 0];
+                continue;
             }
 
             $result = $this->sendToUser(
