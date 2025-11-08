@@ -307,38 +307,64 @@ class CampaignController
     }
 
     /**
-     *  NOUVELLE MÉTHODE: Gérer le désabonnement via URL (retourne HTML bilingue)
+     *  NOUVELLE MÉTHODE: Gérer le désabonnement via URL (retourne HTML ou JSON selon le header Accept)
      */
     public function handleUnsubscribe(Request $request, Response $response, array $args): Response
     {
         try {
             $token = $args['token'] ?? '';
 
+            // Détecter si la requête attend du JSON (depuis Next.js) ou du HTML (clic direct)
+            $acceptHeader = $request->getHeaderLine('Accept');
+            $wantsJson = str_contains($acceptHeader, 'application/json');
+
             if (empty($token)) {
-                $html = $this->generateUnsubscribeHtml(
-                    'error',
-                    'Token manquant',
-                    'Le lien de désabonnement est invalide ou incomplet.',
-                    null,
-                    'fr'
-                );
-                $response->getBody()->write($html);
-                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(400);
+                if ($wantsJson) {
+                    $response->getBody()->write(json_encode([
+                        'success' => false,
+                        'error' => [
+                            'code' => 'MISSING_TOKEN',
+                            'message' => 'Token de désabonnement manquant'
+                        ]
+                    ]));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                } else {
+                    $html = $this->generateUnsubscribeHtml(
+                        'error',
+                        'Token manquant',
+                        'Le lien de désabonnement est invalide ou incomplet.',
+                        null,
+                        'fr'
+                    );
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(400);
+                }
             }
 
             // Trouver l'utilisateur par token
             $user = User::where('unsubscribe_token', $token)->first();
 
             if (!$user) {
-                $html = $this->generateUnsubscribeHtml(
-                    'error',
-                    'Token invalide',
-                    'Ce lien de désabonnement n\'est pas valide. Veuillez vérifier le lien dans votre email.',
-                    null,
-                    'fr'
-                );
-                $response->getBody()->write($html);
-                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(404);
+                if ($wantsJson) {
+                    $response->getBody()->write(json_encode([
+                        'success' => false,
+                        'error' => [
+                            'code' => 'INVALID_TOKEN',
+                            'message' => 'Token de désabonnement invalide'
+                        ]
+                    ]));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+                } else {
+                    $html = $this->generateUnsubscribeHtml(
+                        'error',
+                        'Token invalide',
+                        'Ce lien de désabonnement n\'est pas valide. Veuillez vérifier le lien dans votre email.',
+                        null,
+                        'fr'
+                    );
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(404);
+                }
             }
 
             // Déterminer la langue de l'utilisateur
@@ -351,15 +377,27 @@ class CampaignController
                     ? 'You are already unsubscribed from our marketing emails.'
                     : 'Vous êtes déjà désabonné de nos emails marketing.';
 
-                $html = $this->generateUnsubscribeHtml(
-                    'info',
-                    $title,
-                    $message,
-                    $user->first_name,
-                    $lang
-                );
-                $response->getBody()->write($html);
-                return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+                if ($wantsJson) {
+                    $response->getBody()->write(json_encode([
+                        'success' => true,
+                        'message' => $message,
+                        'data' => [
+                            'already_unsubscribed' => true,
+                            'unsubscribed_at' => $user->email_marketing_unsubscribed_at?->toISOString()
+                        ]
+                    ]));
+                    return $response->withHeader('Content-Type', 'application/json');
+                } else {
+                    $html = $this->generateUnsubscribeHtml(
+                        'info',
+                        $title,
+                        $message,
+                        $user->first_name,
+                        $lang
+                    );
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+                }
             }
 
             // Effectuer le désabonnement
@@ -383,44 +421,84 @@ class CampaignController
                     ? 'You have been successfully unsubscribed from our marketing emails. You will no longer receive promotional emails from us.'
                     : 'Vous avez été désabonné avec succès de nos emails marketing. Vous ne recevrez plus d\'emails promotionnels de notre part.';
 
-                $html = $this->generateUnsubscribeHtml(
-                    'success',
-                    $title,
-                    $message,
-                    $user->first_name,
-                    $lang
-                );
-                $response->getBody()->write($html);
-                return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+                if ($wantsJson) {
+                    $response->getBody()->write(json_encode([
+                        'success' => true,
+                        'message' => $message,
+                        'data' => [
+                            'user_email' => $user->email,
+                            'unsubscribed_at' => Carbon::now()->toISOString(),
+                            'confirmation_email_sent' => true
+                        ]
+                    ]));
+                    return $response->withHeader('Content-Type', 'application/json');
+                } else {
+                    $html = $this->generateUnsubscribeHtml(
+                        'success',
+                        $title,
+                        $message,
+                        $user->first_name,
+                        $lang
+                    );
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+                }
             } else {
                 $title = $lang === 'en' ? 'Unsubscribe Error' : 'Erreur de désabonnement';
                 $message = $lang === 'en'
                     ? 'An error occurred while processing your request. Please try again later.'
                     : 'Une erreur s\'est produite lors du traitement de votre demande. Veuillez réessayer plus tard.';
 
-                $html = $this->generateUnsubscribeHtml(
-                    'error',
-                    $title,
-                    $message,
-                    null,
-                    $lang
-                );
-                $response->getBody()->write($html);
-                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
+                if ($wantsJson) {
+                    $response->getBody()->write(json_encode([
+                        'success' => false,
+                        'error' => [
+                            'code' => 'UNSUBSCRIBE_FAILED',
+                            'message' => $message
+                        ]
+                    ]));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+                } else {
+                    $html = $this->generateUnsubscribeHtml(
+                        'error',
+                        $title,
+                        $message,
+                        null,
+                        $lang
+                    );
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
+                }
             }
 
         } catch (Exception $e) {
             error_log("Unsubscribe error: " . $e->getMessage());
 
-            $html = $this->generateUnsubscribeHtml(
-                'error',
-                'Erreur serveur',
-                'Une erreur technique s\'est produite. Veuillez réessayer plus tard ou nous contacter.',
-                null,
-                'fr'
-            );
-            $response->getBody()->write($html);
-            return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
+            // Détecter si la requête attend du JSON
+            $acceptHeader = $request->getHeaderLine('Accept');
+            $wantsJson = str_contains($acceptHeader, 'application/json');
+
+            if ($wantsJson) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'INTERNAL_ERROR',
+                        'message' => 'Erreur lors du traitement du désabonnement',
+                        'details' => $e->getMessage()
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            } else {
+                $html = $this->generateUnsubscribeHtml(
+                    'error',
+                    'Erreur serveur',
+                    'Une erreur technique s\'est produite. Veuillez réessayer plus tard ou nous contacter.',
+                    null,
+                    'fr'
+                );
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html; charset=utf-8')->withStatus(500);
+            }
         }
     }
 

@@ -778,12 +778,26 @@ class User extends Model
     }
 
     /**
-     * Obtenir l'URL de désabonnement
+     * Obtenir l'URL de désabonnement (vers le frontend Next.js)
      */
     public function getUnsubscribeUrl(): string
     {
         $token = $this->generateUnsubscribeToken();
-        $baseUrl = $_ENV['APP_URL'] ?? 'https://epilist.app';
+
+        // Déterminer l'URL de base selon l'environnement
+        if (isset($_ENV['UNSUBSCRIBE_URL']) && !empty($_ENV['UNSUBSCRIBE_URL'])) {
+            // Utiliser l'URL spécifique de désabonnement si définie
+            $baseUrl = $_ENV['UNSUBSCRIBE_URL'];
+        } elseif (isset($_ENV['FRONTEND_URL']) && !empty($_ENV['FRONTEND_URL'])) {
+            // Utiliser l'URL du frontend
+            $baseUrl = $_ENV['FRONTEND_URL'];
+        } else {
+            // URL par défaut vers le frontend Next.js selon l'environnement
+            $baseUrl = ($_ENV['APP_ENV'] ?? 'prod') === 'dev'
+                ? 'http://localhost:3000'  // Frontend Next.js en développement
+                : 'https://epilist.app';    // Frontend Next.js en production
+        }
+
         return "{$baseUrl}/unsubscribe/{$token}";
     }
 
