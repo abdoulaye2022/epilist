@@ -7908,6 +7908,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'La reconnaissance vocale nécessite une connexion Internet'**
   String get voiceRequiresInternet;
+
+  /// No description provided for @voiceVerifyAndModify.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez et modifiez si nécessaire:'**
+  String get voiceVerifyAndModify;
+
+  /// No description provided for @voiceItemName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'article'**
+  String get voiceItemName;
+
+  /// No description provided for @voiceQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get voiceQuantity;
+
+  /// No description provided for @voiceRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get voiceRetry;
+
+  /// No description provided for @voiceAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter'**
+  String get voiceAdd;
+
+  /// No description provided for @voiceExamplesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exemples de commandes:'**
+  String get voiceExamplesTitle;
+
+  /// No description provided for @voiceExamples.
+  ///
+  /// In fr, this message translates to:
+  /// **'• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\"'**
+  String get voiceExamples;
 }
 
 class _AppLocalizationsDelegate

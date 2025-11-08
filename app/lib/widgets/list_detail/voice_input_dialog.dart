@@ -135,7 +135,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
             // Champs de texte pour vérification/modification
             if (_recognizedItemName != null) ...[
               Text(
-                "Vérifiez et modifiez si nécessaire:",
+                l10n.voiceVerifyAndModify,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -146,7 +146,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
               TextField(
                 controller: _itemController,
                 decoration: InputDecoration(
-                  labelText: "Nom de l'article",
+                  labelText: l10n.voiceItemName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -161,7 +161,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
               TextField(
                 controller: _quantityController,
                 decoration: InputDecoration(
-                  labelText: "Quantité",
+                  labelText: l10n.voiceQuantity,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -191,7 +191,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text("Réessayer"),
+                      child: Text(l10n.voiceRetry),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -204,7 +204,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text("Ajouter"),
+                      child: Text(l10n.voiceAdd),
                     ),
                   ),
                 ],
@@ -233,7 +233,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Exemples de commandes:",
+                      l10n.voiceExamplesTitle,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue[900],
@@ -241,10 +241,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '• "3 pommes"\n'
-                      '• "5 kilogrammes de tomates"\n'
-                      '• "Pain"\n'
-                      '• "2 litres de lait"',
+                      l10n.voiceExamples,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.blue[800],
                       ),

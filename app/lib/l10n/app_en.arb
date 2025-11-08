@@ -1637,5 +1637,12 @@
   "voicePermissionDenied": "Microphone permission denied",
   "voicePermissionRequired": "Microphone access is required for voice input",
   "voiceItemAdded": "Item added by voice",
-  "voiceRequiresInternet": "Voice recognition requires an Internet connection"
+  "voiceRequiresInternet": "Voice recognition requires an Internet connection",
+  "voiceVerifyAndModify": "Verify and modify if necessary:",
+  "voiceItemName": "Item name",
+  "voiceQuantity": "Quantity",
+  "voiceRetry": "Retry",
+  "voiceAdd": "Add",
+  "voiceExamplesTitle": "Example commands:",
+  "voiceExamples": "• \"3 apples\"\n• \"5 kilograms of tomatoes\"\n• \"Bread\"\n• \"2 liters of milk\""
 }

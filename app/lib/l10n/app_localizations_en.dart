@@ -4134,4 +4134,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get voiceRequiresInternet =>
       'Voice recognition requires an Internet connection';
+
+  @override
+  String get voiceVerifyAndModify => 'Verify and modify if necessary:';
+
+  @override
+  String get voiceItemName => 'Item name';
+
+  @override
+  String get voiceQuantity => 'Quantity';
+
+  @override
+  String get voiceRetry => 'Retry';
+
+  @override
+  String get voiceAdd => 'Add';
+
+  @override
+  String get voiceExamplesTitle => 'Example commands:';
+
+  @override
+  String get voiceExamples =>
+      '• \"3 apples\"\n• \"5 kilograms of tomatoes\"\n• \"Bread\"\n• \"2 liters of milk\"';
 }

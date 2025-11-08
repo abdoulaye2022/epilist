@@ -1643,5 +1643,12 @@
   "voicePermissionDenied": "Permission microphone refusée",
   "voicePermissionRequired": "L'accès au microphone est requis pour l'ajout vocal",
   "voiceItemAdded": "Article ajouté par voix",
-  "voiceRequiresInternet": "La reconnaissance vocale nécessite une connexion Internet"
+  "voiceRequiresInternet": "La reconnaissance vocale nécessite une connexion Internet",
+  "voiceVerifyAndModify": "Vérifiez et modifiez si nécessaire:",
+  "voiceItemName": "Nom de l'article",
+  "voiceQuantity": "Quantité",
+  "voiceRetry": "Réessayer",
+  "voiceAdd": "Ajouter",
+  "voiceExamplesTitle": "Exemples de commandes:",
+  "voiceExamples": "• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\""
 }

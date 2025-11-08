@@ -4206,4 +4206,26 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get voiceRequiresInternet =>
       'La reconnaissance vocale nécessite une connexion Internet';
+
+  @override
+  String get voiceVerifyAndModify => 'Vérifiez et modifiez si nécessaire:';
+
+  @override
+  String get voiceItemName => 'Nom de l\'article';
+
+  @override
+  String get voiceQuantity => 'Quantité';
+
+  @override
+  String get voiceRetry => 'Réessayer';
+
+  @override
+  String get voiceAdd => 'Ajouter';
+
+  @override
+  String get voiceExamplesTitle => 'Exemples de commandes:';
+
+  @override
+  String get voiceExamples =>
+      '• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\"';
 }
