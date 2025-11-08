@@ -153,7 +153,7 @@ $app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
 
 //  ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
 $app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
-$app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']);
+$app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']); 
 
 //  ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
 $app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);
