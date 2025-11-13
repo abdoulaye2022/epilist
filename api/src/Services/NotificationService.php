@@ -100,7 +100,7 @@ class NotificationService
     /**
      *  NOUVELLE MÉTHODE: Formater un montant selon la devise de l'utilisateur
      */
-    private function formatAmountForUser(float $amount, User $user, bool $showCode = false): string
+    public function formatAmountForUser(float $amount, User $user, bool $showCode = false): string
     {
         try {
             //  S'assurer que $amount est bien un float

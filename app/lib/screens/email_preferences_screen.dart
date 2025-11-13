@@ -205,26 +205,6 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                               },
                             ),
                             _buildSwitchTile(
-                              title: 'Item Added',
-                              subtitle: 'Someone added an item to a shared list',
-                              value: _preferences!.listItemAdded,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(listItemAdded: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: 'Item Checked',
-                              subtitle: 'Someone checked off an item',
-                              value: _preferences!.listItemChecked,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(listItemChecked: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
                               title: 'List Completed',
                               subtitle: 'All items in a shared list are done',
                               value: _preferences!.listCompleted,
@@ -267,34 +247,14 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         ),
                         const SizedBox(height: 24),
                         _buildSection(
-                          title: 'Marketing & Updates',
-                          subtitle: 'News, tips and promotions',
-                          icon: Icons.campaign,
-                          color: Colors.purple,
+                          title: 'Tips & Tricks',
+                          subtitle: 'Helpful advice to use EpiList better',
+                          icon: Icons.lightbulb_outline,
+                          color: Colors.amber,
                           children: [
                             _buildSwitchTile(
-                              title: 'Marketing Emails',
-                              subtitle: 'Promotions and special offers',
-                              value: _preferences!.marketingEmails,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(marketingEmails: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: 'Product Updates',
-                              subtitle: 'New features and improvements',
-                              value: _preferences!.productUpdates,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(productUpdates: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: 'Tips & Tricks',
-                              subtitle: 'Helpful advice to use EpiList better',
+                              title: 'Tips & Reminders',
+                              subtitle: 'Get helpful tips and reminders',
                               value: _preferences!.tipsAndTricks,
                               onChanged: (val) {
                                 setState(() {
@@ -304,8 +264,6 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        _buildFrequencySection(),
                         const SizedBox(height: 100),
                       ],
                     ),
@@ -397,98 +355,6 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       value: value,
       onChanged: onChanged,
       contentPadding: EdgeInsets.zero,
-    );
-  }
-
-  Widget _buildFrequencySection() {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.indigo.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.schedule, color: Colors.indigo),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Notification Frequency',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'How often to receive notifications',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24),
-            RadioListTile<String>(
-              title: const Text('Real-time'),
-              subtitle: const Text('Receive emails immediately', style: TextStyle(fontSize: 12)),
-              value: 'realtime',
-              groupValue: _preferences!.notificationFrequency,
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _preferences = _preferences!.copyWith(notificationFrequency: val);
-                  });
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-            ),
-            RadioListTile<String>(
-              title: const Text('Daily Digest'),
-              subtitle: const Text('One email per day with all updates', style: TextStyle(fontSize: 12)),
-              value: 'daily',
-              groupValue: _preferences!.notificationFrequency,
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _preferences = _preferences!.copyWith(notificationFrequency: val);
-                  });
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-            ),
-            RadioListTile<String>(
-              title: const Text('Weekly Digest'),
-              subtitle: const Text('One email per week with summary', style: TextStyle(fontSize: 12)),
-              value: 'weekly',
-              groupValue: _preferences!.notificationFrequency,
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _preferences = _preferences!.copyWith(notificationFrequency: val);
-                  });
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

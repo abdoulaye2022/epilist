@@ -15,15 +15,10 @@ class EmailPreference extends Model
         'password_change_request',
         'password_changed',
         'list_shared_with_me',
-        'list_item_added',
-        'list_item_checked',
         'list_completed',
         'budget_alert',
         'budget_summary',
-        'marketing_emails',
-        'product_updates',
         'tips_and_tricks',
-        'notification_frequency',
     ];
 
     protected $casts = [
@@ -31,13 +26,9 @@ class EmailPreference extends Model
         'password_change_request' => 'boolean',
         'password_changed' => 'boolean',
         'list_shared_with_me' => 'boolean',
-        'list_item_added' => 'boolean',
-        'list_item_checked' => 'boolean',
         'list_completed' => 'boolean',
         'budget_alert' => 'boolean',
         'budget_summary' => 'boolean',
-        'marketing_emails' => 'boolean',
-        'product_updates' => 'boolean',
         'tips_and_tricks' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -77,8 +68,9 @@ class EmailPreference extends Model
             return true;
         }
 
-        // Vérifier si le type d'email existe dans les préférences
-        if (property_exists($preferences, $emailType)) {
+        // ✅ CORRECTION: Utiliser isset() au lieu de property_exists() pour les modèles Eloquent
+        // property_exists() ne fonctionne pas avec les attributs dynamiques d'Eloquent
+        if (isset($preferences->$emailType) || array_key_exists($emailType, $preferences->getAttributes())) {
             return (bool) $preferences->$emailType;
         }
 

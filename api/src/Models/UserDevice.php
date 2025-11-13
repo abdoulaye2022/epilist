@@ -29,7 +29,6 @@ class UserDevice extends Model
         'device_model',
         'is_active',
         'last_active_at',
-        'notification_preferences',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -38,15 +37,13 @@ class UserDevice extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'last_active_at' => 'datetime',
-        'notification_preferences' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime'
     ];
 
     protected $attributes = [
-        'is_active' => true,
-        'notification_preferences' => '{"budget_alerts":true,"daily_summary":true,"budget_expiring":true,"purchase_confirmations":false}'
+        'is_active' => true
     ];
 
     /**
@@ -151,50 +148,13 @@ class UserDevice extends Model
 
     /**
      *  PRÉFÉRENCES DE NOTIFICATION
+     *  Note: Les préférences sont maintenant gérées dans la table email_preferences
+     *  Ces méthodes sont conservées pour compatibilité mais redirigent vers EmailPreference
      */
     public function hasNotificationPreference(string $type): bool
     {
-        $preferences = $this->notification_preferences ?? [];
-        return $preferences[$type] ?? false;
-    }
-
-    public function updateNotificationPreference(string $type, bool $enabled): bool
-    {
-        $preferences = $this->notification_preferences ?? [];
-        $preferences[$type] = $enabled;
-        
-        return $this->update(['notification_preferences' => $preferences]);
-    }
-
-    public function getNotificationPreferences(): array
-    {
-        return $this->notification_preferences ?? [
-            'budget_alerts' => true,
-            'daily_summary' => true,
-            'budget_expiring' => true,
-            'purchase_confirmations' => false,
-            'list_sharing' => true,
-            'app_updates' => true
-        ];
-    }
-
-    public function setNotificationPreferences(array $preferences): bool
-    {
-        $validTypes = [
-            'budget_alerts',
-            'daily_summary', 
-            'budget_expiring',
-            'purchase_confirmations',
-            'list_sharing',
-            'app_updates'
-        ];
-
-        $filteredPreferences = [];
-        foreach ($validTypes as $type) {
-            $filteredPreferences[$type] = isset($preferences[$type]) ? (bool)$preferences[$type] : false;
-        }
-
-        return $this->update(['notification_preferences' => $filteredPreferences]);
+        // Rediriger vers EmailPreference
+        return \App\Models\EmailPreference::isEmailEnabled($this->user_id, $type);
     }
 
     /**
@@ -216,8 +176,8 @@ class UserDevice extends Model
 
     public function shouldReceiveBudgetAlerts(): bool
     {
-        return $this->canReceiveNotifications() && 
-               $this->hasNotificationPreference('budget_alerts');
+        return $this->canReceiveNotifications() &&
+               $this->hasNotificationPreference('budget_alert');
     }
 
     /**

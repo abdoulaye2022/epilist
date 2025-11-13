@@ -136,14 +136,59 @@ function sendDailySummaries(NotificationService $service): void
                 $alertBudgets = $budgets->filter(function($budget) {
                     return method_exists($budget, 'shouldShowAlert') && $budget->shouldShowAlert();
                 });
-                
+
+                // ✅ CORRECTION: Envoyer UNE SEULE notification groupée au lieu d'une par budget
                 if ($alertBudgets->isNotEmpty()) {
+                    $budgetCount = $alertBudgets->count();
+
+                    // Construire le résumé
+                    $budgetSummaries = [];
                     foreach ($alertBudgets as $budget) {
-                        $success = $service->sendBudgetAlert($user, $budget, 'daily_summary');
-                        
-                        if ($success) {
-                            $sentCount++;
-                        }
+                        $spentAmount = method_exists($budget, 'getSpentAmount') ? $budget->getSpentAmount() : 0;
+                        $budgetAmount = $budget->budget_amount ?? 0;
+                        $percentage = $budgetAmount > 0 ? round(($spentAmount / $budgetAmount) * 100, 1) : 0;
+
+                        $budgetSummaries[] = [
+                            'name' => $budget->name,
+                            'spent' => $spentAmount,
+                            'total' => $budgetAmount,
+                            'percentage' => $percentage
+                        ];
+                    }
+
+                    // Créer le message groupé
+                    $title = $budgetCount === 1
+                        ? "📊 Daily Budget Summary"
+                        : "📊 Daily Budget Summary ({$budgetCount} budgets)";
+
+                    $bodyLines = [];
+                    foreach ($budgetSummaries as $summary) {
+                        $formatted = $service->formatAmountForUser($summary['spent'], $user) . ' / ' .
+                                   $service->formatAmountForUser($summary['total'], $user);
+                        $bodyLines[] = "• {$summary['name']}: {$formatted} ({$summary['percentage']}%)";
+                    }
+                    $body = implode("\n", $bodyLines);
+
+                    // Données pour la notification
+                    $data = [
+                        'type' => 'daily_summary',
+                        'budget_count' => (string) $budgetCount,
+                        'budgets' => json_encode($budgetSummaries),
+                        'action' => 'view_budgets'
+                    ];
+
+                    // Envoyer UNE SEULE notification
+                    $result = $service->sendToUser(
+                        $user->id,
+                        \App\Services\NotificationService::TYPE_DAILY_SUMMARY,
+                        $title,
+                        $body,
+                        $data
+                    );
+
+                    if ($result['success']) {
+                        $sentCount++;
+                        echo "Sent daily summary to user {$user->id} ({$budgetCount} budgets)\n";
                     }
                 }
             } catch (\Exception $e) {
@@ -207,10 +252,10 @@ function checkBudgetAlerts(NotificationService $service): void
                 // Éviter les spams - vérifier la dernière alerte envoyée
                 $lastAlert = getLastAlertTime($budget->id, $alertType);
                 $now = Carbon::now();
-                
-                // Alertes "exceeded": max 1 par heure
-                // Alertes "warning": max 1 par 4 heures
-                $cooldownHours = $alertType === 'exceeded' ? 1 : 4;
+
+                // Alertes "exceeded": max 1 par 24 heures (1 par jour)
+                // Alertes "warning": max 1 par 24 heures (1 par jour)
+                $cooldownHours = $alertType === 'exceeded' ? 24 : 24;
                 
                 $shouldSendAlert = false;
                 

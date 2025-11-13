@@ -652,6 +652,42 @@ class BudgetController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
+            // Calculate dates based on budget type
+            [$startDate, $endDate] = match($budgetType) {
+                'weekly' => [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()],
+                'yearly' => [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()],
+                default => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]
+            };
+
+            // Check for overlapping budgets
+            $overlappingQuery = Budget::forUser($user_id)
+                ->active()
+                ->where(function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('start_date', [$startDate, $endDate])
+                          ->orWhereBetween('end_date', [$startDate, $endDate])
+                          ->orWhere(function($q) use ($startDate, $endDate) {
+                              $q->where('start_date', '<=', $startDate)
+                                ->where('end_date', '>=', $endDate);
+                          });
+                });
+
+            if ($listId) {
+                $overlappingQuery->where('list_id', $listId);
+            } else {
+                $overlappingQuery->whereNull('list_id');
+            }
+
+            if ($overlappingQuery->exists()) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'OVERLAPPING_BUDGET',
+                        'message' => 'A budget already exists for this period and scope'
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
+            }
+
             $name = $data['name'] ?? $this->generateBudgetName($budgetType, $listId);
 
             $budget = match($budgetType) {
@@ -670,7 +706,7 @@ class BudgetController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (\Exception $e) {
             error_log("Quick budget creation error: " . $e->getMessage());
-            
+
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [

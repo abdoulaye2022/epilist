@@ -635,36 +635,29 @@ class User extends Model
      */
     public function getNotificationPreferences(): array
     {
-        $preferences = [];
-        
-        $devices = $this->activeDevices;
-        foreach ($devices as $device) {
-            $devicePreferences = $device->getNotificationPreferences();
-            foreach ($devicePreferences as $type => $enabled) {
-                if (!isset($preferences[$type])) {
-                    $preferences[$type] = false;
-                }
-                $preferences[$type] = $preferences[$type] || $enabled;
-            }
-        }
+        // Utiliser EmailPreference au lieu de UserDevice
+        $emailPref = EmailPreference::getOrCreateForUser($this->id);
 
-        return $preferences;
+        return [
+            'email_verification' => $emailPref->email_verification,
+            'password_change_request' => $emailPref->password_change_request,
+            'password_changed' => $emailPref->password_changed,
+            'list_shared_with_me' => $emailPref->list_shared_with_me,
+            'list_completed' => $emailPref->list_completed,
+            'budget_alert' => $emailPref->budget_alert,
+            'budget_summary' => $emailPref->budget_summary,
+            'tips_and_tricks' => $emailPref->tips_and_tricks,
+        ];
     }
 
     /**
-     *  NOUVELLE MÉTHODE: Mettre à jour les préférences de notification pour tous les appareils
+     *  NOUVELLE MÉTHODE: Mettre à jour les préférences de notification
      */
     public function updateNotificationPreferences(array $preferences): bool
     {
-        $success = true;
-        
-        foreach ($this->activeDevices as $device) {
-            if (!$device->setNotificationPreferences($preferences)) {
-                $success = false;
-            }
-        }
-
-        return $success;
+        // Utiliser EmailPreference au lieu de UserDevice
+        $emailPref = EmailPreference::getOrCreateForUser($this->id);
+        return $emailPref->updatePreferences($preferences);
     }
 
     /**
