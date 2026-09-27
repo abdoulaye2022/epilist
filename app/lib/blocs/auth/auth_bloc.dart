@@ -1043,7 +1043,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      final user = await authService.getCurrentUser();
+      final user = await authService.getCurrentUser(forceRefresh: true);
       if (user != null) {
         await OfflineStorageService.saveUserProfile(user.toJson());
         final ssoProvider = await authService.getCurrentSSOProvider();

@@ -882,10 +882,14 @@ class AuthService {
     }
   }
 
-  Future<User?> getCurrentUser() async {
+  /// [forceRefresh] : ignore le cache et interroge /auth/me (puis met le
+  /// cache a jour). Indispensable apres un changement serveur (avatar,
+  /// profil) — sinon le cache ecrit au login ne se rafraichit JAMAIS.
+  Future<User?> getCurrentUser({bool forceRefresh = false}) async {
     try {
-      // D'abord essayer le cache
-      final cachedUserData = sharedPreferences.getString(_userKey);
+      // D'abord essayer le cache (sauf rafraichissement force)
+      final cachedUserData =
+          forceRefresh ? null : sharedPreferences.getString(_userKey);
       if (cachedUserData != null && cachedUserData.isNotEmpty) {
         try {
           final userData = User.fromJsonString(cachedUserData);
