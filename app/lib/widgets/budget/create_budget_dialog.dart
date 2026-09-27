@@ -1,5 +1,6 @@
 // widgets/budget/create_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -129,18 +130,21 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               },
               child: Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildIcon(isEditing),
-                        const SizedBox(height: 20),
-                        _buildTitle(l10n, isEditing),
-                        const SizedBox(height: 12),
-                        _buildDescription(l10n, isEditing),
-                        const SizedBox(height: 24),
+                        AppDialogHeader(
+                          icon:
+                              isEditing
+                                  ? Icons.edit_outlined
+                                  : Icons.savings_outlined,
+                          title:
+                              isEditing ? l10n.editBudget : l10n.createBudget,
+                        ),
+                        const SizedBox(height: 16),
                         _buildForm(l10n),
                         const SizedBox(height: 24),
                         _buildButtons(l10n, isEditing),
@@ -153,41 +157,6 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildIcon(bool isEditing) {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(
-        isEditing ? Icons.edit_rounded : Icons.savings_rounded,
-        size: 40,
-        color: AppColors.primary,
-      ),
-    );
-  }
-
-  Widget _buildTitle(AppLocalizations l10n, bool isEditing) {
-    return Text(
-      isEditing ? l10n.editBudget : l10n.createBudget,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildDescription(AppLocalizations l10n, bool isEditing) {
-    return Text(
-      isEditing ? l10n.modifyBudgetDetails : l10n.setBudgetForPeriod,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -218,21 +187,6 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       decoration: InputDecoration(
         labelText: l10n.budgetName,
         hintText: l10n.budgetNameHint,
-        prefixIcon: Icon(Icons.label, color: AppColors.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
       ),
       autofocus: true,
       textCapitalization: TextCapitalization.words,
@@ -254,22 +208,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       decoration: InputDecoration(
         labelText: l10n.budgetAmount,
         hintText: '100.00',
-        prefixIcon: Icon(Icons.monetization_on, color: Colors.amber[700]),
         // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.amber[700]!, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
@@ -355,24 +294,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
   Widget _buildPeriodTypeField(AppLocalizations l10n) {
     return DropdownButtonFormField<BudgetPeriodType>(
       value: _selectedPeriodType,
-      decoration: InputDecoration(
-        labelText: l10n.periodType,
-        prefixIcon: Icon(Icons.calendar_view_month, color: AppColors.accent),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.accent, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
-      ),
+      decoration: InputDecoration(labelText: l10n.periodType),
       items:
           BudgetPeriodType.values.map((type) {
             return DropdownMenuItem(
@@ -400,27 +322,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           child: InkWell(
             onTap: _selectStartDate,
             child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l10n.startDate,
-                prefixIcon: Icon(
-                  Icons.calendar_today,
-                  color: Colors.purple[600],
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.purple[600]!, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                filled: true,
-                fillColor: AppColors.background,
-              ),
+              decoration: InputDecoration(labelText: l10n.startDate),
               child: Text(
                 _formatDate(_startDate),
                 style: const TextStyle(fontSize: 16),
@@ -438,30 +340,6 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
             child: InputDecorator(
               decoration: InputDecoration(
                 labelText: l10n.endDate,
-                prefixIcon: Icon(
-                  Icons.event,
-                  color:
-                      _selectedPeriodType == BudgetPeriodType.custom
-                          ? Colors.purple[600]
-                          : AppColors.textDisabled,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.purple[600]!, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                filled: true,
-                fillColor:
-                    _selectedPeriodType == BudgetPeriodType.custom
-                        ? AppColors.background
-                        : AppColors.background,
                 enabled: _selectedPeriodType == BudgetPeriodType.custom,
               ),
               child: Text(
@@ -495,21 +373,6 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         decoration: InputDecoration(
           labelText: l10n.associatedList,
           hintText: l10n.generalBudget,
-          prefixIcon: Icon(Icons.list_alt, color: Colors.indigo[600]),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.border),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.indigo[600]!, width: 2),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.border),
-          ),
-          filled: true,
-          fillColor: AppColors.background,
         ),
         items: [
           DropdownMenuItem<int?>(value: null, child: Text(l10n.generalBudget)),
@@ -583,76 +446,14 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
   }
 
   Widget _buildButtons(AppLocalizations l10n, bool isEditing) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton(
-            onPressed: _isLoading ? null : () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: AppColors.border),
-              ),
-            ),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
+    return BlocBuilder<BudgetBloc, BudgetState>(
+      builder:
+          (context, state) => AppDialogActions(
+            cancelLabel: l10n.cancel,
+            submitLabel: isEditing ? l10n.update : l10n.create,
+            loading: _isLoading || state is BudgetOperationLoading,
+            onSubmit: _submitForm,
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: BlocBuilder<BudgetBloc, BudgetState>(
-            builder: (context, state) {
-              final isLoading = state is BudgetOperationLoading;
-              return ElevatedButton(
-                onPressed: isLoading ? null : _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.green[300],
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child:
-                    isLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                        : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(isEditing ? Icons.edit : Icons.add, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              isEditing ? l10n.update : l10n.create,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 

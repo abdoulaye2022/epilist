@@ -23,7 +23,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -32,7 +32,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildIcon(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             _buildTitle(l10n),
             const SizedBox(height: 12),
             _buildDescription(l10n),
@@ -48,13 +48,13 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.security, size: 40, color: AppColors.accent),
+      child: Icon(Icons.security, size: 22, color: AppColors.accent),
     );
   }
 
@@ -62,8 +62,8 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     return Text(
       l10n.security,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -73,7 +73,11 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     return Text(
       l10n.manageAccountSecurity,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -273,7 +277,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           ),
           elevation: 10,
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: Colors.white,
@@ -282,7 +286,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildIcon(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 _buildTitle(l10n),
                 const SizedBox(height: 12),
                 _buildDescription(l10n),
@@ -302,15 +306,15 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: _showCodeStep ? AppColors.primaryLight : AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
         _showCodeStep ? Icons.mail_outline : Icons.lock_outline,
-        size: 40,
+        size: 22,
         color: _showCodeStep ? AppColors.primary : AppColors.accent,
       ),
     );
@@ -320,8 +324,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     return Text(
       _showCodeStep ? l10n.newPasswordTitle : l10n.changePassword,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -333,7 +337,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           ? l10n.enterCodeAndNewPassword
           : l10n.verificationCodeWillBeSent,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -352,20 +360,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       decoration: InputDecoration(
         labelText: l10n.emailAddress,
         prefixIcon: Icon(Icons.email_outlined, color: AppColors.accent),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.accent, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
       ),
       keyboardType: TextInputType.emailAddress,
     );
@@ -380,20 +374,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           decoration: InputDecoration(
             labelText: l10n.verificationCode,
             prefixIcon: Icon(Icons.security, color: AppColors.primary),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
           ),
           keyboardType: TextInputType.number,
           maxLength: 6,
@@ -414,20 +394,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               onPressed:
                   () => setState(() => _obscurePassword = !_obscurePassword),
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
           ),
         ),
         const SizedBox(height: 16),
@@ -450,20 +416,6 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                     () => _obscureConfirmPassword = !_obscureConfirmPassword,
                   ),
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
           ),
         ),
       ],

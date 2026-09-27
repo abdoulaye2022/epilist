@@ -20,9 +20,7 @@ class ProductConfirmationDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Column(
@@ -40,11 +38,7 @@ class ProductConfirmationDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: AppColors.primary,
-                    size: 32,
-                  ),
+                  Icon(Icons.check_circle, color: AppColors.primary, size: 32),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -63,9 +57,7 @@ class ProductConfirmationDialog extends StatelessWidget {
               Container(
                 height: 200,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                ),
+                decoration: BoxDecoration(color: AppColors.background),
                 child: Image.network(
                   product.imageUrl!,
                   fit: BoxFit.contain,
@@ -82,10 +74,11 @@ class ProductConfirmationDialog extends StatelessWidget {
                     if (loadingProgress == null) return child;
                     return Center(
                       child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
+                        value:
+                            loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
                       ),
                     );
                   },
@@ -130,7 +123,8 @@ class ProductConfirmationDialog extends StatelessWidget {
                   ],
 
                   // Quantité/Contenance
-                  if (product.quantity != null && product.quantity!.isNotEmpty) ...[
+                  if (product.quantity != null &&
+                      product.quantity!.isNotEmpty) ...[
                     Row(
                       children: [
                         Icon(

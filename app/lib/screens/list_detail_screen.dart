@@ -224,16 +224,24 @@ class _ListDetailViewState extends State<_ListDetailView> {
             tooltip: l10n.startShopping,
             icon: const Icon(Icons.shopping_cart_checkout,
                 color: AppColors.primary),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ShoppingModeScreen(
-                  shoppingList: currentList,
-                  store: _activeStore,
-                  aisleRank: _aisleRank,
+            onPressed: () {
+              // Le ListItemBloc est fourni par cet écran : on le passe
+              // explicitement à la route (sinon Provider introuvable).
+              final bloc = context.read<ListItemBloc>();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: bloc,
+                    child: ShoppingModeScreen(
+                      shoppingList: currentList,
+                      store: _activeStore,
+                      aisleRank: _aisleRank,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           PopupMenuButton<int>(
             color: Colors.white,

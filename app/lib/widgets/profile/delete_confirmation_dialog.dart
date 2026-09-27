@@ -103,7 +103,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.white,
@@ -112,7 +112,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildIcon(effectiveAccentColor, effectiveIcon),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             _buildTitle(),
             const SizedBox(height: 12),
             _buildMessage(),
@@ -130,13 +130,13 @@ class DeleteConfirmationDialog extends StatelessWidget {
 
   Widget _buildIcon(Color color, IconData iconData) {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(iconData, size: 40, color: color),
+      child: Icon(iconData, size: 22, color: color),
     );
   }
 
@@ -144,8 +144,8 @@ class DeleteConfirmationDialog extends StatelessWidget {
     return Text(
       title,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -156,14 +156,22 @@ class DeleteConfirmationDialog extends StatelessWidget {
       return Text(
         itemName,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+        style: TextStyle(
+          fontSize: 13.5,
+          color: AppColors.textSecondary,
+          height: 1.4,
+        ),
       );
     }
 
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+        style: TextStyle(
+          fontSize: 13.5,
+          color: AppColors.textSecondary,
+          height: 1.4,
+        ),
         children: [
           TextSpan(text: '$description '),
           TextSpan(
@@ -210,7 +218,10 @@ class DeleteConfirmationDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: isLoading ? AppColors.textDisabled : AppColors.textSecondary,
+                color:
+                    isLoading
+                        ? AppColors.textDisabled
+                        : AppColors.textSecondary,
               ),
             ),
           ),

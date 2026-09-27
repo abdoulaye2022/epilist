@@ -90,12 +90,12 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                       // Contenu scrollable
                       Flexible(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               _buildIcon(),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 12),
                               _buildTitle(l10n),
                               const SizedBox(height: 12),
                               _buildDescription(l10n),
@@ -120,17 +120,17 @@ class _NoInternetDialogState extends State<NoInternetDialog>
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: Colors.red[50],
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.red.shade100, width: 2),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(Icons.wifi, size: 40, color: Colors.red[300]),
+          Icon(Icons.wifi, size: 22, color: Colors.red[300]),
           Positioned(
             right: 15,
             top: 15,
@@ -153,8 +153,8 @@ class _NoInternetDialogState extends State<NoInternetDialog>
     return Text(
       l10n.noInternetConnection ?? 'Aucune connexion Internet',
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
       textAlign: TextAlign.center,
@@ -167,7 +167,11 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           'Vous devez être connecté à Internet pour utiliser cette application. '
               'Veuillez vérifier votre connexion et réessayer.',
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 

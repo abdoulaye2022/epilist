@@ -1,5 +1,6 @@
 // widgets/dialogs/add_item_dialog.dart - VERSION CORRIGÉE SANS CAD
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -122,16 +123,15 @@ class _AddItemDialogState extends State<AddItemDialog> {
               },
               child: Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildIcon(),
-                      const SizedBox(height: 20),
-                      _buildTitle(l10n),
-                      const SizedBox(height: 12),
-                      _buildDescription(l10n),
-                      const SizedBox(height: 24),
+                      AppDialogHeader(
+                        icon: Icons.add_shopping_cart_rounded,
+                        title: l10n.newItem,
+                      ),
+                      const SizedBox(height: 16),
                       _buildForm(l10n),
                       if (_showSuggestions) ...[
                         const SizedBox(height: 16),
@@ -192,41 +192,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
     );
   }
 
-  Widget _buildIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(
-        Icons.add_shopping_cart_rounded,
-        size: 40,
-        color: AppColors.primary,
-      ),
-    );
-  }
-
-  Widget _buildTitle(AppLocalizations l10n) {
-    return Text(
-      l10n.newItem,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildDescription(AppLocalizations l10n) {
-    return Text(
-      l10n.addNewItemToList,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
-    );
-  }
-
   Widget _buildForm(AppLocalizations l10n) {
     return Column(
       children: [
@@ -236,9 +201,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
         // Suggestions intelligentes
         BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
-            final currencySymbol = currencyState is CurrencySelected
-                ? currencyState.currency.symbol
-                : '\$';
+            final currencySymbol =
+                currencyState is CurrencySelected
+                    ? currencyState.currency.symbol
+                    : '\$';
 
             return SmartSuggestionsWidget(
               currencySymbol: currencySymbol,
@@ -246,7 +212,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 // Remplir automatiquement le formulaire
                 setState(() {
                   productController.text = suggestion.productName;
-                  quantityController.text = suggestion.suggestedQuantity.toString();
+                  quantityController.text =
+                      suggestion.suggestedQuantity.toString();
                 });
               },
             );
@@ -265,23 +232,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildScannerButton(AppLocalizations l10n) {
-    return OutlinedButton.icon(
-      onPressed: _openBarcodeScanner,
-      icon: Icon(Icons.qr_code_scanner, color: AppColors.accent),
-      label: const Text(
-        'Scanner un code-barres',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.accent,
-        side: BorderSide(color: AppColors.accent, width: 2),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: OutlinedButton.icon(
+        onPressed: _openBarcodeScanner,
+        icon: const Icon(Icons.qr_code_scanner, size: 18),
+        label: Text(l10n.scanBarcode),
       ),
     );
   }
@@ -294,30 +250,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
           decoration: InputDecoration(
             labelText: l10n.productNameRequired,
             hintText: l10n.productNameHint,
-            prefixIcon: Icon(Icons.shopping_basket, color: AppColors.primary),
-            suffixIcon: _selectedSuggestion != null
-                ? IconButton(
-                    icon: Icon(Icons.clear, color: AppColors.textSecondary),
-                    onPressed: _clearSelectedSuggestion,
-                  )
-                : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor:
+            suffixIcon:
                 _selectedSuggestion != null
-                    ? AppColors.primaryLight
-                    : AppColors.background,
+                    ? IconButton(
+                      icon: Icon(Icons.clear, color: AppColors.textSecondary),
+                      onPressed: _clearSelectedSuggestion,
+                    )
+                    : null,
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -448,21 +387,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
             decoration: InputDecoration(
               labelText: l10n.quantity,
               hintText: '1',
-              prefixIcon: Icon(Icons.numbers, color: AppColors.accent),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.accent, width: 2),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
             ),
             keyboardType: TextInputType.number,
           ),
@@ -476,23 +400,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
               // ✅ CORRECTION: Remplacer l10n.priceCAD par l10n.price
               labelText: l10n.price, // Plus de référence à CAD
               hintText: '0.00',
-              prefixIcon: Icon(Icons.attach_money, color: Colors.amber[700]),
               // ✅ CORRECTION: Afficher uniquement l'indicateur de devise
               suffixIcon: _buildCurrencyIndicator(),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.amber[700]!, width: 2),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
@@ -516,20 +425,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
         labelText: l10n.storeOptional,
         hintText: l10n.storeHint,
         prefixIcon: Icon(Icons.store, color: Theme.of(context).primaryColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
       ),
       textCapitalization: TextCapitalization.words,
     );
@@ -559,9 +454,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
               children: [
                 Icon(
                   Icons.category,
-                  color: _selectedCategory != null
-                      ? _selectedCategory!.color
-                      : Theme.of(context).primaryColor,
+                  color:
+                      _selectedCategory != null
+                          ? _selectedCategory!.color
+                          : Theme.of(context).primaryColor,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -580,12 +476,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         _selectedCategory?.name ?? l10n.noCategorySelected,
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: _selectedCategory != null
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: _selectedCategory != null
-                              ? AppColors.textPrimary
-                              : AppColors.textDisabled,
+                          fontWeight:
+                              _selectedCategory != null
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                          color:
+                              _selectedCategory != null
+                                  ? AppColors.textPrimary
+                                  : AppColors.textDisabled,
                         ),
                       ),
                     ],
@@ -647,10 +545,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.category,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  Icon(Icons.category, color: Theme.of(context).primaryColor),
                   const SizedBox(width: 12),
                   Text(
                     l10n.selectCategory,
@@ -713,15 +608,18 @@ class _AddItemDialogState extends State<AddItemDialog> {
                           category.name,
                           style: TextStyle(
                             fontWeight:
-                                isSelected ? FontWeight.bold : FontWeight.normal,
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                           ),
                         ),
-                        trailing: isSelected
-                            ? Icon(
-                                Icons.check_circle,
-                                color: Theme.of(context).primaryColor,
-                              )
-                            : null,
+                        trailing:
+                            isSelected
+                                ? Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).primaryColor,
+                                )
+                                : null,
                         onTap: () {
                           setState(() {
                             _selectedCategory = category;
@@ -740,76 +638,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildButtons(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: AppColors.border),
-              ),
-            ),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
+    return BlocBuilder<ListItemBloc, ListItemState>(
+      builder:
+          (context, state) => AppDialogActions(
+            cancelLabel: l10n.cancel,
+            submitLabel: l10n.add,
+            loading: state is ListItemLoading,
+            onSubmit: () => _addItem(l10n),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: BlocBuilder<ListItemBloc, ListItemState>(
-            builder: (context, state) {
-              final isLoading = state is ListItemLoading;
-              return ElevatedButton(
-                onPressed: isLoading ? null : () => _addItem(l10n),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.green[300],
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child:
-                    isLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                        : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.add, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              l10n.add,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 
@@ -863,8 +699,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
       String? barcode;
 
       // Détecter si on est sur un simulateur ou appareil physique
-      final bool isSimulator = defaultTargetPlatform == TargetPlatform.iOS &&
-                                kDebugMode;
+      final bool isSimulator =
+          defaultTargetPlatform == TargetPlatform.iOS && kDebugMode;
 
       if (isSimulator) {
         // Sur simulateur: utiliser le dialog de saisie manuelle
@@ -900,11 +736,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
             final confirmed = await showDialog<bool>(
               context: context,
               barrierDismissible: false,
-              builder: (context) => ProductConfirmationDialog(
-                product: product,
-                onConfirm: () => Navigator.of(context).pop(true),
-                onCancel: () => Navigator.of(context).pop(false),
-              ),
+              builder:
+                  (context) => ProductConfirmationDialog(
+                    product: product,
+                    onConfirm: () => Navigator.of(context).pop(true),
+                    onCancel: () => Navigator.of(context).pop(false),
+                  ),
             );
 
             if (confirmed == true && mounted) {
@@ -984,7 +821,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
     // Auto-catégorisation : si l'utilisateur n'a pas choisi de catégorie,
     // deviner depuis le nom du produit (dictionnaire local, hors ligne).
-    final category = _selectedCategory ??
+    final category =
+        _selectedCategory ??
         CategoryGuesser.guessCategory(
           _loadedCategories(),
           productController.text.trim(),

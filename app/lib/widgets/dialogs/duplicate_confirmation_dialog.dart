@@ -50,12 +50,12 @@ class DuplicateConfirmationDialog extends StatelessWidget {
           children: [
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildIcon(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     _buildTitle(l10n),
                     const SizedBox(height: 12),
                     _buildMessage(),
@@ -76,13 +76,13 @@ class DuplicateConfirmationDialog extends StatelessWidget {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: Colors.orange[50],
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.warning_rounded, size: 40, color: AppColors.warning),
+      child: Icon(Icons.warning_rounded, size: 22, color: AppColors.warning),
     );
   }
 
@@ -102,7 +102,11 @@ class DuplicateConfirmationDialog extends StatelessWidget {
     return Text(
       message,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -323,7 +327,9 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       onTap:
           duplicate.suggestionType == DuplicateType.exactMatch
               ? () {
-                debugPrint('🎯 Sélection pour fusion: ${duplicate.productName}');
+                debugPrint(
+                  '🎯 Sélection pour fusion: ${duplicate.productName}',
+                );
                 // Juste indiquer visuellement la sélection
               }
               : null,
@@ -333,7 +339,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
   // ✅ CORRECTION: Passer le contexte en paramètre
   Widget _buildActions(BuildContext context, AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: const BorderRadius.only(

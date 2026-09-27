@@ -199,12 +199,16 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                         if (_feedbackTypes.isNotEmpty &&
                             _selectedFeedbackType == null) {
                           _selectedFeedbackType = _feedbackTypes.first.value;
-                          debugPrint('🎯 Type par défaut: $_selectedFeedbackType');
+                          debugPrint(
+                            '🎯 Type par défaut: $_selectedFeedbackType',
+                          );
                         }
                         if (_priorities.isNotEmpty &&
                             _selectedPriority == null) {
                           _selectedPriority = _priorities.first.value;
-                          debugPrint('🎯 Priorité par défaut: $_selectedPriority');
+                          debugPrint(
+                            '🎯 Priorité par défaut: $_selectedPriority',
+                          );
                         }
                         _dataLoaded = true;
                       }
@@ -228,12 +232,12 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
               },
               child: Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildIcon(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
                       _buildTitle(l10n),
                       const SizedBox(height: 12),
                       _buildDescription(l10n),
@@ -254,13 +258,13 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.feedback_outlined, size: 40, color: AppColors.primary),
+      child: Icon(Icons.feedback_outlined, size: 22, color: AppColors.primary),
     );
   }
 
@@ -268,8 +272,8 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     return Text(
       l10n.sendFeedback,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -279,7 +283,11 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     return Text(
       l10n.feedbackDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -370,7 +378,10 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
             child: DropdownButton<String>(
               value: _selectedFeedbackType,
               isExpanded: true,
-              icon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: AppColors.textSecondary,
+              ),
               items:
                   _feedbackTypes.map((type) {
                     // ✅ CORRECTION: Utiliser les traductions locales
@@ -440,7 +451,10 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
             child: DropdownButton<String>(
               value: _selectedPriority,
               isExpanded: true,
-              icon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: AppColors.textSecondary,
+              ),
               items:
                   _priorities.map((priority) {
                     // ✅ CORRECTION: Utiliser les traductions locales
@@ -483,20 +497,6 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         labelText: l10n.subject,
         hintText: l10n.subjectHint,
         prefixIcon: Icon(Icons.title, color: AppColors.accent),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.accent, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
         counterText: '', // Masquer le compteur
       ),
       maxLength: 200,
@@ -525,20 +525,6 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           padding: const EdgeInsets.only(bottom: 60),
           child: Icon(Icons.message, color: AppColors.primary),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
         alignLabelWithHint: true,
         counterText: '', // Masquer le compteur
       ),

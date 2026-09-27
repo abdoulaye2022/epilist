@@ -9114,6 +9114,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Rechercher'**
   String get search;
+
+  /// No description provided for @scanBarcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner un code-barres'**
+  String get scanBarcode;
 }
 
 class _AppLocalizationsDelegate

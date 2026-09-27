@@ -84,12 +84,12 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               children: [
                 Flexible(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _buildIcon(),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
                         _buildTitle(l10n),
                         const SizedBox(height: 12),
                         _buildDescription(l10n),
@@ -113,13 +113,13 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.person_rounded, size: 40, color: AppColors.primary),
+      child: Icon(Icons.person_rounded, size: 22, color: AppColors.primary),
     );
   }
 
@@ -127,8 +127,8 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     return Text(
       l10n.editProfile,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -138,7 +138,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     return Text(
       l10n.modifyPersonalInformation,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -189,24 +193,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           icon,
           color: isDisabled ? AppColors.textDisabled : AppColors.primary,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: isDisabled ? AppColors.background : AppColors.background,
       ),
       enabled: enabled,
     );

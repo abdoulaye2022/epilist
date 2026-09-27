@@ -2142,5 +2142,6 @@
   "settingAutoAddOutHint": "Un produit marqué « Terminé » rejoint votre liste récente",
   "settingBudgetForecast": "Projection budget",
   "settingBudgetForecastHint": "Rythme, projection de fin de mois et budget par jour",
-  "search": "Rechercher"
+  "search": "Rechercher",
+  "scanBarcode": "Scanner un code-barres"
 }

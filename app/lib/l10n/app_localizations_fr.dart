@@ -4910,4 +4910,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get search => 'Rechercher';
+
+  @override
+  String get scanBarcode => 'Scanner un code-barres';
 }

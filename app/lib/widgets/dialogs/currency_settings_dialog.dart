@@ -98,12 +98,12 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                   }
                 },
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildIcon(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
                       _buildTitle(l10n),
                       const SizedBox(height: 12),
                       _buildDescription(l10n),
@@ -124,13 +124,13 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.currency_exchange, size: 40, color: AppColors.primary),
+      child: Icon(Icons.currency_exchange, size: 22, color: AppColors.primary),
     );
   }
 
@@ -138,8 +138,8 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     return Text(
       l10n.selectCurrency,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -149,7 +149,11 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     return Text(
       l10n.chooseCurrencyDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 

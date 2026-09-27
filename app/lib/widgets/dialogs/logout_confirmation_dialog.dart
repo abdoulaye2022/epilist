@@ -1,4 +1,5 @@
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -88,22 +89,34 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
             } else if (state is AuthFailure && _logoutStarted) {
               // En cas d'erreur, forcer quand même la navigation
               if (!_hasLoggedOut) {
-                debugPrint('❌ Erreur de logout - Navigation forcée vers /login');
+                debugPrint(
+                  '❌ Erreur de logout - Navigation forcée vers /login',
+                );
                 _navigateToLogin();
               }
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildIcon(),
-                const SizedBox(height: 20),
-                _buildTitle(l10n),
+                AppDialogHeader(
+                  icon: Icons.logout_rounded,
+                  title: l10n.logout,
+                  color: AppColors.warning,
+                ),
                 const SizedBox(height: 12),
-                _buildMessage(l10n),
-                const SizedBox(height: 24),
+                Text(
+                  l10n.confirmLogoutMessage,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
                 _buildButtons(context, l10n),
               ],
             ),
@@ -113,128 +126,22 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
     );
   }
 
-  Widget _buildIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(Icons.logout_rounded, size: 40, color: AppColors.warning),
-    );
-  }
-
-  Widget _buildTitle(AppLocalizations l10n) {
-    return Text(
-      l10n.logout,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildMessage(AppLocalizations l10n) {
-    return Text(
-      l10n.confirmLogoutMessage,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
-    );
-  }
-
   Widget _buildButtons(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        // Bouton Annuler
-        Expanded(
-          child: TextButton(
-            onPressed: _logoutStarted ? null : () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: AppColors.border),
-              ),
-            ),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: _logoutStarted ? AppColors.textDisabled : AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-
-        // Bouton Déconnexion
-        Expanded(
-          child: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              final isLoading = state is AuthLoading && _logoutStarted;
-
-              return ElevatedButton(
-                onPressed:
-                    (_logoutStarted || isLoading)
-                        ? null
-                        : () {
-                          debugPrint('🚀 Déclenchement de LogoutRequested');
-
-                          // ✅ Marquer le début du logout
-                          setState(() {
-                            _logoutStarted = true;
-                          });
-
-                          // ✅ Démarrer le timer de sécurité
-                          _startLogoutTimeout();
-
-                          // Déclencher le logout
-                          context.read<AuthBloc>().add(LogoutRequested());
-                        },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.warning,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.orange[300],
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child:
-                    isLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                        : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.logout, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              l10n.logout,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-              );
-            },
-          ),
-        ),
-      ],
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final isLoading = _logoutStarted;
+        return AppDialogActions(
+          cancelLabel: l10n.cancel,
+          submitLabel: l10n.logout,
+          destructive: true,
+          loading: isLoading,
+          onSubmit: () {
+            setState(() => _logoutStarted = true);
+            _startLogoutTimeout();
+            context.read<AuthBloc>().add(LogoutRequested());
+          },
+        );
+      },
     );
   }
 }

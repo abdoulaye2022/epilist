@@ -2141,5 +2141,6 @@
       }
     }
   },
-  "search": "Search"
+  "search": "Search",
+  "scanBarcode": "Scan a barcode"
 }

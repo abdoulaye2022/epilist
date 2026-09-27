@@ -25,12 +25,12 @@ class LogoutDialog extends StatelessWidget {
           color: Colors.white,
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildIcon(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               _buildTitle(l10n),
               const SizedBox(height: 12),
               _buildDescription(l10n),
@@ -45,13 +45,13 @@ class LogoutDialog extends StatelessWidget {
 
   Widget _buildIcon() {
     return Container(
-      width: 80,
-      height: 80,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: Colors.red[50],
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.logout_rounded, size: 40, color: AppColors.error),
+      child: Icon(Icons.logout_rounded, size: 22, color: AppColors.error),
     );
   }
 
@@ -59,8 +59,8 @@ class LogoutDialog extends StatelessWidget {
     return Text(
       l10n.logout,
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     );
@@ -70,7 +70,11 @@ class LogoutDialog extends StatelessWidget {
     return Text(
       l10n.confirmLogoutMessage,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 13.5,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 

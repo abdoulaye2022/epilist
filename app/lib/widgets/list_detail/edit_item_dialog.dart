@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:epilist/services/image_upload_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -127,33 +128,32 @@ class _EditItemDialogState extends State<EditItemDialog> {
             children: [
               Flexible(
                 child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildIcon(),
-                    const SizedBox(height: 20),
-                    _buildTitle(l10n),
-                    const SizedBox(height: 12),
-                    _buildDescription(l10n),
-                    const SizedBox(height: 16),
-                    _buildPhotoSection(l10n),
-                    const SizedBox(height: 16),
-                    _buildForm(l10n),
-                    _buildPriceHistoryLink(l10n),
-                    if (_showSuggestions) ...[
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppDialogHeader(
+                        icon: Icons.edit_outlined,
+                        title: l10n.editItem,
+                      ),
                       const SizedBox(height: 16),
-                      _buildSuggestions(l10n),
+                      _buildPhotoSection(l10n),
+                      const SizedBox(height: 16),
+                      _buildForm(l10n),
+                      _buildPriceHistoryLink(l10n),
+                      if (_showSuggestions) ...[
+                        const SizedBox(height: 16),
+                        _buildSuggestions(l10n),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildButtons(l10n),
                     ],
-                    const SizedBox(height: 24),
-                    _buildButtons(l10n),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -171,37 +171,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
         icon: const Icon(Icons.query_stats, size: 18),
         label: Text(l10n.priceHistoryTitle),
       ),
-    );
-  }
-
-  Widget _buildIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(Icons.edit_rounded, size: 40, color: AppColors.accent),
-    );
-  }
-
-  Widget _buildTitle(AppLocalizations l10n) {
-    return Text(
-      l10n.editItem,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildDescription(AppLocalizations l10n) {
-    return Text(
-      l10n.modifyItemInformation,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -227,7 +196,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
           decoration: InputDecoration(
             labelText: l10n.productNameRequired,
             hintText: l10n.productNameHint,
-            prefixIcon: Icon(Icons.shopping_basket, color: AppColors.accent),
             suffixIcon:
                 _selectedSuggestion != null
                     ? IconButton(
@@ -242,21 +210,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       tooltip: 'Restaurer le nom original',
                     )
                     : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.accent, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor:
-                _selectedSuggestion != null ? AppColors.accentLight : AppColors.background,
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -387,21 +340,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
             decoration: InputDecoration(
               labelText: l10n.quantity,
               hintText: '1',
-              prefixIcon: Icon(Icons.numbers, color: AppColors.warning),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.warning, width: 2),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
             ),
             keyboardType: TextInputType.number,
           ),
@@ -415,23 +353,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
               // ✅ CORRECTION: Remplacer l10n.priceCAD par l10n.price
               labelText: l10n.price, // Plus de référence à CAD
               hintText: '0.00',
-              prefixIcon: Icon(Icons.attach_money, color: Colors.amber[700]),
               // ✅ CORRECTION: Afficher uniquement l'indicateur de devise
               suffixIcon: _buildCurrencyIndicator(),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.amber[700]!, width: 2),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
@@ -455,96 +378,20 @@ class _EditItemDialogState extends State<EditItemDialog> {
         labelText: l10n.storeOptional,
         hintText: l10n.storeHint,
         prefixIcon: Icon(Icons.store, color: Theme.of(context).primaryColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
       ),
       textCapitalization: TextCapitalization.words,
     );
   }
 
   Widget _buildButtons(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: AppColors.border),
-              ),
-            ),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
+    return BlocBuilder<ListItemBloc, ListItemState>(
+      builder:
+          (context, state) => AppDialogActions(
+            cancelLabel: l10n.cancel,
+            submitLabel: l10n.save,
+            loading: state is ListItemLoading,
+            onSubmit: () => _updateItem(l10n),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: BlocBuilder<ListItemBloc, ListItemState>(
-            builder: (context, state) {
-              final isLoading = state is ListItemLoading;
-              return ElevatedButton(
-                onPressed: isLoading ? null : () => _updateItem(l10n),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.blue[300],
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child:
-                    isLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                        : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.save, size: 18),
-                            const SizedBox(width: 6),
-                            Text(
-                              l10n.save,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 
@@ -677,9 +524,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
               children: [
                 Icon(
                   Icons.category,
-                  color: _selectedCategory != null
-                      ? _selectedCategory!.color
-                      : Theme.of(context).primaryColor,
+                  color:
+                      _selectedCategory != null
+                          ? _selectedCategory!.color
+                          : Theme.of(context).primaryColor,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -698,12 +546,14 @@ class _EditItemDialogState extends State<EditItemDialog> {
                         _selectedCategory?.name ?? l10n.noCategorySelected,
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: _selectedCategory != null
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: _selectedCategory != null
-                              ? AppColors.textPrimary
-                              : AppColors.textDisabled,
+                          fontWeight:
+                              _selectedCategory != null
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                          color:
+                              _selectedCategory != null
+                                  ? AppColors.textPrimary
+                                  : AppColors.textDisabled,
                         ),
                       ),
                     ],
@@ -765,10 +615,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.category,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  Icon(Icons.category, color: Theme.of(context).primaryColor),
                   const SizedBox(width: 12),
                   Text(
                     l10n.selectCategory,
@@ -831,15 +678,18 @@ class _EditItemDialogState extends State<EditItemDialog> {
                           category.name,
                           style: TextStyle(
                             fontWeight:
-                                isSelected ? FontWeight.bold : FontWeight.normal,
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                           ),
                         ),
-                        trailing: isSelected
-                            ? Icon(
-                                Icons.check_circle,
-                                color: Theme.of(context).primaryColor,
-                              )
-                            : null,
+                        trailing:
+                            isSelected
+                                ? Icon(
+                                  Icons.check_circle,
+                                  color: Theme.of(context).primaryColor,
+                                )
+                                : null,
                         onTap: () {
                           setState(() {
                             _selectedCategory = category;
@@ -875,27 +725,29 @@ class _EditItemDialogState extends State<EditItemDialog> {
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(color: AppColors.border),
             ),
-            child: _photoBusy
-                ? const Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : hasPhoto
-                    ? CachedNetworkImage(
-                        imageUrl: _photoUrl!,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => const Icon(
-                          Icons.broken_image_outlined,
-                          color: AppColors.textDisabled,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.add_a_photo_outlined,
-                        color: AppColors.textSecondary,
+            child:
+                _photoBusy
+                    ? const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
+                    )
+                    : hasPhoto
+                    ? CachedNetworkImage(
+                      imageUrl: _photoUrl!,
+                      fit: BoxFit.cover,
+                      errorWidget:
+                          (_, __, ___) => const Icon(
+                            Icons.broken_image_outlined,
+                            color: AppColors.textDisabled,
+                          ),
+                    )
+                    : const Icon(
+                      Icons.add_a_photo_outlined,
+                      color: AppColors.textSecondary,
+                    ),
           ),
         ),
         const SizedBox(width: 12),
@@ -917,40 +769,45 @@ class _EditItemDialogState extends State<EditItemDialog> {
     final hasPhoto = _photoUrl?.isNotEmpty == true;
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: Text(l10n.takePhoto),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickAndUploadPhoto(ImageSource.camera);
-              },
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_outlined),
+                  title: Text(l10n.takePhoto),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickAndUploadPhoto(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library_outlined),
+                  title: Text(l10n.chooseFromGallery),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickAndUploadPhoto(ImageSource.gallery);
+                  },
+                ),
+                if (hasPhoto)
+                  ListTile(
+                    leading: const Icon(
+                      Icons.delete_outline,
+                      color: AppColors.error,
+                    ),
+                    title: Text(
+                      l10n.removePhoto,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _removePhoto();
+                    },
+                  ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: Text(l10n.chooseFromGallery),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickAndUploadPhoto(ImageSource.gallery);
-              },
-            ),
-            if (hasPhoto)
-              ListTile(
-                leading:
-                    const Icon(Icons.delete_outline, color: AppColors.error),
-                title: Text(l10n.removePhoto,
-                    style: const TextStyle(color: AppColors.error)),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _removePhoto();
-                },
-              ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -965,18 +822,16 @@ class _EditItemDialogState extends State<EditItemDialog> {
       if (picked == null || !mounted) return;
       setState(() => _photoBusy = true);
       final updated = await context.read<ImageUploadService>().uploadItemImage(
-            widget.item.listId,
-            widget.item.id,
-            File(picked.path),
-          );
+        widget.item.listId,
+        widget.item.id,
+        File(picked.path),
+      );
       if (!mounted) return;
       setState(() {
         _photoUrl = updated.imageUrl;
         _photoBusy = false;
       });
-      context
-          .read<ListItemBloc>()
-          .add(LoadListItems(widget.item.listId));
+      context.read<ListItemBloc>().add(LoadListItems(widget.item.listId));
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoUpdated);
     } catch (e) {
       if (!mounted) return;
@@ -989,17 +844,16 @@ class _EditItemDialogState extends State<EditItemDialog> {
     final l10n = AppLocalizations.of(context)!;
     try {
       setState(() => _photoBusy = true);
-      await context
-          .read<ImageUploadService>()
-          .deleteItemImage(widget.item.listId, widget.item.id);
+      await context.read<ImageUploadService>().deleteItemImage(
+        widget.item.listId,
+        widget.item.id,
+      );
       if (!mounted) return;
       setState(() {
         _photoUrl = null;
         _photoBusy = false;
       });
-      context
-          .read<ListItemBloc>()
-          .add(LoadListItems(widget.item.listId));
+      context.read<ListItemBloc>().add(LoadListItems(widget.item.listId));
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoRemoved);
     } catch (e) {
       if (!mounted) return;

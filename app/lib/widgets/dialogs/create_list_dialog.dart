@@ -1,9 +1,11 @@
-// widgets/dialogs/create_list_dialog.dart
-import 'package:epilist/theme/app_theme.dart';
+// widgets/dialogs/create_list_dialog.dart - Nouvelle liste : un en-tête
+// compact, un champ, deux boutons. Les styles viennent du thème.
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:epilist/l10n/app_localizations.dart';
 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({super.key});
@@ -21,172 +23,53 @@ class _CreateListDialogState extends State<CreateListDialog> {
     super.dispose();
   }
 
+  void _createList() {
+    if (nameController.text.trim().isEmpty) return;
+    context.read<ShoppingListBloc>().add(
+      CreateShoppingList(nameController.text.trim()),
+    );
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      elevation: 10,
-      child: Container(
-        padding: EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Icône de création
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                Icons.add_shopping_cart_rounded,
-                size: 40,
-                color: AppColors.primary,
-              ),
+            AppDialogHeader(
+              icon: Icons.playlist_add_rounded,
+              title: l10n.newList,
             ),
-
-            SizedBox(height: 20),
-
-            // Titre
-            Text(
-              l10n.newList,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-
-            SizedBox(height: 12),
-
-            // Message
-            Text(
-              l10n.giveNameToNewList,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
-            ),
-
-            SizedBox(height: 24),
-
-            // Champ de saisie
+            const SizedBox(height: AppSpacing.md + 4),
             TextField(
               controller: nameController,
+              autofocus: true,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 labelText: l10n.listName,
                 hintText: l10n.listNameHint,
-                prefixIcon: Icon(Icons.list_alt, color: AppColors.primary),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.primary, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.border),
-                ),
-                filled: true,
-                fillColor: AppColors.background,
               ),
-              autofocus: true,
+              onSubmitted: (_) => _createList(),
             ),
-
-            SizedBox(height: 24),
-
-            // Boutons
-            Row(
-              children: [
-                // Bouton Annuler
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: AppColors.border),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.cancel,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+            const SizedBox(height: AppSpacing.lg),
+            BlocBuilder<ShoppingListBloc, ShoppingListState>(
+              builder:
+                  (context, state) => AppDialogActions(
+                    cancelLabel: l10n.cancel,
+                    submitLabel: l10n.create,
+                    loading: state is ShoppingListLoading,
+                    onSubmit: _createList,
                   ),
-                ),
-
-                SizedBox(width: 12),
-
-                // Bouton Créer
-                Expanded(
-                  child: BlocBuilder<ShoppingListBloc, ShoppingListState>(
-                    builder: (context, state) {
-                      final isLoading = state is ShoppingListLoading;
-                      return ElevatedButton(
-                        onPressed: isLoading ? null : _createList,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: Colors.green[300],
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                        ),
-                        child:
-                            isLoading
-                                ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                                : Text(
-                                  l10n.create,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                      );
-                    },
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _createList() {
-    if (nameController.text.trim().isNotEmpty) {
-      context.read<ShoppingListBloc>().add(
-        CreateShoppingList(nameController.text.trim()),
-      );
-      Navigator.pop(context);
-    }
   }
 }

@@ -1,5 +1,6 @@
 // widgets/budget/quick_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -113,18 +114,17 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           children: [
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildIcon(),
-                      const SizedBox(height: 20),
-                      _buildTitle(l10n),
-                      const SizedBox(height: 12),
-                      _buildDescription(l10n),
-                      const SizedBox(height: 24),
+                      AppDialogHeader(
+                        icon: Icons.flash_on_outlined,
+                        title: l10n.quickBudget,
+                      ),
+                      const SizedBox(height: 16),
                       _buildForm(l10n),
                       const SizedBox(height: 24),
                       _buildButtons(l10n),
@@ -136,37 +136,6 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildIcon() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        borderRadius: BorderRadius.circular(40),
-      ),
-      child: Icon(Icons.flash_on_rounded, size: 40, color: AppColors.warning),
-    );
-  }
-
-  Widget _buildTitle(AppLocalizations l10n) {
-    return Text(
-      l10n.quickBudget,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildDescription(AppLocalizations l10n) {
-    return Text(
-      l10n.quickBudgetDescription,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -260,7 +229,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                         children: [
                           Icon(
                             period['icon'] as IconData,
-                            color: isSelected ? color[600] : AppColors.textSecondary,
+                            color:
+                                isSelected
+                                    ? color[600]
+                                    : AppColors.textSecondary,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -272,7 +244,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                                     isSelected
                                         ? FontWeight.w600
                                         : FontWeight.normal,
-                                color: isSelected ? color[600] : AppColors.textPrimary,
+                                color:
+                                    isSelected
+                                        ? color[600]
+                                        : AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -313,23 +288,8 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.monetization_on, color: Colors.amber[700]),
             hintText: l10n.enterAmount,
             // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.amber[700]!, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
           ),
           onChanged: (value) {
             // ✅ DÉCLENCHER UN REBUILD POUR LE PREVIEW
@@ -381,7 +341,9 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
               border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(12),
               color:
-                  _selectedListId == null ? Colors.indigo[50] : AppColors.background,
+                  _selectedListId == null
+                      ? Colors.indigo[50]
+                      : AppColors.background,
             ),
             child: Row(
               children: [
@@ -413,7 +375,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                       ),
                       Text(
                         l10n.generalBudgetDescription,
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -537,24 +502,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
         const SizedBox(height: 8),
         TextFormField(
           controller: _nameController,
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.label, color: AppColors.primary),
-            hintText: l10n.enterBudgetName,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
-          ),
+          decoration: InputDecoration(hintText: l10n.enterBudgetName),
           textCapitalization: TextCapitalization.words,
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -637,69 +585,11 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
   }
 
   Widget _buildButtons(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextButton(
-            onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: AppColors.border),
-              ),
-            ),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _createBudget,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.warning,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.orange[300],
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 2,
-            ),
-            child:
-                _isLoading
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                    : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.flash_on, size: 18),
-                        const SizedBox(width: 6),
-                        Text(
-                          l10n.createBudget,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-          ),
-        ),
-      ],
+    return AppDialogActions(
+      cancelLabel: l10n.cancel,
+      submitLabel: l10n.create,
+      loading: _isLoading,
+      onSubmit: _createBudget,
     );
   }
 
