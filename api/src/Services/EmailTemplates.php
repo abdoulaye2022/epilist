@@ -14,32 +14,12 @@ class EmailTemplates
             'fr' => [
                 'tagline' => 'Gérez vos courses facilement',
                 'footer_tagline' => 'Simplifiez vos courses. Maîtrisez votre budget.',
-                'feature_1' => 'Créez vos listes avant d\'aller faire vos courses',
-                'feature_2' => 'Cochez vos achats en temps réel',
-                'feature_3' => 'Suivez vos dépenses dans votre devise préférée',
-                'feature_4' => 'Partagez vos listes avec votre famille',
-                'discover_features' => 'Découvrez toutes nos fonctionnalités',
-                'visit_website' => 'Visitez epilist.app',
-                'copyright' => 'Application de gestion de courses',
-                'help_title' => 'Une question ? Besoin d\'aide ?',
-                'help_text' => 'Rendez-vous sur notre site web pour nous contacter',
-                'proudly_canadian' => 'Développée avec ❤ par M2atech Solutions Inc.',
-                'local_tag' => 'Fièrement canadienne depuis le Nouveau-Brunswick',
+                'help_title' => 'Une question ?',
             ],
             'en' => [
                 'tagline' => 'Manage your shopping easily',
                 'footer_tagline' => 'Simplify your shopping. Master your budget.',
-                'feature_1' => 'Create your lists before going shopping',
-                'feature_2' => 'Check off your purchases in real-time',
-                'feature_3' => 'Track your expenses in your preferred currency',
-                'feature_4' => 'Share your lists with your family',
-                'discover_features' => 'Discover all our features',
-                'visit_website' => 'Visit epilist.app',
-                'copyright' => 'Shopping Management Application',
-                'help_title' => 'Have a question? Need help?',
-                'help_text' => 'Visit our website to contact us',
-                'proudly_canadian' => 'Developed with ❤ by M2atech Solutions Inc.',
-                'local_tag' => 'Proudly Canadian from New Brunswick',
+                'help_title' => 'A question?',
             ],
         ];
     }
@@ -787,23 +767,20 @@ class EmailTemplates
                         <td align='center' style='padding: 40px 20px;'>
                             <table class='email-container' role='presentation' width='600' cellspacing='0' cellpadding='0' border='0' style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08); overflow: hidden;'>
                                 <tr>
-                                    <td class='header' style='background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 40px 30px 30px; text-align: center; border-bottom: 1px solid #e5e7eb;'>
-                                        <!-- Logo EpiList depuis votre serveur -->
-                                        <div style='margin-bottom: 16px;'>
+                                    <td class='header' style='background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); padding: 24px 30px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;'>
+                                        <div style='margin-bottom: 10px;'>
                                             <img src='https://m2atodev.com/api.epilist/public/app_logo.png'
-                                                 alt='EpiList Logo'
-                                                 style='width: 80px; height: 80px; border-radius: 20px; border: none; display: block; margin: 0 auto;'
+                                                 alt='EpiList'
+                                                 style='width: 52px; height: 52px; border-radius: 14px; border: none; display: block; margin: 0 auto;'
                                                  onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
-                                            <!-- Fallback si l'image ne charge pas -->
-                                            <div style='display: none; width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 20px; margin: 0 auto; position: relative;'>
-                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 36px;'>🛒</div>
+                                            <div style='display: none; width: 52px; height: 52px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 14px; margin: 0 auto; position: relative;'>
+                                                <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #059669; font-size: 24px;'>🛒</div>
                                             </div>
                                         </div>
-                                        <h1 style='margin: 0 0 8px; font-size: 28px; font-weight: bold; color: #047857;'>EpiList</h1>
-                                        <p style='margin: 0 0 16px; font-size: 16px; color: #6b7280; font-weight: 500;'>
+                                        <h1 style='margin: 0 0 2px; font-size: 22px; font-weight: bold; color: #047857;'>EpiList</h1>
+                                        <p style='margin: 0; font-size: 13px; color: #6b7280;'>
                                             {$common['tagline']}
                                         </p>
-                                        <div style='height: 3px; width: 60px; background: linear-gradient(90deg, #059669, #10b981); margin: 0 auto; border-radius: 2px;'></div>
                                     </td>
                                 </tr>
         ";
@@ -812,7 +789,7 @@ class EmailTemplates
     /**
      * Générer le footer multilingue
      */
-    public static function footerContent(string $lang = 'fr', string $unsubscribeUrl = null): string
+    public static function footerContent(string $lang = 'fr', ?string $unsubscribeUrl = null): string
     {
         $common = self::getCommonTranslations()[$lang] ?? self::getCommonTranslations()['fr'];
         $currentYear = date('Y');
@@ -825,90 +802,26 @@ class EmailTemplates
                 : "You are receiving this email because you are registered with EpiList.<br><a href='{$unsubscribeUrl}' style='color: #6b7280; text-decoration: underline;'>Unsubscribe from marketing emails</a> | <a href='https://epilist.app' style='color: #6b7280; text-decoration: underline;'>Email preferences</a>";
 
             $unsubscribeSection = "
-                <!-- Section de désabonnement -->
-                <div style='margin-top: 20px; padding: 15px; background: rgba(107, 114, 128, 0.05); border-radius: 8px; border-top: 1px solid #e5e7eb;'>
-                    <p style='margin: 0; font-size: 11px; color: #6b7280; text-align: center; line-height: 1.4;'>
-                        {$unsubscribeText}
-                    </p>
-                </div>
+                <p style='margin: 12px 0 0; font-size: 10px; color: #6b7280; text-align: center; line-height: 1.4;'>
+                    {$unsubscribeText}
+                </p>
             ";
         }
 
         return "
                                     <tr>
-                                        <td class='footer' style='background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-align: center; padding: 40px 30px;'>
-                                            <!-- Logo footer -->
-                                            <div style='margin-bottom: 20px;'>
-                                                <img src='https://m2atodev.com/api.epilist/public/app_logo.png'
-                                                    alt='EpiList Logo'
-                                                    style='width: 60px; height: 60px; border-radius: 16px; border: none; display: block; margin: 0 auto;'
-                                                    onerror=\"this.style.display='none'; this.nextElementSibling.style.display='inline-block';\">
-                                                <!-- Fallback si l'image ne charge pas -->
-                                                <div style='display: none; width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px; margin: 0 auto; position: relative;'>
-                                                    <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffff; font-size: 24px;'>🛒</div>
-                                                </div>
-                                            </div>
-
-                                            <h3 style='margin: 0 0 8px; font-size: 18px; font-weight: 600; color: #ffffff;'>EpiList</h3>
-                                            <p style='margin: 0 0 25px; font-size: 15px; color: #d1d5db; font-weight: 500;'>
-                                                {$common['footer_tagline']}
+                                        <td class='footer' style='background-color: #1f2937; color: #ffffff; text-align: center; padding: 24px 30px;'>
+                                            <p style='margin: 0 0 4px; font-size: 15px; font-weight: 700; color: #ffffff;'>
+                                                EpiList
+                                                <span style='font-weight: 400; color: #9ca3af;'> — {$common['footer_tagline']}</span>
                                             </p>
-
-                                            <!-- Fonctionnalités clés -->
-                                            <div style='margin: 25px 0 30px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;'>
-                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>📝</span>
-                                                    <span>{$common['feature_1']}</span>
-                                                </div>
-                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>✅</span>
-                                                    <span>{$common['feature_2']}</span>
-                                                </div>
-                                                <div style='display: flex; align-items: center; margin-bottom: 8px; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>💰</span>
-                                                    <span>{$common['feature_3']}</span>
-                                                </div>
-                                                <div style='display: flex; align-items: center; color: #d1d5db; font-size: 14px;'>
-                                                    <span style='margin-right: 8px;'>👨‍👩‍👧‍👦</span>
-                                                    <span>{$common['feature_4']}</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Bouton vers le site web -->
-                                            <div style='margin: 25px 0; padding: 20px; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);'>
-                                                <p style='margin: 0 0 12px; font-size: 15px; color: #10b981; font-weight: 600; text-align: center;'>
-                                                    ✨ {$common['discover_features']}
-                                                </p>
-                                                <a href='https://epilist.app'
-                                                   style='display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;'>
-                                                    {$common['visit_website']}
-                                                </a>
-                                            </div>
-
-                                            <!-- Informations de contact -->
-                                            <p style='margin: 20px 0; font-size: 12px; color: #6b7280; line-height: 1.5; text-align: center;'>
-                                                © {$currentYear} EpiList - {$common['copyright']}<br>
-                                                Nouveau-Brunswick, Canada
+                                            <p style='margin: 0 0 10px; font-size: 12px; color: #9ca3af;'>
+                                                {$common['help_title']}
+                                                <a href='https://epilist.app' style='color: #34d399; text-decoration: none; font-weight: 600;'>epilist.app</a>
                                             </p>
-
-                                            <!-- Une question ou besoin d'aide -->
-                                            <div style='margin: 20px 0; padding: 16px; background: rgba(16, 185, 129, 0.08); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.15);'>
-                                                <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600; text-align: center;'>
-                                                    {$common['help_title']}
-                                                </p>
-                                                <p style='margin: 0; font-size: 13px; color: #059669; text-align: center;'>
-                                                    {$common['help_text']}
-                                                </p>
-                                            </div>
-
-                                            <!-- Message local -->
-                                            <div style='margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px;'>
-                                                <p style='margin: 0; font-size: 12px; color: #10b981; font-weight: 500; text-align: center;'>
-                                                    {$common['proudly_canadian']}<br>
-                                                    <span style='font-size: 11px; color: #6b7280;'>{$common['local_tag']}</span>
-                                                </p>
-                                            </div>
-
+                                            <p style='margin: 0; font-size: 11px; color: #6b7280; line-height: 1.5;'>
+                                                © {$currentYear} EpiList · M2atech Solutions Inc. · Nouveau-Brunswick, Canada
+                                            </p>
                                             {$unsubscribeSection}
                                         </td>
                                     </tr>
