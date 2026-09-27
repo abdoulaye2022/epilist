@@ -44,6 +44,12 @@ class OfflineQueueService {
   static const String ACTION_REORDER_CATEGORIES = 'reorder_categories';
 
   static const String ACTION_UPDATE_PROFILE = 'update_profile';
+
+  // Magasins (tri par rayon)
+  static const String ACTION_CREATE_STORE = 'create_store';
+  static const String ACTION_RENAME_STORE = 'rename_store';
+  static const String ACTION_DELETE_STORE = 'delete_store';
+  static const String ACTION_SET_STORE_ORDER = 'set_store_order';
   static const String ACTION_UPDATE_EMAIL_PREFERENCES = 'update_email_preferences';
   static const String ACTION_SEND_FEEDBACK = 'send_feedback';
 

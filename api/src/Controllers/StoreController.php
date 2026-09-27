@@ -187,6 +187,49 @@ class StoreController
         }
     }
 
+    /**
+     * POST /stores/{id}/merge {target_store_id}
+     * Fusionne le magasin {id} DANS la cible : la cible est conservée ;
+     * si elle n'a pas d'ordre de rayons et que la source en a un, l'ordre
+     * est transféré ; la source est supprimée (soft delete).
+     */
+    public function merge(Request $request, Response $response, array $args): Response
+    {
+        $data = $request->getParsedBody();
+        $targetId = (int) ($data['target_store_id'] ?? 0);
+
+        try {
+            $userId = $request->getAttribute('auth_id');
+            $source = $this->findOwnedStore($userId, (int) $args['id']);
+            $target = $targetId > 0 ? $this->findOwnedStore($userId, $targetId) : null;
+
+            if (!$source || !$target) {
+                return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
+            }
+            if ($source->id === $target->id) {
+                return $this->json($response, ['success' => false, 'message' => 'Impossible de fusionner un magasin avec lui-même'], 422);
+            }
+
+            DB::connection()->transaction(function () use ($source, $target) {
+                $targetHasOrder = StoreCategoryOrder::where('store_id', $target->id)->exists();
+                if (!$targetHasOrder) {
+                    StoreCategoryOrder::where('store_id', $source->id)
+                        ->update(['store_id' => $target->id]);
+                }
+                $source->delete();
+            });
+
+            return $this->json($response, [
+                'success' => true,
+                'data' => $this->formatStore($target->fresh('categoryOrders'), withOrder: true),
+                'message' => 'Magasins fusionnés',
+            ]);
+        } catch (\Exception $e) {
+            error_log("Erreur stores.merge: " . $e->getMessage());
+            return $this->json($response, ['success' => false, 'message' => 'Erreur lors de la fusion'], 500);
+        }
+    }
+
     /** GET /stores/{id}/category-order */
     public function getCategoryOrder(Request $request, Response $response, array $args): Response
     {

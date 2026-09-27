@@ -45,3 +45,12 @@ class SaveCategoryOrder extends StoreEvent {
   @override
   List<Object?> get props => [storeId, categoryKinds];
 }
+
+class MergeStores extends StoreEvent {
+  final int sourceStoreId;
+  final int targetStoreId;
+  const MergeStores(this.sourceStoreId, this.targetStoreId);
+
+  @override
+  List<Object?> get props => [sourceStoreId, targetStoreId];
+}

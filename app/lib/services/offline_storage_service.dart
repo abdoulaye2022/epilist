@@ -26,6 +26,7 @@ class OfflineStorageService {
   static const String _analyticsTopProductsKey = 'cached_analytics_top_products';
   static const String _emailPreferencesKey = 'cached_email_preferences';
   static const String _feedbackTypesKey = 'cached_feedback_types';
+  static const String _storesKey = 'cached_stores';
   static const String _lastSyncKey = 'last_sync_timestamp';
 
   // ============================================================================
@@ -284,6 +285,33 @@ class OfflineStorageService {
   // ============================================================================
 
   /// Sauvegarder les catégories
+  /// Sauvegarder les magasins (tri par rayon) dans le cache
+  static Future<bool> saveStores(List<Map<String, dynamic>> stores) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_storesKey, json.encode(stores));
+      debugPrint('💾 [OfflineStorage] Saved ${stores.length} stores');
+      return true;
+    } catch (e) {
+      debugPrint('❌ [OfflineStorage] Error saving stores: $e');
+      return false;
+    }
+  }
+
+  /// Charger les magasins depuis le cache
+  static Future<List<Map<String, dynamic>>?> getStores() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final encoded = prefs.getString(_storesKey);
+      if (encoded == null || encoded.isEmpty) return null;
+      final decoded = json.decode(encoded) as List;
+      return decoded.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('❌ [OfflineStorage] Error loading stores: $e');
+      return null;
+    }
+  }
+
   static Future<bool> saveCategories(List<Map<String, dynamic>> categories) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -556,6 +584,7 @@ class OfflineStorageService {
         _analyticsTopProductsKey,
         _emailPreferencesKey,
         _feedbackTypesKey,
+        _storesKey,
         _lastSyncKey,
       ];
 

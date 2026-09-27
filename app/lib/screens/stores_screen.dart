@@ -64,6 +64,7 @@ class _StoresView extends StatelessWidget {
               'store_renamed' => l10n.storeRenamed,
               'store_deleted' => l10n.storeDeleted,
               'order_saved' => l10n.aisleOrderSaved,
+              'stores_merged' => l10n.storesMerged,
               _ => state.message,
             };
             SmartSnackBarManager.showSuccessSnackBar(context, message);
@@ -135,6 +136,9 @@ class _StoresView extends StatelessWidget {
     Store store,
   ) {
     final configured = store.hasAisleOrder;
+    // Magasin créé hors ligne, pas encore synchronisé : édition bloquée
+    // tant que le serveur ne lui a pas donné son vrai id.
+    final pendingSync = store.id < 0;
 
     return Card(
       color: Colors.white,
@@ -157,20 +161,31 @@ class _StoresView extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          configured
-              ? '${l10n.aisleOrder} : ${store.categoryOrder.length}'
-              : l10n.aisleOrder,
+          pendingSync
+              ? l10n.storePendingSync
+              : configured
+                  ? '${l10n.aisleOrder} : ${store.categoryOrder.length}'
+                  : l10n.aisleOrder,
           style: TextStyle(
             fontSize: 13,
-            color: configured ? Colors.green[700] : Colors.grey[500],
+            color: pendingSync
+                ? Colors.orange[700]
+                : configured
+                    ? Colors.green[700]
+                    : Colors.grey[500],
           ),
         ),
-        trailing: PopupMenuButton<String>(
+        trailing: pendingSync
+            ? Icon(Icons.cloud_upload, color: Colors.orange[400])
+            : PopupMenuButton<String>(
           color: Colors.white,
           onSelected: (value) {
             switch (value) {
               case 'rename':
                 _showStoreNameDialog(context, store: store);
+                break;
+              case 'merge':
+                _showMergeDialog(context, l10n, store);
                 break;
               case 'delete':
                 _confirmDelete(context, l10n, store);
@@ -190,6 +205,17 @@ class _StoresView extends StatelessWidget {
               ),
             ),
             PopupMenuItem(
+              value: 'merge',
+              child: Row(
+                children: [
+                  Icon(Icons.merge, size: 20, color: Colors.teal[600]),
+                  const SizedBox(width: 8),
+                  Text(l10n.mergeStore,
+                      style: const TextStyle(color: Colors.black87)),
+                ],
+              ),
+            ),
+            PopupMenuItem(
               value: 'delete',
               child: Row(
                 children: [
@@ -202,17 +228,19 @@ class _StoresView extends StatelessWidget {
             ),
           ],
         ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: context.read<StoreBloc>(),
-                child: StoreAisleOrderScreen(storeId: store.id),
-              ),
-            ),
-          );
-        },
+        onTap: pendingSync
+            ? null
+            : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<StoreBloc>(),
+                      child: StoreAisleOrderScreen(storeId: store.id),
+                    ),
+                  ),
+                );
+              },
       ),
     );
   }
@@ -276,6 +304,89 @@ class _StoresView extends StatelessWidget {
     } else {
       bloc.add(RenameStore(store.id, trimmed));
     }
+  }
+
+  void _showMergeDialog(BuildContext context, AppLocalizations l10n, Store source) {
+    final bloc = context.read<StoreBloc>();
+    final state = bloc.state;
+    final all = switch (state) {
+      StoreLoaded(:final stores) => stores,
+      StoreOperationSuccess(:final stores) => stores,
+      StoreError(:final stores) => stores,
+      _ => const <Store>[],
+    };
+    final targets =
+        all.where((s) => s.id != source.id && s.id > 0).toList();
+    if (targets.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        backgroundColor: Colors.white,
+        title: Text(
+          '${l10n.mergeStore} ${source.name}',
+          style: const TextStyle(color: Colors.black87, fontSize: 18),
+        ),
+        children: targets
+            .map(
+              (target) => SimpleDialogOption(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  _confirmMerge(context, l10n, source, target);
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.storefront, size: 20, color: Colors.grey[600]),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(target.name,
+                          style: const TextStyle(color: Colors.black87)),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  void _confirmMerge(
+    BuildContext context,
+    AppLocalizations l10n,
+    Store source,
+    Store target,
+  ) {
+    final bloc = context.read<StoreBloc>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(l10n.mergeStore,
+            style: const TextStyle(color: Colors.black87)),
+        content: Text(
+          l10n.mergeStoreConfirm(source.name, target.name),
+          style: const TextStyle(color: Colors.black87),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal[600],
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              bloc.add(MergeStores(source.id, target.id));
+            },
+            child: Text(l10n.mergeStore),
+          ),
+        ],
+      ),
+    );
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l10n, Store store) {

@@ -150,9 +150,11 @@ void main() async {
 
     // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne
     debugPrint('🔄 Initialisation du service de synchronisation...');
+    final storeService = StoreService(dio: dio);
     await OfflineSyncService().initialize(
       shoppingListService: shoppingListService,
       listItemService: listItemService,
+      storeService: storeService,
     );
     debugPrint('✅ Service de synchronisation initialisé');
 
@@ -199,9 +201,7 @@ void main() async {
           ),
           RepositoryProvider<CurrencyService>.value(value: currencyService),
           RepositoryProvider<CategoryService>.value(value: categoryService),
-          RepositoryProvider<StoreService>(
-            create: (_) => StoreService(dio: dio),
-          ),
+          RepositoryProvider<StoreService>.value(value: storeService),
           RepositoryProvider<AnalyticsService>.value(value: analyticsService),
           RepositoryProvider<ShoppingListService>.value(
             value: shoppingListService,

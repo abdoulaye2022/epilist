@@ -330,6 +330,7 @@ $app->group('', function ($group) {
     $group->post('/stores', [StoreController::class, 'store']);
     $group->put('/stores/{id}', [StoreController::class, 'update']);
     $group->delete('/stores/{id}', [StoreController::class, 'destroy']);
+    $group->post('/stores/{id}/merge', [StoreController::class, 'merge']);
     $group->get('/stores/{id}/category-order', [StoreController::class, 'getCategoryOrder']);
     $group->put('/stores/{id}/category-order', [StoreController::class, 'setCategoryOrder']);
 

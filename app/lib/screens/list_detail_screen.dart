@@ -26,6 +26,7 @@ import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
+import 'package:epilist/models/category.dart';
 import 'package:epilist/models/store.dart';
 import 'package:epilist/services/category_guesser.dart';
 import 'package:epilist/services/store_service.dart';
@@ -524,17 +525,89 @@ class _ListDetailViewState extends State<_ListDetailView> {
       );
     }
 
+    // En tri par rayon : liste groupée avec un en-tête par rayon,
+    // dans l'ordre du magasin actif. Sinon : liste plate habituelle.
+    final grouped = _filterCriteria.sortBy == ItemSortBy.aisle &&
+        _activeStore?.hasAisleOrder == true;
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<ListItemBloc>().add(LoadListItems(currentList.id));
       },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return _buildItemCard(items[index]);
-        },
-      ),
+      child: grouped
+          ? _buildGroupedByAisle(items)
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return _buildItemCard(items[index]);
+              },
+            ),
+    );
+  }
+
+  /// Liste groupée par rayon : les items arrivent déjà triés par rang
+  /// (apply avec aisleRank) ; on insère un en-tête à chaque changement
+  /// de rayon. Les articles sans rayon vont dans « Non classé » à la fin.
+  Widget _buildGroupedByAisle(List<ListItem> items) {
+    final l10n = AppLocalizations.of(context)!;
+    final categoryState = context.read<CategoryBloc>().state;
+    final categoriesById = <int, Category>{
+      if (categoryState is CategoryLoaded)
+        for (final cat in categoryState.categories) cat.id: cat,
+    };
+
+    String headerFor(ListItem item) {
+      final catId = item.categoryId;
+      if (catId == null || !_aisleRank.containsKey(catId)) {
+        return l10n.uncategorizedAisle;
+      }
+      return categoriesById[catId]?.name ?? l10n.uncategorizedAisle;
+    }
+
+    final rows = <Widget>[];
+    String? currentHeader;
+    for (final item in items) {
+      final header = headerFor(item);
+      if (header != currentHeader) {
+        currentHeader = header;
+        final cat = item.categoryId != null ? categoriesById[item.categoryId!] : null;
+        final inAisle = item.categoryId != null &&
+            _aisleRank.containsKey(item.categoryId!);
+        rows.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            child: Row(
+              children: [
+                Icon(
+                  inAisle ? (cat?.icon ?? Icons.category) : Icons.help_outline,
+                  size: 18,
+                  color: inAisle
+                      ? (cat?.color ?? Colors.grey[600])
+                      : Colors.grey[500],
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  header,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: inAisle ? Colors.black87 : Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Divider(color: Colors.grey[300])),
+              ],
+            ),
+          ),
+        );
+      }
+      rows.add(_buildItemCard(item));
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+      children: rows,
     );
   }
 

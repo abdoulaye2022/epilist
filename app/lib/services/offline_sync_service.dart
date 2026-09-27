@@ -8,6 +8,7 @@ import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/services/offline_queue_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/services/store_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/config/app_config.dart';
@@ -27,6 +28,7 @@ class OfflineSyncService {
   // Services API (seront injectés)
   ShoppingListService? _shoppingListService;
   ListItemService? _listItemService;
+  StoreService? _storeService;
   ReceiptService? _receiptService;
   BudgetService? _budgetService;
 
@@ -42,6 +44,7 @@ class OfflineSyncService {
   Future<void> initialize({
     required ShoppingListService shoppingListService,
     required ListItemService listItemService,
+    StoreService? storeService,
     ReceiptService? receiptService,
     BudgetService? budgetService,
   }) async {
@@ -49,6 +52,7 @@ class OfflineSyncService {
 
     _shoppingListService = shoppingListService;
     _listItemService = listItemService;
+    _storeService = storeService;
     _receiptService = receiptService;
     _budgetService = budgetService;
 
@@ -266,6 +270,34 @@ class OfflineSyncService {
 
         case OfflineQueueService.ACTION_DELETE_BUDGET:
           await _budgetService?.deleteBudget(payload['budget_id'] as int);
+          return true;
+
+        // Magasins (tri par rayon). Les actions sur un id temporaire
+        // (negatif, cree hors ligne) sont ignorees : l'ecran bloque leur
+        // edition tant que la synchro n'est pas passee.
+        case OfflineQueueService.ACTION_CREATE_STORE:
+          await _storeService?.createStore(payload['name'] as String);
+          return true;
+
+        case OfflineQueueService.ACTION_RENAME_STORE:
+          final storeId = payload['store_id'] as int;
+          if (storeId < 0) return true;
+          await _storeService?.renameStore(storeId, payload['name'] as String);
+          return true;
+
+        case OfflineQueueService.ACTION_DELETE_STORE:
+          final storeId = payload['store_id'] as int;
+          if (storeId < 0) return true;
+          await _storeService?.deleteStore(storeId);
+          return true;
+
+        case OfflineQueueService.ACTION_SET_STORE_ORDER:
+          final storeId = payload['store_id'] as int;
+          if (storeId < 0) return true;
+          await _storeService?.setCategoryOrder(
+            storeId,
+            (payload['category_kinds'] as List).cast<String>(),
+          );
           return true;
 
         // User Profile - TODO: Implémenter quand UserService sera disponible

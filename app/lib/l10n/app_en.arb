@@ -1674,5 +1674,21 @@
   "sortByAisle": "By aisle",
   "chooseStore": "I'm at store...",
   "noActiveStore": "No store",
-  "aisleOrderNotConfigured": "First set this store's aisle order in Profile > My stores."
+  "aisleOrderNotConfigured": "First set this store's aisle order in Profile > My stores.",
+  "mergeStore": "Merge with...",
+  "mergeStoreConfirm": "Merge “{source}” into “{target}”? “{target}” will be kept and inherit the aisle order if needed.",
+  "@mergeStoreConfirm": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "storesMerged": "Stores merged",
+  "mergeUnavailableOffline": "Merge unavailable offline",
+  "storePendingSync": "Waiting for sync",
+  "uncategorizedAisle": "Uncategorized"
 }

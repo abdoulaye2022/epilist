@@ -4212,4 +4212,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aisleOrderNotConfigured =>
       'First set this store\'s aisle order in Profile > My stores.';
+
+  @override
+  String get mergeStore => 'Merge with...';
+
+  @override
+  String mergeStoreConfirm(String source, String target) {
+    return 'Merge “$source” into “$target”? “$target” will be kept and inherit the aisle order if needed.';
+  }
+
+  @override
+  String get storesMerged => 'Stores merged';
+
+  @override
+  String get mergeUnavailableOffline => 'Merge unavailable offline';
+
+  @override
+  String get storePendingSync => 'Waiting for sync';
+
+  @override
+  String get uncategorizedAisle => 'Uncategorized';
 }

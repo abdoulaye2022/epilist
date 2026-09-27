@@ -1675,5 +1675,21 @@
   "sortByAisle": "Par rayon",
   "chooseStore": "Je suis au magasin...",
   "noActiveStore": "Aucun magasin",
-  "aisleOrderNotConfigured": "Configurez d'abord l'ordre des rayons de ce magasin dans Profil > Mes magasins."
+  "aisleOrderNotConfigured": "Configurez d'abord l'ordre des rayons de ce magasin dans Profil > Mes magasins.",
+  "mergeStore": "Fusionner avec...",
+  "mergeStoreConfirm": "Fusionner « {source} » dans « {target} » ? « {target} » sera conservé et héritera de l'ordre des rayons si besoin.",
+  "@mergeStoreConfirm": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "storesMerged": "Magasins fusionnés",
+  "mergeUnavailableOffline": "Fusion indisponible hors ligne",
+  "storePendingSync": "En attente de synchronisation",
+  "uncategorizedAisle": "Non classé"
 }

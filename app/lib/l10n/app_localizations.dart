@@ -8052,6 +8052,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Configurez d\'abord l\'ordre des rayons de ce magasin dans Profil > Mes magasins.'**
   String get aisleOrderNotConfigured;
+
+  /// No description provided for @mergeStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fusionner avec...'**
+  String get mergeStore;
+
+  /// No description provided for @mergeStoreConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fusionner « {source} » dans « {target} » ? « {target} » sera conservé et héritera de l\'ordre des rayons si besoin.'**
+  String mergeStoreConfirm(String source, String target);
+
+  /// No description provided for @storesMerged.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasins fusionnés'**
+  String get storesMerged;
+
+  /// No description provided for @mergeUnavailableOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fusion indisponible hors ligne'**
+  String get mergeUnavailableOffline;
+
+  /// No description provided for @storePendingSync.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de synchronisation'**
+  String get storePendingSync;
+
+  /// No description provided for @uncategorizedAisle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non classé'**
+  String get uncategorizedAisle;
 }
 
 class _AppLocalizationsDelegate

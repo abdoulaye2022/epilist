@@ -4284,4 +4284,24 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get aisleOrderNotConfigured =>
       'Configurez d\'abord l\'ordre des rayons de ce magasin dans Profil > Mes magasins.';
+
+  @override
+  String get mergeStore => 'Fusionner avec...';
+
+  @override
+  String mergeStoreConfirm(String source, String target) {
+    return 'Fusionner « $source » dans « $target » ? « $target » sera conservé et héritera de l\'ordre des rayons si besoin.';
+  }
+
+  @override
+  String get storesMerged => 'Magasins fusionnés';
+
+  @override
+  String get mergeUnavailableOffline => 'Fusion indisponible hors ligne';
+
+  @override
+  String get storePendingSync => 'En attente de synchronisation';
+
+  @override
+  String get uncategorizedAisle => 'Non classé';
 }

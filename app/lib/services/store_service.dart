@@ -3,19 +3,33 @@
 // (TokenRefreshInterceptor), contrairement aux anciens services en http.
 import 'package:dio/dio.dart';
 import 'package:epilist/models/store.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 
 class StoreService {
   final Dio _dio;
 
   StoreService({required Dio dio}) : _dio = dio;
 
+  /// Charge les magasins depuis l'API et met le cache à jour ;
+  /// en cas d'échec (hors ligne), sert le dernier cache connu.
   Future<List<Store>> getStores() async {
-    final response = await _dio.get('/stores');
-    final data = response.data['data'] as List?;
-    if (data == null) return [];
-    return data
-        .map((json) => Store.fromJson(json as Map<String, dynamic>))
-        .toList();
+    try {
+      final response = await _dio.get('/stores');
+      final data = response.data['data'] as List?;
+      final stores = (data ?? [])
+          .map((json) => Store.fromJson(json as Map<String, dynamic>))
+          .toList();
+      await OfflineStorageService.saveStores(
+        stores.map((s) => s.toJson()).toList(),
+      );
+      return stores;
+    } catch (e) {
+      final cached = await OfflineStorageService.getStores();
+      if (cached != null) {
+        return cached.map(Store.fromJson).toList();
+      }
+      rethrow;
+    }
   }
 
   /// Crée un magasin. Si un magasin du même nom existe déjà (409),
@@ -39,6 +53,16 @@ class StoreService {
 
   Future<void> deleteStore(int storeId) async {
     await _dio.delete('/stores/$storeId');
+  }
+
+  /// Fusionne [sourceStoreId] dans [targetStoreId] (la cible est conservée ;
+  /// elle hérite de l'ordre des rayons de la source si elle n'en a pas).
+  Future<Store> mergeStores(int sourceStoreId, int targetStoreId) async {
+    final response = await _dio.post(
+      '/stores/$sourceStoreId/merge',
+      data: {'target_store_id': targetStoreId},
+    );
+    return Store.fromJson(response.data['data'] as Map<String, dynamic>);
   }
 
   Future<List<String>> getCategoryOrder(int storeId) async {
