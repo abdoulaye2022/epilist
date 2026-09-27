@@ -34,6 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterRequested>(_onRegisterRequested);
     on<RefreshTokenRequested>(_onRefreshTokenRequested);
     on<GetCurrentUser>(_onGetCurrentUser);
+    on<RefreshCurrentUser>(_onRefreshCurrentUser);
     on<UpdateProfile>(_onUpdateProfile);
     on<ClearAuthError>(_onClearAuthError);
     on<RequestPasswordChangeCode>(_onRequestPasswordChangeCode);
@@ -1031,6 +1032,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
+    }
+  }
+
+  /// Recharge force du profil (avatar change, etc.) : pas de court-circuit,
+  /// pas d'etat de chargement (l'UI reste en place), cache mis a jour pour
+  /// la persistance hors ligne.
+  Future<void> _onRefreshCurrentUser(
+    RefreshCurrentUser event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      final user = await authService.getCurrentUser();
+      if (user != null) {
+        await OfflineStorageService.saveUserProfile(user.toJson());
+        final ssoProvider = await authService.getCurrentSSOProvider();
+        emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
+      }
+    } catch (e) {
+      debugPrint('RefreshCurrentUser: echec silencieux ($e)');
     }
   }
 

@@ -1119,6 +1119,7 @@ class AuthController
             'last_name' => $user->last_name,
             'full_name' => trim($user->first_name . ' ' . $user->last_name),
             'email' => $user->email,
+            'avatar_url' => $user->avatar_url,
             'email_verified' => $user->email_verified,
             'email_verified_at' => $user->email_verified_at?->toISOString(),
             'currency' => [

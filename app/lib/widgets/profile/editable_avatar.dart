@@ -143,7 +143,7 @@ class _EditableAvatarState extends State<EditableAvatar> {
         _busy = false;
       });
       // Rafraîchir l'utilisateur du bloc (avatar_url inclus dans /auth/me)
-      context.read<AuthBloc>().add(GetCurrentUser());
+      context.read<AuthBloc>().add(RefreshCurrentUser());
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoUpdated);
     } catch (e) {
       if (!mounted) return;
@@ -162,7 +162,7 @@ class _EditableAvatarState extends State<EditableAvatar> {
         _localUrl = '';
         _busy = false;
       });
-      context.read<AuthBloc>().add(GetCurrentUser());
+      context.read<AuthBloc>().add(RefreshCurrentUser());
       SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoRemoved);
     } catch (e) {
       if (!mounted) return;

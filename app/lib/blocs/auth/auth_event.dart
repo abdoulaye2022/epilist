@@ -94,6 +94,10 @@ class RefreshTokenRequested extends AuthEvent {
 
 class GetCurrentUser extends AuthEvent {}
 
+/// Recharge l'utilisateur depuis l'API MEME si deja authentifie
+/// (ex. apres un changement d'avatar).
+class RefreshCurrentUser extends AuthEvent {}
+
 class UpdateProfile extends AuthEvent {
   final String firstName;
   final String lastName;

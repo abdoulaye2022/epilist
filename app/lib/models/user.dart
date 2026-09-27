@@ -192,6 +192,7 @@ class User {
       firstName: firstName,
       lastName: lastName,
       email: data['email'] as String? ?? '',
+      avatarUrl: data['avatar_url'] as String?,
       emailVerified: emailVerified,
       accessToken: map['access_token'] as String?,
       refreshToken: map['refresh_token'] as String?,
