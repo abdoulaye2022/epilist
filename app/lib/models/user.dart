@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // models/user.dart - VERSION AVEC DEVISES D'AFFICHAGE SEULEMENT
 import 'dart:convert';
 import 'package:epilist/models/currency.dart';
@@ -71,35 +72,35 @@ class User {
       final accessToken = response['access_token'] as String?;
       final refreshToken = response['refresh_token'] as String?;
 
-      print('=== User.fromLoginResponse DEBUG ===');
-      print('Data reçue: $data');
-      print('Access token présent: ${accessToken != null}');
-      print('Refresh token présent: ${refreshToken != null}');
+      debugPrint('=== User.fromLoginResponse DEBUG ===');
+      // `data` contient les tokens : ne pas l'imprimer en entier
+      debugPrint('Access token présent: ${accessToken != null}');
+      debugPrint('Refresh token présent: ${refreshToken != null}');
 
       // ✅ PARSING SÉCURISÉ DES BOOLÉENS
       final emailVerified = _parseBooleanField(data['email_verified']);
       final isActive = _parseBooleanField(data['is_active']);
 
-      print('Email vérifié: $emailVerified');
-      print('Utilisateur actif: $isActive');
+      debugPrint('Email vérifié: $emailVerified');
+      debugPrint('Utilisateur actif: $isActive');
 
       // ✅ PARSING SÉCURISÉ DE LA DEVISE
       Currency? parsedCurrency;
       try {
         if (data['currency'] != null) {
-          print('Données de devise trouvées: ${data['currency']}');
+          debugPrint('Données de devise trouvées: ${data['currency']}');
           parsedCurrency = Currency.fromJson(
             data['currency'] as Map<String, dynamic>,
           );
-          print(
+          debugPrint(
             'Devise parsée avec succès: ${parsedCurrency.code} (${parsedCurrency.symbol})',
           );
         } else {
-          print('Aucune devise dans les données utilisateur');
+          debugPrint('Aucune devise dans les données utilisateur');
         }
       } catch (e) {
-        print('❌ Erreur lors du parsing de la devise: $e');
-        print('Données de devise brutes: ${data['currency']}');
+        debugPrint('❌ Erreur lors du parsing de la devise: $e');
+        debugPrint('Données de devise brutes: ${data['currency']}');
         parsedCurrency = null;
       }
 
@@ -127,17 +128,15 @@ class User {
                 : null,
       );
 
-      print('Utilisateur créé avec succès:');
-      print('- Nom: ${user.fullName}');
-      print('- Email: ${user.email}');
-      print('- Devise: ${user.currency?.code ?? 'null'}');
-      print('================================');
+      debugPrint('Utilisateur créé avec succès:');
+      debugPrint('- Devise: ${user.currency?.code ?? 'null'}');
+      debugPrint('================================');
 
       return user;
     } catch (e, stackTrace) {
-      print('❌ ERREUR CRITIQUE dans User.fromLoginResponse: $e');
-      print('Stack trace: $stackTrace');
-      print('Response complète: $response');
+      debugPrint('❌ ERREUR CRITIQUE dans User.fromLoginResponse: $e');
+      debugPrint('Stack trace: $stackTrace');
+      debugPrint('Response complète: $response');
 
       // ✅ FALLBACK: Créer un utilisateur minimal en cas d'erreur
       return User(

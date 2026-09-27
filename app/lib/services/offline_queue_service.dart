@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/offline_queue_service.dart
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,12 +57,12 @@ class OfflineQueueService {
     final cachedVersion = prefs.getString(_versionKey);
 
     if (cachedVersion != _version) {
-      print('🔄 [OfflineQueue] Version mismatch, clearing queue...');
+      debugPrint('🔄 [OfflineQueue] Version mismatch, clearing queue...');
       await clearQueue();
       await prefs.setString(_versionKey, _version);
-      print('✅ [OfflineQueue] Queue initialized with version $_version');
+      debugPrint('✅ [OfflineQueue] Queue initialized with version $_version');
     } else {
-      print('✅ [OfflineQueue] Queue version OK: $_version');
+      debugPrint('✅ [OfflineQueue] Queue version OK: $_version');
     }
   }
 
@@ -94,12 +95,12 @@ class OfflineQueueService {
       await prefs.setString(_queueKey, json.encode(queue));
       await _updateStatus();
 
-      print(
+      debugPrint(
         '📥 [OfflineQueue] Action enqueued: $actionType (${queue.length} in queue)',
       );
       return true;
     } catch (e) {
-      print('❌ [OfflineQueue] Error enqueuing action: $e');
+      debugPrint('❌ [OfflineQueue] Error enqueuing action: $e');
       return false;
     }
   }
@@ -117,7 +118,7 @@ class OfflineQueueService {
       final List<dynamic> jsonList = json.decode(encoded);
       return jsonList.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('❌ [OfflineQueue] Error loading queue: $e');
+      debugPrint('❌ [OfflineQueue] Error loading queue: $e');
       return [];
     }
   }
@@ -149,10 +150,10 @@ class OfflineQueueService {
       await prefs.setString(_queueKey, json.encode(queue));
       await _updateStatus();
 
-      print('⏳ [OfflineQueue] Action $actionId marked as processing');
+      debugPrint('⏳ [OfflineQueue] Action $actionId marked as processing');
       return true;
     } catch (e) {
-      print('❌ [OfflineQueue] Error marking action as processing: $e');
+      debugPrint('❌ [OfflineQueue] Error marking action as processing: $e');
       return false;
     }
   }
@@ -168,10 +169,10 @@ class OfflineQueueService {
       await prefs.setString(_queueKey, json.encode(queue));
       await _updateStatus();
 
-      print('✅ [OfflineQueue] Action $actionId completed and removed');
+      debugPrint('✅ [OfflineQueue] Action $actionId completed and removed');
       return true;
     } catch (e) {
-      print('❌ [OfflineQueue] Error marking action as completed: $e');
+      debugPrint('❌ [OfflineQueue] Error marking action as completed: $e');
       return false;
     }
   }
@@ -193,7 +194,7 @@ class OfflineQueueService {
       // Si trop de retries (> 5), marquer comme abandonné
       if (queue[index]['retry_count'] >= 5) {
         queue[index]['status'] = 'abandoned';
-        print('⚠️ [OfflineQueue] Action $actionId abandoned after 5 retries');
+        debugPrint('⚠️ [OfflineQueue] Action $actionId abandoned after 5 retries');
       } else {
         // Remettre en pending pour retry
         queue[index]['status'] = 'pending';
@@ -202,12 +203,12 @@ class OfflineQueueService {
       await prefs.setString(_queueKey, json.encode(queue));
       await _updateStatus();
 
-      print(
+      debugPrint(
         '❌ [OfflineQueue] Action $actionId failed (retry ${queue[index]['retry_count']}): $error',
       );
       return true;
     } catch (e) {
-      print('❌ [OfflineQueue] Error marking action as failed: $e');
+      debugPrint('❌ [OfflineQueue] Error marking action as failed: $e');
       return false;
     }
   }
@@ -222,9 +223,9 @@ class OfflineQueueService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_queueKey);
       await prefs.remove(_statusKey);
-      print('🧹 [OfflineQueue] Queue cleared');
+      debugPrint('🧹 [OfflineQueue] Queue cleared');
     } catch (e) {
-      print('❌ [OfflineQueue] Error clearing queue: $e');
+      debugPrint('❌ [OfflineQueue] Error clearing queue: $e');
     }
   }
 
@@ -247,12 +248,12 @@ class OfflineQueueService {
       if (cleanedQueue.length < queue.length) {
         await prefs.setString(_queueKey, json.encode(cleanedQueue));
         await _updateStatus();
-        print(
+        debugPrint(
           '🧹 [OfflineQueue] Cleaned ${queue.length - cleanedQueue.length} abandoned actions',
         );
       }
     } catch (e) {
-      print('❌ [OfflineQueue] Error cleaning abandoned actions: $e');
+      debugPrint('❌ [OfflineQueue] Error cleaning abandoned actions: $e');
     }
   }
 
@@ -277,7 +278,7 @@ class OfflineQueueService {
 
       await prefs.setString(_statusKey, json.encode(status));
     } catch (e) {
-      print('❌ [OfflineQueue] Error updating status: $e');
+      debugPrint('❌ [OfflineQueue] Error updating status: $e');
     }
   }
 
@@ -300,7 +301,7 @@ class OfflineQueueService {
 
       return json.decode(encoded) as Map<String, dynamic>;
     } catch (e) {
-      print('❌ [OfflineQueue] Error getting status: $e');
+      debugPrint('❌ [OfflineQueue] Error getting status: $e');
       return {
         'total': 0,
         'pending': 0,

@@ -213,7 +213,7 @@ class MonthlyChartCard extends StatelessWidget {
     final cleanShort = lowerShort.replaceAll('.', '').replaceAll(',', '');
 
     // 🐛 DEBUG: Log pour voir la chaîne nettoyée
-    print('🔍 Translating month: "$originalShort" → cleaned: "$cleanShort"');
+    debugPrint('🔍 Translating month: "$originalShort" → cleaned: "$cleanShort"');
 
     // Mapping complet avec TOUTES les variantes (français ET anglais)
     String result;
@@ -357,14 +357,14 @@ class MonthlyChartCard extends StatelessWidget {
           result = l10n.dec;
         } else {
           // Si vraiment rien ne correspond, retourner tel quel
-          print('⚠️ No translation found for: "$cleanShort"');
+          debugPrint('⚠️ No translation found for: "$cleanShort"');
           result = monthShort;
         }
         break;
     }
 
     // 🐛 DEBUG: Log le résultat
-    print('✅ Translation result: "$originalShort" → "$result"');
+    debugPrint('✅ Translation result: "$originalShort" → "$result"');
     return result;
   }
 
@@ -476,11 +476,11 @@ class MonthlyChartCard extends StatelessWidget {
 
                 // 🐛 DEBUG: Ajouter un log pour voir ce qui se passe
                 if (monthShort != translatedMonthShort) {
-                  print(
+                  debugPrint(
                     '🔄 Month translation: "$monthShort" → "$translatedMonthShort"',
                   );
                 } else {
-                  print('⚠️ No translation for: "$monthShort"');
+                  debugPrint('⚠️ No translation for: "$monthShort"');
                 }
 
                 final dataQuality =

@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use Firebase\JWT\Key;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -80,31 +81,27 @@ class SSOService
     // ===================== VÉRIFICATION DES TOKENS CORRIGÉE =====================
 
     /**
-     *  VÉRIFICATION APPLE TOKEN (inchangée - fonctionne bien)
+     *  VÉRIFICATION APPLE TOKEN — signature vérifiée contre les clés publiques
+     *  JWKS d'Apple (https://appleid.apple.com/auth/keys). Un token forgé est
+     *  rejeté par JWT::decode avant toute lecture du payload.
      */
     public function verifyAppleToken(string $idToken): ?array
     {
         try {
             error_log(" [SSOService] Début vérification token Apple...");
 
-            // 1. Décoder le payload sans vérification de signature
-            $tokenParts = explode('.', $idToken);
-            if (count($tokenParts) !== 3) {
-                error_log(" [SSOService] Format de token Apple invalide");
+            // 1. Récupérer les clés publiques d'Apple et vérifier la signature
+            $jwks = $this->fetchAppleJwks();
+            if ($jwks === null) {
+                error_log(" [SSOService] Impossible de récupérer les clés publiques Apple");
                 return null;
             }
 
-            // 2. Décoder le payload (partie centrale)
-            $payloadBase64 = $tokenParts[1];
-            $payloadJson = base64_decode(strtr($payloadBase64, '-_', '+/'));
-            $tokenData = json_decode($payloadJson, true);
-            
-            if (!$tokenData) {
-                error_log(" [SSOService] Impossible de décoder le payload Apple");
-                return null;
-            }
+            // JWT::decode vérifie signature, exp et nbf, et lève une exception sinon
+            $decoded = JWT::decode($idToken, JWK::parseKeySet($jwks));
+            $tokenData = json_decode(json_encode($decoded), true);
 
-            // 3. Vérifications avec config
+            // 2. Vérifications iss / aud / sub
             $expectedIssuer = $this->getAppleIssuer();
             if (!isset($tokenData['iss']) || $tokenData['iss'] !== $expectedIssuer) {
                 error_log(" [SSOService] Issuer Apple invalide:");
@@ -121,35 +118,76 @@ class SSOService
                 return null;
             }
 
-            if (!isset($tokenData['exp']) || $tokenData['exp'] < time()) {
-                error_log(" [SSOService] Token Apple expiré");
-                return null;
-            }
-
             if (!isset($tokenData['sub']) || empty($tokenData['sub'])) {
                 error_log(" [SSOService] Subject (Apple ID) manquant");
                 return null;
             }
 
-            error_log(" [SSOService] Token Apple validé avec succès");
+            error_log(" [SSOService] Token Apple validé avec succès (signature vérifiée)");
 
             return [
                 'sub' => $tokenData['sub'],
                 'email' => $tokenData['email'] ?? null,
-                'email_verified' => isset($tokenData['email_verified']) ? 
+                'email_verified' => isset($tokenData['email_verified']) ?
                     (string)$tokenData['email_verified'] : 'true',
-                'is_private_email' => isset($tokenData['is_private_email']) ? 
+                'is_private_email' => isset($tokenData['is_private_email']) ?
                     (bool)$tokenData['is_private_email'] : false,
                 'real_user_status' => $tokenData['real_user_status'] ?? 2,
                 'aud' => $tokenData['aud'],
                 'iss' => $tokenData['iss'],
-                'iat' => $tokenData['iat'],
-                'exp' => $tokenData['exp'],
-                'validation_method' => 'apple_simplified'
+                'iat' => $tokenData['iat'] ?? time(),
+                'exp' => $tokenData['exp'] ?? 0,
+                'validation_method' => 'apple_jwks_verified'
             ];
 
+        } catch (\Firebase\JWT\ExpiredException $e) {
+            error_log(" [SSOService] Token Apple expiré");
+            return null;
         } catch (\Exception $e) {
             error_log(" [SSOService] Erreur vérification Apple: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Récupère le jeu de clés publiques JWKS d'Apple, avec un cache fichier
+     * court (les clés tournent rarement, mais on ne veut pas dépendre du
+     * réseau Apple à chaque connexion).
+     */
+    private function fetchAppleJwks(): ?array
+    {
+        $cacheFile = dirname(__DIR__, 2) . '/storage/apple_jwks.json';
+        $cacheTtl = 3600; // 1 heure
+
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTtl) {
+            $cached = json_decode((string)file_get_contents($cacheFile), true);
+            if (!empty($cached['keys'])) {
+                return $cached;
+            }
+        }
+
+        try {
+            $response = $this->httpClient->get('https://appleid.apple.com/auth/keys', [
+                'timeout' => 10,
+                'connect_timeout' => 5,
+            ]);
+            $jwks = json_decode((string)$response->getBody(), true);
+
+            if (empty($jwks['keys'])) {
+                return null;
+            }
+
+            @file_put_contents($cacheFile, json_encode($jwks));
+            return $jwks;
+        } catch (\Exception $e) {
+            error_log(" [SSOService] Échec récupération JWKS Apple: " . $e->getMessage());
+            // Dernier recours : cache expiré mais présent (mieux que refuser tous les logins Apple)
+            if (file_exists($cacheFile)) {
+                $cached = json_decode((string)file_get_contents($cacheFile), true);
+                if (!empty($cached['keys'])) {
+                    return $cached;
+                }
+            }
             return null;
         }
     }
@@ -161,7 +199,6 @@ class SSOService
     {
         try {
             error_log(" [SSOService] === DÉBUT VÉRIFICATION GOOGLE TOKEN ANDROID ===");
-            error_log(" [SSOService] Token reçu (50 premiers chars): " . substr($idToken, 0, 50) . '...');
 
             //  MÉTHODE 1: Vérification via Google API
             $response = $this->httpClient->get('https://oauth2.googleapis.com/tokeninfo', [
@@ -175,25 +212,20 @@ class SSOService
 
             if ($response->getStatusCode() !== 200) {
                 error_log(" [SSOService] Échec vérification Google API: " . $response->getStatusCode());
-                error_log(" [SSOService] Réponse: " . $response->getBody());
-                
-                //  ANDROID: Fallback si l'API échoue
-                return $this->fallbackGoogleTokenValidation($idToken);
+                return null;
             }
 
             $tokenData = json_decode($response->getBody(), true);
-            
+
             if (!$tokenData) {
                 error_log(" [SSOService] Impossible de décoder la réponse Google");
-                return $this->fallbackGoogleTokenValidation($idToken);
+                return null;
             }
 
             error_log(" [SSOService] Données token reçues:");
             error_log(" [SSOService] - Audience: " . ($tokenData['aud'] ?? 'manquant'));
             error_log(" [SSOService] - Issuer: " . ($tokenData['iss'] ?? 'manquant'));
-            error_log(" [SSOService] - Email: " . ($tokenData['email'] ?? 'manquant'));
             error_log(" [SSOService] - Email vérifié: " . ($tokenData['email_verified'] ?? 'manquant'));
-            error_log(" [SSOService] - Subject: " . ($tokenData['sub'] ?? 'manquant'));
 
             //  CORRECTION ANDROID: Validation audience avec tous les client IDs
             $validClientIds = $this->getGoogleClientIds();
@@ -266,9 +298,6 @@ class SSOService
             }
 
             error_log(" [SSOService] === TOKEN GOOGLE ANDROID VALIDÉ AVEC SUCCÈS ===");
-            error_log(" [SSOService] Email: " . $tokenData['email']);
-            error_log(" [SSOService] Nom: " . ($tokenData['name'] ?? 'non fourni'));
-            error_log(" [SSOService] Client ID utilisé: " . $receivedAudience);
 
             //  Retour de données complètes et normalisées
             return [
@@ -288,103 +317,14 @@ class SSOService
             ];
 
         } catch (RequestException $e) {
+            // Un token invalide (400 de tokeninfo) ou une erreur réseau ne doit
+            // JAMAIS retomber sur une validation locale sans signature : refus.
             error_log(" [SSOService] Erreur HTTP Google: " . $e->getMessage());
-            if ($e->hasResponse()) {
-                error_log(" [SSOService] Réponse erreur: " . $e->getResponse()->getBody());
-            }
-            
-            //  ANDROID: Fallback avec validation locale en cas d'erreur réseau
-            return $this->fallbackGoogleTokenValidation($idToken);
-            
+            return null;
+
         } catch (\Exception $e) {
             error_log(" [SSOService] Erreur générale Google: " . $e->getMessage());
             error_log(" [SSOService] Stack trace: " . $e->getTraceAsString());
-            return null;
-        }
-    }
-
-    /**
-     *  NOUVEAU: Validation Google en fallback pour Android
-     */
-    private function fallbackGoogleTokenValidation(string $idToken): ?array
-    {
-        try {
-            error_log(" [SSOService] Fallback validation Google pour Android...");
-            
-            // Décoder le token JWT manuellement
-            $tokenParts = explode('.', $idToken);
-            if (count($tokenParts) !== 3) {
-                error_log(" [SSOService] Format JWT invalide");
-                return null;
-            }
-
-            // Décoder le payload
-            $payloadBase64 = $tokenParts[1];
-            // Corriger le padding base64
-            $payloadBase64 = str_pad(strtr($payloadBase64, '-_', '+/'), strlen($payloadBase64) % 4, '=', STR_PAD_RIGHT);
-            $payloadJson = base64_decode($payloadBase64);
-            $tokenData = json_decode($payloadJson, true);
-
-            if (!$tokenData) {
-                error_log(" [SSOService] Impossible de décoder le payload en fallback");
-                return null;
-            }
-
-            // Vérifications basiques
-            $validClientIds = $this->getGoogleClientIds();
-            $receivedAudience = $tokenData['aud'] ?? '';
-            
-            $audienceValid = false;
-            foreach ($validClientIds as $validClientId) {
-                if ($receivedAudience === $validClientId) {
-                    $audienceValid = true;
-                    break;
-                }
-            }
-
-            // Validation permissive pour Android
-            if (!$audienceValid && strpos($receivedAudience, '695717834998-') === 0) {
-                $audienceValid = true;
-                error_log(" [SSOService] Fallback: Client ID du même projet accepté");
-            }
-
-            if (!$audienceValid) {
-                error_log(" [SSOService] Fallback: Audience invalide: " . $receivedAudience);
-                return null;
-            }
-
-            // Vérification expiration
-            if (!isset($tokenData['exp']) || $tokenData['exp'] < (time() - 300)) {
-                error_log(" [SSOService] Fallback: Token expiré");
-                return null;
-            }
-
-            // Vérification email
-            if (!isset($tokenData['email']) || empty($tokenData['email'])) {
-                error_log(" [SSOService] Fallback: Email manquant");
-                return null;
-            }
-
-            error_log(" [SSOService] Validation fallback Google réussie pour Android");
-
-            return [
-                'sub' => $tokenData['sub'] ?? '',
-                'email' => $tokenData['email'],
-                'email_verified' => true,
-                'name' => $tokenData['name'] ?? '',
-                'given_name' => $tokenData['given_name'] ?? '',
-                'family_name' => $tokenData['family_name'] ?? '',
-                'picture' => $tokenData['picture'] ?? '',
-                'locale' => $tokenData['locale'] ?? 'en',
-                'aud' => $tokenData['aud'],
-                'iss' => $tokenData['iss'] ?? 'accounts.google.com',
-                'iat' => $tokenData['iat'] ?? time(),
-                'exp' => $tokenData['exp'],
-                'validation_method' => 'google_fallback_android'
-            ];
-
-        } catch (\Exception $e) {
-            error_log(" [SSOService] Erreur fallback validation: " . $e->getMessage());
             return null;
         }
     }

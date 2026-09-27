@@ -343,7 +343,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                 child: InkWell(
                   onTap: () {
                     // ✅ DEBUG: Print pour vérifier les clics
-                    print(
+                    debugPrint(
                       '🔧 Sort option clicked: ${option['key']}, current: ${widget.activeSortBy}, isActive: $isActive',
                     );
 
@@ -448,7 +448,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              print(
+              debugPrint(
                 '🔧 Filter chip clicked: "$label", value=$value, current activeValue=$activeValue',
               );
               // ✅ CORRECTION: Logique simplifiée - toujours activer la valeur cliquée
@@ -521,7 +521,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
   }
 
   void _clearAllFilters() {
-    print('🔧 Clearing all filters');
+    debugPrint('🔧 Clearing all filters');
     widget.onStatusFilterChanged(null);
     widget.onPeriodFilterChanged(null);
     widget.onScopeFilterChanged(null);

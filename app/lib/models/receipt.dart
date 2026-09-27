@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // models/receipt.dart - VERSION CORRIGÉE
 import 'package:equatable/equatable.dart';
 
@@ -189,8 +190,8 @@ class ReceiptStats extends Equatable {
         formattedAmounts: _parseFormattedAmounts(json['formatted_amounts']),
       );
     } catch (e) {
-      print('❌ Erreur parsing ReceiptStats: $e');
-      print('📥 JSON reçu: $json');
+      debugPrint('❌ Erreur parsing ReceiptStats: $e');
+      debugPrint('📥 JSON reçu: $json');
       rethrow;
     }
   }

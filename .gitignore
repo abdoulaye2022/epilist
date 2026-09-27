@@ -108,3 +108,8 @@ coverage/
 *.rar
 *.tar
 *.zip
+# Environnement de dev local (launch.sh / stop.sh)
+.dev/
+
+# Caches de build Dart a la racine
+/.dart_tool/

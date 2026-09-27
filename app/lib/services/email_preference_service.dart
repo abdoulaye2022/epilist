@@ -138,7 +138,7 @@ class EmailPreferenceService {
 
       return false;
     } catch (e) {
-      print('Error resetting email preferences: $e');
+      debugPrint('Error resetting email preferences: $e');
       return false;
     }
   }
@@ -166,7 +166,7 @@ class EmailPreferenceService {
 
       return false;
     } catch (e) {
-      print('Error unsubscribing from marketing: $e');
+      debugPrint('Error unsubscribing from marketing: $e');
       return false;
     }
   }

@@ -13,6 +13,21 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// 🔒 GARDE : ce script envoie la campagne email à TOUTE la base et liste les
+// destinataires. Exécution autorisée uniquement en CLI, ou en HTTP avec le
+// secret CRON_SECRET (?key=... ou header X-Cron-Key). Sans secret configuré,
+// tout accès HTTP est refusé (fail closed).
+if (php_sapi_name() !== 'cli') {
+    $expectedKey = $_ENV['CRON_SECRET'] ?? '';
+    $providedKey = $_GET['key'] ?? ($_SERVER['HTTP_X_CRON_KEY'] ?? '');
+    if ($expectedKey === '' || !hash_equals($expectedKey, (string)$providedKey)) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Forbidden']);
+        exit;
+    }
+}
+
 // Configuration UTC globale
 date_default_timezone_set('UTC');
 Carbon::setLocale('fr');

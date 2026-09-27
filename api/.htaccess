@@ -1,0 +1,13 @@
+# api/.htaccess — DÉFENSE EN PROFONDEUR
+# Le docroot du serveur de prod est AU-DESSUS de public/ : sans ce fichier,
+# .env, service-account.json, src/, migrations/*.sql et les scripts de test
+# seraient téléchargeables/exécutables par URL.
+# Tout est refusé ici ; public/.htaccess ré-autorise explicitement.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

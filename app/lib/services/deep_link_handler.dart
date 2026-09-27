@@ -40,7 +40,7 @@ class DeepLinkHandler {
     try {
       return await ConnectivityService().checkConnectivity();
     } catch (e) {
-      print('❌ Erreur vérification connectivité: $e');
+      debugPrint('❌ Erreur vérification connectivité: $e');
       return false;
     }
   }
@@ -48,7 +48,7 @@ class DeepLinkHandler {
   // Gérer les actions nécessitant une connexion
   static Future<void> _requireConnection(VoidCallback onConnected) async {
     if (_context == null) {
-      print('❌ Context non disponible pour vérification connectivité');
+      debugPrint('❌ Context non disponible pour vérification connectivité');
       return;
     }
 
@@ -56,7 +56,7 @@ class DeepLinkHandler {
     if (isConnected) {
       onConnected();
     } else {
-      print('❌ Aucune connexion - Invitation en attente');
+      debugPrint('❌ Aucune connexion - Invitation en attente');
       // Pas de SnackBar - gestion silencieuse ou via l'UI de connectivité
     }
   }
@@ -65,7 +65,7 @@ class DeepLinkHandler {
     if (_lastProcessedToken == token && _lastProcessTime != null) {
       final timeDiff = DateTime.now().difference(_lastProcessTime!);
       if (timeDiff.inSeconds < 5) {
-        print('⏭️ Token ignoré (traité récemment): $token');
+        debugPrint('⏭️ Token ignoré (traité récemment): $token');
         return true;
       }
     }
@@ -97,7 +97,7 @@ class DeepLinkHandler {
   }
 
   static void dispose() {
-    print('🧹 Nettoyage complet du DeepLinkHandler');
+    debugPrint('🧹 Nettoyage complet du DeepLinkHandler');
     _linkSubscription?.cancel();
     _authSubscription?.cancel();
     _linkSubscription = null;
@@ -113,11 +113,11 @@ class DeepLinkHandler {
 
   static void initialize(BuildContext context) {
     if (_isProcessing) {
-      print('⏳ Initialisation déjà en cours, ignorée');
+      debugPrint('⏳ Initialisation déjà en cours, ignorée');
       return;
     }
 
-    print('🚀 Initialisation DeepLinkHandler');
+    debugPrint('🚀 Initialisation DeepLinkHandler');
     _context = context;
 
     if (_appLinks == null) {
@@ -131,7 +131,7 @@ class DeepLinkHandler {
   static void _initializeDeepLinks() {
     // Protection: Ne pas réinitialiser si déjà actif
     if (_linkSubscription != null) {
-      print('🔄 Subscription déjà active');
+      debugPrint('🔄 Subscription déjà active');
       return;
     }
 
@@ -140,20 +140,20 @@ class DeepLinkHandler {
 
       _linkSubscription = _appLinks!.uriLinkStream.listen(
         (Uri uri) {
-          print('🔗 Deep link reçu: ${uri.toString()}');
+          debugPrint('🔗 Deep link reçu: ${uri.toString()}');
           _handleDeepLink(uri.toString());
         },
         onError: (err) {
-          print('❌ Erreur deep link: $err');
+          debugPrint('❌ Erreur deep link: $err');
         },
         onDone: () {
-          print('✅ Écoute deep link terminée');
+          debugPrint('✅ Écoute deep link terminée');
         },
       );
 
       _getInitialLink();
     } catch (e) {
-      print('❌ Erreur initialisation deep links: $e');
+      debugPrint('❌ Erreur initialisation deep links: $e');
     }
   }
 
@@ -161,19 +161,19 @@ class DeepLinkHandler {
   static void _navigateToShareInvitation(String shareToken) {
     // Protection contre les navigations multiples
     if (_isNavigating) {
-      print('🚫 Navigation déjà en cours, ignorée');
+      debugPrint('🚫 Navigation déjà en cours, ignorée');
       return;
     }
 
     if (_context == null || !_context!.mounted) {
-      print('❌ Context non disponible pour navigation');
+      debugPrint('❌ Context non disponible pour navigation');
       return;
     }
 
     _isNavigating = true;
 
     try {
-      print('🎯 Navigation vers ShareInvitationScreen avec token: $shareToken');
+      debugPrint('🎯 Navigation vers ShareInvitationScreen avec token: $shareToken');
 
       // Navigation avec ConnectivityWrapper pour éviter les conflits
       Navigator.of(_context!).pushAndRemoveUntil(
@@ -183,11 +183,11 @@ class DeepLinkHandler {
                 showOfflineBanner: true,
                 blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
                 onConnectivityLost: () {
-                  print('❌ Connexion perdue durant l\'invitation');
+                  debugPrint('❌ Connexion perdue durant l\'invitation');
                   // Gestion silencieuse via le wrapper
                 },
                 onConnectivityRestored: () {
-                  print('✅ Connexion rétablie durant l\'invitation');
+                  debugPrint('✅ Connexion rétablie durant l\'invitation');
                 },
                 child: BlocProvider(
                   create:
@@ -204,7 +204,7 @@ class DeepLinkHandler {
 
       // Pas de message de succès - l'écran d'invitation se charge de l'affichage
     } catch (e) {
-      print('❌ Erreur navigation: $e');
+      debugPrint('❌ Erreur navigation: $e');
       // Pas de SnackBar - erreur loggée seulement
     } finally {
       // Réinitialiser le flag avec délai
@@ -217,11 +217,11 @@ class DeepLinkHandler {
   static void updateContext(BuildContext context) {
     // Protection: Éviter les mises à jour trop fréquentes
     if (_isProcessing || _isNavigating) {
-      print('⏳ Update context ignoré (traitement en cours)');
+      debugPrint('⏳ Update context ignoré (traitement en cours)');
       return;
     }
 
-    print('🔄 Mise à jour du contexte');
+    debugPrint('🔄 Mise à jour du contexte');
     _context = context;
 
     // Traiter les liens en attente seulement si le contexte est valide et stable
@@ -235,7 +235,7 @@ class DeepLinkHandler {
 
     // Réinitialiser les liens seulement si nécessaire
     if (_linkSubscription == null && _appLinks == null) {
-      print('🔄 Réinitialisation des liens');
+      debugPrint('🔄 Réinitialisation des liens');
       Future.delayed(const Duration(milliseconds: 300), () {
         if (!_isProcessing) {
           _initializeDeepLinks();
@@ -245,11 +245,11 @@ class DeepLinkHandler {
   }
 
   static void _handleDeepLink(String link) {
-    print('🔄 Traitement du lien: $link');
+    debugPrint('🔄 Traitement du lien: $link');
 
     // Protection contre les traitements multiples
     if (_isProcessing || _isNavigating) {
-      print('⏳ Traitement en cours, lien ignoré');
+      debugPrint('⏳ Traitement en cours, lien ignoré');
       return;
     }
 
@@ -259,13 +259,13 @@ class DeepLinkHandler {
       final uri = Uri.parse(link);
 
       if (_isShareLink(uri)) {
-        print('✅ Lien de partage détecté');
+        debugPrint('✅ Lien de partage détecté');
         _handleShareLink(uri);
       } else {
-        print('⚠️ Lien non reconnu: ${uri.toString()}');
+        debugPrint('⚠️ Lien non reconnu: ${uri.toString()}');
       }
     } catch (e) {
-      print('❌ Erreur parsing lien: $e');
+      debugPrint('❌ Erreur parsing lien: $e');
     } finally {
       // Réinitialiser le flag avec délai
       Future.delayed(const Duration(seconds: 2), () {
@@ -282,18 +282,18 @@ class DeepLinkHandler {
       isValidScheme = true;
       if (uri.host == 'share' && uri.pathSegments.isNotEmpty) {
         isValidPath = true;
-        print('📱 Lien direct app détecté: ${uri.toString()}');
+        debugPrint('📱 Lien direct app détecté: ${uri.toString()}');
       }
     } else if (uri.scheme == 'https' && uri.host == customDomain) {
       isValidScheme = true;
       if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'share') {
         isValidPath = true;
-        print('🌐 Lien web détecté: ${uri.toString()}');
+        debugPrint('🌐 Lien web détecté: ${uri.toString()}');
       }
     }
 
     final isValid = isValidScheme && isValidPath;
-    print(
+    debugPrint(
       '🔍 Validation lien: scheme=$isValidScheme, path=$isValidPath, result=$isValid',
     );
     return isValid;
@@ -303,16 +303,16 @@ class DeepLinkHandler {
     try {
       final Uri? initialUri = await _appLinks!.getInitialLink();
       if (initialUri != null) {
-        print('🚀 Lien initial détecté: ${initialUri.toString()}');
+        debugPrint('🚀 Lien initial détecté: ${initialUri.toString()}');
         // Délai pour éviter les conflits avec l'initialisation
         Future.delayed(const Duration(milliseconds: 1000), () {
           _handleDeepLink(initialUri.toString());
         });
       } else {
-        print('ℹ️ Aucun lien initial');
+        debugPrint('ℹ️ Aucun lien initial');
       }
     } catch (e) {
-      print('❌ Erreur récupération lien initial: $e');
+      debugPrint('❌ Erreur récupération lien initial: $e');
     }
   }
 
@@ -323,23 +323,23 @@ class DeepLinkHandler {
       if (uri.scheme == appScheme) {
         if (uri.host == 'share' && uri.pathSegments.isNotEmpty) {
           shareToken = uri.pathSegments[0];
-          print('📱 Token extrait du lien direct: $shareToken');
+          debugPrint('📱 Token extrait du lien direct: $shareToken');
         }
       } else if (uri.scheme == 'https' && uri.host == customDomain) {
         if (uri.pathSegments.length >= 2 && uri.pathSegments[0] == 'share') {
           shareToken = uri.pathSegments[1];
-          print('🌐 Token extrait du lien web: $shareToken');
+          debugPrint('🌐 Token extrait du lien web: $shareToken');
         }
       }
 
       if ((shareToken == null || shareToken.isEmpty) &&
           uri.queryParameters.containsKey('token')) {
         shareToken = uri.queryParameters['token'];
-        print('🔍 Token extrait des paramètres: $shareToken');
+        debugPrint('🔍 Token extrait des paramètres: $shareToken');
       }
 
       if (shareToken == null || shareToken.isEmpty) {
-        print('❌ Token manquant dans le lien');
+        debugPrint('❌ Token manquant dans le lien');
         // Pas de SnackBar - erreur loggée seulement
         return;
       }
@@ -353,19 +353,19 @@ class DeepLinkHandler {
       _markTokenAsProcessed(shareToken);
 
       if (_context == null) {
-        print('⏳ Contexte non disponible, token en attente: $shareToken');
+        debugPrint('⏳ Contexte non disponible, token en attente: $shareToken');
         _pendingShareToken = shareToken;
         return;
       }
 
-      print('✅ Token validé: $shareToken');
+      debugPrint('✅ Token validé: $shareToken');
 
       // Vérifier connectivité avant de procéder
       _requireConnection(() {
         _checkAuthAndNavigate(shareToken!);
       });
     } catch (e) {
-      print('❌ Erreur traitement lien de partage: $e');
+      debugPrint('❌ Erreur traitement lien de partage: $e');
       // Pas de SnackBar - erreur loggée seulement
     }
   }
@@ -375,7 +375,7 @@ class DeepLinkHandler {
         _context != null &&
         !_isProcessing &&
         !_isNavigating) {
-      print('🔄 Traitement token en attente: $_pendingShareToken');
+      debugPrint('🔄 Traitement token en attente: $_pendingShareToken');
       final token = _pendingShareToken!;
       _pendingShareToken = null;
 
@@ -392,24 +392,24 @@ class DeepLinkHandler {
 
   static Future<void> _checkAuthAndNavigate(String shareToken) async {
     if (_context == null || _isNavigating) {
-      print('❌ Contexte non disponible ou navigation en cours');
+      debugPrint('❌ Contexte non disponible ou navigation en cours');
       return;
     }
 
     try {
-      print('🔐 Vérification authentification...');
+      debugPrint('🔐 Vérification authentification...');
       final authService = _context!.read<AuthService>();
       final isAuthenticated = await authService.isAuthenticated();
 
       if (isAuthenticated) {
-        print('✅ Utilisateur authentifié, navigation directe');
+        debugPrint('✅ Utilisateur authentifié, navigation directe');
         _navigateToShareInvitation(shareToken);
       } else {
-        print('🔒 Utilisateur non authentifié, redirection login');
+        debugPrint('🔒 Utilisateur non authentifié, redirection login');
         _redirectToLoginWithToken(shareToken);
       }
     } catch (e) {
-      print('❌ Erreur vérification auth: $e');
+      debugPrint('❌ Erreur vérification auth: $e');
       _redirectToLoginWithToken(shareToken);
     }
   }
@@ -419,7 +419,7 @@ class DeepLinkHandler {
     if (_context == null || _isNavigating) return;
 
     _pendingShareToken = shareToken;
-    print('🔄 Redirection vers login avec token: $shareToken');
+    debugPrint('🔄 Redirection vers login avec token: $shareToken');
 
     // Pas de SnackBar - redirection silencieuse
     Navigator.of(_context!).pushAndRemoveUntil(
@@ -446,7 +446,7 @@ class DeepLinkHandler {
       if (state is AuthSuccess &&
           _pendingShareToken != null &&
           !_isNavigating) {
-        print('✅ ${_getTranslatedMessage('auth_success_navigation')}');
+        debugPrint('✅ ${_getTranslatedMessage('auth_success_navigation')}');
         final token = _pendingShareToken!;
         _pendingShareToken = null;
 
@@ -467,7 +467,7 @@ class DeepLinkHandler {
 
     // Timeout pour la subscription
     Future.delayed(const Duration(minutes: 10), () {
-      print('⏰ Timeout écoute auth, nettoyage');
+      debugPrint('⏰ Timeout écoute auth, nettoyage');
       _authSubscription?.cancel();
       _authSubscription = null;
       _pendingShareToken = null;
@@ -475,7 +475,7 @@ class DeepLinkHandler {
   }
 
   static void forceReinitialize() {
-    print('🔄 Réinitialisation forcée des deep links');
+    debugPrint('🔄 Réinitialisation forcée des deep links');
 
     // Nettoyer complètement avant de réinitialiser
     _linkSubscription?.cancel();
@@ -496,7 +496,7 @@ class DeepLinkHandler {
 
   static void processPendingTokenAfterLogin() {
     if (_pendingShareToken != null && _context != null && !_isNavigating) {
-      print('🎯 Traitement token après login: $_pendingShareToken');
+      debugPrint('🎯 Traitement token après login: $_pendingShareToken');
       final token = _pendingShareToken!;
       _pendingShareToken = null;
 
@@ -515,13 +515,13 @@ class DeepLinkHandler {
 
   static String generateDirectAppUrl(String token) {
     final directUrl = '$appScheme://share/$token';
-    print('📱 Lien direct généré: $directUrl');
+    debugPrint('📱 Lien direct généré: $directUrl');
     return directUrl;
   }
 
   static String generateWebShareUrl(String token) {
     final webUrl = 'https://$customDomain/share/$token';
-    print('🌐 Lien web généré: $webUrl');
+    debugPrint('🌐 Lien web généré: $webUrl');
     return webUrl;
   }
 
@@ -648,7 +648,7 @@ L'app s'ouvrira automatiquement !''';
 
   static Future<void> openAppOrStore(String shareToken) async {
     final appUrl = generateDirectAppUrl(shareToken);
-    print('🚀 Tentative ouverture app: $appUrl');
+    debugPrint('🚀 Tentative ouverture app: $appUrl');
 
     try {
       final bool launched = await launchUrl(
@@ -657,13 +657,13 @@ L'app s'ouvrira automatiquement !''';
       );
 
       if (launched) {
-        print('✅ App ouverte avec succès');
+        debugPrint('✅ App ouverte avec succès');
       } else {
-        print('⚠️ App non ouverte, redirection store');
+        debugPrint('⚠️ App non ouverte, redirection store');
         await _openStore();
       }
     } catch (e) {
-      print('❌ Erreur ouverture app: $e');
+      debugPrint('❌ Erreur ouverture app: $e');
       await _openStore();
     }
   }
@@ -674,9 +674,9 @@ L'app s'ouvrira automatiquement !''';
         Uri.parse(playStoreUrl),
         mode: LaunchMode.externalApplication,
       );
-      print('✅ Store ouvert');
+      debugPrint('✅ Store ouvert');
     } catch (e) {
-      print('❌ Erreur ouverture store: $e');
+      debugPrint('❌ Erreur ouverture store: $e');
     }
   }
 
@@ -719,21 +719,21 @@ L'app s'ouvrira automatiquement !''';
   // MÉTHODES DE DEBUG
 
   static void debugPrintStatus() {
-    print('\n=== DEBUG DEEP LINK HANDLER ===');
-    print('Context available: ${_context != null}');
-    print('Pending token: $_pendingShareToken');
-    print('Subscription active: ${_linkSubscription != null}');
-    print('AppLinks initialized: ${_appLinks != null}');
-    print('Is processing: $_isProcessing');
-    print('Is navigating: $_isNavigating');
-    print('Last processed token: $_lastProcessedToken');
-    print('Last process time: $_lastProcessTime');
-    print('================================\n');
+    debugPrint('\n=== DEBUG DEEP LINK HANDLER ===');
+    debugPrint('Context available: ${_context != null}');
+    debugPrint('Pending token: $_pendingShareToken');
+    debugPrint('Subscription active: ${_linkSubscription != null}');
+    debugPrint('AppLinks initialized: ${_appLinks != null}');
+    debugPrint('Is processing: $_isProcessing');
+    debugPrint('Is navigating: $_isNavigating');
+    debugPrint('Last processed token: $_lastProcessedToken');
+    debugPrint('Last process time: $_lastProcessTime');
+    debugPrint('================================\n');
   }
 
   static void testDirectLink(String token) {
     final directUrl = generateDirectAppUrl(token);
-    print('🧪 Test lien direct: $directUrl');
+    debugPrint('🧪 Test lien direct: $directUrl');
     _handleDeepLink(directUrl);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/list_item_service.dart - VERSION CORRIGÉE POUR DIO EXCEPTION
 import 'package:dio/dio.dart';
 import 'package:epilist/models/list_item.dart';
@@ -61,7 +62,7 @@ class ListItemService {
         return AddItemResult.success(ListItem.fromJson(response.data['data']));
       } else if (response.statusCode == 409) {
         // Doublon détecté
-        print('🔍 Doublon détecté: ${response.data}');
+        debugPrint('🔍 Doublon détecté: ${response.data}');
 
         final errorData = response.data;
         final duplicates =
@@ -94,9 +95,9 @@ class ListItemService {
       }
     } on DioException catch (e) {
       // ✅ GESTION D'ERREUR AMÉLIORÉE
-      print('❌ Erreur Dio: ${e.message}');
-      print('❌ Status: ${e.response?.statusCode}');
-      print('❌ Data: ${e.response?.data}');
+      debugPrint('❌ Erreur Dio: ${e.message}');
+      debugPrint('❌ Status: ${e.response?.statusCode}');
+      debugPrint('❌ Data: ${e.response?.data}');
 
       // Si c'est encore une erreur 409 qui a échappé au validateStatus
       if (e.response?.statusCode == 409) {
@@ -115,7 +116,7 @@ class ListItemService {
       // Relancer l'exception pour les autres cas
       rethrow;
     } catch (e) {
-      print('❌ Erreur inattendue: $e');
+      debugPrint('❌ Erreur inattendue: $e');
       rethrow;
     }
   }
@@ -157,7 +158,7 @@ class ListItemService {
         );
       }
     } catch (e) {
-      print('❌ Erreur force add: $e');
+      debugPrint('❌ Erreur force add: $e');
       rethrow;
     }
   }
@@ -310,7 +311,7 @@ class ListItemService {
         );
       }
     } catch (e) {
-      print('❌ Erreur merge: $e');
+      debugPrint('❌ Erreur merge: $e');
       rethrow;
     }
   }
@@ -340,7 +341,7 @@ class ListItemService {
         );
       }
     } catch (e) {
-      print('❌ Erreur get item: $e');
+      debugPrint('❌ Erreur get item: $e');
       rethrow;
     }
   }

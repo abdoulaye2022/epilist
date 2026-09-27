@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // blocs/receipt/receipt_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/receipt.dart';
@@ -122,7 +123,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       final receipts = await _receiptService.getListReceipts(event.listId);
       emit(ReceiptLoaded(receipts));
     } catch (e) {
-      print("Error loading receipts: $e");
+      debugPrint("Error loading receipts: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }
@@ -148,7 +149,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       await Future.delayed(const Duration(milliseconds: 300));
       add(LoadReceipts(event.listId));
     } catch (e) {
-      print("Error creating receipt: $e");
+      debugPrint("Error creating receipt: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }
@@ -159,7 +160,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     Emitter<ReceiptState> emit,
   ) async {
     try {
-      print("🔄 Début de la mise à jour de la facture ${event.receiptId}");
+      debugPrint("🔄 Début de la mise à jour de la facture ${event.receiptId}");
 
       // ✅ CORRECTION: Construire les données correctement
       final Map<String, dynamic> updateData = {};
@@ -178,7 +179,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         updateData['notes'] = event.notes!;
       }
 
-      print("📤 Données à envoyer: $updateData");
+      debugPrint("📤 Données à envoyer: $updateData");
 
       final updatedReceipt = await _receiptService.updateReceipt(
         listId: event.listId,
@@ -189,7 +190,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         notes: event.notes,
       );
 
-      print("✅ Facture mise à jour avec succès: ${updatedReceipt.id}");
+      debugPrint("✅ Facture mise à jour avec succès: ${updatedReceipt.id}");
 
       final successMessage = _getTranslatedSuccessMessage('update');
       emit(ReceiptOperationSuccess(successMessage));
@@ -198,7 +199,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       await Future.delayed(const Duration(milliseconds: 300));
       add(LoadReceipts(event.listId));
     } catch (e) {
-      print("❌ Erreur lors de la mise à jour: $e");
+      debugPrint("❌ Erreur lors de la mise à jour: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }
@@ -218,7 +219,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       await Future.delayed(const Duration(milliseconds: 300));
       add(LoadReceipts(event.listId));
     } catch (e) {
-      print("Error deleting receipt: $e");
+      debugPrint("Error deleting receipt: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }
@@ -235,7 +236,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       );
       emit(ReceiptsByStoreLoaded(storeGroups));
     } catch (e) {
-      print("Error loading receipts by store: $e");
+      debugPrint("Error loading receipts by store: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }
@@ -250,7 +251,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       final stats = await _receiptService.getReceiptStats(event.listId);
       emit(ReceiptStatsLoaded(stats));
     } catch (e) {
-      print("Error loading receipt stats: $e");
+      debugPrint("Error loading receipt stats: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ReceiptError(errorMessage));
     }

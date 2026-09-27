@@ -44,7 +44,7 @@ class NotificationService {
     if (_isBasicInitialized) return;
 
     if (kDebugMode) {
-      print('🔔 [EPILIST] Initialisation basique des notifications...');
+      debugPrint('🔔 [EPILIST] Initialisation basique des notifications...');
     }
 
     try {
@@ -53,31 +53,31 @@ class NotificationService {
       // 1. Détecter le simulateur
       await _detectSimulator();
       if (kDebugMode) {
-        print(
+        debugPrint(
           '📱 [EPILIST] Device type: ${_isSimulator ? "Simulator" : "Physical"}',
         );
       }
 
       // 2. Initialiser les notifications locales
       if (kDebugMode) {
-        print('🔔 [EPILIST] Initializing local notifications...');
+        debugPrint('🔔 [EPILIST] Initializing local notifications...');
       }
       await _initializeLocalNotifications();
 
       // 3. Configurer les handlers de messages
       if (kDebugMode) {
-        print('📨 [EPILIST] Setting up message handlers...');
+        debugPrint('📨 [EPILIST] Setting up message handlers...');
       }
       await _setupMessageHandlers();
 
       _isBasicInitialized = true;
       if (kDebugMode) {
-        print('✅ [EPILIST] Initialisation basique terminée (sans token)');
+        debugPrint('✅ [EPILIST] Initialisation basique terminée (sans token)');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Erreur lors de l\'initialisation basique: $e');
-        print('📍 [EPILIST] Stack trace: $stackTrace');
+        debugPrint('❌ [EPILIST] Erreur lors de l\'initialisation basique: $e');
+        debugPrint('📍 [EPILIST] Stack trace: $stackTrace');
       }
     }
   }
@@ -86,7 +86,7 @@ class NotificationService {
   static Future<void> initializeAfterLogin() async {
     if (_isFullyInitialized) {
       if (kDebugMode) {
-        print('ℹ️ [EPILIST] Notifications déjà complètement initialisées');
+        debugPrint('ℹ️ [EPILIST] Notifications déjà complètement initialisées');
       }
       return;
     }
@@ -96,7 +96,7 @@ class NotificationService {
     }
 
     if (kDebugMode) {
-      print(
+      debugPrint(
         '🔔 [EPILIST] Initialisation complète des notifications après connexion...',
       );
     }
@@ -104,30 +104,30 @@ class NotificationService {
     try {
       // 1. Demander les permissions
       if (kDebugMode) {
-        print('🔒 [EPILIST] Requesting permissions...');
+        debugPrint('🔒 [EPILIST] Requesting permissions...');
       }
       await _requestPermissions();
 
       // 2. Gérer le token FCM
       if (kDebugMode) {
-        print('🔑 [EPILIST] Handling FCM token...');
+        debugPrint('🔑 [EPILIST] Handling FCM token...');
       }
       await _handlePushNotificationsToken();
 
       // 3. Vérifier les messages initiaux
       if (kDebugMode) {
-        print('📬 [EPILIST] Checking initial messages...');
+        debugPrint('📬 [EPILIST] Checking initial messages...');
       }
       await _checkInitialMessage();
 
       _isFullyInitialized = true;
       if (kDebugMode) {
-        print('✅ [EPILIST] Initialisation complète terminée!');
+        debugPrint('✅ [EPILIST] Initialisation complète terminée!');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Erreur lors de l\'initialisation complète: $e');
-        print('📍 [EPILIST] Stack trace: $stackTrace');
+        debugPrint('❌ [EPILIST] Erreur lors de l\'initialisation complète: $e');
+        debugPrint('📍 [EPILIST] Stack trace: $stackTrace');
       }
     }
   }
@@ -136,14 +136,14 @@ class NotificationService {
   static Future<void> _handlePushNotificationsToken() async {
     try {
       if (kDebugMode) {
-        print('🔄 [EPILIST] Setting up token refresh listener...');
+        debugPrint('🔄 [EPILIST] Setting up token refresh listener...');
       }
 
       // Écouter les changements de token SEULEMENT si l'utilisateur est connecté
       _firebaseMessaging.onTokenRefresh
           .listen((fcmToken) async {
             if (kDebugMode) {
-              print(
+              debugPrint(
                 '🔄 [EPILIST] FCM Token refreshed: ${fcmToken.substring(0, 20)}...',
               );
             }
@@ -163,14 +163,14 @@ class NotificationService {
           })
           .onError((error) {
             if (kDebugMode) {
-              print('❌ [EPILIST] Token refresh error: $error');
+              debugPrint('❌ [EPILIST] Token refresh error: $error');
             }
           });
 
       await _getInitialTokenSafe();
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error in _handlePushNotificationsToken: $e');
+        debugPrint('❌ [EPILIST] Error in _handlePushNotificationsToken: $e');
       }
     }
   }
@@ -178,20 +178,20 @@ class NotificationService {
   static Future<void> _getInitialTokenSafe() async {
     try {
       if (kDebugMode) {
-        print('🔍 [EPILIST] Getting initial FCM token...');
+        debugPrint('🔍 [EPILIST] Getting initial FCM token...');
       }
 
       // Traitement spécial iOS pour APNS
       if (Platform.isIOS && !_isSimulator) {
         if (kDebugMode) {
-          print('🍎 [EPILIST] Preparing APNS for iOS...');
+          debugPrint('🍎 [EPILIST] Preparing APNS for iOS...');
         }
         await _prepareAPNSForIPhone();
       }
 
       // Attendre un délai puis essayer d'obtenir un nouveau token
       if (kDebugMode) {
-        print('⏳ [EPILIST] Waiting before token request...');
+        debugPrint('⏳ [EPILIST] Waiting before token request...');
       }
       await Future.delayed(
         Duration(milliseconds: Platform.isAndroid ? 2000 : 8000),
@@ -200,7 +200,7 @@ class NotificationService {
       await _tryGetTokenSafely();
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error in _getInitialTokenSafe: $e');
+        debugPrint('❌ [EPILIST] Error in _getInitialTokenSafe: $e');
       }
     }
   }
@@ -211,7 +211,7 @@ class NotificationService {
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         if (kDebugMode) {
-          print(
+          debugPrint(
             '🔄 [EPILIST] Attempting to get FCM token (attempt $attempt/$maxAttempts)',
           );
         }
@@ -221,7 +221,7 @@ class NotificationService {
           Duration(seconds: Platform.isAndroid ? 15 : 20),
           onTimeout: () {
             if (kDebugMode) {
-              print('⏰ [EPILIST] Token request timeout on attempt $attempt');
+              debugPrint('⏰ [EPILIST] Token request timeout on attempt $attempt');
             }
             return null;
           },
@@ -232,8 +232,8 @@ class NotificationService {
           await _saveTokenToPreferences(token);
 
           if (kDebugMode) {
-            print('✅ [EPILIST] FCM token obtained: ${token.substring(0, 20)}...');
-            print('📱 [EPILIST] Full token length: ${token.length}');
+            debugPrint('✅ [EPILIST] FCM token obtained: ${token.substring(0, 20)}...');
+            debugPrint('📱 [EPILIST] Full token length: ${token.length}');
           }
 
           if (Platform.isIOS && !_isSimulator && _apnsToken == null) {
@@ -250,11 +250,11 @@ class NotificationService {
               // ignore: unawaited_futures
               _registerDeviceWithToken().then((_) {
                 if (kDebugMode) {
-                  print('✅ [EPILIST] Device registration completed in background');
+                  debugPrint('✅ [EPILIST] Device registration completed in background');
                 }
               }).catchError((e) {
                 if (kDebugMode) {
-                  print('⚠️ [EPILIST] Background device registration failed: $e');
+                  debugPrint('⚠️ [EPILIST] Background device registration failed: $e');
                 }
                 // Réessayer dans 60 secondes
                 Future.delayed(const Duration(seconds: 60), () {
@@ -263,11 +263,11 @@ class NotificationService {
               });
             });
             if (kDebugMode) {
-              print('⏰ [EPILIST] Device registration scheduled in 3 seconds');
+              debugPrint('⏰ [EPILIST] Device registration scheduled in 3 seconds');
             }
           } else {
             if (kDebugMode) {
-              print(
+              debugPrint(
                 'ℹ️ [EPILIST] Utilisateur non connecté, token stocké pour plus tard',
               );
             }
@@ -275,19 +275,19 @@ class NotificationService {
           return;
         } else {
           if (kDebugMode) {
-            print(
+            debugPrint(
               '⚠️ [EPILIST] Empty or null token received on attempt $attempt',
             );
           }
         }
       } catch (e) {
         if (kDebugMode) {
-          print('❌ [EPILIST] Error getting token (attempt $attempt): $e');
+          debugPrint('❌ [EPILIST] Error getting token (attempt $attempt): $e');
         }
 
         if (e.toString().contains('apns-token-not-set')) {
           if (kDebugMode) {
-            print('ℹ️ [EPILIST] APNS token not set, this is normal for Android');
+            debugPrint('ℹ️ [EPILIST] APNS token not set, this is normal for Android');
           }
           if (attempt == maxAttempts) {
             break;
@@ -298,14 +298,14 @@ class NotificationService {
       if (attempt < maxAttempts) {
         final delay = Duration(milliseconds: Platform.isAndroid ? 2000 : 3000);
         if (kDebugMode) {
-          print('⏳ [EPILIST] Waiting ${delay.inMilliseconds}ms before retry...');
+          debugPrint('⏳ [EPILIST] Waiting ${delay.inMilliseconds}ms before retry...');
         }
         await Future.delayed(delay);
       }
     }
 
     if (kDebugMode) {
-      print('❌ [EPILIST] Failed to get FCM token after $maxAttempts attempts');
+      debugPrint('❌ [EPILIST] Failed to get FCM token after $maxAttempts attempts');
     }
   }
 
@@ -314,7 +314,7 @@ class NotificationService {
 
     try {
       if (kDebugMode) {
-        print('🍎 [EPILIST] Preparing APNS token...');
+        debugPrint('🍎 [EPILIST] Preparing APNS token...');
       }
       await Future.delayed(const Duration(milliseconds: 5000));
 
@@ -328,18 +328,18 @@ class NotificationService {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('apns_token', apnsToken);
         if (kDebugMode) {
-          print(
+          debugPrint(
             '✅ [EPILIST] APNS token obtained: ${apnsToken.substring(0, 20)}...',
           );
         }
       } else {
         if (kDebugMode) {
-          print('⚠️ [EPILIST] APNS token is null or empty');
+          debugPrint('⚠️ [EPILIST] APNS token is null or empty');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error getting APNS token: $e');
+        debugPrint('❌ [EPILIST] Error getting APNS token: $e');
       }
     }
   }
@@ -349,7 +349,7 @@ class NotificationService {
 
     try {
       if (kDebugMode) {
-        print('🍎 [EPILIST] Trying to get APNS token safely...');
+        debugPrint('🍎 [EPILIST] Trying to get APNS token safely...');
       }
       await Future.delayed(const Duration(milliseconds: 2000));
 
@@ -357,7 +357,7 @@ class NotificationService {
         const Duration(seconds: 10),
         onTimeout: () {
           if (kDebugMode) {
-            print('⏰ [EPILIST] APNS token request timeout');
+            debugPrint('⏰ [EPILIST] APNS token request timeout');
           }
           return null;
         },
@@ -376,18 +376,18 @@ class NotificationService {
         }
 
         if (kDebugMode) {
-          print(
+          debugPrint(
             '✅ [EPILIST] APNS token updated: ${apnsToken.substring(0, 20)}...',
           );
         }
       } else {
         if (kDebugMode) {
-          print('⚠️ [EPILIST] APNS token is null or empty');
+          debugPrint('⚠️ [EPILIST] APNS token is null or empty');
         }
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error getting APNS token safely: $e');
+        debugPrint('❌ [EPILIST] Error getting APNS token safely: $e');
       }
     }
   }
@@ -396,14 +396,14 @@ class NotificationService {
   static Future<void> _registerDeviceWithToken() async {
     if (_deviceRegistrationInProgress) {
       if (kDebugMode) {
-        print('⏳ [EPILIST] Device registration already in progress');
+        debugPrint('⏳ [EPILIST] Device registration already in progress');
       }
       return;
     }
 
     if (_currentToken == null || _currentToken!.isEmpty) {
       if (kDebugMode) {
-        print('⚠️ [EPILIST] No FCM token available for registration');
+        debugPrint('⚠️ [EPILIST] No FCM token available for registration');
       }
       return;
     }
@@ -412,7 +412,7 @@ class NotificationService {
 
     try {
       if (kDebugMode) {
-        print('🔄 [EPILIST] Starting device registration...');
+        debugPrint('🔄 [EPILIST] Starting device registration...');
       }
 
       final prefs = await SharedPreferences.getInstance();
@@ -420,13 +420,13 @@ class NotificationService {
 
       if (authToken == null) {
         if (kDebugMode) {
-          print('⚠️ [EPILIST] No auth token, skipping device registration');
+          debugPrint('⚠️ [EPILIST] No auth token, skipping device registration');
         }
         return;
       }
 
       if (kDebugMode) {
-        print(
+        debugPrint(
           '🔄 [EPILIST] Registering device with FCM token: ${_currentToken!.substring(0, 20)}...',
         );
       }
@@ -454,15 +454,15 @@ class NotificationService {
       }
 
       if (kDebugMode) {
-        print('📡 [EPILIST] Sending registration request...');
-        print('📡 [EPILIST] Device data: $deviceData');
+        debugPrint('📡 [EPILIST] Sending registration request...');
+        debugPrint('📡 [EPILIST] Device data: $deviceData');
       }
 
       final response = await dio.post('/devices/register', data: deviceData);
 
       if (kDebugMode) {
-        print('📡 [EPILIST] Registration response: ${response.statusCode}');
-        print('📡 [EPILIST] Response data: ${response.data}');
+        debugPrint('📡 [EPILIST] Registration response: ${response.statusCode}');
+        debugPrint('📡 [EPILIST] Response data: ${response.data}');
       }
 
       if (response.statusCode == 201) {
@@ -471,34 +471,34 @@ class NotificationService {
         _lastRegisteredToken = _currentToken;
 
         if (kDebugMode) {
-          print('✅ [EPILIST] Device registered successfully!');
+          debugPrint('✅ [EPILIST] Device registered successfully!');
         }
       } else {
         if (kDebugMode) {
-          print('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
+          debugPrint('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
         }
       }
     } on DioException catch (e) {
       if (kDebugMode) {
         if (e.type == DioExceptionType.receiveTimeout) {
-          print('⏱️ [EPILIST] Device registration timeout - Server is slow, will retry later');
+          debugPrint('⏱️ [EPILIST] Device registration timeout - Server is slow, will retry later');
         } else if (e.type == DioExceptionType.connectionTimeout) {
-          print('⏱️ [EPILIST] Connection timeout - Network is slow');
+          debugPrint('⏱️ [EPILIST] Connection timeout - Network is slow');
         } else if (e.type == DioExceptionType.connectionError) {
-          print('📡 [EPILIST] Connection error - Network unavailable');
+          debugPrint('📡 [EPILIST] Connection error - Network unavailable');
         } else {
-          print('❌ [EPILIST] Device registration failed: ${e.message}');
+          debugPrint('❌ [EPILIST] Device registration failed: ${e.message}');
         }
         // Don't print full stack trace for timeout errors to avoid log spam
         if (e.type != DioExceptionType.receiveTimeout &&
             e.type != DioExceptionType.connectionTimeout) {
-          print('📍 [EPILIST] Error details: ${e.response?.data}');
+          debugPrint('📍 [EPILIST] Error details: ${e.response?.data}');
         }
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Device registration failed: $e');
-        print('📍 [EPILIST] Stack trace: $stackTrace');
+        debugPrint('❌ [EPILIST] Device registration failed: $e');
+        debugPrint('📍 [EPILIST] Stack trace: $stackTrace');
       }
     } finally {
       _deviceRegistrationInProgress = false;
@@ -513,10 +513,10 @@ class NotificationService {
       // Handler pour les messages en premier plan
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         if (kDebugMode) {
-          print(
+          debugPrint(
             '📨 [EPILIST] Foreground message received: ${message.notification?.title}',
           );
-          print('📨 [EPILIST] Message data: ${message.data}');
+          debugPrint('📨 [EPILIST] Message data: ${message.data}');
         }
         await _handleForegroundMessage(message);
       });
@@ -526,7 +526,7 @@ class NotificationService {
         RemoteMessage message,
       ) async {
         if (kDebugMode) {
-          print(
+          debugPrint(
             '👆 [EPILIST] Notification opened app: ${message.notification?.title}',
           );
         }
@@ -534,11 +534,11 @@ class NotificationService {
       });
 
       if (kDebugMode) {
-        print('✅ [EPILIST] Message handlers configured');
+        debugPrint('✅ [EPILIST] Message handlers configured');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error setting up message handlers: $e');
+        debugPrint('❌ [EPILIST] Error setting up message handlers: $e');
       }
     }
   }
@@ -547,7 +547,7 @@ class NotificationService {
     try {
       if (Platform.isIOS) {
         if (kDebugMode) {
-          print('🍎 [EPILIST] Requesting iOS permissions...');
+          debugPrint('🍎 [EPILIST] Requesting iOS permissions...');
         }
         final result = await _firebaseMessaging.requestPermission(
           alert: true,
@@ -560,7 +560,7 @@ class NotificationService {
         );
 
         if (kDebugMode) {
-          print(
+          debugPrint(
             '🍎 [EPILIST] iOS notification permission: ${result.authorizationStatus}',
           );
         }
@@ -572,13 +572,13 @@ class NotificationService {
         );
       } else if (Platform.isAndroid) {
         if (kDebugMode) {
-          print('🤖 [EPILIST] Requesting Android permissions...');
+          debugPrint('🤖 [EPILIST] Requesting Android permissions...');
         }
 
         // Permission pour les notifications (Android 13+)
         final notificationStatus = await Permission.notification.request();
         if (kDebugMode) {
-          print(
+          debugPrint(
             '🤖 [EPILIST] Android notification permission: $notificationStatus',
           );
         }
@@ -587,18 +587,18 @@ class NotificationService {
         final batteryStatus =
             await Permission.ignoreBatteryOptimizations.request();
         if (kDebugMode) {
-          print('🤖 [EPILIST] Battery optimization permission: $batteryStatus');
+          debugPrint('🤖 [EPILIST] Battery optimization permission: $batteryStatus');
         }
 
         // Vérifier les permissions des notifications
         final isGranted = await Permission.notification.isGranted;
         if (kDebugMode) {
-          print('🤖 [EPILIST] Notification permission granted: $isGranted');
+          debugPrint('🤖 [EPILIST] Notification permission granted: $isGranted');
         }
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error requesting permissions: $e');
+        debugPrint('❌ [EPILIST] Error requesting permissions: $e');
       }
     }
   }
@@ -606,7 +606,7 @@ class NotificationService {
   static Future<void> _initializeLocalNotifications() async {
     try {
       if (kDebugMode) {
-        print('🔔 [EPILIST] Initializing local notifications...');
+        debugPrint('🔔 [EPILIST] Initializing local notifications...');
       }
 
       const androidSettings = AndroidInitializationSettings(
@@ -628,7 +628,7 @@ class NotificationService {
       );
 
       if (kDebugMode) {
-        print('🔔 [EPILIST] Local notifications initialized: $initialized');
+        debugPrint('🔔 [EPILIST] Local notifications initialized: $initialized');
       }
 
       if (Platform.isAndroid) {
@@ -636,7 +636,7 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error initializing local notifications: $e');
+        debugPrint('❌ [EPILIST] Error initializing local notifications: $e');
       }
     }
   }
@@ -644,7 +644,7 @@ class NotificationService {
   static Future<void> _createNotificationChannels() async {
     try {
       if (kDebugMode) {
-        print('📺 [EPILIST] Creating Android notification channels...');
+        debugPrint('📺 [EPILIST] Creating Android notification channels...');
       }
 
       final androidPlugin =
@@ -655,7 +655,7 @@ class NotificationService {
 
       if (androidPlugin == null) {
         if (kDebugMode) {
-          print('❌ [EPILIST] Android notification plugin not available');
+          debugPrint('❌ [EPILIST] Android notification plugin not available');
         }
         return;
       }
@@ -711,28 +711,28 @@ class NotificationService {
       for (final channel in channels) {
         await androidPlugin.createNotificationChannel(channel);
         if (kDebugMode) {
-          print('📺 [EPILIST] Created channel: ${channel.id}');
+          debugPrint('📺 [EPILIST] Created channel: ${channel.id}');
         }
       }
 
       if (kDebugMode) {
-        print(
+        debugPrint(
           '✅ [EPILIST] Android notification channels created: ${channels.length}',
         );
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error creating notification channels: $e');
+        debugPrint('❌ [EPILIST] Error creating notification channels: $e');
       }
     }
   }
 
   static Future<void> _handleForegroundMessage(RemoteMessage message) async {
     if (kDebugMode) {
-      print('📨 [EPILIST] Handling foreground message...');
-      print('📨 [EPILIST] Title: ${message.notification?.title}');
-      print('📨 [EPILIST] Body: ${message.notification?.body}');
-      print('📨 [EPILIST] Data: ${message.data}');
+      debugPrint('📨 [EPILIST] Handling foreground message...');
+      debugPrint('📨 [EPILIST] Title: ${message.notification?.title}');
+      debugPrint('📨 [EPILIST] Body: ${message.notification?.body}');
+      debugPrint('📨 [EPILIST] Data: ${message.data}');
     }
 
     // Afficher la notification locale sur Android en foreground
@@ -744,13 +744,13 @@ class NotificationService {
   static Future<void> _showLocalNotification(RemoteMessage message) async {
     try {
       if (kDebugMode) {
-        print('🔔 [EPILIST] Showing local notification...');
+        debugPrint('🔔 [EPILIST] Showing local notification...');
       }
 
       final notification = message.notification;
       if (notification == null) {
         if (kDebugMode) {
-          print('⚠️ [EPILIST] No notification data in message');
+          debugPrint('⚠️ [EPILIST] No notification data in message');
         }
         return;
       }
@@ -795,11 +795,11 @@ class NotificationService {
       );
 
       if (kDebugMode) {
-        print('✅ [EPILIST] Local notification shown with ID: $notificationId');
+        debugPrint('✅ [EPILIST] Local notification shown with ID: $notificationId');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error showing local notification: $e');
+        debugPrint('❌ [EPILIST] Error showing local notification: $e');
       }
     }
   }
@@ -829,7 +829,7 @@ class NotificationService {
         isRegistered = false;
       } else {
         if (kDebugMode) {
-          print(
+          debugPrint(
             '⚠️ [EPILIST] Unexpected type for device_registered: ${registeredValue.runtimeType}',
           );
         }
@@ -842,18 +842,18 @@ class NotificationService {
           isRegistered && lastToken == _currentToken && _currentToken != null;
 
       if (kDebugMode) {
-        print('🔍 [EPILIST] Device registration check: $result');
-        print(
+        debugPrint('🔍 [EPILIST] Device registration check: $result');
+        debugPrint(
           '🔍 [EPILIST] - Registered: $isRegistered (type: ${registeredValue?.runtimeType})',
         );
-        print('🔍 [EPILIST] - Token match: ${lastToken == _currentToken}');
-        print('🔍 [EPILIST] - Current token present: ${_currentToken != null}');
+        debugPrint('🔍 [EPILIST] - Token match: ${lastToken == _currentToken}');
+        debugPrint('🔍 [EPILIST] - Current token present: ${_currentToken != null}');
       }
 
       return result;
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error checking device registration: $e');
+        debugPrint('❌ [EPILIST] Error checking device registration: $e');
       }
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -861,7 +861,7 @@ class NotificationService {
         await prefs.remove('last_registered_token');
       } catch (cleanupError) {
         if (kDebugMode) {
-          print('❌ [EPILIST] Error cleaning up preferences: $cleanupError');
+          debugPrint('❌ [EPILIST] Error cleaning up preferences: $cleanupError');
         }
       }
       return false;
@@ -876,7 +876,7 @@ class NotificationService {
 
     if (_currentToken == null || _currentToken!.isEmpty) {
       if (kDebugMode) {
-        print('⚠️ [EPILIST] No FCM token available for registration after login');
+        debugPrint('⚠️ [EPILIST] No FCM token available for registration after login');
       }
       return;
     }
@@ -1011,7 +1011,7 @@ class NotificationService {
           await _firebaseMessaging.getInitialMessage();
       if (initialMessage != null) {
         if (kDebugMode) {
-          print(
+          debugPrint(
             '📱 [EPILIST] App opened from notification: ${initialMessage.notification?.title}',
           );
         }
@@ -1019,14 +1019,14 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error checking initial message: $e');
+        debugPrint('❌ [EPILIST] Error checking initial message: $e');
       }
     }
   }
 
   static Future<void> _handleNotificationOpened(RemoteMessage message) async {
     if (kDebugMode) {
-      print('👆 [EPILIST] Notification opened: ${message.data}');
+      debugPrint('👆 [EPILIST] Notification opened: ${message.data}');
     }
 
     try {
@@ -1043,7 +1043,7 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error handling notification: $e');
+        debugPrint('❌ [EPILIST] Error handling notification: $e');
       }
     }
   }
@@ -1052,7 +1052,7 @@ class NotificationService {
     NotificationResponse response,
   ) async {
     if (kDebugMode) {
-      print('👆 [EPILIST] Local notification tapped: ${response.payload}');
+      debugPrint('👆 [EPILIST] Local notification tapped: ${response.payload}');
     }
 
     try {
@@ -1072,7 +1072,7 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error handling notification tap: $e');
+        debugPrint('❌ [EPILIST] Error handling notification tap: $e');
       }
     }
   }
@@ -1087,7 +1087,7 @@ class NotificationService {
       // Use a placeholder navigation - the actual implementation will depend on your routing
       // For now, just print the action
       if (kDebugMode) {
-        print('📱 [EPILIST] Navigating to chat for list $listId: $listName');
+        debugPrint('📱 [EPILIST] Navigating to chat for list $listId: $listName');
       }
 
       // TODO: Implement actual navigation to ChatScreen
@@ -1096,7 +1096,7 @@ class NotificationService {
       // navigator.pushNamed('/chat', arguments: {'listId': listId, 'listName': listName});
     } catch (e) {
       if (kDebugMode) {
-        print('❌ [EPILIST] Error navigating to chat: $e');
+        debugPrint('❌ [EPILIST] Error navigating to chat: $e');
       }
     }
   }
@@ -1111,7 +1111,7 @@ class NotificationService {
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   if (kDebugMode) {
-    print('📨 [EPILIST] Background message: ${message.notification?.title}');
+    debugPrint('📨 [EPILIST] Background message: ${message.notification?.title}');
   }
   // Handle background messages
 }

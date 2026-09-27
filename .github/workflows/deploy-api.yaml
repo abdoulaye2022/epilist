@@ -31,12 +31,17 @@ jobs:
           composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
           composer dump-autoload --optimize
 
-      # Étape 4 : Vérifier la structure avant déploiement
+      # Étape 4 : Vérification syntaxique de tout le PHP avant d'envoyer en prod
+      - name: PHP lint
+        working-directory: ./api
+        run: find src public -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+
+      # Étape 5 : Vérifier la structure avant déploiement
       - name: List files to deploy
         working-directory: ./api
         run: ls -la
 
-      # Étape 5 : Déploiement FTP
+      # Étape 6 : Déploiement FTP
       - name: Deploy to server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0  # Version vérifiée et fonctionnelle
         with:
@@ -46,10 +51,21 @@ jobs:
           local-dir: ./api/
           server-dir: /www/api.epilist/
           dangerous-clean-slate: false
+          # Sécurité : ne jamais envoyer en prod les scripts de test/debug,
+          # les migrations SQL, les secrets ni la doc — le docroot du serveur
+          # est au-dessus de public/, tout fichier envoyé est téléchargeable.
           exclude: |
             **/.git*
-            **/.env
+            **/.env*
+            **/service-account.json
             **/README.md
+            **/*.md
             **/composer.*
             **/vendor/tests/*
+            **/migrations/**
+            **/storage/**
+            test_*.php
+            generate_test_data.php
+            run_migration_language.php
+            check_*.php
           log-level: verbose

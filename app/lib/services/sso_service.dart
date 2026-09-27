@@ -90,7 +90,7 @@ class SSOService {
   // ✅ Configuration Google Sign-In pour iOS/Android
   static GoogleSignIn _getGoogleSignIn() {
     if (_googleSignIn == null) {
-      print('🔵 [SSOService] Initialisation GoogleSignIn...');
+      debugPrint('🔵 [SSOService] Initialisation GoogleSignIn...');
 
       try {
         _googleSignIn = GoogleSignIn(
@@ -102,14 +102,14 @@ class SSOService {
               '695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6.apps.googleusercontent.com',
         );
 
-        print(
+        debugPrint(
           '✅ [SSOService] GoogleSignIn initialisé AVEC Android Client ID forcé',
         );
-        print(
+        debugPrint(
           '🔧 [DEBUG] ServerClientId configuré: ${_googleSignIn!.serverClientId}',
         );
       } catch (e) {
-        print('❌ [SSOService] Erreur initialisation: $e');
+        debugPrint('❌ [SSOService] Erreur initialisation: $e');
         rethrow;
       }
     }
@@ -120,26 +120,26 @@ class SSOService {
 
   /// ✅ Connexion Google optimisée pour iOS/Android
   static Future<SSOResult> signInWithGoogle() async {
-    print('🔵 [SSOService] === DÉBUT CONNEXION GOOGLE ===');
+    debugPrint('🔵 [SSOService] === DÉBUT CONNEXION GOOGLE ===');
 
     try {
       // ✅ ÉTAPE 1: Vérification plateforme
-      print('🔵 [SSOService] Plateforme détectée: ${Platform.operatingSystem}');
+      debugPrint('🔵 [SSOService] Plateforme détectée: ${Platform.operatingSystem}');
 
       // ✅ ÉTAPE 2: Nettoyage OBLIGATOIRE
-      print('🔵 [SSOService] Nettoyage Google Sign-In...');
+      debugPrint('🔵 [SSOService] Nettoyage Google Sign-In...');
       await _forceCleanGoogleSignIn();
 
       // ✅ ÉTAPE 3: Nouvelle instance avec config
-      print('🔵 [SSOService] Création nouvelle instance GoogleSignIn...');
+      debugPrint('🔵 [SSOService] Création nouvelle instance GoogleSignIn...');
       final googleSignIn = _getGoogleSignIn();
 
       // ✅ ÉTAPE 4: Vérification de la disponibilité
-      print('🔵 [SSOService] Vérification disponibilité Google Sign-In...');
+      debugPrint('🔵 [SSOService] Vérification disponibilité Google Sign-In...');
 
       // Sur iOS, vérifier que l'app Google est installée ou utiliser web view
       if (Platform.isIOS) {
-        print(
+        debugPrint(
           '🔵 [SSOService] Configuration iOS - vérification des schemes URL...',
         );
       }
@@ -150,7 +150,7 @@ class SSOService {
               ? const Duration(minutes: 3) // Plus long sur iOS
               : const Duration(minutes: 2); // Standard sur Android
 
-      print(
+      debugPrint(
         '🔵 [SSOService] Lancement connexion Google (timeout: ${timeoutDuration.inMinutes}min)...',
       );
 
@@ -166,18 +166,18 @@ class SSOService {
       );
 
       if (googleUser == null) {
-        print('❌ [SSOService] Connexion annulée par l\'utilisateur');
+        debugPrint('❌ [SSOService] Connexion annulée par l\'utilisateur');
         return SSOResult.error('Connexion annulée par l\'utilisateur');
       }
 
-      print('✅ [SSOService] Utilisateur Google connecté: ${googleUser.email}');
-      print('🔵 [SSOService] ID utilisateur: ${googleUser.id}');
-      print(
+      debugPrint('✅ [SSOService] Utilisateur Google connecté: ${googleUser.email}');
+      debugPrint('🔵 [SSOService] ID utilisateur: ${googleUser.id}');
+      debugPrint(
         '🔵 [SSOService] Nom affiché: ${googleUser.displayName ?? "Non fourni"}',
       );
 
       // ✅ ÉTAPE 6: Récupération tokens avec stratégie de retry
-      print('🔵 [SSOService] Récupération des tokens d\'authentification...');
+      debugPrint('🔵 [SSOService] Récupération des tokens d\'authentification...');
 
       GoogleSignInAuthentication? googleAuth;
       String? validIdToken;
@@ -186,11 +186,11 @@ class SSOService {
       // ✅ STRATÉGIE DE RETRY
       for (int attempt = 1; attempt <= 3; attempt++) {
         try {
-          print('🔵 [SSOService] Tentative $attempt/3 récupération tokens...');
+          debugPrint('🔵 [SSOService] Tentative $attempt/3 récupération tokens...');
 
           // ✅ Clear auth cache avant chaque tentative sur iOS
           if (Platform.isIOS && attempt > 1) {
-            print('🔵 [SSOService] Nettoyage cache auth iOS...');
+            debugPrint('🔵 [SSOService] Nettoyage cache auth iOS...');
             await googleUser.clearAuthCache();
             await Future.delayed(Duration(seconds: attempt));
           }
@@ -200,11 +200,11 @@ class SSOService {
             onTimeout: () => throw Exception('Timeout récupération tokens'),
           );
 
-          print('🔵 [SSOService] Tokens récupérés:');
-          print(
+          debugPrint('🔵 [SSOService] Tokens récupérés:');
+          debugPrint(
             '  - ID Token: ${googleAuth.idToken?.isNotEmpty == true ? "✅ Présent" : "❌ Manquant"}',
           );
-          print(
+          debugPrint(
             '  - Access Token: ${googleAuth.accessToken?.isNotEmpty == true ? "✅ Présent" : "❌ Manquant"}',
           );
 
@@ -212,57 +212,57 @@ class SSOService {
           if (googleAuth.idToken != null && googleAuth.idToken!.isNotEmpty) {
             // Validation format JWT
             if (_isValidJWT(googleAuth.idToken!)) {
-              print('✅ [SSOService] Format JWT valide');
+              debugPrint('✅ [SSOService] Format JWT valide');
 
               // Validation expiration
               if (_isTokenNotExpired(googleAuth.idToken!)) {
-                print('✅ [SSOService] Token non expiré');
+                debugPrint('✅ [SSOService] Token non expiré');
 
                 // ✅ VALIDATION SPÉCIFIQUE iOS
                 if (Platform.isIOS &&
                     _validateTokenForIOS(googleAuth.idToken!)) {
                   validIdToken = googleAuth.idToken!;
                   validAccessToken = googleAuth.accessToken;
-                  print(
+                  debugPrint(
                     '✅ [SSOService] Token iOS validé avec succès (tentative $attempt)',
                   );
                   break;
                 } else if (!Platform.isIOS) {
                   validIdToken = googleAuth.idToken!;
                   validAccessToken = googleAuth.accessToken;
-                  print(
+                  debugPrint(
                     '✅ [SSOService] Token Android validé avec succès (tentative $attempt)',
                   );
                   break;
                 } else {
-                  print(
+                  debugPrint(
                     '⚠️ [SSOService] Token iOS non valide (tentative $attempt) - Retry...',
                   );
                 }
               } else {
-                print(
+                debugPrint(
                   '⚠️ [SSOService] Token expiré (tentative $attempt) - Retry...',
                 );
               }
             } else {
-              print(
+              debugPrint(
                 '⚠️ [SSOService] Format JWT invalide (tentative $attempt) - Retry...',
               );
             }
           } else {
-            print('⚠️ [SSOService] Token vide (tentative $attempt) - Retry...');
+            debugPrint('⚠️ [SSOService] Token vide (tentative $attempt) - Retry...');
           }
 
           // ✅ Attente progressive avant retry
           if (attempt < 3) {
             final waitTime = Duration(seconds: attempt * 2);
-            print(
+            debugPrint(
               '🔵 [SSOService] Attente ${waitTime.inSeconds}s avant retry...',
             );
             await Future.delayed(waitTime);
           }
         } catch (authError) {
-          print('❌ [SSOService] Erreur tentative $attempt: $authError');
+          debugPrint('❌ [SSOService] Erreur tentative $attempt: $authError');
           if (attempt == 3) {
             rethrow;
           }
@@ -271,7 +271,7 @@ class SSOService {
 
       // ✅ Vérification finale
       if (validIdToken == null || validIdToken.isEmpty) {
-        print(
+        debugPrint(
           '❌ [SSOService] ÉCHEC: Impossible de récupérer un token Google valide',
         );
         return SSOResult.error(
@@ -281,14 +281,14 @@ class SSOService {
       }
 
       // ✅ ÉTAPE 7: Validation finale et informations utilisateur
-      print('🔵 [SSOService] Création informations utilisateur...');
+      debugPrint('🔵 [SSOService] Création informations utilisateur...');
 
       final tokenInfo = _decodeJWT(validIdToken);
-      print('🔵 [SSOService] Informations token:');
-      print('  - Issuer: ${tokenInfo?['iss']}');
-      print('  - Audience: ${tokenInfo?['aud']}');
-      print('  - Email: ${tokenInfo?['email']}');
-      print('  - Vérifié: ${tokenInfo?['email_verified']}');
+      debugPrint('🔵 [SSOService] Informations token:');
+      debugPrint('  - Issuer: ${tokenInfo?['iss']}');
+      debugPrint('  - Audience: ${tokenInfo?['aud']}');
+      debugPrint('  - Email: ${tokenInfo?['email']}');
+      debugPrint('  - Vérifié: ${tokenInfo?['email_verified']}');
 
       final SSOUserInfo userInfo = SSOUserInfo(
         id: googleUser.id,
@@ -300,10 +300,10 @@ class SSOService {
         provider: 'google',
       );
 
-      print('✅ [SSOService] === CONNEXION GOOGLE RÉUSSIE ===');
-      print('🔵 [SSOService] Email: ${userInfo.email}');
-      print('🔵 [SSOService] Nom: ${userInfo.displayName ?? "Non fourni"}');
-      print('🔵 [SSOService] Token longueur: ${validIdToken.length} chars');
+      debugPrint('✅ [SSOService] === CONNEXION GOOGLE RÉUSSIE ===');
+      debugPrint('🔵 [SSOService] Email: ${userInfo.email}');
+      debugPrint('🔵 [SSOService] Nom: ${userInfo.displayName ?? "Non fourni"}');
+      debugPrint('🔵 [SSOService] Token longueur: ${validIdToken.length} chars');
 
       return SSOResult.success(
         idToken: validIdToken,
@@ -311,7 +311,7 @@ class SSOService {
         userInfo: userInfo,
       );
     } catch (e) {
-      print('❌ [SSOService] ERREUR CRITIQUE GOOGLE: $e');
+      debugPrint('❌ [SSOService] ERREUR CRITIQUE GOOGLE: $e');
 
       // ✅ Messages d'erreur spécifiques
       String errorMessage = 'Erreur lors de la connexion Google';
@@ -336,16 +336,16 @@ class SSOService {
   /// Nettoyage complet forcé
   static Future<void> _forceCleanGoogleSignIn() async {
     try {
-      print('🧹 [SSOService] Nettoyage complet Google Sign-In...');
+      debugPrint('🧹 [SSOService] Nettoyage complet Google Sign-In...');
 
       if (_googleSignIn != null) {
         try {
           // ✅ Déconnexion complète
           await _googleSignIn!.signOut();
           await _googleSignIn!.disconnect();
-          print('🧹 [SSOService] Déconnexion Google terminée');
+          debugPrint('🧹 [SSOService] Déconnexion Google terminée');
         } catch (e) {
-          print('⚠️ [SSOService] Erreur déconnexion Google (normale): $e');
+          debugPrint('⚠️ [SSOService] Erreur déconnexion Google (normale): $e');
         }
       }
 
@@ -359,9 +359,9 @@ class SSOService {
               : const Duration(seconds: 1);
       await Future.delayed(waitTime);
 
-      print('✅ [SSOService] Nettoyage terminé');
+      debugPrint('✅ [SSOService] Nettoyage terminé');
     } catch (e) {
-      print('⚠️ [SSOService] Erreur nettoyage (peut être ignorée): $e');
+      debugPrint('⚠️ [SSOService] Erreur nettoyage (peut être ignorée): $e');
     }
   }
 
@@ -383,29 +383,29 @@ class SSOService {
       // Android: 695717834998-kshi4umfi4asq3ubna6s3es9ti0ij8d6
       // iOS: 695717834998-s125mgv17n96b59d9u7jh4eham2kp9lo
       if (audience == null || !audience.contains('695717834998-')) {
-        print('❌ [SSOService] Audience iOS invalide: $audience');
+        debugPrint('❌ [SSOService] Audience iOS invalide: $audience');
         return false;
       }
 
-      print('✅ [SSOService] Audience Firebase acceptée: $audience');
+      debugPrint('✅ [SSOService] Audience Firebase acceptée: $audience');
 
       // Vérifier issuer Google
       if (issuer != 'https://accounts.google.com' &&
           issuer != 'accounts.google.com') {
-        print('❌ [SSOService] Issuer iOS invalide: $issuer');
+        debugPrint('❌ [SSOService] Issuer iOS invalide: $issuer');
         return false;
       }
 
       // Vérifier email vérifié
       if (emailVerified != true && emailVerified != 'true') {
-        print('❌ [SSOService] Email non vérifié iOS: $emailVerified');
+        debugPrint('❌ [SSOService] Email non vérifié iOS: $emailVerified');
         return false;
       }
 
-      print('✅ [SSOService] Token iOS valide pour serveur');
+      debugPrint('✅ [SSOService] Token iOS valide pour serveur');
       return true;
     } catch (e) {
-      print('❌ [SSOService] Erreur validation iOS: $e');
+      debugPrint('❌ [SSOService] Erreur validation iOS: $e');
       return false;
     }
   }
@@ -415,7 +415,7 @@ class SSOService {
     try {
       final parts = token.split('.');
       if (parts.length != 3) {
-        print(
+        debugPrint(
           '❌ [SSOService] JWT: nombre de parties incorrect (${parts.length})',
         );
         return false;
@@ -424,20 +424,20 @@ class SSOService {
       // Vérification header
       final header = _decodeBase64(parts[0]);
       if (header == null || !header.containsKey('alg')) {
-        print('❌ [SSOService] JWT: header invalide');
+        debugPrint('❌ [SSOService] JWT: header invalide');
         return false;
       }
 
       // Vérification payload
       final payload = _decodeBase64(parts[1]);
       if (payload == null || !payload.containsKey('iss')) {
-        print('❌ [SSOService] JWT: payload invalide');
+        debugPrint('❌ [SSOService] JWT: payload invalide');
         return false;
       }
 
       return true;
     } catch (e) {
-      print('❌ [SSOService] Erreur validation JWT: $e');
+      debugPrint('❌ [SSOService] Erreur validation JWT: $e');
       return false;
     }
   }
@@ -456,14 +456,14 @@ class SSOService {
 
       if (!isValid) {
         final expTime = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
-        print(
+        debugPrint(
           '❌ [SSOService] Token expiré à: $expTime (maintenant: ${DateTime.now()})',
         );
       }
 
       return isValid;
     } catch (e) {
-      print('❌ [SSOService] Erreur vérification expiration: $e');
+      debugPrint('❌ [SSOService] Erreur vérification expiration: $e');
       return false;
     }
   }
@@ -501,11 +501,11 @@ class SSOService {
   /// ✅ Déconnexion améliorée
   static Future<void> signOutGoogle() async {
     try {
-      print('🔵 [SSOService] Déconnexion Google complète...');
+      debugPrint('🔵 [SSOService] Déconnexion Google complète...');
       await _forceCleanGoogleSignIn();
-      print('✅ [SSOService] Déconnexion Google terminée');
+      debugPrint('✅ [SSOService] Déconnexion Google terminée');
     } catch (e) {
-      print('❌ [SSOService] Erreur déconnexion Google: $e');
+      debugPrint('❌ [SSOService] Erreur déconnexion Google: $e');
     }
   }
 
@@ -514,7 +514,7 @@ class SSOService {
   // ❌ APPLE SIGN-IN COMPLÈTEMENT COMMENTÉ
   static Future<SSOResult> signInWithApple() async {
     try {
-      print('🍎 [SSOService] Début connexion Apple...');
+      debugPrint('🍎 [SSOService] Début connexion Apple...');
 
       if (!Platform.isIOS) {
         return SSOResult.error('Apple Sign-In uniquement disponible sur iOS');
@@ -568,23 +568,23 @@ class SSOService {
         userInfo: userInfo,
       );
     } catch (e) {
-      print('❌ [SSOService] Erreur Apple: $e');
+      debugPrint('❌ [SSOService] Erreur Apple: $e');
       return SSOResult.error('Erreur Apple: ${e.toString()}');
     }
   }
 
   static Future<void> signOutApple() async {
-    print('🍎 [SSOService] Apple Sign-Out (géré automatiquement)');
+    debugPrint('🍎 [SSOService] Apple Sign-Out (géré automatiquement)');
   }
 
   // ✅ MÉTHODES APPLE STUB POUR COMPATIBILITÉ ANDROID
   // static Future<SSOResult> signInWithApple() async {
-  //   print('❌ [SSOService] Apple Sign-In non disponible sur Android');
+  //   debugPrint('❌ [SSOService] Apple Sign-In non disponible sur Android');
   //   return SSOResult.error('Apple Sign-In non disponible sur Android');
   // }
 
   // static Future<void> signOutApple() async {
-  //   print('❌ [SSOService] Apple Sign-Out non disponible sur Android');
+  //   debugPrint('❌ [SSOService] Apple Sign-Out non disponible sur Android');
   // }
 
   // ===================== MÉTHODES UTILITAIRES =====================
@@ -621,9 +621,9 @@ class SSOService {
     try {
       await signOutGoogle();
       await signOutApple(); // Stub pour Android
-      print('✅ [SSOService] Déconnexion complète SSO');
+      debugPrint('✅ [SSOService] Déconnexion complète SSO');
     } catch (e) {
-      print('❌ [SSOService] Erreur déconnexion SSO: $e');
+      debugPrint('❌ [SSOService] Erreur déconnexion SSO: $e');
     }
   }
 
@@ -631,150 +631,150 @@ class SSOService {
 
   /// Diagnostic général (iOS/Android)
   static Future<void> diagnoseGoogleProblem() async {
-    print('🔍 === DIAGNOSTIC SSO GOOGLE ===');
+    debugPrint('🔍 === DIAGNOSTIC SSO GOOGLE ===');
 
     try {
-      print('📱 Plateforme: ${Platform.operatingSystem}');
-      print('📱 Version: ${Platform.operatingSystemVersion}');
-      print('📱 Mode debug: $kDebugMode');
+      debugPrint('📱 Plateforme: ${Platform.operatingSystem}');
+      debugPrint('📱 Version: ${Platform.operatingSystemVersion}');
+      debugPrint('📱 Mode debug: $kDebugMode');
 
       // Test configuration
-      print('\n🔧 === TEST CONFIGURATION ===');
+      debugPrint('\n🔧 === TEST CONFIGURATION ===');
       final googleSignIn = _getGoogleSignIn();
-      print('✅ GoogleSignIn initialisé');
-      print('📱 Scopes: ${googleSignIn.scopes}');
-      print(
+      debugPrint('✅ GoogleSignIn initialisé');
+      debugPrint('📱 Scopes: ${googleSignIn.scopes}');
+      debugPrint(
         '📱 Server Client ID configuré: ${googleSignIn.serverClientId != null}',
       );
 
       // Test disponibilité
-      print('\n🔵 === TEST DISPONIBILITÉ ===');
+      debugPrint('\n🔵 === TEST DISPONIBILITÉ ===');
       try {
         final isSignedIn = await googleSignIn.isSignedIn();
-        print('📱 État actuel: $isSignedIn');
+        debugPrint('📱 État actuel: $isSignedIn');
 
         if (isSignedIn) {
           final user = googleSignIn.currentUser;
           if (user != null) {
-            print('📱 Utilisateur actuel: ${user.email}');
+            debugPrint('📱 Utilisateur actuel: ${user.email}');
 
             try {
               final auth = await user.authentication;
               if (auth.idToken != null) {
-                print('📱 Token présent: ${auth.idToken!.length} chars');
+                debugPrint('📱 Token présent: ${auth.idToken!.length} chars');
 
                 final isValid = _isValidJWT(auth.idToken!);
                 final notExpired = _isTokenNotExpired(auth.idToken!);
                 final tokenValid =
                     Platform.isIOS ? _validateTokenForIOS(auth.idToken!) : true;
 
-                print('📱 JWT valide: $isValid');
-                print('📱 Non expiré: $notExpired');
-                print('📱 Compatible serveur: $tokenValid');
+                debugPrint('📱 JWT valide: $isValid');
+                debugPrint('📱 Non expiré: $notExpired');
+                debugPrint('📱 Compatible serveur: $tokenValid');
 
                 if (!tokenValid) {
                   final payload = _decodeJWT(auth.idToken!);
-                  print('📱 Token details: $payload');
+                  debugPrint('📱 Token details: $payload');
                 }
               }
             } catch (tokenError) {
-              print('❌ Erreur récupération token: $tokenError');
+              debugPrint('❌ Erreur récupération token: $tokenError');
             }
           }
         }
       } catch (e) {
-        print('❌ Erreur test disponibilité: $e');
+        debugPrint('❌ Erreur test disponibilité: $e');
       }
 
-      print('\n💡 === RECOMMANDATIONS ===');
+      debugPrint('\n💡 === RECOMMANDATIONS ===');
       if (Platform.isAndroid) {
-        print('📱 1. Vérifiez google-services.json dans android/app/');
-        print('📱 2. Vérifiez SHA-1 fingerprints dans Firebase Console');
-        print('📱 3. Vérifiez les permissions dans AndroidManifest.xml');
+        debugPrint('📱 1. Vérifiez google-services.json dans android/app/');
+        debugPrint('📱 2. Vérifiez SHA-1 fingerprints dans Firebase Console');
+        debugPrint('📱 3. Vérifiez les permissions dans AndroidManifest.xml');
       } else if (Platform.isIOS) {
-        print('📱 1. Vérifiez GoogleService-Info.plist dans Bundle Resources');
-        print('📱 2. Vérifiez URL Schemes dans Info.plist');
-        print('📱 3. Vérifiez serverClientId dans la configuration');
+        debugPrint('📱 1. Vérifiez GoogleService-Info.plist dans Bundle Resources');
+        debugPrint('📱 2. Vérifiez URL Schemes dans Info.plist');
+        debugPrint('📱 3. Vérifiez serverClientId dans la configuration');
       }
-      print('📱 4. Testez après nettoyage complet et redémarrage app');
-      print('📱 5. Vérifiez la connexion internet');
+      debugPrint('📱 4. Testez après nettoyage complet et redémarrage app');
+      debugPrint('📱 5. Vérifiez la connexion internet');
     } catch (e) {
-      print('❌ ERREUR DIAGNOSTIC: $e');
+      debugPrint('❌ ERREUR DIAGNOSTIC: $e');
     }
 
-    print('🔍 === FIN DIAGNOSTIC ===');
+    debugPrint('🔍 === FIN DIAGNOSTIC ===');
   }
 
   /// Diagnostic spécifique iOS (commenté mais gardé pour référence)
   // ❌ DIAGNOSTIC iOS COMMENTÉ
   static Future<void> diagnoseIOSProblem() async {
-    print('🔍 === DIAGNOSTIC SSO GOOGLE IOS ===');
+    debugPrint('🔍 === DIAGNOSTIC SSO GOOGLE IOS ===');
 
     try {
-      print('📱 Plateforme: ${Platform.operatingSystem}');
-      print('📱 Version iOS: ${Platform.operatingSystemVersion}');
-      print('📱 Mode debug: $kDebugMode');
+      debugPrint('📱 Plateforme: ${Platform.operatingSystem}');
+      debugPrint('📱 Version iOS: ${Platform.operatingSystemVersion}');
+      debugPrint('📱 Mode debug: $kDebugMode');
 
       // Test configuration
-      print('\n🔧 === TEST CONFIGURATION IOS ===');
+      debugPrint('\n🔧 === TEST CONFIGURATION IOS ===');
       final googleSignIn = _getGoogleSignIn();
-      print('✅ GoogleSignIn initialisé');
-      print('📱 Scopes: ${googleSignIn.scopes}');
-      print(
+      debugPrint('✅ GoogleSignIn initialisé');
+      debugPrint('📱 Scopes: ${googleSignIn.scopes}');
+      debugPrint(
         '📱 Server Client ID configuré: ${googleSignIn.serverClientId != null}',
       );
 
       // Test disponibilité
-      print('\n🔵 === TEST DISPONIBILITÉ IOS ===');
+      debugPrint('\n🔵 === TEST DISPONIBILITÉ IOS ===');
       try {
         final isSignedIn = await googleSignIn.isSignedIn();
-        print('📱 État actuel: $isSignedIn');
+        debugPrint('📱 État actuel: $isSignedIn');
 
         if (isSignedIn) {
           final user = googleSignIn.currentUser;
           if (user != null) {
-            print('📱 Utilisateur actuel: ${user.email}');
+            debugPrint('📱 Utilisateur actuel: ${user.email}');
 
             try {
               final auth = await user.authentication;
               if (auth.idToken != null) {
-                print('📱 Token présent: ${auth.idToken!.length} chars');
+                debugPrint('📱 Token présent: ${auth.idToken!.length} chars');
 
                 final isValid = _isValidJWT(auth.idToken!);
                 final notExpired = _isTokenNotExpired(auth.idToken!);
                 final iosValid = _validateTokenForIOS(auth.idToken!);
 
-                print('📱 JWT valide: $isValid');
-                print('📱 Non expiré: $notExpired');
-                print('📱 iOS compatible: $iosValid');
+                debugPrint('📱 JWT valide: $isValid');
+                debugPrint('📱 Non expiré: $notExpired');
+                debugPrint('📱 iOS compatible: $iosValid');
 
                 if (!iosValid) {
                   final payload = _decodeJWT(auth.idToken!);
-                  print('📱 Token details: $payload');
+                  debugPrint('📱 Token details: $payload');
                 }
               }
             } catch (tokenError) {
-              print('❌ Erreur récupération token: $tokenError');
+              debugPrint('❌ Erreur récupération token: $tokenError');
             }
           }
         }
       } catch (e) {
-        print('❌ Erreur test disponibilité: $e');
+        debugPrint('❌ Erreur test disponibilité: $e');
       }
 
-      print('\n💡 === RECOMMANDATIONS IOS ===');
-      print('📱 1. Vérifiez GoogleService-Info.plist dans Bundle Resources');
-      print('📱 2. Vérifiez URL Schemes dans Info.plist');
-      print('📱 3. Vérifiez serverClientId dans la configuration');
-      print('📱 4. Testez après nettoyage complet et redémarrage app');
-      print(
+      debugPrint('\n💡 === RECOMMANDATIONS IOS ===');
+      debugPrint('📱 1. Vérifiez GoogleService-Info.plist dans Bundle Resources');
+      debugPrint('📱 2. Vérifiez URL Schemes dans Info.plist');
+      debugPrint('📱 3. Vérifiez serverClientId dans la configuration');
+      debugPrint('📱 4. Testez après nettoyage complet et redémarrage app');
+      debugPrint(
         '📱 5. Vérifiez que Google app est installée ou autorisez web view',
       );
     } catch (e) {
-      print('❌ ERREUR DIAGNOSTIC IOS: $e');
+      debugPrint('❌ ERREUR DIAGNOSTIC IOS: $e');
     }
 
-    print('🔍 === FIN DIAGNOSTIC IOS ===');
+    debugPrint('🔍 === FIN DIAGNOSTIC IOS ===');
   }
 
   // Méthodes existantes inchangées...
@@ -832,7 +832,7 @@ class SSOService {
   }
 
   static Future<void> initialize() async {
-    print(
+    debugPrint(
       '✅ [SSOService] Services SSO initialisés (Google seulement pour Android)',
     );
   }

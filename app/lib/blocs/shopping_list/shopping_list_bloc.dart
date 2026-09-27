@@ -142,13 +142,13 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
 
       emit(ShoppingListLoaded(lists));
     } catch (e) {
-      print("Error loading shopping lists: $e");
+      debugPrint("Error loading shopping lists: $e");
 
       // ✅ Fallback: Charger depuis le cache si erreur réseau
       final cachedLists = await OfflineStorageService.getShoppingLists();
 
       if (cachedLists != null && cachedLists.isNotEmpty) {
-        print("📦 Loading ${cachedLists.length} shopping lists from cache (offline mode)");
+        debugPrint("📦 Loading ${cachedLists.length} shopping lists from cache (offline mode)");
         emit(ShoppingListLoaded(cachedLists));
         return;
       }
@@ -212,7 +212,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         add(LoadShoppingLists());
       }
     } catch (e) {
-      print("Error creating shopping list: $e");
+      debugPrint("Error creating shopping list: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -280,7 +280,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         emit(ShoppingListLoaded(updatedLists));
       }
     } catch (e) {
-      print("Error updating shopping list: $e");
+      debugPrint("Error updating shopping list: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -328,7 +328,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         emit(ShoppingListLoaded(updatedLists));
       }
     } catch (e) {
-      print("Error deleting shopping list: $e");
+      debugPrint("Error deleting shopping list: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(ShoppingListError(errorMessage));
     }
@@ -354,7 +354,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         emit(ShoppingListLoaded(updatedLists));
       }
     } catch (e) {
-      print("Error duplicating shopping list: $e");
+      debugPrint("Error duplicating shopping list: $e");
 
       // ✅ Si hors ligne, mettre en queue (note: duplication hors ligne complexe, on peut ignorer)
       final errorMessage = _getTranslatedErrorMessage(e);

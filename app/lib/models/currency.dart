@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // models/currency.dart - VERSION AVEC DEVISES PRÉDÉFINIES
 class Currency {
   final int id;
@@ -46,9 +47,9 @@ class Currency {
                 : DateTime.now(),
       );
     } catch (e, stackTrace) {
-      print('❌ Erreur parsing Currency: $e');
-      print('JSON reçu: $json');
-      print('Stack trace: $stackTrace');
+      debugPrint('❌ Erreur parsing Currency: $e');
+      debugPrint('JSON reçu: $json');
+      debugPrint('Stack trace: $stackTrace');
 
       // ✅ FALLBACK: Retourner une devise par défaut en cas d'erreur
       return Currency.cad;

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/offline_storage_service.dart
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,12 +38,12 @@ class OfflineStorageService {
     final cachedVersion = prefs.getString(_versionKey);
 
     if (cachedVersion != _version) {
-      print('🔄 [OfflineStorage] Version mismatch, clearing cache...');
+      debugPrint('🔄 [OfflineStorage] Version mismatch, clearing cache...');
       await clearAll();
       await prefs.setString(_versionKey, _version);
-      print('✅ [OfflineStorage] Cache initialized with version $_version');
+      debugPrint('✅ [OfflineStorage] Cache initialized with version $_version');
     } else {
-      print('✅ [OfflineStorage] Cache version OK: $_version');
+      debugPrint('✅ [OfflineStorage] Cache version OK: $_version');
     }
   }
 
@@ -80,10 +81,10 @@ class OfflineStorageService {
       await prefs.setString(_shoppingListsKey, encoded);
       await updateLastSync();
 
-      print('💾 [OfflineStorage] Saved ${lists.length} shopping lists');
+      debugPrint('💾 [OfflineStorage] Saved ${lists.length} shopping lists');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving shopping lists: $e');
+      debugPrint('❌ [OfflineStorage] Error saving shopping lists: $e');
       return false;
     }
   }
@@ -95,17 +96,17 @@ class OfflineStorageService {
       final encoded = prefs.getString(_shoppingListsKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached shopping lists');
+        debugPrint('ℹ️ [OfflineStorage] No cached shopping lists');
         return null;
       }
 
       final List<dynamic> jsonList = json.decode(encoded);
       final lists = jsonList.map((json) => ShoppingList.fromJson(json)).toList();
 
-      print('📦 [OfflineStorage] Loaded ${lists.length} shopping lists from cache');
+      debugPrint('📦 [OfflineStorage] Loaded ${lists.length} shopping lists from cache');
       return lists;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading shopping lists: $e');
+      debugPrint('❌ [OfflineStorage] Error loading shopping lists: $e');
       return null;
     }
   }
@@ -124,10 +125,10 @@ class OfflineStorageService {
       await prefs.setString(_budgetsKey, encoded);
       await updateLastSync();
 
-      print('💾 [OfflineStorage] Saved ${budgets.length} budgets');
+      debugPrint('💾 [OfflineStorage] Saved ${budgets.length} budgets');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving budgets: $e');
+      debugPrint('❌ [OfflineStorage] Error saving budgets: $e');
       return false;
     }
   }
@@ -139,17 +140,17 @@ class OfflineStorageService {
       final encoded = prefs.getString(_budgetsKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached budgets');
+        debugPrint('ℹ️ [OfflineStorage] No cached budgets');
         return null;
       }
 
       final List<dynamic> jsonList = json.decode(encoded);
       final budgets = jsonList.map((json) => Budget.fromJson(json)).toList();
 
-      print('📦 [OfflineStorage] Loaded ${budgets.length} budgets from cache');
+      debugPrint('📦 [OfflineStorage] Loaded ${budgets.length} budgets from cache');
       return budgets;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading budgets: $e');
+      debugPrint('❌ [OfflineStorage] Error loading budgets: $e');
       return null;
     }
   }
@@ -169,10 +170,10 @@ class OfflineStorageService {
       await prefs.setString(key, encoded);
       await updateLastSync();
 
-      print('💾 [OfflineStorage] Saved ${receipts.length} receipts for list $listId');
+      debugPrint('💾 [OfflineStorage] Saved ${receipts.length} receipts for list $listId');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving receipts: $e');
+      debugPrint('❌ [OfflineStorage] Error saving receipts: $e');
       return false;
     }
   }
@@ -185,17 +186,17 @@ class OfflineStorageService {
       final encoded = prefs.getString(key);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached receipts for list $listId');
+        debugPrint('ℹ️ [OfflineStorage] No cached receipts for list $listId');
         return null;
       }
 
       final List<dynamic> jsonList = json.decode(encoded);
       final receipts = jsonList.map((json) => Receipt.fromJson(json)).toList();
 
-      print('📦 [OfflineStorage] Loaded ${receipts.length} receipts from cache');
+      debugPrint('📦 [OfflineStorage] Loaded ${receipts.length} receipts from cache');
       return receipts;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading receipts: $e');
+      debugPrint('❌ [OfflineStorage] Error loading receipts: $e');
       return null;
     }
   }
@@ -211,10 +212,10 @@ class OfflineStorageService {
       final encoded = json.encode(profile);
 
       await prefs.setString(_userProfileKey, encoded);
-      print('💾 [OfflineStorage] Saved user profile');
+      debugPrint('💾 [OfflineStorage] Saved user profile');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving user profile: $e');
+      debugPrint('❌ [OfflineStorage] Error saving user profile: $e');
       return false;
     }
   }
@@ -226,15 +227,15 @@ class OfflineStorageService {
       final encoded = prefs.getString(_userProfileKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached user profile');
+        debugPrint('ℹ️ [OfflineStorage] No cached user profile');
         return null;
       }
 
       final profile = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded user profile from cache');
+      debugPrint('📦 [OfflineStorage] Loaded user profile from cache');
       return profile;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading user profile: $e');
+      debugPrint('❌ [OfflineStorage] Error loading user profile: $e');
       return null;
     }
   }
@@ -250,10 +251,10 @@ class OfflineStorageService {
       final encoded = json.encode(currency);
 
       await prefs.setString(_currencyKey, encoded);
-      print('💾 [OfflineStorage] Saved currency');
+      debugPrint('💾 [OfflineStorage] Saved currency');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving currency: $e');
+      debugPrint('❌ [OfflineStorage] Error saving currency: $e');
       return false;
     }
   }
@@ -265,15 +266,15 @@ class OfflineStorageService {
       final encoded = prefs.getString(_currencyKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached currency');
+        debugPrint('ℹ️ [OfflineStorage] No cached currency');
         return null;
       }
 
       final currency = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded currency from cache');
+      debugPrint('📦 [OfflineStorage] Loaded currency from cache');
       return currency;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading currency: $e');
+      debugPrint('❌ [OfflineStorage] Error loading currency: $e');
       return null;
     }
   }
@@ -289,10 +290,10 @@ class OfflineStorageService {
       final encoded = json.encode(categories);
 
       await prefs.setString(_categoriesKey, encoded);
-      print('💾 [OfflineStorage] Saved ${categories.length} categories');
+      debugPrint('💾 [OfflineStorage] Saved ${categories.length} categories');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving categories: $e');
+      debugPrint('❌ [OfflineStorage] Error saving categories: $e');
       return false;
     }
   }
@@ -304,17 +305,17 @@ class OfflineStorageService {
       final encoded = prefs.getString(_categoriesKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached categories');
+        debugPrint('ℹ️ [OfflineStorage] No cached categories');
         return null;
       }
 
       final List<dynamic> jsonList = json.decode(encoded);
       final categories = jsonList.cast<Map<String, dynamic>>();
 
-      print('📦 [OfflineStorage] Loaded ${categories.length} categories from cache');
+      debugPrint('📦 [OfflineStorage] Loaded ${categories.length} categories from cache');
       return categories;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading categories: $e');
+      debugPrint('❌ [OfflineStorage] Error loading categories: $e');
       return null;
     }
   }
@@ -332,10 +333,10 @@ class OfflineStorageService {
       await prefs.setString(_analyticsKey, encoded);
       await updateLastSync();
 
-      print('💾 [OfflineStorage] Saved analytics');
+      debugPrint('💾 [OfflineStorage] Saved analytics');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving analytics: $e');
+      debugPrint('❌ [OfflineStorage] Error saving analytics: $e');
       return false;
     }
   }
@@ -347,15 +348,15 @@ class OfflineStorageService {
       final encoded = prefs.getString(_analyticsKey);
 
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached analytics');
+        debugPrint('ℹ️ [OfflineStorage] No cached analytics');
         return null;
       }
 
       final analytics = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded analytics from cache');
+      debugPrint('📦 [OfflineStorage] Loaded analytics from cache');
       return analytics;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading analytics: $e');
+      debugPrint('❌ [OfflineStorage] Error loading analytics: $e');
       return null;
     }
   }
@@ -367,10 +368,10 @@ class OfflineStorageService {
       final encoded = json.encode(data);
       await prefs.setString(_analyticsMonthlyKey, encoded);
       await updateLastSync();
-      print('💾 [OfflineStorage] Saved analytics monthly');
+      debugPrint('💾 [OfflineStorage] Saved analytics monthly');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving analytics monthly: $e');
+      debugPrint('❌ [OfflineStorage] Error saving analytics monthly: $e');
       return false;
     }
   }
@@ -381,14 +382,14 @@ class OfflineStorageService {
       final prefs = await SharedPreferences.getInstance();
       final encoded = prefs.getString(_analyticsMonthlyKey);
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached analytics monthly');
+        debugPrint('ℹ️ [OfflineStorage] No cached analytics monthly');
         return null;
       }
       final data = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded analytics monthly from cache');
+      debugPrint('📦 [OfflineStorage] Loaded analytics monthly from cache');
       return data;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading analytics monthly: $e');
+      debugPrint('❌ [OfflineStorage] Error loading analytics monthly: $e');
       return null;
     }
   }
@@ -400,10 +401,10 @@ class OfflineStorageService {
       final encoded = json.encode(data);
       await prefs.setString(_analyticsCategoriesKey, encoded);
       await updateLastSync();
-      print('💾 [OfflineStorage] Saved analytics categories');
+      debugPrint('💾 [OfflineStorage] Saved analytics categories');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving analytics categories: $e');
+      debugPrint('❌ [OfflineStorage] Error saving analytics categories: $e');
       return false;
     }
   }
@@ -414,14 +415,14 @@ class OfflineStorageService {
       final prefs = await SharedPreferences.getInstance();
       final encoded = prefs.getString(_analyticsCategoriesKey);
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached analytics categories');
+        debugPrint('ℹ️ [OfflineStorage] No cached analytics categories');
         return null;
       }
       final data = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded analytics categories from cache');
+      debugPrint('📦 [OfflineStorage] Loaded analytics categories from cache');
       return data;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading analytics categories: $e');
+      debugPrint('❌ [OfflineStorage] Error loading analytics categories: $e');
       return null;
     }
   }
@@ -433,10 +434,10 @@ class OfflineStorageService {
       final encoded = json.encode(data);
       await prefs.setString(_analyticsTopProductsKey, encoded);
       await updateLastSync();
-      print('💾 [OfflineStorage] Saved analytics top products');
+      debugPrint('💾 [OfflineStorage] Saved analytics top products');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving analytics top products: $e');
+      debugPrint('❌ [OfflineStorage] Error saving analytics top products: $e');
       return false;
     }
   }
@@ -447,14 +448,14 @@ class OfflineStorageService {
       final prefs = await SharedPreferences.getInstance();
       final encoded = prefs.getString(_analyticsTopProductsKey);
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached analytics top products');
+        debugPrint('ℹ️ [OfflineStorage] No cached analytics top products');
         return null;
       }
       final data = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded analytics top products from cache');
+      debugPrint('📦 [OfflineStorage] Loaded analytics top products from cache');
       return data;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading analytics top products: $e');
+      debugPrint('❌ [OfflineStorage] Error loading analytics top products: $e');
       return null;
     }
   }
@@ -470,10 +471,10 @@ class OfflineStorageService {
       final encoded = json.encode(data);
       await prefs.setString(_emailPreferencesKey, encoded);
       await updateLastSync();
-      print('💾 [OfflineStorage] Saved email preferences');
+      debugPrint('💾 [OfflineStorage] Saved email preferences');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving email preferences: $e');
+      debugPrint('❌ [OfflineStorage] Error saving email preferences: $e');
       return false;
     }
   }
@@ -484,14 +485,14 @@ class OfflineStorageService {
       final prefs = await SharedPreferences.getInstance();
       final encoded = prefs.getString(_emailPreferencesKey);
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached email preferences');
+        debugPrint('ℹ️ [OfflineStorage] No cached email preferences');
         return null;
       }
       final data = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded email preferences from cache');
+      debugPrint('📦 [OfflineStorage] Loaded email preferences from cache');
       return data;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading email preferences: $e');
+      debugPrint('❌ [OfflineStorage] Error loading email preferences: $e');
       return null;
     }
   }
@@ -507,10 +508,10 @@ class OfflineStorageService {
       final encoded = json.encode(data);
       await prefs.setString(_feedbackTypesKey, encoded);
       await updateLastSync();
-      print('💾 [OfflineStorage] Saved feedback types');
+      debugPrint('💾 [OfflineStorage] Saved feedback types');
       return true;
     } catch (e) {
-      print('❌ [OfflineStorage] Error saving feedback types: $e');
+      debugPrint('❌ [OfflineStorage] Error saving feedback types: $e');
       return false;
     }
   }
@@ -521,14 +522,14 @@ class OfflineStorageService {
       final prefs = await SharedPreferences.getInstance();
       final encoded = prefs.getString(_feedbackTypesKey);
       if (encoded == null || encoded.isEmpty) {
-        print('ℹ️ [OfflineStorage] No cached feedback types');
+        debugPrint('ℹ️ [OfflineStorage] No cached feedback types');
         return null;
       }
       final data = json.decode(encoded) as Map<String, dynamic>;
-      print('📦 [OfflineStorage] Loaded feedback types from cache');
+      debugPrint('📦 [OfflineStorage] Loaded feedback types from cache');
       return data;
     } catch (e) {
-      print('❌ [OfflineStorage] Error loading feedback types: $e');
+      debugPrint('❌ [OfflineStorage] Error loading feedback types: $e');
       return null;
     }
   }
@@ -570,9 +571,9 @@ class OfflineStorageService {
         await prefs.remove(key);
       }
 
-      print('🧹 [OfflineStorage] Cache cleared (${keysToRemove.length} keys)');
+      debugPrint('🧹 [OfflineStorage] Cache cleared (${keysToRemove.length} keys)');
     } catch (e) {
-      print('❌ [OfflineStorage] Error clearing cache: $e');
+      debugPrint('❌ [OfflineStorage] Error clearing cache: $e');
     }
   }
 
@@ -580,7 +581,7 @@ class OfflineStorageService {
   static Future<void> clearExpiredCache() async {
     final isValid = await isCacheValid();
     if (!isValid) {
-      print('🗑️ [OfflineStorage] Cache expired, clearing...');
+      debugPrint('🗑️ [OfflineStorage] Cache expired, clearing...');
       await clearAll();
     }
   }

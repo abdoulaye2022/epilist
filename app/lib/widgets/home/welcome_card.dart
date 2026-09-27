@@ -36,7 +36,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
         });
       }
     } catch (e) {
-      print('Erreur lors du chargement de l\'état WelcomeCard: $e');
+      debugPrint('Erreur lors du chargement de l\'état WelcomeCard: $e');
       if (mounted) {
         setState(() {
           _isDismissed = false;
@@ -58,7 +58,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
         });
       }
     } catch (e) {
-      print('Erreur lors de la sauvegarde de l\'état WelcomeCard: $e');
+      debugPrint('Erreur lors de la sauvegarde de l\'état WelcomeCard: $e');
     }
   }
 
@@ -68,7 +68,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_welcomeCardDismissedKey);
     } catch (e) {
-      print('Erreur lors de la réinitialisation WelcomeCard: $e');
+      debugPrint('Erreur lors de la réinitialisation WelcomeCard: $e');
     }
   }
 

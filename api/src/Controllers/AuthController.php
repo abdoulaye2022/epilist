@@ -1248,10 +1248,28 @@ class AuthController
                 ->withStatus(400);
         }
 
+        // 🔒 ANTI-BRUTE-FORCE : limites par IP et par compte sur les échecs
+        $ipAddress = $this->getClientIP($request);
+        $loginEmailKey = md5(strtolower($data['email']));
+
+        if ($this->rateLimiter->isIPBlocked($ipAddress)
+            || !$this->rateLimiter->checkIPLimit('login', $ipAddress)
+            || !$this->rateLimiter->checkEmailLimit('login', $data['email'])) {
+            $retryAfter = $this->rateLimiter->getRetryAfter('login', $ipAddress);
+            return $this->createErrorResponse(
+                'Too many login attempts. Please try again later.',
+                429,
+                'RATE_LIMIT_EXCEEDED',
+                ['retry_after' => $retryAfter]
+            );
+        }
+
         try {
             $user = User::with('currency')->where('email', $data['email'])->first();
-            
+
             if (!$user) {
+                $this->rateLimiter->recordAttempt('login', $ipAddress);
+                $this->rateLimiter->recordAttempt('login_email', $loginEmailKey);
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'code' => 'INVALID_CREDENTIALS',
@@ -1262,7 +1280,9 @@ class AuthController
                     ->withStatus(401);
             }
 
-            if (!password_verify($data['password'], $user->password_hash)) {
+            if ($user->password_hash === null || !password_verify($data['password'], $user->password_hash)) {
+                $this->rateLimiter->recordAttempt('login', $ipAddress);
+                $this->rateLimiter->recordAttempt('login_email', $loginEmailKey);
                 $response->getBody()->write(json_encode([
                     'success' => false,
                     'code' => 'INVALID_CREDENTIALS',
@@ -1272,6 +1292,10 @@ class AuthController
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus(401);
             }
+
+            // Succès : remettre les compteurs à zéro
+            $this->rateLimiter->resetAttempts('login', $ipAddress);
+            $this->rateLimiter->resetAttempts('login_email', $loginEmailKey);
 
             if (!$user->isEmailVerified()) {
                 $response->getBody()->write(json_encode([
@@ -1560,7 +1584,7 @@ class AuthController
             }
 
             // Générer un code de confirmation
-            $confirmationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $confirmationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(24);
 
             $user->update([
@@ -2117,7 +2141,7 @@ class AuthController
             error_log("🌍 [AuthController] Inscription avec langue: {$language}");
 
             // Générer le code de vérification
-            $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
             // Créer l'utilisateur
@@ -2283,7 +2307,8 @@ class AuthController
                 );
             }
 
-            if ($user->email_verification_code !== $data['code']) {
+            $storedVerificationCode = (string)($user->email_verification_code ?? '');
+            if ($storedVerificationCode === '' || !hash_equals($storedVerificationCode, (string)$data['code'])) {
                 // 🔒 Enregistrer tentative échouée
                 $this->rateLimiter->recordAttempt('verification_code', $ipAddress);
 
@@ -2385,7 +2410,7 @@ class AuthController
                 return $this->createErrorResponse('Email already verified', 400);
             }
 
-            $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
             $user->email_verification_code = $verificationCode;
@@ -2482,7 +2507,7 @@ class AuthController
                 return $this->createErrorResponse('If this email exists, a password change code has been sent.', 200);
             }
 
-            $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+            $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
             // 🌍 Déterminer la langue (depuis la requête, l'utilisateur ou défaut)
@@ -2535,6 +2560,28 @@ class AuthController
     {
         $data = $request->getParsedBody();
 
+        // 🔒 ANTI-BRUTE-FORCE : un code à 6 chiffres se devine en quelques
+        // milliers d'essais sans limite. Limites par IP ET par email.
+        $ipAddress = $this->getClientIP($request);
+
+        if ($this->rateLimiter->isIPBlocked($ipAddress)) {
+            return $this->createErrorResponse(
+                'Trop de tentatives. Votre IP a été temporairement bloquée.',
+                429,
+                'IP_BLOCKED'
+            );
+        }
+
+        if (!$this->rateLimiter->checkIPLimit('password_change_code', $ipAddress)) {
+            $retryAfter = $this->rateLimiter->getRetryAfter('password_change_code', $ipAddress);
+            return $this->createErrorResponse(
+                'Trop de tentatives. Veuillez réessayer dans ' . ceil($retryAfter / 60) . ' minutes.',
+                429,
+                'RATE_LIMIT_EXCEEDED',
+                ['retry_after' => $retryAfter]
+            );
+        }
+
         $validator = new Validator($data);
         $validator->rule('required', ['email', 'code', 'new_password'])
             ->message('{field} is required');
@@ -2556,9 +2603,12 @@ class AuthController
         }
 
         try {
+            $emailKey = md5(strtolower($data['email']));
             $user = User::findByEmail($data['email']);
-            
+
             if (!$user) {
+                // Compter aussi les essais sur des emails inexistants
+                $this->rateLimiter->recordAttempt('password_change_code', $ipAddress);
                 return $this->createErrorResponse(
                     'User not found',
                     404,
@@ -2566,7 +2616,26 @@ class AuthController
                 );
             }
 
-            if ($user->password_change_code !== $data['code']) {
+            // Limite par email : au-delà, le code est invalidé et il faut en
+            // redemander un — un attaquant ne peut pas épuiser les 10^6 codes.
+            if (!$this->rateLimiter->checkEmailLimit('password_change_code', $data['email'])) {
+                if ($user->password_change_code !== null) {
+                    $user->password_change_code = null;
+                    $user->password_change_code_expires_at = null;
+                    $user->save();
+                    error_log("🚫 [AuthController] Code de changement invalidé après trop d'essais");
+                }
+                return $this->createErrorResponse(
+                    'Too many attempts. Please request a new code.',
+                    429,
+                    'RATE_LIMIT_EXCEEDED'
+                );
+            }
+
+            $storedCode = (string)($user->password_change_code ?? '');
+            if ($storedCode === '' || !hash_equals($storedCode, (string)$data['code'])) {
+                $this->rateLimiter->recordAttempt('password_change_code', $ipAddress);
+                $this->rateLimiter->recordAttempt('password_change_code_email', $emailKey);
                 return $this->createErrorResponse(
                     'Invalid verification code',
                     400,
@@ -2594,6 +2663,10 @@ class AuthController
             $user->password_change_code = null;
             $user->password_change_code_expires_at = null;
             $user->save();
+
+            // Succès : remettre les compteurs à zéro
+            $this->rateLimiter->resetAttempts('password_change_code', $ipAddress);
+            $this->rateLimiter->resetAttempts('password_change_code_email', $emailKey);
 
             // 🌍 Envoyer l'email de confirmation de changement de mot de passe
             try {

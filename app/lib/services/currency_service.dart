@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/currency_service.dart - VERSION AVEC DEVISES PRÉDÉFINIES
 import 'package:dio/dio.dart';
 import 'package:epilist/models/currency.dart';
@@ -13,19 +14,19 @@ class CurrencyService {
   /// ✅ NOUVEAU: Obtenir toutes les devises prédéfinies (pas d'appel réseau)
   Future<List<Currency>> getAllCurrencies({bool popularOnly = false}) async {
     try {
-      print('🔄 Utilisation des devises prédéfinies (pas d\'appel API)');
+      debugPrint('🔄 Utilisation des devises prédéfinies (pas d\'appel API)');
 
       if (popularOnly) {
         final popularCurrencies = Currency.getPopular();
-        print('✅ ${popularCurrencies.length} devises populaires chargées');
+        debugPrint('✅ ${popularCurrencies.length} devises populaires chargées');
         return popularCurrencies;
       } else {
         final allCurrencies = Currency.getActive();
-        print('✅ ${allCurrencies.length} devises actives chargées');
+        debugPrint('✅ ${allCurrencies.length} devises actives chargées');
         return allCurrencies;
       }
     } catch (e) {
-      print('❌ Erreur lors de la récupération des devises prédéfinies: $e');
+      debugPrint('❌ Erreur lors de la récupération des devises prédéfinies: $e');
       // Fallback avec les devises de base
       return [Currency.cad, Currency.usd, Currency.eur, Currency.gbp];
     }
@@ -34,12 +35,12 @@ class CurrencyService {
   /// ✅ NOUVEAU: Obtenir les devises populaires prédéfinies
   Future<List<Currency>> getPopularCurrencies() async {
     try {
-      print('🔄 Récupération des devises populaires prédéfinies');
+      debugPrint('🔄 Récupération des devises populaires prédéfinies');
       final popularCurrencies = Currency.getPopular();
-      print('✅ ${popularCurrencies.length} devises populaires disponibles');
+      debugPrint('✅ ${popularCurrencies.length} devises populaires disponibles');
       return popularCurrencies;
     } catch (e) {
-      print('❌ Erreur lors de la récupération des devises populaires: $e');
+      debugPrint('❌ Erreur lors de la récupération des devises populaires: $e');
       return [Currency.cad, Currency.usd, Currency.eur, Currency.gbp];
     }
   }
@@ -47,7 +48,7 @@ class CurrencyService {
   /// ✅ NOUVEAU: Obtenir une devise par ID ou code (prédéfinie)
   Future<Currency> getCurrency(String idOrCode) async {
     try {
-      print('🔍 Recherche de la devise: $idOrCode');
+      debugPrint('🔍 Recherche de la devise: $idOrCode');
 
       Currency? currency;
 
@@ -56,7 +57,7 @@ class CurrencyService {
         final id = int.parse(idOrCode);
         currency = Currency.findById(id);
         if (currency != null) {
-          print('✅ Devise trouvée par ID: ${currency.code}');
+          debugPrint('✅ Devise trouvée par ID: ${currency.code}');
           return currency;
         }
       }
@@ -64,13 +65,13 @@ class CurrencyService {
       // Essayer par code
       currency = Currency.findByCode(idOrCode);
       if (currency != null) {
-        print('✅ Devise trouvée par code: ${currency.code}');
+        debugPrint('✅ Devise trouvée par code: ${currency.code}');
         return currency;
       }
 
       throw Exception('Devise non trouvée: $idOrCode');
     } catch (e) {
-      print('❌ Erreur lors de la recherche de devise: $e');
+      debugPrint('❌ Erreur lors de la recherche de devise: $e');
       throw Exception('Devise non trouvée');
     }
   }
@@ -83,14 +84,14 @@ class CurrencyService {
         throw Exception('Token d\'authentification manquant');
       }
 
-      print('🔄 Récupération de la devise utilisateur depuis l\'API...');
+      debugPrint('🔄 Récupération de la devise utilisateur depuis l\'API...');
       final response = await dio.get(
         '/user/currency',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        print('✅ Réponse API reçue pour la devise utilisateur');
+        debugPrint('✅ Réponse API reçue pour la devise utilisateur');
         return UserCurrency.fromJson(response.data);
       } else {
         throw Exception(
@@ -98,7 +99,7 @@ class CurrencyService {
         );
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ Erreur réseau lors de la récupération de la devise utilisateur: ${e.message}',
       );
       if (e.response?.statusCode == 401) {
@@ -106,7 +107,7 @@ class CurrencyService {
       }
       throw Exception('Erreur réseau: ${e.message}');
     } catch (e) {
-      print(
+      debugPrint(
         '❌ Erreur inattendue lors de la récupération de la devise utilisateur: $e',
       );
       throw Exception('Erreur inattendue: $e');
@@ -121,7 +122,7 @@ class CurrencyService {
         throw Exception('Token d\'authentification manquant');
       }
 
-      print('🔄 Mise à jour de la devise utilisateur vers ID: $currencyId');
+      debugPrint('🔄 Mise à jour de la devise utilisateur vers ID: $currencyId');
 
       final response = await dio.put(
         '/user/currency',
@@ -130,7 +131,7 @@ class CurrencyService {
       );
 
       if (response.statusCode == 200 && response.data['success'] == true) {
-        print('✅ Devise utilisateur mise à jour avec succès');
+        debugPrint('✅ Devise utilisateur mise à jour avec succès');
         // Récupérer la devise mise à jour
         return await getUserCurrency();
       } else {
@@ -139,7 +140,7 @@ class CurrencyService {
         );
       }
     } on DioException catch (e) {
-      print('❌ Erreur lors de la mise à jour de la devise: ${e.message}');
+      debugPrint('❌ Erreur lors de la mise à jour de la devise: ${e.message}');
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
         if (errorData != null && errorData['error'] != null) {
@@ -157,7 +158,7 @@ class CurrencyService {
       }
       throw Exception('Erreur réseau: ${e.message}');
     } catch (e) {
-      print('❌ Erreur inattendue lors de la mise à jour: $e');
+      debugPrint('❌ Erreur inattendue lors de la mise à jour: $e');
       throw Exception('Erreur inattendue: $e');
     }
   }
@@ -233,27 +234,27 @@ class CurrencyService {
         _cachedCurrencies == null ||
         _cacheTime == null ||
         now.difference(_cacheTime!).compareTo(_cacheValidDuration) > 0) {
-      print('🔄 Mise à jour du cache des devises');
+      debugPrint('🔄 Mise à jour du cache des devises');
       try {
         final currencies = await getAllCurrencies();
         _cachedCurrencies = currencies;
         _cacheTime = now;
-        print('✅ Cache mis à jour avec ${currencies.length} devises');
+        debugPrint('✅ Cache mis à jour avec ${currencies.length} devises');
         return currencies;
       } catch (e) {
-        print('❌ Erreur lors de la mise à jour du cache: $e');
+        debugPrint('❌ Erreur lors de la mise à jour du cache: $e');
         // Retourner le cache même expiré en cas d'erreur
         if (_cachedCurrencies != null) {
-          print('🔄 Utilisation du cache expiré');
+          debugPrint('🔄 Utilisation du cache expiré');
           return _cachedCurrencies!;
         }
         // Fallback avec les devises prédéfinies de base
-        print('🔄 Fallback vers les devises de base');
+        debugPrint('🔄 Fallback vers les devises de base');
         return [Currency.cad, Currency.usd, Currency.eur, Currency.gbp];
       }
     }
 
-    print(
+    debugPrint(
       '✅ Utilisation du cache existant (${_cachedCurrencies!.length} devises)',
     );
     return _cachedCurrencies!;
@@ -261,7 +262,7 @@ class CurrencyService {
 
   /// Vider le cache des devises
   void clearCache() {
-    print('🗑️ Vidage du cache des devises');
+    debugPrint('🗑️ Vidage du cache des devises');
     _cachedCurrencies = null;
     _cacheTime = null;
   }
@@ -274,7 +275,7 @@ class CurrencyService {
         (currency) => currency.code.toUpperCase() == code.toUpperCase(),
       );
     } catch (e) {
-      print('❌ Devise non trouvée dans le cache: $code');
+      debugPrint('❌ Devise non trouvée dans le cache: $code');
       return Currency.findByCode(code); // Fallback vers les devises prédéfinies
     }
   }
@@ -282,12 +283,12 @@ class CurrencyService {
   /// ✅ NOUVEAU: Initialiser le cache avec les devises prédéfinies
   Future<void> initializeCache() async {
     try {
-      print('🚀 Initialisation du cache des devises avec devises prédéfinies');
+      debugPrint('🚀 Initialisation du cache des devises avec devises prédéfinies');
       _cachedCurrencies = Currency.getActive();
       _cacheTime = DateTime.now();
-      print('✅ Cache initialisé avec ${_cachedCurrencies!.length} devises');
+      debugPrint('✅ Cache initialisé avec ${_cachedCurrencies!.length} devises');
     } catch (e) {
-      print('❌ Erreur lors de l\'initialisation du cache: $e');
+      debugPrint('❌ Erreur lors de l\'initialisation du cache: $e');
     }
   }
 }

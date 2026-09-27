@@ -7,6 +7,19 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+  errors:
+    # print() s'exécute en release et fuit dans `adb logcat` : interdit.
+    # Utiliser debugPrint (neutralisé en release dans main.dart).
+    avoid_print: error
 include: package:flutter_lints/flutter.yaml
 
 linter:

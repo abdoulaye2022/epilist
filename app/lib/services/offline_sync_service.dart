@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/offline_sync_service.dart
 import 'dart:async';
 import 'dart:convert';
@@ -58,25 +59,25 @@ class OfflineSyncService {
     _connectivitySubscription = _connectivityService.connectivityStream.listen(
       (isConnected) async {
         if (isConnected && !_isSyncing) {
-          print('📡 [OfflineSync] Connexion rétablie, démarrage de la synchronisation...');
+          debugPrint('📡 [OfflineSync] Connexion rétablie, démarrage de la synchronisation...');
           await syncPendingActions();
         }
       },
     );
 
     _isInitialized = true;
-    print('✅ [OfflineSync] Service de synchronisation initialisé');
+    debugPrint('✅ [OfflineSync] Service de synchronisation initialisé');
   }
 
   /// Synchronise toutes les actions en attente
   Future<void> syncPendingActions() async {
     if (_isSyncing) {
-      print('⏳ [OfflineSync] Synchronisation déjà en cours...');
+      debugPrint('⏳ [OfflineSync] Synchronisation déjà en cours...');
       return;
     }
 
     if (!_connectivityService.isConnected) {
-      print('📵 [OfflineSync] Pas de connexion, synchronisation annulée');
+      debugPrint('📵 [OfflineSync] Pas de connexion, synchronisation annulée');
       return;
     }
 
@@ -87,12 +88,12 @@ class OfflineSyncService {
       final pendingActions = await OfflineQueueService.getPendingActions();
 
       if (pendingActions.isEmpty) {
-        print('✅ [OfflineSync] Aucune action en attente');
+        debugPrint('✅ [OfflineSync] Aucune action en attente');
         _syncStatusController.add(SyncStatus.idle);
         return;
       }
 
-      print('🔄 [OfflineSync] ${pendingActions.length} actions à synchroniser');
+      debugPrint('🔄 [OfflineSync] ${pendingActions.length} actions à synchroniser');
 
       int successCount = 0;
       int failureCount = 0;
@@ -125,7 +126,7 @@ class OfflineSyncService {
             failureCount++;
           }
         } catch (e) {
-          print('❌ [OfflineSync] Erreur sync action ${action['action_type']}: $e');
+          debugPrint('❌ [OfflineSync] Erreur sync action ${action['action_type']}: $e');
           await OfflineQueueService.markAsFailed(
             action['id'] as String,
             e.toString(),
@@ -137,12 +138,12 @@ class OfflineSyncService {
         await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      print('✅ [OfflineSync] Synchronisation terminée: $successCount succès, $failureCount échecs');
+      debugPrint('✅ [OfflineSync] Synchronisation terminée: $successCount succès, $failureCount échecs');
       _syncStatusController.add(
         failureCount > 0 ? SyncStatus.partiallyFailed : SyncStatus.success,
       );
     } catch (e) {
-      print('❌ [OfflineSync] Erreur lors de la synchronisation: $e');
+      debugPrint('❌ [OfflineSync] Erreur lors de la synchronisation: $e');
       _syncStatusController.add(SyncStatus.failed);
     } finally {
       _isSyncing = false;
@@ -154,7 +155,7 @@ class OfflineSyncService {
     final type = action['action_type'] as String;
     final payload = action['payload'] as Map<String, dynamic>;
 
-    print('🔄 [OfflineSync] Synchronisation de: $type');
+    debugPrint('🔄 [OfflineSync] Synchronisation de: $type');
 
     try {
       switch (type) {
@@ -254,13 +255,13 @@ class OfflineSyncService {
         case OfflineQueueService.ACTION_CREATE_BUDGET:
           // Note: Budget creation requires more data than stored in queue
           // This is a simplified version - consider storing full budget data
-          print('⚠️ [OfflineSync] Budget creation from queue requires full data');
+          debugPrint('⚠️ [OfflineSync] Budget creation from queue requires full data');
           return false;
 
         case OfflineQueueService.ACTION_UPDATE_BUDGET:
           // Note: Budget update requires UpdateBudgetRequest
           // This is a simplified version - consider storing full budget data
-          print('⚠️ [OfflineSync] Budget update from queue requires full data');
+          debugPrint('⚠️ [OfflineSync] Budget update from queue requires full data');
           return false;
 
         case OfflineQueueService.ACTION_DELETE_BUDGET:
@@ -269,7 +270,7 @@ class OfflineSyncService {
 
         // User Profile - TODO: Implémenter quand UserService sera disponible
         case OfflineQueueService.ACTION_UPDATE_PROFILE:
-          print('⚠️ [OfflineSync] ACTION_UPDATE_PROFILE not yet implemented');
+          debugPrint('⚠️ [OfflineSync] ACTION_UPDATE_PROFILE not yet implemented');
           return true; // Ignorer pour l'instant
 
         // Email Preferences
@@ -322,11 +323,11 @@ class OfflineSyncService {
           return false;
 
         default:
-          print('⚠️ [OfflineSync] Type d\'action inconnu: $type');
+          debugPrint('⚠️ [OfflineSync] Type d\'action inconnu: $type');
           return false;
       }
     } catch (e) {
-      print('❌ [OfflineSync] Erreur sync $type: $e');
+      debugPrint('❌ [OfflineSync] Erreur sync $type: $e');
       return false;
     }
   }
@@ -337,7 +338,7 @@ class OfflineSyncService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString('access_token');
     } catch (e) {
-      print('❌ [OfflineSync] Error getting token: $e');
+      debugPrint('❌ [OfflineSync] Error getting token: $e');
       return null;
     }
   }
@@ -355,14 +356,14 @@ class OfflineSyncService {
         localId: localId,
       );
 
-      print('📝 [OfflineSync] Action mise en queue: $type');
+      debugPrint('📝 [OfflineSync] Action mise en queue: $type');
 
       // Tenter la synchronisation immédiatement si connecté
       if (_connectivityService.isConnected && !_isSyncing) {
         await syncPendingActions();
       }
     } catch (e) {
-      print('❌ [OfflineSync] Erreur mise en queue: $e');
+      debugPrint('❌ [OfflineSync] Erreur mise en queue: $e');
     }
   }
 
@@ -379,12 +380,12 @@ class OfflineSyncService {
   /// Efface toutes les actions en attente
   Future<void> clearPendingActions() async {
     await OfflineQueueService.clearQueue();
-    print('🗑️ [OfflineSync] Actions en attente effacées');
+    debugPrint('🗑️ [OfflineSync] Actions en attente effacées');
   }
 
   /// Force la synchronisation manuelle
   Future<void> forceSyncNow() async {
-    print('🔄 [OfflineSync] Synchronisation forcée...');
+    debugPrint('🔄 [OfflineSync] Synchronisation forcée...');
     await syncPendingActions();
   }
 
@@ -403,7 +404,7 @@ class OfflineSyncService {
     _connectivitySubscription?.cancel();
     _syncStatusController.close();
     _isInitialized = false;
-    print('👋 [OfflineSync] Service de synchronisation fermé');
+    debugPrint('👋 [OfflineSync] Service de synchronisation fermé');
   }
 }
 

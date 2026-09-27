@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // blocs/localization/localization_bloc.dart
 import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,40 +67,40 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       if (savedLanguage != null) {
         // Utiliser la langue sauvegardée (préférence de l'utilisateur)
         locale = Locale(savedLanguage);
-        print('🌍 [Localisation] Langue sauvegardée trouvée: $savedLanguage');
+        debugPrint('🌍 [Localisation] Langue sauvegardée trouvée: $savedLanguage');
       } else {
         // 🔍 PREMIER LANCEMENT: Détecter automatiquement la langue du système
         final systemLocale = PlatformDispatcher.instance.locale;
         final systemLanguage = systemLocale.languageCode;
 
-        print('🔍 [Localisation] Premier lancement - détection langue système');
-        print('🌍 [Localisation] Langue système détectée: $systemLanguage');
+        debugPrint('🔍 [Localisation] Premier lancement - détection langue système');
+        debugPrint('🌍 [Localisation] Langue système détectée: $systemLanguage');
 
         // Vérifier si la langue du système est supportée (fr ou en)
         if (['fr', 'en'].contains(systemLanguage)) {
           locale = Locale(systemLanguage);
-          print('✅ [Localisation] Langue système supportée - utilisation de: $systemLanguage');
+          debugPrint('✅ [Localisation] Langue système supportée - utilisation de: $systemLanguage');
         } else {
           // Par défaut: français si langue non supportée
           locale = const Locale('fr');
-          print(
+          debugPrint(
             '⚠️  [Localisation] Langue système non supportée ($systemLanguage)',
           );
-          print('✅ [Localisation] Utilisation du français par défaut');
+          debugPrint('✅ [Localisation] Utilisation du français par défaut');
         }
 
         // Sauvegarder cette langue comme préférence initiale
         await sharedPreferences.setString(_languageKey, locale.languageCode);
-        print('💾 [Localisation] Langue sauvegardée: ${locale.languageCode}');
+        debugPrint('💾 [Localisation] Langue sauvegardée: ${locale.languageCode}');
       }
 
       emit(LocalizationLoaded(locale));
-      print('✅ [Localisation] Langue chargée avec succès: ${locale.languageCode}');
+      debugPrint('✅ [Localisation] Langue chargée avec succès: ${locale.languageCode}');
     } catch (e) {
-      print('❌ [Localisation] Erreur lors du chargement de la langue: $e');
+      debugPrint('❌ [Localisation] Erreur lors du chargement de la langue: $e');
       // En cas d'erreur, utiliser le français par défaut
       emit(const LocalizationLoaded(Locale('fr')));
-      print('✅ [Localisation] Utilisation du français par défaut (fallback)');
+      debugPrint('✅ [Localisation] Utilisation du français par défaut (fallback)');
     }
   }
 
@@ -108,24 +109,24 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
     Emitter<LocalizationState> emit,
   ) async {
     try {
-      print('🔄 [Localisation] Changement de langue demandé: ${event.languageCode}');
+      debugPrint('🔄 [Localisation] Changement de langue demandé: ${event.languageCode}');
 
       // Vérifier que la langue est supportée
       if (!['fr', 'en'].contains(event.languageCode)) {
-        print('❌ [Localisation] Langue non supportée: ${event.languageCode}');
+        debugPrint('❌ [Localisation] Langue non supportée: ${event.languageCode}');
         return;
       }
 
       // Sauvegarder la nouvelle langue
       await sharedPreferences.setString(_languageKey, event.languageCode);
-      print('💾 [Localisation] Langue sauvegardée: ${event.languageCode}');
+      debugPrint('💾 [Localisation] Langue sauvegardée: ${event.languageCode}');
 
       // Émettre le nouvel état
       emit(LocalizationLoaded(Locale(event.languageCode)));
 
-      print('✅ [Localisation] Langue changée avec succès pour: ${event.languageCode}');
+      debugPrint('✅ [Localisation] Langue changée avec succès pour: ${event.languageCode}');
     } catch (e) {
-      print('❌ [Localisation] Erreur lors du changement de langue: $e');
+      debugPrint('❌ [Localisation] Erreur lors du changement de langue: $e');
       // En cas d'erreur, garder la langue actuelle
       if (state is LocalizationLoaded) {
         emit(state as LocalizationLoaded);

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/chat_service.dart
 import 'package:dio/dio.dart';
 import 'package:epilist/models/list_message.dart';
@@ -112,7 +113,7 @@ class ChatService {
       }
     } on DioException catch (e) {
       // Silently fail for read receipts - not critical
-      print('Failed to mark message as read: ${e.message}');
+      debugPrint('Failed to mark message as read: ${e.message}');
     }
   }
 
@@ -147,7 +148,7 @@ class ChatService {
         return 0;
       }
     } on DioException catch (e) {
-      print('Failed to get unread count: ${e.message}');
+      debugPrint('Failed to get unread count: ${e.message}');
       return 0;
     }
   }
@@ -165,7 +166,7 @@ class ChatService {
       // Filter messages newer than 'since'
       return messages.where((m) => m.createdAt.isAfter(since)).toList();
     } catch (e) {
-      print('Failed to poll new messages: $e');
+      debugPrint('Failed to poll new messages: $e');
       return [];
     }
   }

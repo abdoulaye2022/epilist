@@ -27,6 +27,7 @@ use App\Controllers\{
 };
 use App\Middleware\ErrorMiddleware;
 use App\Middleware\JwtMiddleware;
+use App\Middleware\AdminMiddleware;
 use App\Middleware\CorsMiddleware;
 use App\Config\Database;
 use App\Services\JwtService;
@@ -149,7 +150,8 @@ $app->get('/test-json', function ($request, $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->get('/test-auth-header', [AuthController::class, 'debugAuth']);
+// Route /test-auth-header supprimée : elle renvoyait tous les headers recus
+// (dont Authorization) a n'importe qui, sans authentification.
 
 //  ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
 $app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
@@ -273,22 +275,18 @@ $app->group('', function ($group) {
     $group->put('/devices/notifications', [DeviceController::class, 'updateNotificationPreferences']);
     $group->post('/devices/deactivate', [DeviceController::class, 'deactivate']);
 
-    //  NOUVELLES ROUTES POUR VRAIES NOTIFICATIONS
-    $group->put('/devices/real-token', [DeviceController::class, 'updateWithRealToken']);
-    $group->get('/devices/analyze', [DeviceController::class, 'analyzeDeviceTokens']);
-    $group->post('/devices/test-advanced', [DeviceController::class, 'testAdvancedNotification']);
+    // Routes retirées (handlers inexistants dans DeviceController -> 500) :
+    // /devices/real-token, /devices/analyze, /devices/test-advanced, /devices/debug
 
     //  ROUTES DE TEST DE NOTIFICATIONS
     $group->post('/devices/test-notification', [DeviceController::class, 'testNotification']);
     $group->post('/devices/test-user-notifications', [DeviceController::class, 'testNotificationToUser']);
 
-    //  ROUTE DE DEBUG
-    $group->get('/devices/debug', [DeviceController::class, 'debugDevices']);
-
-    //  ROUTES POUR LES CAMPAGNES MARKETING
-    $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign']);
-    $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats']);
-    $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail']);
+    //  ROUTES POUR LES CAMPAGNES MARKETING — réservées aux admins
+    //  (users.role = 'admin', voir migrations/add_role_to_users.sql)
+    $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign'])->add(new AdminMiddleware());
+    $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats'])->add(new AdminMiddleware());
+    $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail'])->add(new AdminMiddleware());
 
     // 📧 ROUTES DE PRÉFÉRENCES D'EMAIL
     $group->get('/user/email-preferences', [EmailPreferenceController::class, 'getPreferences']);

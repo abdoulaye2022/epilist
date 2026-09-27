@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/conflict_resolution_service.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,14 +51,14 @@ class ConflictResolutionService {
       final serverTimestamp = _parseTimestamp(serverData['updated_at']);
 
       if (localTimestamp == null || serverTimestamp == null) {
-        print('⚠️ [ConflictResolution] Missing timestamps, assuming no conflict');
+        debugPrint('⚠️ [ConflictResolution] Missing timestamps, assuming no conflict');
         return null;
       }
 
       // Si le serveur est plus récent et les données sont différentes
       if (serverTimestamp.isAfter(localTimestamp)) {
         if (!_areDataEqual(localData, serverData)) {
-          print(
+          debugPrint(
             '⚠️ [ConflictResolution] Conflict detected for $entityType:$entityId',
           );
 
@@ -78,7 +79,7 @@ class ConflictResolutionService {
 
       return null;
     } catch (e) {
-      print('❌ [ConflictResolution] Error detecting conflict: $e');
+      debugPrint('❌ [ConflictResolution] Error detecting conflict: $e');
       return null;
     }
   }
@@ -92,7 +93,7 @@ class ConflictResolutionService {
       final resolvedStrategy =
           strategy ?? await _getResolutionStrategy();
 
-      print(
+      debugPrint(
         '🔧 [ConflictResolution] Resolving conflict with strategy: $resolvedStrategy',
       );
 
@@ -101,28 +102,28 @@ class ConflictResolutionService {
       switch (resolvedStrategy) {
         case STRATEGY_SERVER_WINS:
           resolvedData = conflict.serverData;
-          print('✅ [ConflictResolution] Resolved: Server wins');
+          debugPrint('✅ [ConflictResolution] Resolved: Server wins');
           break;
 
         case STRATEGY_LOCAL_WINS:
           resolvedData = conflict.localData;
-          print('✅ [ConflictResolution] Resolved: Local wins');
+          debugPrint('✅ [ConflictResolution] Resolved: Local wins');
           break;
 
         case STRATEGY_MERGE:
           resolvedData = _mergeData(conflict.localData, conflict.serverData);
-          print('✅ [ConflictResolution] Resolved: Merged data');
+          debugPrint('✅ [ConflictResolution] Resolved: Merged data');
           break;
 
         case STRATEGY_ASK_USER:
           // Dans ce cas, on retourne le conflit et laisse l'UI gérer
-          print('⏳ [ConflictResolution] Waiting for user decision');
+          debugPrint('⏳ [ConflictResolution] Waiting for user decision');
           return {};
 
         default:
           // Par défaut, le serveur gagne (plus sûr)
           resolvedData = conflict.serverData;
-          print('✅ [ConflictResolution] Resolved: Default to server wins');
+          debugPrint('✅ [ConflictResolution] Resolved: Default to server wins');
       }
 
       // Supprimer le conflit après résolution
@@ -130,7 +131,7 @@ class ConflictResolutionService {
 
       return resolvedData;
     } catch (e) {
-      print('❌ [ConflictResolution] Error resolving conflict: $e');
+      debugPrint('❌ [ConflictResolution] Error resolving conflict: $e');
       // En cas d'erreur, privilégier le serveur (plus sûr)
       return conflict.serverData;
     }
@@ -196,9 +197,9 @@ class ConflictResolutionService {
       conflicts.add(conflict.toJson());
 
       await prefs.setString(_conflictsKey, _encodeConflicts(conflicts));
-      print('💾 [ConflictResolution] Conflict saved');
+      debugPrint('💾 [ConflictResolution] Conflict saved');
     } catch (e) {
-      print('❌ [ConflictResolution] Error saving conflict: $e');
+      debugPrint('❌ [ConflictResolution] Error saving conflict: $e');
     }
   }
 
@@ -219,9 +220,9 @@ class ConflictResolutionService {
       );
 
       await prefs.setString(_conflictsKey, _encodeConflicts(conflicts));
-      print('🗑️ [ConflictResolution] Conflict removed');
+      debugPrint('🗑️ [ConflictResolution] Conflict removed');
     } catch (e) {
-      print('❌ [ConflictResolution] Error removing conflict: $e');
+      debugPrint('❌ [ConflictResolution] Error removing conflict: $e');
     }
   }
 
@@ -237,7 +238,7 @@ class ConflictResolutionService {
 
       return _decodeConflicts(encoded);
     } catch (e) {
-      print('❌ [ConflictResolution] Error loading conflicts: $e');
+      debugPrint('❌ [ConflictResolution] Error loading conflicts: $e');
       return [];
     }
   }
@@ -253,9 +254,9 @@ class ConflictResolutionService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_conflictsKey);
-      print('🧹 [ConflictResolution] All conflicts cleared');
+      debugPrint('🧹 [ConflictResolution] All conflicts cleared');
     } catch (e) {
-      print('❌ [ConflictResolution] Error clearing conflicts: $e');
+      debugPrint('❌ [ConflictResolution] Error clearing conflicts: $e');
     }
   }
 
@@ -268,9 +269,9 @@ class ConflictResolutionService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_resolutionStrategyKey, strategy);
-      print('⚙️ [ConflictResolution] Resolution strategy set to: $strategy');
+      debugPrint('⚙️ [ConflictResolution] Resolution strategy set to: $strategy');
     } catch (e) {
-      print('❌ [ConflictResolution] Error setting strategy: $e');
+      debugPrint('❌ [ConflictResolution] Error setting strategy: $e');
     }
   }
 
@@ -280,7 +281,7 @@ class ConflictResolutionService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(_resolutionStrategyKey) ?? STRATEGY_SERVER_WINS;
     } catch (e) {
-      print('❌ [ConflictResolution] Error getting strategy: $e');
+      debugPrint('❌ [ConflictResolution] Error getting strategy: $e');
       return STRATEGY_SERVER_WINS; // Par défaut le plus sûr
     }
   }
@@ -302,7 +303,7 @@ class ConflictResolutionService {
         return DateTime.fromMillisecondsSinceEpoch(timestamp);
       }
     } catch (e) {
-      print('❌ [ConflictResolution] Error parsing timestamp: $e');
+      debugPrint('❌ [ConflictResolution] Error parsing timestamp: $e');
     }
 
     return null;

@@ -63,39 +63,45 @@ import 'package:epilist/services/offline_sync_service.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print('📱 Message reçu en arrière-plan: ${message.messageId}');
+  debugPrint('📱 Message reçu en arrière-plan: ${message.messageId}');
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Silence des logs : toujours en release (visibles par n'importe qui via
+  // `adb logcat`), et aussi en debug sauf si AppConfig.enableDebugLogs = true.
+  if (kReleaseMode || !AppConfig.enableDebugLogs) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+
   try {
     // ✅ ÉTAPE 1: Initialiser Firebase avec options
-    print('🚀 Initialisation de Firebase...');
+    debugPrint('🚀 Initialisation de Firebase...');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    print('✅ Firebase initialisé avec succès');
+    debugPrint('✅ Firebase initialisé avec succès');
 
     // ✅ ÉTAPE 2: Configurer les notifications en arrière-plan
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // ✅ ÉTAPE 3: Initialisation simple des notifications (sans demander permissions)
-    print('🔔 Initialisation basique des notifications...');
+    debugPrint('🔔 Initialisation basique des notifications...');
     await NotificationService.initializeBasic();
 
     final sharedPreferences = await SharedPreferences.getInstance();
     await ConnectivityService().initialize();
 
     // ETAPE 4: Initialiser le nouveau systeme de cache
-    print('[OfflineMode] Initialisation du cache hors ligne...');
+    debugPrint('[OfflineMode] Initialisation du cache hors ligne...');
     await OfflineStorageService.initialize();
-    print('[OfflineMode] Cache hors ligne initialise');
+    debugPrint('[OfflineMode] Cache hors ligne initialise');
 
     // ETAPE 5: Initialiser la queue d'actions
-    print('[OfflineMode] Initialisation de la queue...');
+    debugPrint('[OfflineMode] Initialisation de la queue...');
     await OfflineQueueService.initialize();
-    print('[OfflineMode] Queue initialisee');
+    debugPrint('[OfflineMode] Queue initialisee');
 
     final dio = Dio(
       BaseOptions(
@@ -142,12 +148,12 @@ void main() async {
     );
 
     // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne
-    print('🔄 Initialisation du service de synchronisation...');
+    debugPrint('🔄 Initialisation du service de synchronisation...');
     await OfflineSyncService().initialize(
       shoppingListService: shoppingListService,
       listItemService: listItemService,
     );
-    print('✅ Service de synchronisation initialisé');
+    debugPrint('✅ Service de synchronisation initialisé');
 
     final localizationBloc = LocalizationBloc(
       sharedPreferences: sharedPreferences,
@@ -323,7 +329,7 @@ void main() async {
       ),
     );
   } catch (e) {
-    print('❌ Erreur lors de l\'initialisation: $e');
+    debugPrint('❌ Erreur lors de l\'initialisation: $e');
     runApp(ErrorApp(error: e.toString()));
   }
 }
@@ -574,13 +580,13 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           // ✅ NOUVEAU: Initialisation complète des notifications après connexion
           Future.delayed(const Duration(milliseconds: 500), () async {
             try {
-              print(
+              debugPrint(
                 '🔔 Initialisation complète des notifications après connexion...',
               );
               await NotificationService.initializeAfterLogin();
-              print('✅ Notifications initialisées avec succès après connexion');
+              debugPrint('✅ Notifications initialisées avec succès après connexion');
             } catch (e) {
-              print(
+              debugPrint(
                 '⚠️ Erreur lors de l\'initialisation des notifications: $e',
               );
             }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/product_suggestion_service.dart
 import 'package:dio/dio.dart';
 import 'package:epilist/models/product_suggestion.dart';
@@ -31,7 +32,7 @@ class ProductSuggestionService {
       }
       return [];
     } catch (e) {
-      print('Erreur lors de la recherche de suggestions: $e');
+      debugPrint('Erreur lors de la recherche de suggestions: $e');
       return [];
     }
   }
@@ -55,7 +56,7 @@ class ProductSuggestionService {
       }
       return [];
     } catch (e) {
-      print('Erreur lors de la récupération des suggestions populaires: $e');
+      debugPrint('Erreur lors de la récupération des suggestions populaires: $e');
       return [];
     }
   }
@@ -71,7 +72,7 @@ class ProductSuggestionService {
 
       return response.data['success'] == true;
     } catch (e) {
-      print('Erreur lors de la suppression de la suggestion: $e');
+      debugPrint('Erreur lors de la suppression de la suggestion: $e');
       return false;
     }
   }
@@ -87,7 +88,7 @@ class ProductSuggestionService {
 
       return response.data['success'] == true;
     } catch (e) {
-      print('Erreur lors de la suppression de toutes les suggestions: $e');
+      debugPrint('Erreur lors de la suppression de toutes les suggestions: $e');
       return false;
     }
   }
@@ -118,7 +119,7 @@ class ProductSuggestionService {
       }
       return null;
     } catch (e) {
-      print('Erreur lors de la mise à jour de la suggestion: $e');
+      debugPrint('Erreur lors de la mise à jour de la suggestion: $e');
       return null;
     }
   }
@@ -137,7 +138,7 @@ class ProductSuggestionService {
       }
       return null;
     } catch (e) {
-      print('Erreur lors de la récupération des statistiques: $e');
+      debugPrint('Erreur lors de la récupération des statistiques: $e');
       return null;
     }
   }

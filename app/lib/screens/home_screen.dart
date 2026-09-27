@@ -20,7 +20,6 @@ import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
-// import 'package:epilist/widgets/profile/notification_test_widget.dart'; // ✅ COMMENTÉ POUR PRODUCTION
 import 'package:epilist/widgets/home/welcome_card.dart';
 import 'package:epilist/widgets/home/home_app_bar.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
@@ -75,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // Méthode pour initialiser les deep links une seule fois
   void _initializeDeepLinksOnce() {
     if (!_deepLinkInitialized && mounted) {
-      // print('🚀 Initialisation unique des deep links depuis HomeScreen');
+      // debugPrint('🚀 Initialisation unique des deep links depuis HomeScreen');
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           DeepLinkHandler.updateContext(context);
@@ -102,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (_deepLinkInitialized) {
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (mounted && _isResuming) {
-            // print('📱 App resumed - mise à jour contexte deep links');
+            // debugPrint('📱 App resumed - mise à jour contexte deep links');
             DeepLinkHandler.updateContext(context);
             _isResuming = false;
           }

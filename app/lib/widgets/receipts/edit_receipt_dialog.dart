@@ -456,17 +456,17 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             ? null
             : _notesController.text.trim();
 
-    print("🔄 Soumission de la mise à jour:");
-    print(
+    debugPrint("🔄 Soumission de la mise à jour:");
+    debugPrint(
       "   Store: ${storeName != widget.receipt.storeName ? storeName : 'unchanged'}",
     );
-    print(
+    debugPrint(
       "   Amount: ${amount != widget.receipt.totalAmount ? amount : 'unchanged'}",
     );
-    print(
+    debugPrint(
       "   Date: ${_selectedDate != widget.receipt.purchaseDate ? _selectedDate : 'unchanged'}",
     );
-    print("   Notes: ${notes != widget.receipt.notes ? notes : 'unchanged'}");
+    debugPrint("   Notes: ${notes != widget.receipt.notes ? notes : 'unchanged'}");
 
     context.read<ReceiptBloc>().add(
       UpdateReceipt(

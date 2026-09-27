@@ -264,7 +264,7 @@ class FormattedAmount extends StatelessWidget {
         return currentCurrency;
       }
     } catch (e) {
-      print('CurrencyBloc non disponible: $e');
+      debugPrint('CurrencyBloc non disponible: $e');
     }
 
     // 6. Fallback avec devise personnalisée
@@ -367,7 +367,7 @@ class CurrencyIndicator extends StatelessWidget {
         return currentCode;
       }
     } catch (e) {
-      print('CurrencyBloc non disponible: $e');
+      debugPrint('CurrencyBloc non disponible: $e');
     }
 
     return fallbackCode!;

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // models/user_currency.dart - VERSION CORRIGÉE POUR L'API
 import 'package:epilist/models/currency.dart';
 
@@ -15,8 +16,8 @@ class UserCurrency {
 
   factory UserCurrency.fromJson(Map<String, dynamic> json) {
     try {
-      print('=== UserCurrency.fromJson DEBUG ===');
-      print('JSON reçu: $json');
+      debugPrint('=== UserCurrency.fromJson DEBUG ===');
+      debugPrint('JSON reçu: $json');
 
       // ✅ PROTECTION: Vérifier que 'data' existe et est un Map
       final data = json['data'];
@@ -26,7 +27,7 @@ class UserCurrency {
         );
       }
 
-      print('Data extraite: $data');
+      debugPrint('Data extraite: $data');
 
       // ✅ PROTECTION: Vérifier que 'currency' existe et est un Map
       final currencyData = data['currency'];
@@ -36,7 +37,7 @@ class UserCurrency {
         );
       }
 
-      print('Currency data: $currencyData');
+      debugPrint('Currency data: $currencyData');
 
       // ✅ NOUVEAU: Essayer de récupérer la devise prédéfinie par ID d'abord
       Currency? currency;
@@ -44,7 +45,7 @@ class UserCurrency {
 
       if (currencyId != null) {
         currency = Currency.findById(currencyId);
-        print('Devise trouvée par ID $currencyId: ${currency?.code}');
+        debugPrint('Devise trouvée par ID $currencyId: ${currency?.code}');
       }
 
       // Si pas trouvée par ID, essayer par code
@@ -52,17 +53,17 @@ class UserCurrency {
         final currencyCode = currencyData['code'] as String?;
         if (currencyCode != null) {
           currency = Currency.findByCode(currencyCode);
-          print('Devise trouvée par code $currencyCode: ${currency?.code}');
+          debugPrint('Devise trouvée par code $currencyCode: ${currency?.code}');
         }
       }
 
       // Si toujours pas trouvée, parser depuis le JSON (avec fallback)
       if (currency == null) {
-        print('Parsing devise depuis JSON...');
+        debugPrint('Parsing devise depuis JSON...');
         try {
           currency = Currency.fromJson(currencyData);
         } catch (e) {
-          print('Erreur parsing JSON, utilisation de la devise par défaut: $e');
+          debugPrint('Erreur parsing JSON, utilisation de la devise par défaut: $e');
           currency = Currency.cad;
         }
       }
@@ -74,26 +75,26 @@ class UserCurrency {
         setAt: DateTime.parse(data['set_at'] as String),
       );
 
-      print('UserCurrency créé avec succès:');
-      print('- User ID: ${userCurrency.userId}');
-      print(
+      debugPrint('UserCurrency créé avec succès:');
+      debugPrint('- User ID: ${userCurrency.userId}');
+      debugPrint(
         '- Currency: ${userCurrency.currency.code} (${userCurrency.currency.symbol})',
       );
-      print('- Set at: ${userCurrency.setAt}');
-      print('================================');
+      debugPrint('- Set at: ${userCurrency.setAt}');
+      debugPrint('================================');
 
       return userCurrency;
     } catch (e, stackTrace) {
       // ✅ DEBUG: Afficher les détails de l'erreur
-      print('❌ UserCurrency.fromJson error: $e');
-      print('📄 Raw JSON: $json');
-      print('Stack trace: $stackTrace');
+      debugPrint('❌ UserCurrency.fromJson error: $e');
+      debugPrint('📄 Raw JSON: $json');
+      debugPrint('Stack trace: $stackTrace');
 
       // ✅ FALLBACK: Créer un UserCurrency minimal en cas d'erreur
       final fallbackUserId = json['data']?['user_id'] as int? ?? 0;
       final fallbackCurrency = Currency.cad; // Devise par défaut
 
-      print('🔄 Création d\'un UserCurrency de fallback');
+      debugPrint('🔄 Création d\'un UserCurrency de fallback');
       return UserCurrency(
         userId: fallbackUserId,
         currency: fallbackCurrency,

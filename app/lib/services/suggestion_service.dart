@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/suggestion_service.dart
 import 'package:dio/dio.dart';
 import 'package:epilist/models/smart_suggestion.dart';
@@ -66,7 +67,7 @@ class SuggestionService {
 
       return null;
     } on DioException catch (e) {
-      print('Failed to get product suggestion: ${e.message}');
+      debugPrint('Failed to get product suggestion: ${e.message}');
       return null;
     }
   }
@@ -93,7 +94,7 @@ class SuggestionService {
         throw Exception(response.data['message'] ?? 'Failed to record feedback');
       }
     } on DioException catch (e) {
-      print('Failed to record feedback: ${e.message}');
+      debugPrint('Failed to record feedback: ${e.message}');
       // Silently fail - not critical
     }
   }

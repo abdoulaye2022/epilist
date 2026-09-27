@@ -158,10 +158,10 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           children: [
             BlocListener<ContactBloc, ContactState>(
               listener: (context, state) {
-                print('🔄 ContactBloc State: ${state.runtimeType}');
+                debugPrint('🔄 ContactBloc State: ${state.runtimeType}');
 
                 if (state is FeedbackSent) {
-                  print('✅ Feedback envoyé avec succès');
+                  debugPrint('✅ Feedback envoyé avec succès');
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) {
                       Navigator.of(context).pop();
@@ -173,7 +173,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                     }
                   });
                 } else if (state is ContactFailure) {
-                  print('❌ Erreur ContactFailure: ${state.error}');
+                  debugPrint('❌ Erreur ContactFailure: ${state.error}');
                   if (mounted) {
                     setState(() {
                       _isLoading = false;
@@ -184,7 +184,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                     );
                   }
                 } else if (state is FeedbackTypesLoaded) {
-                  print(
+                  debugPrint(
                     '📋 Types de feedback chargés: ${state.feedbackTypes.length} types',
                   );
                   if (mounted) {
@@ -198,26 +198,26 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                         if (_feedbackTypes.isNotEmpty &&
                             _selectedFeedbackType == null) {
                           _selectedFeedbackType = _feedbackTypes.first.value;
-                          print('🎯 Type par défaut: $_selectedFeedbackType');
+                          debugPrint('🎯 Type par défaut: $_selectedFeedbackType');
                         }
                         if (_priorities.isNotEmpty &&
                             _selectedPriority == null) {
                           _selectedPriority = _priorities.first.value;
-                          print('🎯 Priorité par défaut: $_selectedPriority');
+                          debugPrint('🎯 Priorité par défaut: $_selectedPriority');
                         }
                         _dataLoaded = true;
                       }
                     });
                   }
                 } else if (state is ContactLoading) {
-                  print('⏳ ContactLoading...');
+                  debugPrint('⏳ ContactLoading...');
                   if (mounted) {
                     setState(() {
                       _isLoading = true;
                     });
                   }
                 } else if (state is ContactInitial) {
-                  print('🔄 ContactInitial');
+                  debugPrint('🔄 ContactInitial');
                   if (mounted) {
                     setState(() {
                       _isLoading = false;
@@ -663,7 +663,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       final feedbackType = _selectedFeedbackType!;
       final priority = _selectedPriority!;
 
-      print('🚀 Envoi du feedback: $feedbackType - $priority');
+      debugPrint('🚀 Envoi du feedback: $feedbackType - $priority');
 
       _contactBloc.add(
         SendFeedback(

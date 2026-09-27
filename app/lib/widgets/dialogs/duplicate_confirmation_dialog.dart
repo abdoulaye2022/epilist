@@ -322,7 +322,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       onTap:
           duplicate.suggestionType == DuplicateType.exactMatch
               ? () {
-                print('🎯 Sélection pour fusion: ${duplicate.productName}');
+                debugPrint('🎯 Sélection pour fusion: ${duplicate.productName}');
                 // Juste indiquer visuellement la sélection
               }
               : null,
@@ -354,7 +354,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   final exactMatch = duplicates.firstWhere(
                     (d) => d.suggestionType == DuplicateType.exactMatch,
                   );
-                  print('🎯 Fusion avec item ${exactMatch.id}');
+                  debugPrint('🎯 Fusion avec item ${exactMatch.id}');
                   onActionSelected(
                     DuplicateAction.merge,
                     existingItemId: exactMatch.id,
@@ -388,7 +388,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               Expanded(
                 child: TextButton(
                   onPressed: () {
-                    print('🎯 Annulation');
+                    debugPrint('🎯 Annulation');
                     onActionSelected(DuplicateAction.cancel);
                   },
                   style: TextButton.styleFrom(
@@ -412,7 +412,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    print('🎯 Ajout forcé');
+                    debugPrint('🎯 Ajout forcé');
                     onActionSelected(DuplicateAction.forceAdd);
                   },
                   style: ElevatedButton.styleFrom(

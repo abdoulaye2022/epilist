@@ -52,11 +52,11 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     // Vérifier toutes les 30 secondes si on est hors ligne
     _periodicCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
       if (!_isConnected && mounted) {
-        print('🔄 [ConnectivityWrapper] Vérification périodique de la connectivité');
+        debugPrint('🔄 [ConnectivityWrapper] Vérification périodique de la connectivité');
         final isConnected = await ConnectivityService().checkConnectivity();
 
         if (isConnected && mounted) {
-          print('✅ [ConnectivityWrapper] Connexion restaurée (vérification périodique)');
+          debugPrint('✅ [ConnectivityWrapper] Connexion restaurée (vérification périodique)');
           setState(() {
             _isConnected = true;
           });
@@ -70,7 +70,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   Future<void> _initializeConnectivity() async {
     // Vérifier la connectivité initiale
     final isConnected = await ConnectivityService().checkConnectivity();
-    print('🌐 [ConnectivityWrapper] Connectivité initiale: $isConnected');
+    debugPrint('🌐 [ConnectivityWrapper] Connectivité initiale: $isConnected');
 
     if (mounted) {
       setState(() {
@@ -84,7 +84,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     // Écouter les changements de connectivité
     _connectivitySubscription = ConnectivityService().connectivityStream.listen(
       (connected) {
-        print('🌐 [ConnectivityWrapper] Changement de connectivité: $connected');
+        debugPrint('🌐 [ConnectivityWrapper] Changement de connectivité: $connected');
 
         if (mounted) {
           final wasConnected = _isConnected;
@@ -94,7 +94,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
 
           if (!connected && wasConnected) {
             // Connexion perdue
-            print('❌ [ConnectivityWrapper] Connexion perdue');
+            debugPrint('❌ [ConnectivityWrapper] Connexion perdue');
             widget.onConnectivityLost?.call();
             _hasShownOfflineMessage = false;
 
@@ -106,7 +106,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
             }
           } else if (connected && !wasConnected) {
             // Connexion rétablie
-            print('✅ [ConnectivityWrapper] Connexion rétablie');
+            debugPrint('✅ [ConnectivityWrapper] Connexion rétablie');
             widget.onConnectivityRestored?.call();
             _hasShownOfflineMessage = false;
 
@@ -202,12 +202,12 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    print('🔄 [ConnectivityWrapper] Bouton réessayer cliqué');
+                    debugPrint('🔄 [ConnectivityWrapper] Bouton réessayer cliqué');
 
                     // Forcer une vérification de connectivité
                     final isConnected =
                         await ConnectivityService().checkConnectivity();
-                    print('🌐 [ConnectivityWrapper] Résultat de la vérification manuelle: $isConnected');
+                    debugPrint('🌐 [ConnectivityWrapper] Résultat de la vérification manuelle: $isConnected');
 
                     if (mounted) {
                       if (isConnected) {

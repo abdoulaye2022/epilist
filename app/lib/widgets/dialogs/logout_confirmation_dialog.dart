@@ -27,7 +27,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
     // ✅ SÉCURITÉ: Timer de 3 secondes pour forcer la navigation si blocage
     _timeoutTimer = Timer(const Duration(seconds: 3), () {
       if (mounted && !_hasLoggedOut) {
-        print('⚠️ Timeout de logout - Navigation forcée vers /login');
+        debugPrint('⚠️ Timeout de logout - Navigation forcée vers /login');
         _navigateToLogin();
       }
     });
@@ -38,7 +38,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
       _hasLoggedOut = true;
       _timeoutTimer?.cancel();
 
-      print('🚀 Navigation forcée vers /login depuis le dialog');
+      debugPrint('🚀 Navigation forcée vers /login depuis le dialog');
 
       // ✅ Fermer le dialog d'abord
       Navigator.pop(context);
@@ -73,21 +73,21 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
         ),
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            print('🔄 LogoutDialog - State changé: ${state.runtimeType}');
+            debugPrint('🔄 LogoutDialog - State changé: ${state.runtimeType}');
 
             // ✅ CORRECTION: Gérer le processus de logout de manière plus robuste
             if (state is AuthLoading && _logoutStarted) {
-              print('🔄 Logout en cours...');
+              debugPrint('🔄 Logout en cours...');
               // Ne rien faire, attendre Unauthenticated
             } else if (state is Unauthenticated && _logoutStarted) {
               if (!_hasLoggedOut) {
-                print('✅ Déconnexion confirmée - Navigation vers /login');
+                debugPrint('✅ Déconnexion confirmée - Navigation vers /login');
                 _navigateToLogin();
               }
             } else if (state is AuthFailure && _logoutStarted) {
               // En cas d'erreur, forcer quand même la navigation
               if (!_hasLoggedOut) {
-                print('❌ Erreur de logout - Navigation forcée vers /login');
+                debugPrint('❌ Erreur de logout - Navigation forcée vers /login');
                 _navigateToLogin();
               }
             }
@@ -180,7 +180,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
                     (_logoutStarted || isLoading)
                         ? null
                         : () {
-                          print('🚀 Déclenchement de LogoutRequested');
+                          debugPrint('🚀 Déclenchement de LogoutRequested');
 
                           // ✅ Marquer le début du logout
                           setState(() {

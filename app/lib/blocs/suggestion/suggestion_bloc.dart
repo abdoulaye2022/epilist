@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // blocs/suggestion/suggestion_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/suggestion_service.dart';
@@ -91,7 +92,7 @@ class SuggestionBloc extends Bloc<SuggestionEvent, SuggestionState> {
       }
     } catch (e) {
       // Silently fail for feedback
-      print('Failed to record rejection: $e');
+      debugPrint('Failed to record rejection: $e');
     }
   }
 
@@ -110,7 +111,7 @@ class SuggestionBloc extends Bloc<SuggestionEvent, SuggestionState> {
       );
     } catch (e) {
       // Silently fail for feedback
-      print('Failed to record modification: $e');
+      debugPrint('Failed to record modification: $e');
     }
   }
 

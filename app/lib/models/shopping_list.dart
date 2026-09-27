@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // models/shopping_list.dart - VERSION COMPATIBLE AVEC NOUVELLE API + FACTURES
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shared_enums.dart';
@@ -292,7 +293,7 @@ class ShoppingList {
                 .map((item) => ListItem.fromJson(item as Map<String, dynamic>))
                 .toList();
       } catch (e) {
-        print("Error parsing items: $e");
+        debugPrint("Error parsing items: $e");
       }
     }
 
@@ -302,7 +303,7 @@ class ShoppingList {
       try {
         sharedBy = User.fromMap(json['shared_by'] as Map<String, dynamic>);
       } catch (e) {
-        print("Error parsing shared_by: $e");
+        debugPrint("Error parsing shared_by: $e");
       }
     }
 
@@ -312,7 +313,7 @@ class ShoppingList {
       try {
         owner = User.fromMap(json['owner'] as Map<String, dynamic>);
       } catch (e) {
-        print("Error parsing owner: $e");
+        debugPrint("Error parsing owner: $e");
       }
     }
 
@@ -327,7 +328,7 @@ class ShoppingList {
                 )
                 .toList();
       } catch (e) {
-        print("Error parsing shared_with: $e");
+        debugPrint("Error parsing shared_with: $e");
       }
     }
 
@@ -340,7 +341,7 @@ class ShoppingList {
           orElse: () => SharePermission.edit,
         );
       } catch (e) {
-        print("Error parsing user_permission: $e");
+        debugPrint("Error parsing user_permission: $e");
       }
     }
 

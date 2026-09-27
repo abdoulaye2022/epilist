@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // blocs/list_item/list_item_bloc.dart - VERSION AVEC GESTION DOUBLONS
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/list_item.dart';
@@ -115,7 +116,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       final items = await _listItemService.getListItems(event.listId);
       emit(ListItemLoaded(items));
     } catch (e) {
-      print("Error loading items: $e");
+      debugPrint("Error loading items: $e");
 
       // ✅ Fallback: Essayer de charger depuis le cache (mode offline)
       // Note: Les items sont dans la liste en cache
@@ -126,12 +127,12 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
             (list) => list.id == event.listId,
             orElse: () => throw Exception('List not found in cache'),
           );
-          print('📦 Loading ${cachedList.items.length} items from cache (offline mode)');
+          debugPrint('📦 Loading ${cachedList.items.length} items from cache (offline mode)');
           emit(ListItemLoaded(cachedList.items));
           return;
         }
       } catch (cacheError) {
-        print('❌ Cache load failed: $cacheError');
+        debugPrint('❌ Cache load failed: $cacheError');
       }
 
       final errorMessage = _getTranslatedOperationError('load');
@@ -156,7 +157,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
       if (result.isSuccess) {
         // Succès - pas de doublon
-        print("Item ajouté avec succès: ${result.item!.toJson()}");
+        debugPrint("Item ajouté avec succès: ${result.item!.toJson()}");
 
         if (state is ListItemLoaded) {
           final currentState = state as ListItemLoaded;
@@ -193,7 +194,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         );
       }
     } catch (e) {
-      print("Error adding item: $e");
+      debugPrint("Error adding item: $e");
 
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
@@ -253,7 +254,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         storeName: event.storeName,
       );
 
-      print("Item forcé avec succès: ${newItem.toJson()}");
+      debugPrint("Item forcé avec succès: ${newItem.toJson()}");
 
       if (state is ListItemLoaded) {
         final currentState = state as ListItemLoaded;
@@ -268,7 +269,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         add(LoadListItems(event.listId));
       }
     } catch (e) {
-      print("Error force adding item: $e");
+      debugPrint("Error force adding item: $e");
       final errorMessage = _getTranslatedOperationError('add');
       emit(ListItemError(errorMessage));
     }
@@ -287,7 +288,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         newPrice: event.newPrice,
       );
 
-      print("Items fusionnés avec succès: ${updatedItem.toJson()}");
+      debugPrint("Items fusionnés avec succès: ${updatedItem.toJson()}");
 
       if (state is ListItemLoaded) {
         final currentState = state as ListItemLoaded;
@@ -308,7 +309,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         add(LoadListItems(event.listId));
       }
     } catch (e) {
-      print("Error merging items: $e");
+      debugPrint("Error merging items: $e");
       final errorMessage = _getTranslatedOperationError('add');
       emit(ListItemError(errorMessage));
     }
@@ -363,13 +364,13 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         isPurchased: event.isPurchased,
       );
 
-      print("$updatedCount articles mis à jour");
+      debugPrint("$updatedCount articles mis à jour");
 
       final successMessage = _getTranslatedSuccessMessage('mark_all');
       emit(ListItemOperationSuccess(successMessage));
       add(LoadListItems(event.listId));
     } catch (e) {
-      print("Error marking all items: $e");
+      debugPrint("Error marking all items: $e");
       final errorMessage = _getTranslatedOperationError('mark_all');
       emit(ListItemError(errorMessage));
     }
@@ -385,13 +386,13 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         event.listId,
       );
 
-      print("$deletedCount articles supprimés");
+      debugPrint("$deletedCount articles supprimés");
 
       final successMessage = _getTranslatedSuccessMessage('clear_purchased');
       emit(ListItemOperationSuccess(successMessage));
       add(LoadListItems(event.listId));
     } catch (e) {
-      print("Error clearing purchased items: $e");
+      debugPrint("Error clearing purchased items: $e");
       final errorMessage = _getTranslatedOperationError('clear_purchased');
       emit(ListItemError(errorMessage));
     }
@@ -406,7 +407,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       final stats = await _listItemService.getListStats(event.listId);
       emit(ListItemStatsLoaded(stats));
     } catch (e) {
-      print("Error loading stats: $e");
+      debugPrint("Error loading stats: $e");
       final errorMessage = _getTranslatedOperationError('load');
       emit(ListItemError(errorMessage));
     }
@@ -468,7 +469,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         categoryId: event.categoryId,
       );
 
-      print("Item mis à jour avec succès: ${updatedItem.toJson()}");
+      debugPrint("Item mis à jour avec succès: ${updatedItem.toJson()}");
 
       if (state is ListItemLoaded) {
         final currentState = state as ListItemLoaded;
@@ -489,7 +490,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         add(LoadListItems(event.listId));
       }
     } catch (e) {
-      print("Error updating item: $e");
+      debugPrint("Error updating item: $e");
       final errorMessage = _getTranslatedOperationError('update');
       emit(ListItemError(errorMessage));
     }
@@ -548,7 +549,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         emit(ListItemLoaded(updatedItems));
       }
     } catch (e) {
-      print("Error toggling status: $e");
+      debugPrint("Error toggling status: $e");
       final errorMessage = _getTranslatedOperationError('toggle');
       emit(ListItemError(errorMessage));
     }
@@ -603,7 +604,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         emit(ListItemLoaded(updatedItems));
       }
     } catch (e) {
-      print("Error deleting item: $e");
+      debugPrint("Error deleting item: $e");
       final errorMessage = _getTranslatedOperationError('delete');
       emit(ListItemError(errorMessage));
     }

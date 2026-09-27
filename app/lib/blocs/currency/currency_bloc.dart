@@ -49,7 +49,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
       try {
         userCurrency = await currencyService.getUserCurrency();
       } catch (e) {
-        print('Impossible de charger la devise utilisateur: $e');
+        debugPrint('Impossible de charger la devise utilisateur: $e');
       }
 
       if (event.popularOnly) {

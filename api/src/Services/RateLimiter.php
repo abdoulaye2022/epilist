@@ -27,6 +27,16 @@ class RateLimiter
         'password_reset' => [
             'max_attempts_per_ip' => 5,       // 5 tentatives max par IP
             'window_minutes' => 60,           // Fenêtre de 60 minutes
+        ],
+        'password_change_code' => [
+            'max_attempts_per_ip' => 5,       // 5 essais de code max par IP
+            'max_attempts' => 5,              // 5 essais max par email (anti-brute-force distribué)
+            'window_minutes' => 30,
+        ],
+        'login' => [
+            'max_attempts_per_ip' => 10,      // 10 échecs de connexion max par IP
+            'max_attempts' => 10,             // 10 échecs max par compte
+            'window_minutes' => 15,
         ]
     ];
 

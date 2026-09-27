@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/offline_cache_service.dart
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,9 +39,9 @@ class OfflineCacheService {
       _pendingActions = await Hive.openBox(_pendingActionsBox);
 
       _isInitialized = true;
-      print('✅ [OfflineCache] Cache hors ligne initialisé avec succès');
+      debugPrint('✅ [OfflineCache] Cache hors ligne initialisé avec succès');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur lors de l\'initialisation: $e');
+      debugPrint('❌ [OfflineCache] Erreur lors de l\'initialisation: $e');
       rethrow;
     }
   }
@@ -55,9 +56,9 @@ class OfflineCacheService {
       if (id == null) return;
 
       await _shoppingLists?.put(id, jsonEncode(list));
-      print('💾 [OfflineCache] Liste $id mise en cache');
+      debugPrint('💾 [OfflineCache] Liste $id mise en cache');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur cache liste: $e');
+      debugPrint('❌ [OfflineCache] Erreur cache liste: $e');
     }
   }
 
@@ -68,9 +69,9 @@ class OfflineCacheService {
       for (var list in lists) {
         await cacheShoppingList(list);
       }
-      print('💾 [OfflineCache] ${lists.length} listes mises en cache');
+      debugPrint('💾 [OfflineCache] ${lists.length} listes mises en cache');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur cache listes: $e');
+      debugPrint('❌ [OfflineCache] Erreur cache listes: $e');
     }
   }
 
@@ -83,7 +84,7 @@ class OfflineCacheService {
 
       return jsonDecode(cached as String) as Map<String, dynamic>;
     } catch (e) {
-      print('❌ [OfflineCache] Erreur récupération liste: $e');
+      debugPrint('❌ [OfflineCache] Erreur récupération liste: $e');
       return null;
     }
   }
@@ -101,7 +102,7 @@ class OfflineCacheService {
       }
       return lists;
     } catch (e) {
-      print('❌ [OfflineCache] Erreur récupération listes: $e');
+      debugPrint('❌ [OfflineCache] Erreur récupération listes: $e');
       return [];
     }
   }
@@ -111,9 +112,9 @@ class OfflineCacheService {
     _ensureInitialized();
     try {
       await _shoppingLists?.delete(id);
-      print('🗑️ [OfflineCache] Liste $id supprimée du cache');
+      debugPrint('🗑️ [OfflineCache] Liste $id supprimée du cache');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur suppression liste: $e');
+      debugPrint('❌ [OfflineCache] Erreur suppression liste: $e');
     }
   }
 
@@ -128,7 +129,7 @@ class OfflineCacheService {
 
       await _listItems?.put(id, jsonEncode(item));
     } catch (e) {
-      print('❌ [OfflineCache] Erreur cache article: $e');
+      debugPrint('❌ [OfflineCache] Erreur cache article: $e');
     }
   }
 
@@ -139,9 +140,9 @@ class OfflineCacheService {
       for (var item in items) {
         await cacheListItem(item);
       }
-      print('💾 [OfflineCache] ${items.length} articles mis en cache');
+      debugPrint('💾 [OfflineCache] ${items.length} articles mis en cache');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur cache articles: $e');
+      debugPrint('❌ [OfflineCache] Erreur cache articles: $e');
     }
   }
 
@@ -161,7 +162,7 @@ class OfflineCacheService {
       }
       return items;
     } catch (e) {
-      print('❌ [OfflineCache] Erreur récupération articles: $e');
+      debugPrint('❌ [OfflineCache] Erreur récupération articles: $e');
       return [];
     }
   }
@@ -172,7 +173,7 @@ class OfflineCacheService {
     try {
       await _listItems?.delete(id);
     } catch (e) {
-      print('❌ [OfflineCache] Erreur suppression article: $e');
+      debugPrint('❌ [OfflineCache] Erreur suppression article: $e');
     }
   }
 
@@ -183,9 +184,9 @@ class OfflineCacheService {
     _ensureInitialized();
     try {
       await _categories?.put('all', jsonEncode(categories));
-      print('💾 [OfflineCache] ${categories.length} catégories mises en cache');
+      debugPrint('💾 [OfflineCache] ${categories.length} catégories mises en cache');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur cache catégories: $e');
+      debugPrint('❌ [OfflineCache] Erreur cache catégories: $e');
     }
   }
 
@@ -199,7 +200,7 @@ class OfflineCacheService {
       final List<dynamic> decoded = jsonDecode(cached as String);
       return decoded.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('❌ [OfflineCache] Erreur récupération catégories: $e');
+      debugPrint('❌ [OfflineCache] Erreur récupération catégories: $e');
       return [];
     }
   }
@@ -219,9 +220,9 @@ class OfflineCacheService {
         'retryCount': 0,
       }));
 
-      print('📝 [OfflineCache] Action en attente ajoutée: ${action['type']}');
+      debugPrint('📝 [OfflineCache] Action en attente ajoutée: ${action['type']}');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur ajout action: $e');
+      debugPrint('❌ [OfflineCache] Erreur ajout action: $e');
     }
   }
 
@@ -244,7 +245,7 @@ class OfflineCacheService {
 
       return actions;
     } catch (e) {
-      print('❌ [OfflineCache] Erreur récupération actions: $e');
+      debugPrint('❌ [OfflineCache] Erreur récupération actions: $e');
       return [];
     }
   }
@@ -254,9 +255,9 @@ class OfflineCacheService {
     _ensureInitialized();
     try {
       await _pendingActions?.delete(key);
-      print('✅ [OfflineCache] Action synchronisée et supprimée');
+      debugPrint('✅ [OfflineCache] Action synchronisée et supprimée');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur suppression action: $e');
+      debugPrint('❌ [OfflineCache] Erreur suppression action: $e');
     }
   }
 
@@ -271,7 +272,7 @@ class OfflineCacheService {
         await _pendingActions?.put(key, jsonEncode(action));
       }
     } catch (e) {
-      print('❌ [OfflineCache] Erreur incrémentation retry: $e');
+      debugPrint('❌ [OfflineCache] Erreur incrémentation retry: $e');
     }
   }
 
@@ -280,9 +281,9 @@ class OfflineCacheService {
     _ensureInitialized();
     try {
       await _pendingActions?.clear();
-      print('🗑️ [OfflineCache] Actions en attente effacées');
+      debugPrint('🗑️ [OfflineCache] Actions en attente effacées');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur effacement actions: $e');
+      debugPrint('❌ [OfflineCache] Erreur effacement actions: $e');
     }
   }
 
@@ -296,9 +297,9 @@ class OfflineCacheService {
       await _listItems?.clear();
       await _categories?.clear();
       await _pendingActions?.clear();
-      print('🗑️ [OfflineCache] Cache entièrement effacé');
+      debugPrint('🗑️ [OfflineCache] Cache entièrement effacé');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur effacement cache: $e');
+      debugPrint('❌ [OfflineCache] Erreur effacement cache: $e');
     }
   }
 
@@ -317,9 +318,9 @@ class OfflineCacheService {
       await _categories?.close();
       await _pendingActions?.close();
       _isInitialized = false;
-      print('👋 [OfflineCache] Cache fermé');
+      debugPrint('👋 [OfflineCache] Cache fermé');
     } catch (e) {
-      print('❌ [OfflineCache] Erreur fermeture cache: $e');
+      debugPrint('❌ [OfflineCache] Erreur fermeture cache: $e');
     }
   }
 }

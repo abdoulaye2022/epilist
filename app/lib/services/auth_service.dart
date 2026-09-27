@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 // services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,19 +58,19 @@ class AuthService {
         return DateTime.fromMillisecondsSinceEpoch(exp * 1000);
       }
     } catch (e) {
-      print('❌ [AuthService] Erreur lors du décodage du token: $e');
+      debugPrint('❌ [AuthService] Erreur lors du décodage du token: $e');
     }
     return null;
   }
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
     try {
-      print('🔄 [AuthService] Sauvegarde des tokens...');
-      print('  Access token: ${accessToken.substring(0, 20)}...');
-      print('  Refresh token: ${refreshToken.substring(0, 20)}...');
+      debugPrint('🔄 [AuthService] Sauvegarde des tokens...');
+      debugPrint('  Access token: ${accessToken.substring(0, 20)}...');
+      debugPrint('  Refresh token: ${refreshToken.substring(0, 20)}...');
 
       final tokenExpiry = _getTokenExpiration(accessToken);
-      print('  Expiration: ${tokenExpiry ?? "1 an par défaut"}');
+      debugPrint('  Expiration: ${tokenExpiry ?? "1 an par défaut"}');
 
       await Future.wait([
         sharedPreferences.setString(_accessTokenKey, accessToken),
@@ -81,9 +82,9 @@ class AuthService {
         ),
       ]);
 
-      print('✅ [AuthService] Tokens sauvegardés avec succès');
+      debugPrint('✅ [AuthService] Tokens sauvegardés avec succès');
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la sauvegarde des tokens: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la sauvegarde des tokens: $e');
       throw Exception('Impossible de sauvegarder les tokens: $e');
     }
   }
@@ -92,10 +93,10 @@ class AuthService {
     try {
       final token = sharedPreferences.getString(_accessTokenKey);
       if (token != null && token.isNotEmpty) {
-        print('🔍 [AuthService] Token trouvé: ${token.substring(0, 20)}...');
+        debugPrint('🔍 [AuthService] Token trouvé: ${token.substring(0, 20)}...');
 
         if (await isTokenExpired()) {
-          print(
+          debugPrint(
             '⏰ [AuthService] Token expiré, tentative de refresh automatique',
           );
 
@@ -107,10 +108,10 @@ class AuthService {
                 newTokens['access_token']!,
                 newTokens['refresh_token']!,
               );
-              print('✅ [AuthService] Token refreshé automatiquement');
+              debugPrint('✅ [AuthService] Token refreshé automatiquement');
               return newTokens['access_token'];
             } catch (e) {
-              print('❌ [AuthService] Échec du refresh automatique: $e');
+              debugPrint('❌ [AuthService] Échec du refresh automatique: $e');
               await clearUserData();
               return null;
             }
@@ -119,11 +120,11 @@ class AuthService {
         }
         return token;
       } else {
-        print('❌ [AuthService] Aucun token trouvé dans le cache');
+        debugPrint('❌ [AuthService] Aucun token trouvé dans le cache');
         return null;
       }
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la récupération du token: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la récupération du token: $e');
       return null;
     }
   }
@@ -145,17 +146,17 @@ class AuthService {
       final isExpired = DateTime.now().isAfter(expiryDate);
 
       if (isExpired) {
-        print('❌ [AuthService] Token expiré: $expiryDate');
+        debugPrint('❌ [AuthService] Token expiré: $expiryDate');
       } else {
         final timeLeft = expiryDate.difference(DateTime.now());
-        print(
+        debugPrint(
           '✅ [AuthService] Token valide, expire dans: ${timeLeft.inDays}j ${timeLeft.inHours % 24}h',
         );
       }
 
       return isExpired;
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la vérification d\'expiration: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la vérification d\'expiration: $e');
       return true;
     }
   }
@@ -179,13 +180,13 @@ class AuthService {
   /// ✅ CONNEXION GOOGLE
   Future<Map<String, String>> loginWithGoogle() async {
     try {
-      print('🔵 [AuthService] Début de la connexion Google...');
+      debugPrint('🔵 [AuthService] Début de la connexion Google...');
 
       // 1. Obtenir les credentials Google
       final SSOResult result = await SSOService.signInWithGoogle();
 
       if (!result.success) {
-        print('❌ [AuthService] Échec SSO Google: ${result.error}');
+        debugPrint('❌ [AuthService] Échec SSO Google: ${result.error}');
         throw AuthenticationException(
           result.error ?? 'Erreur lors de la connexion Google',
           'GOOGLE_SIGNIN_FAILED',
@@ -193,16 +194,15 @@ class AuthService {
       }
 
       if (result.idToken == null || result.userInfo == null) {
-        print('❌ [AuthService] Données Google incomplètes');
+        debugPrint('❌ [AuthService] Données Google incomplètes');
         throw AuthenticationException(
           'Informations Google incomplètes',
           'GOOGLE_INCOMPLETE_DATA',
         );
       }
 
-      print('✅ [AuthService] Credentials Google obtenus, envoi au serveur...');
-      print('  ID Token: ${result.idToken!.substring(0, 30)}...');
-      print('  User Info: ${result.userInfo!.email}');
+      // Ne jamais logguer le token ni l'email : visibles en release via `adb logcat`
+      debugPrint('✅ [AuthService] Credentials Google obtenus, envoi au serveur...');
 
       // 2. Envoyer les credentials au serveur
       final response = await dio.post(
@@ -214,8 +214,8 @@ class AuthService {
         },
       );
 
-      print('📡 [AuthService] Réponse serveur: ${response.statusCode}');
-      print('📡 [AuthService] Données: ${response.data}');
+      // La réponse contient access_token et refresh_token : ne pas la logguer
+      debugPrint('📡 [AuthService] Réponse serveur: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -225,7 +225,7 @@ class AuthService {
         final refreshToken = data['refresh_token'] as String?;
 
         if (accessToken == null || accessToken.isEmpty) {
-          print('❌ [AuthService] Access token manquant');
+          debugPrint('❌ [AuthService] Access token manquant');
           throw AuthenticationException(
             'Access token manquant',
             'MISSING_ACCESS_TOKEN',
@@ -233,16 +233,16 @@ class AuthService {
         }
 
         if (refreshToken == null || refreshToken.isEmpty) {
-          print('❌ [AuthService] Refresh token manquant');
+          debugPrint('❌ [AuthService] Refresh token manquant');
           throw AuthenticationException(
             'Refresh token manquant',
             'MISSING_REFRESH_TOKEN',
           );
         }
 
-        print('✅ [AuthService] Tokens reçus:');
-        print('  Access: ${accessToken.substring(0, 30)}...');
-        print('  Refresh: ${refreshToken.substring(0, 30)}...');
+        debugPrint('✅ [AuthService] Tokens reçus:');
+        debugPrint('  Access: ${accessToken.substring(0, 30)}...');
+        debugPrint('  Refresh: ${refreshToken.substring(0, 30)}...');
 
         // ✅ SAUVEGARDER LES TOKENS EN PREMIER
         await saveTokens(accessToken, refreshToken);
@@ -254,17 +254,17 @@ class AuthService {
           'data': data['data'],
         });
 
-        print('✅ [AuthService] Utilisateur créé: ${user.fullName}');
+        debugPrint('✅ [AuthService] Utilisateur créé: ${user.fullName}');
 
         // ✅ SAUVEGARDER L'UTILISATEUR
         await saveUserToCache(user);
         await _saveSSOInfo('google', result.userInfo!);
 
-        print('✅ [AuthService] Connexion Google terminée avec succès');
+        debugPrint('✅ [AuthService] Connexion Google terminée avec succès');
 
         return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
-        print(
+        debugPrint(
           '❌ [AuthService] Code de réponse inattendu: ${response.statusCode}',
         );
         throw AuthenticationException(
@@ -273,12 +273,12 @@ class AuthService {
         );
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur Dio Google: ${e.response?.statusCode} - ${e.response?.data}',
       );
       return _handleSSODioException(e, 'google');
     } catch (e) {
-      print('❌ [AuthService] Erreur générale Google: $e');
+      debugPrint('❌ [AuthService] Erreur générale Google: $e');
 
       if (e is AuthenticationException) {
         rethrow;
@@ -294,11 +294,11 @@ class AuthService {
   /// ✅ CONNEXION APPLE RESTAURÉE COMPLÈTEMENT
   Future<Map<String, String>> loginWithApple() async {
     try {
-      print('🍎 [AuthService] Début de la connexion Apple...');
+      debugPrint('🍎 [AuthService] Début de la connexion Apple...');
 
       // 1. Vérification de plateforme
       if (!Platform.isIOS) {
-        print('⚠️ [AuthService] Apple Sign-In tenté sur plateforme non-iOS');
+        debugPrint('⚠️ [AuthService] Apple Sign-In tenté sur plateforme non-iOS');
         // Ne pas lancer d'exception, essayer quand même
       }
 
@@ -306,7 +306,7 @@ class AuthService {
       final SSOResult result = await SSOService.signInWithApple();
 
       if (!result.success) {
-        print('❌ [AuthService] Échec SSO Apple: ${result.error}');
+        debugPrint('❌ [AuthService] Échec SSO Apple: ${result.error}');
         throw AuthenticationException(
           result.error ?? 'Erreur lors de la connexion Apple',
           'APPLE_SIGNIN_FAILED',
@@ -314,16 +314,15 @@ class AuthService {
       }
 
       if (result.idToken == null || result.userInfo == null) {
-        print('❌ [AuthService] Données Apple incomplètes');
+        debugPrint('❌ [AuthService] Données Apple incomplètes');
         throw AuthenticationException(
           'Informations Apple incomplètes',
           'APPLE_INCOMPLETE_DATA',
         );
       }
 
-      print('✅ [AuthService] Credentials Apple obtenus, envoi au serveur...');
-      print('  ID Token: ${result.idToken!.substring(0, 30)}...');
-      print('  User Info: ${result.userInfo!.email ?? "privé"}');
+      // Ne jamais logguer le token ni l'email : visibles en release via `adb logcat`
+      debugPrint('✅ [AuthService] Credentials Apple obtenus, envoi au serveur...');
 
       // 3. Envoyer les credentials au serveur
       final response = await dio.post(
@@ -335,7 +334,7 @@ class AuthService {
         },
       );
 
-      print('📡 [AuthService] Réponse serveur Apple: ${response.statusCode}');
+      debugPrint('📡 [AuthService] Réponse serveur Apple: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -353,9 +352,9 @@ class AuthService {
           );
         }
 
-        print('✅ [AuthService] Tokens Apple reçus:');
-        print('  Access: ${accessToken.substring(0, 30)}...');
-        print('  Refresh: ${refreshToken.substring(0, 30)}...');
+        debugPrint('✅ [AuthService] Tokens Apple reçus:');
+        debugPrint('  Access: ${accessToken.substring(0, 30)}...');
+        debugPrint('  Refresh: ${refreshToken.substring(0, 30)}...');
 
         await saveTokens(accessToken, refreshToken);
 
@@ -368,7 +367,7 @@ class AuthService {
         await saveUserToCache(user);
         await _saveSSOInfo('apple', result.userInfo!);
 
-        print('✅ [AuthService] Connexion Apple terminée avec succès');
+        debugPrint('✅ [AuthService] Connexion Apple terminée avec succès');
 
         return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
@@ -378,12 +377,12 @@ class AuthService {
         );
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur Dio Apple: ${e.response?.statusCode} - ${e.response?.data}',
       );
       return _handleSSODioException(e, 'apple');
     } catch (e) {
-      print('❌ [AuthService] Erreur générale Apple: $e');
+      debugPrint('❌ [AuthService] Erreur générale Apple: $e');
 
       if (e is AuthenticationException) {
         rethrow;
@@ -399,7 +398,7 @@ class AuthService {
   /// ✅ INSCRIPTION GOOGLE
   Future<void> registerWithGoogle() async {
     try {
-      print('🔵 [AuthService] Début de l\'inscription Google...');
+      debugPrint('🔵 [AuthService] Début de l\'inscription Google...');
 
       final SSOResult result = await SSOService.signInWithGoogle();
 
@@ -417,7 +416,7 @@ class AuthService {
         );
       }
 
-      print(
+      debugPrint(
         '✅ [AuthService] Credentials Google obtenus, création du compte...',
       );
 
@@ -437,9 +436,9 @@ class AuthService {
         );
       }
 
-      print('✅ [AuthService] Inscription Google réussie');
+      debugPrint('✅ [AuthService] Inscription Google réussie');
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur Dio inscription Google: ${e.response?.data}',
       );
       _handleSSODioException(e, 'google');
@@ -457,11 +456,11 @@ class AuthService {
   /// ✅ INSCRIPTION APPLE RESTAURÉE COMPLÈTEMENT
   Future<void> registerWithApple() async {
     try {
-      print('🍎 [AuthService] Début de l\'inscription Apple...');
+      debugPrint('🍎 [AuthService] Début de l\'inscription Apple...');
 
       // Vérification de plateforme (warning, pas d'exception)
       if (!Platform.isIOS) {
-        print(
+        debugPrint(
           '⚠️ [AuthService] Apple Sign-In registration tenté sur plateforme non-iOS',
         );
       }
@@ -482,7 +481,7 @@ class AuthService {
         );
       }
 
-      print('✅ [AuthService] Credentials Apple obtenus, création du compte...');
+      debugPrint('✅ [AuthService] Credentials Apple obtenus, création du compte...');
 
       final response = await dio.post(
         '/auth/sso/apple/register',
@@ -500,9 +499,9 @@ class AuthService {
         );
       }
 
-      print('✅ [AuthService] Inscription Apple réussie');
+      debugPrint('✅ [AuthService] Inscription Apple réussie');
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur Dio inscription Apple: ${e.response?.data}',
       );
       _handleSSODioException(e, 'apple');
@@ -522,7 +521,7 @@ class AuthService {
   /// ✅ LIER UN COMPTE SSO À UN COMPTE EXISTANT
   Future<void> linkSSOAccount(String provider, SSOResult ssoResult) async {
     try {
-      print('🔗 [AuthService] Liaison d\'un compte $provider...');
+      debugPrint('🔗 [AuthService] Liaison d\'un compte $provider...');
 
       final token = await getToken();
       if (token == null) {
@@ -544,7 +543,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         await _saveSSOInfo(provider, ssoResult.userInfo!);
-        print('✅ [AuthService] Compte $provider lié avec succès');
+        debugPrint('✅ [AuthService] Compte $provider lié avec succès');
       } else {
         throw AuthenticationException(
           'Erreur lors de la liaison du compte $provider',
@@ -559,7 +558,7 @@ class AuthService {
   /// ✅ DÉLIER UN COMPTE SSO
   Future<void> unlinkSSOAccount(String provider) async {
     try {
-      print('🔗❌ [AuthService] Déliaison du compte $provider...');
+      debugPrint('🔗❌ [AuthService] Déliaison du compte $provider...');
 
       final token = await getToken();
       if (token == null) {
@@ -584,7 +583,7 @@ class AuthService {
           await SSOService.signOutApple();
         }
 
-        print('✅ [AuthService] Compte $provider délié avec succès');
+        debugPrint('✅ [AuthService] Compte $provider délié avec succès');
       } else {
         throw AuthenticationException(
           'Erreur lors de la déliaison du compte $provider',
@@ -606,9 +605,9 @@ class AuthService {
         _ssoUserInfoKey,
         json.encode(userInfo.toMap()),
       );
-      print('💾 [AuthService] Informations SSO sauvegardées pour $provider');
+      debugPrint('💾 [AuthService] Informations SSO sauvegardées pour $provider');
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la sauvegarde SSO: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la sauvegarde SSO: $e');
     }
   }
 
@@ -617,9 +616,9 @@ class AuthService {
     try {
       await sharedPreferences.remove(_ssoProviderKey);
       await sharedPreferences.remove(_ssoUserInfoKey);
-      print('🗑️ [AuthService] Informations SSO supprimées pour $provider');
+      debugPrint('🗑️ [AuthService] Informations SSO supprimées pour $provider');
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la suppression SSO: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la suppression SSO: $e');
     }
   }
 
@@ -628,7 +627,7 @@ class AuthService {
     try {
       return sharedPreferences.getString(_ssoProviderKey);
     } catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur lors de la récupération du provider SSO: $e',
       );
       return null;
@@ -653,7 +652,7 @@ class AuthService {
         provider: userInfoMap['provider'],
       );
     } catch (e) {
-      print('❌ [AuthService] Erreur lors de la récupération des infos SSO: $e');
+      debugPrint('❌ [AuthService] Erreur lors de la récupération des infos SSO: $e');
       return null;
     }
   }
@@ -666,7 +665,7 @@ class AuthService {
 
   /// ✅ GESTION DES ERREURS SSO
   Never _handleSSODioException(DioException e, String provider) {
-    print(
+    debugPrint(
       '❌ [AuthService] Erreur ${provider.toUpperCase()} Dio: ${e.response?.statusCode} - ${e.response?.data}',
     );
 
@@ -717,7 +716,7 @@ class AuthService {
   /// ✅ LOGIN CLASSIQUE
   Future<Map<String, String>> login(String email, String password) async {
     try {
-      print('🔐 [AuthService] Début du login classique...');
+      debugPrint('🔐 [AuthService] Début du login classique...');
 
       final response = await dio.post(
         '/auth/login',
@@ -726,7 +725,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        print('📡 [AuthService] Réponse login: $data');
+        // La réponse contient les tokens : ne pas la logguer
 
         final accessToken = data['access_token'] as String?;
         final refreshToken = data['refresh_token'] as String?;
@@ -748,14 +747,14 @@ class AuthService {
         });
 
         await saveUserToCache(user);
-        print('✅ [AuthService] Login classique réussi');
+        debugPrint('✅ [AuthService] Login classique réussi');
 
         return {'access_token': accessToken, 'refresh_token': refreshToken};
       } else {
         throw AuthenticationException('Erreur de connexion', 'LOGIN_FAILED');
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur login classique: ${e.response?.statusCode} - ${e.response?.data}',
       );
 
@@ -813,7 +812,7 @@ class AuthService {
         'NETWORK_ERROR',
       );
     } catch (e) {
-      print('❌ [AuthService] Erreur inattendue login: $e');
+      debugPrint('❌ [AuthService] Erreur inattendue login: $e');
       throw AuthenticationException(
         'Une erreur inattendue est survenue',
         'UNKNOWN_ERROR',
@@ -823,7 +822,7 @@ class AuthService {
 
   Future<Map<String, String>> refreshToken(String refreshToken) async {
     try {
-      print('🔄 [AuthService] Tentative de refresh du token...');
+      debugPrint('🔄 [AuthService] Tentative de refresh du token...');
 
       final response = await dio.post(
         '/auth/refresh',
@@ -840,7 +839,7 @@ class AuthService {
           throw Exception('Nouveaux tokens manquants dans la réponse');
         }
 
-        print('✅ [AuthService] Token refreshé avec succès');
+        debugPrint('✅ [AuthService] Token refreshé avec succès');
 
         return {
           'access_token': newAccessToken,
@@ -850,7 +849,7 @@ class AuthService {
         throw Exception('Échec du rafraîchissement du token');
       }
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur refresh: ${e.response?.statusCode} - ${e.message}',
       );
       if (e.response?.statusCode == 401) {
@@ -864,10 +863,10 @@ class AuthService {
     try {
       final accessToken = await getToken();
       final result = accessToken != null && accessToken.isNotEmpty;
-      print('🔍 [AuthService] Authentifié: $result');
+      debugPrint('🔍 [AuthService] Authentifié: $result');
       return result;
     } catch (e) {
-      print('❌ [AuthService] Erreur vérification auth: $e');
+      debugPrint('❌ [AuthService] Erreur vérification auth: $e');
       return false;
     }
   }
@@ -875,11 +874,11 @@ class AuthService {
   Future<void> saveUserToCache(User user) async {
     try {
       await sharedPreferences.setString(_userKey, user.toJsonString());
-      print(
+      debugPrint(
         '💾 [AuthService] Utilisateur sauvegardé en cache: ${user.fullName}',
       );
     } catch (e) {
-      print('❌ [AuthService] Erreur sauvegarde utilisateur: $e');
+      debugPrint('❌ [AuthService] Erreur sauvegarde utilisateur: $e');
     }
   }
 
@@ -890,23 +889,23 @@ class AuthService {
       if (cachedUserData != null && cachedUserData.isNotEmpty) {
         try {
           final userData = User.fromJsonString(cachedUserData);
-          print(
+          debugPrint(
             '💾 [AuthService] Utilisateur récupéré depuis le cache: ${userData.fullName}',
           );
           return userData;
         } catch (e) {
-          print('❌ [AuthService] Erreur lecture cache utilisateur: $e');
+          debugPrint('❌ [AuthService] Erreur lecture cache utilisateur: $e');
         }
       }
 
       // Sinon appeler l'API
       final token = await getToken();
       if (token == null) {
-        print('❌ [AuthService] Aucun token pour getCurrentUser');
+        debugPrint('❌ [AuthService] Aucun token pour getCurrentUser');
         return null;
       }
 
-      print('📡 [AuthService] Récupération utilisateur depuis l\'API...');
+      debugPrint('📡 [AuthService] Récupération utilisateur depuis l\'API...');
       final response = await dio.get(
         '/auth/me',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
@@ -915,7 +914,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final user = User.fromMap(response.data);
         await saveUserToCache(user);
-        print(
+        debugPrint(
           '✅ [AuthService] Utilisateur récupéré depuis l\'API: ${user.fullName}',
         );
         return user;
@@ -923,7 +922,7 @@ class AuthService {
 
       return null;
     } on DioException catch (e) {
-      print(
+      debugPrint(
         '❌ [AuthService] Erreur getCurrentUser: ${e.response?.statusCode} - ${e.message}',
       );
       if (e.response?.statusCode == 401) {
@@ -934,12 +933,12 @@ class AuthService {
   }
 
   Future<void> logout() async {
-    print('🚀 [AuthService] Début du logout...');
+    debugPrint('🚀 [AuthService] Début du logout...');
 
     try {
       final ssoProvider = await getCurrentSSOProvider();
       if (ssoProvider != null) {
-        print('🔄 [AuthService] Déconnexion SSO ($ssoProvider)...');
+        debugPrint('🔄 [AuthService] Déconnexion SSO ($ssoProvider)...');
 
         if (ssoProvider == 'google') {
           await SSOService.signOutGoogle();
@@ -948,18 +947,18 @@ class AuthService {
         }
 
         await _removeSSOInfo(ssoProvider);
-        print('✅ [AuthService] Déconnexion SSO terminée');
+        debugPrint('✅ [AuthService] Déconnexion SSO terminée');
       }
 
       await clearUserData();
-      print('✅ [AuthService] Logout terminé');
+      debugPrint('✅ [AuthService] Logout terminé');
     } catch (e) {
-      print('❌ [AuthService] Erreur logout: $e');
+      debugPrint('❌ [AuthService] Erreur logout: $e');
       try {
         await clearUserData();
         await SSOService.signOutAll();
       } catch (clearError) {
-        print('❌ [AuthService] Erreur nettoyage de secours: $clearError');
+        debugPrint('❌ [AuthService] Erreur nettoyage de secours: $clearError');
       }
     }
   }
@@ -980,13 +979,13 @@ class AuthService {
         await sharedPreferences.remove(key);
       }
 
-      print('🧹 [AuthService] Données utilisateur effacées (incluant SSO)');
+      debugPrint('🧹 [AuthService] Données utilisateur effacées (incluant SSO)');
     } catch (e) {
-      print('❌ [AuthService] Erreur nettoyage: $e');
+      debugPrint('❌ [AuthService] Erreur nettoyage: $e');
       try {
         await sharedPreferences.clear();
       } catch (clearError) {
-        print('❌ [AuthService] Erreur clear global: $clearError');
+        debugPrint('❌ [AuthService] Erreur clear global: $clearError');
       }
     }
   }
