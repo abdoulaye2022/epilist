@@ -1,4 +1,8 @@
 // widgets/dialogs/edit_item_dialog.dart - VERSION CORRIGÉE SANS CAD
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:epilist/services/image_upload_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
@@ -23,6 +27,8 @@ class EditItemDialog extends StatefulWidget {
 }
 
 class _EditItemDialogState extends State<EditItemDialog> {
+  String? _photoUrl; // photo courante de l'article
+  bool _photoBusy = false;
   late final TextEditingController productController;
   late final TextEditingController quantityController;
   late final TextEditingController priceController;
@@ -37,6 +43,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
   void initState() {
     super.initState();
     _originalProductName = widget.item.productName;
+    _photoUrl = widget.item.imageUrl;
     productController = TextEditingController(text: widget.item.productName);
     quantityController = TextEditingController(
       text: widget.item.quantity.toString(),
@@ -128,7 +135,9 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     _buildTitle(l10n),
                     const SizedBox(height: 12),
                     _buildDescription(l10n),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    _buildPhotoSection(l10n),
+                    const SizedBox(height: 16),
                     _buildForm(l10n),
                     if (_showSuggestions) ...[
                       const SizedBox(height: 16),
@@ -828,5 +837,156 @@ class _EditItemDialogState extends State<EditItemDialog> {
         );
       },
     );
+  }
+
+  /// Photo du produit : vignette + remplacement/suppression. L'upload part
+  /// immediatement (l'article existe deja) ; l'API assainit puis stocke
+  /// sur GCS et renvoie l'article a jour.
+  Widget _buildPhotoSection(AppLocalizations l10n) {
+    final hasPhoto = _photoUrl?.isNotEmpty == true;
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: _photoBusy ? null : _showPhotoOptions,
+          child: Container(
+            width: 64,
+            height: 64,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: _photoBusy
+                ? const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : hasPhoto
+                    ? CachedNetworkImage(
+                        imageUrl: _photoUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => const Icon(
+                          Icons.broken_image_outlined,
+                          color: AppColors.textDisabled,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.add_a_photo_outlined,
+                        color: AppColors.textSecondary,
+                      ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            hasPhoto ? l10n.productPhoto : l10n.addPhoto,
+            style: const TextStyle(
+              fontSize: 13.5,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showPhotoOptions() {
+    final l10n = AppLocalizations.of(context)!;
+    final hasPhoto = _photoUrl?.isNotEmpty == true;
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(l10n.takePhoto),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickAndUploadPhoto(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.chooseFromGallery),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickAndUploadPhoto(ImageSource.gallery);
+              },
+            ),
+            if (hasPhoto)
+              ListTile(
+                leading:
+                    const Icon(Icons.delete_outline, color: AppColors.error),
+                title: Text(l10n.removePhoto,
+                    style: const TextStyle(color: AppColors.error)),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _removePhoto();
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 1600,
+        imageQuality: 85,
+      );
+      if (picked == null || !mounted) return;
+      setState(() => _photoBusy = true);
+      final updated = await context.read<ImageUploadService>().uploadItemImage(
+            widget.item.listId,
+            widget.item.id,
+            File(picked.path),
+          );
+      if (!mounted) return;
+      setState(() {
+        _photoUrl = updated.imageUrl;
+        _photoBusy = false;
+      });
+      context
+          .read<ListItemBloc>()
+          .add(LoadListItems(widget.item.listId));
+      SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoUpdated);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _photoBusy = false);
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.photoUploadFailed);
+    }
+  }
+
+  Future<void> _removePhoto() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      setState(() => _photoBusy = true);
+      await context
+          .read<ImageUploadService>()
+          .deleteItemImage(widget.item.listId, widget.item.id);
+      if (!mounted) return;
+      setState(() {
+        _photoUrl = null;
+        _photoBusy = false;
+      });
+      context
+          .read<ListItemBloc>()
+          .add(LoadListItems(widget.item.listId));
+      SmartSnackBarManager.showSuccessSnackBar(context, l10n.photoRemoved);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _photoBusy = false);
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.photoUploadFailed);
+    }
   }
 }

@@ -8,6 +8,7 @@ class User {
   final String firstName;
   final String lastName;
   final String email;
+  final String? avatarUrl;
   final bool emailVerified;
   final String? accessToken;
   final String? refreshToken;
@@ -22,6 +23,7 @@ class User {
     required this.firstName,
     required this.lastName,
     required this.email,
+    this.avatarUrl,
     required this.emailVerified,
     this.accessToken,
     this.refreshToken,
@@ -109,6 +111,7 @@ class User {
         firstName: data['first_name'] as String? ?? '',
         lastName: data['last_name'] as String? ?? '',
         email: data['email'] as String? ?? '',
+      avatarUrl: data['avatar_url'] as String?,
         emailVerified: emailVerified,
         accessToken: accessToken,
         refreshToken: refreshToken,
@@ -264,6 +267,7 @@ class User {
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
+      'avatar_url': avatarUrl,
       'email_verified': emailVerified,
       'access_token': accessToken,
       'refresh_token': refreshToken,
@@ -282,6 +286,7 @@ class User {
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
+      'avatar_url': avatarUrl,
       'email_verified': emailVerified,
       'email_verified_at': emailVerifiedAt?.toIso8601String(),
       'currency': currency?.toJson(),

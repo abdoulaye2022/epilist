@@ -4,6 +4,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ AJOUT
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SwipeableItemCard extends StatelessWidget {
@@ -56,7 +57,25 @@ class SwipeableItemCard extends StatelessWidget {
                   : BorderSide.none,
         ),
         child: ListTile(
-          leading: _buildCheckbox(),
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildCheckbox(),
+              if (item.imageUrl?.isNotEmpty == true) ...[
+                const SizedBox(width: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: item.imageUrl!,
+                    width: 38,
+                    height: 38,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ],
+            ],
+          ),
           title: _buildTitle(),
           subtitle: _buildSubtitle(context),
           trailing: _buildTrailing(context),

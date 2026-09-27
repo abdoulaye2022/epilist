@@ -4238,4 +4238,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trackYourBudget => 'Track your grocery budgets';
+
+  @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get photoUpdated => 'Photo updated';
+
+  @override
+  String get photoRemoved => 'Photo removed';
+
+  @override
+  String get photoUploadFailed => 'Photo upload failed';
+
+  @override
+  String get addPhoto => 'Add a photo';
+
+  @override
+  String get productPhoto => 'Product photo';
 }

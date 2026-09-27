@@ -8100,6 +8100,54 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Suivez vos budgets d\'épicerie'**
   String get trackYourBudget;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get chooseFromGallery;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer la photo'**
+  String get removePhoto;
+
+  /// No description provided for @photoUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo mise à jour'**
+  String get photoUpdated;
+
+  /// No description provided for @photoRemoved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo retirée'**
+  String get photoRemoved;
+
+  /// No description provided for @photoUploadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'envoi de la photo'**
+  String get photoUploadFailed;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get addPhoto;
+
+  /// No description provided for @productPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du produit'**
+  String get productPhoto;
 }
 
 class _AppLocalizationsDelegate

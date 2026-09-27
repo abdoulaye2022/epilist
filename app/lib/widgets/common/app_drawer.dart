@@ -11,6 +11,7 @@ import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -119,24 +120,12 @@ class AppDrawer extends StatelessWidget {
 
         final name = user?.fullName ?? 'EpiList';
         final email = user?.email ?? '';
-        final initials = _initials(user);
 
         return Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 26,
-                backgroundColor: AppColors.primaryLight,
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryDark,
-                  ),
-                ),
-              ),
+              UserAvatar(user: user, radius: 26),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
@@ -168,14 +157,6 @@ class AppDrawer extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _initials(User? user) {
-    if (user == null) return 'E';
-    final f = user.firstName.isNotEmpty ? user.firstName[0] : '';
-    final l = user.lastName.isNotEmpty ? user.lastName[0] : '';
-    final initials = '$f$l'.toUpperCase();
-    return initials.isEmpty ? 'E' : initials;
   }
 
   Widget _item(

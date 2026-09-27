@@ -1,6 +1,7 @@
 // widgets/profile/profile_header_card.dart - VERSION I18N
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/models/user.dart';
+import 'package:epilist/widgets/profile/editable_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -48,19 +49,8 @@ class ProfileHeaderCard extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    return CircleAvatar(
-      radius: 40,
-      backgroundColor: AppColors.primaryLight,
-      child: Text(
-        user.initials,
-        style: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
-          letterSpacing: 2,
-        ),
-      ),
-    );
+    // Avatar reel, modifiable (upload securise vers GCS via l'API)
+    return EditableAvatar(user: user, radius: 40);
   }
 
   Widget _buildUserInfo() {

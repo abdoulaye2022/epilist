@@ -4310,4 +4310,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get trackYourBudget => 'Suivez vos budgets d\'épicerie';
+
+  @override
+  String get takePhoto => 'Prendre une photo';
+
+  @override
+  String get chooseFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get removePhoto => 'Retirer la photo';
+
+  @override
+  String get photoUpdated => 'Photo mise à jour';
+
+  @override
+  String get photoRemoved => 'Photo retirée';
+
+  @override
+  String get photoUploadFailed => 'Échec de l\'envoi de la photo';
+
+  @override
+  String get addPhoto => 'Ajouter une photo';
+
+  @override
+  String get productPhoto => 'Photo du produit';
 }

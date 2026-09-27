@@ -1693,5 +1693,13 @@
   "storePendingSync": "En attente de synchronisation",
   "uncategorizedAisle": "Non classé",
   "shareAndCollaborate": "Partagez vos listes en famille",
-  "trackYourBudget": "Suivez vos budgets d'épicerie"
+  "trackYourBudget": "Suivez vos budgets d'épicerie",
+  "takePhoto": "Prendre une photo",
+  "chooseFromGallery": "Choisir dans la galerie",
+  "removePhoto": "Retirer la photo",
+  "photoUpdated": "Photo mise à jour",
+  "photoRemoved": "Photo retirée",
+  "photoUploadFailed": "Échec de l'envoi de la photo",
+  "addPhoto": "Ajouter une photo",
+  "productPhoto": "Photo du produit"
 }

@@ -11,6 +11,7 @@ class ListItem {
   final String? storeName; // Nullable pour gérer les magasins absents
   final bool isPurchased;
   final int? categoryId; // Nullable - ID de la catégorie associée
+  final String? imageUrl; // Photo du produit (GCS)
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -23,7 +24,8 @@ class ListItem {
     this.price, // Nullable
     this.storeName, // Nullable
     required this.isPurchased,
-    this.categoryId, // Nullable
+    this.categoryId,
+    this.imageUrl, // Nullable
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -166,6 +168,7 @@ class ListItem {
       storeName: _parseString(json['store_name']), // Peut être null
       isPurchased: json['is_purchased'] == true || json['is_purchased'] == 1,
       categoryId: json['category_id'] != null ? _parseInt(json['category_id']) : null,
+      imageUrl: json['image_url'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       deletedAt:
@@ -214,6 +217,7 @@ class ListItem {
       'store_name': storeName,
       'is_purchased': isPurchased,
       'category_id': categoryId,
+      'image_url': imageUrl,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'deleted_at': deletedAt?.toIso8601String(),
@@ -229,6 +233,7 @@ class ListItem {
     String? storeName,
     bool? isPurchased,
     int? categoryId,
+    String? imageUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? deletedAt,
@@ -242,6 +247,7 @@ class ListItem {
       storeName: storeName ?? this.storeName,
       isPurchased: isPurchased ?? this.isPurchased,
       categoryId: categoryId ?? this.categoryId,
+      imageUrl: imageUrl ?? this.imageUrl,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,

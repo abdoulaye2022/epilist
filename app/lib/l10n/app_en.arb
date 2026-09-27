@@ -1692,5 +1692,13 @@
   "storePendingSync": "Waiting for sync",
   "uncategorizedAisle": "Uncategorized",
   "shareAndCollaborate": "Share your lists with family",
-  "trackYourBudget": "Track your grocery budgets"
+  "trackYourBudget": "Track your grocery budgets",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "removePhoto": "Remove photo",
+  "photoUpdated": "Photo updated",
+  "photoRemoved": "Photo removed",
+  "photoUploadFailed": "Photo upload failed",
+  "addPhoto": "Add a photo",
+  "productPhoto": "Product photo"
 }
