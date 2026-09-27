@@ -4610,4 +4610,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get aReceipt => 'un reçu';
+
+  @override
+  String get tabHome => 'Accueil';
+
+  @override
+  String get tabLists => 'Listes';
 }

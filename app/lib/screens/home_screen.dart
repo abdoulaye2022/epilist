@@ -446,12 +446,6 @@ class _HomeScreenState extends State<HomeScreen>
                             sublabel: l10n.aReceipt,
                             onTap: _scanReceipt,
                           ),
-                          QuickActionButton(
-                            icon: Icons.playlist_add_rounded,
-                            label: l10n.newListShort,
-                            sublabel: '',
-                            onTap: () => _showCreateListDialog(context),
-                          ),
                         ],
                       ),
                       const SizedBox(height: AppSpacing.lg),
@@ -488,13 +482,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-      // ✅ FAB pour création de liste (fonctionne hors ligne)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateListDialog(context),
-        backgroundColor: AppColors.primary,
-        tooltip: l10n.createList,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      // La création de liste passe par le bouton + central du MainShell.
     );
   }
 

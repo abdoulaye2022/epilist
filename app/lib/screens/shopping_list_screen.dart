@@ -64,7 +64,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         listeners: [_buildShoppingListListener(), _buildSharedListListener()],
         child: _buildBody(),
       ),
-      floatingActionButton: _buildFloatingActionButton(),
+      // La création de liste passe par le bouton + central du MainShell.
     );
   }
 
@@ -233,17 +233,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    final l10n = AppLocalizations.of(context)!;
-
-    return FloatingActionButton(
-      onPressed: _showCreateListDialog,
-      backgroundColor: AppColors.primary,
-      tooltip: l10n.createList,
-      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 

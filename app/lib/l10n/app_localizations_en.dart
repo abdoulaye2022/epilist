@@ -4537,4 +4537,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aReceipt => 'a receipt';
+
+  @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabLists => 'Lists';
 }

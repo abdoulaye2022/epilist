@@ -8610,6 +8610,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'un reçu'**
   String get aReceipt;
+
+  /// No description provided for @tabHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accueil'**
+  String get tabHome;
+
+  /// No description provided for @tabLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes'**
+  String get tabLists;
 }
 
 class _AppLocalizationsDelegate

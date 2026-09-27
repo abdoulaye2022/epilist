@@ -1922,5 +1922,7 @@
     }
   },
   "quickScan": "Scanner",
-  "aReceipt": "un reçu"
+  "aReceipt": "un reçu",
+  "tabHome": "Accueil",
+  "tabLists": "Listes"
 }

@@ -50,7 +50,7 @@ import 'package:epilist/services/image_upload_service.dart';
 import 'package:epilist/services/price_service.dart';
 import 'package:epilist/services/store_service.dart';
 import 'package:epilist/screens/login_screen.dart';
-import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/screens/main_shell.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 
@@ -383,7 +383,7 @@ class MyApp extends StatelessWidget {
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
             '/home':
                 (context) => _wrapWithConnectivity(
-                  const HomeScreen(),
+                  const MainShell(),
                   showBanner: false,
                 ),
             '/profil':
@@ -418,7 +418,7 @@ class MyApp extends StatelessWidget {
                 );
               }
               return _wrapWithConnectivity(
-                const HomeScreen(),
+                const MainShell(),
                 showBanner: false,
               );
             },
@@ -432,7 +432,7 @@ class MyApp extends StatelessWidget {
               if (listId != null) {
                 return _wrapWithConnectivity(ListDetailsScreen(listId: listId));
               }
-              return _wrapWithConnectivity(const HomeScreen());
+              return _wrapWithConnectivity(const MainShell());
             },
           },
           navigatorObservers: [routeObserver],
@@ -658,7 +658,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             return ConnectivityWrapper(
               showOfflineBanner: false,
               blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
-              child: const HomeScreen(),
+              child: const MainShell(),
             );
           }
 

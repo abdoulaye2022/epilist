@@ -5,7 +5,7 @@ import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
-import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/screens/main_shell.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/services/sso_service.dart';
 import 'package:flutter/material.dart';
@@ -818,7 +818,7 @@ class _SignUpPageState extends State<SignUpPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const MainShell()),
         );
       }
     });

@@ -3,7 +3,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
-import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/screens/main_shell.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -410,7 +410,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 if (mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const MainShell()),
                     (route) => false,
                   );
                 }

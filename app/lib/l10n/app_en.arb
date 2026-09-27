@@ -1921,5 +1921,7 @@
     }
   },
   "quickScan": "Scan",
-  "aReceipt": "a receipt"
+  "aReceipt": "a receipt",
+  "tabHome": "Home",
+  "tabLists": "Lists"
 }

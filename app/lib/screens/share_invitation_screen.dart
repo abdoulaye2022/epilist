@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/models/shared_list.dart' hide SharePermission;
 import 'package:epilist/screens/list_detail_screen.dart';
-import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/screens/main_shell.dart';
 
 class ShareInvitationScreen extends StatefulWidget {
   final String shareToken;
@@ -49,7 +49,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                     : () {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => const MainShell(),
                         ),
                         (route) => false,
                       );
@@ -68,7 +68,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               );
 
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(builder: (context) => const MainShell()),
                 (route) => false,
               );
             } else if (state is ShareInvitationDeclined) {
@@ -83,7 +83,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               Future.delayed(const Duration(seconds: 1), () {
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const MainShell()),
                     (route) => false,
                   );
                 }
@@ -370,7 +370,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         child: ElevatedButton(
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MainShell()),
               (route) => false,
             );
           },
@@ -1136,7 +1136,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const MainShell()),
                   (route) => false,
                 );
               },
