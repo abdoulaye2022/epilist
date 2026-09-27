@@ -19,7 +19,7 @@
         "vlucas/phpdotenv": "^5.6",
         "nesbot/carbon": "^3.8",
         "guzzlehttp/guzzle": "^7.9",
-        "firebase/php-jwt": "^6.10",
+        "firebase/php-jwt": "^7.0.2",
         "vlucas/valitron": "^1.4",
         "getbrevo/brevo-php": "1.x.x",
         "kreait/firebase-php": "^7.0"
