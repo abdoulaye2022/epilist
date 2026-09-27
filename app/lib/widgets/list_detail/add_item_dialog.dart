@@ -13,6 +13,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/dialogs/duplicate_confirmation_dialog.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:epilist/screens/barcode_scanner_screen.dart';
+import 'package:epilist/services/category_guesser.dart';
 import 'package:epilist/services/product_api_service.dart';
 import 'package:epilist/widgets/list_detail/barcode_input_dialog.dart';
 import 'package:epilist/widgets/dialogs/product_confirmation_dialog.dart';
@@ -906,9 +907,16 @@ class _AddItemDialogState extends State<AddItemDialog> {
             );
 
             if (confirmed == true && mounted) {
-              // Remplir les champs avec les informations du produit
+              // Remplir les champs avec les informations du produit,
+              // et suggérer une catégorie depuis les tags Open Food Facts
+              // (seulement si l'utilisateur n'en a pas déjà choisi une).
               setState(() {
                 productController.text = product.displayName;
+                _selectedCategory ??= CategoryGuesser.resolve(
+                  _loadedCategories(),
+                  CategoryGuesser.guessFromOffTags(product.categoriesTags) ??
+                      CategoryGuesser.guessFromName(product.name),
+                );
               });
 
               SmartSnackBarManager.showSuccessSnackBar(
@@ -973,6 +981,14 @@ class _AddItemDialogState extends State<AddItemDialog> {
       return;
     }
 
+    // Auto-catégorisation : si l'utilisateur n'a pas choisi de catégorie,
+    // deviner depuis le nom du produit (dictionnaire local, hors ligne).
+    final category = _selectedCategory ??
+        CategoryGuesser.guessCategory(
+          _loadedCategories(),
+          productController.text.trim(),
+        );
+
     // ✅ Utiliser le BLoC sauvegardé pour éviter les erreurs
     _listItemBloc.add(
       AddListItem(
@@ -984,8 +1000,18 @@ class _AddItemDialogState extends State<AddItemDialog> {
             storeController.text.trim().isEmpty
                 ? null
                 : storeController.text.trim(),
-        categoryId: _selectedCategory?.id,
+        categoryId: category?.id,
       ),
     );
+  }
+
+  /// Catégories de l'utilisateur telles que chargées par le CategoryBloc
+  /// (liste vide si pas encore chargées : le guesser ne s'applique pas).
+  List<Category> _loadedCategories() {
+    final state = context.read<CategoryBloc>().state;
+    if (state is CategoryLoaded) {
+      return state.categories.where((c) => c.deletedAt == null).toList();
+    }
+    return const [];
   }
 }

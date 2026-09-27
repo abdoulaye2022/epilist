@@ -326,7 +326,327 @@ class SharedListController
         }
     }
 
-    // ... (autres méthodes restent identiques)
+    /**
+     * Formater un partage pour l'app mobile (SharedList.fromJson).
+     * shared_with_user_id est requis non-null côté Flutter : ne formater
+     * que des partages rattachés à un utilisateur.
+     */
+    private function formatShare(SharedList $share, bool $withList = false, bool $withOwner = false, bool $withUser = false): array
+    {
+        $out = [
+            'id' => $share->id,
+            'list_id' => $share->list_id,
+            'owner_id' => $share->owner_id,
+            'shared_with_user_id' => $share->shared_with_user_id,
+            'permission' => $share->permission,
+            'shared_at' => Carbon::parse($share->shared_at)->toISOString(),
+            'is_active' => (bool) $share->is_active,
+            'status' => $share->status,
+            'share_token' => $share->share_token,
+        ];
+        if ($withList && $share->shoppingList) {
+            $out['shopping_list'] = [
+                'id' => $share->shoppingList->id,
+                'user_id' => $share->shoppingList->user_id,
+                'name' => $share->shoppingList->name,
+                'created_at' => $share->shoppingList->created_at->toISOString(),
+                'updated_at' => $share->shoppingList->updated_at->toISOString(),
+                'items' => [],
+            ];
+        }
+        if ($withOwner && $share->owner) {
+            $out['owner'] = $this->formatUser($share->owner);
+        }
+        if ($withUser && $share->sharedWithUser) {
+            $out['shared_with_user'] = $this->formatUser($share->sharedWithUser);
+        }
+        return $out;
+    }
+
+    private function formatUser(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+        ];
+    }
+
+    /**
+     * GET /shared-lists — les listes partagées AVEC moi (acceptées, actives)
+     */
+    public function getSharedLists(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+
+            $shares = SharedList::with(['shoppingList', 'owner'])
+                ->where('shared_with_user_id', $user_id)
+                ->where('status', SharedList::STATUS_ACCEPTED)
+                ->where('is_active', true)
+                ->orderByDesc('accepted_at')
+                ->get();
+
+            $data = $shares
+                ->filter(fn($s) => $s->shoppingList !== null)
+                ->map(fn($s) => $this->formatShare($s, withList: true, withOwner: true))
+                ->values();
+
+            $response->getBody()->write(json_encode(['success' => true, 'data' => $data]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur getSharedLists: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors du chargement des listes partagées'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * GET /shopping-lists/{id}/shares — les personnes ayant accès à ma liste
+     */
+    public function getListShares(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $list_id = (int) $args['id'];
+
+            if (!$this->canManageShares($user_id, $list_id)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous n\'êtes pas autorisé à voir les partages de cette liste'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $shares = SharedList::with(['sharedWithUser'])
+                ->where('list_id', $list_id)
+                ->whereNotNull('shared_with_user_id')
+                ->where('status', SharedList::STATUS_ACCEPTED)
+                ->where('is_active', true)
+                ->orderBy('accepted_at')
+                ->get();
+
+            $data = $shares->map(fn($s) => $this->formatShare($s, withUser: true))->values();
+
+            $response->getBody()->write(json_encode(['success' => true, 'data' => $data]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur getListShares: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors du chargement des partages'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * PUT /shared-lists/{id} — modifier la permission d'un partage
+     */
+    public function updateSharePermission(Request $request, Response $response, array $args): Response
+    {
+        $data = $request->getParsedBody();
+
+        $validator = new Validator($data);
+        $validator->rule('required', 'permission')->message('Permission requise');
+        $validator->rule('in', 'permission', ['readOnly', 'edit', 'admin'])->message('Permission invalide');
+        if (!$validator->validate()) {
+            $response->getBody()->write(json_encode(['success' => false, 'errors' => $validator->errors()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+        }
+
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $share = SharedList::with(['sharedWithUser'])->find((int) $args['id']);
+
+            if (!$share) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Partage introuvable']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            if (!$this->canManageShares($user_id, $share->list_id)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous n\'êtes pas autorisé à modifier ce partage'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $share->update(['permission' => $data['permission']]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $this->formatShare($share->fresh(['sharedWithUser']), withUser: true),
+                'message' => 'Permission mise à jour'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur updateSharePermission: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la modification de la permission'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * DELETE /shared-lists/{id} — révoquer un partage
+     */
+    public function revokeShare(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $share = SharedList::find((int) $args['id']);
+
+            if (!$share) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Partage introuvable']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            if (!$this->canManageShares($user_id, $share->list_id)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous n\'êtes pas autorisé à révoquer ce partage'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $share->revoke();
+
+            $response->getBody()->write(json_encode(['success' => true, 'message' => 'Partage révoqué']));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur revokeShare: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la révocation du partage'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * DELETE /shopping-lists/{id}/share-links — révoquer tous les liens
+     * d'invitation en attente d'une liste (ne retire pas les accès acceptés)
+     */
+    public function revokeAllShareLinks(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $list_id = (int) $args['id'];
+
+            if (!$this->canManageShares($user_id, $list_id)) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Vous n\'êtes pas autorisé à gérer les liens de cette liste'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $count = SharedList::where('list_id', $list_id)
+                ->where('status', SharedList::STATUS_PENDING)
+                ->where('is_active', true)
+                ->update([
+                    'status' => SharedList::STATUS_REVOKED,
+                    'revoked_at' => Carbon::now(),
+                    'is_active' => false,
+                ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => ['revoked_links' => $count],
+                'message' => "{$count} lien(s) d'invitation révoqué(s)"
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur revokeAllShareLinks: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la révocation des liens'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * GET /shopping-lists/{id}/share-stats — statistiques de partage
+     */
+    public function getShareStats(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $user_id = $request->getAttribute('auth_id');
+            $list_id = (int) $args['id'];
+
+            $list = ShoppingList::find($list_id);
+            if (!$list || !$list->canBeAccessedBy($user_id)) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Liste introuvable']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            $shares = SharedList::where('list_id', $list_id)->get();
+            $accepted = $shares->where('status', SharedList::STATUS_ACCEPTED)->where('is_active', true);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'list_id' => $list_id,
+                    'active_shares' => $accepted->count(),
+                    'pending_links' => $shares->where('status', SharedList::STATUS_PENDING)->where('is_active', true)->count(),
+                    'declined' => $shares->where('status', SharedList::STATUS_DECLINED)->count(),
+                    'revoked' => $shares->where('status', SharedList::STATUS_REVOKED)->count(),
+                    'left' => $shares->where('status', SharedList::STATUS_LEFT)->count(),
+                    'by_permission' => [
+                        'readOnly' => $accepted->where('permission', 'readOnly')->count(),
+                        'edit' => $accepted->where('permission', 'edit')->count(),
+                        'admin' => $accepted->where('permission', 'admin')->count(),
+                    ],
+                ],
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            error_log("Erreur getShareStats: " . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erreur lors du chargement des statistiques'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    /**
+     * GET /share/{token} — page web publique : redirige vers le site,
+     * qui gère le deep link vers l'app et le repli vers les stores.
+     */
+    public function showSharePage(Request $request, Response $response, array $args): Response
+    {
+        $token = preg_replace('/[^a-f0-9]/', '', $args['token'] ?? '');
+        return $response
+            ->withHeader('Location', $this->generateWebUrl($token))
+            ->withStatus(302);
+    }
+
+    /**
+     * Seuls le propriétaire de la liste et les partagés "admin" peuvent
+     * gérer les partages (voir, modifier, révoquer).
+     */
+    private function canManageShares(int $user_id, int $list_id): bool
+    {
+        $isOwner = ShoppingList::where('id', $list_id)->where('user_id', $user_id)->exists();
+        if ($isOwner) {
+            return true;
+        }
+        return SharedList::where('list_id', $list_id)
+            ->where('shared_with_user_id', $user_id)
+            ->where('status', SharedList::STATUS_ACCEPTED)
+            ->where('is_active', true)
+            ->where('permission', SharedList::PERMISSION_ADMIN)
+            ->exists();
+    }
 
     // ✅ MÉTHODES UTILITAIRES (inchangées)
     private function generateShareToken(): string

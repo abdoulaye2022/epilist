@@ -1126,6 +1126,53 @@ class NotificationService
     /**
      *  NOUVELLE MÉTHODE: Envoyer notification de nouveau message
      */
+    /**
+     * Notifier les autres participants d'une liste partagée qu'elle a changé
+     * (article ajouté, coché...). Anti-spam : au plus une notification par
+     * liste toutes les 3 minutes (une session de courses = des dizaines de
+     * coches), via un fichier témoin.
+     */
+    public function sendListUpdateNotification(User $actor, $list, string $body, array $recipientUserIds): array
+    {
+        $cooldownDir = dirname(__DIR__, 2) . '/storage/list_update_cooldowns';
+        if (!is_dir($cooldownDir)) {
+            @mkdir($cooldownDir, 0755, true);
+        }
+        $cooldownFile = $cooldownDir . '/list_' . (int) $list->id . '.lock';
+        if (file_exists($cooldownFile) && (time() - filemtime($cooldownFile)) < 180) {
+            return ['skipped' => 'cooldown'];
+        }
+        @touch($cooldownFile);
+
+        $title = "🛒 {$list->name}";
+        $data = [
+            'list_id' => (string) $list->id,
+            'list_name' => (string) $list->name,
+            'actor_id' => (string) $actor->id,
+            'action' => 'open_list',
+        ];
+
+        $results = [];
+        foreach ($recipientUserIds as $recipientId) {
+            if ((int) $recipientId === (int) $actor->id) {
+                continue;
+            }
+            $recipient = User::find($recipientId);
+            if (!$recipient || !$this->canSendNotification($recipient, self::TYPE_LIST_UPDATED)) {
+                continue;
+            }
+            $results[$recipientId] = $this->sendToUser(
+                $recipientId,
+                self::TYPE_LIST_UPDATED,
+                $title,
+                $body,
+                $data,
+                'normal'
+            );
+        }
+        return $results;
+    }
+
     public function sendNewMessageNotification(
         User $sender,
         $list,

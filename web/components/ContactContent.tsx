@@ -41,21 +41,56 @@ export default function ContactContent() {
     }));
   };
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  // Honeypot anti-spam : champ invisible que seuls les robots remplissent
+  const [honeypot, setHoneypot] = useState("");
+
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ??
+    "https://m2atodev.com/api.epilist/public";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+
+    // Robot détecté : faire semblant que tout va bien, ne rien envoyer
+    if (honeypot.trim() !== "") {
+      setIsSubmitted(true);
+      return;
+    }
+
     setIsSubmitting(true);
+    try {
+      const res = await fetch(`${API_URL}/contact/feedback-anonymous`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          feedback_type: "question",
+        }),
+      });
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+      const data = await res.json().catch(() => null);
+      if (!res.ok || data?.success === false) {
+        throw new Error(data?.message ?? `Erreur ${res.status}`);
+      }
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+      setIsSubmitted(true);
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      }, 3000);
+    } catch (err) {
+      setSubmitError(
+        "L'envoi a échoué. Réessayez dans un instant ou écrivez-nous directement par email."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -227,6 +262,24 @@ export default function ContactContent() {
                             />
                           </div>
                         </div>
+
+                        {/* Honeypot anti-spam (invisible pour les humains) */}
+                        <input
+                          type="text"
+                          name="website"
+                          value={honeypot}
+                          onChange={(e) => setHoneypot(e.target.value)}
+                          tabIndex={-1}
+                          autoComplete="off"
+                          aria-hidden="true"
+                          className="hidden"
+                        />
+
+                        {submitError && (
+                          <p className="text-sm text-red-600" role="alert">
+                            {submitError}
+                          </p>
+                        )}
 
                         {/* Submit Button */}
                         <Button

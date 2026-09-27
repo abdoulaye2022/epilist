@@ -7,12 +7,77 @@ use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Models\SharedList;
 use App\Models\ProductSuggestion;
+use App\Models\PurchaseHistory;
+use App\Models\User;
+use App\Services\NotificationService;
+use Carbon\Carbon;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Valitron\Validator;
 
 class ListItemController
 {
+    /**
+     * Alimente purchase_history quand un article passe à "acheté".
+     * C'est le carburant des suggestions intelligentes (fréquences, produits
+     * saisonniers, associations) : la table n'était JAMAIS remplie avant.
+     * Ne doit jamais faire échouer l'action principale.
+     */
+    private function recordPurchaseHistory(int $userId, ListItem $item): void
+    {
+        try {
+            $now = Carbon::now();
+            PurchaseHistory::create([
+                'user_id' => $userId,
+                'product_name' => $item->product_name,
+                'normalized_name' => PurchaseHistory::normalizeProductName($item->product_name),
+                'category_id' => $item->category_id,
+                'quantity' => $item->quantity ?? 1,
+                'price' => $item->price,
+                'store_name' => $item->store_name,
+                'barcode' => $item->barcode,
+                'purchased_at' => $now,
+                'list_id' => $item->list_id,
+                'day_of_week' => $now->dayOfWeek,
+                'month' => $now->month,
+                'season' => match (true) {
+                    in_array($now->month, [12, 1, 2]) => 'winter',
+                    in_array($now->month, [3, 4, 5]) => 'spring',
+                    in_array($now->month, [6, 7, 8]) => 'summer',
+                    default => 'fall',
+                },
+            ]);
+        } catch (\Throwable $e) {
+            error_log("purchase_history non enregistre: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Push "liste mise à jour" aux autres participants d'une liste partagée.
+     * Silencieux et jamais bloquant ; l'anti-spam (3 min/liste) est dans
+     * NotificationService::sendListUpdateNotification.
+     */
+    private function notifyListParticipants(int $actorId, int $listId, string $body): void
+    {
+        try {
+            $list = ShoppingList::find($listId);
+            if (!$list) {
+                return;
+            }
+            $recipients = $list->getAllAccessUsers();
+            if (count($recipients) <= 1) {
+                return; // liste non partagée
+            }
+            $actor = User::find($actorId);
+            if (!$actor) {
+                return;
+            }
+            (new NotificationService())->sendListUpdateNotification($actor, $list, $body, $recipients);
+        } catch (\Throwable $e) {
+            error_log("Notification liste non envoyee: " . $e->getMessage());
+        }
+    }
+
     /**
      * ✅ ADVANCED VALIDATION WITH ENGLISH MESSAGES
      */
@@ -380,6 +445,8 @@ class ListItemController
             // Update suggestions
             $this->updateProductSuggestion($user_id, $cleanData);
 
+            $this->notifyListParticipants((int) $user_id, (int) $listId, "\"{$item->product_name}\" a été ajouté à la liste");
+
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => $item,
@@ -557,8 +624,26 @@ class ListItemController
             }
 
             $item = ListItem::where('list_id', $listId)->findOrFail($itemId);
-            $newStatus = !$item->is_purchased;
-            $item->update(['is_purchased' => $newStatus]);
+
+            // Valeur ABSOLUE si le client l'envoie (l'app envoie toujours
+            // is_purchased) : deux personnes qui cochent le même article hors
+            // ligne ne doivent pas se neutraliser. L'inversion ne reste que
+            // pour un appel sans corps (rétro-compatibilité).
+            $body = $request->getParsedBody();
+            $newStatus = isset($body['is_purchased'])
+                ? filter_var($body['is_purchased'], FILTER_VALIDATE_BOOLEAN)
+                : !$item->is_purchased;
+
+            $becamePurchased = $newStatus && !$item->is_purchased;
+            $item->update([
+                'is_purchased' => $newStatus,
+                'purchased_at' => $newStatus ? ($item->purchased_at ?? Carbon::now()) : null,
+            ]);
+
+            if ($becamePurchased) {
+                $this->recordPurchaseHistory($user_id, $item);
+                $this->notifyListParticipants($user_id, (int) $listId, "\"{$item->product_name}\" a été acheté");
+            }
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -924,8 +1009,26 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
+            // Alimenter l'historique d'achat pour les articles qui PASSENT à
+            // "acheté" (pas ceux qui l'étaient déjà), avant la mise à jour.
+            if ((bool) $purchased) {
+                $newlyPurchased = ListItem::where('list_id', $listId)
+                    ->where('is_purchased', false)
+                    ->get();
+                foreach ($newlyPurchased as $newItem) {
+                    $this->recordPurchaseHistory($user_id, $newItem);
+                }
+            }
+
             $updatedCount = ListItem::where('list_id', $listId)
-                ->update(['is_purchased' => (bool)$purchased]);
+                ->update([
+                    'is_purchased' => (bool) $purchased,
+                    'purchased_at' => $purchased ? Carbon::now() : null,
+                ]);
+
+            if ((bool) $purchased && $updatedCount > 0) {
+                $this->notifyListParticipants((int) $user_id, (int) $listId, 'Tous les articles ont été achetés ✅');
+            }
 
             $response->getBody()->write(json_encode([
                 'success' => true,

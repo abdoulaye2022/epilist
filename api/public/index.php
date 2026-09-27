@@ -37,7 +37,6 @@ use App\Services\MailSender;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Carbon\Carbon;
-use App\Middleware\DebugMiddleware;
 
 // Charger les variables d'environnement
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');

@@ -26,6 +26,7 @@ import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
+import 'package:epilist/services/category_guesser.dart';
 import 'package:epilist/widgets/list_detail/item_filters_bar.dart';
 import 'package:epilist/widgets/list_detail/voice_input_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
@@ -99,6 +100,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
         onEdit: currentList.canEdit ? _showEditListDialog : null,
         onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
         onOpenChat: currentList.isShared ? _openChatScreen : null,
+        onManageShares:
+            currentList.isOwner && currentList.isShared
+                ? _showManageSharesDialog
+                : null,
       ),
       body: MultiBlocListener(
         listeners: [
@@ -776,13 +781,24 @@ class _ListDetailViewState extends State<_ListDetailView> {
     showVoiceInputDialog(
       context,
       onItemConfirmed: (itemName, quantity) {
+        // Auto-catégorisation depuis le nom dicté (dictionnaire local)
+        final categoryState = context.read<CategoryBloc>().state;
+        final guessed = CategoryGuesser.guessCategory(
+          categoryState is CategoryLoaded
+              ? categoryState.categories
+                  .where((c) => c.deletedAt == null)
+                  .toList()
+              : const [],
+          itemName,
+        );
+
         // Ajouter l'item avec les données reconnues par voix
         context.read<ListItemBloc>().add(
           AddListItem(
             listId: currentList.id,
             productName: itemName,
             quantity: quantity.toInt(),
-            categoryId: null,
+            categoryId: guessed?.id,
             storeName: null,
             price: null,
           ),

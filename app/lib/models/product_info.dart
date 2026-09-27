@@ -8,6 +8,10 @@ class ProductInfo extends Equatable {
   final String? imageUrl;
   final Map<String, dynamic>? nutriments;
 
+  /// Tags de catégories Open Food Facts (ex. "en:dairies", "en:breads"),
+  /// utilisés pour suggérer automatiquement une catégorie d'article.
+  final List<String> categoriesTags;
+
   const ProductInfo({
     required this.barcode,
     required this.name,
@@ -15,6 +19,7 @@ class ProductInfo extends Equatable {
     this.quantity,
     this.imageUrl,
     this.nutriments,
+    this.categoriesTags = const [],
   });
 
   /// Crée un ProductInfo depuis les données de OpenFoodFacts
@@ -53,6 +58,11 @@ class ProductInfo extends Equatable {
       imageUrl = json['image_small_url'].toString();
     }
 
+    // Récupérer les tags de catégories OFF
+    final categoriesTags = (json['categories_tags'] is List)
+        ? (json['categories_tags'] as List).map((t) => t.toString()).toList()
+        : const <String>[];
+
     return ProductInfo(
       barcode: json['code']?.toString() ?? '',
       name: productName,
@@ -60,6 +70,7 @@ class ProductInfo extends Equatable {
       quantity: quantity,
       imageUrl: imageUrl,
       nutriments: json['nutriments'] as Map<String, dynamic>?,
+      categoriesTags: categoriesTags,
     );
   }
 

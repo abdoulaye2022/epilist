@@ -1,6 +1,8 @@
 // widgets/list_detail/list_detail_app_bar.dart - POPUP INFORMATION CORRIGÉ
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
+import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
+import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/receipts_screen.dart';
@@ -17,6 +19,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onOpenChat;
+  final VoidCallback? onManageShares;
 
   const ListDetailAppBar({
     super.key,
@@ -27,6 +30,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onEdit,
     this.onDelete,
     this.onOpenChat,
+    this.onManageShares,
   });
 
   @override
@@ -169,6 +173,28 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
+    // Gérer les partages (révoquer, changer une permission)
+    if (shoppingList.isShared && onManageShares != null) {
+      items.add(
+        PopupMenuItem(
+          value: 'manage_shares',
+          child: Row(
+            children: [
+              Icon(Icons.group, size: 20, color: Colors.teal[600]),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.manageShares,
+                  style: const TextStyle(color: Colors.black87),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     // Informations sur les permissions
     items.add(
       PopupMenuItem(
@@ -268,6 +294,9 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         break;
       case 'share':
         onShare?.call();
+        break;
+      case 'manage_shares':
+        onManageShares?.call();
         break;
       case 'permissions':
         _showPermissionsDialog(context);
@@ -650,7 +679,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (dialogContext) => AlertDialog(
             backgroundColor: Colors.white,
             title: Text(
               l10n.leaveList,
@@ -662,12 +691,18 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(dialogContext).pop(),
                 child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(dialogContext).pop();
+                  // Quitter POUR DE VRAI : avant ce correctif, ce bouton
+                  // affichait juste un message sans jamais appeler l'API.
+                  context
+                      .read<SharedListBloc>()
+                      .add(LeaveSharedList(shoppingList.id));
+                  Navigator.of(context).pop(); // revenir à l'écran des listes
                   SmartSnackBarManager.showWarningSnackBar(
                     context,
                     l10n.leftList(shoppingList.name),

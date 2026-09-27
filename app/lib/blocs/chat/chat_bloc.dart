@@ -1,16 +1,18 @@
 // blocs/chat/chat_bloc.dart
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/services/chat_service.dart';
 import 'package:epilist/models/list_message.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 
-class ChatBloc extends Bloc<ChatEvent, ChatState> {
+class ChatBloc extends Bloc<ChatEvent, ChatState> with WidgetsBindingObserver {
   final ChatService chatService;
   Timer? _pollingTimer;
   DateTime? _lastMessageTime;
   int _currentOffset = 0;
+  int? _pollingListId;
   static const int _pageSize = 50;
 
   ChatBloc({required this.chatService}) : super(ChatInitial()) {
@@ -21,6 +23,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<DeleteMessage>(_onDeleteMessage);
     on<PollNewMessages>(_onPollNewMessages);
     on<LoadMoreMessages>(_onLoadMoreMessages);
+    // Suspendre le polling quand l'app passe en arriere-plan : un Timer de
+    // 5 s qui tourne en continu vide la batterie pour un ecran invisible.
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _pollingTimer?.cancel();
+      _pollingTimer = null;
+    } else if (state == AppLifecycleState.resumed && _pollingListId != null && _pollingTimer == null) {
+      _startPolling(_pollingListId!);
+      add(PollNewMessages(_pollingListId!)); // rattraper immediatement
+    }
   }
 
   /// Load messages for a list
@@ -241,6 +257,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   /// Start polling for new messages every 5 seconds
   void _startPolling(int listId) {
+    _pollingListId = listId;
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(
       const Duration(seconds: 5),
@@ -252,12 +269,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   /// Stop polling
   void stopPolling() {
+    _pollingListId = null;
     _pollingTimer?.cancel();
     _pollingTimer = null;
   }
 
   @override
   Future<void> close() {
+    WidgetsBinding.instance.removeObserver(this);
     stopPolling();
     return super.close();
   }

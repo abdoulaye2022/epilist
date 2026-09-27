@@ -396,10 +396,22 @@ class SSOService
 
     // ===================== GESTION DES LIENS SSO (inchangées) =====================
 
+    // Ces quatre méthodes étaient des stubs qui ne persistaient rien : la
+    // table user_sso_links restait vide depuis le lancement. Implémentation
+    // réelle (upsert sur les contraintes uniques provider+sso_id / user+provider).
+
     public function saveSSOAccountLink(int $userId, string $provider, string $ssoId, array $userInfo): bool
     {
         try {
-            error_log(" [SSOService] Lien SSO sauvegardé: utilisateur {$userId} -> {$provider} (ID: {$ssoId})");
+            \Illuminate\Database\Capsule\Manager::table('user_sso_links')->updateOrInsert(
+                ['user_id' => $userId, 'provider' => $provider],
+                [
+                    'sso_id' => $ssoId,
+                    'user_info' => json_encode($userInfo, JSON_UNESCAPED_UNICODE),
+                    'last_login_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]
+            );
             return true;
         } catch (\Exception $e) {
             error_log(" [SSOService] Erreur sauvegarde lien SSO: " . $e->getMessage());
@@ -409,18 +421,39 @@ class SSOService
 
     public function findSSOAccountLink(string $provider, string $ssoId): ?array
     {
-        return null;
+        try {
+            $link = \Illuminate\Database\Capsule\Manager::table('user_sso_links')
+                ->where('provider', $provider)
+                ->where('sso_id', $ssoId)
+                ->first();
+            return $link ? (array) $link : null;
+        } catch (\Exception $e) {
+            error_log(" [SSOService] Erreur recherche lien SSO: " . $e->getMessage());
+            return null;
+        }
     }
 
     public function getUserSSOLinks(int $userId): array
     {
-        return [];
+        try {
+            return \Illuminate\Database\Capsule\Manager::table('user_sso_links')
+                ->where('user_id', $userId)
+                ->get()
+                ->map(fn($row) => (array) $row)
+                ->all();
+        } catch (\Exception $e) {
+            error_log(" [SSOService] Erreur lecture liens SSO: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function removeSSOAccountLink(int $userId, string $provider): bool
     {
         try {
-            error_log(" [SSOService] Lien SSO supprimé: utilisateur {$userId} -> {$provider}");
+            \Illuminate\Database\Capsule\Manager::table('user_sso_links')
+                ->where('user_id', $userId)
+                ->where('provider', $provider)
+                ->delete();
             return true;
         } catch (\Exception $e) {
             error_log(" [SSOService] Erreur suppression lien SSO: " . $e->getMessage());
