@@ -6,6 +6,10 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
+import 'package:epilist/screens/inventory_screen.dart';
+import 'package:epilist/screens/recurring_lists_screen.dart';
+import 'package:epilist/screens/meal_planner_screen.dart';
+import 'package:epilist/screens/intelligence_settings_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -69,6 +73,25 @@ class AppDrawer extends StatelessWidget {
                   const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
                   _item(
                     context,
+                    icon: Icons.kitchen_outlined,
+                    label: l10n.inventoryTitle,
+                    onTap: () => _push(context, const InventoryScreen()),
+                  ),
+                  _item(
+                    context,
+                    icon: Icons.event_repeat_outlined,
+                    label: l10n.recurringListsTitle,
+                    onTap: () => _push(context, const RecurringListsScreen()),
+                  ),
+                  _item(
+                    context,
+                    icon: Icons.restaurant_menu_outlined,
+                    label: l10n.mealPlannerTitle,
+                    onTap: () => _push(context, const MealPlannerScreen()),
+                  ),
+                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  _item(
+                    context,
                     icon: Icons.storefront_outlined,
                     label: l10n.myStores,
                     onTap: () => _push(context, const StoresScreen()),
@@ -86,6 +109,13 @@ class AppDrawer extends StatelessWidget {
                     icon: Icons.person_outline,
                     label: l10n.profile,
                     onTap: () => _push(context, const ProfileScreen()),
+                  ),
+                  _item(
+                    context,
+                    icon: Icons.auto_awesome_outlined,
+                    label: l10n.intelligenceSettings,
+                    onTap: () =>
+                        _push(context, const IntelligenceSettingsScreen()),
                   ),
                   _item(
                     context,

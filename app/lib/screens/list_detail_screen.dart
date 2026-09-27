@@ -1,5 +1,6 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/screens/shopping_mode_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
@@ -215,6 +216,23 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 color: active != null ? AppColors.textPrimary : AppColors.textSecondary,
               ),
               overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          // Mode « Je suis au magasin » : plein écran, gros boutons,
+          // regroupé par rayon dans l'ordre du magasin actif.
+          IconButton(
+            tooltip: l10n.startShopping,
+            icon: const Icon(Icons.shopping_cart_checkout,
+                color: AppColors.primary),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ShoppingModeScreen(
+                  shoppingList: currentList,
+                  store: _activeStore,
+                  aisleRank: _aisleRank,
+                ),
+              ),
             ),
           ),
           PopupMenuButton<int>(

@@ -1923,5 +1923,223 @@
   "quickScan": "Scan",
   "aReceipt": "a receipt",
   "tabHome": "Home",
-  "tabLists": "Lists"
+  "tabLists": "Lists",
+  "predictionsTitle": "You may need soon",
+  "allPredictions": "All suggestions",
+  "seeAllSuggestions": "See all suggestions",
+  "usuallyEveryDays": "Usually every {days} days",
+  "lastBoughtDaysAgo": "Last bought {days} days ago",
+  "mightRunOutSoon": "You might run out soon.",
+  "predictionAdd": "Add",
+  "predictionNotNow": "Not now",
+  "predictionStillHave": "Still have some",
+  "predictionNever": "Don't suggest again",
+  "predictionAdded": "{product} added to your recent list",
+  "noPredictionsYet": "No suggestions yet. EpiList learns from your purchases: they will appear after a few shopping trips.",
+  "statusSoon": "Soon",
+  "statusLikelyNeeded": "Likely needed",
+  "statusOverdue": "Overdue",
+  "confidenceLow": "low confidence",
+  "inventoryTitle": "At home",
+  "inventoryAtHome": "At home",
+  "inventoryRunningLow": "Running low",
+  "inventoryOut": "Out",
+  "inventoryProbablyLow": "Probably running low",
+  "inventoryEmpty": "Add your essentials to track what's left at home.",
+  "inventoryAddProduct": "Add a product",
+  "inventoryProductName": "Product name",
+  "addToListQuestion": "Add {product} to your list?",
+  "addedToList": "{product} added to the list",
+  "removeFromInventory": "Remove from inventory",
+  "atYourCurrentPace": "At your current pace: ~{amount}",
+  "perDayToStayOnBudget": "About {amount}/day to stay on target",
+  "recommendedThisWeek": "{amount} recommended this week",
+  "daysLeftShort": "{days} days left",
+  "underBudgetPace": "You are {pct}% under your budget pace",
+  "overBudgetPace": "You are {pct}% over your budget pace",
+  "shoppingModeTitle": "My shopping",
+  "itemsRemaining": "{count} items remaining",
+  "itemsProgress": "{done} / {total} items",
+  "showCompletedItems": "Show checked items",
+  "hideCompletedItems": "Hide checked items",
+  "shoppingDone": "Shopping done 🎉",
+  "recurringListsTitle": "Recurring lists",
+  "newRecurringList": "New recurring list",
+  "recurrenceWeekly": "Every week",
+  "recurrenceBiweekly": "Every 2 weeks",
+  "recurrenceMonthly": "Every month",
+  "autoGenerateLabel": "Generate automatically",
+  "autoGenerateHint": "EpiList prepares the list on schedule and notifies you.",
+  "nextRunOn": "Next: {date}",
+  "prepareMyList": "Prepare my list",
+  "recurringListReady": "Your list is ready",
+  "recurringEmpty": "Create a template (weekly groceries, monthly Costco…) and EpiList will prefill it from your habits.",
+  "reasonInventoryOut": "out at home",
+  "reasonInventoryAtHome": "already at home",
+  "reasonBoughtRecently": "bought recently",
+  "reasonPredictionDue": "needed soon",
+  "reasonNormalCycle": "normal cycle",
+  "createTheList": "Create the list",
+  "listCreated": "List created",
+  "deleteRecurringConfirm": "Delete this recurring list?",
+  "recurringProducts": "Template products",
+  "recurringNameHint": "E.g.: Weekly groceries",
+  "mealPlannerTitle": "Plan my meals",
+  "mealPlannerSubtitle": "Pick your meals, EpiList builds the list",
+  "chooseMeals": "Choose your meals",
+  "peopleCount": "People",
+  "budgetMaxOptional": "Maximum budget (optional)",
+  "createMyPlan": "Create my plan",
+  "planEstimatedAt": "Estimated cost: {amount}",
+  "planOverBudget": "Your plan is estimated at {amount}, above your budget.",
+  "estimationCoverage": "Estimate based on {pct}% of ingredients",
+  "alreadyAtHome": "Already at home",
+  "minutesShort": "{minutes} min",
+  "servingsCount": "{count} servings",
+  "intelligenceSettings": "EpiList Intelligence",
+  "settingPredictions": "Predictive suggestions",
+  "settingPredictionsHint": "\"You may need soon\" on the dashboard",
+  "settingInventoryEstimates": "Smart inventory",
+  "settingInventoryEstimatesHint": "Estimate what's running low from your purchases",
+  "settingAutoAddOut": "Auto-add products marked out",
+  "settingAutoAddOutHint": "A product marked \"Out\" joins your recent list",
+  "settingBudgetForecast": "Budget projection",
+  "settingBudgetForecastHint": "Pace, end-of-month projection and daily budget",
+  "@usuallyEveryDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@lastBoughtDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@predictionAdded": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "@addToListQuestion": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "@addedToList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "@atYourCurrentPace": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@perDayToStayOnBudget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@recommendedThisWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@daysLeftShort": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@underBudgetPace": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@overBudgetPace": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@itemsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@itemsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@nextRunOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@planEstimatedAt": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@planOverBudget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@estimationCoverage": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "@minutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "@servingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "search": "Search"
 }

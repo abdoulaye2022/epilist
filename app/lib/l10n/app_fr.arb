@@ -1924,5 +1924,223 @@
   "quickScan": "Scanner",
   "aReceipt": "un reçu",
   "tabHome": "Accueil",
-  "tabLists": "Listes"
+  "tabLists": "Listes",
+  "predictionsTitle": "À prévoir bientôt",
+  "allPredictions": "Toutes les suggestions",
+  "seeAllSuggestions": "Voir toutes les suggestions",
+  "usuallyEveryDays": "Habituellement tous les {days} jours",
+  "@usuallyEveryDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "lastBoughtDaysAgo": "Dernier achat il y a {days} jours",
+  "@lastBoughtDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "mightRunOutSoon": "Il pourrait bientôt vous en manquer.",
+  "predictionAdd": "Ajouter",
+  "predictionNotNow": "Pas maintenant",
+  "predictionStillHave": "J'en ai encore",
+  "predictionNever": "Ne plus suggérer",
+  "predictionAdded": "{product} ajouté à votre liste récente",
+  "@predictionAdded": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "noPredictionsYet": "Pas encore de suggestions. EpiList apprend de vos achats : elles apparaîtront après quelques courses.",
+  "statusSoon": "Bientôt",
+  "statusLikelyNeeded": "Probablement nécessaire",
+  "statusOverdue": "En retard",
+  "confidenceLow": "confiance faible",
+  "inventoryTitle": "À la maison",
+  "inventoryAtHome": "À la maison",
+  "inventoryRunningLow": "Bientôt terminé",
+  "inventoryOut": "Terminé",
+  "inventoryProbablyLow": "Probablement bientôt terminé",
+  "inventoryEmpty": "Ajoutez vos produits essentiels pour suivre ce qu'il reste à la maison.",
+  "inventoryAddProduct": "Ajouter un produit",
+  "inventoryProductName": "Nom du produit",
+  "addToListQuestion": "Ajouter {product} à votre liste ?",
+  "@addToListQuestion": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "addedToList": "{product} ajouté à la liste",
+  "@addedToList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromInventory": "Retirer de l'inventaire",
+  "atYourCurrentPace": "À votre rythme actuel : ~{amount}",
+  "@atYourCurrentPace": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "perDayToStayOnBudget": "Environ {amount}/jour pour rester dans votre objectif",
+  "@perDayToStayOnBudget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recommendedThisWeek": "{amount} recommandés cette semaine",
+  "@recommendedThisWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "daysLeftShort": "{days} jours restants",
+  "@daysLeftShort": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "underBudgetPace": "Vous êtes {pct} % sous votre rythme budgétaire",
+  "@underBudgetPace": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "overBudgetPace": "Vous êtes {pct} % au-dessus de votre rythme budgétaire",
+  "@overBudgetPace": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingModeTitle": "Mes courses",
+  "itemsRemaining": "{count} articles restants",
+  "@itemsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsProgress": "{done} / {total} articles",
+  "@itemsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "showCompletedItems": "Voir les articles cochés",
+  "hideCompletedItems": "Masquer les articles cochés",
+  "shoppingDone": "Courses terminées 🎉",
+  "recurringListsTitle": "Listes récurrentes",
+  "newRecurringList": "Nouvelle liste récurrente",
+  "recurrenceWeekly": "Chaque semaine",
+  "recurrenceBiweekly": "Toutes les 2 semaines",
+  "recurrenceMonthly": "Chaque mois",
+  "autoGenerateLabel": "Générer automatiquement",
+  "autoGenerateHint": "EpiList prépare la liste à la date prévue et vous prévient.",
+  "nextRunOn": "Prochaine : {date}",
+  "@nextRunOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "prepareMyList": "Préparer ma liste",
+  "recurringListReady": "Votre liste est prête",
+  "recurringEmpty": "Créez un modèle (courses de la semaine, Costco mensuel…) et EpiList le préremplira selon vos habitudes.",
+  "reasonInventoryOut": "terminé à la maison",
+  "reasonInventoryAtHome": "déjà à la maison",
+  "reasonBoughtRecently": "acheté récemment",
+  "reasonPredictionDue": "bientôt nécessaire",
+  "reasonNormalCycle": "cycle normal",
+  "createTheList": "Créer la liste",
+  "listCreated": "Liste créée",
+  "deleteRecurringConfirm": "Supprimer cette liste récurrente ?",
+  "recurringProducts": "Produits du modèle",
+  "recurringNameHint": "Ex. : Courses de la semaine",
+  "mealPlannerTitle": "Planifier mes repas",
+  "mealPlannerSubtitle": "Choisissez vos repas, EpiList prépare la liste",
+  "chooseMeals": "Choisissez vos repas",
+  "peopleCount": "Personnes",
+  "budgetMaxOptional": "Budget maximum (facultatif)",
+  "createMyPlan": "Créer mon plan",
+  "planEstimatedAt": "Coût estimé : {amount}",
+  "@planEstimatedAt": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "planOverBudget": "Votre plan est estimé à {amount}, au-dessus de votre budget.",
+  "@planOverBudget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "estimationCoverage": "Estimation basée sur {pct} % des ingrédients",
+  "@estimationCoverage": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "alreadyAtHome": "Déjà à la maison",
+  "minutesShort": "{minutes} min",
+  "@minutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "servingsCount": "{count} portions",
+  "@servingsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "intelligenceSettings": "Intelligence EpiList",
+  "settingPredictions": "Suggestions prédictives",
+  "settingPredictionsHint": "« Il te manque probablement… » sur le tableau de bord",
+  "settingInventoryEstimates": "Inventaire intelligent",
+  "settingInventoryEstimatesHint": "Estimer ce qui est bientôt terminé d'après vos achats",
+  "settingAutoAddOut": "Ajouter automatiquement les produits terminés",
+  "settingAutoAddOutHint": "Un produit marqué « Terminé » rejoint votre liste récente",
+  "settingBudgetForecast": "Projection budget",
+  "settingBudgetForecastHint": "Rythme, projection de fin de mois et budget par jour",
+  "search": "Rechercher"
 }

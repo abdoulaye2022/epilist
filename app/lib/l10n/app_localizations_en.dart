@@ -4543,4 +4543,295 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabLists => 'Lists';
+
+  @override
+  String get predictionsTitle => 'You may need soon';
+
+  @override
+  String get allPredictions => 'All suggestions';
+
+  @override
+  String get seeAllSuggestions => 'See all suggestions';
+
+  @override
+  String usuallyEveryDays(int days) {
+    return 'Usually every $days days';
+  }
+
+  @override
+  String lastBoughtDaysAgo(int days) {
+    return 'Last bought $days days ago';
+  }
+
+  @override
+  String get mightRunOutSoon => 'You might run out soon.';
+
+  @override
+  String get predictionAdd => 'Add';
+
+  @override
+  String get predictionNotNow => 'Not now';
+
+  @override
+  String get predictionStillHave => 'Still have some';
+
+  @override
+  String get predictionNever => 'Don\'t suggest again';
+
+  @override
+  String predictionAdded(String product) {
+    return '$product added to your recent list';
+  }
+
+  @override
+  String get noPredictionsYet =>
+      'No suggestions yet. EpiList learns from your purchases: they will appear after a few shopping trips.';
+
+  @override
+  String get statusSoon => 'Soon';
+
+  @override
+  String get statusLikelyNeeded => 'Likely needed';
+
+  @override
+  String get statusOverdue => 'Overdue';
+
+  @override
+  String get confidenceLow => 'low confidence';
+
+  @override
+  String get inventoryTitle => 'At home';
+
+  @override
+  String get inventoryAtHome => 'At home';
+
+  @override
+  String get inventoryRunningLow => 'Running low';
+
+  @override
+  String get inventoryOut => 'Out';
+
+  @override
+  String get inventoryProbablyLow => 'Probably running low';
+
+  @override
+  String get inventoryEmpty =>
+      'Add your essentials to track what\'s left at home.';
+
+  @override
+  String get inventoryAddProduct => 'Add a product';
+
+  @override
+  String get inventoryProductName => 'Product name';
+
+  @override
+  String addToListQuestion(String product) {
+    return 'Add $product to your list?';
+  }
+
+  @override
+  String addedToList(String product) {
+    return '$product added to the list';
+  }
+
+  @override
+  String get removeFromInventory => 'Remove from inventory';
+
+  @override
+  String atYourCurrentPace(String amount) {
+    return 'At your current pace: ~$amount';
+  }
+
+  @override
+  String perDayToStayOnBudget(String amount) {
+    return 'About $amount/day to stay on target';
+  }
+
+  @override
+  String recommendedThisWeek(String amount) {
+    return '$amount recommended this week';
+  }
+
+  @override
+  String daysLeftShort(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String underBudgetPace(String pct) {
+    return 'You are $pct% under your budget pace';
+  }
+
+  @override
+  String overBudgetPace(String pct) {
+    return 'You are $pct% over your budget pace';
+  }
+
+  @override
+  String get shoppingModeTitle => 'My shopping';
+
+  @override
+  String itemsRemaining(int count) {
+    return '$count items remaining';
+  }
+
+  @override
+  String itemsProgress(int done, int total) {
+    return '$done / $total items';
+  }
+
+  @override
+  String get showCompletedItems => 'Show checked items';
+
+  @override
+  String get hideCompletedItems => 'Hide checked items';
+
+  @override
+  String get shoppingDone => 'Shopping done 🎉';
+
+  @override
+  String get recurringListsTitle => 'Recurring lists';
+
+  @override
+  String get newRecurringList => 'New recurring list';
+
+  @override
+  String get recurrenceWeekly => 'Every week';
+
+  @override
+  String get recurrenceBiweekly => 'Every 2 weeks';
+
+  @override
+  String get recurrenceMonthly => 'Every month';
+
+  @override
+  String get autoGenerateLabel => 'Generate automatically';
+
+  @override
+  String get autoGenerateHint =>
+      'EpiList prepares the list on schedule and notifies you.';
+
+  @override
+  String nextRunOn(String date) {
+    return 'Next: $date';
+  }
+
+  @override
+  String get prepareMyList => 'Prepare my list';
+
+  @override
+  String get recurringListReady => 'Your list is ready';
+
+  @override
+  String get recurringEmpty =>
+      'Create a template (weekly groceries, monthly Costco…) and EpiList will prefill it from your habits.';
+
+  @override
+  String get reasonInventoryOut => 'out at home';
+
+  @override
+  String get reasonInventoryAtHome => 'already at home';
+
+  @override
+  String get reasonBoughtRecently => 'bought recently';
+
+  @override
+  String get reasonPredictionDue => 'needed soon';
+
+  @override
+  String get reasonNormalCycle => 'normal cycle';
+
+  @override
+  String get createTheList => 'Create the list';
+
+  @override
+  String get listCreated => 'List created';
+
+  @override
+  String get deleteRecurringConfirm => 'Delete this recurring list?';
+
+  @override
+  String get recurringProducts => 'Template products';
+
+  @override
+  String get recurringNameHint => 'E.g.: Weekly groceries';
+
+  @override
+  String get mealPlannerTitle => 'Plan my meals';
+
+  @override
+  String get mealPlannerSubtitle => 'Pick your meals, EpiList builds the list';
+
+  @override
+  String get chooseMeals => 'Choose your meals';
+
+  @override
+  String get peopleCount => 'People';
+
+  @override
+  String get budgetMaxOptional => 'Maximum budget (optional)';
+
+  @override
+  String get createMyPlan => 'Create my plan';
+
+  @override
+  String planEstimatedAt(String amount) {
+    return 'Estimated cost: $amount';
+  }
+
+  @override
+  String planOverBudget(String amount) {
+    return 'Your plan is estimated at $amount, above your budget.';
+  }
+
+  @override
+  String estimationCoverage(int pct) {
+    return 'Estimate based on $pct% of ingredients';
+  }
+
+  @override
+  String get alreadyAtHome => 'Already at home';
+
+  @override
+  String minutesShort(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String servingsCount(int count) {
+    return '$count servings';
+  }
+
+  @override
+  String get intelligenceSettings => 'EpiList Intelligence';
+
+  @override
+  String get settingPredictions => 'Predictive suggestions';
+
+  @override
+  String get settingPredictionsHint => '\"You may need soon\" on the dashboard';
+
+  @override
+  String get settingInventoryEstimates => 'Smart inventory';
+
+  @override
+  String get settingInventoryEstimatesHint =>
+      'Estimate what\'s running low from your purchases';
+
+  @override
+  String get settingAutoAddOut => 'Auto-add products marked out';
+
+  @override
+  String get settingAutoAddOutHint =>
+      'A product marked \"Out\" joins your recent list';
+
+  @override
+  String get settingBudgetForecast => 'Budget projection';
+
+  @override
+  String get settingBudgetForecastHint =>
+      'Pace, end-of-month projection and daily budget';
+
+  @override
+  String get search => 'Search';
 }

@@ -8622,6 +8622,498 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Listes'**
   String get tabLists;
+
+  /// No description provided for @predictionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À prévoir bientôt'**
+  String get predictionsTitle;
+
+  /// No description provided for @allPredictions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les suggestions'**
+  String get allPredictions;
+
+  /// No description provided for @seeAllSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir toutes les suggestions'**
+  String get seeAllSuggestions;
+
+  /// No description provided for @usuallyEveryDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Habituellement tous les {days} jours'**
+  String usuallyEveryDays(int days);
+
+  /// No description provided for @lastBoughtDaysAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier achat il y a {days} jours'**
+  String lastBoughtDaysAgo(int days);
+
+  /// No description provided for @mightRunOutSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il pourrait bientôt vous en manquer.'**
+  String get mightRunOutSoon;
+
+  /// No description provided for @predictionAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter'**
+  String get predictionAdd;
+
+  /// No description provided for @predictionNotNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas maintenant'**
+  String get predictionNotNow;
+
+  /// No description provided for @predictionStillHave.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'en ai encore'**
+  String get predictionStillHave;
+
+  /// No description provided for @predictionNever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne plus suggérer'**
+  String get predictionNever;
+
+  /// No description provided for @predictionAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'{product} ajouté à votre liste récente'**
+  String predictionAdded(String product);
+
+  /// No description provided for @noPredictionsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore de suggestions. EpiList apprend de vos achats : elles apparaîtront après quelques courses.'**
+  String get noPredictionsYet;
+
+  /// No description provided for @statusSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bientôt'**
+  String get statusSoon;
+
+  /// No description provided for @statusLikelyNeeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Probablement nécessaire'**
+  String get statusLikelyNeeded;
+
+  /// No description provided for @statusOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get statusOverdue;
+
+  /// No description provided for @confidenceLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'confiance faible'**
+  String get confidenceLow;
+
+  /// No description provided for @inventoryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À la maison'**
+  String get inventoryTitle;
+
+  /// No description provided for @inventoryAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'À la maison'**
+  String get inventoryAtHome;
+
+  /// No description provided for @inventoryRunningLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bientôt terminé'**
+  String get inventoryRunningLow;
+
+  /// No description provided for @inventoryOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé'**
+  String get inventoryOut;
+
+  /// No description provided for @inventoryProbablyLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Probablement bientôt terminé'**
+  String get inventoryProbablyLow;
+
+  /// No description provided for @inventoryEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos produits essentiels pour suivre ce qu\'il reste à la maison.'**
+  String get inventoryEmpty;
+
+  /// No description provided for @inventoryAddProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un produit'**
+  String get inventoryAddProduct;
+
+  /// No description provided for @inventoryProductName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du produit'**
+  String get inventoryProductName;
+
+  /// No description provided for @addToListQuestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter {product} à votre liste ?'**
+  String addToListQuestion(String product);
+
+  /// No description provided for @addedToList.
+  ///
+  /// In fr, this message translates to:
+  /// **'{product} ajouté à la liste'**
+  String addedToList(String product);
+
+  /// No description provided for @removeFromInventory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer de l\'inventaire'**
+  String get removeFromInventory;
+
+  /// No description provided for @atYourCurrentPace.
+  ///
+  /// In fr, this message translates to:
+  /// **'À votre rythme actuel : ~{amount}'**
+  String atYourCurrentPace(String amount);
+
+  /// No description provided for @perDayToStayOnBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Environ {amount}/jour pour rester dans votre objectif'**
+  String perDayToStayOnBudget(String amount);
+
+  /// No description provided for @recommendedThisWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'{amount} recommandés cette semaine'**
+  String recommendedThisWeek(String amount);
+
+  /// No description provided for @daysLeftShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days} jours restants'**
+  String daysLeftShort(int days);
+
+  /// No description provided for @underBudgetPace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes {pct} % sous votre rythme budgétaire'**
+  String underBudgetPace(String pct);
+
+  /// No description provided for @overBudgetPace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes {pct} % au-dessus de votre rythme budgétaire'**
+  String overBudgetPace(String pct);
+
+  /// No description provided for @shoppingModeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes courses'**
+  String get shoppingModeTitle;
+
+  /// No description provided for @itemsRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} articles restants'**
+  String itemsRemaining(int count);
+
+  /// No description provided for @itemsProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'{done} / {total} articles'**
+  String itemsProgress(int done, int total);
+
+  /// No description provided for @showCompletedItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les articles cochés'**
+  String get showCompletedItems;
+
+  /// No description provided for @hideCompletedItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer les articles cochés'**
+  String get hideCompletedItems;
+
+  /// No description provided for @shoppingDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courses terminées 🎉'**
+  String get shoppingDone;
+
+  /// No description provided for @recurringListsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes récurrentes'**
+  String get recurringListsTitle;
+
+  /// No description provided for @newRecurringList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle liste récurrente'**
+  String get newRecurringList;
+
+  /// No description provided for @recurrenceWeekly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque semaine'**
+  String get recurrenceWeekly;
+
+  /// No description provided for @recurrenceBiweekly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les 2 semaines'**
+  String get recurrenceBiweekly;
+
+  /// No description provided for @recurrenceMonthly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque mois'**
+  String get recurrenceMonthly;
+
+  /// No description provided for @autoGenerateLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Générer automatiquement'**
+  String get autoGenerateLabel;
+
+  /// No description provided for @autoGenerateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList prépare la liste à la date prévue et vous prévient.'**
+  String get autoGenerateHint;
+
+  /// No description provided for @nextRunOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochaine : {date}'**
+  String nextRunOn(String date);
+
+  /// No description provided for @prepareMyList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préparer ma liste'**
+  String get prepareMyList;
+
+  /// No description provided for @recurringListReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre liste est prête'**
+  String get recurringListReady;
+
+  /// No description provided for @recurringEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez un modèle (courses de la semaine, Costco mensuel…) et EpiList le préremplira selon vos habitudes.'**
+  String get recurringEmpty;
+
+  /// No description provided for @reasonInventoryOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'terminé à la maison'**
+  String get reasonInventoryOut;
+
+  /// No description provided for @reasonInventoryAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'déjà à la maison'**
+  String get reasonInventoryAtHome;
+
+  /// No description provided for @reasonBoughtRecently.
+  ///
+  /// In fr, this message translates to:
+  /// **'acheté récemment'**
+  String get reasonBoughtRecently;
+
+  /// No description provided for @reasonPredictionDue.
+  ///
+  /// In fr, this message translates to:
+  /// **'bientôt nécessaire'**
+  String get reasonPredictionDue;
+
+  /// No description provided for @reasonNormalCycle.
+  ///
+  /// In fr, this message translates to:
+  /// **'cycle normal'**
+  String get reasonNormalCycle;
+
+  /// No description provided for @createTheList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer la liste'**
+  String get createTheList;
+
+  /// No description provided for @listCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste créée'**
+  String get listCreated;
+
+  /// No description provided for @deleteRecurringConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette liste récurrente ?'**
+  String get deleteRecurringConfirm;
+
+  /// No description provided for @recurringProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits du modèle'**
+  String get recurringProducts;
+
+  /// No description provided for @recurringNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. : Courses de la semaine'**
+  String get recurringNameHint;
+
+  /// No description provided for @mealPlannerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planifier mes repas'**
+  String get mealPlannerTitle;
+
+  /// No description provided for @mealPlannerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez vos repas, EpiList prépare la liste'**
+  String get mealPlannerSubtitle;
+
+  /// No description provided for @chooseMeals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez vos repas'**
+  String get chooseMeals;
+
+  /// No description provided for @peopleCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnes'**
+  String get peopleCount;
+
+  /// No description provided for @budgetMaxOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget maximum (facultatif)'**
+  String get budgetMaxOptional;
+
+  /// No description provided for @createMyPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer mon plan'**
+  String get createMyPlan;
+
+  /// No description provided for @planEstimatedAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût estimé : {amount}'**
+  String planEstimatedAt(String amount);
+
+  /// No description provided for @planOverBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre plan est estimé à {amount}, au-dessus de votre budget.'**
+  String planOverBudget(String amount);
+
+  /// No description provided for @estimationCoverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimation basée sur {pct} % des ingrédients'**
+  String estimationCoverage(int pct);
+
+  /// No description provided for @alreadyAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déjà à la maison'**
+  String get alreadyAtHome;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes} min'**
+  String minutesShort(int minutes);
+
+  /// No description provided for @servingsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} portions'**
+  String servingsCount(int count);
+
+  /// No description provided for @intelligenceSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intelligence EpiList'**
+  String get intelligenceSettings;
+
+  /// No description provided for @settingPredictions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions prédictives'**
+  String get settingPredictions;
+
+  /// No description provided for @settingPredictionsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'« Il te manque probablement… » sur le tableau de bord'**
+  String get settingPredictionsHint;
+
+  /// No description provided for @settingInventoryEstimates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inventaire intelligent'**
+  String get settingInventoryEstimates;
+
+  /// No description provided for @settingInventoryEstimatesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimer ce qui est bientôt terminé d\'après vos achats'**
+  String get settingInventoryEstimatesHint;
+
+  /// No description provided for @settingAutoAddOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter automatiquement les produits terminés'**
+  String get settingAutoAddOut;
+
+  /// No description provided for @settingAutoAddOutHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un produit marqué « Terminé » rejoint votre liste récente'**
+  String get settingAutoAddOutHint;
+
+  /// No description provided for @settingBudgetForecast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Projection budget'**
+  String get settingBudgetForecast;
+
+  /// No description provided for @settingBudgetForecastHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rythme, projection de fin de mois et budget par jour'**
+  String get settingBudgetForecastHint;
+
+  /// No description provided for @search.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher'**
+  String get search;
 }
 
 class _AppLocalizationsDelegate

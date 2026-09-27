@@ -4616,4 +4616,298 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get tabLists => 'Listes';
+
+  @override
+  String get predictionsTitle => 'À prévoir bientôt';
+
+  @override
+  String get allPredictions => 'Toutes les suggestions';
+
+  @override
+  String get seeAllSuggestions => 'Voir toutes les suggestions';
+
+  @override
+  String usuallyEveryDays(int days) {
+    return 'Habituellement tous les $days jours';
+  }
+
+  @override
+  String lastBoughtDaysAgo(int days) {
+    return 'Dernier achat il y a $days jours';
+  }
+
+  @override
+  String get mightRunOutSoon => 'Il pourrait bientôt vous en manquer.';
+
+  @override
+  String get predictionAdd => 'Ajouter';
+
+  @override
+  String get predictionNotNow => 'Pas maintenant';
+
+  @override
+  String get predictionStillHave => 'J\'en ai encore';
+
+  @override
+  String get predictionNever => 'Ne plus suggérer';
+
+  @override
+  String predictionAdded(String product) {
+    return '$product ajouté à votre liste récente';
+  }
+
+  @override
+  String get noPredictionsYet =>
+      'Pas encore de suggestions. EpiList apprend de vos achats : elles apparaîtront après quelques courses.';
+
+  @override
+  String get statusSoon => 'Bientôt';
+
+  @override
+  String get statusLikelyNeeded => 'Probablement nécessaire';
+
+  @override
+  String get statusOverdue => 'En retard';
+
+  @override
+  String get confidenceLow => 'confiance faible';
+
+  @override
+  String get inventoryTitle => 'À la maison';
+
+  @override
+  String get inventoryAtHome => 'À la maison';
+
+  @override
+  String get inventoryRunningLow => 'Bientôt terminé';
+
+  @override
+  String get inventoryOut => 'Terminé';
+
+  @override
+  String get inventoryProbablyLow => 'Probablement bientôt terminé';
+
+  @override
+  String get inventoryEmpty =>
+      'Ajoutez vos produits essentiels pour suivre ce qu\'il reste à la maison.';
+
+  @override
+  String get inventoryAddProduct => 'Ajouter un produit';
+
+  @override
+  String get inventoryProductName => 'Nom du produit';
+
+  @override
+  String addToListQuestion(String product) {
+    return 'Ajouter $product à votre liste ?';
+  }
+
+  @override
+  String addedToList(String product) {
+    return '$product ajouté à la liste';
+  }
+
+  @override
+  String get removeFromInventory => 'Retirer de l\'inventaire';
+
+  @override
+  String atYourCurrentPace(String amount) {
+    return 'À votre rythme actuel : ~$amount';
+  }
+
+  @override
+  String perDayToStayOnBudget(String amount) {
+    return 'Environ $amount/jour pour rester dans votre objectif';
+  }
+
+  @override
+  String recommendedThisWeek(String amount) {
+    return '$amount recommandés cette semaine';
+  }
+
+  @override
+  String daysLeftShort(int days) {
+    return '$days jours restants';
+  }
+
+  @override
+  String underBudgetPace(String pct) {
+    return 'Vous êtes $pct % sous votre rythme budgétaire';
+  }
+
+  @override
+  String overBudgetPace(String pct) {
+    return 'Vous êtes $pct % au-dessus de votre rythme budgétaire';
+  }
+
+  @override
+  String get shoppingModeTitle => 'Mes courses';
+
+  @override
+  String itemsRemaining(int count) {
+    return '$count articles restants';
+  }
+
+  @override
+  String itemsProgress(int done, int total) {
+    return '$done / $total articles';
+  }
+
+  @override
+  String get showCompletedItems => 'Voir les articles cochés';
+
+  @override
+  String get hideCompletedItems => 'Masquer les articles cochés';
+
+  @override
+  String get shoppingDone => 'Courses terminées 🎉';
+
+  @override
+  String get recurringListsTitle => 'Listes récurrentes';
+
+  @override
+  String get newRecurringList => 'Nouvelle liste récurrente';
+
+  @override
+  String get recurrenceWeekly => 'Chaque semaine';
+
+  @override
+  String get recurrenceBiweekly => 'Toutes les 2 semaines';
+
+  @override
+  String get recurrenceMonthly => 'Chaque mois';
+
+  @override
+  String get autoGenerateLabel => 'Générer automatiquement';
+
+  @override
+  String get autoGenerateHint =>
+      'EpiList prépare la liste à la date prévue et vous prévient.';
+
+  @override
+  String nextRunOn(String date) {
+    return 'Prochaine : $date';
+  }
+
+  @override
+  String get prepareMyList => 'Préparer ma liste';
+
+  @override
+  String get recurringListReady => 'Votre liste est prête';
+
+  @override
+  String get recurringEmpty =>
+      'Créez un modèle (courses de la semaine, Costco mensuel…) et EpiList le préremplira selon vos habitudes.';
+
+  @override
+  String get reasonInventoryOut => 'terminé à la maison';
+
+  @override
+  String get reasonInventoryAtHome => 'déjà à la maison';
+
+  @override
+  String get reasonBoughtRecently => 'acheté récemment';
+
+  @override
+  String get reasonPredictionDue => 'bientôt nécessaire';
+
+  @override
+  String get reasonNormalCycle => 'cycle normal';
+
+  @override
+  String get createTheList => 'Créer la liste';
+
+  @override
+  String get listCreated => 'Liste créée';
+
+  @override
+  String get deleteRecurringConfirm => 'Supprimer cette liste récurrente ?';
+
+  @override
+  String get recurringProducts => 'Produits du modèle';
+
+  @override
+  String get recurringNameHint => 'Ex. : Courses de la semaine';
+
+  @override
+  String get mealPlannerTitle => 'Planifier mes repas';
+
+  @override
+  String get mealPlannerSubtitle =>
+      'Choisissez vos repas, EpiList prépare la liste';
+
+  @override
+  String get chooseMeals => 'Choisissez vos repas';
+
+  @override
+  String get peopleCount => 'Personnes';
+
+  @override
+  String get budgetMaxOptional => 'Budget maximum (facultatif)';
+
+  @override
+  String get createMyPlan => 'Créer mon plan';
+
+  @override
+  String planEstimatedAt(String amount) {
+    return 'Coût estimé : $amount';
+  }
+
+  @override
+  String planOverBudget(String amount) {
+    return 'Votre plan est estimé à $amount, au-dessus de votre budget.';
+  }
+
+  @override
+  String estimationCoverage(int pct) {
+    return 'Estimation basée sur $pct % des ingrédients';
+  }
+
+  @override
+  String get alreadyAtHome => 'Déjà à la maison';
+
+  @override
+  String minutesShort(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String servingsCount(int count) {
+    return '$count portions';
+  }
+
+  @override
+  String get intelligenceSettings => 'Intelligence EpiList';
+
+  @override
+  String get settingPredictions => 'Suggestions prédictives';
+
+  @override
+  String get settingPredictionsHint =>
+      '« Il te manque probablement… » sur le tableau de bord';
+
+  @override
+  String get settingInventoryEstimates => 'Inventaire intelligent';
+
+  @override
+  String get settingInventoryEstimatesHint =>
+      'Estimer ce qui est bientôt terminé d\'après vos achats';
+
+  @override
+  String get settingAutoAddOut =>
+      'Ajouter automatiquement les produits terminés';
+
+  @override
+  String get settingAutoAddOutHint =>
+      'Un produit marqué « Terminé » rejoint votre liste récente';
+
+  @override
+  String get settingBudgetForecast => 'Projection budget';
+
+  @override
+  String get settingBudgetForecastHint =>
+      'Rythme, projection de fin de mois et budget par jour';
+
+  @override
+  String get search => 'Rechercher';
 }

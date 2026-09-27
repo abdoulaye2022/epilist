@@ -34,6 +34,11 @@ import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
 import 'package:epilist/utils/receipt_scan_flow.dart';
+import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/intelligence_service.dart';
+import 'package:epilist/services/list_item_service.dart';
+import 'package:epilist/screens/predictions_screen.dart';
+import 'package:epilist/screens/meal_planner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -54,6 +59,12 @@ class _HomeScreenState extends State<HomeScreen>
   // Donnees du tableau de bord (chargees en douceur, jamais bloquantes)
   List<Budget> _allBudgets = [];
   DateTime _selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+
+  // Intelligence : suggestions « À prévoir bientôt » + projection budget
+  List<ProductPrediction> _predictions = [];
+  BudgetForecast? _forecast;
+  bool _predictionsEnabled = true;
+  bool _forecastEnabled = true;
 
   /// Budget couvrant le mois sélectionné (les mensuels d'abord).
   Budget? get _monthBudget {
@@ -96,6 +107,64 @@ class _HomeScreenState extends State<HomeScreen>
     } catch (_) {
       // hors ligne / pas de budget : la carte passe en invite
     }
+    _loadIntelligence();
+  }
+
+  /// Suggestions prédictives + projection budget (selon les réglages
+  /// Intelligence EpiList). Échec silencieux : jamais bloquant.
+  Future<void> _loadIntelligence() async {
+    _predictionsEnabled =
+        await IntelligenceSettings.get(IntelligenceSettings.keyPredictions);
+    _forecastEnabled =
+        await IntelligenceSettings.get(IntelligenceSettings.keyBudgetForecast);
+    if (!mounted) return;
+    final service = context.read<IntelligenceService>();
+
+    if (_predictionsEnabled) {
+      try {
+        final predictions = await service.getPredictions(limit: 3);
+        if (mounted) setState(() => _predictions = predictions);
+      } catch (_) {}
+    } else if (_predictions.isNotEmpty) {
+      setState(() => _predictions = []);
+    }
+
+    if (_forecastEnabled) {
+      try {
+        final forecast = await service.getBudgetForecast();
+        if (mounted) setState(() => _forecast = forecast);
+      } catch (_) {}
+    } else if (_forecast != null) {
+      setState(() => _forecast = null);
+    }
+  }
+
+  /// Feedback sur une suggestion du dashboard (ajout, snooze…).
+  Future<void> _predictionAction(ProductPrediction p, String action) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      if (action == 'added') {
+        final state = context.read<ShoppingListBloc>().state;
+        final lists =
+            state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
+        if (lists.isNotEmpty) {
+          await context.read<ListItemService>().forceAddListItem(
+                listId: lists.first.id,
+                productName: p.productName,
+                quantity: p.avgQuantity.round().clamp(1, 99),
+              );
+          if (mounted) {
+            SmartSnackBarManager.showSuccessSnackBar(
+                context, l10n.predictionAdded(p.productName));
+          }
+        }
+      }
+      if (!mounted) return;
+      await context
+          .read<IntelligenceService>()
+          .sendPredictionFeedback(p.productName, action);
+      if (mounted) setState(() => _predictions.remove(p));
+    } catch (_) {}
   }
 
   /// Sélecteur de mois de la carte budget : 12 derniers mois + suivant.
@@ -416,6 +485,12 @@ class _HomeScreenState extends State<HomeScreen>
                           selectedMonth: _selectedMonth,
                           onPickMonth: _pickBudgetMonth,
                         ),
+                      if (_forecast != null && _forecast!.hasBudget)
+                        _buildForecastLine(l10n),
+                      if (_predictions.isNotEmpty) ...[
+                        const SizedBox(height: AppSpacing.lg),
+                        _buildPredictionsSection(l10n),
+                      ],
                       const SizedBox(height: AppSpacing.lg),
                       ListsSectionHeader(
                         onViewAll: () => _goToAllLists(context),
@@ -451,14 +526,17 @@ class _HomeScreenState extends State<HomeScreen>
                       const SizedBox(height: AppSpacing.lg),
                       Row(
                         children: [
+                          // Analytiques est desormais un onglet du bas :
+                          // la tuile devient le planificateur de repas.
                           DashboardTile(
-                            icon: Icons.insights_outlined,
-                            title: l10n.analytics,
-                            subtitle: l10n.spendingThisMonth,
+                            icon: Icons.restaurant_menu_outlined,
+                            title: l10n.mealPlannerTitle,
+                            subtitle: l10n.mealPlannerSubtitle,
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const AnalyticsScreen()),
+                                  builder: (_) =>
+                                      const MealPlannerScreen()),
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm + 4),
@@ -483,6 +561,95 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       // La création de liste passe par le bouton + central du MainShell.
+    );
+  }
+
+  /// Ligne de projection sous la carte budget (§24) : rythme actuel,
+  /// budget/jour recommandé. Discrète, jamais culpabilisante.
+  Widget _buildForecastLine(AppLocalizations l10n) {
+    final f = _forecast!;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  f.projectionGap > 0
+                      ? Icons.trending_up
+                      : Icons.trending_flat,
+                  size: 16,
+                  color: f.projectionGap > 0
+                      ? AppColors.warning
+                      : AppColors.primary,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    '${l10n.atYourCurrentPace('${f.projection.toStringAsFixed(0)} \$')} · ${l10n.daysLeftShort(f.daysLeft)}',
+                    style: const TextStyle(
+                        fontSize: 12.5, color: AppColors.textPrimary),
+                  ),
+                ),
+              ],
+            ),
+            if (f.daysLeft > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 2, left: 24),
+                child: Text(
+                  l10n.perDayToStayOnBudget(
+                      '${f.perDayRemaining.toStringAsFixed(2)} \$'),
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Section « À prévoir bientôt » : 3 suggestions max + voir tout (§7).
+  Widget _buildPredictionsSection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              l10n.predictionsTitle,
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w800),
+            ),
+            const Spacer(),
+            TextButton(
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PredictionsScreen()),
+              ).then((_) => _loadIntelligence()),
+              child: Text(l10n.seeAllSuggestions,
+                  style: const TextStyle(fontSize: 12.5)),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        ..._predictions.take(3).map((p) => PredictionCard(
+              prediction: p,
+              compact: true,
+              onAction: (action) => _predictionAction(p, action),
+            )),
+      ],
     );
   }
 
