@@ -1,42 +1,26 @@
 // screens/home_screen.dart - VERSION PRODUCTION SANS TEST
 
 import 'package:epilist/theme/app_theme.dart';
-import 'dart:io';
 
-import 'package:epilist/blocs/analytics/analytics_bloc.dart';
-import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
-import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
-import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
-import 'package:epilist/screens/analytics_screen.dart';
-import 'package:epilist/screens/budget_screen.dart';
-import 'package:epilist/screens/category_management_screen.dart';
-import 'package:epilist/services/analytics_service.dart';
-import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
-import 'package:epilist/widgets/home/welcome_card.dart';
-import 'package:epilist/widgets/home/home_app_bar.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
 import 'package:epilist/widgets/home/shopping_lists_content.dart';
 import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/delete_list_dialog.dart';
 import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
-import 'package:epilist/widgets/dialogs/logout_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
-import 'package:epilist/widgets/shopping/empty_list_state.dart';
-import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
-import 'package:epilist/widgets/common/network_status_indicator.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -125,12 +109,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: HomeAppBar(
-        onRefresh: () => _loadShoppingLists(),
-        onViewAllLists: () => _goToAllLists(context),
-        onProfile: () => _goToProfile(context),
-        onManageCategories: () => _goToManageCategories(context),
-        onLogout: () => _showLogoutDialog(context),
+      // Navigation centralisée dans le drawer : la barre reste minimale.
+      drawer: const AppDrawer(),
+      appBar: AppBar(
+        title: Text(l10n.myShoppingLists),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.grid_view_outlined),
+            tooltip: l10n.allLists,
+            onPressed: () => _goToAllLists(context),
+          ),
+        ],
       ),
       body: MultiBlocListener(
         listeners: [
@@ -173,30 +162,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               // Indicateur de mode hors ligne avec actions en attente
               const OfflineIndicator(),
 
-              // Indicateur de statut réseau
-              const NetworkStatusIndicator(),
-
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const WelcomeCard(),
-                      const SizedBox(height: 24),
-
-                // ✅ SUPPRIMÉ : Widget de test notifications
-                // if (_showNotificationTest) ...[
-                //   const NotificationTestWidget(),
-                //   const SizedBox(height: 24),
-                // ],
-
-                // Section Actions rapides avec Budget
-                _buildQuickActionsSection(context, l10n),
-                const SizedBox(height: 24),
-
-                // Section header des listes
-                ListsSectionHeader(
+                      // Section header des listes
+                      ListsSectionHeader(
                   onViewAll: () => _goToAllLists(context),
                   onCreateNew: () => _showCreateListDialog(context),
                 ),
@@ -219,128 +192,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         backgroundColor: AppColors.primary,
         tooltip: l10n.createList,
         child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-
-  // Section d'actions rapides avec Budget, Analytics et Listes
-  Widget _buildQuickActionsSection(
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.quickActions,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Première ligne: Budget et Analytics
-        Row(
-          children: [
-            // Bouton Budget
-            Expanded(
-              child: _buildQuickActionCard(
-                icon: Icons.account_balance_wallet,
-                title: l10n.budgets,
-                subtitle: l10n.overviewOfYourBudgets,
-                color: AppColors.primary,
-                onTap: () => _goToBudget(context),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Bouton Analytics
-            Expanded(
-              child: _buildQuickActionCard(
-                icon: Icons.analytics,
-                title: l10n.analytics,
-                subtitle: l10n.viewSpendingReports,
-                color: AppColors.accent,
-                onTap: () => _goToAnalytics(context),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 12),
-
-        // Deuxième ligne: Toutes les listes (pleine largeur)
-        _buildQuickActionCard(
-          icon: Icons.list_alt,
-          title: l10n.allLists,
-          subtitle: l10n.manageAllLists,
-          color: Theme.of(context).primaryColor,
-          onTap: () => _goToAllLists(context),
-          isFullWidth: true,
-        ),
-      ],
-    );
-  }
-
-  // Card avec background blanc
-  Widget _buildQuickActionCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-    bool isFullWidth = false,
-  }) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: color, size: 24),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: AppColors.textDisabled,
-                    size: 16,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -468,24 +319,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Navigation vers la page Budget
-  void _goToBudget(BuildContext context) {
-    // ✅ Mode offline supporté: Les budgets en cache peuvent être consultés
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BudgetScreen()),
-    );
-  }
-
-  // Navigation vers la page Analytics
-  void _goToAnalytics(BuildContext context) {
-    // ✅ Mode offline supporté: Les analytics en cache peuvent être consultés
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
-    );
-  }
-
   void _openListDetails(BuildContext context, ShoppingList list) {
     // ✅ Mode offline supporté: Pas besoin de connexion pour voir une liste en cache
     Navigator.push(
@@ -502,22 +335,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context,
       MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
     ).then((_) => _loadShoppingLists());
-  }
-
-  void _goToProfile(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
-    );
-  }
-
-  void _goToManageCategories(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CategoryManagementScreen(),
-      ),
-    );
   }
 
   // Gestion des actions déléguée à ShoppingListsContent
@@ -626,21 +443,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
             child: const CreateListDialog(),
-          ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // ✅ Empêcher la fermeture en cliquant à l'extérieur
-      builder:
-          (dialogContext) => BlocProvider.value(
-            // ✅ IMPORTANT : Passer le AuthBloc au dialog
-            value: context.read<AuthBloc>(),
-            child:
-                const LogoutConfirmationDialog(), // ✅ UTILISER votre dialog personnalisé
           ),
     );
   }

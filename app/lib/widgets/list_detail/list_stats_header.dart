@@ -1,4 +1,6 @@
-// widgets/list_detail/list_stats_header.dart - VERSION AVEC SÉPARATION DE L'APPBAR
+// widgets/list_detail/list_stats_header.dart - Bandeau de progression
+// compact : une barre de progression + les chiffres sur UNE ligne, au lieu
+// de l'ancien bloc à trois colonnes qui mangeait l'écran.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -19,90 +21,53 @@ class ListStatsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final progressPercentage =
-        totalItems > 0 ? ((purchasedItems / totalItems) * 100).round() : 0;
+    final progress = totalItems > 0 ? purchasedItems / totalItems : 0.0;
+    final done = totalItems > 0 && purchasedItems == totalItems;
 
     return Container(
-      // ✅ SÉPARATION AVEC L'APPBAR
-      decoration: BoxDecoration(
-        color: Colors.white,
-        // ✅ BORDURE SUPÉRIEURE POUR SÉPARER DE L'APPBAR
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
-          bottom: BorderSide(color: AppColors.border, width: 1),
-        ),
-        // ✅ OMBRE SUBTILE POUR PLUS DE PROFONDEUR
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildStatItem(l10n.articles, '$purchasedItems/$totalItems'),
-            _buildVerticalDivider(),
-            _buildStatItemWithAmount(l10n.total, totalPrice),
-            _buildVerticalDivider(),
-            _buildStatItem(l10n.progress, '$progressPercentage%'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ✅ SÉPARATEUR VERTICAL ENTRE LES STATISTIQUES
-  Widget _buildVerticalDivider() {
-    return Container(height: 40, width: 1, color: AppColors.border);
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    return Expanded(
+      color: AppColors.surface,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + 4),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+          Row(
+            children: [
+              Icon(
+                done ? Icons.check_circle : Icons.shopping_basket_outlined,
+                size: 16,
+                color: done ? AppColors.primary : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '$purchasedItems/$totalItems ${l10n.articles.toLowerCase()}',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              FormattedAmount(
+                amount: totalPrice,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryDark,
+                ),
+                showCode: false,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 5,
+              backgroundColor: AppColors.background,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItemWithAmount(String label, double amount) {
-    return Expanded(
-      child: Column(
-        children: [
-          FormattedAmount(
-            amount: amount,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-            showCode: false,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
