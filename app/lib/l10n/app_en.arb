@@ -1722,5 +1722,14 @@
   "onLastList": "On your latest list",
   "noListYet": "Create a list first",
   "newListShort": "New list",
-  "dashboardTitle": "Dashboard"
+  "dashboardTitle": "Dashboard",
+  "noBudgetForMonth": "No budget for {month}",
+  "@noBudgetForMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "pickMonth": "Pick a month"
 }

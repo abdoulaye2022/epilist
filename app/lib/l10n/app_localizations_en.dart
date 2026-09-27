@@ -4309,4 +4309,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardTitle => 'Dashboard';
+
+  @override
+  String noBudgetForMonth(String month) {
+    return 'No budget for $month';
+  }
+
+  @override
+  String get pickMonth => 'Pick a month';
 }

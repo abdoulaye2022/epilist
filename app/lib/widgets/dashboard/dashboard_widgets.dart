@@ -14,38 +14,51 @@ class BudgetMonthCard extends StatelessWidget {
   final Budget budget;
   final VoidCallback onSeeDetail;
 
+  /// Mois affiché dans la puce ; un appui ouvre le sélecteur de mois.
+  final DateTime selectedMonth;
+  final VoidCallback? onPickMonth;
+
   const BudgetMonthCard({
     super.key,
     required this.budget,
     required this.onSeeDetail,
+    required this.selectedMonth,
+    this.onPickMonth,
   });
 
-  /// Puce « 📅 mai 2025 » comme sur la maquette.
+  /// Puce « 📅 mai 2025 ▾ » : appui = sélecteur de mois.
   Widget _monthChip(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
-    var month = DateFormat('MMM yyyy', locale).format(DateTime.now());
+    var month = DateFormat('MMM yyyy', locale).format(selectedMonth);
     month = month[0].toUpperCase() + month.substring(1);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.calendar_today_outlined,
-              size: 11, color: Colors.white),
-          const SizedBox(width: 5),
-          Text(
-            month,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: onPickMonth,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.calendar_today_outlined,
+                size: 11, color: Colors.white),
+            const SizedBox(width: 5),
+            Text(
+              month,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        ],
+            if (onPickMonth != null) ...[
+              const SizedBox(width: 2),
+              const Icon(Icons.expand_more, size: 13, color: Colors.white),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -206,7 +219,23 @@ class BudgetMonthCard extends StatelessWidget {
 class BudgetCtaCard extends StatelessWidget {
   final VoidCallback onCreate;
 
-  const BudgetCtaCard({super.key, required this.onCreate});
+  /// Si fourni : « Aucun budget pour {mois} » + puce cliquable, au lieu du
+  /// message générique.
+  final DateTime? selectedMonth;
+  final VoidCallback? onPickMonth;
+
+  const BudgetCtaCard({
+    super.key,
+    required this.onCreate,
+    this.selectedMonth,
+    this.onPickMonth,
+  });
+
+  String _monthLabel(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    final m = DateFormat('MMMM yyyy', locale).format(selectedMonth!);
+    return m[0].toUpperCase() + m.substring(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +272,9 @@ class BudgetCtaCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  l10n.createBudgetCta,
+                  selectedMonth == null
+                      ? l10n.createBudgetCta
+                      : l10n.noBudgetForMonth(_monthLabel(context)),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 12.5,
@@ -252,6 +283,22 @@ class BudgetCtaCard extends StatelessWidget {
               ],
             ),
           ),
+          if (onPickMonth != null) ...[
+            const SizedBox(width: AppSpacing.sm),
+            GestureDetector(
+              onTap: onPickMonth,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Icon(Icons.expand_more,
+                    size: 15, color: Colors.white),
+              ),
+            ),
+          ],
           const SizedBox(width: AppSpacing.sm),
           TextButton(
             onPressed: onCreate,

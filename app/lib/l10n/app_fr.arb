@@ -1723,5 +1723,14 @@
   "onLastList": "Sur votre dernière liste",
   "noListYet": "Créez d'abord une liste",
   "newListShort": "Nouvelle liste",
-  "dashboardTitle": "Tableau de bord"
+  "dashboardTitle": "Tableau de bord",
+  "noBudgetForMonth": "Aucun budget pour {month}",
+  "@noBudgetForMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "pickMonth": "Choisir le mois"
 }

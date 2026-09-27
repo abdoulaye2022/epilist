@@ -4381,4 +4381,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashboardTitle => 'Tableau de bord';
+
+  @override
+  String noBudgetForMonth(String month) {
+    return 'Aucun budget pour $month';
+  }
+
+  @override
+  String get pickMonth => 'Choisir le mois';
 }

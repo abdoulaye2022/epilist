@@ -24,6 +24,7 @@ import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/main.dart' show routeObserver;
 import 'package:epilist/models/budget.dart';
+import 'package:intl/intl.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
@@ -50,7 +51,23 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isResuming = false;
 
   // Donnees du tableau de bord (chargees en douceur, jamais bloquantes)
-  Budget? _monthBudget;
+  List<Budget> _allBudgets = [];
+  DateTime _selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+
+  /// Budget couvrant le mois sélectionné (les mensuels d'abord).
+  Budget? get _monthBudget {
+    final monthStart = _selectedMonth;
+    final monthEnd = DateTime(monthStart.year, monthStart.month + 1, 0);
+    bool covers(Budget b) =>
+        !b.startDate.isAfter(monthEnd) && !b.endDate.isBefore(monthStart);
+    final candidates = _allBudgets.where((b) => b.isActive && covers(b)).toList()
+      ..sort((a, b) {
+        int rank(Budget x) => x.periodType == BudgetPeriodType.monthly ? 0 : 1;
+        final r = rank(a).compareTo(rank(b));
+        return r != 0 ? r : b.startDate.compareTo(a.startDate);
+      });
+    return candidates.isEmpty ? null : candidates.first;
+  }
   // ✅ SUPPRIMÉ : bool _showNotificationTest = false;
 
   @override
@@ -67,19 +84,75 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  /// Budget actif du mois pour la carte du haut. Echec silencieux :
-  /// le dashboard reste utilisable hors ligne ou sans budget.
+  /// Charge tous les budgets pour la carte du mois (le depense/restant de
+  /// chaque budget est calcule par le serveur). Echec silencieux : le
+  /// dashboard reste utilisable hors ligne ou sans budget.
   Future<void> _loadDashboardData() async {
     try {
-      final dash = await context.read<BudgetService>().getBudgetDashboard();
-      final budgets = (dash['current_budgets'] as List<Budget>? ?? []);
+      final budgets = await context.read<BudgetService>().getBudgets();
       if (!mounted) return;
-      setState(() {
-        _monthBudget = budgets.isNotEmpty ? budgets.first : null;
-      });
+      setState(() => _allBudgets = budgets);
     } catch (_) {
-      // hors ligne / pas de budget : on n'affiche simplement pas la carte
+      // hors ligne / pas de budget : la carte passe en invite
     }
+  }
+
+  /// Sélecteur de mois de la carte budget : 12 derniers mois + suivant.
+  void _pickBudgetMonth() {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final now = DateTime(DateTime.now().year, DateTime.now().month);
+    final months = [
+      for (var i = 1; i >= -11; i--) DateTime(now.year, now.month + i),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.pickMonth,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: months.map((m) {
+                  var label = DateFormat('MMMM yyyy', locale).format(m);
+                  label = label[0].toUpperCase() + label.substring(1);
+                  final selected = m.year == _selectedMonth.year &&
+                      m.month == _selectedMonth.month;
+                  return ListTile(
+                    leading: Icon(
+                      selected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
+                      size: 20,
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.textDisabled,
+                    ),
+                    title: Text(label),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      setState(() => _selectedMonth = m);
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
 
@@ -319,9 +392,15 @@ class _HomeScreenState extends State<HomeScreen>
                         BudgetMonthCard(
                           budget: _monthBudget!,
                           onSeeDetail: _openBudgets,
+                          selectedMonth: _selectedMonth,
+                          onPickMonth: _pickBudgetMonth,
                         )
                       else
-                        BudgetCtaCard(onCreate: _openBudgets),
+                        BudgetCtaCard(
+                          onCreate: _openBudgets,
+                          selectedMonth: _selectedMonth,
+                          onPickMonth: _pickBudgetMonth,
+                        ),
                       const SizedBox(height: AppSpacing.lg),
                       ListsSectionHeader(
                         onViewAll: () => _goToAllLists(context),

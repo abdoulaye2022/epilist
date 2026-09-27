@@ -8238,6 +8238,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tableau de bord'**
   String get dashboardTitle;
+
+  /// No description provided for @noBudgetForMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun budget pour {month}'**
+  String noBudgetForMonth(String month);
+
+  /// No description provided for @pickMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir le mois'**
+  String get pickMonth;
 }
 
 class _AppLocalizationsDelegate
