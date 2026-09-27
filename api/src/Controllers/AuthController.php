@@ -1120,6 +1120,7 @@ class AuthController
             'full_name' => trim($user->first_name . ' ' . $user->last_name),
             'email' => $user->email,
             'avatar_url' => $user->avatar_url,
+            'role' => $user->role ?? 'user',
             'email_verified' => $user->email_verified,
             'email_verified_at' => $user->email_verified_at?->toISOString(),
             'currency' => [
@@ -1372,7 +1373,7 @@ class AuthController
         $validator = new Validator($data);
         $validator->rule('required', ['new_password'])
             ->message('Le nouveau mot de passe est requis');
-        $validator->rule('lengthMin', 'new_password', 6)
+        $validator->rule('lengthMin', 'new_password', 8)
             ->message('Le mot de passe doit faire au moins 6 caractères');
 
         // Si l'utilisateur a déjà un mot de passe, exiger l'ancien
@@ -2067,7 +2068,7 @@ class AuthController
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
 
-        $validator->rule('lengthMin', 'password', 6)
+        $validator->rule('lengthMin', 'password', 8)
             ->message('Password must be at least 6 characters');
 
         if (isset($data['currency_id'])) {
@@ -2588,7 +2589,7 @@ class AuthController
             ->message('{field} is required');
         $validator->rule('email', 'email')
             ->message('Invalid email address');
-        $validator->rule('lengthMin', 'new_password', 6)
+        $validator->rule('lengthMin', 'new_password', 8)
             ->message('Password must be at least 6 characters');
 
         if (!$validator->validate()) {

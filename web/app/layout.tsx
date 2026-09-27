@@ -5,6 +5,7 @@ import LanguageProvider from "@/components/LanguageProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import FacebookPixel from "@/components/FacebookPixel";
 import Hotjar from "@/components/Hotjar";
+import TrackingGate from "@/components/TrackingGate";
 import {
   epilistAppSchema,
   epilistFAQSchema,
@@ -217,9 +218,11 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {/* Tracking Scripts */}
         <Suspense fallback={null}>
-          <GoogleAnalytics />
-          <FacebookPixel />
-          <Hotjar />
+          <TrackingGate>
+            <GoogleAnalytics />
+            <FacebookPixel />
+            <Hotjar />
+          </TrackingGate>
         </Suspense>
 
         {/* Application */}

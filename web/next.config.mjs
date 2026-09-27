@@ -33,32 +33,32 @@ const nextConfig = {
       // Redirection de l'ancienne URL vers la nouvelle si besoin
       {
         source: "/terms",
-        destination: "/conditions-utilisation",
+        destination: "/en/terms-of-use",
         permanent: true,
       },
       {
         source: "/privacy",
-        destination: "/politique-confidentialite",
+        destination: "/en/privacy-policy",
         permanent: true,
       },
       {
         source: "/download",
-        destination: "/telecharger",
+        destination: "/en/download",
         permanent: true,
       },
       {
         source: "/features",
-        destination: "/fonctionnalites",
+        destination: "/en/features",
         permanent: true,
       },
       {
         source: "/help",
-        destination: "/aide",
+        destination: "/en/help",
         permanent: true,
       },
       {
         source: "/about",
-        destination: "/a-propos",
+        destination: "/en/about",
         permanent: true,
       },
     ];
