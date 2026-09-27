@@ -160,6 +160,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ).then((_) => _loadShoppingLists());
   }
 
+  /// Ouvre l'ecran Budgets et rafraichit la carte au retour
+  /// (creation/modification d'un budget).
+  void _openBudgets() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BudgetScreen()),
+    ).then((_) => _loadDashboardData());
+  }
+
   void _loadShoppingLists() {
     context.read<ShoppingListBloc>().add(LoadShoppingLists());
   }
@@ -290,17 +299,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     children: [
                       _buildGreeting(l10n),
                       const SizedBox(height: AppSpacing.md),
-                      if (_monthBudget != null) ...[
+                      if (_monthBudget != null)
                         BudgetMonthCard(
                           budget: _monthBudget!,
-                          onSeeDetail: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const BudgetScreen()),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                      ],
+                          onSeeDetail: _openBudgets,
+                        )
+                      else
+                        BudgetCtaCard(onCreate: _openBudgets),
+                      const SizedBox(height: AppSpacing.lg),
                       ListsSectionHeader(
                         onViewAll: () => _goToAllLists(context),
                         onCreateNew: () => _showCreateListDialog(context),

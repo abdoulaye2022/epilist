@@ -201,6 +201,80 @@ class BudgetMonthCard extends StatelessWidget {
   }
 }
 
+/// Carte affichée quand AUCUN budget n'est en cours : invite à en créer
+/// un plutôt que de laisser un trou dans le tableau de bord.
+class BudgetCtaCard extends StatelessWidget {
+  final VoidCallback onCreate;
+
+  const BudgetCtaCard({super.key, required this.onCreate});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primaryDark,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: const Icon(Icons.account_balance_wallet_outlined,
+                color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.sm + 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.budgetOfMonth,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.createBudgetCta,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    fontSize: 12.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          TextButton(
+            onPressed: onCreate,
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primaryDark,
+              backgroundColor: Colors.white,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              minimumSize: Size.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+              ),
+              textStyle: const TextStyle(
+                  fontSize: 12.5, fontWeight: FontWeight.w700),
+            ),
+            child: const Text('+'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Carte de liste compacte pour le carrousel horizontal du dashboard.
 class DashboardListCard extends StatelessWidget {
   final ShoppingList list;
