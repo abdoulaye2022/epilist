@@ -69,6 +69,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('📱 Message reçu en arrière-plan: ${message.messageId}');
 }
 
+/// Observateur de routes global : permet aux ecrans (ex. dashboard) de se
+/// rafraichir quand on REVIENT sur eux apres une navigation.
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -426,6 +431,7 @@ class MyApp extends StatelessWidget {
               return _wrapWithConnectivity(const HomeScreen());
             },
           },
+          navigatorObservers: [routeObserver],
           home: const AuthWrapper(),
         );
       },

@@ -292,9 +292,10 @@ class _BudgetScreenState extends State<BudgetScreen>
 
   Widget _buildErrorState(String message, AppLocalizations l10n) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // ✅ CORRECTION: Card avec fond blanc

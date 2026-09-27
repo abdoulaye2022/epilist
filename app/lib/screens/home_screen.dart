@@ -22,6 +22,7 @@ import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/main.dart' show routeObserver;
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
@@ -42,7 +43,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, RouteAware {
   // Variables pour contrôler les initialisations et éviter les redondances
   bool _deepLinkInitialized = false;
   bool _isResuming = false;
@@ -189,6 +191,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != null) {
+      routeObserver.subscribe(this, route);
+    }
     if (_deepLinkInitialized && !_isResuming && mounted) {
       DeepLinkHandler.updateContext(context);
     }
@@ -214,8 +220,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  /// Appele quand on REVIENT sur le dashboard (retour d'un ecran pousse,
+  /// y compris via le drawer) : la carte budget et les listes se
+  /// rafraichissent.
+  @override
+  void didPopNext() {
+    _loadDashboardData();
+    _loadShoppingLists();
+  }
+
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
