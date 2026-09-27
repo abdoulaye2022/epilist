@@ -17,7 +17,7 @@ import 'package:epilist/widgets/shopping/error_state.dart';
 import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/shopping/shopping_list_app_bar.dart';
-import 'package:epilist/widgets/dialogs/shopping_list_card.dart';
+import 'package:epilist/widgets/home/shopping_list_card.dart';
 import 'package:epilist/widgets/shopping/list_filter_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -164,7 +164,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       return ShoppingListCard(
                         list: list,
                         onTap: () => _openListDetails(list),
-                        onMenuAction:
+                        onAction:
                             (action) => _handleListAction(
                               action,
                               list,
