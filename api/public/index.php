@@ -22,6 +22,7 @@ use App\Controllers\{
     ContactController,  //  AJOUT DE L'IMPORT MANQUANT
     CategoryController,
     StoreController,
+    ImageController,
     MessageController,
     SuggestionController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
@@ -333,6 +334,13 @@ $app->group('', function ($group) {
     $group->post('/stores/{id}/merge', [StoreController::class, 'merge']);
     $group->get('/stores/{id}/category-order', [StoreController::class, 'getCategoryOrder']);
     $group->put('/stores/{id}/category-order', [StoreController::class, 'setCategoryOrder']);
+
+    // 📷 IMAGES (avatars et photos de produits)
+    $group->post('/user/avatar', [ImageController::class, 'uploadAvatar']);
+    $group->delete('/user/avatar', [ImageController::class, 'deleteAvatar']);
+    $group->post('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'uploadItemImage']);
+    $group->delete('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'deleteItemImage']);
+
 
     $group->get('/categories/{id}', [CategoryController::class, 'show']);
     $group->put('/categories/{id}', [CategoryController::class, 'update']);
