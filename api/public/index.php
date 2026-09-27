@@ -22,6 +22,7 @@ use App\Controllers\{
     ContactController,  //  AJOUT DE L'IMPORT MANQUANT
     CategoryController,
     StoreController,
+    PriceController,
     ImageController,
     MessageController,
     SuggestionController,
@@ -242,6 +243,14 @@ $app->group('', function ($group) {
     $group->get('/shopping-lists/{listId}/receipts/stats', [ListReceiptsController::class, 'stats']);
     $group->get('/shopping-lists/{listId}/receipts/export/pdf', [ListReceiptsController::class, 'exportPDF']);
     $group->get('/shopping-lists/{listId}/receipts/export/csv', [ListReceiptsController::class, 'exportCSV']);
+    // 💰 Intelligence prix : import structuré de reçu (OCR/manuel),
+    // résolution de libellés, historique, comparateur, optimiseur
+    $group->post('/shopping-lists/{listId}/receipts/import', [PriceController::class, 'importReceipt']);
+    $group->post('/receipts/resolve-labels', [PriceController::class, 'resolveLabels']);
+    $group->get('/price-history', [PriceController::class, 'priceHistory']);
+    $group->get('/shopping-lists/{id}/store-comparison', [PriceController::class, 'storeComparison']);
+    $group->get('/shopping-lists/{id}/optimization', [PriceController::class, 'optimization']);
+
     $group->get('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'show']);
     $group->put('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'update']);
     $group->delete('/shopping-lists/{listId}/receipts/{receiptId}', [ListReceiptsController::class, 'destroy']);
