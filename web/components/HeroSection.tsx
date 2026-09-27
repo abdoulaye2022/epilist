@@ -43,8 +43,16 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="bg-gradient-to-b from-green-50/60 to-white">
-      <div className="container mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24">
+    <section
+      className="relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+    >
+      {/* Voile clair : lisibilité du texte + fondu vers le blanc en bas */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white"
+        aria-hidden="true"
+      ></div>
+      <div className="container relative z-10 mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Colonne texte */}
           <div className="space-y-7">
