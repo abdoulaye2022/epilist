@@ -222,8 +222,11 @@ class WelcomeScreen extends StatelessWidget {
           style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
         );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    // Wrap et non Row : les libellés français (« Politique de
+    // confidentialité »...) dépassent la largeur d'un petit écran.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         link(l10n.aboutEpiList, () => _navigateToAbout(context)),
         dot(),

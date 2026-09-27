@@ -283,17 +283,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildFooterLinks(AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Flexible(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             l10n.dontHaveAccount,
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 14,
             ),
-            overflow: TextOverflow.ellipsis,
           ),
         ),
         TextButton(
