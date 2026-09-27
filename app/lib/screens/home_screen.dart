@@ -93,6 +93,14 @@ class _HomeScreenState extends State<HomeScreen>
     // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinksOnce();
+
+      // Filet de sécurité avatar/prénom : si l'état auth courant ne porte
+      // pas d'utilisateur (ex. EmailConfirmationSuccess), on recharge le
+      // profil depuis l'API pour peupler l'en-tête et le drawer.
+      final authState = context.read<AuthBloc>().state;
+      if (authState is! AuthSuccess && authState is! ProfileUpdated) {
+        context.read<AuthBloc>().add(RefreshCurrentUser());
+      }
     });
   }
 

@@ -696,6 +696,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           final ssoProvider = await authService.getCurrentSSOProvider();
           emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
+
+          // Stale-while-revalidate : le cache s'affiche tout de suite,
+          // puis le profil frais (avatar compris) arrive de l'API et
+          // remplace l'etat. Sans ca, un cache ecrit avant l'upload de
+          // l'avatar ne se corrige jamais au lancement.
+          add(RefreshCurrentUser());
         } else {
           debugPrint('❌ [AuthBloc] Utilisateur null, nettoyage...');
           await authService.clearUserData();
