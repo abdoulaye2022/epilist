@@ -124,17 +124,27 @@ class ImageStorageService
             throw new \RuntimeException('Echec du re-encodage');
         }
 
-        // 5. Nom aleatoire + upload
-        $name = trim($folder, '/') . '/' . bin2hex(random_bytes(16)) . '.jpg';
+        // 5. Nom aleatoire + upload, prefixe par l'environnement :
+        //    dev/... en local, prod/... en production (meme bucket).
+        $envPrefix = \App\Config\Config::get('APP_ENV', 'production') === 'dev' ? 'dev' : 'prod';
+        $name = $envPrefix . '/' . trim($folder, '/') . '/' . bin2hex(random_bytes(16)) . '.jpg';
         $bucket = $this->bucket();
-        $bucket->upload($clean, [
+        $options = [
             'name' => $name,
-            'predefinedAcl' => 'publicRead',
             'metadata' => [
                 'contentType' => 'image/jpeg',
                 'cacheControl' => 'public, max-age=31536000, immutable',
             ],
-        ]);
+        ];
+        try {
+            // Bucket en acces "fine-grained" : ACL publique par objet
+            $bucket->upload($clean, $options + ['predefinedAcl' => 'publicRead']);
+        } catch (\Google\Cloud\Core\Exception\BadRequestException $e) {
+            // Bucket en acces uniforme : pas d'ACL par objet — la lecture
+            // publique doit etre accordee au niveau du bucket (allUsers =
+            // Storage Object Viewer). On re-tente sans ACL.
+            $bucket->upload($clean, $options);
+        }
 
         return "https://storage.googleapis.com/{$this->bucketName}/{$name}";
     }
@@ -155,15 +165,9 @@ class ImageStorageService
 
     private function bucket(): Bucket
     {
-        $bucket = $this->client->bucket($this->bucketName);
-        if (!$bucket->exists()) {
-            // Creation paresseuse : fonctionne des que la facturation Google
-            // du projet est activee (plan Blaze).
-            $bucket = $this->client->createBucket($this->bucketName, [
-                'location' => 'NORTHAMERICA-NORTHEAST1',
-                'storageClass' => 'STANDARD',
-            ]);
-        }
-        return $bucket;
+        // Pas de test d'existence : il exigerait storage.buckets.get, alors
+        // que le compte de service n'a besoin que des droits sur les OBJETS
+        // (Storage Object Admin sur le bucket).
+        return $this->client->bucket($this->bucketName);
     }
 }
