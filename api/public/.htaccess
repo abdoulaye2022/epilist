@@ -9,6 +9,14 @@
 </IfModule>
 
 RewriteEngine On
+
+# INDISPENSABLE sur OVH (Apache en FastCGI) : le header Authorization est
+# supprime par defaut avant d'atteindre PHP. Sans cette regle, TOUTES les
+# routes JWT repondent 401 "Authorization header missing" et l'app mobile
+# tourne en boucle. Ne jamais retirer.
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
