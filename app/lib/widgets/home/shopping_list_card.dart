@@ -24,46 +24,93 @@ class ShoppingListCard extends StatelessWidget {
     final totalItems = list.itemsCount;
     final completedItems = list.purchasedItemsCount;
     final progress = list.progress;
+    final done = list.isCompleted && totalItems > 0;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border:
-            list.isShared
-                ? Border.all(
-                  color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
-                  width: 1.5,
-                )
-                : null,
-      ),
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, // ✅ NOUVEAU: Taille minimale
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.sm + 4, AppSpacing.xs, AppSpacing.sm + 4),
+          child: Row(
             children: [
-              _buildHeader(l10n),
-              const SizedBox(height: 12),
-              _buildEssentialInfo(totalItems, l10n),
-              if (totalItems > 0) ...[
-                const SizedBox(height: 12),
-                _buildProgressSection(progress, completedItems, totalItems),
-              ],
-              const SizedBox(height: 8),
-              _buildCompactFooter(l10n),
+              _buildProgressRing(progress, done),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            list.name,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        if (list.isShared) ...[
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.people_alt_rounded,
+                            size: 14,
+                            color: list.isOwner
+                                ? AppColors.accent
+                                : AppColors.primary,
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        Text(
+                          totalItems == 0
+                              ? l10n.inProgress
+                              : '$completedItems/$totalItems ${l10n.articles.toLowerCase()}',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            color: done
+                                ? AppColors.primaryDark
+                                : AppColors.textSecondary,
+                            fontWeight:
+                                done ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                        ),
+                        if (list.hasReceipts ?? false) ...[
+                          const SizedBox(width: 8),
+                          const Icon(Icons.receipt_long,
+                              size: 12, color: AppColors.textDisabled),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${list.receiptsCount ?? 0}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textDisabled,
+                            ),
+                          ),
+                        ],
+                        const Spacer(),
+                        Text(
+                          DateFormatter.formatDate(list.createdAt),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textDisabled,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              _buildPopupMenu(l10n),
             ],
           ),
         ),
@@ -71,177 +118,34 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(AppLocalizations l10n) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            list.name,
-            style: const TextStyle(
-              fontSize: 16, // ✅ RÉDUIT: 18 -> 16
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-        ),
-        const SizedBox(width: 8),
-        if (list.isShared) _buildCompactSharingIndicator(),
-        const SizedBox(width: 8),
-        _buildPopupMenu(l10n),
-      ],
-    );
-  }
-
-  // ✅ NOUVEAU: Info essentielle simplifiée
-  Widget _buildEssentialInfo(int totalItems, AppLocalizations l10n) {
-    final hasReceipts = list.hasReceipts ?? false;
-
-    return Row(
-      children: [
-        // Articles
-        Icon(Icons.shopping_cart, size: 14, color: AppColors.textSecondary),
-        const SizedBox(width: 4),
-        Text(
-          '$totalItems',
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-
-        // Factures badge si applicable
-        if (hasReceipts) ...[
-          const SizedBox(width: 12),
-          _buildCompactReceiptsBadge(),
-        ],
-
-        const Spacer(),
-
-        // Statut
-        _buildCompactStatusChip(l10n),
-      ],
-    );
-  }
-
-  // ✅ NOUVEAU: Badge factures compact
-  Widget _buildCompactReceiptsBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.blue[200]!),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  /// Anneau de progression : l'etat de la liste d'un coup d'oeil.
+  Widget _buildProgressRing(double progress, bool done) {
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(Icons.receipt_long, size: 10, color: AppColors.accent),
-          const SizedBox(width: 2),
-          Text(
-            '${list.receiptsCount ?? 0}',
-            style: TextStyle(
-              fontSize: 9,
-              color: AppColors.accent,
-              fontWeight: FontWeight.bold,
+          CircularProgressIndicator(
+            value: progress,
+            strokeWidth: 3.5,
+            backgroundColor: AppColors.background,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              done ? AppColors.primary : AppColors.primary,
             ),
           ),
+          done
+              ? const Icon(Icons.check_rounded,
+                  size: 18, color: AppColors.primary)
+              : Text(
+                  '${(progress * 100).round()}',
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
         ],
-      ),
-    );
-  }
-
-  // ✅ NOUVEAU: Indicateur de partage compact
-  Widget _buildCompactSharingIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: list.isOwner ? AppColors.accentLight : AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
-        ),
-      ),
-      child: Icon(
-        list.isOwner ? Icons.people : Icons.share,
-        size: 10,
-        color: list.isOwner ? AppColors.accent : AppColors.primary,
-      ),
-    );
-  }
-
-  Widget _buildProgressSection(
-    double progress,
-    int completedItems,
-    int totalItems,
-  ) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '$completedItems/$totalItems',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Text(
-              '${(progress * 100).round()}%',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        LinearProgressIndicator(
-          value: progress,
-          backgroundColor: AppColors.border,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            list.isCompleted ? AppColors.primary : AppColors.accent,
-          ),
-          minHeight: 4, // ✅ RÉDUIT: 6 -> 4
-        ),
-      ],
-    );
-  }
-
-  // ✅ NOUVEAU: Statut compact
-  Widget _buildCompactStatusChip(AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: list.isCompleted ? AppColors.primaryLight : Colors.orange[50],
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
-        ),
-      ),
-      child: Text(
-        list.isCompleted ? l10n.completed : l10n.inProgress,
-        style: TextStyle(
-          fontSize: 10, // ✅ RÉDUIT: 12 -> 10
-          color: list.isCompleted ? AppColors.primaryDark : AppColors.warning,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  // ✅ NOUVEAU: Footer compact avec juste la date
-  Widget _buildCompactFooter(AppLocalizations l10n) {
-    return Text(
-      DateFormatter.formatDate(list.createdAt),
-      style: TextStyle(
-        fontSize: 10, // ✅ RÉDUIT: 12 -> 10
-        color: AppColors.textDisabled,
       ),
     );
   }
