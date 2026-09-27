@@ -1101,6 +1101,117 @@ class AuthController
     /**
      *  MÉTHODE MISE À JOUR: Formater les données utilisateur avec devise et SSO
      */
+    // ===================== 2FA ADMINISTRATEUR =====================
+    // La connexion à l'espace admin web se fait en deux temps :
+    // 1. email + mot de passe -> un code à 6 chiffres part par email ;
+    // 2. le code -> les jetons. Le mot de passe seul ne suffit plus.
+
+    /** POST /auth/admin/otp { email, password } */
+    public function adminOtpRequest(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody() ?? [];
+        $email = trim((string) ($data['email'] ?? ''));
+        $password = (string) ($data['password'] ?? '');
+        $ipAddress = $this->getClientIP($request);
+
+        if ($this->rateLimiter->isIPBlocked($ipAddress)
+            || !$this->rateLimiter->checkIPLimit('admin_otp', $ipAddress)
+            || !$this->rateLimiter->checkEmailLimit('admin_otp', $email)) {
+            return $this->createErrorResponse('Trop de tentatives. Réessayez plus tard.', 429);
+        }
+        $this->rateLimiter->recordAttempt('admin_otp', $ipAddress);
+        $this->rateLimiter->recordAttempt('admin_otp', $email);
+
+        $user = User::where('email', $email)->first();
+        $valid = $user && $user->password_hash
+            && password_verify($password, $user->password_hash)
+            && ($user->role ?? null) === 'admin'
+            && $user->is_active;
+
+        // Réponse identique que le compte existe ou non : pas d'énumération.
+        if (!$valid) {
+            return $this->createErrorResponse('Identifiants invalides', 401);
+        }
+
+        $code = (string) random_int(100000, 999999);
+        $user->admin_otp_code = password_hash($code, PASSWORD_DEFAULT);
+        $user->admin_otp_expires_at = date('Y-m-d H:i:s', time() + 600); // 10 min
+        $user->save();
+
+        $header = \App\Services\EmailTemplates::headerContent('Code de connexion administrateur', 'fr');
+        $footer = \App\Services\EmailTemplates::footerContent('fr');
+        $body = "
+            <tr><td style='padding: 30px;'>
+                <p style='margin:0 0 12px; font-size:15px; color:#1a202c;'>Bonjour {$user->first_name},</p>
+                <p style='margin:0 0 16px; font-size:14px; color:#4a5568;'>
+                    Voici votre code de connexion à l'espace administrateur EpiList.
+                    Il expire dans 10 minutes.</p>
+                <div class='verification-code'>{$code}</div>
+                <p style='margin:16px 0 0; font-size:12px; color:#718096;'>
+                    Si vous n'êtes pas à l'origine de cette demande, changez votre
+                    mot de passe immédiatement.</p>
+            </td></tr>";
+        \App\Services\MailSender::sendMail(
+            'Votre code administrateur EpiList',
+            [['email' => $user->email, 'name' => trim($user->first_name . ' ' . $user->last_name)]],
+            $header . $body . $footer
+        );
+
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'message' => 'Code envoyé par email',
+            ]))
+        );
+    }
+
+    /** POST /auth/admin/verify-otp { email, code } */
+    public function adminOtpVerify(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody() ?? [];
+        $email = trim((string) ($data['email'] ?? ''));
+        $code = trim((string) ($data['code'] ?? ''));
+        $ipAddress = $this->getClientIP($request);
+
+        if (!$this->rateLimiter->checkIPLimit('admin_otp_verify', $ipAddress)) {
+            return $this->createErrorResponse('Trop de tentatives. Réessayez plus tard.', 429);
+        }
+        $this->rateLimiter->recordAttempt('admin_otp_verify', $ipAddress);
+
+        $user = User::with('currency')->where('email', $email)->first();
+        $valid = $user && ($user->role ?? null) === 'admin'
+            && $user->admin_otp_code && $user->admin_otp_expires_at
+            && strtotime($user->admin_otp_expires_at) >= time()
+            && password_verify($code, $user->admin_otp_code);
+
+        if (!$valid) {
+            return $this->createErrorResponse('Code invalide ou expiré', 401);
+        }
+
+        // Usage unique : le code est consommé.
+        $user->admin_otp_code = null;
+        $user->admin_otp_expires_at = null;
+        $user->save();
+        $this->rateLimiter->resetAttempts('admin_otp', $email);
+
+        $accessToken = $this->jwtService->generateToken(['auth_id' => $user->id]);
+        $refreshToken = $this->jwtService->generateRefreshToken(['auth_id' => $user->id]);
+
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'message' => 'Connexion administrateur réussie',
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'data' => $this->formatUserData($user),
+            ]))
+        );
+    }
+
     private function formatUserData(User $user): array
     {
         if (!$user->relationLoaded('currency')) {
@@ -1848,6 +1959,12 @@ class AuthController
         $data = $request->getParsedBody();
 
         try {
+            // Révoquer le refresh token présenté : la déconnexion devient
+            // effective côté serveur, pas seulement côté client.
+            if (!empty($data['refresh_token'])) {
+                \App\Models\RefreshToken::revokeToken((string) $data['refresh_token']);
+            }
+
             // Si un device_id est fourni, désactiver l'appareil
             if (isset($data['device_id']) && !empty($data['device_id'])) {
                 $authId = $request->getAttribute('auth_id');
@@ -1909,6 +2026,14 @@ class AuthController
                 return $this->createErrorResponse('Refresh token expiré', 401);
             }
 
+            // Révocation : un token révoqué (logout, rotation, compte
+            // désactivé) est refusé. Un token « unknown » date d'avant le
+            // suivi : accepté une fois, puis remplacé par un token suivi.
+            $tokenStatus = \App\Models\RefreshToken::statusOf($refreshToken);
+            if ($tokenStatus === 'revoked') {
+                return $this->createErrorResponse('Refresh token révoqué', 401);
+            }
+
             $user = User::with('currency')->find($decoded['data']->auth_id);
 
             if (!$user) {
@@ -1927,6 +2052,9 @@ class AuthController
             $newRefreshToken = $this->jwtService->generateRefreshToken([
                 'auth_id' => $user->id
             ]);
+
+            // Rotation : l'ancien refresh token ne doit plus servir.
+            \App\Models\RefreshToken::revokeToken($refreshToken);
 
             return new JsonResponse(
                 200,

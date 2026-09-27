@@ -98,10 +98,23 @@ class JwtService
             'nbf' => $now,
             'exp' => $now + $this->refreshExpiration,
             'type' => 'refresh',
+            // Identifiant unique : sans lui, deux tokens émis la même
+            // seconde pour le même utilisateur seraient byte-identiques
+            // (même hachage, rotation impossible à distinguer).
+            'jti' => bin2hex(random_bytes(8)),
             'data' => $payload
         ];
 
-        return JWT::encode($tokenPayload, $this->refreshSecretKey, $this->refreshAlgorithm);
+        $token = JWT::encode($tokenPayload, $this->refreshSecretKey, $this->refreshAlgorithm);
+
+        // Suivi pour révocation (logout, rotation, désactivation de compte).
+        \App\Models\RefreshToken::register(
+            (int) $payload['auth_id'],
+            $token,
+            $this->refreshExpiration
+        );
+
+        return $token;
     }
 
     /**

@@ -34,6 +34,8 @@ import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
 import 'package:epilist/utils/receipt_scan_flow.dart';
+import 'package:epilist/services/app_version_service.dart';
+import 'package:epilist/widgets/common/update_modal.dart';
 import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/list_item_service.dart';
@@ -42,6 +44,10 @@ import 'package:epilist/screens/meal_planner_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+
+// Portée : le processus entier — une seule vérification de version
+// par lancement de l'app.
+bool _versionCheckDone = false;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -100,6 +106,14 @@ class _HomeScreenState extends State<HomeScreen>
       final authState = context.read<AuthBloc>().state;
       if (authState is! AuthSuccess && authState is! ProfileUpdated) {
         context.read<AuthBloc>().add(RefreshCurrentUser());
+      }
+
+      // Contrôle de version : une seule fois par lancement du processus
+      // (naviguer puis revenir ne repose pas la question), après la
+      // première image, sur un écran qui a du sens. Échec = silence.
+      if (!_versionCheckDone && mounted) {
+        _versionCheckDone = true;
+        showUpdateModalIfNeeded(context, context.read<AppVersionService>());
       }
     });
   }

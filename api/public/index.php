@@ -24,6 +24,8 @@ use App\Controllers\{
     StoreController,
     PriceController,
     IntelligenceController,
+    AdminController,
+    AppVersionController,
     RecurringListController,
     MealPlanController,
     ImageController,
@@ -113,6 +115,9 @@ $app->addErrorMiddleware(true, true, true);
 //  ROUTES D'AUTHENTIFICATION (sans authentification)
 $app->post('/auth/login', [AuthController::class, 'login']);
 $app->post('/auth/refresh', [AuthController::class, 'refresh_token']);
+// 2FA espace admin (web) : code par email puis jetons
+$app->post('/auth/admin/otp', [AuthController::class, 'adminOtpRequest']);
+$app->post('/auth/admin/verify-otp', [AuthController::class, 'adminOtpVerify']);
 $app->post('/auth/register', [AuthController::class, 'register']);
 $app->post('/auth/reset-link', [AuthController::class, 'resetLink']);
 $app->post('/auth/validate-reset-token', [AuthController::class, 'validateResetToken']);
@@ -165,6 +170,12 @@ $app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe
 //  ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
 $app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);
 $app->post('/contact/feedback-anonymous', [ContactController::class, 'sendFeedback']);
+
+// 📲 Contrôle de version de l'app — PUBLIC et AVANT l'authentification :
+// une app bloquée par une version périmée doit pouvoir l'apprendre même
+// si la connexion ne passe plus.
+$app->get('/app/version-check', [AppVersionController::class, 'check']);
+$app->post('/app/version-stat', [AppVersionController::class, 'stat']);
 
 //  ROUTES SSO PUBLIQUES (sans authentification)
 $app->post('/auth/sso/google/login', [AuthController::class, 'googleLogin']);
@@ -298,6 +309,18 @@ $app->group('', function ($group) {
 
     //  ROUTES POUR LES CAMPAGNES MARKETING — réservées aux admins
     //  (users.role = 'admin', voir migrations/add_role_to_users.sql)
+    // 🛠️ Espace administrateur (web) : dashboard, utilisateurs, stats,
+    // monitoring, versions de l'app. JWT + rôle admin obligatoires.
+    $group->get('/admin/overview', [AdminController::class, 'overview'])->add(new AdminMiddleware());
+    $group->get('/admin/users', [AdminController::class, 'users'])->add(new AdminMiddleware());
+    $group->put('/admin/users/{id}', [AdminController::class, 'updateUser'])->add(new AdminMiddleware());
+    $group->get('/admin/stats', [AdminController::class, 'stats'])->add(new AdminMiddleware());
+    $group->get('/admin/errors', [AdminController::class, 'errors'])->add(new AdminMiddleware());
+    $group->delete('/admin/errors', [AdminController::class, 'purgeErrors'])->add(new AdminMiddleware());
+    $group->get('/admin/app-versions', [AppVersionController::class, 'index'])->add(new AdminMiddleware());
+    $group->put('/admin/app-versions/{platform}', [AppVersionController::class, 'update'])->add(new AdminMiddleware());
+    $group->post('/admin/app-versions/{platform}/reset-stats', [AppVersionController::class, 'resetStats'])->add(new AdminMiddleware());
+
     $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign'])->add(new AdminMiddleware());
     $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats'])->add(new AdminMiddleware());
     $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail'])->add(new AdminMiddleware());

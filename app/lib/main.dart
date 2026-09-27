@@ -49,6 +49,7 @@ import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/image_upload_service.dart';
 import 'package:epilist/services/price_service.dart';
 import 'package:epilist/services/intelligence_service.dart';
+import 'package:epilist/services/app_version_service.dart';
 import 'package:epilist/services/store_service.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/main_shell.dart';
@@ -219,6 +220,9 @@ void main() async {
           ),
           RepositoryProvider<IntelligenceService>(
             create: (_) => IntelligenceService(dio: dio),
+          ),
+          RepositoryProvider<AppVersionService>(
+            create: (_) => AppVersionService(dio: dio),
           ),
           RepositoryProvider<AnalyticsService>.value(value: analyticsService),
           RepositoryProvider<ShoppingListService>.value(

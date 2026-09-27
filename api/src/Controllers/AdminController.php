@@ -125,6 +125,11 @@ class AdminController
 
         if (isset($data['is_active'])) {
             $user->is_active = (bool) $data['is_active'];
+            // Désactivation = fin de toutes ses sessions (les refresh
+            // tokens révoqués ne peuvent plus renouveler d'accès).
+            if (!$user->is_active) {
+                \App\Models\RefreshToken::revokeAllForUser($user->id);
+            }
         }
         if (isset($data['role']) && in_array($data['role'], ['user', 'admin'], true)) {
             $user->role = $data['role'];

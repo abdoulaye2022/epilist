@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/token_store.dart';
 import 'package:flutter/foundation.dart';
 import '../models/email_preference.dart';
 import '../config/app_config.dart';
@@ -17,7 +18,7 @@ class EmailPreferenceService {
   /// Get authentication token from SharedPreferences
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
+    return await TokenStore.readAccess();
   }
 
   /// Get user's email preferences

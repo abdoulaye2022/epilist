@@ -154,7 +154,11 @@ class PriceController
                     'subtotal' => isset($data['subtotal']) && is_numeric($data['subtotal']) ? (float) $data['subtotal'] : null,
                     'taxes' => isset($data['taxes']) && is_numeric($data['taxes']) ? (float) $data['taxes'] : null,
                     'currency' => isset($data['currency']) ? substr((string) $data['currency'], 0, 3) : null,
-                    'image_url' => $data['image_url'] ?? null,
+                    // Sécurité : seules les images de NOTRE bucket GCS sont
+                    // acceptées (pas d'URL arbitraire stockée puis affichée).
+                    'image_url' => (isset($data['image_url']) && is_string($data['image_url']) &&
+                        str_starts_with($data['image_url'], 'https://storage.googleapis.com/epilist-storage/'))
+                        ? $data['image_url'] : null,
                     'source' => $source,
                     'signature' => $signature,
                     'notes' => $data['notes'] ?? null,

@@ -41,6 +41,21 @@ class ErrorMiddleware
             error_log('ErrorMiddleware Exception Line: ' . $e->getLine());
             error_log('ErrorMiddleware Stack trace: ' . $e->getTraceAsString());
 
+            // Journal pour l'écran Monitoring de l'espace admin. Protégé :
+            // si la base est elle-même en cause, on ne boucle pas.
+            try {
+                \Illuminate\Database\Capsule\Manager::table('api_error_logs')->insert([
+                    'method' => $request->getMethod(),
+                    'path' => substr($request->getUri()->getPath(), 0, 255),
+                    'status' => 500,
+                    'message' => substr($e->getMessage(), 0, 2000),
+                    'user_id' => $request->getAttribute('auth_id'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+            } catch (\Throwable $logError) {
+                // silencieux
+            }
+
             $message = 'Une erreur interne est survenue.';
 
             // En mode dev, afficher le message d'erreur détaillé

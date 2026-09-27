@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 // services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/token_store.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/services/sso_service.dart';
 import 'dart:convert';
@@ -72,9 +73,8 @@ class AuthService {
       final tokenExpiry = _getTokenExpiration(accessToken);
       debugPrint('  Expiration: ${tokenExpiry ?? "1 an par défaut"}');
 
+      await TokenStore.write(accessToken, refreshToken);
       await Future.wait([
-        sharedPreferences.setString(_accessTokenKey, accessToken),
-        sharedPreferences.setString(_refreshTokenKey, refreshToken),
         sharedPreferences.setInt(
           _tokenExpiryKey,
           (tokenExpiry ?? DateTime.now().add(const Duration(days: 365)))
@@ -91,7 +91,7 @@ class AuthService {
 
   Future<String?> getToken() async {
     try {
-      final token = sharedPreferences.getString(_accessTokenKey);
+      final token = await TokenStore.readAccess();
       if (token != null && token.isNotEmpty) {
         debugPrint('🔍 [AuthService] Token trouvé: ${token.substring(0, 20)}...');
 
@@ -131,7 +131,7 @@ class AuthService {
 
   Future<String?> getRefreshToken() async {
     try {
-      return sharedPreferences.getString(_refreshTokenKey);
+      return await TokenStore.readRefresh();
     } catch (e) {
       return null;
     }
@@ -940,6 +940,17 @@ class AuthService {
     debugPrint('🚀 [AuthService] Début du logout...');
 
     try {
+      // Révocation serveur du refresh token : la déconnexion n'est plus
+      // seulement locale. Jamais bloquant (hors ligne = nettoyage local).
+      try {
+        final refreshToken = await TokenStore.readRefresh();
+        if (refreshToken != null && refreshToken.isNotEmpty) {
+          await dio
+              .post('/auth/logout', data: {'refresh_token': refreshToken})
+              .timeout(const Duration(seconds: 4));
+        }
+      } catch (_) {}
+
       final ssoProvider = await getCurrentSSOProvider();
       if (ssoProvider != null) {
         debugPrint('🔄 [AuthService] Déconnexion SSO ($ssoProvider)...');
@@ -969,6 +980,7 @@ class AuthService {
 
   Future<void> clearUserData() async {
     try {
+      await TokenStore.clear();
       final keysToRemove = [
         _accessTokenKey,
         _refreshTokenKey,

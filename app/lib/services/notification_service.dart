@@ -7,6 +7,7 @@ import 'package:epilist/config/app_config.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/token_store.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -156,7 +157,7 @@ class NotificationService {
 
             // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
             final prefs = await SharedPreferences.getInstance();
-            final authToken = prefs.getString('access_token');
+            final authToken = await TokenStore.readAccess();
             if (authToken != null && authToken.isNotEmpty) {
               await _registerDeviceWithToken();
             }
@@ -243,7 +244,7 @@ class NotificationService {
           // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
           // Lance l'enregistrement en arrière-plan après un délai de 3 secondes
           final prefs = await SharedPreferences.getInstance();
-          final authToken = prefs.getString('access_token');
+          final authToken = await TokenStore.readAccess();
           if (authToken != null && authToken.isNotEmpty) {
             // Attendre 3 secondes avant d'enregistrer pour ne pas bloquer le démarrage
             Future.delayed(const Duration(seconds: 3), () {
@@ -370,7 +371,7 @@ class NotificationService {
         await prefs.setString('apns_token', apnsToken);
 
         // ✅ OPTIMISATION: Enregistrer seulement si connecté
-        final authToken = prefs.getString('access_token');
+        final authToken = await TokenStore.readAccess();
         if (authToken != null && authToken.isNotEmpty) {
           await _registerDeviceWithToken();
         }
@@ -416,7 +417,7 @@ class NotificationService {
       }
 
       final prefs = await SharedPreferences.getInstance();
-      final authToken = prefs.getString('access_token');
+      final authToken = await TokenStore.readAccess();
 
       if (authToken == null) {
         if (kDebugMode) {

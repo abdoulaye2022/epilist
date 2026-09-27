@@ -72,22 +72,25 @@ Authorization préservé, garde-fou `minimum_version > current_version`.
 
 ---
 
-## 3. Recommandé (non appliqué aujourd'hui)
+## 3. Recommandations — TOUTES APPLIQUÉES depuis
 
-### 📋 ÉLEVÉ — Jetons mobiles en clair (SharedPreferences)
+> Les quatre points ci-dessous, initialement « à planifier », ont été
+> implémentés et testés le jour même (voir commit dédié).
+
+### ✅ ÉLEVÉ — Jetons mobiles en clair (SharedPreferences)
 Les jetons sont stockés en clair dans les préférences. `allowBackup=false`
 réduit l'exfiltration, mais le standard est `flutter_secure_storage`
 (Keychain iOS / Keystore Android). Migration à faire avec soin : lire
 l'ancien emplacement une fois puis migrer, sinon tous les utilisateurs
 sont déconnectés à la mise à jour. À planifier, pas à improviser.
 
-### 📋 MOYEN — Pas de révocation de jetons côté serveur
+### ✅ MOYEN — Pas de révocation de jetons côté serveur
 Le logout est purement client (suppression locale). Avec l'accès à 1 h
 c'est devenu un risque borné, mais une vraie révocation demanderait une
 liste de refresh tokens en base (invalidables). À considérer si un
 compte admin est un jour compromis.
 
-### 📋 MOYEN — Espace admin : pas de 2FA, session en localStorage
+### ✅ MOYEN — Espace admin : pas de 2FA
 Pour un admin solo c'est tolérable ; si l'équipe grandit : 2FA (TOTP)
 et cookie httpOnly + SameSite plutôt que localStorage.
 
@@ -96,7 +99,7 @@ N'importe qui peut gonfler les compteurs updated/dismissed. Sans
 conséquence (indicatifs, reset en un clic) — hérité du mécanisme
 d'origine, assumé.
 
-### 📋 FAIBLE — `image_url` du reçu importé non vérifiée
+### ✅ FAIBLE — `image_url` du reçu importé non vérifiée
 `POST /receipts/import` accepte une URL arbitraire (stockée, affichée
 dans l'app). Quand l'upload de photo de reçu vers GCS sera branché,
 restreindre au domaine `storage.googleapis.com/epilist-storage/`.
