@@ -1,4 +1,5 @@
 // widgets/dialogs/change_password_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -43,7 +44,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       child: AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.lock_outline, color: Colors.blue[600]),
+            Icon(Icons.lock_outline, color: AppColors.accent),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -98,13 +99,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.blue[50],
+          color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.blue[200]!),
         ),
         child: Column(
           children: [
-            Icon(Icons.info_outline, color: Colors.blue[600], size: 24),
+            Icon(Icons.info_outline, color: AppColors.accent, size: 24),
             const SizedBox(height: 8),
             Text(
               l10n.verificationCodeWillBeSent,
@@ -142,13 +143,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.green[50],
+          color: AppColors.primaryLight,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.green[200]!),
         ),
         child: Column(
           children: [
-            Icon(Icons.mail_outline, color: Colors.green[600], size: 24),
+            Icon(Icons.mail_outline, color: AppColors.primary, size: 24),
             const SizedBox(height: 8),
             Text(
               l10n.verificationCodeSent,

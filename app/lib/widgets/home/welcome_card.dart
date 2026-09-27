@@ -1,4 +1,5 @@
 // widgets/home/welcome_card.dart - VERSION AVEC FERMETURE PERSISTANTE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -92,7 +93,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.blue[100]!),
         boxShadow: [
@@ -128,7 +129,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(Icons.close, size: 20, color: Colors.blue[600]),
+                  child: Icon(Icons.close, size: 20, color: AppColors.accent),
                 ),
               ),
             ],
@@ -136,7 +137,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
           const SizedBox(height: 8),
           Text(
             l10n.manageGroceryLists,
-            style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+            style: TextStyle(fontSize: 16, color: AppColors.accent),
           ),
         ],
       ),

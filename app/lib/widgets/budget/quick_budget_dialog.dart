@@ -1,4 +1,5 @@
 // widgets/budget/quick_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -146,7 +147,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.flash_on_rounded, size: 40, color: Colors.orange[600]),
+      child: Icon(Icons.flash_on_rounded, size: 40, color: AppColors.warning),
     );
   }
 
@@ -156,7 +157,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -165,7 +166,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
     return Text(
       l10n.quickBudgetDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -216,13 +217,13 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -259,7 +260,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                         children: [
                           Icon(
                             period['icon'] as IconData,
-                            color: isSelected ? color[600] : Colors.grey[600],
+                            color: isSelected ? color[600] : AppColors.textSecondary,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -271,7 +272,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                                     isSelected
                                         ? FontWeight.w600
                                         : FontWeight.normal,
-                                color: isSelected ? color[600] : Colors.black87,
+                                color: isSelected ? color[600] : AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -301,7 +302,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -317,7 +318,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -325,10 +326,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: AppColors.background,
           ),
           onChanged: (value) {
             // ✅ DÉCLENCHER UN REBUILD POUR LE PREVIEW
@@ -361,7 +362,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -377,10 +378,10 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(12),
               color:
-                  _selectedListId == null ? Colors.indigo[50] : Colors.grey[50],
+                  _selectedListId == null ? Colors.indigo[50] : AppColors.background,
             ),
             child: Row(
               children: [
@@ -389,7 +390,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                   color:
                       _selectedListId == null
                           ? Colors.indigo[600]
-                          : Colors.grey[600],
+                          : AppColors.textSecondary,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
@@ -407,12 +408,12 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                           color:
                               _selectedListId == null
                                   ? Colors.indigo[600]
-                                  : Colors.black87,
+                                  : AppColors.textPrimary,
                         ),
                       ),
                       Text(
                         l10n.generalBudgetDescription,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -432,7 +433,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             l10n.orSelectSpecificList,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -440,7 +441,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           Container(
             constraints: const BoxConstraints(maxHeight: 150),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(12),
             ),
             child: ListView.separated(
@@ -448,7 +449,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
               itemCount: widget.availableLists!.length,
               separatorBuilder:
                   (context, index) =>
-                      Divider(height: 1, color: Colors.grey[200]),
+                      Divider(height: 1, color: AppColors.border),
               itemBuilder: (context, index) {
                 final list = widget.availableLists![index];
                 final isSelected = _selectedListId == list.id;
@@ -484,7 +485,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                           color:
                               isSelected
                                   ? Colors.indigo[600]
-                                  : Colors.grey[600],
+                                  : AppColors.textSecondary,
                           size: 16,
                         ),
                         const SizedBox(width: 12),
@@ -499,7 +500,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                               color:
                                   isSelected
                                       ? Colors.indigo[600]
-                                      : Colors.black87,
+                                      : AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -530,29 +531,29 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _nameController,
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.label, color: Colors.green[600]),
+            prefixIcon: Icon(Icons.label, color: AppColors.primary),
             hintText: l10n.enterBudgetName,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: AppColors.background,
           ),
           textCapitalization: TextCapitalization.words,
           validator: (value) {
@@ -585,13 +586,13 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
         children: [
           Row(
             children: [
-              Icon(Icons.preview, color: Colors.orange[600], size: 20),
+              Icon(Icons.preview, color: AppColors.warning, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.preview,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.orange[600],
+                  color: AppColors.warning,
                 ),
               ),
             ],
@@ -645,7 +646,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -653,7 +654,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -663,7 +664,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _createBudget,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange[600],
+              backgroundColor: AppColors.warning,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.orange[300],
               padding: const EdgeInsets.symmetric(vertical: 12),

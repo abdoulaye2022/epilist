@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_header_card.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -23,7 +24,7 @@ class SuggestionHeaderCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.blue[50]!, Colors.indigo[50]!],
+            colors: [AppColors.accentLight, Colors.indigo[50]!],
           ),
         ),
         child: Column(
@@ -39,7 +40,7 @@ class SuggestionHeaderCard extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.auto_awesome,
-                    color: Colors.blue[700],
+                    color: AppColors.accent,
                     size: 24,
                   ),
                 ),
@@ -60,7 +61,7 @@ class SuggestionHeaderCard extends StatelessWidget {
                       Text(
                         '$suggestionsCount ${l10n.productSuggestions.toLowerCase()}',
                         style: TextStyle(
-                          color: Colors.blue[600],
+                          color: AppColors.accent,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -79,13 +80,13 @@ class SuggestionHeaderCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[700], size: 16),
+                  Icon(Icons.info_outline, color: AppColors.accent, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.basedOnHistory,
                       style: TextStyle(
-                        color: Colors.blue[700],
+                        color: AppColors.accent,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),

@@ -1,4 +1,5 @@
 // widgets/analytics/period_chart_card.dart - VERSION AVEC CLÉS DE LOCALISATION
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -96,7 +97,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: AppColors.textPrimary,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -654,11 +655,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
       ),
       child: PopupMenuButton<String>(
-        icon: Icon(Icons.date_range, color: Colors.grey[600]),
+        icon: Icon(Icons.date_range, color: AppColors.textSecondary),
         tooltip: l10n.selectPeriod,
         onSelected: (period) {
           setState(() {
@@ -684,7 +685,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                         Icon(
                           _periodIcons[period]!,
                           size: 20,
-                          color: isSelected ? color[600] : Colors.grey[600],
+                          color: isSelected ? color[600] : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -695,7 +696,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                                   isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
-                              color: isSelected ? color[600] : Colors.black87,
+                              color: isSelected ? color[600] : AppColors.textPrimary,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -721,7 +722,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       return Center(
         child: Text(
           l10n.noDataAvailable,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
           textAlign: TextAlign.center,
         ),
       );
@@ -739,11 +740,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.analytics_outlined, size: 48, color: Colors.grey[400]),
+            Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
             const SizedBox(height: 12),
             Text(
               l10n.noSpendingRecorded ?? 'Aucune dépense enregistrée',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
           ],
@@ -778,7 +779,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                           height: height < 5 ? 5 : height,
                           decoration: BoxDecoration(
                             color:
-                                value > 0 ? chartColor[600] : Colors.grey[300],
+                                value > 0 ? chartColor[600] : AppColors.border,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -791,7 +792,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                           label,
                           style: TextStyle(
                             fontSize: 9,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight:
                                 value > 0 ? FontWeight.w600 : FontWeight.normal,
                           ),
@@ -829,7 +830,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
@@ -880,23 +881,23 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: Colors.blue[600]),
+              Icon(Icons.info_outline, size: 16, color: AppColors.accent),
               const SizedBox(width: 6),
               Text(
                 'Informations sur la période',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[700],
+                  color: AppColors.accent,
                 ),
               ),
             ],
@@ -904,7 +905,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.timeline, size: 14, color: Colors.grey[600]),
+              Icon(Icons.timeline, size: 14, color: AppColors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 'Périodes avec données: $periodsWithData/${periodData.length}',

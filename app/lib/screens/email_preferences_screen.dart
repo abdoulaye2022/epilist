@@ -1,5 +1,6 @@
 // lib/screens/email_preferences_screen.dart
 
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/email_preference.dart';
@@ -327,7 +328,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         subtitle,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -351,7 +352,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
   }) {
     return SwitchListTile(
       title: Text(title),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
       value: value,
       onChanged: onChanged,
       contentPadding: EdgeInsets.zero,

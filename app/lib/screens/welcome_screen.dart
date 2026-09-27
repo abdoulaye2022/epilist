@@ -1,4 +1,5 @@
 // screens/welcome_screen.dart - VERSION OPTIMISÉE ET SIMPLIFIÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -15,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -69,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
             (_, __, ___) => Icon(
               Icons.shopping_cart_rounded,
               size: 60,
-              color: Colors.green[600],
+              color: AppColors.primary,
             ),
       ),
     );
@@ -84,14 +85,14 @@ class WelcomeScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         Text(
           l10n.groceryListApp,
-          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
       ],
@@ -112,14 +113,14 @@ class WelcomeScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: AppColors.border),
           ),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.language, color: Colors.grey[600], size: 20),
+                  Icon(Icons.language, color: AppColors.textSecondary, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     l10n.selectLanguage,
@@ -173,10 +174,10 @@ class WelcomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green[600] : Colors.grey[100],
+          color: isSelected ? AppColors.primary : AppColors.background,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? Colors.green[600]! : Colors.grey[300]!,
+            color: isSelected ? AppColors.primary : AppColors.border,
           ),
         ),
         child: Text(
@@ -184,7 +185,7 @@ class WelcomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : Colors.grey[700],
+            color: isSelected ? Colors.white : AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -200,7 +201,7 @@ class WelcomeScreen extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => _navigateToLogin(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green[600],
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -224,7 +225,7 @@ class WelcomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 16),
@@ -270,15 +271,15 @@ class WelcomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: AppColors.border),
         ),
         child: Column(
           children: [
-            Icon(icon, color: Colors.grey[600], size: 24),
+            Icon(icon, color: AppColors.textSecondary, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

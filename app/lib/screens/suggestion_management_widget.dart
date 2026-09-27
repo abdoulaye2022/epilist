@@ -1,4 +1,5 @@
 // screens/suggestion_management_widget.dart - CORRECTION AVEC BACKGROUND GRIS UNIFORME
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/widgets/suggestion/suggestion_app_bar.dart';
@@ -34,7 +35,7 @@ class _SuggestionManagementWidgetState
 
     return Scaffold(
       // ✅ BACKGROUND GRIS UNIFORME (comme les autres pages)
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: SuggestionAppBar(
         onClearAll: () => _showClearConfirmation(context, l10n),
       ),
@@ -125,12 +126,12 @@ class _SuggestionManagementWidgetState
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.delete_outline, color: Colors.red[600]),
+                Icon(Icons.delete_outline, color: AppColors.error),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l10n.deleteSuggestion,
-                    style: const TextStyle(color: Colors.black87),
+                    style: const TextStyle(color: AppColors.textPrimary),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -139,7 +140,7 @@ class _SuggestionManagementWidgetState
             ),
             content: Text(
               l10n.deleteSuggestionConfirm,
-              style: const TextStyle(color: Colors.black87),
+              style: const TextStyle(color: AppColors.textPrimary),
             ),
             actions: [
               TextButton(
@@ -159,7 +160,7 @@ class _SuggestionManagementWidgetState
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -185,12 +186,12 @@ class _SuggestionManagementWidgetState
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.delete_sweep, color: Colors.orange[600]),
+                Icon(Icons.delete_sweep, color: AppColors.warning),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l10n.clearAllSuggestions,
-                    style: const TextStyle(color: Colors.black87),
+                    style: const TextStyle(color: AppColors.textPrimary),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -203,7 +204,7 @@ class _SuggestionManagementWidgetState
               children: [
                 Text(
                   l10n.clearAllSuggestionsConfirm,
-                  style: const TextStyle(color: Colors.black87),
+                  style: const TextStyle(color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 12),
                 Container(
@@ -218,7 +219,7 @@ class _SuggestionManagementWidgetState
                     children: [
                       Icon(
                         Icons.warning_amber,
-                        color: Colors.orange[600],
+                        color: AppColors.warning,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -228,7 +229,7 @@ class _SuggestionManagementWidgetState
                               ? "Cette action est irréversible"
                               : "This action is irreversible",
                           style: TextStyle(
-                            color: Colors.orange[700],
+                            color: AppColors.warning,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -257,7 +258,7 @@ class _SuggestionManagementWidgetState
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange[600],
+                  backgroundColor: AppColors.warning,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

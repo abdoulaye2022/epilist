@@ -1,4 +1,5 @@
 // widgets/shopping/shopping_list_app_bar.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -15,13 +16,13 @@ class ShoppingListAppBar extends StatelessWidget
     return AppBar(
       title: Text(
         l10n.myShoppingLists,
-        style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
       ),
       backgroundColor: Colors.white,
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(Icons.refresh, color: Colors.black87),
+          icon: Icon(Icons.refresh, color: AppColors.textPrimary),
           onPressed: onRefresh,
           tooltip: l10n.refresh,
         ),

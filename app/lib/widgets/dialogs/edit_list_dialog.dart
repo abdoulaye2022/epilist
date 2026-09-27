@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -64,10 +65,10 @@ class _EditListDialogState extends State<EditListDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.edit_rounded, size: 40, color: Colors.blue[600]),
+      child: Icon(Icons.edit_rounded, size: 40, color: AppColors.accent),
     );
   }
 
@@ -77,7 +78,7 @@ class _EditListDialogState extends State<EditListDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -86,7 +87,7 @@ class _EditListDialogState extends State<EditListDialog> {
     return Text(
       l10n.modifyListName,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -95,21 +96,21 @@ class _EditListDialogState extends State<EditListDialog> {
       controller: nameController,
       decoration: InputDecoration(
         labelText: l10n.listName,
-        prefixIcon: Icon(Icons.list_alt, color: Colors.blue[600]),
+        prefixIcon: Icon(Icons.list_alt, color: AppColors.accent),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       autofocus: true,
     );
@@ -125,7 +126,7 @@ class _EditListDialogState extends State<EditListDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -133,7 +134,7 @@ class _EditListDialogState extends State<EditListDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -146,7 +147,7 @@ class _EditListDialogState extends State<EditListDialog> {
               return ElevatedButton(
                 onPressed: isLoading ? null : _updateList,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
+                  backgroundColor: AppColors.accent,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.blue[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

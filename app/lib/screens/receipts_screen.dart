@@ -1,4 +1,5 @@
 // screens/receipts_screen.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
@@ -133,7 +134,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             ),
             title: Row(
               children: [
-                Icon(Icons.file_download, color: Colors.green[600]),
+                Icon(Icons.file_download, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text(l10n.export),
               ],
@@ -154,8 +155,8 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                         icon: const Icon(Icons.picture_as_pdf),
                         label: const Text('PDF'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red[600],
-                          side: BorderSide(color: Colors.red[600]!),
+                          foregroundColor: AppColors.error,
+                          side: BorderSide(color: AppColors.error),
                         ),
                       ),
                     ),
@@ -169,8 +170,8 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                         icon: const Icon(Icons.table_chart),
                         label: const Text('CSV'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.green[600],
-                          side: BorderSide(color: Colors.green[600]!),
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
                         ),
                       ),
                     ),
@@ -211,7 +212,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
 
     return Scaffold(
       // ✅ CORRECTION: Background gris clair comme BudgetScreen
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
         title: Column(
@@ -222,14 +223,14 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.green[700], // ✅ Texte vert au lieu de blanc
+                color: AppColors.primaryDark, // ✅ Texte vert au lieu de blanc
               ),
             ),
             Text(
               widget.shoppingList.name,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey[600], // ✅ Gris au lieu de blanc70
+                color: AppColors.textSecondary, // ✅ Gris au lieu de blanc70
                 fontWeight: FontWeight.normal,
               ),
             ),
@@ -259,7 +260,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     value: 'refresh',
                     child: Row(
                       children: [
-                        Icon(Icons.refresh, size: 20, color: Colors.green[600]),
+                        Icon(Icons.refresh, size: 20, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(l10n.refresh),
                       ],
@@ -271,7 +272,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                       value: 'add_receipt',
                       child: Row(
                         children: [
-                          Icon(Icons.add, size: 20, color: Colors.blue[600]),
+                          Icon(Icons.add, size: 20, color: AppColors.accent),
                           const SizedBox(width: 8),
                           Text(l10n.addReceipt),
                         ],
@@ -286,7 +287,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                         Icon(
                           Icons.file_download,
                           size: 20,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(l10n.export),
@@ -301,23 +302,23 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
         // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
+          labelColor: AppColors.primaryDark, // ✅ Onglet sélectionné en vert
           unselectedLabelColor:
-              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
-          indicatorColor: Colors.green[700], // ✅ Indicateur vert
+              AppColors.textSecondary, // ✅ Onglets non sélectionnés en gris
+          indicatorColor: AppColors.primaryDark, // ✅ Indicateur vert
           indicatorWeight: 3,
           onTap: _onTabChanged, // ✅ Garder la logique existante
           tabs: [
             Tab(
-              icon: Icon(Icons.receipt_long, color: Colors.green[600]),
+              icon: Icon(Icons.receipt_long, color: AppColors.primary),
               text: l10n.allReceipts,
             ),
             Tab(
-              icon: Icon(Icons.store, color: Colors.green[600]),
+              icon: Icon(Icons.store, color: AppColors.primary),
               text: l10n.byStore,
             ),
             Tab(
-              icon: Icon(Icons.analytics, color: Colors.green[600]),
+              icon: Icon(Icons.analytics, color: AppColors.primary),
               text: l10n.statistics,
             ),
           ],
@@ -369,7 +370,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           widget.shoppingList.canEdit
               ? FloatingActionButton(
                 onPressed: _showAddReceiptDialog,
-                backgroundColor: Colors.green[600],
+                backgroundColor: AppColors.primary,
                 child: const Icon(Icons.add, color: Colors.white),
               )
               : null,
@@ -479,7 +480,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
   }
 
   Widget _buildLoadingState() {
-    return Center(child: CircularProgressIndicator(color: Colors.green[600]));
+    return Center(child: CircularProgressIndicator(color: AppColors.primary));
   }
 
   Widget _buildEmptyState() {
@@ -507,7 +508,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -521,7 +522,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     l10n.noReceipts,
                     style: const TextStyle(
                       fontSize: 18,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                     textAlign: TextAlign.center,
@@ -530,7 +531,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   Flexible(
                     child: Text(
                       l10n.addFirstReceipt,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
                       maxLines: 3,
@@ -543,7 +544,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                       icon: const Icon(Icons.add),
                       label: Text(l10n.addReceipt),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[600],
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -589,7 +590,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     l10n.error,
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.red[600],
+                      color: AppColors.error,
                       fontWeight: FontWeight.w600,
                     ),
                     textAlign: TextAlign.center,
@@ -598,7 +599,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   Flexible(
                     child: Text(
                       message,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
                       maxLines: 4,
@@ -613,7 +614,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     icon: const Icon(Icons.refresh),
                     label: Text(l10n.retry),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[600],
+                      backgroundColor: AppColors.accent,
                       foregroundColor: Colors.white,
                     ),
                   ),
@@ -712,7 +713,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             ),
             title: Row(
               children: [
-                Icon(Icons.warning, color: Colors.red[600]),
+                Icon(Icons.warning, color: AppColors.error),
                 const SizedBox(width: 8),
                 Text(l10n.deleteReceipt),
               ],
@@ -734,7 +735,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                 ),
                 child: Text(l10n.delete),

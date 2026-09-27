@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,7 @@ class EmptyListState extends StatelessWidget {
               Icon(
                 Icons.shopping_cart_outlined,
                 size: 64, // ✅ Taille réduite
-                color: Colors.grey[400],
+                color: AppColors.textDisabled,
               ),
               const SizedBox(height: 12), // ✅ Espacement réduit
               Text(
@@ -32,7 +33,7 @@ class EmptyListState extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18, // ✅ Taille réduite
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -42,7 +43,7 @@ class EmptyListState extends StatelessWidget {
                 child: Text(
                   l10n.createFirstListToStart,
                   style: TextStyle(
-                    color: Colors.grey[500],
+                    color: AppColors.textDisabled,
                     fontSize: 14, // ✅ Taille réduite
                   ),
                   textAlign: TextAlign.center,
@@ -59,7 +60,7 @@ class EmptyListState extends StatelessWidget {
                   style: const TextStyle(fontSize: 14), // ✅ Taille réduite
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,

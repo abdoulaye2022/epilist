@@ -1,4 +1,5 @@
 // screens/analytics_screen.dart - VERSION CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
@@ -65,13 +66,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           l10n.analytics,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.green[700],
+            color: AppColors.primaryDark,
             fontSize: 24,
           ),
         ),
@@ -89,9 +90,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.green[700],
-          unselectedLabelColor: Colors.grey[600],
-          indicatorColor: Colors.green[700],
+          labelColor: AppColors.primaryDark,
+          unselectedLabelColor: AppColors.textSecondary,
+          indicatorColor: AppColors.primaryDark,
           indicatorWeight: 3,
           onTap: (index) {
             switch (index) {
@@ -113,11 +114,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           },
           tabs: [
             Tab(
-              icon: Icon(Icons.dashboard, color: Colors.green[600]),
+              icon: Icon(Icons.dashboard, color: AppColors.primary),
               text: l10n.overview,
             ),
             Tab(
-              icon: Icon(Icons.trending_up, color: Colors.blue[600]),
+              icon: Icon(Icons.trending_up, color: AppColors.accent),
               text: l10n.trends,
             ),
             Tab(
@@ -125,7 +126,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               text: l10n.categories,
             ),
             Tab(
-              icon: Icon(Icons.star, color: Colors.orange[600]),
+              icon: Icon(Icons.star, color: AppColors.warning),
               text: l10n.topProducts,
             ),
           ],
@@ -415,7 +416,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.blue[50],
+                      color: AppColors.accentLight,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -430,7 +431,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.visible,
@@ -440,7 +441,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                   Flexible(
                     child: Text(
                       'Commencez à faire vos courses pour voir vos analyses',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
                       maxLines: 3,
@@ -460,7 +461,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                           overflow: TextOverflow.ellipsis,
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,

@@ -1,4 +1,5 @@
 // screens/chat_screen.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
@@ -198,11 +199,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           hintText: l10n.typeMessage,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.border),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.border),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
@@ -213,7 +214,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             vertical: 12,
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.background,
                         ),
                         maxLines: null,
                         textCapitalization: TextCapitalization.sentences,
@@ -249,14 +250,14 @@ class _ChatScreenState extends State<ChatScreen> {
           Icon(
             Icons.chat_bubble_outline,
             size: 80,
-            color: Colors.grey[300],
+            color: AppColors.border,
           ),
           const SizedBox(height: 16),
           Text(
             l10n.noMessagesYet,
             style: TextStyle(
               fontSize: 18,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -265,7 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
             l10n.startConversation,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[500],
+              color: AppColors.textDisabled,
             ),
           ),
         ],
@@ -293,7 +294,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Text(
               error,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -372,7 +373,7 @@ class _MessageBubble extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isCurrentUser
                       ? theme.primaryColor
-                      : Colors.grey[200],
+                      : AppColors.border,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20),
                     topRight: const Radius.circular(20),
@@ -405,7 +406,7 @@ class _MessageBubble extends StatelessWidget {
                     Text(
                       message.message,
                       style: TextStyle(
-                        color: isCurrentUser ? Colors.white : Colors.black87,
+                        color: isCurrentUser ? Colors.white : AppColors.textPrimary,
                         fontSize: 15,
                       ),
                     ),
@@ -416,7 +417,7 @@ class _MessageBubble extends StatelessWidget {
                         fontSize: 11,
                         color: isCurrentUser
                             ? Colors.white.withValues(alpha: 0.7)
-                            : Colors.grey[600],
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ],

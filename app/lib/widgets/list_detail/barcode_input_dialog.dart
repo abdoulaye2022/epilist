@@ -1,4 +1,5 @@
 // widgets/list_detail/barcode_input_dialog.dart - Alternative au scanner pour le simulateur
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -37,7 +38,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.edit, color: Colors.blue[600]),
+          Icon(Icons.edit, color: AppColors.accent),
           const SizedBox(width: 12),
           const Text('Saisir un code-barres'),
         ],
@@ -54,7 +55,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 'Scanner non disponible sur le simulateur',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.orange[700],
+                  color: AppColors.warning,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -63,7 +64,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 'Saisissez un code-barres manuellement ou choisissez un exemple',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 20),
@@ -74,13 +75,13 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 decoration: InputDecoration(
                   labelText: 'Code-barres',
                   hintText: 'Ex: 3017620422003',
-                  prefixIcon: Icon(Icons.qr_code, color: Colors.blue[600]),
+                  prefixIcon: Icon(Icons.qr_code, color: AppColors.accent),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -103,7 +104,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -119,10 +120,10 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                     return ListTile(
                       dense: true,
                       leading: CircleAvatar(
-                        backgroundColor: Colors.blue[50],
+                        backgroundColor: AppColors.accentLight,
                         child: Icon(
                           Icons.shopping_basket,
-                          color: Colors.blue[600],
+                          color: AppColors.accent,
                           size: 20,
                         ),
                       ),
@@ -137,7 +138,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                         example['code']!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -159,7 +160,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(
             l10n.cancel,
-            style: TextStyle(color: Colors.grey[600]),
+            style: TextStyle(color: AppColors.textSecondary),
           ),
         ),
         ElevatedButton.icon(
@@ -171,7 +172,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
           icon: const Icon(Icons.check),
           label: const Text('Valider'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue[600],
+            backgroundColor: AppColors.accent,
             foregroundColor: Colors.white,
           ),
         ),

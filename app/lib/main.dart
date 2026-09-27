@@ -13,6 +13,7 @@ import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/suggestion/suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
@@ -363,15 +364,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('fr', ''), Locale('en', '')],
-          theme: ThemeData(
-            primarySwatch: Colors.green,
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.green,
-              primary: Colors.green[600]!,
-              secondary: Colors.green[600]!,
-            ),
-          ),
+          theme: AppTheme.light,
           routes: {
             '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
             '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
@@ -699,7 +692,7 @@ class LoadingScreen extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Colors.green[400]!, Colors.green[600]!],
+                        colors: [AppColors.primary, AppColors.primary],
                       ),
                     ),
                     child: const Icon(
@@ -722,7 +715,7 @@ class LoadingScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.green[700],
+                color: AppColors.primaryDark,
                 letterSpacing: 1.2,
               ),
             ),
@@ -731,7 +724,7 @@ class LoadingScreen extends StatelessWidget {
               message ?? l10n.initialization,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,

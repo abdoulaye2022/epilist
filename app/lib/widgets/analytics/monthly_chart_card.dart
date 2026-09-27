@@ -1,4 +1,5 @@
 // widgets/analytics/monthly_chart_card.dart - VERSION CORRIGÉE TRADUCTION MOIS
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -34,7 +35,7 @@ class MonthlyChartCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.show_chart, color: Colors.blue[600], size: 28),
+                        Icon(Icons.show_chart, color: AppColors.accent, size: 28),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -42,7 +43,7 @@ class MonthlyChartCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: AppColors.textPrimary,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -58,7 +59,7 @@ class MonthlyChartCard extends StatelessWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: AppColors.accentLight,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.blue[100]!),
                       ),
@@ -424,7 +425,7 @@ class MonthlyChartCard extends StatelessWidget {
       return Center(
         child: Text(
           l10n.noDataAvailable,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
           textAlign: TextAlign.center,
         ),
       );
@@ -442,11 +443,11 @@ class MonthlyChartCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.analytics_outlined, size: 48, color: Colors.grey[400]),
+            Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
             const SizedBox(height: 12),
             Text(
               l10n.noSpendingRecorded ?? 'Aucune dépense enregistrée',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
           ],
@@ -513,7 +514,7 @@ class MonthlyChartCard extends StatelessWidget {
                           translatedMonthShort,
                           style: TextStyle(
                             fontSize: 9,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight:
                                 value > 0 ? FontWeight.w600 : FontWeight.normal,
                           ),
@@ -577,11 +578,11 @@ class MonthlyChartCard extends StatelessWidget {
   }
 
   Color _getBarColor(String dataQuality, double value) {
-    if (value == 0) return Colors.grey[300]!;
+    if (value == 0) return AppColors.border;
 
     switch (dataQuality) {
       case 'high':
-        return Colors.blue[600]!;
+        return AppColors.accent;
       case 'medium':
         return Colors.blue[400]!;
       case 'low':
@@ -635,23 +636,23 @@ class MonthlyChartCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: Colors.blue[600]),
+              Icon(Icons.info_outline, size: 16, color: AppColors.accent),
               const SizedBox(width: 6),
               Text(
                 'Informations sur la période',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[700],
+                  color: AppColors.accent,
                 ),
               ),
             ],
@@ -661,7 +662,7 @@ class MonthlyChartCard extends StatelessWidget {
           if (period.isNotEmpty) ...[
             Row(
               children: [
-                Icon(Icons.calendar_month, size: 14, color: Colors.grey[600]),
+                Icon(Icons.calendar_month, size: 14, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
                 Text('Période: $period', style: const TextStyle(fontSize: 11)),
               ],
@@ -671,7 +672,7 @@ class MonthlyChartCard extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.timeline, size: 14, color: Colors.grey[600]),
+              Icon(Icons.timeline, size: 14, color: AppColors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 'Mois avec données: $monthsWithData/${monthlyData.length}',
@@ -703,7 +704,7 @@ class MonthlyChartCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,

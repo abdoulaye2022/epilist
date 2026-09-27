@@ -1,4 +1,5 @@
 // widgets/shopping/error_state.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -23,13 +24,13 @@ class ErrorState extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: Colors.red[600],
+              color: AppColors.error,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             message,
-            style: TextStyle(color: Colors.grey[600]),
+            style: TextStyle(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -38,7 +39,7 @@ class ErrorState extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             label: Text(l10n.retry),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[600],
+              backgroundColor: AppColors.accent,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),

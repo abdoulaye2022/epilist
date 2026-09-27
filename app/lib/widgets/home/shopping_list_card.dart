@@ -1,4 +1,5 @@
 // widgets/home/shopping_list_card.dart - VERSION SIMPLIFIÉE POUR HOME SCREEN
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/receipts_screen.dart';
 import 'package:epilist/utils/date_formatter.dart';
@@ -79,7 +80,7 @@ class ShoppingListCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16, // ✅ RÉDUIT: 18 -> 16
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
@@ -100,12 +101,12 @@ class ShoppingListCard extends StatelessWidget {
     return Row(
       children: [
         // Articles
-        Icon(Icons.shopping_cart, size: 14, color: Colors.grey[600]),
+        Icon(Icons.shopping_cart, size: 14, color: AppColors.textSecondary),
         const SizedBox(width: 4),
         Text(
           '$totalItems',
           style: TextStyle(
-            color: Colors.grey[600],
+            color: AppColors.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -130,20 +131,20 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.receipt_long, size: 10, color: Colors.blue[600]),
+          Icon(Icons.receipt_long, size: 10, color: AppColors.accent),
           const SizedBox(width: 2),
           Text(
             '${list.receiptsCount ?? 0}',
             style: TextStyle(
               fontSize: 9,
-              color: Colors.blue[600],
+              color: AppColors.accent,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -157,7 +158,7 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
-        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
+        color: list.isOwner ? AppColors.accentLight : AppColors.primaryLight,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
@@ -166,7 +167,7 @@ class ShoppingListCard extends StatelessWidget {
       child: Icon(
         list.isOwner ? Icons.people : Icons.share,
         size: 10,
-        color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+        color: list.isOwner ? AppColors.accent : AppColors.primary,
       ),
     );
   }
@@ -184,7 +185,7 @@ class ShoppingListCard extends StatelessWidget {
             Text(
               '$completedItems/$totalItems',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -192,7 +193,7 @@ class ShoppingListCard extends StatelessWidget {
             Text(
               '${(progress * 100).round()}%',
               style: TextStyle(
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -202,9 +203,9 @@ class ShoppingListCard extends StatelessWidget {
         const SizedBox(height: 4),
         LinearProgressIndicator(
           value: progress,
-          backgroundColor: Colors.grey[200],
+          backgroundColor: AppColors.border,
           valueColor: AlwaysStoppedAnimation<Color>(
-            list.isCompleted ? Colors.green[600]! : Colors.blue[600]!,
+            list.isCompleted ? AppColors.primary : AppColors.accent,
           ),
           minHeight: 4, // ✅ RÉDUIT: 6 -> 4
         ),
@@ -217,7 +218,7 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: list.isCompleted ? Colors.green[50] : Colors.orange[50],
+        color: list.isCompleted ? AppColors.primaryLight : Colors.orange[50],
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
@@ -227,7 +228,7 @@ class ShoppingListCard extends StatelessWidget {
         list.isCompleted ? l10n.completed : l10n.inProgress,
         style: TextStyle(
           fontSize: 10, // ✅ RÉDUIT: 12 -> 10
-          color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
+          color: list.isCompleted ? AppColors.primaryDark : AppColors.warning,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -240,7 +241,7 @@ class ShoppingListCard extends StatelessWidget {
       DateFormatter.formatDate(list.createdAt),
       style: TextStyle(
         fontSize: 10, // ✅ RÉDUIT: 12 -> 10
-        color: Colors.grey[500],
+        color: AppColors.textDisabled,
       ),
     );
   }
@@ -251,7 +252,7 @@ class ShoppingListCard extends StatelessWidget {
           (context) => PopupMenuButton(
             icon: Icon(
               Icons.more_vert,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               size: 18, // ✅ RÉDUIT: 24 -> 18
             ),
             itemBuilder: (context) => _buildMenuItems(l10n),
@@ -287,7 +288,7 @@ class ShoppingListCard extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 18, color: Colors.blue[600]),
+              Icon(Icons.edit, size: 18, color: AppColors.accent),
               const SizedBox(width: 8),
               Text(l10n.edit),
             ],
@@ -302,7 +303,7 @@ class ShoppingListCard extends StatelessWidget {
         value: 'duplicate',
         child: Row(
           children: [
-            Icon(Icons.copy, size: 18, color: Colors.green[600]),
+            Icon(Icons.copy, size: 18, color: AppColors.primary),
             const SizedBox(width: 8),
             Text(l10n.duplicate),
           ],
@@ -316,7 +317,7 @@ class ShoppingListCard extends StatelessWidget {
         value: 'receipts',
         child: Row(
           children: [
-            Icon(Icons.receipt_long, size: 18, color: Colors.blue[600]),
+            Icon(Icons.receipt_long, size: 18, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(child: Text(l10n.receipts)),
             if ((list.hasReceipts ?? false)) ...[
@@ -331,7 +332,7 @@ class ShoppingListCard extends StatelessWidget {
                   '${list.receiptsCount ?? 0}',
                   style: TextStyle(
                     fontSize: 9,
-                    color: Colors.blue[600],
+                    color: AppColors.accent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -350,7 +351,7 @@ class ShoppingListCard extends StatelessWidget {
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 18, color: Colors.blue[600]),
+              Icon(Icons.share, size: 18, color: AppColors.accent),
               const SizedBox(width: 8),
               Text(l10n.share),
             ],
@@ -368,9 +369,9 @@ class ShoppingListCard extends StatelessWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 18, color: Colors.red[600]),
+              Icon(Icons.delete, size: 18, color: AppColors.error),
               const SizedBox(width: 8),
-              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+              Text(l10n.delete, style: TextStyle(color: AppColors.error)),
             ],
           ),
         ),
@@ -381,9 +382,9 @@ class ShoppingListCard extends StatelessWidget {
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 18, color: Colors.orange[600]),
+              Icon(Icons.exit_to_app, size: 18, color: AppColors.warning),
               const SizedBox(width: 8),
-              Text(l10n.leave, style: TextStyle(color: Colors.orange[600])),
+              Text(l10n.leave, style: TextStyle(color: AppColors.warning)),
             ],
           ),
         ),

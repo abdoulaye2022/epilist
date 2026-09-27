@@ -1,4 +1,5 @@
 // utils/smart_snackbar_manager.dart - VERSION CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SmartSnackBarManager {
@@ -257,25 +258,25 @@ class SmartSnackBarManager {
       case SnackBarType.error:
         return _SnackBarConfig(
           icon: Icons.error_outline,
-          backgroundColor: Colors.red[600]!,
+          backgroundColor: AppColors.error,
           showCloseAction: true,
         );
       case SnackBarType.success:
         return _SnackBarConfig(
           icon: Icons.check_circle_outline,
-          backgroundColor: Colors.green[600]!,
+          backgroundColor: AppColors.primary,
           showCloseAction: false,
         );
       case SnackBarType.warning:
         return _SnackBarConfig(
           icon: Icons.warning_outlined,
-          backgroundColor: Colors.orange[600]!,
+          backgroundColor: AppColors.warning,
           showCloseAction: true,
         );
       case SnackBarType.info:
         return _SnackBarConfig(
           icon: Icons.info_outline,
-          backgroundColor: Colors.blue[600]!,
+          backgroundColor: AppColors.accent,
           showCloseAction: false,
         );
     }

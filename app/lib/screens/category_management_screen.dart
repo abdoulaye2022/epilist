@@ -1,4 +1,5 @@
 // screens/category_management_screen.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/category/category_bloc.dart';
@@ -111,7 +112,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                   Icon(
                     Icons.category_outlined,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: AppColors.textDisabled,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -122,7 +123,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                   Text(
                     l10n.createFirstCategoryDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -280,7 +281,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 child: Icon(
                   Icons.delete_rounded,
                   size: 40,
-                  color: Colors.red[600],
+                  color: AppColors.error,
                 ),
               ),
 
@@ -292,7 +293,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
               ),
 
@@ -304,7 +305,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 text: TextSpan(
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     height: 1.4,
                   ),
                   children: [
@@ -313,7 +314,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                       text: ' "${category.name}"',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const TextSpan(text: ' ?'),
@@ -328,7 +329,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.red[600],
+                  color: AppColors.error,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -346,7 +347,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Colors.grey[300]!),
+                          side: BorderSide(color: AppColors.border),
                         ),
                       ),
                       child: Text(
@@ -354,7 +355,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -375,7 +376,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                   Navigator.of(dialogContext).pop();
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red[600],
+                            backgroundColor: AppColors.error,
                             foregroundColor: Colors.white,
                             disabledBackgroundColor: Colors.red[300],
                             padding: const EdgeInsets.symmetric(vertical: 12),

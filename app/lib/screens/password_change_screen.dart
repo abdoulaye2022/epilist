@@ -1,4 +1,5 @@
 // screens/password_change_screen.dart - VERSION CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -39,12 +40,12 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.changePassword),
         backgroundColor: Colors.white,
         elevation: 1,
-        foregroundColor: Colors.black87,
+        foregroundColor: AppColors.textPrimary,
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -128,7 +129,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.orange[400]!, Colors.orange[600]!],
+                          colors: [Colors.orange[400]!, AppColors.warning],
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -153,7 +154,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange[700],
+                        color: AppColors.warning,
                         letterSpacing: -0.5,
                       ),
                       textAlign: TextAlign.center,
@@ -165,7 +166,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           : l10n.enterEmailForVerificationCode,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
@@ -183,7 +184,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   padding: EdgeInsets.all(12),
                   margin: EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: AppColors.accentLight,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.blue[200]!),
                   ),
@@ -193,7 +194,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                          color: Colors.blue[600],
+                          color: AppColors.accent,
                           strokeWidth: 2,
                         ),
                       ),
@@ -203,7 +204,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             ? l10n.changingPassword
                             : l10n.sendingCode,
                         style: TextStyle(
-                          color: Colors.blue[700],
+                          color: AppColors.accent,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -369,7 +370,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: AppColors.accentLight,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.blue[200]!),
                   boxShadow: [
@@ -383,7 +384,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue[600], size: 24),
+                    Icon(Icons.info_outline, color: AppColors.accent, size: 24),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -392,7 +393,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             : l10n.verificationCodeWillBeSent,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.blue[700],
+                          color: AppColors.accent,
                           fontWeight: FontWeight.w500,
                           height: 1.5,
                         ),
@@ -432,14 +433,14 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!),
+          borderSide: BorderSide(color: AppColors.primary),
         ),
         filled: true,
-        fillColor: enabled ? Colors.grey[50] : Colors.grey[100],
+        fillColor: enabled ? AppColors.background : AppColors.background,
       ),
       validator: validator,
     );
@@ -470,7 +471,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey[300],
+          disabledBackgroundColor: AppColors.border,
           padding: EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

@@ -1,4 +1,5 @@
 // widgets/dialogs/duplicate_confirmation_dialog.dart - VERSION TRADUITE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
@@ -81,7 +82,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.warning_rounded, size: 40, color: Colors.orange[600]),
+      child: Icon(Icons.warning_rounded, size: 40, color: AppColors.warning),
     );
   }
 
@@ -92,7 +93,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       style: const TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -101,7 +102,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
     return Text(
       message,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -110,7 +111,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.blue[200]!),
       ),
@@ -119,14 +120,14 @@ class DuplicateConfirmationDialog extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.add_circle, color: Colors.blue[600], size: 20),
+              Icon(Icons.add_circle, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.itemToAdd, // ✅ TRADUIT
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[700],
+                  color: AppColors.accent,
                 ),
               ),
             ],
@@ -159,7 +160,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               '$label:',
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -169,7 +170,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               value,
               style: const TextStyle(
                 fontSize: 13,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -184,7 +185,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       width: double.infinity,
       constraints: const BoxConstraints(maxHeight: 200),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -194,7 +195,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: AppColors.background,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -205,7 +206,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -215,7 +216,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               itemCount: duplicates.length,
               separatorBuilder:
                   (context, index) =>
-                      Divider(height: 1, color: Colors.grey[200]),
+                      Divider(height: 1, color: AppColors.border),
               itemBuilder: (context, index) {
                 final duplicate = duplicates[index];
                 return _buildDuplicateItem(duplicate, l10n);
@@ -230,8 +231,8 @@ class DuplicateConfirmationDialog extends StatelessWidget {
   Widget _buildDuplicateItem(DuplicateItem duplicate, AppLocalizations l10n) {
     Color matchColor =
         duplicate.suggestionType == DuplicateType.exactMatch
-            ? Colors.red[600]!
-            : Colors.orange[600]!;
+            ? AppColors.error
+            : AppColors.warning;
 
     return ListTile(
       dense: true,
@@ -280,7 +281,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
           if (duplicate.storeName != null && duplicate.storeName!.isNotEmpty)
             Text(
               duplicate.storeName!,
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
         ],
       ),
@@ -298,7 +299,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: Colors.red[700],
+                    color: AppColors.error,
                   ),
                 ),
               )
@@ -314,7 +315,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: Colors.orange[700],
+                    color: AppColors.warning,
                   ),
                 ),
               ),
@@ -334,7 +335,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -361,7 +362,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -395,7 +396,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Colors.grey[300]!),
+                      side: BorderSide(color: AppColors.border),
                     ),
                   ),
                   child: Text(
@@ -403,7 +404,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -416,7 +417,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                     onActionSelected(DuplicateAction.forceAdd);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[600],
+                    backgroundColor: AppColors.warning,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(

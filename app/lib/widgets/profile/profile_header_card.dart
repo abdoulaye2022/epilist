@@ -1,4 +1,5 @@
 // widgets/profile/profile_header_card.dart - VERSION I18N
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -49,13 +50,13 @@ class ProfileHeaderCard extends StatelessWidget {
   Widget _buildAvatar() {
     return CircleAvatar(
       radius: 40,
-      backgroundColor: Colors.green[100],
+      backgroundColor: AppColors.primaryLight,
       child: Text(
         user.initials,
         style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: Colors.green[600],
+          color: AppColors.primary,
           letterSpacing: 2,
         ),
       ),
@@ -70,13 +71,13 @@ class ProfileHeaderCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           user.email,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
       ],
     );
@@ -86,7 +87,7 @@ class ProfileHeaderCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: user.isEmailVerified ? Colors.green[50] : Colors.orange[50],
+        color: user.isEmailVerified ? AppColors.primaryLight : Colors.orange[50],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color:
@@ -100,7 +101,7 @@ class ProfileHeaderCard extends StatelessWidget {
             user.isEmailVerified ? Icons.verified : Icons.warning,
             size: 16,
             color:
-                user.isEmailVerified ? Colors.green[600] : Colors.orange[600],
+                user.isEmailVerified ? AppColors.primary : AppColors.warning,
           ),
           const SizedBox(width: 4),
           Text(
@@ -110,7 +111,7 @@ class ProfileHeaderCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               color:
-                  user.isEmailVerified ? Colors.green[600] : Colors.orange[600],
+                  user.isEmailVerified ? AppColors.primary : AppColors.warning,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -125,7 +126,7 @@ class ProfileHeaderCard extends StatelessWidget {
       icon: const Icon(Icons.edit, size: 18),
       label: Text(l10n.editProfile),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green[600],
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

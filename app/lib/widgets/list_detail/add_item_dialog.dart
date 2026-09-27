@@ -1,4 +1,5 @@
 // widgets/dialogs/add_item_dialog.dart - VERSION CORRIGÉE SANS CAD
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -196,13 +197,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
       child: Icon(
         Icons.add_shopping_cart_rounded,
         size: 40,
-        color: Colors.green[600],
+        color: AppColors.primary,
       ),
     );
   }
@@ -213,7 +214,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -222,7 +223,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     return Text(
       l10n.addNewItemToList,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -266,7 +267,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   Widget _buildScannerButton(AppLocalizations l10n) {
     return OutlinedButton.icon(
       onPressed: _openBarcodeScanner,
-      icon: Icon(Icons.qr_code_scanner, color: Colors.blue[600]),
+      icon: Icon(Icons.qr_code_scanner, color: AppColors.accent),
       label: const Text(
         'Scanner un code-barres',
         style: TextStyle(
@@ -275,8 +276,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
         ),
       ),
       style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.blue[600],
-        side: BorderSide(color: Colors.blue[600]!, width: 2),
+        foregroundColor: AppColors.accent,
+        side: BorderSide(color: AppColors.accent, width: 2),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -293,30 +294,30 @@ class _AddItemDialogState extends State<AddItemDialog> {
           decoration: InputDecoration(
             labelText: l10n.productNameRequired,
             hintText: l10n.productNameHint,
-            prefixIcon: Icon(Icons.shopping_basket, color: Colors.green[600]),
+            prefixIcon: Icon(Icons.shopping_basket, color: AppColors.primary),
             suffixIcon: _selectedSuggestion != null
                 ? IconButton(
-                    icon: Icon(Icons.clear, color: Colors.grey[600]),
+                    icon: Icon(Icons.clear, color: AppColors.textSecondary),
                     onPressed: _clearSelectedSuggestion,
                   )
                 : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
             fillColor:
                 _selectedSuggestion != null
-                    ? Colors.green[50]
-                    : Colors.grey[50],
+                    ? AppColors.primaryLight
+                    : AppColors.background,
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -332,19 +333,19 @@ class _AddItemDialogState extends State<AddItemDialog> {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.green[200]!),
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, color: Colors.green[600], size: 16),
+          Icon(Icons.auto_awesome, color: AppColors.primary, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'Suggestion sélectionnée • ${_selectedSuggestion!.usageInfo}',
               style: TextStyle(
-                color: Colors.green[700],
+                color: AppColors.primaryDark,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -359,7 +360,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     return Container(
       constraints: const BoxConstraints(maxHeight: 200),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
       child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
@@ -377,7 +378,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               itemCount: state.suggestions.length,
               separatorBuilder:
                   (context, index) =>
-                      Divider(height: 1, color: Colors.grey[200]),
+                      Divider(height: 1, color: AppColors.border),
               itemBuilder: (context, index) {
                 final suggestion = state.suggestions[index];
                 return _buildSuggestionItem(suggestion, l10n);
@@ -403,8 +404,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
     return ListTile(
       dense: true,
       leading: CircleAvatar(
-        backgroundColor: Colors.blue[50],
-        child: Icon(Icons.history, color: Colors.blue[600], size: 16),
+        backgroundColor: AppColors.accentLight,
+        child: Icon(Icons.history, color: AppColors.accent, size: 16),
       ),
       title: Text(
         suggestion.productName,
@@ -417,7 +418,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
             FormattedAmount(
               amount: suggestion.price!,
               style: TextStyle(
-                color: Colors.green[600],
+                color: AppColors.primary,
                 fontWeight: FontWeight.w500,
               ),
               showCode: false,
@@ -429,7 +430,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           const Spacer(),
           Text(
             suggestion.usageInfo,
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -447,21 +448,21 @@ class _AddItemDialogState extends State<AddItemDialog> {
             decoration: InputDecoration(
               labelText: l10n.quantity,
               hintText: '1',
-              prefixIcon: Icon(Icons.numbers, color: Colors.blue[600]),
+              prefixIcon: Icon(Icons.numbers, color: AppColors.accent),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+                borderSide: BorderSide(color: AppColors.accent, width: 2),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             keyboardType: TextInputType.number,
           ),
@@ -480,7 +481,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               suffixIcon: _buildCurrencyIndicator(),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -488,10 +489,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
@@ -517,7 +518,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         prefixIcon: Icon(Icons.store, color: Theme.of(context).primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -525,10 +526,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       textCapitalization: TextCapitalization.words,
     );
@@ -550,9 +551,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(12),
-              color: Colors.grey[50],
+              color: AppColors.background,
             ),
             child: Row(
               children: [
@@ -570,7 +571,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       Text(
                         l10n.selectCategory,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -583,8 +584,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
                               ? FontWeight.w600
                               : FontWeight.normal,
                           color: _selectedCategory != null
-                              ? Colors.black87
-                              : Colors.grey[500],
+                              ? AppColors.textPrimary
+                              : AppColors.textDisabled,
                         ),
                       ),
                     ],
@@ -669,13 +670,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
                       Icon(
                         Icons.category_outlined,
                         size: 48,
-                        color: Colors.grey[400],
+                        color: AppColors.textDisabled,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         l10n.noCategoriesYet,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontSize: 16,
                         ),
                       ),
@@ -748,7 +749,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -756,7 +757,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -769,7 +770,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               return ElevatedButton(
                 onPressed: isLoading ? null : () => _addItem(l10n),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.green[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

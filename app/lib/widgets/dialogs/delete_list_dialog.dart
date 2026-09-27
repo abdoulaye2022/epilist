@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -36,7 +37,7 @@ class DeleteListDialog extends StatelessWidget {
               child: Icon(
                 Icons.delete_rounded,
                 size: 40,
-                color: Colors.red[600],
+                color: AppColors.error,
               ),
             ),
 
@@ -48,7 +49,7 @@ class DeleteListDialog extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
 
@@ -60,7 +61,7 @@ class DeleteListDialog extends StatelessWidget {
               text: TextSpan(
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                   height: 1.4,
                 ),
                 children: [
@@ -69,7 +70,7 @@ class DeleteListDialog extends StatelessWidget {
                     text: ' "${list.name}"',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const TextSpan(text: ' ?'),
@@ -84,7 +85,7 @@ class DeleteListDialog extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.red[600],
+                color: AppColors.error,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -102,7 +103,7 @@ class DeleteListDialog extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.grey[300]!),
+                        side: BorderSide(color: AppColors.border),
                       ),
                     ),
                     child: Text(
@@ -110,7 +111,7 @@ class DeleteListDialog extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -127,7 +128,7 @@ class DeleteListDialog extends StatelessWidget {
                         onPressed:
                             isLoading ? null : () => _deleteList(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red[600],
+                          backgroundColor: AppColors.error,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.red[300],
                           padding: const EdgeInsets.symmetric(vertical: 12),

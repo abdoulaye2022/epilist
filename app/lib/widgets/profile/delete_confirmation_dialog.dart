@@ -1,4 +1,5 @@
 // widgets/dialogs/delete_confirmation_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -43,7 +44,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
-      accentColor: Colors.red[600],
+      accentColor: AppColors.error,
       icon: Icons.delete_rounded,
     );
   }
@@ -65,7 +66,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
-      accentColor: Colors.red[600],
+      accentColor: AppColors.error,
       icon: Icons.delete_rounded,
     );
   }
@@ -87,7 +88,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       onConfirm: onConfirm,
       onCancel: onCancel,
       isLoading: isLoading,
-      accentColor: Colors.orange[600],
+      accentColor: AppColors.warning,
       icon: Icons.exit_to_app,
     );
   }
@@ -95,7 +96,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final effectiveAccentColor = accentColor ?? Colors.red[600]!;
+    final effectiveAccentColor = accentColor ?? AppColors.error;
     final effectiveIcon = icon ?? Icons.delete_rounded;
 
     return Dialog(
@@ -145,7 +146,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -155,21 +156,21 @@ class DeleteConfirmationDialog extends StatelessWidget {
       return Text(
         itemName,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
       );
     }
 
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
         children: [
           TextSpan(text: '$description '),
           TextSpan(
             text: '"$itemName"',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           const TextSpan(text: ' ?'),
@@ -201,7 +202,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -209,7 +210,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: isLoading ? Colors.grey[400] : Colors.grey[600],
+                color: isLoading ? AppColors.textDisabled : AppColors.textSecondary,
               ),
             ),
           ),

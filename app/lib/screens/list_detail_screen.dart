@@ -1,4 +1,5 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
+import 'package:epilist/theme/app_theme.dart';
 import 'package:dio/dio.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
@@ -175,7 +176,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         children: [
           Icon(Icons.storefront,
               size: 20,
-              color: active != null ? Colors.green[600] : Colors.grey[500]),
+              color: active != null ? AppColors.primary : AppColors.textDisabled),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -184,14 +185,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 fontSize: 14,
                 fontWeight:
                     active != null ? FontWeight.w600 : FontWeight.normal,
-                color: active != null ? Colors.black87 : Colors.grey[600],
+                color: active != null ? AppColors.textPrimary : AppColors.textSecondary,
               ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           PopupMenuButton<int>(
             color: Colors.white,
-            icon: Icon(Icons.expand_more, color: Colors.grey[600]),
+            icon: Icon(Icons.expand_more, color: AppColors.textSecondary),
             onSelected: (id) {
               _selectActiveStore(
                   id == -1 ? null : _myStores.where((s) => s.id == id).firstOrNull);
@@ -200,7 +201,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
               PopupMenuItem(
                 value: -1,
                 child: Text(l10n.noActiveStore,
-                    style: const TextStyle(color: Colors.black87)),
+                    style: const TextStyle(color: AppColors.textPrimary)),
               ),
               ..._myStores.map(
                 (s) => PopupMenuItem(
@@ -211,13 +212,13 @@ class _ListDetailViewState extends State<_ListDetailView> {
                         s.hasAisleOrder ? Icons.route : Icons.storefront,
                         size: 18,
                         color: s.hasAisleOrder
-                            ? Colors.green[600]
-                            : Colors.grey[500],
+                            ? AppColors.primary
+                            : AppColors.textDisabled,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(s.name,
-                            style: const TextStyle(color: Colors.black87),
+                            style: const TextStyle(color: AppColors.textPrimary),
                             overflow: TextOverflow.ellipsis),
                       ),
                     ],
@@ -239,7 +240,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.background,
       // ✅ UTILISATION DU WIDGET RÉUTILISABLE ListDetailAppBar
       appBar: ListDetailAppBar(
         listName: currentList.name,
@@ -337,7 +338,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         FloatingActionButton(
           onPressed: _openReceiptsScreen,
           heroTag: "receipts_fab",
-          backgroundColor: Colors.blue[600],
+          backgroundColor: AppColors.accent,
           tooltip: l10n.receipts,
           child: const Icon(Icons.receipt_long, color: Colors.white),
         ),
@@ -347,7 +348,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           onPressed: currentList.canEdit ? _addItemByVoice : null,
           heroTag: "voice_fab",
           backgroundColor:
-              currentList.canEdit ? Colors.purple[600] : Colors.grey[400],
+              currentList.canEdit ? Colors.purple[600] : AppColors.textDisabled,
           tooltip: 'Ajouter par voix',
           child: const Icon(Icons.mic, color: Colors.white),
         ),
@@ -357,7 +358,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           onPressed: currentList.canEdit ? _addNewItem : null,
           heroTag: "add_item_fab",
           backgroundColor:
-              currentList.canEdit ? Colors.green[600] : Colors.grey[400],
+              currentList.canEdit ? AppColors.primary : AppColors.textDisabled,
           tooltip: l10n.addItem,
           child: const Icon(Icons.add, color: Colors.white),
         ),
@@ -513,7 +514,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     if (isLoading) {
       return Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
         ),
       );
     }
@@ -583,8 +584,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   inAisle ? (cat?.icon ?? Icons.category) : Icons.help_outline,
                   size: 18,
                   color: inAisle
-                      ? (cat?.color ?? Colors.grey[600])
-                      : Colors.grey[500],
+                      ? (cat?.color ?? AppColors.textSecondary)
+                      : AppColors.textDisabled,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -592,11 +593,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: inAisle ? Colors.black87 : Colors.grey[600],
+                    color: inAisle ? AppColors.textPrimary : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Divider(color: Colors.grey[300])),
+                Expanded(child: Divider(color: AppColors.border)),
               ],
             ),
           ),
@@ -651,8 +652,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
               decoration: item.isPurchased ? TextDecoration.lineThrough : null,
               color:
                   currentList.isReadOnly
-                      ? (item.isPurchased ? Colors.grey[500] : Colors.grey[700])
-                      : (item.isPurchased ? Colors.grey : Colors.black87),
+                      ? (item.isPurchased ? AppColors.textDisabled : AppColors.textSecondary)
+                      : (item.isPurchased ? Colors.grey : AppColors.textPrimary),
               fontWeight:
                   currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
             ),
@@ -671,7 +672,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.red[600],
+        color: AppColors.error,
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: isStartToEnd ? Alignment.centerLeft : Alignment.centerRight,
@@ -715,15 +716,15 @@ class _ListDetailViewState extends State<_ListDetailView> {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: item.isPurchased ? Colors.green[100] : Colors.grey[100],
+          color: item.isPurchased ? AppColors.primaryLight : AppColors.background,
           border: Border.all(
-            color: item.isPurchased ? Colors.green[300]! : Colors.grey[300]!,
+            color: item.isPurchased ? Colors.green[300]! : AppColors.border,
             width: 2,
           ),
         ),
         child:
             item.isPurchased
-                ? Icon(Icons.check, size: 16, color: Colors.green[600])
+                ? Icon(Icons.check, size: 16, color: AppColors.primary)
                 : null,
       );
     }
@@ -743,11 +744,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
               }
               : (value) =>
                   _showPermissionDenied('modifier le statut des articles'),
-      activeColor: Colors.green[600],
+      activeColor: AppColors.primary,
       fillColor:
           currentList.canManageItems
               ? null
-              : MaterialStateProperty.all(Colors.grey[300]),
+              : MaterialStateProperty.all(AppColors.border),
     );
   }
 
@@ -762,8 +763,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
               style: TextStyle(
                 color:
                     currentList.isReadOnly
-                        ? Colors.grey[500]
-                        : Colors.grey[600],
+                        ? AppColors.textDisabled
+                        : AppColors.textSecondary,
               ),
             ),
             if (item.price != null && item.price! > 0) ...[
@@ -772,8 +773,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 style: TextStyle(
                   color:
                       currentList.isReadOnly
-                          ? Colors.grey[500]
-                          : Colors.grey[600],
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary,
                 ),
               ),
               FormattedAmount(
@@ -781,8 +782,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 style: TextStyle(
                   color:
                       currentList.isReadOnly
-                          ? Colors.grey[500]
-                          : Colors.grey[600],
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary,
                 ),
                 showCode: false,
               ),
@@ -798,8 +799,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 size: 12,
                 color:
                     currentList.isReadOnly
-                        ? Colors.grey[400]
-                        : Colors.grey[600],
+                        ? AppColors.textDisabled
+                        : AppColors.textSecondary,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -809,8 +810,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                     fontSize: 12,
                     color:
                         currentList.isReadOnly
-                            ? Colors.grey[400]
-                            : Colors.grey[600],
+                            ? AppColors.textDisabled
+                            : AppColors.textSecondary,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -828,20 +829,20 @@ class _ListDetailViewState extends State<_ListDetailView> {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.blue[50],
+          color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.blue[200]!),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
+            Icon(Icons.visibility, size: 14, color: AppColors.accent),
             const SizedBox(width: 4),
             Text(
               'Lecture seule',
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.blue[600],
+                color: AppColors.accent,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -851,7 +852,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     }
 
     return IconButton(
-      icon: Icon(Icons.edit, color: Colors.blue[600]),
+      icon: Icon(Icons.edit, color: AppColors.accent),
       onPressed:
           currentList.canEdit
               ? () => _editItem(item)
@@ -1045,7 +1046,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange[600], size: 28),
+            Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 28),
             const SizedBox(width: 12),
             const Expanded(child: Text('Article déjà présent')),
           ],
@@ -1058,13 +1059,13 @@ class _ListDetailViewState extends State<_ListDetailView> {
               duplicate.suggestionType == DuplicateType.exactMatch
                   ? 'Cet article existe déjà dans votre liste :'
                   : 'Un article similaire existe déjà dans votre liste :',
-              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: AppColors.accentLight,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.blue[200]!),
               ),
@@ -1081,12 +1082,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   const SizedBox(height: 4),
                   Text(
                     'Quantité actuelle: ${duplicate.quantity}',
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: TextStyle(color: AppColors.textSecondary),
                   ),
                   if (duplicate.storeName != null)
                     Text(
                       'Magasin: ${duplicate.storeName}',
-                      style: TextStyle(color: Colors.grey[700]),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                 ],
               ),
@@ -1097,7 +1098,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[800],
+                color: AppColors.textPrimary,
               ),
             ),
           ],
@@ -1176,8 +1177,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 currentList.isReadOnly ? Icons.visibility : Icons.lock,
                 color:
                     currentList.isReadOnly
-                        ? Colors.blue[600]
-                        : Colors.orange[600],
+                        ? AppColors.accent
+                        : AppColors.warning,
                 size: 24,
               ),
               const SizedBox(width: 8),
@@ -1195,7 +1196,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   'Cette liste a été partagée par ${currentList.sharedBy!.name}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     fontStyle: FontStyle.italic,
                   ),
                 ),

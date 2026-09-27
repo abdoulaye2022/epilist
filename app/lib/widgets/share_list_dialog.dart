@@ -1,4 +1,5 @@
 // widgets/share_list_dialog.dart - VERSION AVEC DESIGN COHÉRENT ET TRADUCTIONS
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -109,10 +110,10 @@ class _ShareListDialogState extends State<ShareListDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.share_rounded, size: 40, color: Colors.blue[600]),
+      child: Icon(Icons.share_rounded, size: 40, color: AppColors.accent),
     );
   }
 
@@ -124,7 +125,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -135,7 +136,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
     return Text(
       l10n.createShareLinkFor(widget.listName),
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -150,13 +151,13 @@ class _ShareListDialogState extends State<ShareListDialog> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -168,7 +169,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue[50] : Colors.transparent,
+                      color: isSelected ? AppColors.accentLight : Colors.transparent,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(index == 0 ? 12 : 0),
                         topRight: Radius.circular(index == 0 ? 12 : 0),
@@ -193,7 +194,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: isSelected ? Colors.blue[700] : Colors.black87,
+                          color: isSelected ? AppColors.accent : AppColors.textPrimary,
                         ),
                       ),
                       subtitle: Text(
@@ -201,10 +202,10 @@ class _ShareListDialogState extends State<ShareListDialog> {
                         style: TextStyle(
                           fontSize: 13,
                           color:
-                              isSelected ? Colors.blue[600] : Colors.grey[600],
+                              isSelected ? AppColors.accent : AppColors.textSecondary,
                         ),
                       ),
-                      activeColor: Colors.blue[600],
+                      activeColor: AppColors.accent,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 4,
@@ -229,28 +230,28 @@ class _ShareListDialogState extends State<ShareListDialog> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[800],
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<int>(
           value: _expirationDays,
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.schedule_outlined, color: Colors.grey[600]),
+            prefixIcon: Icon(Icons.schedule_outlined, color: AppColors.textSecondary),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+              borderSide: BorderSide(color: AppColors.accent, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
-            fillColor: Colors.grey[50],
+            fillColor: AppColors.background,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -283,7 +284,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
           child: ElevatedButton(
             onPressed: _isGeneratingLink ? null : _generateShareLink,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[600],
+              backgroundColor: AppColors.accent,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.blue[300],
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -337,7 +338,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.green[50],
+            color: AppColors.primaryLight,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.green[200]!),
           ),
@@ -348,7 +349,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 children: [
                   Icon(
                     Icons.check_circle_outline,
-                    color: Colors.green[600],
+                    color: AppColors.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -356,7 +357,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                     l10n.linkCreatedSuccessfully,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: Colors.green[700],
+                      color: AppColors.primaryDark,
                       fontSize: 16,
                     ),
                   ),
@@ -368,7 +369,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Row(
                   children: [
@@ -388,7 +389,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                       onPressed: () => _copyToClipboard(_generatedLink!),
                       icon: Icon(
                         Icons.copy_outlined,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                         size: 18,
                       ),
                       tooltip: l10n.copy,
@@ -413,7 +414,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 label: Text(l10n.copy),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: BorderSide(color: Colors.grey[400]!),
+                  side: BorderSide(color: AppColors.textDisabled),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -427,7 +428,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 icon: const Icon(Icons.share_outlined, size: 18),
                 label: Text(l10n.share),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -484,7 +485,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -492,7 +493,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -508,7 +509,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[600],
+                backgroundColor: AppColors.accent,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(

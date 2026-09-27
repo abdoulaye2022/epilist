@@ -1,4 +1,5 @@
 // widgets/common/network_status_indicator.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -57,7 +58,7 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: _isConnected ? Colors.green[600] : Colors.orange[700],
+        color: _isConnected ? AppColors.primary : AppColors.warning,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -132,7 +133,7 @@ class _NetworkStatusBadgeState extends State<NetworkStatusBadge> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orange[700],
+        color: AppColors.warning,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

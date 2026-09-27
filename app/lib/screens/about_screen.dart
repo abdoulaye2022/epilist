@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,13 +14,13 @@ class AboutPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.aboutEpiList),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
-        foregroundColor: Colors.black87,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        foregroundColor: AppColors.textPrimary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -63,7 +64,7 @@ class AboutPage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [Colors.green[400]!, Colors.green[600]!],
+                              colors: [AppColors.primary, AppColors.primary],
                             ),
                           ),
                           child: const Icon(
@@ -81,7 +82,7 @@ class AboutPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green[700],
+                      color: AppColors.primaryDark,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -90,7 +91,7 @@ class AboutPage extends StatelessWidget {
                     l10n.manageGroceryListsEasily,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -101,7 +102,7 @@ class AboutPage extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.green[200]!),
                     ),
@@ -109,7 +110,7 @@ class AboutPage extends StatelessWidget {
                       'Version 1.0.0',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.green[700],
+                        color: AppColors.primaryDark,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -169,19 +170,19 @@ class AboutPage extends StatelessWidget {
             // Copyright
             Text(
               '© 2025 EpiList. ${l10n.aboutRightsReserved}',
-              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               '${l10n.aboutDevelopedWith} ❤️ ${l10n.aboutByCompany}',
-              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               'Moncton, New Brunswick, Canada',
-              style: TextStyle(color: Colors.grey[400], fontSize: 10),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 10),
               textAlign: TextAlign.center,
             ),
           ],
@@ -215,7 +216,7 @@ class AboutPage extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -223,7 +224,7 @@ class AboutPage extends StatelessWidget {
             content,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),

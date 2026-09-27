@@ -1,4 +1,5 @@
 // widgets/budget/budget_filters.dart - VERSION CORRIGÉE AVEC ÉTAT VISUEL
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -63,7 +64,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                 children: [
                   Icon(
                     Icons.filter_list,
-                    color: hasActiveFilters ? themeColor : Colors.grey[600],
+                    color: hasActiveFilters ? themeColor : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -72,7 +73,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: hasActiveFilters ? themeColor : Colors.black87,
+                        color: hasActiveFilters ? themeColor : AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -107,7 +108,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         child: Icon(
                           Icons.clear,
                           size: 18,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -115,7 +116,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                   ],
                   Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                   ),
                 ],
               ),
@@ -169,7 +170,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
@@ -205,7 +206,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.warning,
-          color: Colors.red[600],
+          color: AppColors.error,
         ),
         _buildFilterChip(
           l10n.warning,
@@ -213,7 +214,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.info,
-          color: Colors.orange[600],
+          color: AppColors.warning,
         ),
         _buildFilterChip(
           l10n.expired,
@@ -221,7 +222,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.schedule,
-          color: Colors.grey[600],
+          color: AppColors.textSecondary,
         ),
         _buildFilterChip(
           l10n.upcoming,
@@ -229,7 +230,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeStatusFilter,
           widget.onStatusFilterChanged,
           icon: Icons.upcoming,
-          color: Colors.blue[600],
+          color: AppColors.accent,
         ),
       ],
     );
@@ -307,7 +308,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           widget.activeScopeFilter,
           widget.onScopeFilterChanged,
           icon: Icons.list,
-          color: Colors.orange[600], // ✅ Garder orange pour distinction
+          color: AppColors.warning, // ✅ Garder orange pour distinction
         ),
       ],
     );
@@ -366,7 +367,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       color:
                           isActive
                               ? themeColor.withValues(alpha: 0.1)
-                              : Colors.grey[50],
+                              : AppColors.background,
                       borderRadius: BorderRadius.circular(8),
                       border:
                           isActive
@@ -374,21 +375,21 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                                 color: themeColor,
                                 width: 2,
                               )
-                              : Border.all(color: Colors.grey[200]!),
+                              : Border.all(color: AppColors.border),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           option['icon'] as IconData,
                           size: 20,
-                          color: isActive ? themeColor : Colors.grey[600],
+                          color: isActive ? themeColor : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             option['label'] as String,
                             style: TextStyle(
-                              color: isActive ? themeColor : Colors.black87,
+                              color: isActive ? themeColor : AppColors.textPrimary,
                               fontWeight:
                                   isActive
                                       ? FontWeight.w600
@@ -464,10 +465,10 @@ class _BudgetFiltersState extends State<BudgetFilters> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 // ✅ CORRECTION: Utiliser la couleur du thème
-                color: isActive ? chipColor : Colors.grey[100],
+                color: isActive ? chipColor : AppColors.background,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isActive ? chipColor : Colors.grey[300]!,
+                  color: isActive ? chipColor : AppColors.border,
                   width: isActive ? 2 : 1,
                 ),
               ),
@@ -487,7 +488,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: isActive ? Colors.white : Colors.black87,
+                        color: isActive ? Colors.white : AppColors.textPrimary,
                         fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                         fontSize: 12,
                       ),

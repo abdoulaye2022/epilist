@@ -1,4 +1,5 @@
 // screens/stores_screen.dart - Mes magasins (tri par rayon)
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/store/store_bloc.dart';
 import 'package:epilist/blocs/store/store_event.dart';
 import 'package:epilist/blocs/store/store_state.dart';
@@ -32,22 +33,22 @@ class _StoresView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         title: Text(
           l10n.myStores,
           style: const TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showStoreNameDialog(context),
-        backgroundColor: Colors.green[600],
+        backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add_business, color: Colors.white),
         label: Text(
           l10n.addStore,
@@ -108,21 +109,21 @@ class _StoresView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.storefront, size: 72, color: Colors.grey[400]),
+            Icon(Icons.storefront, size: 72, color: AppColors.textDisabled),
             const SizedBox(height: 16),
             Text(
               l10n.noStoresYet,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.noStoresHint,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -147,17 +148,17 @@ class _StoresView extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: configured ? Colors.green[50] : Colors.grey[100],
+          backgroundColor: configured ? AppColors.primaryLight : AppColors.background,
           child: Icon(
             Icons.storefront,
-            color: configured ? Colors.green[600] : Colors.grey[500],
+            color: configured ? AppColors.primary : AppColors.textDisabled,
           ),
         ),
         title: Text(
           store.name,
           style: const TextStyle(
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         subtitle: Text(
@@ -169,10 +170,10 @@ class _StoresView extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             color: pendingSync
-                ? Colors.orange[700]
+                ? AppColors.warning
                 : configured
-                    ? Colors.green[700]
-                    : Colors.grey[500],
+                    ? AppColors.primaryDark
+                    : AppColors.textDisabled,
           ),
         ),
         trailing: pendingSync
@@ -197,10 +198,10 @@ class _StoresView extends StatelessWidget {
               value: 'rename',
               child: Row(
                 children: [
-                  Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+                  Icon(Icons.edit, size: 20, color: AppColors.accent),
                   const SizedBox(width: 8),
                   Text(l10n.renameStore,
-                      style: const TextStyle(color: Colors.black87)),
+                      style: const TextStyle(color: AppColors.textPrimary)),
                 ],
               ),
             ),
@@ -211,7 +212,7 @@ class _StoresView extends StatelessWidget {
                   Icon(Icons.merge, size: 20, color: Colors.teal[600]),
                   const SizedBox(width: 8),
                   Text(l10n.mergeStore,
-                      style: const TextStyle(color: Colors.black87)),
+                      style: const TextStyle(color: AppColors.textPrimary)),
                 ],
               ),
             ),
@@ -219,10 +220,10 @@ class _StoresView extends StatelessWidget {
               value: 'delete',
               child: Row(
                 children: [
-                  Icon(Icons.delete, size: 20, color: Colors.red[600]),
+                  Icon(Icons.delete, size: 20, color: AppColors.error),
                   const SizedBox(width: 8),
                   Text(l10n.deleteStore,
-                      style: TextStyle(color: Colors.red[600])),
+                      style: TextStyle(color: AppColors.error)),
                 ],
               ),
             ),
@@ -256,7 +257,7 @@ class _StoresView extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text(
           store == null ? l10n.addStore : l10n.renameStore,
-          style: const TextStyle(color: Colors.black87),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: TextField(
           controller: controller,
@@ -278,7 +279,7 @@ class _StoresView extends StatelessWidget {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
             onPressed: () =>
@@ -325,7 +326,7 @@ class _StoresView extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text(
           '${l10n.mergeStore} ${source.name}',
-          style: const TextStyle(color: Colors.black87, fontSize: 18),
+          style: const TextStyle(color: AppColors.textPrimary, fontSize: 18),
         ),
         children: targets
             .map(
@@ -336,11 +337,11 @@ class _StoresView extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.storefront, size: 20, color: Colors.grey[600]),
+                    Icon(Icons.storefront, size: 20, color: AppColors.textSecondary),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(target.name,
-                          style: const TextStyle(color: Colors.black87)),
+                          style: const TextStyle(color: AppColors.textPrimary)),
                     ),
                   ],
                 ),
@@ -363,10 +364,10 @@ class _StoresView extends StatelessWidget {
       builder: (dialogContext) => AlertDialog(
         backgroundColor: Colors.white,
         title: Text(l10n.mergeStore,
-            style: const TextStyle(color: Colors.black87)),
+            style: const TextStyle(color: AppColors.textPrimary)),
         content: Text(
           l10n.mergeStoreConfirm(source.name, target.name),
-          style: const TextStyle(color: Colors.black87),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
         actions: [
           TextButton(
@@ -397,11 +398,11 @@ class _StoresView extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Text(
           l10n.deleteStore,
-          style: const TextStyle(color: Colors.black87),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: Text(
           l10n.deleteStoreConfirm(store.name),
-          style: const TextStyle(color: Colors.black87),
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
         actions: [
           TextButton(
@@ -409,7 +410,7 @@ class _StoresView extends StatelessWidget {
             child: Text(l10n.cancel),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.red[600]),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             onPressed: () {
               Navigator.of(dialogContext).pop();
               bloc.add(DeleteStore(store.id));

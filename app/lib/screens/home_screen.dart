@@ -1,5 +1,6 @@
 // screens/home_screen.dart - VERSION PRODUCTION SANS TEST
 
+import 'package:epilist/theme/app_theme.dart';
 import 'dart:io';
 
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: HomeAppBar(
         onRefresh: () => _loadShoppingLists(),
         onViewAllLists: () => _goToAllLists(context),
@@ -215,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       // ✅ FAB pour création de liste (fonctionne hors ligne)
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateListDialog(context),
-        backgroundColor: Colors.green[600],
+        backgroundColor: AppColors.primary,
         tooltip: l10n.createList,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -235,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 12),
@@ -249,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 icon: Icons.account_balance_wallet,
                 title: l10n.budgets,
                 subtitle: l10n.overviewOfYourBudgets,
-                color: Colors.green[600]!,
+                color: AppColors.primary,
                 onTap: () => _goToBudget(context),
               ),
             ),
@@ -260,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 icon: Icons.analytics,
                 title: l10n.analytics,
                 subtitle: l10n.viewSpendingReports,
-                color: Colors.blue[600]!,
+                color: AppColors.accent,
                 onTap: () => _goToAnalytics(context),
               ),
             ),
@@ -316,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   const Spacer(),
                   Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.grey[400],
+                    color: AppColors.textDisabled,
                     size: 16,
                   ),
                 ],
@@ -327,13 +328,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -372,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Text(
                         l10n.recentLists('${state.lists.length}'),
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -390,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: Text(
                             l10n.viewAll,
                             style: TextStyle(
-                              color: Colors.green[700],
+                              color: AppColors.primaryDark,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -439,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Text(
                       l10n.recentLists('0'),
                       style: TextStyle(
-                        color: Colors.grey[700],
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),

@@ -1,4 +1,5 @@
 // widgets/analytics/shared_lists_filter.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -278,13 +279,13 @@ class FilterStatusIndicator extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.filter_alt, size: 14, color: Colors.orange[700]),
+          Icon(Icons.filter_alt, size: 14, color: AppColors.warning),
           const SizedBox(width: 4),
           Text(
             l10n.ownListsOnly ?? 'Mes listes uniquement',
             style: TextStyle(
               fontSize: 11,
-              color: Colors.orange[700],
+              color: AppColors.warning,
               fontWeight: FontWeight.w500,
             ),
           ),

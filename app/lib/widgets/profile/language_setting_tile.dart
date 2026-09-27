@@ -1,4 +1,5 @@
 // widgets/profile/language_setting_tile.dart - DIALOGUE SIMPLIFIÉ
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -43,13 +44,13 @@ class LanguageSettingTile extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
+                        color: AppColors.primaryLight,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.green[100]!),
+                        border: Border.all(color: AppColors.primaryLight),
                       ),
                       child: Icon(
                         Icons.language_rounded,
-                        color: Colors.green[600],
+                        color: AppColors.primary,
                         size: 22,
                       ),
                     ),
@@ -65,7 +66,7 @@ class LanguageSettingTile extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: AppColors.textPrimary,
                               letterSpacing: -0.2,
                             ),
                           ),
@@ -74,7 +75,7 @@ class LanguageSettingTile extends StatelessWidget {
                             _getLanguageDisplayName(currentLanguage, l10n),
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: AppColors.textSecondary,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -92,9 +93,9 @@ class LanguageSettingTile extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: AppColors.background,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[200]!),
+                            border: Border.all(color: AppColors.border),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -109,7 +110,7 @@ class LanguageSettingTile extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             ],
@@ -119,7 +120,7 @@ class LanguageSettingTile extends StatelessWidget {
                         Icon(
                           Icons.arrow_forward_ios_rounded,
                           size: 16,
-                          color: Colors.grey[400],
+                          color: AppColors.textDisabled,
                         ),
                       ],
                     ),
@@ -222,7 +223,7 @@ class LanguageSettingTile extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            side: BorderSide(color: AppColors.border),
                           ),
                         ),
                         child: Text(
@@ -230,7 +231,7 @@ class LanguageSettingTile extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -249,10 +250,10 @@ class LanguageSettingTile extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.language_rounded, size: 40, color: Colors.green[600]),
+      child: Icon(Icons.language_rounded, size: 40, color: AppColors.primary),
     );
   }
 
@@ -263,7 +264,7 @@ class LanguageSettingTile extends StatelessWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -272,7 +273,7 @@ class LanguageSettingTile extends StatelessWidget {
   Widget _buildDescription(AppLocalizations l10n) {
     return Text(
       l10n.choosePreferredLanguage,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
       textAlign: TextAlign.center,
     );
   }
@@ -295,10 +296,10 @@ class LanguageSettingTile extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green[50] : Colors.grey[50],
+          color: isSelected ? AppColors.primaryLight : AppColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.green[300]! : Colors.grey[200]!,
+            color: isSelected ? Colors.green[300]! : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
           boxShadow:
@@ -321,7 +322,7 @@ class LanguageSettingTile extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: AppColors.border),
               ),
               child: Center(
                 child: Text(flag, style: const TextStyle(fontSize: 20)),
@@ -339,7 +340,7 @@ class LanguageSettingTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.green[700] : Colors.black87,
+                      color: isSelected ? AppColors.primaryDark : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -347,7 +348,7 @@ class LanguageSettingTile extends StatelessWidget {
                     nativeName,
                     style: TextStyle(
                       fontSize: 13,
-                      color: isSelected ? Colors.green[600] : Colors.grey[600],
+                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -361,7 +362,7 @@ class LanguageSettingTile extends StatelessWidget {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -377,7 +378,7 @@ class LanguageSettingTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: AppColors.border),
                 ),
               ),
             ],

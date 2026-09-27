@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_error_state.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -60,7 +61,7 @@ class SuggestionErrorState extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.error_outline, size: 40, color: Colors.red[600]),
+      child: Icon(Icons.error_outline, size: 40, color: AppColors.error),
     );
   }
 
@@ -68,7 +69,7 @@ class SuggestionErrorState extends StatelessWidget {
     return Text(
       l10n.errorLoadingSuggestions,
       style: TextStyle(
-        color: Colors.red[700],
+        color: AppColors.error,
         fontSize: 18,
         fontWeight: FontWeight.w600,
       ),
@@ -79,7 +80,7 @@ class SuggestionErrorState extends StatelessWidget {
   Widget _buildMessage() {
     return Text(
       message,
-      style: TextStyle(color: Colors.grey[600], fontSize: 14, height: 1.4),
+      style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
       textAlign: TextAlign.center,
     );
   }
@@ -93,7 +94,7 @@ class SuggestionErrorState extends StatelessWidget {
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue[600],
+        backgroundColor: AppColors.accent,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

@@ -1,4 +1,5 @@
 // widgets/analytics/categories_chart_card.dart - VERSION CORRIGÉE AVEC CALCUL SÉCURISÉ
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -31,7 +32,7 @@ class CategoriesChartCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -59,7 +60,7 @@ class CategoriesChartCard extends StatelessWidget {
                           l10n.totalSpent,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -85,7 +86,7 @@ class CategoriesChartCard extends StatelessWidget {
                           l10n.categories,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -115,11 +116,11 @@ class CategoriesChartCard extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Icon(Icons.category, size: 48, color: Colors.grey[400]),
+                      Icon(Icons.category, size: 48, color: AppColors.textDisabled),
                       const SizedBox(height: 8),
                       Text(
                         l10n.noCategoriesData ?? 'Aucune donnée de catégorie',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -142,7 +143,7 @@ class CategoriesChartCard extends StatelessWidget {
                   '${l10n.andXMore ?? 'Et'} ${categories.length - 8} ${l10n.moreCategories ?? 'autres catégories'}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     fontStyle: FontStyle.italic,
                   ),
                   textAlign: TextAlign.center,
@@ -213,11 +214,11 @@ class CategoriesChartCard extends StatelessWidget {
 
     // Couleurs pour les catégories
     final colors = [
-      Colors.green[600]!,
-      Colors.blue[600]!,
-      Colors.orange[600]!,
+      AppColors.primary,
+      AppColors.accent,
+      AppColors.warning,
       Colors.purple[600]!,
-      Colors.red[600]!,
+      AppColors.error,
       Colors.teal[600]!,
       Colors.indigo[600]!,
       Colors.brown[600]!,
@@ -253,13 +254,13 @@ class CategoriesChartCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       '$totalItems ${l10n.articles ?? 'articles'}',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -280,7 +281,7 @@ class CategoriesChartCard extends StatelessWidget {
                   ),
                   Text(
                     '${percentage.toStringAsFixed(1)}%',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -291,7 +292,7 @@ class CategoriesChartCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: percentage > 0 ? (percentage / 100).clamp(0.0, 1.0) : 0.0,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: AppColors.border,
               valueColor: AlwaysStoppedAnimation<Color>(color),
               minHeight: 6,
             ),

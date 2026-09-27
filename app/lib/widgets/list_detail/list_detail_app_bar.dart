@@ -1,4 +1,5 @@
 // widgets/list_detail/list_detail_app_bar.dart - POPUP INFORMATION CORRIGÉ
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -38,8 +39,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      iconTheme: const IconThemeData(color: Colors.black87),
-      foregroundColor: Colors.black87,
+      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      foregroundColor: AppColors.textPrimary,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,7 +49,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           if (shoppingList.isShared) _buildSharingSubtitle(context),
@@ -65,11 +66,11 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     if (shoppingList.isOwner) {
       subtitle = l10n.sharedList;
-      subtitleColor = Colors.blue[600]!;
+      subtitleColor = AppColors.accent;
     } else {
       subtitle = shoppingList.permissionDisplayName ?? l10n.sharedList;
       subtitleColor =
-          shoppingList.isReadOnly ? Colors.blue[600]! : Colors.green[600]!;
+          shoppingList.isReadOnly ? AppColors.accent : AppColors.primary;
     }
 
     return Text(
@@ -91,7 +92,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions.add(
         IconButton(
           onPressed: onAddItem,
-          icon: const Icon(Icons.add, color: Colors.black87),
+          icon: const Icon(Icons.add, color: AppColors.textPrimary),
           tooltip: l10n.addItemTooltip,
         ),
       );
@@ -102,7 +103,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions.add(
         IconButton(
           onPressed: onOpenChat,
-          icon: const Icon(Icons.chat_bubble_outline, color: Colors.black87),
+          icon: const Icon(Icons.chat_bubble_outline, color: AppColors.textPrimary),
           tooltip: l10n.openChat,
         ),
       );
@@ -116,7 +117,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildOptionsMenu(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert, color: Colors.black87),
+      icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
       onSelected: (value) => _handleMenuAction(value, context),
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -136,12 +137,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              Icon(Icons.edit, size: 20, color: AppColors.accent),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.editList,
-                  style: const TextStyle(color: Colors.black87),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -158,12 +159,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 20, color: Colors.green[600]),
+              Icon(Icons.share, size: 20, color: AppColors.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.share,
-                  style: const TextStyle(color: Colors.black87),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -185,7 +186,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               Expanded(
                 child: Text(
                   l10n.manageShares,
-                  style: const TextStyle(color: Colors.black87),
+                  style: const TextStyle(color: AppColors.textPrimary),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -201,12 +202,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         value: 'permissions',
         child: Row(
           children: [
-            Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+            Icon(Icons.info_outline, size: 20, color: AppColors.textSecondary),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 l10n.information,
-                style: const TextStyle(color: Colors.black87),
+                style: const TextStyle(color: AppColors.textPrimary),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -221,12 +222,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         value: 'receipts',
         child: Row(
           children: [
-            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
+            Icon(Icons.receipt_long, size: 20, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 l10n.receipts,
-                style: const TextStyle(color: Colors.black87),
+                style: const TextStyle(color: AppColors.textPrimary),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -247,12 +248,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              Icon(Icons.exit_to_app, size: 20, color: AppColors.warning),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.leaveList,
-                  style: TextStyle(color: Colors.orange[600]),
+                  style: TextStyle(color: AppColors.warning),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -269,12 +270,12 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              Icon(Icons.delete, size: 20, color: AppColors.error),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.delete,
-                  style: TextStyle(color: Colors.red[600]),
+                  style: TextStyle(color: AppColors.error),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -372,13 +373,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
       child: Icon(
         Icons.info_outline_rounded,
         size: 40,
-        color: Colors.blue[600],
+        color: AppColors.accent,
       ),
     );
   }
@@ -389,7 +390,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -398,7 +399,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Text(
       'Détails et permissions de cette liste',
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -407,9 +408,9 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,7 +455,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             '$label:',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               fontSize: 14,
             ),
           ),
@@ -464,7 +465,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Text(
             value,
             style: const TextStyle(
-              color: Colors.black87,
+              color: AppColors.textPrimary,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -480,7 +481,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (shoppingList.canEdit) {
       permissions.add({
         'icon': Icons.edit,
-        'color': Colors.green[600],
+        'color': AppColors.primary,
         'text': l10n.editItems,
         'granted': true,
       });
@@ -496,7 +497,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (shoppingList.canShare) {
       permissions.add({
         'icon': Icons.share,
-        'color': Colors.green[600],
+        'color': AppColors.primary,
         'text': l10n.shareList,
         'granted': true,
       });
@@ -512,7 +513,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     if (shoppingList.canDelete) {
       permissions.add({
         'icon': Icons.delete,
-        'color': Colors.green[600],
+        'color': AppColors.primary,
         'text': l10n.deleteList,
         'granted': true,
       });
@@ -531,20 +532,20 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.security, size: 18, color: Colors.blue[600]),
+              Icon(Icons.security, size: 18, color: AppColors.accent),
               const SizedBox(width: 8),
               Text(
                 '${l10n.permissions}:',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+                  color: AppColors.textSecondary,
                   fontSize: 15,
                 ),
               ),
@@ -569,8 +570,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         fontSize: 14,
                         color:
                             permission['granted']
-                                ? Colors.black87
-                                : Colors.grey[600],
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary,
                         fontWeight:
                             permission['granted']
                                 ? FontWeight.w500
@@ -585,7 +586,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
+                        color: AppColors.primaryLight,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.green[200]!),
                       ),
@@ -593,7 +594,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         'Autorisé',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.green[700],
+                          color: AppColors.primaryDark,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -613,7 +614,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         'Refusé',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.red[700],
+                          color: AppColors.error,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -633,7 +634,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: ElevatedButton(
         onPressed: () => Navigator.of(context).pop(),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue[600],
+          backgroundColor: AppColors.accent,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
@@ -683,11 +684,11 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             backgroundColor: Colors.white,
             title: Text(
               l10n.leaveList,
-              style: const TextStyle(color: Colors.black87),
+              style: const TextStyle(color: AppColors.textPrimary),
             ),
             content: Text(
               l10n.leaveListConfirm(shoppingList.name),
-              style: const TextStyle(color: Colors.black87),
+              style: const TextStyle(color: AppColors.textPrimary),
             ),
             actions: [
               TextButton(

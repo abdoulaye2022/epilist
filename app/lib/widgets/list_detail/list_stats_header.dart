@@ -1,4 +1,5 @@
 // widgets/list_detail/list_stats_header.dart - VERSION AVEC SÉPARATION DE L'APPBAR
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +28,8 @@ class ListStatsHeader extends StatelessWidget {
         color: Colors.white,
         // ✅ BORDURE SUPÉRIEURE POUR SÉPARER DE L'APPBAR
         border: Border(
-          top: BorderSide(color: Colors.grey[300]!, width: 1),
-          bottom: BorderSide(color: Colors.grey[200]!, width: 1),
+          top: BorderSide(color: AppColors.border, width: 1),
+          bottom: BorderSide(color: AppColors.border, width: 1),
         ),
         // ✅ OMBRE SUBTILE POUR PLUS DE PROFONDEUR
         boxShadow: [
@@ -58,7 +59,7 @@ class ListStatsHeader extends StatelessWidget {
 
   // ✅ SÉPARATEUR VERTICAL ENTRE LES STATISTIQUES
   Widget _buildVerticalDivider() {
-    return Container(height: 40, width: 1, color: Colors.grey[300]);
+    return Container(height: 40, width: 1, color: AppColors.border);
   }
 
   Widget _buildStatItem(String label, String value) {
@@ -70,13 +71,13 @@ class ListStatsHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -93,14 +94,14 @@ class ListStatsHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+              color: AppColors.primary,
             ),
             showCode: false,
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],

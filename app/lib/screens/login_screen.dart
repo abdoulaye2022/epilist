@@ -1,4 +1,5 @@
 // screens/login_screen.dart - VERSION CORRIGÉE SANS OVERFLOW
+import 'package:epilist/theme/app_theme.dart';
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -34,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       body: BlocListener<AuthBloc, AuthState>(
         listener: _handleAuthState,
         child: SafeArea(
@@ -212,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 (_, __, ___) => Icon(
                   Icons.shopping_cart_rounded,
                   size: 40,
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                 ),
           ),
         ),
@@ -222,13 +223,13 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.green[700],
+            color: AppColors.primaryDark,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.manageGroceryListsEasily,
-          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
       ],
@@ -247,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signInWithGoogle,
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
-              side: BorderSide(color: Colors.grey[300]!),
+              side: BorderSide(color: AppColors.border),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -259,19 +260,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     )
                     : Icon(
                       Icons.g_mobiledata,
-                      color: Colors.red[600],
+                      color: AppColors.error,
                       size: 20,
                     ),
             label: Text(
               _isGoogleLoading ? 'Connexion...' : l10n.continueWithGoogle,
               style: const TextStyle(
                 fontSize: 15,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -325,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const Expanded(child: Divider()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(l10n.or, style: TextStyle(color: Colors.grey[600])),
+          child: Text(l10n.or, style: TextStyle(color: AppColors.textSecondary)),
         ),
         const Expanded(child: Divider()),
       ],
@@ -349,7 +350,7 @@ class _LoginScreenState extends State<LoginScreen> {
               prefixIcon: const Icon(Icons.email_outlined),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[400]!),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -357,10 +358,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[600]!),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
             validator: (value) {
@@ -393,7 +394,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[400]!),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -401,10 +402,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[600]!),
+                borderSide: BorderSide(color: AppColors.primary),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             onFieldSubmitted: (_) => _login(),
             validator: (value) {
@@ -424,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text(
                 l10n.forgotPassword,
                 style: TextStyle(
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -440,7 +441,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _login,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -479,7 +480,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Text(
             l10n.dontHaveAccount,
-            style: TextStyle(color: Colors.grey[600], fontSize: 15),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
             textAlign: TextAlign.center,
           ),
           TextButton(
@@ -498,7 +499,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Text(
               l10n.createAccount,
               style: TextStyle(
-                color: Colors.green[600],
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
               ),
@@ -516,7 +517,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           l10n.dontHaveAccount,
-          style: TextStyle(color: Colors.grey[600], fontSize: 15),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
@@ -531,7 +532,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Text(
             l10n.createAccount,
             style: TextStyle(
-              color: Colors.green[600],
+              color: AppColors.primary,
               fontWeight: FontWeight.w600,
               fontSize: 15,
             ),
@@ -640,7 +641,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Icon(
                         Icons.lock_reset_rounded,
                         size: 40,
-                        color: Colors.orange[600],
+                        color: AppColors.warning,
                       ),
                     ),
 
@@ -652,7 +653,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppColors.textPrimary,
                       ),
                     ),
 
@@ -664,7 +665,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                         height: 1.4,
                       ),
                     ),
@@ -681,7 +682,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.grey[300]!),
+                                side: BorderSide(color: AppColors.border),
                               ),
                             ),
                             child: Text(
@@ -689,7 +690,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.grey[600],
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ),
@@ -717,7 +718,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange[600],
+                              backgroundColor: AppColors.warning,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(

@@ -1,6 +1,7 @@
 // screens/store_aisle_order_screen.dart - Ordre des rayons d'un magasin.
 // Glisser-déposer les rayons (kinds des catégories par défaut) dans l'ordre
 // où on parcourt le magasin ; sauvegarde à chaque dépôt (optimiste).
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/store/store_bloc.dart';
 import 'package:epilist/blocs/store/store_event.dart';
@@ -79,25 +80,25 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
         final store = _storeFrom(storeState);
 
         return Scaffold(
-          backgroundColor: Colors.grey[100],
+          backgroundColor: AppColors.background,
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black87),
+            iconTheme: const IconThemeData(color: AppColors.textPrimary),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   store?.name ?? '',
                   style: const TextStyle(
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                   ),
                 ),
                 Text(
                   l10n.aisleOrder,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -122,14 +123,14 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                     margin: const EdgeInsets.all(16),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: Colors.blue[50],
+                      color: AppColors.accentLight,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.blue[100]!),
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.swipe_vertical,
-                            color: Colors.blue[600], size: 22),
+                            color: AppColors.accent, size: 22),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -193,7 +194,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                                     cat.name,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -202,7 +203,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                             trailing: ReorderableDragStartListener(
                               index: index,
                               child: Icon(Icons.drag_handle,
-                                  color: Colors.grey[400]),
+                                  color: AppColors.textDisabled),
                             ),
                           ),
                         );

@@ -1,4 +1,5 @@
 // widgets/list_detail/modern_dropdown_menu.dart - MENU SIMPLE INSPIRÉ DU SHOPPING CARD
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class ModernDropdownMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+      icon: Icon(Icons.more_vert, color: AppColors.textSecondary),
       onSelected: (value) => _handleMenuAction(value, context),
       itemBuilder: (context) => _buildMenuItems(context),
     );
@@ -43,7 +44,7 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              Icon(Icons.edit, size: 20, color: AppColors.accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -65,7 +66,7 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 20, color: Colors.green[600]),
+              Icon(Icons.share, size: 20, color: AppColors.primary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -111,7 +112,7 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'info',
           child: Row(
             children: [
-              Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+              Icon(Icons.info_outline, size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -139,12 +140,12 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              Icon(Icons.exit_to_app, size: 20, color: AppColors.warning),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.leaveList,
-                  style: TextStyle(color: Colors.orange[600]),
+                  style: TextStyle(color: AppColors.warning),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -162,12 +163,12 @@ class ModernDropdownMenu extends StatelessWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              Icon(Icons.delete, size: 20, color: AppColors.error),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.deleteList,
-                  style: TextStyle(color: Colors.red[600]),
+                  style: TextStyle(color: AppColors.error),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),

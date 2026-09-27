@@ -1,4 +1,5 @@
 // screens/share_invitation_screen.dart - VERSION WITH MINIMAL SNACKBARS
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/models/share_invitation.dart';
@@ -34,12 +35,12 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     return WillPopScope(
       onWillPop: () async => !_hasPerformedAction,
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text('Share Invitation'),
           backgroundColor: Colors.white,
           elevation: 0,
-          foregroundColor: Colors.black87,
+          foregroundColor: AppColors.textPrimary,
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed:
@@ -136,7 +137,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
             ),
           ),
 
@@ -144,7 +145,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           Text(
             'Verifying share token',
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            style: TextStyle(fontSize: 14, color: AppColors.textDisabled),
           ),
 
           const SizedBox(height: 32),
@@ -153,7 +154,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 40),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: AppColors.background,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -162,7 +163,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   'Token',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -171,7 +172,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   widget.shareToken,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey[800],
+                    color: AppColors.textPrimary,
                     fontFamily: 'monospace',
                   ),
                   textAlign: TextAlign.center,
@@ -223,7 +224,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -306,13 +307,13 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         children: [
           Text(
             'This invitation expired on ${_formatDate(invitation.expiresAt)}',
-            style: TextStyle(fontSize: 16, color: Colors.red[600]),
+            style: TextStyle(fontSize: 16, color: AppColors.error),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             'Contact ${invitation.ownerName} to receive a new invitation.',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -322,7 +323,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     if (invitation.isAccepted) {
       return Text(
         'You have already accepted this invitation for the list "${invitation.listName}".',
-        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         textAlign: TextAlign.center,
       );
     }
@@ -330,7 +331,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     if (invitation.isDeclined) {
       return Text(
         'You have declined this invitation for the list "${invitation.listName}".',
-        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         textAlign: TextAlign.center,
       );
     }
@@ -338,13 +339,13 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: TextStyle(fontSize: 18, color: Colors.grey[600], height: 1.4),
+        style: TextStyle(fontSize: 18, color: AppColors.textSecondary, height: 1.4),
         children: [
           TextSpan(
             text: invitation.ownerName,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           const TextSpan(text: ' invites you to access the list '),
@@ -352,7 +353,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             text: '"${invitation.listName}"',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.green[700],
+              color: AppColors.primaryDark,
             ),
           ),
         ],
@@ -374,7 +375,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey[600],
+            backgroundColor: AppColors.textSecondary,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -406,7 +407,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.red[600],
+                color: AppColors.error,
               ),
             ),
           ),
@@ -416,7 +417,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           child: ElevatedButton(
             onPressed: () => _showAcceptConfirmation(invitation),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -439,18 +440,18 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.blue[50],
+          color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.blue[200]!),
         ),
         child: Row(
           children: [
-            Icon(Icons.info, color: Colors.blue[600], size: 20),
+            Icon(Icons.info, color: AppColors.accent, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'This invitation expires on ${_formatDate(invitation.expiresAt)}.',
-                style: TextStyle(color: Colors.blue[700], fontSize: 14),
+                style: TextStyle(color: AppColors.accent, fontSize: 14),
               ),
             ),
           ],
@@ -496,7 +497,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.shopping_cart, color: Colors.green[600], size: 24),
+              Icon(Icons.shopping_cart, color: AppColors.primary, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -504,7 +505,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
@@ -535,7 +536,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             icon: Icons.schedule,
             title: 'Expires on',
             value: _formatDate(invitation.expiresAt),
-            valueColor: invitation.isExpired ? Colors.red[600] : null,
+            valueColor: invitation.isExpired ? AppColors.error : null,
           ),
 
           const SizedBox(height: 12),
@@ -556,7 +557,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 12),
@@ -621,13 +622,13 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Colors.green[50],
+                    color: AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(40),
                   ),
                   child: Icon(
                     Icons.check_circle_rounded,
                     size: 40,
-                    color: Colors.green[600],
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -637,7 +638,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -647,7 +648,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                       height: 1.4,
                     ),
                     children: [
@@ -658,7 +659,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         text: invitation.ownerName,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const TextSpan(text: ' for the list '),
@@ -666,7 +667,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         text: '"${invitation.listName}"',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.green[700],
+                          color: AppColors.primaryDark,
                         ),
                       ),
                       const TextSpan(text: '?'),
@@ -678,20 +679,20 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green[50],
+                    color: AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.green[200]!),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.security, color: Colors.green[600], size: 16),
+                      Icon(Icons.security, color: AppColors.primary, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Permissions: ${invitation.permissionDisplayName}',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.green[700],
+                            color: AppColors.primaryDark,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -710,7 +711,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            side: BorderSide(color: AppColors.border),
                           ),
                         ),
                         child: Text(
@@ -718,7 +719,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -733,7 +734,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -795,7 +796,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   child: Icon(
                     Icons.cancel_rounded,
                     size: 40,
-                    color: Colors.red[600],
+                    color: AppColors.error,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -805,7 +806,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -815,7 +816,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   text: TextSpan(
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                       height: 1.4,
                     ),
                     children: [
@@ -826,7 +827,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         text: invitation.ownerName,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const TextSpan(text: ' for the list '),
@@ -834,7 +835,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         text: '"${invitation.listName}"',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.red[700],
+                          color: AppColors.error,
                         ),
                       ),
                       const TextSpan(text: '?'),
@@ -854,7 +855,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                     children: [
                       Icon(
                         Icons.warning_amber_rounded,
-                        color: Colors.orange[600],
+                        color: AppColors.warning,
                         size: 16,
                       ),
                       const SizedBox(width: 8),
@@ -863,7 +864,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           'You will need to request a new invitation to access this list.',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.orange[700],
+                            color: AppColors.warning,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -882,7 +883,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            side: BorderSide(color: AppColors.border),
                           ),
                         ),
                         child: Text(
@@ -890,7 +891,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -905,7 +906,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red[600],
+                          backgroundColor: AppColors.error,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -948,7 +949,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: Colors.grey[600]),
+        Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -958,7 +959,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 title,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -967,7 +968,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 value,
                 style: TextStyle(
                   fontSize: 16,
-                  color: valueColor ?? Colors.black87,
+                  color: valueColor ?? AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1027,7 +1028,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           'View items and their status',
           'See prices and quantities',
         ];
-        color = Colors.blue[600]!;
+        color = AppColors.accent;
         break;
       case SharePermission.edit:
         title = 'Edit';
@@ -1037,7 +1038,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           'Mark items as purchased',
           'Edit prices and quantities',
         ];
-        color = Colors.green[600]!;
+        color = AppColors.primary;
         break;
       case SharePermission.admin:
         title = 'Administration';
@@ -1054,9 +1055,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1083,7 +1084,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 8),
           Text(
             description,
-            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
           ...abilities.map(
@@ -1096,7 +1097,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   Expanded(
                     child: Text(
                       ability,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                     ),
                   ),
                 ],
@@ -1122,14 +1123,14 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -1140,7 +1141,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[600],
+                backgroundColor: AppColors.textSecondary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
@@ -1158,9 +1159,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
   Color _getPermissionColor(SharePermission permission) {
     switch (permission) {
       case SharePermission.readOnly:
-        return Colors.blue[600]!;
+        return AppColors.accent;
       case SharePermission.edit:
-        return Colors.green[600]!;
+        return AppColors.primary;
       case SharePermission.admin:
         return Colors.purple[600]!;
     }

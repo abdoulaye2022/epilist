@@ -1,4 +1,5 @@
 // widgets/receipts/store_group_card.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/receipts/receipt_card.dart';
@@ -72,10 +73,10 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
+            color: AppColors.accentLight,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.store, color: Colors.blue[600], size: 24),
+          child: Icon(Icons.store, color: AppColors.accent, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -87,7 +88,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
               ),
               // CORRECTION: Calculer le total à partir des reçus
@@ -96,7 +97,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                 ),
                 showCode: false,
                 fallbackCurrencyCode: 'CAD',
@@ -106,7 +107,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
         ),
         Icon(
           _isExpanded ? Icons.expand_less : Icons.expand_more,
-          color: Colors.grey[600],
+          color: AppColors.textSecondary,
         ),
       ],
     );
@@ -167,7 +168,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
   Widget _buildReceiptsList() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
       ),
       child: Column(

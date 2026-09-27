@@ -1,4 +1,5 @@
 // screens/budget_screen.dart - VERSION CORRIGÉE AVEC DESIGN HARMONISÉ
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
@@ -47,14 +48,14 @@ class _BudgetScreenState extends State<BudgetScreen>
 
     return Scaffold(
       // ✅ CORRECTION: Background gris clair comme HomeScreen
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         // ✅ CORRECTION: Style harmonisé avec HomeScreen (fond blanc)
         title: Text(
           l10n.budgets,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.green[700], // ✅ Texte vert au lieu de blanc
+            color: AppColors.primaryDark, // ✅ Texte vert au lieu de blanc
             fontSize: 24,
           ),
         ),
@@ -67,7 +68,7 @@ class _BudgetScreenState extends State<BudgetScreen>
           IconButton(
             icon: Icon(
               _showFilters ? Icons.filter_list_off : Icons.filter_list,
-              color: _showFilters ? Colors.green[700] : Colors.black,
+              color: _showFilters ? AppColors.primaryDark : Colors.black,
             ),
             tooltip: _showFilters ? l10n.hideFilters : l10n.showFilters,
             onPressed: () {
@@ -95,7 +96,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     value: 'refresh',
                     child: Row(
                       children: [
-                        Icon(Icons.refresh, size: 20, color: Colors.green[600]),
+                        Icon(Icons.refresh, size: 20, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(l10n.refresh),
                       ],
@@ -108,7 +109,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                         Icon(
                           Icons.flash_on,
                           size: 20,
-                          color: Colors.orange[600],
+                          color: AppColors.warning,
                         ),
                         const SizedBox(width: 8),
                         Text(l10n.quickBudget),
@@ -123,7 +124,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                         Icon(
                           Icons.sort_by_alpha,
                           size: 20,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(l10n.sortByName),
@@ -137,7 +138,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                         Icon(
                           Icons.monetization_on,
                           size: 20,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(l10n.sortByAmount),
@@ -151,25 +152,25 @@ class _BudgetScreenState extends State<BudgetScreen>
         // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.green[700], // ✅ Onglet sélectionné en vert
+          labelColor: AppColors.primaryDark, // ✅ Onglet sélectionné en vert
           unselectedLabelColor:
-              Colors.grey[600], // ✅ Onglets non sélectionnés en gris
-          indicatorColor: Colors.green[700], // ✅ Indicateur vert
+              AppColors.textSecondary, // ✅ Onglets non sélectionnés en gris
+          indicatorColor: AppColors.primaryDark, // ✅ Indicateur vert
           indicatorWeight: 3,
           tabs: [
             Tab(
-              icon: Icon(Icons.dashboard, color: Colors.green[600]),
+              icon: Icon(Icons.dashboard, color: AppColors.primary),
               text: l10n.overview,
             ),
             Tab(
               icon: Icon(
                 Icons.account_balance_wallet,
-                color: Colors.green[600],
+                color: AppColors.primary,
               ),
               text: l10n.active,
             ),
             Tab(
-              icon: Icon(Icons.warning, color: Colors.orange[600]),
+              icon: Icon(Icons.warning, color: AppColors.warning),
               text: l10n.alerts,
             ),
           ],
@@ -268,7 +269,7 @@ class _BudgetScreenState extends State<BudgetScreen>
       ),
       floatingActionButton: ConnectedFloatingActionButton(
         onPressed: () => _showCreateBudgetDialog(context),
-        backgroundColor: Colors.green[600],
+        backgroundColor: AppColors.primary,
         tooltip: l10n.createBudget,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -314,7 +315,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
@@ -323,7 +324,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     const SizedBox(height: 8),
                     Text(
                       message,
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: AppColors.textSecondary),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
@@ -336,7 +337,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       icon: const Icon(Icons.refresh),
                       label: Text(l10n.retry, overflow: TextOverflow.ellipsis),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[600],
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                       ),
                     ),
@@ -453,7 +454,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     style: const TextStyle(
                       fontSize: 18, // ✅ RÉDUIT de 20 à 18
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     overflow:
@@ -470,7 +471,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       l10n.tryAdjustingFilters,
                       style: TextStyle(
                         fontSize: 13, // ✅ RÉDUIT de 14 à 13
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                       overflow:
@@ -508,7 +509,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange[600],
+                                  backgroundColor: AppColors.warning,
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -530,8 +531,8 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.green[600],
-                                  side: BorderSide(color: Colors.green[600]!),
+                                  foregroundColor: AppColors.primary,
+                                  side: BorderSide(color: AppColors.primary),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 12,
@@ -564,7 +565,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange[600],
+                                  backgroundColor: AppColors.warning,
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -586,8 +587,8 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.green[600],
-                                  side: BorderSide(color: Colors.green[600]!),
+                                  foregroundColor: AppColors.primary,
+                                  side: BorderSide(color: AppColors.primary),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
                                     vertical: 12,
@@ -719,7 +720,7 @@ class _BudgetScreenState extends State<BudgetScreen>
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 12),
@@ -730,7 +731,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                 icon: Icons.flash_on,
                 title: l10n.quickBudget,
                 subtitle: l10n.createQuickBudget,
-                color: Colors.orange[600]!,
+                color: AppColors.warning,
                 onTap: () => _showQuickBudgetDialog(context),
               ),
             ),
@@ -740,7 +741,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                 icon: Icons.trending_up,
                 title: l10n.monthlyBudget,
                 subtitle: l10n.createMonthlyBudget,
-                color: Colors.blue[600]!,
+                color: AppColors.accent,
                 onTap: () => _createMonthlyBudget(context),
               ),
             ),
@@ -783,7 +784,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                   const Spacer(),
                   Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.grey[400],
+                    color: AppColors.textDisabled,
                     size: 16,
                   ),
                 ],
@@ -794,13 +795,13 @@ class _BudgetScreenState extends State<BudgetScreen>
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -831,7 +832,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                 Text(
                   l10n.recentBudgets,
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    color: AppColors.textSecondary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -849,7 +850,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     child: Text(
                       l10n.viewAll,
                       style: TextStyle(
-                        color: Colors.green[700],
+                        color: AppColors.primaryDark,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -897,7 +898,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -914,7 +915,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     style: const TextStyle(
                       fontSize: 18, // ✅ RÉDUIT
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.visible,
@@ -928,7 +929,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       l10n.createFirstBudgetDescription,
                       style: TextStyle(
                         fontSize: 13, // ✅ RÉDUIT
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
@@ -952,7 +953,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                           overflow: TextOverflow.ellipsis,
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -993,7 +994,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                   Icon(
                     Icons.hourglass_empty,
                     size: 48, // ✅ RÉDUIT
-                    color: Colors.grey[400],
+                    color: AppColors.textDisabled,
                   ),
 
                   const SizedBox(height: 16),
@@ -1003,7 +1004,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     style: const TextStyle(
                       fontSize: 16, // ✅ RÉDUIT
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.visible,
@@ -1017,7 +1018,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       l10n.createActiveBudgetDescription,
                       style: TextStyle(
                         fontSize: 13, // ✅ RÉDUIT
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
@@ -1056,13 +1057,13 @@ class _BudgetScreenState extends State<BudgetScreen>
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.check_circle,
                       size: 48, // ✅ RÉDUIT
-                      color: Colors.green[400],
+                      color: AppColors.primary,
                     ),
                   ),
 
@@ -1073,7 +1074,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                     style: const TextStyle(
                       fontSize: 16, // ✅ RÉDUIT
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.visible,
@@ -1087,7 +1088,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                       l10n.allBudgetsOnTrack,
                       style: TextStyle(
                         fontSize: 13, // ✅ RÉDUIT
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
@@ -1256,7 +1257,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                   context.read<BudgetBloc>().add(DeleteBudget(budget.id));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                 ),
                 child: Text(l10n.delete),

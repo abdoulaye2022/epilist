@@ -1,4 +1,5 @@
 // widgets/connectivity/connected_action_widgets.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
@@ -40,10 +41,10 @@ class ConnectedElevatedButton extends StatelessWidget {
             backgroundColor:
                 isConnected
                     ? style?.backgroundColor
-                    : MaterialStateProperty.all(Colors.grey[400]),
+                    : MaterialStateProperty.all(AppColors.textDisabled),
           ) ??
           ElevatedButton.styleFrom(
-            backgroundColor: isConnected ? null : Colors.grey[400],
+            backgroundColor: isConnected ? null : AppColors.textDisabled,
           ),
       child: child,
     );
@@ -96,8 +97,8 @@ class ConnectedFloatingActionButton extends StatelessWidget {
               },
       backgroundColor:
           isConnected
-              ? (backgroundColor ?? Colors.green[600])
-              : Colors.grey[400],
+              ? (backgroundColor ?? AppColors.primary)
+              : AppColors.textDisabled,
       tooltip:
           isConnected
               ? tooltip

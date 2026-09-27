@@ -1,4 +1,5 @@
 // widgets/analytics/comparison_card.dart - VERSION CORRIGÉE AVEC FormattedAmount
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -21,15 +22,15 @@ class ComparisonCard extends StatelessWidget {
 
     switch (trend) {
       case 'increased':
-        trendColor = Colors.red[600]!;
+        trendColor = AppColors.error;
         trendIcon = Icons.trending_up;
         break;
       case 'decreased':
-        trendColor = Colors.green[600]!;
+        trendColor = AppColors.primary;
         trendIcon = Icons.trending_down;
         break;
       default:
-        trendColor = Colors.blue[600]!;
+        trendColor = AppColors.accent;
         trendIcon = Icons.trending_flat;
     }
 
@@ -42,7 +43,7 @@ class ComparisonCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.compare_arrows, color: Colors.orange[600], size: 28),
+                Icon(Icons.compare_arrows, color: AppColors.warning, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -50,7 +51,7 @@ class ComparisonCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -105,7 +106,7 @@ class ComparisonCard extends StatelessWidget {
                                 '${absoluteChange > 0 ? '+' : ''}',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[600],
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                               // ✅ UTILISATION CORRECTE: Votre FormattedAmount sans paramètres inconnus
@@ -114,7 +115,7 @@ class ComparisonCard extends StatelessWidget {
                                   amount: absoluteChange.abs(),
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.grey[600],
+                                    color: AppColors.textSecondary,
                                   ),
                                   showCode: false,
                                 ),
@@ -133,7 +134,7 @@ class ComparisonCard extends StatelessWidget {
             if (data.containsKey('current_period') &&
                 data.containsKey('previous_period')) ...[
               const SizedBox(height: 16),
-              Divider(color: Colors.grey[300]),
+              Divider(color: AppColors.border),
               const SizedBox(height: 12),
 
               Row(
@@ -178,7 +179,7 @@ class ComparisonCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
             maxLines: 1,

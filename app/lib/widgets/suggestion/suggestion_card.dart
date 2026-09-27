@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_card.dart - VERSION CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -51,7 +52,7 @@ class SuggestionCard extends StatelessWidget {
       ),
       child: Icon(
         Icons.shopping_basket_outlined,
-        color: Colors.blue[700],
+        color: AppColors.accent,
         size: 24,
       ),
     );
@@ -63,7 +64,7 @@ class SuggestionCard extends StatelessWidget {
       style: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 16,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
       overflow: TextOverflow.ellipsis, // Correction pour éviter l'overflow
       maxLines: 1,
@@ -155,14 +156,14 @@ class SuggestionCard extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.trending_up, size: 12, color: Colors.orange[600]),
+                Icon(Icons.trending_up, size: 12, color: AppColors.warning),
                 const SizedBox(width: 4),
                 Flexible(
                   // Permet au texte de s'adapter
                   child: Text(
                     suggestion.getUsageInfo(context),
                     style: TextStyle(
-                      color: Colors.orange[700],
+                      color: AppColors.warning,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -182,7 +183,7 @@ class SuggestionCard extends StatelessWidget {
             flex: 1,
             child: Text(
               '${l10n.lastUsed}: ${suggestion.getLastUsedFormatted(context)}',
-              style: TextStyle(color: Colors.grey[500], fontSize: 11),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 11),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               textAlign: TextAlign.end,
@@ -207,13 +208,13 @@ class SuggestionCard extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min, // Évite l'expansion complète
                 children: [
-                  Icon(Icons.delete_outline, color: Colors.red[600], size: 20),
+                  Icon(Icons.delete_outline, color: AppColors.error, size: 20),
                   const SizedBox(width: 12),
                   Flexible(
                     // Permet au texte de s'adapter
                     child: Text(
                       l10n.deleteSuggestion,
-                      style: TextStyle(color: Colors.red[600]),
+                      style: TextStyle(color: AppColors.error),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
@@ -225,10 +226,10 @@ class SuggestionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(Icons.more_vert, color: Colors.grey[600], size: 18),
+        child: Icon(Icons.more_vert, color: AppColors.textSecondary, size: 18),
       ),
     );
   }

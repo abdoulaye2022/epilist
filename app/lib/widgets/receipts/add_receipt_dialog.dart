@@ -1,4 +1,5 @@
 // widgets/receipts/add_receipt_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -91,10 +92,10 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.receipt_long, size: 40, color: Colors.green[600]),
+      child: Icon(Icons.receipt_long, size: 40, color: AppColors.primary),
     );
   }
 
@@ -104,7 +105,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -113,7 +114,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     return Text(
       l10n.addReceiptDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -123,21 +124,21 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       decoration: InputDecoration(
         labelText: l10n.storeName,
         hintText: l10n.enterStoreName,
-        prefixIcon: Icon(Icons.store, color: Colors.green[600]),
+        prefixIcon: Icon(Icons.store, color: AppColors.primary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       textCapitalization: TextCapitalization.words,
       enabled: !_isLoading,
@@ -159,21 +160,21 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       decoration: InputDecoration(
         labelText: l10n.totalAmount,
         hintText: l10n.enterAmount,
-        prefixIcon: Icon(Icons.attach_money, color: Colors.green[600]),
+        prefixIcon: Icon(Icons.attach_money, color: AppColors.primary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
@@ -205,13 +206,13 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: AppColors.border),
           borderRadius: BorderRadius.circular(12),
-          color: Colors.grey[50],
+          color: AppColors.background,
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today, color: Colors.green[600]),
+            Icon(Icons.calendar_today, color: AppColors.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -221,14 +222,14 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
                     l10n.purchaseDate,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     _formatDate(_selectedDate),
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
                   ),
                 ],
               ),
@@ -245,21 +246,21 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
       decoration: InputDecoration(
         labelText: l10n.notes,
         hintText: l10n.optionalNotes,
-        prefixIcon: Icon(Icons.note, color: Colors.green[600]),
+        prefixIcon: Icon(Icons.note, color: AppColors.primary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
         alignLabelWithHint: true,
       ),
       maxLines: 3,
@@ -279,7 +280,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -287,7 +288,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -297,7 +298,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _submitForm,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.green[300],
               padding: const EdgeInsets.symmetric(vertical: 12),

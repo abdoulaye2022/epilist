@@ -1,4 +1,5 @@
 // widgets/list_detail/swipeable_item_card.dart - VERSION CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -74,7 +75,7 @@ class SwipeableItemCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.red[600],
+        color: AppColors.error,
         borderRadius: BorderRadius.circular(8),
       ),
       alignment: isStartToEnd ? Alignment.centerLeft : Alignment.centerRight,
@@ -129,15 +130,15 @@ class SwipeableItemCard extends StatelessWidget {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: item.isPurchased ? Colors.green[100] : Colors.grey[100],
+          color: item.isPurchased ? AppColors.primaryLight : AppColors.background,
           border: Border.all(
-            color: item.isPurchased ? Colors.green[300]! : Colors.grey[300]!,
+            color: item.isPurchased ? Colors.green[300]! : AppColors.border,
             width: 2,
           ),
         ),
         child:
             item.isPurchased
-                ? Icon(Icons.check, size: 16, color: Colors.green[600])
+                ? Icon(Icons.check, size: 16, color: AppColors.primary)
                 : null,
       );
     }
@@ -148,11 +149,11 @@ class SwipeableItemCard extends StatelessWidget {
           shoppingList.canManageItems
               ? (value) => onTogglePurchased(item, value!)
               : (value) => onPermissionDenied?.call(),
-      activeColor: Colors.green[600],
+      activeColor: AppColors.primary,
       fillColor:
           shoppingList.canManageItems
               ? null
-              : MaterialStateProperty.all(Colors.grey[300]),
+              : MaterialStateProperty.all(AppColors.border),
     );
   }
 
@@ -163,8 +164,8 @@ class SwipeableItemCard extends StatelessWidget {
         decoration: item.isPurchased ? TextDecoration.lineThrough : null,
         color:
             shoppingList.isReadOnly
-                ? (item.isPurchased ? Colors.grey[500] : Colors.grey[700])
-                : (item.isPurchased ? Colors.grey : Colors.black87),
+                ? (item.isPurchased ? AppColors.textDisabled : AppColors.textSecondary)
+                : (item.isPurchased ? Colors.grey : AppColors.textPrimary),
         fontWeight:
             shoppingList.isReadOnly ? FontWeight.normal : FontWeight.w500,
       ),
@@ -184,8 +185,8 @@ class SwipeableItemCard extends StatelessWidget {
               style: TextStyle(
                 color:
                     shoppingList.isReadOnly
-                        ? Colors.grey[500]
-                        : Colors.grey[600],
+                        ? AppColors.textDisabled
+                        : AppColors.textSecondary,
               ),
             ),
             // ✅ CORRECTION: Utiliser FormattedAmount au lieu de _formatPrice
@@ -195,8 +196,8 @@ class SwipeableItemCard extends StatelessWidget {
                 style: TextStyle(
                   color:
                       shoppingList.isReadOnly
-                          ? Colors.grey[500]
-                          : Colors.grey[600],
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary,
                 ),
               ),
               FormattedAmount(
@@ -204,8 +205,8 @@ class SwipeableItemCard extends StatelessWidget {
                 style: TextStyle(
                   color:
                       shoppingList.isReadOnly
-                          ? Colors.grey[500]
-                          : Colors.grey[600],
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary,
                 ),
                 showCode: false,
               ),
@@ -221,8 +222,8 @@ class SwipeableItemCard extends StatelessWidget {
                 size: 12,
                 color:
                     shoppingList.isReadOnly
-                        ? Colors.grey[400]
-                        : Colors.grey[600],
+                        ? AppColors.textDisabled
+                        : AppColors.textSecondary,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -232,8 +233,8 @@ class SwipeableItemCard extends StatelessWidget {
                     fontSize: 12,
                     color:
                         shoppingList.isReadOnly
-                            ? Colors.grey[400]
-                            : Colors.grey[600],
+                            ? AppColors.textDisabled
+                            : AppColors.textSecondary,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -253,20 +254,20 @@ class SwipeableItemCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.blue[50],
+          color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.blue[200]!),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.visibility, size: 14, color: Colors.blue[600]),
+            Icon(Icons.visibility, size: 14, color: AppColors.accent),
             const SizedBox(width: 4),
             Text(
               l10n.readOnlyShort,
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.blue[600],
+                color: AppColors.accent,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -276,7 +277,7 @@ class SwipeableItemCard extends StatelessWidget {
     }
 
     return IconButton(
-      icon: Icon(Icons.edit, color: Colors.blue[600]),
+      icon: Icon(Icons.edit, color: AppColors.accent),
       onPressed: shoppingList.canEdit ? () => onEdit(item) : onPermissionDenied,
       tooltip:
           shoppingList.canEdit ? l10n.editItem : l10n.insufficientPermission,

@@ -1,4 +1,5 @@
 // widgets/category/category_list_item.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
 
@@ -60,7 +61,7 @@ class CategoryListItem extends StatelessWidget {
             Text(
               category.colorHex,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ],

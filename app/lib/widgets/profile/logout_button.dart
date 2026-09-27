@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -18,7 +19,7 @@ class LogoutButton extends StatelessWidget {
         label: Text(l10n.logoutButton),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red[50],
-          foregroundColor: Colors.red[600],
+          foregroundColor: AppColors.error,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

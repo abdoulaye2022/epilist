@@ -1,4 +1,5 @@
 // screens/signup_screen.dart - VERSION CORRIGÉE AVEC GESTION INTELLIGENTE SSO
+import 'package:epilist/theme/app_theme.dart';
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -37,12 +38,12 @@ class _SignUpPageState extends State<SignUpPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: _isLoading ? null : () => Navigator.pop(context),
         ),
       ),
@@ -218,7 +219,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       : Icons.apple,
                   color:
                       ssoState.provider == 'google'
-                          ? Colors.red[600]
+                          ? AppColors.error
                           : Colors.black,
                 ),
                 const SizedBox(width: 8),
@@ -238,19 +239,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 8),
                 Text(
                   'Voulez-vous compléter votre profil maintenant ou vous connecter plus tard ?',
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: AppColors.accentLight,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.blue[200]!),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.person, color: Colors.blue[600], size: 18),
+                      Icon(Icons.person, color: AppColors.accent, size: 18),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -266,7 +267,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ssoState.user.email,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],
@@ -285,7 +286,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
                 child: Text(
                   'Plus tard',
-                  style: TextStyle(color: Colors.grey[600]),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               ),
               ElevatedButton(
@@ -294,7 +295,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   _fillFormWithSSOData(ssoState.user);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('Compléter'),
@@ -333,13 +334,13 @@ class _SignUpPageState extends State<SignUpPage> {
           style: const TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.joinEpiListToManage,
-          style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -354,7 +355,7 @@ class _SignUpPageState extends State<SignUpPage> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
+            color: AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -368,7 +369,7 @@ class _SignUpPageState extends State<SignUpPage> {
             onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signUpWithGoogle,
             style: OutlinedButton.styleFrom(
               backgroundColor: Colors.white,
-              side: BorderSide(color: Colors.grey[300]!),
+              side: BorderSide(color: AppColors.border),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -380,19 +381,19 @@ class _SignUpPageState extends State<SignUpPage> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     )
                     : Icon(
                       Icons.g_mobiledata,
-                      color: Colors.red[600],
+                      color: AppColors.error,
                       size: 20,
                     ),
             label: Text(
               _isGoogleLoading ? 'Création...' : l10n.signUpWithGoogle,
               style: const TextStyle(
                 fontSize: 15,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -441,7 +442,7 @@ class _SignUpPageState extends State<SignUpPage> {
         // Disclaimer SSO normal
         Text(
           l10n.ssoSignupDisclaimer,
-          style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.3),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3),
           textAlign: TextAlign.center,
         ),
       ],
@@ -455,7 +456,7 @@ class _SignUpPageState extends State<SignUpPage> {
         const Expanded(child: Divider()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(l10n.or, style: TextStyle(color: Colors.grey[600])),
+          child: Text(l10n.or, style: TextStyle(color: AppColors.textSecondary)),
         ),
         const Expanded(child: Divider()),
       ],
@@ -583,7 +584,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: ElevatedButton(
               onPressed: (_isLoading || !_acceptTerms) ? null : _signUp,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -635,7 +636,7 @@ class _SignUpPageState extends State<SignUpPage> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: Colors.green[400]!,
+            color: AppColors.primary,
           ), // Bordure verte fine
         ),
         enabledBorder: OutlineInputBorder(
@@ -647,7 +648,7 @@ class _SignUpPageState extends State<SignUpPage> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: Colors.green[600]!,
+            color: AppColors.primary,
           ), // Bordure verte fine
         ),
         errorBorder: OutlineInputBorder(
@@ -655,7 +656,7 @@ class _SignUpPageState extends State<SignUpPage> {
           borderSide: BorderSide(color: Colors.red[400]!),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
         // Pas de labelStyle pour garder les couleurs par défaut
       ),
       validator: validator,
@@ -672,7 +673,7 @@ class _SignUpPageState extends State<SignUpPage> {
               _isLoading
                   ? null
                   : (value) => setState(() => _acceptTerms = value!),
-          activeColor: Colors.green[600],
+          activeColor: AppColors.primary,
         ),
         Expanded(
           child: GestureDetector(
@@ -684,14 +685,14 @@ class _SignUpPageState extends State<SignUpPage> {
               text: TextSpan(
                 style: TextStyle(
                   fontSize: 14,
-                  color: _isLoading ? Colors.grey[400] : Colors.black87,
+                  color: _isLoading ? AppColors.textDisabled : AppColors.textPrimary,
                 ),
                 children: [
                   TextSpan(text: l10n.iAcceptThe),
                   TextSpan(
                     text: l10n.termsOfService,
                     style: TextStyle(
-                      color: _isLoading ? Colors.grey[400] : Colors.green[600],
+                      color: _isLoading ? AppColors.textDisabled : AppColors.primary,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
                     ),
@@ -700,7 +701,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   TextSpan(
                     text: l10n.privacyPolicy,
                     style: TextStyle(
-                      color: _isLoading ? Colors.grey[400] : Colors.green[600],
+                      color: _isLoading ? AppColors.textDisabled : AppColors.primary,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
                     ),
@@ -722,20 +723,20 @@ class _SignUpPageState extends State<SignUpPage> {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.green[50],
+            color: AppColors.primaryLight,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.green[200]!),
           ),
           child: Row(
             children: [
-              Icon(Icons.email_outlined, color: Colors.green[600], size: 18),
+              Icon(Icons.email_outlined, color: AppColors.primary, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.afterRegistrationEmailVerification,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.green[700],
+                    color: AppColors.primaryDark,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -752,14 +753,14 @@ class _SignUpPageState extends State<SignUpPage> {
           children: [
             Text(
               l10n.alreadyHaveAccount,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
             TextButton(
               onPressed: _isLoading ? null : () => Navigator.pop(context),
               child: Text(
                 l10n.login,
                 style: TextStyle(
-                  color: _isLoading ? Colors.grey[400] : Colors.green[600],
+                  color: _isLoading ? AppColors.textDisabled : AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/product_info.dart';
 
@@ -41,7 +42,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.check_circle,
-                    color: Colors.green[600],
+                    color: AppColors.primary,
                     size: 32,
                   ),
                   const SizedBox(width: 12),
@@ -63,7 +64,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                 height: 200,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppColors.background,
                 ),
                 child: Image.network(
                   product.imageUrl!,
@@ -73,7 +74,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                       child: Icon(
                         Icons.shopping_basket,
                         size: 80,
-                        color: Colors.grey[400],
+                        color: AppColors.textDisabled,
                       ),
                     );
                   },
@@ -114,13 +115,13 @@ class ProductConfirmationDialog extends StatelessWidget {
                         Icon(
                           Icons.business,
                           size: 16,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           product.brand!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[700],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -135,13 +136,13 @@ class ProductConfirmationDialog extends StatelessWidget {
                         Icon(
                           Icons.straighten,
                           size: 16,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           product.quantity!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[700],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -155,13 +156,13 @@ class ProductConfirmationDialog extends StatelessWidget {
                       Icon(
                         Icons.qr_code,
                         size: 16,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         product.barcode,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -183,7 +184,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                     onPressed: onCancel,
                     child: Text(
                       'Annuler',
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
                   const SizedBox(width: 12),

@@ -1,4 +1,5 @@
 // widgets/category/add_edit_category_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/category/category_bloc.dart';
@@ -82,7 +83,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
 
@@ -96,7 +97,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 height: 1.4,
               ),
             ),
@@ -112,7 +113,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                 prefixIcon: Icon(Icons.label, color: theme.primaryColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -120,10 +121,10 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: AppColors.background,
               ),
               textCapitalization: TextCapitalization.words,
               autofocus: !isEditing,
@@ -157,9 +158,9 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: AppColors.border),
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[50],
+                        color: AppColors.background,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -175,7 +176,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                             child: Text(
                               l10n.selectIcon,
                               style: TextStyle(
-                                color: Colors.grey[700],
+                                color: AppColors.textSecondary,
                                 fontSize: 12,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -183,7 +184,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                           ),
                           Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             size: 20,
                           ),
                         ],
@@ -217,9 +218,9 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: AppColors.border),
                         borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[50],
+                        color: AppColors.background,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +233,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                               color: _selectedColor,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.grey[300]!,
+                                color: AppColors.border,
                                 width: 1,
                               ),
                             ),
@@ -242,7 +243,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                             child: Text(
                               l10n.selectColor,
                               style: TextStyle(
-                                color: Colors.grey[700],
+                                color: AppColors.textSecondary,
                                 fontSize: 12,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -250,7 +251,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                           ),
                           Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             size: 20,
                           ),
                         ],
@@ -274,7 +275,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.grey[300]!),
+                        side: BorderSide(color: AppColors.border),
                       ),
                     ),
                     child: Text(
@@ -282,7 +283,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
 // widgets/profile/currency_setting_tile.dart - VERSION AVEC TRADUCTIONS COMPLÈTES
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/currency/currency_selector_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,7 +80,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: AppColors.border),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
@@ -105,7 +106,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.green[400]!, Colors.green[600]!],
+                          colors: [AppColors.primary, AppColors.primary],
                         ),
                         borderRadius: BorderRadius.circular(22),
                       ),
@@ -131,7 +132,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -140,7 +141,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                               _currentCurrency!.code.toUpperCase(),
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -149,7 +150,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                               l10n.defaultCurrencyCAD,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -160,7 +161,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
 
                     Icon(
                       Icons.chevron_right,
-                      color: Colors.grey[400],
+                      color: AppColors.textDisabled,
                       size: 24,
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,13 +46,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   Widget _buildTitle(AppLocalizations l10n) {
     return Row(
       children: [
-        Icon(Icons.warning_rounded, color: Colors.red[600], size: 28),
+        Icon(Icons.warning_rounded, color: AppColors.error, size: 28),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             _showCodeStep ? l10n.confirmDeletion : l10n.deleteAccount,
             style: TextStyle(
-              color: Colors.red[700],
+              color: AppColors.error,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -109,7 +110,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               l10n.attention,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.red[700],
+                color: AppColors.error,
                 fontSize: 16,
               ),
             ),
@@ -117,7 +118,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             Text(
               l10n.actionDefinitiveIrreversible,
               style: TextStyle(
-                color: Colors.red[700],
+                color: AppColors.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -129,7 +130,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       Text(
         l10n.whatWillBeDeleted,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[800]),
+        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
       ),
       const SizedBox(height: 8),
 
@@ -142,13 +143,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       Text(
         l10n.whatWillBePreserved,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green[700]),
+        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryDark),
       ),
       const SizedBox(height: 8),
 
       Text(
         l10n.sharedListsAnonymized,
-        style: TextStyle(color: Colors.green[600], fontSize: 14),
+        style: TextStyle(color: AppColors.primary, fontSize: 14),
       ),
 
       const SizedBox(height: 20),
@@ -172,7 +173,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         title: Text(l10n.understandIrreversible),
         subtitle: Text(l10n.allDataWillBeDeleted),
         controlAffinity: ListTileControlAffinity.leading,
-        activeColor: Colors.red[600],
+        activeColor: AppColors.error,
       ),
     ];
   }
@@ -188,7 +189,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         ),
         child: Column(
           children: [
-            Icon(Icons.mail_outline, size: 48, color: Colors.orange[600]),
+            Icon(Icons.mail_outline, size: 48, color: AppColors.warning),
             const SizedBox(height: 12),
             Text(
               l10n.verificationCodeSent,
@@ -232,18 +233,18 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.blue[50],
+          color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.blue[200]!),
         ),
         child: Row(
           children: [
-            Icon(Icons.info_outline, color: Colors.blue[600]),
+            Icon(Icons.info_outline, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 l10n.codeExpiresInTwoHours,
-                style: TextStyle(color: Colors.blue[700], fontSize: 12),
+                style: TextStyle(color: AppColors.accent, fontSize: 12),
               ),
             ),
           ],
@@ -255,7 +256,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   Widget _buildDeletionItem(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Text(text, style: TextStyle(color: Colors.red[600], fontSize: 14)),
+      child: Text(text, style: TextStyle(color: AppColors.error, fontSize: 14)),
     );
   }
 
@@ -270,7 +271,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         ElevatedButton(
           onPressed: _confirmDeletion && !_isLoading ? _requestDeletion : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red[600],
+            backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
           ),
           child: Text(l10n.requestDeletion),
@@ -280,7 +281,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         ElevatedButton(
           onPressed: !_isLoading ? _confirmDeletionWithCode : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red[600],
+            backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
           ),
           child: Text(l10n.confirmDeletionWithCode),

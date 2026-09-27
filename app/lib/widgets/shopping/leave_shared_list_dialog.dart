@@ -1,4 +1,5 @@
 // widgets/shopping/leave_shared_list_dialog.dart - VERSION MISE À JOUR
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -19,7 +20,7 @@ class LeaveSharedListDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
         children: [
-          Icon(Icons.exit_to_app, color: Colors.orange[600]),
+          Icon(Icons.exit_to_app, color: AppColors.warning),
           SizedBox(width: 8),
           Text(l10n.leaveList),
         ],
@@ -39,12 +40,12 @@ class LeaveSharedListDialog extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.info, color: Colors.orange[600], size: 16),
+                Icon(Icons.info, color: AppColors.warning, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l10n.loseAccessWarning,
-                    style: TextStyle(fontSize: 13, color: Colors.orange[700]),
+                    style: TextStyle(fontSize: 13, color: AppColors.warning),
                   ),
                 ),
               ],
@@ -64,7 +65,7 @@ class LeaveSharedListDialog extends StatelessWidget {
             // Fermer le dialogue
             Navigator.pop(context);
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.orange[600]),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
           child: Text(l10n.leave, style: TextStyle(color: Colors.white)),
         ),
       ],

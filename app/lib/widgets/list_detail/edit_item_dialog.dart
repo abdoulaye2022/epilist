@@ -1,4 +1,5 @@
 // widgets/dialogs/edit_item_dialog.dart - VERSION CORRIGÉE SANS CAD
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -151,10 +152,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.edit_rounded, size: 40, color: Colors.blue[600]),
+      child: Icon(Icons.edit_rounded, size: 40, color: AppColors.accent),
     );
   }
 
@@ -164,7 +165,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -173,7 +174,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     return Text(
       l10n.modifyItemInformation,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -199,36 +200,36 @@ class _EditItemDialogState extends State<EditItemDialog> {
           decoration: InputDecoration(
             labelText: l10n.productNameRequired,
             hintText: l10n.productNameHint,
-            prefixIcon: Icon(Icons.shopping_basket, color: Colors.blue[600]),
+            prefixIcon: Icon(Icons.shopping_basket, color: AppColors.accent),
             suffixIcon:
                 _selectedSuggestion != null
                     ? IconButton(
-                      icon: Icon(Icons.clear, color: Colors.grey[600]),
+                      icon: Icon(Icons.clear, color: AppColors.textSecondary),
                       onPressed: _clearSelectedSuggestion,
                     )
                     : (productController.text != _originalProductName &&
                         productController.text.isNotEmpty)
                     ? IconButton(
-                      icon: Icon(Icons.refresh, color: Colors.orange[600]),
+                      icon: Icon(Icons.refresh, color: AppColors.warning),
                       onPressed: _resetToOriginal,
                       tooltip: 'Restaurer le nom original',
                     )
                     : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+              borderSide: BorderSide(color: AppColors.accent, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
             fillColor:
-                _selectedSuggestion != null ? Colors.blue[50] : Colors.grey[50],
+                _selectedSuggestion != null ? AppColors.accentLight : AppColors.background,
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -244,19 +245,19 @@ class _EditItemDialogState extends State<EditItemDialog> {
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, color: Colors.blue[600], size: 16),
+          Icon(Icons.auto_awesome, color: AppColors.accent, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'Suggestion sélectionnée • ${_selectedSuggestion!.usageInfo}',
               style: TextStyle(
-                color: Colors.blue[700],
+                color: AppColors.accent,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -271,7 +272,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     return Container(
       constraints: const BoxConstraints(maxHeight: 200),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
       child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
@@ -289,7 +290,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               itemCount: state.suggestions.length,
               separatorBuilder:
                   (context, index) =>
-                      Divider(height: 1, color: Colors.grey[200]),
+                      Divider(height: 1, color: AppColors.border),
               itemBuilder: (context, index) {
                 final suggestion = state.suggestions[index];
                 return _buildSuggestionItem(suggestion, l10n);
@@ -315,8 +316,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
     return ListTile(
       dense: true,
       leading: CircleAvatar(
-        backgroundColor: Colors.blue[50],
-        child: Icon(Icons.history, color: Colors.blue[600], size: 16),
+        backgroundColor: AppColors.accentLight,
+        child: Icon(Icons.history, color: AppColors.accent, size: 16),
       ),
       title: Text(
         suggestion.productName,
@@ -329,7 +330,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
             FormattedAmount(
               amount: suggestion.price!,
               style: TextStyle(
-                color: Colors.green[600],
+                color: AppColors.primary,
                 fontWeight: FontWeight.w500,
               ),
               showCode: false,
@@ -341,7 +342,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
           const Spacer(),
           Text(
             suggestion.usageInfo,
-            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -359,21 +360,21 @@ class _EditItemDialogState extends State<EditItemDialog> {
             decoration: InputDecoration(
               labelText: l10n.quantity,
               hintText: '1',
-              prefixIcon: Icon(Icons.numbers, color: Colors.orange[600]),
+              prefixIcon: Icon(Icons.numbers, color: AppColors.warning),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.orange[600]!, width: 2),
+                borderSide: BorderSide(color: AppColors.warning, width: 2),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             keyboardType: TextInputType.number,
           ),
@@ -392,7 +393,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               suffixIcon: _buildCurrencyIndicator(),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -400,10 +401,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: AppColors.border),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: AppColors.background,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
@@ -429,7 +430,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
         prefixIcon: Icon(Icons.store, color: Theme.of(context).primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -437,10 +438,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       textCapitalization: TextCapitalization.words,
     );
@@ -456,7 +457,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -464,7 +465,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -477,7 +478,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               return ElevatedButton(
                 onPressed: isLoading ? null : () => _updateItem(l10n),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[600],
+                  backgroundColor: AppColors.accent,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.blue[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -641,9 +642,9 @@ class _EditItemDialogState extends State<EditItemDialog> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: AppColors.border),
               borderRadius: BorderRadius.circular(12),
-              color: Colors.grey[50],
+              color: AppColors.background,
             ),
             child: Row(
               children: [
@@ -661,7 +662,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       Text(
                         l10n.selectCategory,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -674,8 +675,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
                               ? FontWeight.w600
                               : FontWeight.normal,
                           color: _selectedCategory != null
-                              ? Colors.black87
-                              : Colors.grey[500],
+                              ? AppColors.textPrimary
+                              : AppColors.textDisabled,
                         ),
                       ),
                     ],
@@ -760,13 +761,13 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       Icon(
                         Icons.category_outlined,
                         size: 48,
-                        color: Colors.grey[400],
+                        color: AppColors.textDisabled,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         l10n.noCategoriesYet,
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontSize: 16,
                         ),
                       ),

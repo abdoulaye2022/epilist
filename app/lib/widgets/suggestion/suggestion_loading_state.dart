@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_loading_state.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -43,7 +44,7 @@ class SuggestionLoadingState extends StatelessWidget {
               Text(
                 l10n.searchingSuggestions,
                 style: TextStyle(
-                  color: Colors.grey[700],
+                  color: AppColors.textSecondary,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),

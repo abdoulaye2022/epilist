@@ -1,4 +1,5 @@
 // widgets/category/icon_picker.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
 import '../../l10n/app_localizations.dart';
@@ -284,16 +285,16 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
         decoration: BoxDecoration(
           color: isSelected
               ? theme.primaryColor.withValues(alpha: 0.2)
-              : Colors.grey[100],
+              : AppColors.background,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? theme.primaryColor : Colors.grey[300]!,
+            color: isSelected ? theme.primaryColor : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Icon(
           Category.getIconDataFromCode(icon['code']!),
-          color: isSelected ? theme.primaryColor : Colors.grey[700],
+          color: isSelected ? theme.primaryColor : AppColors.textSecondary,
           size: 28,
         ),
       ),

@@ -1,4 +1,5 @@
 // widgets/shopping/manage_shares_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -29,7 +30,7 @@ class ManageSharesDialog extends StatelessWidget {
             SizedBox(height: 16),
             Text(
               '${l10n.list}: ${list.name}',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
             SizedBox(height: 16),
             Expanded(child: _buildSharesList(context)),
@@ -67,7 +68,7 @@ class ManageSharesDialog extends StatelessWidget {
       return Center(
         child: Text(
           l10n.noActiveShares,
-          style: TextStyle(color: Colors.grey[500]),
+          style: TextStyle(color: AppColors.textDisabled),
         ),
       );
     }
@@ -81,7 +82,7 @@ class ManageSharesDialog extends StatelessWidget {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.blue[100],
-              child: Icon(Icons.person, color: Colors.blue[600]),
+              child: Icon(Icons.person, color: AppColors.accent),
             ),
             title: Text(share.sharedWithUser?.name ?? l10n.user),
             subtitle: Text(share.sharedWithUser?.email ?? ''),
@@ -124,7 +125,7 @@ class ManageSharesDialog extends StatelessWidget {
           Navigator.pop(context);
           _showShareDialog(context);
         },
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[600]),
+        style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
         child: Text(l10n.createNewShare, style: TextStyle(color: Colors.white)),
       ),
     );

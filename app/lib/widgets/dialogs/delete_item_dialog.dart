@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
@@ -49,7 +50,7 @@ class DeleteItemDialog extends StatelessWidget {
         color: Colors.red[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.delete_rounded, size: 40, color: Colors.red[600]),
+      child: Icon(Icons.delete_rounded, size: 40, color: AppColors.error),
     );
   }
 
@@ -59,7 +60,7 @@ class DeleteItemDialog extends StatelessWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -68,14 +69,14 @@ class DeleteItemDialog extends StatelessWidget {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
         children: [
           TextSpan(text: l10n.sureToDeleteItem),
           TextSpan(
             text: ' "${item.productName}"',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           TextSpan(text: ' ${l10n.sureToLeaveQuestion}?'),
@@ -90,7 +91,7 @@ class DeleteItemDialog extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 14,
-        color: Colors.red[600],
+        color: AppColors.error,
         fontWeight: FontWeight.w500,
       ),
     );
@@ -106,7 +107,7 @@ class DeleteItemDialog extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -114,7 +115,7 @@ class DeleteItemDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -127,7 +128,7 @@ class DeleteItemDialog extends StatelessWidget {
               return ElevatedButton(
                 onPressed: isLoading ? null : () => _deleteItem(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.red[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

@@ -1,4 +1,5 @@
 // widgets/list_detail/item_filters_bar.dart - DESIGN INSPIRÉ DE BUDGET_FILTERS
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -192,7 +193,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 children: [
                   Icon(
                     Icons.filter_list,
-                    color: hasActiveFilters ? themeColor : Colors.grey[600],
+                    color: hasActiveFilters ? themeColor : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -201,7 +202,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: hasActiveFilters ? themeColor : Colors.black87,
+                        color: hasActiveFilters ? themeColor : AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -236,7 +237,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                         child: Icon(
                           Icons.clear,
                           size: 18,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -244,7 +245,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                   ],
                   Icon(
                     _isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                   ),
                 ],
               ),
@@ -301,7 +302,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
@@ -381,28 +382,28 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 decoration: BoxDecoration(
                   color: isActive
                       ? themeColor.withValues(alpha: 0.1)
-                      : Colors.grey[50],
+                      : AppColors.background,
                   borderRadius: BorderRadius.circular(8),
                   border: isActive
                       ? Border.all(
                           color: themeColor,
                           width: 2,
                         )
-                      : Border.all(color: Colors.grey[200]!),
+                      : Border.all(color: AppColors.border),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       option['icon'] as IconData,
                       size: 20,
-                      color: isActive ? themeColor : Colors.grey[600],
+                      color: isActive ? themeColor : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         option['label'] as String,
                         style: TextStyle(
-                          color: isActive ? themeColor : Colors.black87,
+                          color: isActive ? themeColor : AppColors.textPrimary,
                           fontWeight:
                               isActive ? FontWeight.w600 : FontWeight.normal,
                           fontSize: 14,
@@ -441,7 +442,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     if (widget.availableStores.isEmpty) {
       return Text(
         l10n.noStoresAvailable,
-        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       );
     }
 
@@ -519,7 +520,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
             );
           },
           icon: Icons.check_circle,
-          color: Colors.green[600],
+          color: AppColors.primary,
         ),
         _buildFilterChip(
           label: l10n.unpurchased,
@@ -541,7 +542,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
             );
           },
           icon: Icons.radio_button_unchecked,
-          color: Colors.orange[600],
+          color: AppColors.warning,
         ),
       ],
     );
@@ -576,10 +577,10 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: isActive ? chipColor : Colors.grey[100],
+            color: isActive ? chipColor : AppColors.background,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isActive ? chipColor : Colors.grey[300]!,
+              color: isActive ? chipColor : AppColors.border,
               width: isActive ? 2 : 1,
             ),
           ),
@@ -599,7 +600,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: isActive ? Colors.white : Colors.black87,
+                    color: isActive ? Colors.white : AppColors.textPrimary,
                     fontWeight:
                         isActive ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,

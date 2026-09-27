@@ -1,4 +1,5 @@
 // email_verification_screen.dart - VERSION COMPLÈTE CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
@@ -168,15 +169,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         border: Border.all(
           color:
               _controllers[index].text.isEmpty
-                  ? Colors.grey[300]!
-                  : Colors.green[600]!,
+                  ? AppColors.border
+                  : AppColors.primary,
           width: 2,
         ),
         borderRadius: BorderRadius.circular(8),
         color:
             _controllers[index].text.isEmpty
-                ? Colors.grey[50]
-                : Colors.green[50],
+                ? AppColors.background
+                : AppColors.primaryLight,
       ),
       child: TextFormField(
         controller: _controllers[index],
@@ -188,7 +189,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          color: AppColors.textPrimary,
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,
@@ -241,7 +242,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 20),
@@ -265,13 +266,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               onPressed: _isLoading ? null : _pasteFromClipboard,
               icon: Icon(
                 Icons.content_paste,
-                color: _isLoading ? Colors.grey[400] : Colors.blue[600],
+                color: _isLoading ? AppColors.textDisabled : AppColors.accent,
                 size: 18,
               ),
               label: Text(
                 l10n.pasteCode,
                 style: TextStyle(
-                  color: _isLoading ? Colors.grey[400] : Colors.blue[600],
+                  color: _isLoading ? AppColors.textDisabled : AppColors.accent,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -285,13 +286,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 onPressed: _isLoading ? null : _clearCode,
                 icon: Icon(
                   Icons.clear,
-                  color: _isLoading ? Colors.grey[400] : Colors.grey[600],
+                  color: _isLoading ? AppColors.textDisabled : AppColors.textSecondary,
                   size: 18,
                 ),
                 label: Text(
                   l10n.clear,
                   style: TextStyle(
-                    color: _isLoading ? Colors.grey[400] : Colors.grey[600],
+                    color: _isLoading ? AppColors.textDisabled : AppColors.textSecondary,
                     fontSize: 14,
                   ),
                 ),
@@ -341,12 +342,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed:
               _isLoading || _isRedirecting
                   ? null
@@ -472,13 +473,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: Icon(
                       Icons.email_outlined,
                       size: 50,
-                      color: Colors.green[600],
+                      color: AppColors.primary,
                     ),
                   ),
 
@@ -490,7 +491,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -500,7 +501,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   // Description
                   Text(
                     l10n.verificationCodeSentTo(widget.email),
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
                     textAlign: TextAlign.center,
                   ),
 
@@ -513,7 +514,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.green[200]!),
                     ),
@@ -522,7 +523,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.green[700],
+                        color: AppColors.primaryDark,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -537,7 +538,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: AppColors.accentLight,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.blue[200]!),
                       ),
@@ -547,7 +548,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: Colors.blue[600],
+                              color: AppColors.accent,
                               strokeWidth: 2,
                             ),
                           ),
@@ -555,7 +556,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           Text(
                             l10n.processing,
                             style: TextStyle(
-                              color: Colors.blue[700],
+                              color: AppColors.accent,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -577,9 +578,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       onPressed:
                           (_isLoading || !_isCodeComplete) ? null : _verifyCode,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[600],
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: Colors.grey[300],
+                        disabledBackgroundColor: AppColors.border,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -612,7 +613,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     children: [
                       Text(
                         l10n.verificationCodeSent,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 8),
                       if (!_canResend)
@@ -620,7 +621,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           '${l10n.resendCode} ${_resendCountdown}s',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[500],
+                            color: AppColors.textDisabled,
                             fontWeight: FontWeight.w500,
                           ),
                         )
@@ -632,8 +633,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             style: TextStyle(
                               color:
                                   _isLoading
-                                      ? Colors.grey[400]
-                                      : Colors.green[600],
+                                      ? AppColors.textDisabled
+                                      : AppColors.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -648,7 +649,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.blue[50],
+                      color: AppColors.accentLight,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.blue[200]!),
                     ),
@@ -656,7 +657,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.blue[600],
+                          color: AppColors.accent,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -665,7 +666,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             l10n.checkEmailsAndSpam,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.blue[700],
+                              color: AppColors.accent,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -680,20 +681,20 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.green[200]!),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.home, color: Colors.green[600], size: 20),
+                        Icon(Icons.home, color: AppColors.primary, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             l10n.afterRegistrationEmailVerification,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.green[700],
+                              color: AppColors.primaryDark,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

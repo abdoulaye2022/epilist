@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.logout_rounded, size: 40, color: Colors.orange[600]),
+      child: Icon(Icons.logout_rounded, size: 40, color: AppColors.warning),
     );
   }
 
@@ -130,7 +131,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -139,7 +140,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
     return Text(
       l10n.confirmLogoutMessage,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -154,7 +155,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -162,7 +163,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: _logoutStarted ? Colors.grey[400] : Colors.grey[600],
+                color: _logoutStarted ? AppColors.textDisabled : AppColors.textSecondary,
               ),
             ),
           ),
@@ -194,7 +195,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
                           context.read<AuthBloc>().add(LogoutRequested());
                         },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange[600],
+                  backgroundColor: AppColors.warning,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.orange[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

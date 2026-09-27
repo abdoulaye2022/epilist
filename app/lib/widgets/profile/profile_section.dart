@@ -1,4 +1,5 @@
 // widgets/profile/profile_section.dart - PAS DE CHANGEMENT (titre passé en paramètre)
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSection extends StatelessWidget {
@@ -37,7 +38,7 @@ class ProfileSection extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
           ),

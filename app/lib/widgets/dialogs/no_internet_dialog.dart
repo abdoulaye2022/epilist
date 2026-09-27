@@ -1,4 +1,5 @@
 // widgets/dialogs/no_internet_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/connectivity_service.dart';
@@ -137,7 +138,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: Colors.red[600],
+                color: AppColors.error,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.close, size: 14, color: Colors.white),
@@ -154,7 +155,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
       textAlign: TextAlign.center,
     );
@@ -166,7 +167,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           'Vous devez être connecté à Internet pour utiliser cette application. '
               'Veuillez vérifier votre connexion et réessayer.',
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -175,7 +176,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.blue.shade200),
       ),
@@ -184,7 +185,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_outline, color: Colors.blue[700], size: 20),
+              Icon(Icons.lightbulb_outline, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.connectionTips ?? 'Conseils :',
@@ -200,19 +201,19 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           _buildTipItem(
             Icons.wifi,
             l10n.checkWifiConnection ?? "Vérifiez votre connexion Wi-Fi",
-            Colors.blue[700]!,
+            AppColors.accent,
           ),
           const SizedBox(height: 8),
           _buildTipItem(
             Icons.signal_cellular_alt,
             l10n.checkMobileData ?? "Activez vos données mobiles",
-            Colors.green[700]!,
+            AppColors.primaryDark,
           ),
           const SizedBox(height: 8),
           _buildTipItem(
             Icons.router,
             l10n.restartRouter ?? "Redémarrez votre routeur si nécessaire",
-            Colors.orange[700]!,
+            AppColors.warning,
           ),
         ],
       ),
@@ -229,7 +230,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
             text,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.blue[700],
+              color: AppColors.accent,
               height: 1.3,
             ),
           ),
@@ -244,7 +245,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       child: ElevatedButton(
         onPressed: _isChecking ? null : () => _checkConnection(),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red[600],
+          backgroundColor: AppColors.error,
           foregroundColor: Colors.white,
           disabledBackgroundColor: Colors.red[300],
           padding: const EdgeInsets.symmetric(vertical: 16),

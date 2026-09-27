@@ -1,4 +1,5 @@
 // widgets/dialogs/create_list_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,13 +42,13 @@ class _CreateListDialogState extends State<CreateListDialog> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Icon(
                 Icons.add_shopping_cart_rounded,
                 size: 40,
-                color: Colors.green[600],
+                color: AppColors.primary,
               ),
             ),
 
@@ -59,7 +60,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
 
@@ -71,7 +72,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 height: 1.4,
               ),
             ),
@@ -84,21 +85,21 @@ class _CreateListDialogState extends State<CreateListDialog> {
               decoration: InputDecoration(
                 labelText: l10n.listName,
                 hintText: l10n.listNameHint,
-                prefixIcon: Icon(Icons.list_alt, color: Colors.green[600]),
+                prefixIcon: Icon(Icons.list_alt, color: AppColors.primary),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+                  borderSide: BorderSide(color: AppColors.primary, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: AppColors.background,
               ),
               autofocus: true,
             ),
@@ -116,7 +117,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                       padding: EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.grey[300]!),
+                        side: BorderSide(color: AppColors.border),
                       ),
                     ),
                     child: Text(
@@ -124,7 +125,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -140,7 +141,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                       return ElevatedButton(
                         onPressed: isLoading ? null : _createList,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
+                          backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: Colors.green[300],
                           padding: EdgeInsets.symmetric(vertical: 12),

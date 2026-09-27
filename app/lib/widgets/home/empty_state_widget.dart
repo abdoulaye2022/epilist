@@ -1,4 +1,5 @@
 // widgets/home/empty_state_widget.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -20,7 +21,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               Icons.shopping_cart_outlined,
               size: 60, // ✅ RÉDUIT: 80 -> 60
-              color: Colors.grey[400],
+              color: AppColors.textDisabled,
             ),
             const SizedBox(height: 12), // ✅ RÉDUIT: 16 -> 12
             Text(
@@ -28,7 +29,7 @@ class EmptyStateWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16, // ✅ RÉDUIT: 18 -> 16
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center, // ✅ AJOUTÉ: Centrage du texte
             ),
@@ -40,7 +41,7 @@ class EmptyStateWidget extends StatelessWidget {
               child: Text(
                 l10n.createFirstList,
                 style: TextStyle(
-                  color: Colors.grey[500],
+                  color: AppColors.textDisabled,
                   fontSize: 14, // ✅ AJOUTÉ: Taille explicite
                 ),
                 textAlign: TextAlign.center, // ✅ AJOUTÉ: Centrage du texte
@@ -57,7 +58,7 @@ class EmptyStateWidget extends StatelessWidget {
                 style: const TextStyle(fontSize: 14), // ✅ AJOUTÉ: Taille texte
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20, // ✅ RÉDUIT: 24 -> 20

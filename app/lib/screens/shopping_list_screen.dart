@@ -1,4 +1,5 @@
 // screens/shopping_list_screen.dart - VERSION AVEC NAVIGATION FACTURES CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
@@ -57,7 +58,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: ShoppingListAppBar(onRefresh: _loadShoppingLists),
       body: MultiBlocListener(
         listeners: [_buildShoppingListListener(), _buildSharedListListener()],
@@ -134,7 +135,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   Widget _buildLoadingState() {
-    return Center(child: CircularProgressIndicator(color: Colors.green[600]));
+    return Center(child: CircularProgressIndicator(color: AppColors.primary));
   }
 
   Widget _buildListView(List<ShoppingList> lists) {
@@ -209,7 +210,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             Icon(
               icon,
               size: 80,
-              color: Colors.grey[400],
+              color: AppColors.textDisabled,
             ),
             const SizedBox(height: 16),
             Text(
@@ -217,7 +218,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -226,7 +227,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               'Essayez un autre filtre',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[500],
+                color: AppColors.textDisabled,
               ),
             ),
           ],
@@ -240,7 +241,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
     return FloatingActionButton(
       onPressed: _showCreateListDialog,
-      backgroundColor: Colors.green[600],
+      backgroundColor: AppColors.primary,
       tooltip: l10n.createList,
       child: const Icon(Icons.add, color: Colors.white),
     );

@@ -1,4 +1,5 @@
 // widgets/list_detail/list_item_card.dart - VERSION ENTIÈREMENT TRADUITE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -104,15 +105,15 @@ class ListItemCard extends StatelessWidget {
   }
 
   Color _getCheckboxColor() {
-    if (item.isPurchased) return Colors.green[600]!;
-    if (shoppingList.isReadOnly) return Colors.grey[300]!;
+    if (item.isPurchased) return AppColors.primary;
+    if (shoppingList.isReadOnly) return AppColors.border;
     return Colors.transparent;
   }
 
   Color _getCheckboxBorderColor() {
-    if (item.isPurchased) return Colors.green[600]!;
-    if (shoppingList.isReadOnly) return Colors.grey[400]!;
-    return Colors.grey[500]!;
+    if (item.isPurchased) return AppColors.primary;
+    if (shoppingList.isReadOnly) return AppColors.textDisabled;
+    return AppColors.textDisabled;
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -130,9 +131,9 @@ class ListItemCard extends StatelessWidget {
   }
 
   Color _getTitleColor() {
-    if (item.isPurchased) return Colors.grey[500]!;
-    if (shoppingList.isReadOnly) return Colors.blue[700]!;
-    return Colors.black87;
+    if (item.isPurchased) return AppColors.textDisabled;
+    if (shoppingList.isReadOnly) return AppColors.accent;
+    return AppColors.textPrimary;
   }
 
   Widget _buildDetails(BuildContext context) {
@@ -145,7 +146,7 @@ class ListItemCard extends StatelessWidget {
       _buildDetailChip(
         icon: Icons.shopping_basket_outlined,
         text: '${l10n.quantityShort}: ${item.quantity}',
-        color: Colors.grey[600]!,
+        color: AppColors.textSecondary,
       ),
     );
 
@@ -173,20 +174,20 @@ class ListItemCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.green[200]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.attach_money, size: 12, color: Colors.green[600]),
+          Icon(Icons.attach_money, size: 12, color: AppColors.primary),
           const SizedBox(width: 4),
           FormattedAmount(
             amount: item.price!,
             style: TextStyle(
               fontSize: 11,
-              color: Colors.green[600]!,
+              color: AppColors.primary,
               fontWeight: FontWeight.w500,
             ),
             showCode:
@@ -266,10 +267,10 @@ class ListItemCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: AppColors.background,
           shape: BoxShape.circle,
         ),
-        child: Icon(Icons.lock, color: Colors.grey[400], size: 16),
+        child: Icon(Icons.lock, color: AppColors.textDisabled, size: 16),
       );
     }
 
@@ -277,12 +278,12 @@ class ListItemCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.green[50],
+          color: AppColors.primaryLight,
           shape: BoxShape.circle,
         ),
         child: Icon(
           Icons.check_circle_outline,
-          color: Colors.green[400],
+          color: AppColors.primary,
           size: 16,
         ),
       );
@@ -293,10 +294,10 @@ class ListItemCard extends StatelessWidget {
         icon: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: AppColors.background,
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.more_vert, color: Colors.grey[600], size: 16),
+          child: Icon(Icons.more_vert, color: AppColors.textSecondary, size: 16),
         ),
         onSelected: (value) => _handleMenuAction(value, context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -317,7 +318,7 @@ class ListItemCard extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 18, color: Colors.blue[600]),
+              Icon(Icons.edit, size: 18, color: AppColors.accent),
               const SizedBox(width: 8),
               Text(l10n.edit),
             ],
@@ -332,9 +333,9 @@ class ListItemCard extends StatelessWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 18, color: Colors.red[600]),
+              Icon(Icons.delete, size: 18, color: AppColors.error),
               const SizedBox(width: 8),
-              Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+              Text(l10n.delete, style: TextStyle(color: AppColors.error)),
             ],
           ),
         ),
@@ -392,11 +393,11 @@ class ListItemCard extends StatelessWidget {
           ),
           title: Text(
             l10n.deleteItemTitle,
-            style: const TextStyle(color: Colors.black87),
+            style: const TextStyle(color: AppColors.textPrimary),
           ),
           content: Text(
             l10n.deleteQuickConfirm(item.productName),
-            style: const TextStyle(color: Colors.black87),
+            style: const TextStyle(color: AppColors.textPrimary),
           ),
           actions: [
             TextButton(
@@ -409,7 +410,7 @@ class ListItemCard extends StatelessWidget {
                 onDelete?.call();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[600],
+                backgroundColor: AppColors.error,
                 foregroundColor: Colors.white,
               ),
               child: Text(l10n.delete),

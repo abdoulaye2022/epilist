@@ -1,4 +1,5 @@
 // widgets/common/offline_indicator.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/services/offline_sync_service.dart';
@@ -194,22 +195,22 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
 
   Color _getBackgroundColor() {
     if (_isSyncing) {
-      return Colors.blue[700]!;
+      return AppColors.accent;
     }
 
     if (!_isOnline && _pendingCount > 0) {
-      return Colors.orange[700]!;
+      return AppColors.warning;
     }
 
     if (!_isOnline) {
-      return Colors.grey[600]!;
+      return AppColors.textSecondary;
     }
 
     if (_pendingCount > 0) {
-      return Colors.blue[600]!;
+      return AppColors.accent;
     }
 
-    return Colors.green[600]!;
+    return AppColors.primary;
   }
 
   String _getStatusTitle(AppLocalizations l10n) {
@@ -332,7 +333,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.orange[700], size: 20),
+                  Icon(Icons.info_outline, color: AppColors.warning, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -372,7 +373,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
           label,
           style: const TextStyle(
             fontSize: 14,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         Container(

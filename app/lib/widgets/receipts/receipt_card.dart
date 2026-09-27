@@ -1,4 +1,5 @@
 // widgets/receipts/receipt_card.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
@@ -66,10 +67,10 @@ class ReceiptCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
+                  color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.store, color: Colors.green[600], size: 20),
+                child: Icon(Icons.store, color: AppColors.primary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -78,7 +79,7 @@ class ReceiptCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -101,7 +102,7 @@ class ReceiptCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.green[600],
+            color: AppColors.primary,
           ),
           showCode: false, // Pas d'affichage du code de devise ici
           fallbackCurrencyCode: 'CAD', // Devise de fallback
@@ -109,7 +110,7 @@ class ReceiptCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
+            color: AppColors.accentLight,
             borderRadius: BorderRadius.circular(6),
             border: Border.all(color: Colors.blue[200]!),
           ),
@@ -117,7 +118,7 @@ class ReceiptCard extends StatelessWidget {
             _formatPurchaseDate(context, receipt.purchaseDate),
             style: TextStyle(
               fontSize: 12,
-              color: Colors.blue[600],
+              color: AppColors.accent,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -133,9 +134,9 @@ class ReceiptCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,14 +145,14 @@ class ReceiptCard extends StatelessWidget {
             l10n.notes,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             receipt.notes!,
-            style: const TextStyle(fontSize: 14, color: Colors.black87),
+            style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -163,11 +164,11 @@ class ReceiptCard extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
+        Icon(Icons.access_time, size: 14, color: AppColors.textDisabled),
         const SizedBox(width: 4),
         Text(
           '${l10n.added} ${_formatCreatedDate(context, receipt.createdAt)}',
-          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+          style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
         ),
       ],
     );
@@ -177,14 +178,14 @@ class ReceiptCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return PopupMenuButton(
-      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+      icon: Icon(Icons.more_vert, color: AppColors.textSecondary),
       itemBuilder:
           (context) => [
             PopupMenuItem(
               value: 'edit',
               child: Row(
                 children: [
-                  Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+                  Icon(Icons.edit, size: 20, color: AppColors.accent),
                   const SizedBox(width: 12),
                   Text(l10n.edit),
                 ],
@@ -194,9 +195,9 @@ class ReceiptCard extends StatelessWidget {
               value: 'delete',
               child: Row(
                 children: [
-                  Icon(Icons.delete, size: 20, color: Colors.red[600]),
+                  Icon(Icons.delete, size: 20, color: AppColors.error),
                   const SizedBox(width: 12),
-                  Text(l10n.delete, style: TextStyle(color: Colors.red[600])),
+                  Text(l10n.delete, style: TextStyle(color: AppColors.error)),
                 ],
               ),
             ),

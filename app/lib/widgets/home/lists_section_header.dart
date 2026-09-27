@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -28,7 +29,7 @@ class ListsSectionHeader extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
@@ -41,7 +42,7 @@ class ListsSectionHeader extends StatelessWidget {
                     onPressed: onViewAll,
                     child: Text(
                       l10n.viewAll,
-                      style: TextStyle(color: Colors.blue[600]),
+                      style: TextStyle(color: AppColors.accent),
                     ),
                   ),
                   ElevatedButton.icon(
@@ -49,7 +50,7 @@ class ListsSectionHeader extends StatelessWidget {
                     icon: const Icon(Icons.add, size: 16),
                     label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -72,7 +73,7 @@ class ListsSectionHeader extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -84,7 +85,7 @@ class ListsSectionHeader extends StatelessWidget {
                     onPressed: onViewAll,
                     child: Text(
                       l10n.viewAll,
-                      style: TextStyle(color: Colors.blue[600]),
+                      style: TextStyle(color: AppColors.accent),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -93,7 +94,7 @@ class ListsSectionHeader extends StatelessWidget {
                     icon: const Icon(Icons.add, size: 18),
                     label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,

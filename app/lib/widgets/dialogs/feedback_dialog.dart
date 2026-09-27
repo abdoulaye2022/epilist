@@ -1,4 +1,5 @@
 // widgets/dialogs/feedback_dialog.dart - VERSION AVEC TRADUCTIONS LOCALES
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/contact/contact_bloc.dart';
@@ -256,10 +257,10 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.feedback_outlined, size: 40, color: Colors.green[600]),
+      child: Icon(Icons.feedback_outlined, size: 40, color: AppColors.primary),
     );
   }
 
@@ -269,7 +270,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -278,7 +279,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     return Text(
       l10n.feedbackDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -312,9 +313,9 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -327,7 +328,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           const SizedBox(width: 12),
           Text(
             AppLocalizations.of(context)!.loadingOptions,
-            style: TextStyle(color: Colors.grey[600]),
+            style: TextStyle(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -353,7 +354,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -361,15 +362,15 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(12),
-            color: Colors.grey[50],
+            color: AppColors.background,
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedFeedbackType,
               isExpanded: true,
-              icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+              icon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
               items:
                   _feedbackTypes.map((type) {
                     // ✅ CORRECTION: Utiliser les traductions locales
@@ -423,7 +424,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -431,15 +432,15 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(12),
-            color: Colors.grey[50],
+            color: AppColors.background,
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedPriority,
               isExpanded: true,
-              icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+              icon: Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
               items:
                   _priorities.map((priority) {
                     // ✅ CORRECTION: Utiliser les traductions locales
@@ -481,21 +482,21 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       decoration: InputDecoration(
         labelText: l10n.subject,
         hintText: l10n.subjectHint,
-        prefixIcon: Icon(Icons.title, color: Colors.blue[600]),
+        prefixIcon: Icon(Icons.title, color: AppColors.accent),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
         counterText: '', // Masquer le compteur
       ),
       maxLength: 200,
@@ -522,22 +523,22 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         hintText: l10n.messageHint,
         prefixIcon: Padding(
           padding: const EdgeInsets.only(bottom: 60),
-          child: Icon(Icons.message, color: Colors.green[600]),
+          child: Icon(Icons.message, color: AppColors.primary),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
         alignLabelWithHint: true,
         counterText: '', // Masquer le compteur
       ),
@@ -561,18 +562,18 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         children: [
-          Icon(Icons.privacy_tip_outlined, color: Colors.blue[600], size: 16),
+          Icon(Icons.privacy_tip_outlined, color: AppColors.accent, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               l10n.feedbackPrivacyNote,
-              style: TextStyle(fontSize: 11, color: Colors.blue[700]),
+              style: TextStyle(fontSize: 11, color: AppColors.accent),
             ),
           ),
         ],
@@ -590,7 +591,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -598,7 +599,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -608,7 +609,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _sendFeedback,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.green[300],
               padding: const EdgeInsets.symmetric(vertical: 12),

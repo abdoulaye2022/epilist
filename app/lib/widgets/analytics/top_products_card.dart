@@ -1,4 +1,5 @@
 // widgets/analytics/top_products_card.dart - VERSION AVEC FormattedAmount
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -35,7 +36,7 @@ class TopProductsCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -65,7 +66,7 @@ class TopProductsCard extends StatelessWidget {
                           l10n.totalProducts,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -90,7 +91,7 @@ class TopProductsCard extends StatelessWidget {
                           l10n.showing,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -123,12 +124,12 @@ class TopProductsCard extends StatelessWidget {
                       Icon(
                         Icons.shopping_basket,
                         size: 48,
-                        color: Colors.grey[400],
+                        color: AppColors.textDisabled,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         l10n.noProductsData,
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -162,11 +163,11 @@ class TopProductsCard extends StatelessWidget {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(8),
       ),
       child: PopupMenuButton<String>(
-        icon: Icon(Icons.sort, color: Colors.grey[600]),
+        icon: Icon(Icons.sort, color: AppColors.textSecondary),
         tooltip: l10n.sortBy,
         onSelected: (sortBy) {
           context.read<AnalyticsBloc>().add(
@@ -187,8 +188,8 @@ class TopProductsCard extends StatelessWidget {
                       size: 20,
                       color:
                           currentSort == 'total_spent'
-                              ? Colors.green[600]
-                              : Colors.grey[600],
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -201,14 +202,14 @@ class TopProductsCard extends StatelessWidget {
                                   : FontWeight.normal,
                           color:
                               currentSort == 'total_spent'
-                                  ? Colors.green[600]
-                                  : Colors.black87,
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (currentSort == 'total_spent')
-                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                      Icon(Icons.check, color: AppColors.primary, size: 18),
                   ],
                 ),
               ),
@@ -221,8 +222,8 @@ class TopProductsCard extends StatelessWidget {
                       size: 20,
                       color:
                           currentSort == 'quantity'
-                              ? Colors.green[600]
-                              : Colors.grey[600],
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -235,14 +236,14 @@ class TopProductsCard extends StatelessWidget {
                                   : FontWeight.normal,
                           color:
                               currentSort == 'quantity'
-                                  ? Colors.green[600]
-                                  : Colors.black87,
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (currentSort == 'quantity')
-                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                      Icon(Icons.check, color: AppColors.primary, size: 18),
                   ],
                 ),
               ),
@@ -255,8 +256,8 @@ class TopProductsCard extends StatelessWidget {
                       size: 20,
                       color:
                           currentSort == 'frequency'
-                              ? Colors.green[600]
-                              : Colors.grey[600],
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -269,14 +270,14 @@ class TopProductsCard extends StatelessWidget {
                                   : FontWeight.normal,
                           color:
                               currentSort == 'frequency'
-                                  ? Colors.green[600]
-                                  : Colors.black87,
+                                  ? AppColors.primary
+                                  : AppColors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (currentSort == 'frequency')
-                      Icon(Icons.check, color: Colors.green[600], size: 18),
+                      Icon(Icons.check, color: AppColors.primary, size: 18),
                   ],
                 ),
               ),
@@ -311,12 +312,12 @@ class TopProductsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.blue[600],
+            color: AppColors.accent,
           ),
         );
         subValue = '${l10n.itemsCount}';
         icon = Icons.shopping_cart;
-        color = Colors.blue[600]!;
+        color = AppColors.accent;
         break;
       case 'frequency':
         mainValue = Text(
@@ -337,24 +338,24 @@ class TopProductsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.green[600],
+            color: AppColors.primary,
           ),
           showCode: false,
         );
         subValue = '$totalQuantity ${l10n.itemsCount}';
         icon = Icons.attach_money;
-        color = Colors.green[600]!;
+        color = AppColors.primary;
         break;
     }
 
     // Couleur pour le rang
-    Color rankColor = Colors.grey[600]!;
+    Color rankColor = AppColors.textSecondary;
     if (rank <= 3) {
       rankColor =
           [
             Colors.amber[600]!, // 1er - Or
-            Colors.grey[500]!, // 2ème - Argent
-            Colors.orange[600]!, // 3ème - Bronze
+            AppColors.textDisabled, // 2ème - Argent
+            AppColors.warning, // 3ème - Bronze
           ][rank - 1];
     }
 
@@ -396,7 +397,7 @@ class TopProductsCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -405,7 +406,7 @@ class TopProductsCard extends StatelessWidget {
                 if (stores.isNotEmpty)
                   Text(
                     '${l10n.storesLabel}: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                     overflow: TextOverflow.ellipsis,
                   ),
                 // ✅ REMPLACEMENT: FormattedAmount pour le prix moyen
@@ -413,12 +414,12 @@ class TopProductsCard extends StatelessWidget {
                   children: [
                     Text(
                       '${l10n.averagePriceLabel}: ',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                     ),
                     Flexible(
                       child: FormattedAmount(
                         amount: averagePrice,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                         showCode: false,
                       ),
                     ),
@@ -443,7 +444,7 @@ class TopProductsCard extends StatelessWidget {
               if (subValue.isNotEmpty)
                 Text(
                   subValue,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
             ],
           ),

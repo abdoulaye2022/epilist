@@ -1,5 +1,6 @@
 // screens/profile_screen.dart - VERSION AVEC FEEDBACK
 
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
@@ -159,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfileView(User user, AppLocalizations l10n) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: const ProfileAppBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -211,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           subtitle:
               'Gérer vos suggestions personnalisées', // Exemple de sous-titre
           onTap: _navigateToSuggestionManagement,
-          iconColor: Colors.orange[600],
+          iconColor: AppColors.warning,
           iconBackgroundColor: Colors.orange.withOpacity(0.1),
         ),
         ProfileActionTile(
@@ -219,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: l10n.myStores,
           subtitle: l10n.aisleOrder,
           onTap: _navigateToStores,
-          iconColor: Colors.green[600],
+          iconColor: AppColors.primary,
           iconBackgroundColor: Colors.green.withOpacity(0.1),
         ),
       ],
@@ -263,7 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -308,7 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.green[400]!, Colors.green[600]!],
+                          colors: [AppColors.primary, AppColors.primary],
                         ),
                         borderRadius: BorderRadius.circular(22),
                       ),
@@ -334,7 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -342,7 +343,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             '${currentCurrency.name} (${currentCurrency.code.toUpperCase()})',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: AppColors.textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -352,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     Icon(
                       Icons.chevron_right,
-                      color: Colors.grey[400],
+                      color: AppColors.textDisabled,
                       size: 24,
                     ),
                   ],
@@ -418,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: l10n.sendFeedback ?? 'Envoyer un feedback',
           subtitle: l10n.feedbackSubtitle ?? 'Aidez-nous à améliorer EpiList',
           onTap: _showFeedbackDialog,
-          iconColor: Colors.green[600], // Couleur verte pour l'icône
+          iconColor: AppColors.primary, // Couleur verte pour l'icône
           iconBackgroundColor: Colors.green.withOpacity(0.1), // Fond vert clair
         ),
         // Vous pouvez ajouter d'autres éléments de support ici si nécessaire

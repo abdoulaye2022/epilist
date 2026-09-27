@@ -1,4 +1,5 @@
 // widgets/home/home_app_bar.dart - VERSION CORRIGÉE AVEC PERSISTENCE DES DONNÉES
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -138,7 +139,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
             title: Text(
               'EpiList',
               style: TextStyle(
-                color: Colors.green[700],
+                color: AppColors.primaryDark,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
@@ -193,7 +194,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                                     .trim(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                                  color: AppColors.primaryDark,
                                   fontSize: 16,
                                 ),
                               ),
@@ -201,7 +202,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                               Text(
                                 l10n.epilistUser, // Au lieu de 'Utilisateur EpiList'
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: AppColors.textSecondary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -218,7 +219,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                             children: [
                               Icon(
                                 Icons.account_circle,
-                                color: Colors.green[700],
+                                color: AppColors.primaryDark,
                               ),
                               const SizedBox(width: 12),
                               Text(
@@ -242,7 +243,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           value: 'view_all',
                           child: Row(
                             children: [
-                              const Icon(Icons.list_alt, color: Colors.black87),
+                              const Icon(Icons.list_alt, color: AppColors.textPrimary),
                               const SizedBox(width: 12),
                               Text(l10n.allLists ?? 'Toutes les listes'),
                             ],
@@ -259,7 +260,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           value: 'manage_categories',
                           child: Row(
                             children: [
-                              Icon(Icons.category, color: Colors.green[700]),
+                              Icon(Icons.category, color: AppColors.primaryDark),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.manageCategories,
@@ -311,7 +312,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: Colors.green[100],
+        color: AppColors.primaryLight,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.green[300]!, width: 2),
       ),
@@ -319,7 +320,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
         child: Text(
           initials,
           style: TextStyle(
-            color: Colors.green[700],
+            color: AppColors.primaryDark,
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),
@@ -472,7 +473,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
             title: Text(
               'EpiList',
               style: TextStyle(
-                color: Colors.green[700],
+                color: AppColors.primaryDark,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
@@ -543,7 +544,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                                 '${firstName ?? ''} ${lastName ?? ''}'.trim(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                                  color: AppColors.primaryDark,
                                   fontSize: 16,
                                 ),
                               ),
@@ -551,7 +552,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                               Text(
                                 'Utilisateur EpiList',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: AppColors.textSecondary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -568,7 +569,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                             children: [
                               Icon(
                                 Icons.account_circle,
-                                color: Colors.green[700],
+                                color: AppColors.primaryDark,
                               ),
                               const SizedBox(width: 12),
                               Text(
@@ -591,7 +592,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                           value: 'view_all',
                           child: Row(
                             children: [
-                              const Icon(Icons.list_alt, color: Colors.black87),
+                              const Icon(Icons.list_alt, color: AppColors.textPrimary),
                               const SizedBox(width: 12),
                               Text(l10n.allLists ?? 'Toutes les listes'),
                             ],
@@ -634,14 +635,14 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.green[100],
+        color: AppColors.primaryLight,
         shape: BoxShape.circle,
       ),
       child: Center(
         child: Text(
           initials,
           style: TextStyle(
-            color: Colors.green[700],
+            color: AppColors.primaryDark,
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),

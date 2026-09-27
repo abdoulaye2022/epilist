@@ -1,4 +1,5 @@
 // widgets/dialogs/logout_dialog.dart - CORRECTION ULTIME SANS CONFLIT
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/login_screen.dart';
@@ -50,7 +51,7 @@ class LogoutDialog extends StatelessWidget {
         color: Colors.red[50],
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.logout_rounded, size: 40, color: Colors.red[600]),
+      child: Icon(Icons.logout_rounded, size: 40, color: AppColors.error),
     );
   }
 
@@ -60,7 +61,7 @@ class LogoutDialog extends StatelessWidget {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -69,7 +70,7 @@ class LogoutDialog extends StatelessWidget {
     return Text(
       l10n.confirmLogoutMessage,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -83,7 +84,7 @@ class LogoutDialog extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -91,7 +92,7 @@ class LogoutDialog extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -154,7 +155,7 @@ class LogoutDialog extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red[600],
+                  backgroundColor: AppColors.error,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.red[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

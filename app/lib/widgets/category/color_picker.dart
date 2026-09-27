@@ -1,4 +1,5 @@
 // widgets/category/color_picker.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -138,7 +139,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                       color: _selectedColor,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.grey[300]!,
+                        color: AppColors.border,
                         width: 2,
                       ),
                     ),
@@ -175,7 +176,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                           color: color,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: isSelected ? Colors.black : Colors.grey[300]!,
+                            color: isSelected ? Colors.black : AppColors.border,
                             width: isSelected ? 3 : 1,
                           ),
                         ),

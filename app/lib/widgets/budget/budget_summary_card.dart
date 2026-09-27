@@ -1,4 +1,5 @@
 // widgets/budget/budget_summary_card.dart - VERSION COMPLETE AVEC FormattedAmount
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
@@ -40,7 +41,7 @@ class BudgetSummaryCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.green[50]!, Colors.green[100]!],
+            colors: [AppColors.primaryLight, AppColors.primaryLight],
           ),
         ),
         child: Column(
@@ -52,7 +53,7 @@ class BudgetSummaryCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green[600],
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -71,12 +72,12 @@ class BudgetSummaryCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       Text(
                         l10n.overviewOfYourBudgets,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -94,7 +95,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     l10n.totalBudgets,
                     totalBudgets.toString(),
                     Icons.widgets,
-                    Colors.blue[600]!,
+                    AppColors.accent,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -103,7 +104,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     l10n.active,
                     activeBudgets.toString(),
                     Icons.play_circle_outline,
-                    Colors.green[600]!,
+                    AppColors.primary,
                   ),
                 ),
               ],
@@ -118,7 +119,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     l10n.warnings,
                     warningBudgets.toString(),
                     Icons.warning_amber,
-                    Colors.orange[600]!,
+                    AppColors.warning,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -127,7 +128,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     l10n.exceeded,
                     exceededBudgets.toString(),
                     Icons.error_outline,
-                    Colors.red[600]!,
+                    AppColors.error,
                   ),
                 ),
               ],
@@ -151,7 +152,7 @@ class BudgetSummaryCard extends StatelessWidget {
                           l10n.budgeted,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[700],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                         FormattedAmount(
@@ -160,7 +161,7 @@ class BudgetSummaryCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ],
@@ -173,7 +174,7 @@ class BudgetSummaryCard extends StatelessWidget {
                           l10n.spent,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[700],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                         FormattedAmount(
@@ -199,7 +200,7 @@ class BudgetSummaryCard extends StatelessWidget {
                               l10n.spendingProgress ?? 'Progress',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -222,7 +223,7 @@ class BudgetSummaryCard extends StatelessWidget {
                                     1.0,
                                   )
                                   : 0.0,
-                          backgroundColor: Colors.grey[300],
+                          backgroundColor: AppColors.border,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             _getSpentColor(),
                           ),
@@ -237,7 +238,7 @@ class BudgetSummaryCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.green[50],
+                          color: AppColors.primaryLight,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.green[200]!),
                         ),
@@ -249,14 +250,14 @@ class BudgetSummaryCard extends StatelessWidget {
                                 Icon(
                                   Icons.savings,
                                   size: 16,
-                                  color: Colors.green[600],
+                                  color: AppColors.primary,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   l10n.remaining,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.green[700],
+                                    color: AppColors.primaryDark,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -268,7 +269,7 @@ class BudgetSummaryCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.green[700],
+                                color: AppColors.primaryDark,
                               ),
                             ),
                           ],
@@ -292,14 +293,14 @@ class BudgetSummaryCard extends StatelessWidget {
                                 Icon(
                                   Icons.warning,
                                   size: 16,
-                                  color: Colors.red[600],
+                                  color: AppColors.error,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   l10n.overBudget ?? 'Over Budget',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.red[700],
+                                    color: AppColors.error,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -311,7 +312,7 @@ class BudgetSummaryCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.red[700],
+                                color: AppColors.error,
                               ),
                             ),
                           ],
@@ -375,17 +376,17 @@ class BudgetSummaryCard extends StatelessWidget {
 
   Color _getSpentColor() {
     if (totalBudgeted == null || totalSpent == null || totalBudgeted == 0) {
-      return Colors.green[600]!;
+      return AppColors.primary;
     }
 
     final percentage = _getSpentPercentage();
 
     if (percentage >= 100) {
-      return Colors.red[600]!;
+      return AppColors.error;
     } else if (percentage >= 80) {
-      return Colors.orange[600]!;
+      return AppColors.warning;
     } else {
-      return Colors.green[600]!;
+      return AppColors.primary;
     }
   }
 }

@@ -1,4 +1,5 @@
 // widgets/shopping/list_filter_chips.dart - Filtres pour les listes de courses
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -86,10 +87,10 @@ class ListFilterChips extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             // ✅ Style identique aux filtres de budget
-            color: isSelected ? primaryColor : Colors.grey[100],
+            color: isSelected ? primaryColor : AppColors.background,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isSelected ? primaryColor : Colors.grey[300]!,
+              color: isSelected ? primaryColor : AppColors.border,
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -105,7 +106,7 @@ class ListFilterChips extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black87,
+                  color: isSelected ? Colors.white : AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   fontSize: 12,
                 ),

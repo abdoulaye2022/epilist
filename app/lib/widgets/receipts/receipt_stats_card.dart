@@ -1,4 +1,5 @@
 // widgets/receipts/receipt_stats_card.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
@@ -37,12 +38,12 @@ class ReceiptStatsCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: AppColors.accentLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.analytics,
-                    color: Colors.blue[600],
+                    color: AppColors.accent,
                     size: 28,
                   ),
                 ),
@@ -60,7 +61,7 @@ class ReceiptStatsCard extends StatelessWidget {
                       ),
                       Text(
                         l10n.totalExpensesSummary,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -123,15 +124,15 @@ class ReceiptStatsCard extends StatelessWidget {
                     color:
                         hasSignificantVariance
                             ? Colors.orange[50]
-                            : Colors.green[50],
+                            : AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     hasSignificantVariance ? Icons.warning : Icons.check_circle,
                     color:
                         hasSignificantVariance
-                            ? Colors.orange[600]
-                            : Colors.green[600],
+                            ? AppColors.warning
+                            : AppColors.primary,
                     size: 28,
                   ),
                 ),
@@ -149,7 +150,7 @@ class ReceiptStatsCard extends StatelessWidget {
                       ),
                       Text(
                         l10n.receiptVsItemComparison,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -189,7 +190,7 @@ class ReceiptStatsCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info, color: Colors.orange[600], size: 20),
+                    Icon(Icons.info, color: AppColors.warning, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -198,7 +199,7 @@ class ReceiptStatsCard extends StatelessWidget {
                         ),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.orange[700],
+                          color: AppColors.warning,
                         ),
                       ),
                     ),
@@ -281,12 +282,12 @@ class ReceiptStatsCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isHighlighted ? color[50] : Colors.grey[100],
+            color: isHighlighted ? color[50] : AppColors.background,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
-            color: isHighlighted ? color[600] : Colors.grey[600],
+            color: isHighlighted ? color[600] : AppColors.textSecondary,
             size: 20,
           ),
         ),
@@ -296,7 +297,7 @@ class ReceiptStatsCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -307,7 +308,7 @@ class ReceiptStatsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: isBold ? 18 : 16,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: isHighlighted ? color[600] : Colors.grey[700],
+            color: isHighlighted ? color[600] : AppColors.textSecondary,
           ),
           showCode: false,
           fallbackCurrencyCode: 'CAD',
@@ -400,14 +401,14 @@ class ReceiptStatsCard extends StatelessWidget {
                 children: [
                   Icon(
                     isPositive ? Icons.check_circle : Icons.lightbulb_outline,
-                    color: isPositive ? Colors.green[600] : Colors.blue[600],
+                    color: isPositive ? AppColors.primary : AppColors.accent,
                     size: 16,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       recommendation,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                     ),
                   ),
                 ],

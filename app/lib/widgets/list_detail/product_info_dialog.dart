@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../models/product_info.dart';
 import '../../l10n/app_localizations.dart';
@@ -106,13 +107,13 @@ class ProductInfoDialog extends StatelessWidget {
                         Icon(
                           Icons.scale,
                           size: 16,
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           product.quantity!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -126,13 +127,13 @@ class ProductInfoDialog extends StatelessWidget {
                       Icon(
                         Icons.qr_code,
                         size: 16,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         product.barcode,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: AppColors.textSecondary,
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -191,7 +192,7 @@ class ProductInfoDialog extends StatelessWidget {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: AppColors.border,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(20),
         ),
@@ -200,7 +201,7 @@ class ProductInfoDialog extends StatelessWidget {
         child: Icon(
           Icons.shopping_basket,
           size: 64,
-          color: Colors.grey[400],
+          color: AppColors.textDisabled,
         ),
       ),
     );

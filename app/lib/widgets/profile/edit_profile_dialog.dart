@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/user.dart';
@@ -115,10 +116,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.person_rounded, size: 40, color: Colors.green[600]),
+      child: Icon(Icons.person_rounded, size: 40, color: AppColors.primary),
     );
   }
 
@@ -128,7 +129,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -137,7 +138,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     return Text(
       l10n.modifyPersonalInformation,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -186,26 +187,26 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         labelText: label,
         prefixIcon: Icon(
           icon,
-          color: isDisabled ? Colors.grey[400] : Colors.green[600],
+          color: isDisabled ? AppColors.textDisabled : AppColors.primary,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[200]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: isDisabled ? Colors.grey[100] : Colors.grey[50],
+        fillColor: isDisabled ? AppColors.background : AppColors.background,
       ),
       enabled: enabled,
     );
@@ -248,7 +249,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -256,7 +257,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -266,7 +267,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           child: ElevatedButton(
             onPressed: isLoading ? null : () => _saveProfile(l10n),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.green[300],
               padding: const EdgeInsets.symmetric(vertical: 12),

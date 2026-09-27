@@ -1,4 +1,5 @@
 // widgets/profile/profile_app_bar.dart - VERSION CORRIGÉE AVEC STYLE UNIFORME
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -13,7 +14,7 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         l10n.myProfile,
         style: const TextStyle(
-          color: Colors.black87,
+          color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -24,10 +25,10 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
 
       // ✅ COULEUR DES ICÔNES NOIRE POUR FOND BLANC
-      iconTheme: const IconThemeData(color: Colors.black87),
+      iconTheme: const IconThemeData(color: AppColors.textPrimary),
 
       // ✅ COULEUR DU TEXTE DE L'APPBAR
-      foregroundColor: Colors.black87,
+      foregroundColor: AppColors.textPrimary,
     );
   }
 

@@ -1,4 +1,5 @@
 // widgets/list_detail/voice_input_button.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:epilist/services/voice_recognition_service.dart';
@@ -61,7 +62,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
               AppLocalizations.of(context)!.voiceRequiresInternet,
               style: const TextStyle(color: Colors.white),
             ),
-            backgroundColor: Colors.orange[700],
+            backgroundColor: AppColors.warning,
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
@@ -207,7 +208,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
               fontWeight: _isListening ? FontWeight.w600 : FontWeight.normal,
               color: _isListening
                   ? Theme.of(context).primaryColor
-                  : Colors.grey[600],
+                  : AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),

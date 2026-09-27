@@ -1,4 +1,5 @@
 // snackbar_manager.dart - VERSION CORRIGÉE : Suppression de AuthErrorMessages
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SnackBarManager {
@@ -45,7 +46,7 @@ class SnackBarManager {
                 ),
               ],
             ),
-            backgroundColor: Colors.red[600],
+            backgroundColor: AppColors.error,
             duration: duration,
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.only(bottom: 20, right: 20, left: 20),
@@ -101,7 +102,7 @@ class SnackBarManager {
                 ),
               ],
             ),
-            backgroundColor: Colors.green[600],
+            backgroundColor: AppColors.primary,
             duration: duration,
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.only(bottom: 20, right: 20, left: 20),

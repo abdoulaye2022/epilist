@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_empty_state.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class SuggestionEmptyState extends StatelessWidget {
           Icon(
             isSearch ? Icons.search_off : Icons.lightbulb_outline,
             size: 80,
-            color: Colors.grey[400],
+            color: AppColors.textDisabled,
           ),
 
           const SizedBox(height: 16),
@@ -36,7 +37,7 @@ class SuggestionEmptyState extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+              color: AppColors.textSecondary,
             ),
           ),
 
@@ -49,7 +50,7 @@ class SuggestionEmptyState extends StatelessWidget {
                     .tryDifferentKeywords // "Essayez avec d'autres mots-clés"
                 : l10n
                     .suggestionsWillAppearAfterShopping, // "Les suggestions apparaîtront après vos achats"
-            style: TextStyle(color: Colors.grey[500]),
+            style: TextStyle(color: AppColors.textDisabled),
             textAlign: TextAlign.center,
           ),
 
@@ -60,7 +61,7 @@ class SuggestionEmptyState extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _navigateToShoppingLists(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
@@ -77,7 +78,7 @@ class SuggestionEmptyState extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 32),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
+                color: AppColors.accentLight,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.blue[200]!),
               ),
@@ -85,14 +86,14 @@ class SuggestionEmptyState extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.tips_and_updates,
-                    color: Colors.blue[600],
+                    color: AppColors.accent,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l10n.searchTips, // "Essayez des termes plus généraux ou vérifiez l'orthographe"
-                      style: TextStyle(color: Colors.blue[700], fontSize: 14),
+                      style: TextStyle(color: AppColors.accent, fontSize: 14),
                     ),
                   ),
                 ],
@@ -107,18 +108,18 @@ class SuggestionEmptyState extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 32),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.green[200]!),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: Colors.green[600], size: 20),
+                  Icon(Icons.auto_awesome, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l10n.suggestionsBasedOnUsage, // "Les suggestions se basent sur vos habitudes d'achat"
-                      style: TextStyle(color: Colors.green[700], fontSize: 14),
+                      style: TextStyle(color: AppColors.primaryDark, fontSize: 14),
                     ),
                   ),
                 ],

@@ -1,4 +1,5 @@
 // widgets/language_selector.dart - VERSION AMÉLIORÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -30,9 +31,9 @@ class LanguageSelector extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green[100]!),
+                border: Border.all(color: AppColors.primaryLight),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -41,12 +42,12 @@ class LanguageSelector extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: Colors.green[100],
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.language_rounded,
-                      color: Colors.green[600],
+                      color: AppColors.primary,
                       size: 18,
                     ),
                   ),
@@ -60,14 +61,14 @@ class LanguageSelector extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: Colors.green[800],
+                            color: AppColors.primaryDark,
                           ),
                         ),
                         Text(
                           l10n.choosePreferredLanguage,
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.green[600],
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -85,7 +86,7 @@ class LanguageSelector extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -194,10 +195,10 @@ class LanguageSelector extends StatelessWidget {
         width: isCompact ? double.infinity : null,
         padding: EdgeInsets.all(isCompact ? 16 : 14),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.green[600] : Colors.white,
+          color: isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.green[600]! : Colors.grey[300]!,
+            color: isSelected ? AppColors.primary : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
@@ -224,13 +225,13 @@ class LanguageSelector extends StatelessWidget {
                 color:
                     isSelected
                         ? Colors.white.withOpacity(0.2)
-                        : Colors.grey[100],
+                        : AppColors.background,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color:
                       isSelected
                           ? Colors.white.withOpacity(0.3)
-                          : Colors.grey[300]!,
+                          : AppColors.border,
                 ),
               ),
               child: Center(
@@ -252,7 +253,7 @@ class LanguageSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: isCompact ? 16 : 14,
                       fontWeight: FontWeight.w700,
-                      color: isSelected ? Colors.white : Colors.black87,
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
                     textAlign: isCompact ? TextAlign.left : TextAlign.center,
                   ),
@@ -264,7 +265,7 @@ class LanguageSelector extends StatelessWidget {
                       color:
                           isSelected
                               ? Colors.white.withOpacity(0.9)
-                              : Colors.grey[600],
+                              : AppColors.textSecondary,
                     ),
                     textAlign: isCompact ? TextAlign.left : TextAlign.center,
                   ),
@@ -284,7 +285,7 @@ class LanguageSelector extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.check_rounded,
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                   size: isCompact ? 16 : 14,
                 ),
               ),
@@ -327,7 +328,7 @@ class LanguageSelectorDialog {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Colors.green[50]!, Colors.green[100]!],
+                        colors: [AppColors.primaryLight, AppColors.primaryLight],
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -340,7 +341,7 @@ class LanguageSelectorDialog {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.green[600],
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
@@ -363,7 +364,7 @@ class LanguageSelectorDialog {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -371,7 +372,7 @@ class LanguageSelectorDialog {
                           l10n.choosePreferredLanguage,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -400,8 +401,8 @@ class LanguageSelectorDialog {
                           child: ElevatedButton(
                             onPressed: () => Navigator.of(dialogContext).pop(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[100],
-                              foregroundColor: Colors.grey[700],
+                              backgroundColor: AppColors.background,
+                              foregroundColor: AppColors.textSecondary,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
@@ -461,9 +462,9 @@ class CurrentLanguageIndicator extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: AppColors.border),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,

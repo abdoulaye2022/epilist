@@ -1,4 +1,5 @@
 // widgets/budget/create_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -160,13 +161,13 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
       child: Icon(
         isEditing ? Icons.edit_rounded : Icons.savings_rounded,
         size: 40,
-        color: Colors.green[600],
+        color: AppColors.primary,
       ),
     );
   }
@@ -177,7 +178,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: AppColors.textPrimary,
       ),
     );
   }
@@ -186,7 +187,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     return Text(
       isEditing ? l10n.modifyBudgetDetails : l10n.setBudgetForPeriod,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.4),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
   }
 
@@ -217,21 +218,21 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       decoration: InputDecoration(
         labelText: l10n.budgetName,
         hintText: l10n.budgetNameHint,
-        prefixIcon: Icon(Icons.label, color: Colors.green[600]),
+        prefixIcon: Icon(Icons.label, color: AppColors.primary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.green[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       autofocus: true,
       textCapitalization: TextCapitalization.words,
@@ -257,7 +258,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         // ✅ SUPPRESSION DU suffixText car FormattedAmount gère la devise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -265,10 +266,10 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
@@ -306,7 +307,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.blue[200]!),
       ),
@@ -315,13 +316,13 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         children: [
           Row(
             children: [
-              Icon(Icons.preview, color: Colors.blue[600], size: 20),
+              Icon(Icons.preview, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.preview,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[600],
+                  color: AppColors.accent,
                 ),
               ),
             ],
@@ -332,7 +333,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
             children: [
               Text(
                 l10n.budgetAmount,
-                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
               FormattedAmount(
                 // ✅ UTILISATION DE FormattedAmount POUR LE PREVIEW
@@ -340,7 +341,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[600],
+                  color: AppColors.accent,
                 ),
                 showCode: true, // ✅ AFFICHER LE CODE DE DEVISE
               ),
@@ -356,21 +357,21 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       value: _selectedPeriodType,
       decoration: InputDecoration(
         labelText: l10n.periodType,
-        prefixIcon: Icon(Icons.calendar_view_month, color: Colors.blue[600]),
+        prefixIcon: Icon(Icons.calendar_view_month, color: AppColors.accent),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.blue[600]!, width: 2),
+          borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: AppColors.background,
       ),
       items:
           BudgetPeriodType.values.map((type) {
@@ -407,7 +408,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -415,10 +416,10 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: AppColors.background,
               ),
               child: Text(
                 _formatDate(_startDate),
@@ -442,11 +443,11 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                   color:
                       _selectedPeriodType == BudgetPeriodType.custom
                           ? Colors.purple[600]
-                          : Colors.grey[400],
+                          : AppColors.textDisabled,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -454,13 +455,13 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
                 filled: true,
                 fillColor:
                     _selectedPeriodType == BudgetPeriodType.custom
-                        ? Colors.grey[50]
-                        : Colors.grey[100],
+                        ? AppColors.background
+                        : AppColors.background,
                 enabled: _selectedPeriodType == BudgetPeriodType.custom,
               ),
               child: Text(
@@ -469,8 +470,8 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                   fontSize: 16,
                   color:
                       _selectedPeriodType == BudgetPeriodType.custom
-                          ? Colors.black87
-                          : Colors.grey[600],
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                 ),
               ),
             ),
@@ -497,7 +498,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           prefixIcon: Icon(Icons.list_alt, color: Colors.indigo[600]),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey[300]!),
+            borderSide: BorderSide(color: AppColors.border),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -505,10 +506,10 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.grey[300]!),
+            borderSide: BorderSide(color: AppColors.border),
           ),
           filled: true,
-          fillColor: Colors.grey[50],
+          fillColor: AppColors.background,
         ),
         items: [
           DropdownMenuItem<int?>(value: null, child: Text(l10n.generalBudget)),
@@ -534,14 +535,14 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       children: [
         Row(
           children: [
-            Icon(Icons.warning_amber, color: Colors.orange[600], size: 20),
+            Icon(Icons.warning_amber, color: AppColors.warning, size: 20),
             const SizedBox(width: 8),
             Text(
               '${l10n.alertThreshold}: ${_alertThreshold}%',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
           ],
@@ -561,7 +562,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 min: 50,
                 max: 95,
                 divisions: 9,
-                activeColor: Colors.orange[600],
+                activeColor: AppColors.warning,
                 inactiveColor: Colors.orange[200],
                 onChanged: (double value) {
                   setState(() {
@@ -571,7 +572,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               ),
               Text(
                 l10n.alertThresholdDescription,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -591,7 +592,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: AppColors.border),
               ),
             ),
             child: Text(
@@ -599,7 +600,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -612,7 +613,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               return ElevatedButton(
                 onPressed: isLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.green[300],
                   padding: const EdgeInsets.symmetric(vertical: 12),

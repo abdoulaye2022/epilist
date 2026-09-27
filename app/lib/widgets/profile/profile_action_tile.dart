@@ -1,5 +1,6 @@
 // widgets/profile/profile_action_tile.dart - VERSION CORRIGÉE AVEC NOUVELLES FONCTIONNALITÉS
 
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class ProfileActionTile extends StatelessWidget {
@@ -40,7 +41,7 @@ class ProfileActionTile extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                color: iconColor ?? Colors.green[600],
+                color: iconColor ?? AppColors.primary,
                 size: 22,
               ),
             ),
@@ -55,7 +56,7 @@ class ProfileActionTile extends StatelessWidget {
                     title,
                     style: const TextStyle(
                       fontSize: 15,
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w500, // Légèrement plus bold
                     ),
                   ),
@@ -66,7 +67,7 @@ class ProfileActionTile extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -75,7 +76,7 @@ class ProfileActionTile extends StatelessWidget {
               ),
             ),
 
-            Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+            Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textDisabled),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 // widgets/list_detail/voice_input_dialog.dart
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/list_detail/voice_input_button.dart';
@@ -137,7 +138,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
               Text(
                 l10n.voiceVerifyAndModify,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -217,7 +218,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: AppColors.accentLight,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.blue[200]!,
@@ -228,7 +229,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                   children: [
                     Icon(
                       Icons.info_outline,
-                      color: Colors.blue[700],
+                      color: AppColors.accent,
                       size: 32,
                     ),
                     const SizedBox(height: 8),

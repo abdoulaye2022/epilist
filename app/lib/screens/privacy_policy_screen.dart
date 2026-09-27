@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -9,12 +10,12 @@ class PrivacyPolicyPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.privacyPolicy),
         backgroundColor: Colors.white,
         elevation: 1,
-        foregroundColor: Colors.black87,
+        foregroundColor: AppColors.textPrimary,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -26,14 +27,14 @@ class PrivacyPolicyPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimary,
               ),
             ),
             SizedBox(height: 8),
             Text(
               l10n.privacyLastUpdated ??
                   'Dernière mise à jour : 5 juillet 2025',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             SizedBox(height: 24),
 
@@ -156,7 +157,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             Center(
               child: Text(
                 '© 2025 EpiList - ${l10n.aboutRightsReserved ?? "Tous droits réservés"}',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
               ),
             ),
           ],
@@ -178,7 +179,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +189,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           SizedBox(height: 12),
@@ -196,7 +197,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             content,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),
@@ -225,7 +226,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue[600],
+              backgroundColor: AppColors.accent,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -246,7 +247,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +257,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: AppColors.textPrimary,
             ),
           ),
           SizedBox(height: 12),
@@ -264,7 +265,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             content,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[700],
+              color: AppColors.textSecondary,
               height: 1.5,
             ),
           ),

@@ -1,4 +1,5 @@
 // widgets/profile/account_deletion_status_widget.dart - VERSION I18N
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,7 +66,7 @@ class _AccountDeletionStatusWidgetState
             children: [
               Icon(
                 Icons.schedule_outlined,
-                color: Colors.orange[700],
+                color: AppColors.warning,
                 size: 24,
               ),
               const SizedBox(width: 12),
@@ -87,7 +88,7 @@ class _AccountDeletionStatusWidgetState
           if (status.deletionEffectiveDate != null) ...[
             Text(
               l10n.accountWillBeDeleted(status.formattedDeletionDate),
-              style: TextStyle(color: Colors.orange[700], fontSize: 14),
+              style: TextStyle(color: AppColors.warning, fontSize: 14),
             ),
 
             if (status.daysRemaining != null) ...[
@@ -98,7 +99,7 @@ class _AccountDeletionStatusWidgetState
                   status.daysRemaining! > 1 ? 's' : '',
                 ),
                 style: TextStyle(
-                  color: Colors.orange[600],
+                  color: AppColors.warning,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -111,7 +112,7 @@ class _AccountDeletionStatusWidgetState
             Text(
               l10n.reason(status.deletionReason!),
               style: TextStyle(
-                color: Colors.grey[600],
+                color: AppColors.textSecondary,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
               ),
@@ -128,7 +129,7 @@ class _AccountDeletionStatusWidgetState
                 icon: const Icon(Icons.undo),
                 label: Text(l10n.cancelDeletion),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -147,13 +148,13 @@ class _AccountDeletionStatusWidgetState
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber, color: Colors.red[600], size: 20),
+                  Icon(Icons.warning_amber, color: AppColors.error, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.cancellationPeriodExpired,
                       style: TextStyle(
-                        color: Colors.red[700],
+                        color: AppColors.error,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -213,7 +214,7 @@ class _AccountDeletionStatusWidgetState
                   context.read<AuthBloc>().add(CancelAccountDeletion());
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[600],
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
                 child: Text(l10n.yesCancelDeletion),

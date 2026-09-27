@@ -1,4 +1,5 @@
 // widgets/list_detail/empty_items_state.dart - VERSION AVEC FOND BLANC
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +53,14 @@ class EmptyItemsState extends StatelessWidget {
       height: 80,
       decoration: BoxDecoration(
         // ✅ MODIFICATION: Couleurs plus subtiles pour fond blanc
-        color: Colors.grey[50],
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.grey[200]!, width: 2),
+        border: Border.all(color: AppColors.border, width: 2),
       ),
       child: Icon(
         Icons.shopping_cart_outlined,
         size: 40,
-        color: Colors.grey[400],
+        color: AppColors.textDisabled,
       ),
     );
   }
@@ -80,7 +81,7 @@ class EmptyItemsState extends StatelessWidget {
         fontSize: 24,
         fontWeight: FontWeight.bold,
         // ✅ MODIFICATION: Couleur plus foncée pour fond blanc
-        color: Colors.grey[800],
+        color: AppColors.textPrimary,
       ),
       textAlign: TextAlign.center,
     );
@@ -100,7 +101,7 @@ class EmptyItemsState extends StatelessWidget {
 
     return Text(
       description,
-      style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.5),
+      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.5),
       textAlign: TextAlign.center,
     );
   }
@@ -131,7 +132,7 @@ class EmptyItemsState extends StatelessWidget {
         ),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green[600],
+        backgroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
@@ -147,11 +148,11 @@ class EmptyItemsState extends StatelessWidget {
 
     if (shoppingList.isReadOnly) {
       infoText = l10n.readOnlyMode;
-      infoColor = Colors.blue[600]!;
+      infoColor = AppColors.accent;
       infoIcon = Icons.visibility;
     } else {
       infoText = l10n.permissionRequiredToAdd;
-      infoColor = Colors.orange[600]!;
+      infoColor = AppColors.warning;
       infoIcon = Icons.lock;
     }
 

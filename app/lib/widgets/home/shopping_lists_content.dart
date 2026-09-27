@@ -1,4 +1,5 @@
 // widgets/home/shopping_lists_content.dart - VERSION AVEC MODE HORIZONTAL
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/widgets/home/empty_state_widget.dart';
@@ -35,7 +36,7 @@ class ShoppingListsContent extends StatelessWidget {
         if (state is ShoppingListLoading) {
           return Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           );
         } else if (state is ShoppingListLoaded) {

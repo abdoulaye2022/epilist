@@ -1,4 +1,5 @@
 // widgets/dialogs/shopping_list_card.dart - VERSION AVEC SIGNATURE CORRIGÉE
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/receipts_screen.dart';
@@ -88,7 +89,7 @@ class ShoppingListCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -126,11 +127,11 @@ class ShoppingListCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.shopping_cart, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 6),
                   Text(
                     '$totalItems ${l10n.articles}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
                   if (hasReceipts) ...[
                     const SizedBox(width: 12),
@@ -145,7 +146,7 @@ class ShoppingListCard extends StatelessWidget {
                     Icon(
                       Icons.account_balance_wallet,
                       size: 16,
-                      color: Colors.green[600],
+                      color: AppColors.primary,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -154,7 +155,7 @@ class ShoppingListCard extends StatelessWidget {
                           Text(
                             '${l10n.budget}: ',
                             style: TextStyle(
-                              color: Colors.green[600],
+                              color: AppColors.primary,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -163,7 +164,7 @@ class ShoppingListCard extends StatelessWidget {
                             child: FormattedAmount(
                               amount: totalPrice,
                               style: TextStyle(
-                                color: Colors.green[600],
+                                color: AppColors.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -180,11 +181,11 @@ class ShoppingListCard extends StatelessWidget {
         } else {
           return Row(
             children: [
-              Icon(Icons.shopping_cart, size: 16, color: Colors.grey[600]),
+              Icon(Icons.shopping_cart, size: 16, color: AppColors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 '$totalItems ${l10n.articles}',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
               if (hasReceipts) ...[
                 const SizedBox(width: 12),
@@ -195,13 +196,13 @@ class ShoppingListCard extends StatelessWidget {
                 Icon(
                   Icons.account_balance_wallet,
                   size: 16,
-                  color: Colors.green[600],
+                  color: AppColors.primary,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   '${l10n.budget}: ',
                   style: TextStyle(
-                    color: Colors.green[600],
+                    color: AppColors.primary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -210,7 +211,7 @@ class ShoppingListCard extends StatelessWidget {
                   child: FormattedAmount(
                     amount: totalPrice,
                     style: TextStyle(
-                      color: Colors.green[600],
+                      color: AppColors.primary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -228,20 +229,20 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.blue[50],
+        color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.blue[200]!),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.receipt_long, size: 12, color: Colors.blue[600]),
+          Icon(Icons.receipt_long, size: 12, color: AppColors.accent),
           const SizedBox(width: 2),
           Text(
             '${list.receiptsCount ?? 0}', // ✅ Protection contre null
             style: TextStyle(
               fontSize: 10,
-              color: Colors.blue[600],
+              color: AppColors.accent,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -258,7 +259,7 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
+        color: list.isOwner ? AppColors.accentLight : AppColors.primaryLight,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
@@ -270,7 +271,7 @@ class ShoppingListCard extends StatelessWidget {
           Icon(
             list.isOwner ? Icons.people_outline : Icons.person_add,
             size: 14,
-            color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+            color: list.isOwner ? AppColors.accent : AppColors.primary,
           ),
           const SizedBox(width: 4),
           Expanded(
@@ -280,7 +281,7 @@ class ShoppingListCard extends StatelessWidget {
                   : '${l10n.sharedBy} ${list.sharedBy?.name ?? "un utilisateur"}',
               style: TextStyle(
                 fontSize: 12,
-                color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+                color: list.isOwner ? AppColors.accent : AppColors.primary,
                 fontWeight: FontWeight.w500,
               ),
               overflow: TextOverflow.ellipsis,
@@ -302,8 +303,8 @@ class ShoppingListCard extends StatelessWidget {
         Expanded(
           child: LinearProgressIndicator(
             value: progress,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
+            backgroundColor: AppColors.border,
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             minHeight: 6,
           ),
         ),
@@ -311,7 +312,7 @@ class ShoppingListCard extends StatelessWidget {
         Text(
           '$completedItems/$totalItems',
           style: TextStyle(
-            color: Colors.grey[600],
+            color: AppColors.textSecondary,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -336,7 +337,7 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: list.isCompleted ? Colors.green[50] : Colors.orange[50],
+        color: list.isCompleted ? AppColors.primaryLight : Colors.orange[50],
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: list.isCompleted ? Colors.green[200]! : Colors.orange[200]!,
@@ -346,7 +347,7 @@ class ShoppingListCard extends StatelessWidget {
         list.isCompleted ? l10n.completed : l10n.inProgress,
         style: TextStyle(
           fontSize: 12,
-          color: list.isCompleted ? Colors.green[700] : Colors.orange[700],
+          color: list.isCompleted ? AppColors.primaryDark : AppColors.warning,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -358,7 +359,7 @@ class ShoppingListCard extends StatelessWidget {
 
     return Text(
       '${l10n.created} ${_formatDate(context, list.createdAt)}',
-      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+      style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
     );
   }
 
@@ -366,7 +367,7 @@ class ShoppingListCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: list.isOwner ? Colors.blue[50] : Colors.green[50],
+        color: list.isOwner ? AppColors.accentLight : AppColors.primaryLight,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
           color: list.isOwner ? Colors.blue[200]! : Colors.green[200]!,
@@ -378,7 +379,7 @@ class ShoppingListCard extends StatelessWidget {
           Icon(
             list.isOwner ? Icons.people : Icons.share,
             size: 12,
-            color: list.isOwner ? Colors.blue[600] : Colors.green[600],
+            color: list.isOwner ? AppColors.accent : AppColors.primary,
           ),
           if (list.isOwner) ...[
             const SizedBox(width: 2),
@@ -386,7 +387,7 @@ class ShoppingListCard extends StatelessWidget {
               '${list.sharedWithCount ?? 0}', // ✅ Protection contre null
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.blue[600],
+                color: AppColors.accent,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -406,11 +407,11 @@ class ShoppingListCard extends StatelessWidget {
     IconData icon;
 
     if (list.isReadOnly) {
-      color = Colors.blue[600]!;
+      color = AppColors.accent;
       icon = Icons.visibility;
       text = l10n.readOnlyAccess;
     } else if (list.canEdit) {
-      color = Colors.green[600]!;
+      color = AppColors.primary;
       icon = Icons.edit;
       text = l10n.editAccess;
     } else {
@@ -453,7 +454,7 @@ class ShoppingListCard extends StatelessWidget {
     return Builder(
       builder:
           (context) => PopupMenuButton(
-            icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+            icon: Icon(Icons.more_vert, color: AppColors.textSecondary),
             itemBuilder: (context) => _buildMenuItems(context),
             onSelected: (value) => _handleMenuAction(context, value.toString()),
           ),
@@ -491,7 +492,7 @@ class ShoppingListCard extends StatelessWidget {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: 20, color: Colors.blue[600]),
+              Icon(Icons.edit, size: 20, color: AppColors.accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -512,7 +513,7 @@ class ShoppingListCard extends StatelessWidget {
         value: 'duplicate',
         child: Row(
           children: [
-            Icon(Icons.copy, size: 20, color: Colors.green[600]),
+            Icon(Icons.copy, size: 20, color: AppColors.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -532,7 +533,7 @@ class ShoppingListCard extends StatelessWidget {
         value: 'receipts',
         child: Row(
           children: [
-            Icon(Icons.receipt_long, size: 20, color: Colors.blue[600]),
+            Icon(Icons.receipt_long, size: 20, color: AppColors.accent),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -554,7 +555,7 @@ class ShoppingListCard extends StatelessWidget {
                   '${list.receiptsCount ?? 0}',
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.blue[600],
+                    color: AppColors.accent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -577,12 +578,12 @@ class ShoppingListCard extends StatelessWidget {
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 20, color: Colors.blue[600]),
+              Icon(Icons.share, size: 20, color: AppColors.accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.share,
-                  style: TextStyle(color: Colors.blue[600]),
+                  style: TextStyle(color: AppColors.accent),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -628,12 +629,12 @@ class ShoppingListCard extends StatelessWidget {
           value: 'leave',
           child: Row(
             children: [
-              Icon(Icons.exit_to_app, size: 20, color: Colors.orange[600]),
+              Icon(Icons.exit_to_app, size: 20, color: AppColors.warning),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.leave,
-                  style: TextStyle(color: Colors.orange[600]),
+                  style: TextStyle(color: AppColors.warning),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -651,12 +652,12 @@ class ShoppingListCard extends StatelessWidget {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: 20, color: Colors.red[600]),
+              Icon(Icons.delete, size: 20, color: AppColors.error),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.delete,
-                  style: TextStyle(color: Colors.red[600]),
+                  style: TextStyle(color: AppColors.error),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),

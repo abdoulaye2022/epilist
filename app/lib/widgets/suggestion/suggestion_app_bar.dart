@@ -1,4 +1,5 @@
 // widgets/suggestion/suggestion_app_bar.dart - VERSION I18N
+import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -15,13 +16,13 @@ class SuggestionAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         l10n.manageSuggestions,
         style: const TextStyle(
-          color: Colors.black87,
+          color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
       backgroundColor: Colors.white,
       elevation: 1,
-      foregroundColor: Colors.black87,
+      foregroundColor: AppColors.textPrimary,
       actions: [
         IconButton(
           icon: const Icon(Icons.delete_sweep),
