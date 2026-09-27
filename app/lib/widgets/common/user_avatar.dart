@@ -52,10 +52,18 @@ class UserAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: AppColors.primaryLight,
-      backgroundImage: CachedNetworkImageProvider(url),
-      // En cas d'échec réseau, les initiales restent lisibles dessous.
-      onBackgroundImageError: (_, __) {},
-      child: const SizedBox.shrink(),
+      // foregroundImage : si le chargement échoue, le child (initiales)
+      // reste visible — plus jamais de rond vide.
+      foregroundImage: CachedNetworkImageProvider(url),
+      onForegroundImageError: (_, __) {},
+      child: Text(
+        _initials,
+        style: TextStyle(
+          fontSize: radius * 0.7,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primaryDark,
+        ),
+      ),
     );
   }
 }

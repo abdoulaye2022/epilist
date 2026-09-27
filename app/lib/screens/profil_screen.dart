@@ -59,7 +59,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _currentUser = authState.user;
       } else if (authState is ProfileUpdated) {
         _currentUser = authState.user;
-      } else {
+      }
+
+      // Auto-réparation : quel que soit l'état porté par le bloc (cache
+      // périmé, user sans avatar...), on recharge le profil canonique
+      // depuis l'API. Silencieux, le listener mettra _currentUser à jour.
+      context.read<AuthBloc>().add(RefreshCurrentUser());
+
+      if (authState is! AuthSuccess && authState is! ProfileUpdated) {
         // ✅ Seulement recharger si on n'a vraiment pas d'utilisateur
         // En mode offline, cela évitera des erreurs inutiles
         if (_currentUser == null) {
