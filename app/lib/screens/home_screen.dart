@@ -307,20 +307,74 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   /// Ouvre la liste la plus recente avec l'action demandee (ajout, voix).
-  void _openRecentListWith(ListDetailAction action) {
+  /// Liste cible des actions rapides : directe s'il n'y en a qu'une,
+  /// sinon l'utilisateur choisit dans une feuille. Null = annulé/aucune.
+  Future<ShoppingList?> _pickTargetList() async {
     final l10n = AppLocalizations.of(context)!;
     final state = context.read<ShoppingListBloc>().state;
     final lists = state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
+
     if (lists.isEmpty) {
       SmartSnackBarManager.showInfoSnackBar(context, l10n.noListYet);
       _showCreateListDialog(context);
-      return;
+      return null;
     }
+    if (lists.length == 1) return lists.first;
+
+    return showModalBottomSheet<ShoppingList>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs),
+              child: Text(
+                l10n.pickListTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: lists
+                    .map((list) => ListTile(
+                          leading: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.sm + 2),
+                            ),
+                            child: const Icon(Icons.shopping_basket_outlined,
+                                size: 20, color: AppColors.primaryDark),
+                          ),
+                          title: Text(list.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                          onTap: () =>
+                              Navigator.of(sheetContext).pop(list),
+                        ))
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openRecentListWith(ListDetailAction action) async {
+    final list = await _pickTargetList();
+    if (list == null || !mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ListDetailScreen(
-          shoppingList: lists.first,
+          shoppingList: list,
           initialAction: action,
         ),
       ),
@@ -328,16 +382,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   /// Scanne un reçu et le rattache à la liste la plus récente.
-  void _scanReceipt() {
-    final l10n = AppLocalizations.of(context)!;
-    final state = context.read<ShoppingListBloc>().state;
-    final lists = state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
-    if (lists.isEmpty) {
-      SmartSnackBarManager.showInfoSnackBar(context, l10n.noListYet);
-      _showCreateListDialog(context);
-      return;
-    }
-    startReceiptScan(context, listId: lists.first.id)
+  Future<void> _scanReceipt() async {
+    final list = await _pickTargetList();
+    if (list == null || !mounted) return;
+    startReceiptScan(context, listId: list.id)
         .then((_) => _loadDashboardData());
   }
 
@@ -526,14 +574,14 @@ class _HomeScreenState extends State<HomeScreen>
                           QuickActionButton(
                             icon: Icons.add,
                             label: l10n.quickAddItem,
-                            sublabel: l10n.onLastList,
+                            sublabel: l10n.toChosenList,
                             onTap: () => _openRecentListWith(
                                 ListDetailAction.addItem),
                           ),
                           QuickActionButton(
                             icon: Icons.mic_none_rounded,
                             label: l10n.quickVoice,
-                            sublabel: l10n.onLastList,
+                            sublabel: l10n.toChosenList,
                             onTap: () => _openRecentListWith(
                                 ListDetailAction.voiceItem),
                           ),

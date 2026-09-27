@@ -2146,5 +2146,7 @@
   "scanBarcode": "Scanner un code-barres",
   "updateRequiredTitle": "Mise à jour obligatoire",
   "updateAvailableTitle": "Mise à jour disponible",
-  "updateNow": "Mettre à jour"
+  "updateNow": "Mettre à jour",
+  "pickListTitle": "Dans quelle liste ?",
+  "toChosenList": "sur la liste choisie"
 }

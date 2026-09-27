@@ -4922,4 +4922,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get updateNow => 'Mettre à jour';
+
+  @override
+  String get pickListTitle => 'Dans quelle liste ?';
+
+  @override
+  String get toChosenList => 'sur la liste choisie';
 }

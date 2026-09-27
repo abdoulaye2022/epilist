@@ -2145,5 +2145,7 @@
   "scanBarcode": "Scan a barcode",
   "updateRequiredTitle": "Update required",
   "updateAvailableTitle": "Update available",
-  "updateNow": "Update now"
+  "updateNow": "Update now",
+  "pickListTitle": "Which list?",
+  "toChosenList": "on the list you pick"
 }

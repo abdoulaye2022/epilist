@@ -9138,6 +9138,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Mettre à jour'**
   String get updateNow;
+
+  /// No description provided for @pickListTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans quelle liste ?'**
+  String get pickListTitle;
+
+  /// No description provided for @toChosenList.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur la liste choisie'**
+  String get toChosenList;
 }
 
 class _AppLocalizationsDelegate

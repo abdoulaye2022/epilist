@@ -4846,4 +4846,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateNow => 'Update now';
+
+  @override
+  String get pickListTitle => 'Which list?';
+
+  @override
+  String get toChosenList => 'on the list you pick';
 }
