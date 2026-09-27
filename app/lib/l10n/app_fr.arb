@@ -1732,5 +1732,6 @@
       }
     }
   },
-  "pickMonth": "Choisir le mois"
+  "pickMonth": "Choisir le mois",
+  "deactivate": "Désactiver"
 }

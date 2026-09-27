@@ -8250,6 +8250,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Choisir le mois'**
   String get pickMonth;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver'**
+  String get deactivate;
 }
 
 class _AppLocalizationsDelegate

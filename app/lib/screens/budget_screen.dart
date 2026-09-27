@@ -1,12 +1,12 @@
 // screens/budget_screen.dart - VERSION CORRIGÉE AVEC DESIGN HARMONISÉ
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/widgets/budget/budget_card.dart';
 import 'package:epilist/widgets/budget/budget_summary_card.dart' as summary;
-import 'package:epilist/widgets/budget/budget_filters.dart' as filters;
 import 'package:epilist/widgets/budget/create_budget_dialog.dart';
 import 'package:epilist/widgets/budget/budget_alerts_widget.dart' as alerts;
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
@@ -22,24 +22,12 @@ class BudgetScreen extends StatefulWidget {
   State<BudgetScreen> createState() => _BudgetScreenState();
 }
 
-class _BudgetScreenState extends State<BudgetScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  bool _showFilters = false;
-
+class _BudgetScreenState extends State<BudgetScreen> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-
     // Charger les budgets au démarrage
     context.read<BudgetBloc>().add(const LoadBudgets());
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -47,225 +35,59 @@ class _BudgetScreenState extends State<BudgetScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      // ✅ CORRECTION: Background gris clair comme HomeScreen
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        // ✅ CORRECTION: Style harmonisé avec HomeScreen (fond blanc)
-        title: Text(
-          l10n.budgets,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryDark, // ✅ Texte vert au lieu de blanc
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: Colors.white, // ✅ Fond blanc comme HomeScreen
-        foregroundColor: Colors.black, // ✅ Texte noir comme HomeScreen
-        elevation: 0, // ✅ Pas d'ombre comme HomeScreen
-        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
+        title: Text(l10n.budgets),
         actions: [
-          // ✅ Icône de filtres avec couleur noire
           IconButton(
-            icon: Icon(
-              _showFilters ? Icons.filter_list_off : Icons.filter_list,
-              color: _showFilters ? AppColors.primaryDark : Colors.black,
-            ),
-            tooltip: _showFilters ? l10n.hideFilters : l10n.showFilters,
-            onPressed: () {
-              setState(() {
-                _showFilters = !_showFilters;
-              });
-            },
+            icon: const Icon(Icons.flash_on_outlined),
+            tooltip: l10n.quickBudget,
+            onPressed: () => _handleMenuAction('quick_budget', context),
           ),
-          // ✅ Menu popup avec style harmonisé
-          PopupMenuButton<String>(
-            icon: const Icon(
-              Icons.more_vert,
-              color: Colors.black, // ✅ Icône noire
-            ),
-            tooltip: l10n.moreOptions,
-            onSelected: (value) => _handleMenuAction(value, context),
-            color: Colors.white,
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            itemBuilder:
-                (context) => [
-                  PopupMenuItem(
-                    value: 'refresh',
-                    child: Row(
-                      children: [
-                        Icon(Icons.refresh, size: 20, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(l10n.refresh),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'quick_budget',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.flash_on,
-                          size: 20,
-                          color: AppColors.warning,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.quickBudget),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'sort_by_name',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.sort_by_alpha,
-                          size: 20,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.sortByName),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'sort_by_amount',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.monetization_on,
-                          size: 20,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l10n.sortByAmount),
-                      ],
-                    ),
-                  ),
-                ],
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: l10n.refresh,
+            onPressed: () =>
+                context.read<BudgetBloc>().add(const RefreshBudgets()),
           ),
-          const SizedBox(width: 8), // ✅ Espacement à droite comme HomeScreen
         ],
-        // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primaryDark, // ✅ Onglet sélectionné en vert
-          unselectedLabelColor:
-              AppColors.textSecondary, // ✅ Onglets non sélectionnés en gris
-          indicatorColor: AppColors.primaryDark, // ✅ Indicateur vert
-          indicatorWeight: 3,
-          tabs: [
-            Tab(
-              icon: Icon(Icons.dashboard, color: AppColors.primary),
-              text: l10n.overview,
-            ),
-            Tab(
-              icon: Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.primary,
-              ),
-              text: l10n.active,
-            ),
-            Tab(
-              icon: Icon(Icons.warning, color: AppColors.warning),
-              text: l10n.alerts,
-            ),
-          ],
-        ),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<BudgetBloc, BudgetState>(
-            listener: (context, state) {
-              if (state is BudgetError) {
-                SmartSnackBarManager.showErrorSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 4),
-                );
-              } else if (state is BudgetOperationSuccess) {
-                SmartSnackBarManager.showSuccessSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 2),
-                );
-              }
-            },
-          ),
-        ],
-        child: Column(
-          children: [
-            // ✅ Filtres avec style adapté (fond blanc)
-            if (_showFilters)
-              BlocBuilder<BudgetBloc, BudgetState>(
-                builder: (context, state) {
-                  // Récupérer les filtres actifs depuis le state
-                  String? activeStatusFilter;
-                  String? activePeriodFilter;
-                  String? activeScopeFilter;
-                  String? activeSortBy;
-                  bool? activeSortAscending;
-
-                  if (state is BudgetLoaded) {
-                    activeStatusFilter = state.activeStatusFilter;
-                    activePeriodFilter = state.activePeriodFilter;
-                    activeScopeFilter = state.activeScopeFilter;
-                    activeSortBy = state.activeSortBy;
-                    activeSortAscending = state.activeSortAscending;
-                  }
-
-                  return Container(
-                    color: Colors.white,
-                    child: filters.BudgetFilters(
-                      activeStatusFilter: activeStatusFilter,
-                      activePeriodFilter: activePeriodFilter,
-                      activeScopeFilter: activeScopeFilter,
-                      activeSortBy: activeSortBy,
-                      activeSortAscending: activeSortAscending,
-                      onStatusFilterChanged: (value) {
-                        context.read<BudgetBloc>().add(
-                          FilterBudgets(statusFilter: value),
-                        );
-                      },
-                      onPeriodFilterChanged: (value) {
-                        context.read<BudgetBloc>().add(
-                          FilterBudgets(periodFilter: value),
-                        );
-                      },
-                      onScopeFilterChanged: (value) {
-                        context.read<BudgetBloc>().add(
-                          FilterBudgets(scopeFilter: value),
-                        );
-                      },
-                      onSortChanged: (sortBy, ascending) {
-                        context.read<BudgetBloc>().add(
-                          SortBudgets(sortBy, ascending),
-                        );
-                      },
-                      onClearFilters: () {
-                        context.read<BudgetBloc>().add(FilterBudgets());
-                      },
-                    ),
-                  );
-                },
-              ),
-
-            // Contenu principal avec onglets
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildOverviewTab(context, l10n),
-                  _buildActiveBudgetsTab(context, l10n),
-                  _buildAlertsTab(context, l10n),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: BlocConsumer<BudgetBloc, BudgetState>(
+        listener: (context, state) {
+          if (state is BudgetError) {
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.message,
+              duration: const Duration(seconds: 4),
+            );
+          } else if (state is BudgetOperationSuccess) {
+            SmartSnackBarManager.showSuccessSnackBar(
+              context,
+              state.message,
+              duration: const Duration(seconds: 2),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is BudgetLoading || state is BudgetInitial) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is BudgetError) {
+            return _buildErrorState(state.message, l10n);
+          }
+          if (state is BudgetLoaded) {
+            return Column(
+              children: [
+                if (state.summary != null &&
+                    state.summary!.totalBudgets > 0)
+                  _buildSummaryStrip(state.summary!, l10n),
+                _buildStatusChips(state.activeStatusFilter, l10n),
+                Expanded(child: _buildBudgetList(state, l10n)),
+              ],
+            );
+          }
+          return _buildEmptyState(l10n);
+        },
       ),
       floatingActionButton: ConnectedFloatingActionButton(
         onPressed: () => _showCreateBudgetDialog(context),
@@ -276,14 +98,142 @@ class _BudgetScreenState extends State<BudgetScreen>
     );
   }
 
-  Widget _buildContextualEmptyState(BudgetLoaded state, AppLocalizations l10n) {
-    final hasFilters = _hasActiveFilters(state);
+  /// Bandeau resume : trois chiffres sur UNE ligne, pas de grosses cartes.
+  Widget _buildSummaryStrip(BudgetSummary summary, AppLocalizations l10n) {
+    Widget cell(String label, Widget value) => Expanded(
+          child: Column(
+            children: [
+              value,
+              const SizedBox(height: 1),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
 
-    if (hasFilters) {
-      return _buildEmptyFilteredState(l10n);
-    } else {
-      return _buildEmptyState(l10n);
+    return Container(
+      color: AppColors.surface,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+      child: Row(
+        children: [
+          cell(
+            l10n.budgeted,
+            Text(
+              summary.formattedTotalBudgeted,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Container(width: 1, height: 26, color: AppColors.border),
+          cell(
+            l10n.spent,
+            Text(
+              summary.formattedTotalSpent,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryDark,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Container(width: 1, height: 26, color: AppColors.border),
+          cell(
+            l10n.remaining,
+            FormattedAmount(
+              amount: summary.totalBudgeted - summary.totalSpent,
+              showCode: false,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: summary.totalSpent > summary.totalBudgeted
+                    ? AppColors.error
+                    : AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Filtres de statut : une rangee de chips, remplace onglets + panneau.
+  Widget _buildStatusChips(String? active, AppLocalizations l10n) {
+    final options = <(String, String)>[
+      ('all', l10n.all),
+      ('active', l10n.active),
+      ('warning', l10n.alerts),
+      ('exceeded', l10n.exceeded),
+      ('expired', l10n.expired),
+    ];
+    final current = active ?? 'all';
+
+    return SizedBox(
+      height: 52,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+        itemCount: options.length,
+        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+        itemBuilder: (context, index) {
+          final (value, label) = options[index];
+          final selected = current == value;
+          return ChoiceChip(
+            label: Text(label),
+            selected: selected,
+            showCheckmark: false,
+            onSelected: (_) => context
+                .read<BudgetBloc>()
+                .add(FilterBudgets(statusFilter: value)),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBudgetList(BudgetLoaded state, AppLocalizations l10n) {
+    final budgets = state.budgets;
+    if (budgets.isEmpty) {
+      return _hasActiveFilters(state)
+          ? _buildEmptyFilteredState(l10n)
+          : _buildEmptyState(l10n);
     }
+    return RefreshIndicator(
+      onRefresh: () async =>
+          context.read<BudgetBloc>().add(const RefreshBudgets()),
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md, AppSpacing.xs, AppSpacing.md, 96),
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: budgets.length,
+        itemBuilder: (context, index) {
+          final budget = budgets[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+            child: BudgetCard(
+              budget: budget,
+              onTap: () => _openBudgetDetails(budget),
+              onEdit: () => _editBudget(budget),
+              onDelete: () => _deleteBudget(budget),
+              onToggleStatus: () => _toggleBudgetStatus(budget),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   bool _hasActiveFilters(BudgetLoaded state) {
@@ -349,65 +299,6 @@ class _BudgetScreenState extends State<BudgetScreen>
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildOverviewTab(BuildContext context, AppLocalizations l10n) {
-    return BlocBuilder<BudgetBloc, BudgetState>(
-      builder: (context, state) {
-        if (state is BudgetLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
-          );
-        }
-
-        if (state is BudgetError) {
-          return _buildErrorState(state.message, l10n);
-        }
-
-        if (state is BudgetLoaded) {
-          if (state.budgets.isEmpty) {
-            return _buildContextualEmptyState(state, l10n);
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<BudgetBloc>().add(const RefreshBudgets());
-            },
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Carte de résumé
-                  summary.BudgetSummaryCard(
-                    totalBudgets: state.totalBudgets,
-                    activeBudgets: state.activeBudgets,
-                    exceededBudgets: state.exceededBudgets,
-                    warningBudgets: state.warningBudgets,
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Actions rapides
-                  _buildQuickActions(context, l10n),
-
-                  const SizedBox(height: 24),
-
-                  // Budgets récents
-                  _buildRecentBudgetsSection(
-                    state.budgets.take(5).toList(),
-                    l10n,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        return _buildEmptyState(l10n);
-      },
     );
   }
 
@@ -499,9 +390,6 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   context.read<BudgetBloc>().add(
                                     FilterBudgets(),
                                   );
-                                  setState(() {
-                                    _showFilters = false;
-                                  });
                                 },
                                 icon: const Icon(Icons.clear_all, size: 18),
                                 label: Text(
@@ -555,9 +443,6 @@ class _BudgetScreenState extends State<BudgetScreen>
                                   context.read<BudgetBloc>().add(
                                     FilterBudgets(),
                                   );
-                                  setState(() {
-                                    _showFilters = false;
-                                  });
                                 },
                                 icon: const Icon(Icons.clear_all, size: 18),
                                 label: Text(
@@ -608,274 +493,6 @@ class _BudgetScreenState extends State<BudgetScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildActiveBudgetsTab(BuildContext context, AppLocalizations l10n) {
-    return BlocBuilder<BudgetBloc, BudgetState>(
-      builder: (context, state) {
-        if (state is BudgetLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
-          );
-        }
-
-        if (state is BudgetError) {
-          return _buildErrorState(state.message, l10n);
-        }
-
-        if (state is BudgetLoaded) {
-          final activeBudgets = state.currentBudgets;
-
-          if (activeBudgets.isEmpty) {
-            final hasFilters = _hasActiveFilters(state);
-            if (hasFilters) {
-              return _buildEmptyFilteredState(l10n);
-            } else {
-              return _buildEmptyActiveState(l10n);
-            }
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<BudgetBloc>().add(const RefreshBudgets());
-            },
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: activeBudgets.length,
-              itemBuilder: (context, index) {
-                final budget = activeBudgets[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: BudgetCard(
-                    budget: budget,
-                    onTap: () => _openBudgetDetails(budget),
-                    onEdit: () => _editBudget(budget),
-                    onDelete: () => _deleteBudget(budget),
-                    onToggleStatus: () => _toggleBudgetStatus(budget),
-                  ),
-                );
-              },
-            ),
-          );
-        }
-
-        return _buildEmptyActiveState(l10n);
-      },
-    );
-  }
-
-  Widget _buildAlertsTab(BuildContext context, AppLocalizations l10n) {
-    return BlocBuilder<BudgetBloc, BudgetState>(
-      builder: (context, state) {
-        if (state is BudgetLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.green),
-          );
-        }
-
-        if (state is BudgetLoaded) {
-          final alertBudgets =
-              state.budgets.where((budget) => budget.shouldShowAlert).toList();
-
-          if (alertBudgets.isEmpty) {
-            return _buildNoAlertsState(l10n);
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<BudgetBloc>().add(const RefreshBudgets());
-            },
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: alertBudgets.length,
-              itemBuilder: (context, index) {
-                final budget = alertBudgets[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: alerts.BudgetAlertsWidget(
-                    budget: budget,
-                    onDismiss: () {
-                      // Optionnel: logique pour masquer cette alerte
-                    },
-                  ),
-                );
-              },
-            ),
-          );
-        }
-
-        return _buildNoAlertsState(l10n);
-      },
-    );
-  }
-
-  Widget _buildQuickActions(BuildContext context, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.quickActions,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _buildQuickActionCard(
-                icon: Icons.flash_on,
-                title: l10n.quickBudget,
-                subtitle: l10n.createQuickBudget,
-                color: AppColors.warning,
-                onTap: () => _showQuickBudgetDialog(context),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildQuickActionCard(
-                icon: Icons.trending_up,
-                title: l10n.monthlyBudget,
-                subtitle: l10n.createMonthlyBudget,
-                color: AppColors.accent,
-                onTap: () => _createMonthlyBudget(context),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // ✅ CORRECTION: Card avec fond blanc
-  Widget _buildQuickActionCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      color: Colors.white, // ✅ Fond blanc
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: color, size: 24),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: AppColors.textDisabled,
-                    size: 16,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRecentBudgetsSection(
-    List<Budget> budgets,
-    AppLocalizations l10n,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ✅ CORRECTION: Header avec fond blanc
-        Card(
-          color: Colors.white,
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.recentBudgets,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (budgets.length > 5)
-                  TextButton(
-                    onPressed: () => _tabController.animateTo(1),
-                    style: TextButton.styleFrom(
-                      minimumSize: Size.zero,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                    ),
-                    child: Text(
-                      l10n.viewAll,
-                      style: TextStyle(
-                        color: AppColors.primaryDark,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        ...budgets.map(
-          (budget) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: BudgetCard(
-              budget: budget,
-              compact: true,
-              onTap: () => _openBudgetDetails(budget),
-              onEdit: () => _editBudget(budget),
-              onDelete: () => _deleteBudget(budget),
-              onToggleStatus: () => _toggleBudgetStatus(budget),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -970,139 +587,6 @@ class _BudgetScreenState extends State<BudgetScreen>
           ),
         ),
       );
-  }
-
-  Widget _buildEmptyActiveState(AppLocalizations l10n) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.4,
-          ),
-          child: Card(
-            color: Colors.white,
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.hourglass_empty,
-                    size: 48, // ✅ RÉDUIT
-                    color: AppColors.textDisabled,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    l10n.noActiveBudgets,
-                    style: const TextStyle(
-                      fontSize: 16, // ✅ RÉDUIT
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.visible,
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Flexible(
-                    child: Text(
-                      l10n.createActiveBudgetDescription,
-                      style: TextStyle(
-                        fontSize: 13, // ✅ RÉDUIT
-                        color: AppColors.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                      maxLines: 3,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoAlertsState(AppLocalizations l10n) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.4,
-          ),
-          child: Card(
-            color: Colors.white,
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 48, // ✅ RÉDUIT
-                      color: AppColors.primary,
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  Text(
-                    l10n.noBudgetAlerts,
-                    style: const TextStyle(
-                      fontSize: 16, // ✅ RÉDUIT
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.visible,
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Flexible(
-                    child: Text(
-                      l10n.allBudgetsOnTrack,
-                      style: TextStyle(
-                        fontSize: 13, // ✅ RÉDUIT
-                        color: AppColors.textSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                      maxLines: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   // Actions methods - IDENTIQUES AU CODE ORIGINAL

@@ -4317,4 +4317,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickMonth => 'Pick a month';
+
+  @override
+  String get deactivate => 'Deactivate';
 }

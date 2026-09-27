@@ -4389,4 +4389,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pickMonth => 'Choisir le mois';
+
+  @override
+  String get deactivate => 'Désactiver';
 }

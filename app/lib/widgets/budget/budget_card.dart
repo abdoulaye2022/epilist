@@ -1,6 +1,7 @@
 // widgets/budget/budget_card.dart - VERSION AVEC BACKGROUND BLANC
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
@@ -23,38 +24,134 @@ class BudgetCard extends StatelessWidget {
     this.onToggleStatus,
   });
 
+  Color get _statusColor => switch (budget.status) {
+        BudgetStatus.exceeded => AppColors.error,
+        BudgetStatus.warning => AppColors.warning,
+        BudgetStatus.ok => AppColors.primary,
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final ratio = (budget.spentPercentage / 100).clamp(0.0, 1.0);
+    final expired = budget.isExpired;
+
+    final df = DateFormat('d MMM', locale);
+    final period =
+        '${df.format(budget.startDate)} – ${df.format(budget.endDate)}';
 
     return Card(
-      elevation: compact ? 1 : 3,
-      color: Colors.white, // ✅ BACKGROUND BLANC
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white, // ✅ BACKGROUND BLANC
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: EdgeInsets.all(compact ? 12 : 16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md, AppSpacing.sm + 4, AppSpacing.xs, AppSpacing.sm + 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(context, l10n),
-              if (!compact) ...[
-                const SizedBox(height: 12),
-                _buildAmountInfo(context, l10n),
-                const SizedBox(height: 12),
-                _buildProgressBar(context, l10n),
-                const SizedBox(height: 8),
-                _buildFooter(context, l10n),
-              ] else ...[
-                const SizedBox(height: 8),
-                _buildCompactInfo(context, l10n),
-              ],
+              Row(
+                children: [
+                  // Pourcentage dans une pastille couleur statut
+                  Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: _statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: Text(
+                      '${budget.spentPercentage.round()}%',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: _statusColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm + 4),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                budget.name,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: expired
+                                      ? AppColors.textSecondary
+                                      : AppColors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (expired) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                l10n.expired,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textDisabled,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          period,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        budget.formattedSpentAmount,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: _statusColor,
+                        ),
+                      ),
+                      Text(
+                        '/ ${budget.formattedBudgetAmount}',
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (!compact) _buildMenu(context, l10n),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm + 2),
+              Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm + 4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    value: ratio,
+                    minHeight: 5,
+                    backgroundColor: AppColors.background,
+                    valueColor: AlwaysStoppedAnimation<Color>(_statusColor),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -62,399 +159,73 @@ class BudgetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        // Icône de statut
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: _getStatusColor().withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildMenu(BuildContext context, AppLocalizations l10n) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert,
+          size: 20, color: AppColors.textSecondary),
+      onSelected: (value) {
+        switch (value) {
+          case 'edit':
+            onEdit?.call();
+            break;
+          case 'toggle':
+            onToggleStatus?.call();
+            break;
+          case 'delete':
+            onDelete?.call();
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        if (onEdit != null)
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                const Icon(Icons.edit_outlined,
+                    size: 18, color: AppColors.accent),
+                const SizedBox(width: 8),
+                Text(l10n.edit),
+              ],
+            ),
           ),
-          child: Icon(
-            _getStatusIcon(),
-            color: _getStatusColor(),
-            size: compact ? 16 : 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-
-        // Nom et type
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                budget.name,
-                style: TextStyle(
-                  fontSize: compact ? 14 : 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+        if (onToggleStatus != null)
+          PopupMenuItem(
+            value: 'toggle',
+            child: Row(
+              children: [
+                Icon(
+                  budget.isActive
+                      ? Icons.pause_circle_outline
+                      : Icons.play_circle_outline,
+                  size: 18,
+                  color: AppColors.textSecondary,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  Text(
-                    budget.periodDisplayName,
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                  ),
-                  if (budget.isListSpecific) ...[
-                    Text(
-                      ' • ',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                    ),
-                    Icon(Icons.list_alt, size: 12, color: AppColors.textSecondary),
-                    const SizedBox(width: 2),
-                    Flexible(
-                      child: Text(
-                        budget.listName ?? l10n.unknownList,
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ] else ...[
-                    Text(
-                      ' • ',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                    ),
-                    Icon(Icons.public, size: 12, color: AppColors.textSecondary),
-                    const SizedBox(width: 2),
-                    Text(
-                      l10n.general,
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                    ),
-                  ],
-                ],
-              ),
-            ],
+                const SizedBox(width: 8),
+                Text(budget.isActive ? l10n.deactivate : l10n.activate),
+              ],
+            ),
           ),
-        ),
-
-        // Menu actions
-        if (!compact)
-          PopupMenuButton<String>(
-            onSelected: (value) => _handleAction(value),
-            itemBuilder:
-                (context) => [
-                  if (onEdit != null)
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.edit, size: 18),
-                          const SizedBox(width: 8),
-                          Text(l10n.edit),
-                        ],
-                      ),
-                    ),
-                  if (onToggleStatus != null)
-                    PopupMenuItem(
-                      value: 'toggle',
-                      child: Row(
-                        children: [
-                          Icon(
-                            budget.isActive ? Icons.pause : Icons.play_arrow,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(budget.isActive ? l10n.pause : l10n.activate),
-                        ],
-                      ),
-                    ),
-                  if (onDelete != null) ...[
-                    const PopupMenuDivider(),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, size: 18, color: AppColors.error),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.delete,
-                            style: TextStyle(color: AppColors.error),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-            child: Icon(Icons.more_vert, color: AppColors.textSecondary),
+        if (onDelete != null) ...[
+          const PopupMenuDivider(),
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline,
+                    size: 18, color: AppColors.error),
+                const SizedBox(width: 8),
+                Text(l10n.delete,
+                    style: const TextStyle(color: AppColors.error)),
+              ],
+            ),
           ),
+        ],
       ],
     );
-  }
-
-  Widget _buildAmountInfo(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: _buildAmountColumn(
-            l10n.budgeted,
-            budget.budgetAmount,
-            AppColors.accent,
-          ),
-        ),
-        Flexible(
-          child: _buildAmountColumn(
-            l10n.spent,
-            budget.spentAmount,
-            _getSpentColor(),
-          ),
-        ),
-        Flexible(
-          child: _buildAmountColumn(
-            l10n.remaining,
-            budget.remainingAmount,
-            AppColors.primary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAmountColumn(String label, double amount, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
-          ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
-        const SizedBox(height: 4),
-        FormattedAmount(
-          amount: amount,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProgressBar(BuildContext context, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.spendingProgress,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Text(
-              '${budget.spentPercentage.toStringAsFixed(1)}%',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: _getProgressColor(),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        LinearProgressIndicator(
-          value: (budget.spentPercentage / 100).clamp(0.0, 1.0),
-          backgroundColor: AppColors.border,
-          valueColor: AlwaysStoppedAnimation<Color>(_getProgressColor()),
-          minHeight: 6,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFooter(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Période
-        Flexible(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.calendar_today, size: 14, color: AppColors.textDisabled),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  _formatDateRange(),
-                  style: TextStyle(fontSize: 11, color: AppColors.textDisabled),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Statut/Message d'alerte
-        if (budget.shouldShowAlert && budget.alertMessage != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: _getStatusColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              _getShortAlertMessage(l10n),
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: _getStatusColor(),
-              ),
-            ),
-          )
-        else
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              budget.daysRemaining > 0
-                  ? '${budget.daysRemaining} ${l10n.days} ${l10n.remaining.toLowerCase()}'
-                  : l10n.expired,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color:
-                    budget.daysRemaining > 0
-                        ? AppColors.primary
-                        : AppColors.error,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildCompactInfo(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Montants avec FormattedAmount
-        Expanded(
-          child: Row(
-            children: [
-              FormattedAmount(
-                amount: budget.spentAmount,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              Text(
-                ' / ',
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-              ),
-              FormattedAmount(
-                amount: budget.budgetAmount,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Statut
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: _getStatusColor().withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            '${budget.spentPercentage.toStringAsFixed(0)}%',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: _getStatusColor(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Color _getStatusColor() {
-    if (budget.isExceeded) return AppColors.error;
-    if (budget.isNearLimit) return AppColors.warning;
-    return AppColors.primary;
-  }
-
-  Color _getSpentColor() {
-    if (budget.isExceeded) return AppColors.error;
-    if (budget.isNearLimit) return AppColors.warning;
-    return AppColors.accent;
-  }
-
-  Color _getProgressColor() {
-    if (budget.isExceeded) return AppColors.error;
-    if (budget.isNearLimit) return AppColors.warning;
-    return AppColors.primary;
-  }
-
-  IconData _getStatusIcon() {
-    if (budget.isExceeded) return Icons.warning;
-    if (budget.isNearLimit) return Icons.info;
-    if (budget.isListSpecific) return Icons.list_alt;
-    return Icons.account_balance_wallet;
-  }
-
-  String _formatDateRange() {
-    final start = budget.startDate;
-    final end = budget.endDate;
-
-    if (start.year == end.year && start.month == end.month) {
-      return '${start.day}-${end.day}/${start.month}/${start.year}';
-    }
-    return '${start.day}/${start.month} - ${end.day}/${end.month}';
-  }
-
-  String _getShortAlertMessage(AppLocalizations l10n) {
-    if (budget.isExceeded) return l10n.exceeded;
-    if (budget.isNearLimit) return l10n.warning;
-    return 'OK';
-  }
-
-  void _handleAction(String action) {
-    switch (action) {
-      case 'edit':
-        onEdit?.call();
-        break;
-      case 'delete':
-        onDelete?.call();
-        break;
-      case 'toggle':
-        onToggleStatus?.call();
-        break;
-    }
   }
 }
 
-// widgets/budget/budget_alerts_widget.dart - VERSION AVEC BACKGROUND BLANC
 class BudgetAlertsWidget extends StatelessWidget {
   final Budget budget;
   final VoidCallback? onDismiss;
