@@ -583,12 +583,10 @@ class NotificationService {
           );
         }
 
-        // Permission pour ignorer l'optimisation de batterie
-        final batteryStatus =
-            await Permission.ignoreBatteryOptimizations.request();
-        if (kDebugMode) {
-          debugPrint('🤖 [EPILIST] Battery optimization permission: $batteryStatus');
-        }
+        // NOTE : on ne demande PAS ignoreBatteryOptimizations. FCM reveille
+        // l'appareil pour les push et les rappels locaux utilisent des
+        // alarmes systeme qui sonnent en Doze ; la permission etait inutile
+        // et son usage injustifie est un motif de rejet Google Play.
 
         // Vérifier les permissions des notifications
         final isGranted = await Permission.notification.isGranted;
