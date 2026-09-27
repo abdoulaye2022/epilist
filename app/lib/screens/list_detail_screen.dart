@@ -40,10 +40,19 @@ import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+enum ListDetailAction { none, addItem, voiceItem }
+
 class ListDetailScreen extends StatefulWidget {
   final ShoppingList shoppingList;
 
-  const ListDetailScreen({super.key, required this.shoppingList});
+  /// Action a declencher a l'ouverture (dashboard : ajout rapide, voix).
+  final ListDetailAction initialAction;
+
+  const ListDetailScreen({
+    super.key,
+    required this.shoppingList,
+    this.initialAction = ListDetailAction.none,
+  });
 
   @override
   _ListDetailScreenState createState() => _ListDetailScreenState();
@@ -58,15 +67,22 @@ class _ListDetailScreenState extends State<ListDetailScreen> {
             listItemService: context.read<ListItemService>(),
             localizationBloc: context.read<LocalizationBloc>(),
           )..add(LoadListItems(widget.shoppingList.id)),
-      child: _ListDetailView(shoppingList: widget.shoppingList),
+      child: _ListDetailView(
+        shoppingList: widget.shoppingList,
+        initialAction: widget.initialAction,
+      ),
     );
   }
 }
 
 class _ListDetailView extends StatefulWidget {
   final ShoppingList shoppingList;
+  final ListDetailAction initialAction;
 
-  const _ListDetailView({required this.shoppingList});
+  const _ListDetailView({
+    required this.shoppingList,
+    this.initialAction = ListDetailAction.none,
+  });
 
   @override
   _ListDetailViewState createState() => _ListDetailViewState();
@@ -93,6 +109,17 @@ class _ListDetailViewState extends State<_ListDetailView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoryBloc>().add(const LoadCategories());
       _loadStoresAndActiveStore();
+      // Action rapide demandee par le dashboard
+      switch (widget.initialAction) {
+        case ListDetailAction.addItem:
+          _addNewItem();
+          break;
+        case ListDetailAction.voiceItem:
+          _addItemByVoice();
+          break;
+        case ListDetailAction.none:
+          break;
+      }
     });
   }
 

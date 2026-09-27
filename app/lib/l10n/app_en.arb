@@ -1700,5 +1700,26 @@
   "photoRemoved": "Photo removed",
   "photoUploadFailed": "Photo upload failed",
   "addPhoto": "Add a photo",
-  "productPhoto": "Product photo"
+  "productPhoto": "Product photo",
+  "helloGreeting": "Hello 👋",
+  "readyToShop": "Ready for your next groceries?",
+  "budgetOfMonth": "Budget of the month",
+  "seeDetail": "See details",
+  "remainingThisMonth": "{amount} left this month",
+  "@remainingThisMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "withinBudget": "You're within budget!",
+  "budgetExceededShort": "Budget exceeded",
+  "createBudgetCta": "Create a budget to track your spending",
+  "spendingThisMonth": "Spending this month",
+  "quickAddItem": "Add an item",
+  "quickVoice": "Add by voice",
+  "onLastList": "On your latest list",
+  "noListYet": "Create a list first",
+  "newListShort": "New list"
 }

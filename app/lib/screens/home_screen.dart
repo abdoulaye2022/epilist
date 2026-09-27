@@ -7,6 +7,7 @@ import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
+import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -20,7 +21,15 @@ import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
 import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
+import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/models/budget.dart';
+import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
+import 'package:epilist/screens/budget_screen.dart';
+import 'package:epilist/screens/analytics_screen.dart';
+import 'package:epilist/screens/stores_screen.dart';
+import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // Variables pour contrôler les initialisations et éviter les redondances
   bool _deepLinkInitialized = false;
   bool _isResuming = false;
+
+  // Donnees du tableau de bord (chargees en douceur, jamais bloquantes)
+  Budget? _monthBudget;
   // ✅ SUPPRIMÉ : bool _showNotificationTest = false;
 
   @override
@@ -45,11 +57,107 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     _loadShoppingLists();
+    _loadDashboardData();
 
     // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDeepLinksOnce();
     });
+  }
+
+  /// Budget actif du mois pour la carte du haut. Echec silencieux :
+  /// le dashboard reste utilisable hors ligne ou sans budget.
+  Future<void> _loadDashboardData() async {
+    try {
+      final dash = await context.read<BudgetService>().getBudgetDashboard();
+      final budgets = (dash['current_budgets'] as List<Budget>? ?? []);
+      if (!mounted) return;
+      setState(() {
+        _monthBudget = budgets.isNotEmpty ? budgets.first : null;
+      });
+    } catch (_) {
+      // hors ligne / pas de budget : on n'affiche simplement pas la carte
+    }
+  }
+
+
+  Widget _buildGreeting(AppLocalizations l10n) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final user = state is AuthSuccess
+            ? state.user
+            : (state is ProfileUpdated ? state.user : null);
+        final name = user?.firstName ?? '';
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              name.isEmpty ? l10n.helloGreeting : '${l10n.helloGreeting.replaceAll(' 👋', '')} $name 👋',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              l10n.readyToShop,
+              style: const TextStyle(
+                fontSize: 14.5,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Carrousel horizontal des listes recentes ; retombe sur la section
+  /// complete (etats vide / erreur / chargement) quand il n'y a rien.
+  Widget _buildListsCarousel(BuildContext context) {
+    return BlocBuilder<ShoppingListBloc, ShoppingListState>(
+      builder: (context, state) {
+        if (state is ShoppingListLoaded && state.lists.isNotEmpty) {
+          final lists = state.lists.take(6).toList();
+          return SizedBox(
+            height: 132,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: lists.length,
+              separatorBuilder: (_, __) =>
+                  const SizedBox(width: AppSpacing.sm + 4),
+              itemBuilder: (context, index) => DashboardListCard(
+                list: lists[index],
+                onTap: () => _openListDetails(context, lists[index]),
+              ),
+            ),
+          );
+        }
+        return _buildShoppingListsSection(context);
+      },
+    );
+  }
+
+  /// Ouvre la liste la plus recente avec l'action demandee (ajout, voix).
+  void _openRecentListWith(ListDetailAction action) {
+    final l10n = AppLocalizations.of(context)!;
+    final state = context.read<ShoppingListBloc>().state;
+    final lists = state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
+    if (lists.isEmpty) {
+      SmartSnackBarManager.showInfoSnackBar(context, l10n.noListYet);
+      _showCreateListDialog(context);
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ListDetailScreen(
+          shoppingList: lists.first,
+          initialAction: action,
+        ),
+      ),
+    ).then((_) => _loadShoppingLists());
   }
 
   void _loadShoppingLists() {
@@ -112,12 +220,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       // Navigation centralisée dans le drawer : la barre reste minimale.
       drawer: const AppDrawer(),
       appBar: AppBar(
-        title: Text(l10n.myShoppingLists),
+        title: const Text('EpiList'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.grid_view_outlined),
-            tooltip: l10n.allLists,
-            onPressed: () => _goToAllLists(context),
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.md),
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                final user = state is AuthSuccess
+                    ? state.user
+                    : (state is ProfileUpdated ? state.user : null);
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  ),
+                  child: UserAvatar(user: user, radius: 17),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -164,20 +284,80 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Section header des listes
+                      _buildGreeting(l10n),
+                      const SizedBox(height: AppSpacing.md),
+                      if (_monthBudget != null) ...[
+                        BudgetMonthCard(
+                          budget: _monthBudget!,
+                          onSeeDetail: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const BudgetScreen()),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                      ],
                       ListsSectionHeader(
-                  onViewAll: () => _goToAllLists(context),
-                  onCreateNew: () => _showCreateListDialog(context),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Section des listes de courses
-                _buildShoppingListsSection(context),
+                        onViewAll: () => _goToAllLists(context),
+                        onCreateNew: () => _showCreateListDialog(context),
+                      ),
+                      const SizedBox(height: AppSpacing.sm + 4),
+                      _buildListsCarousel(context),
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          QuickActionButton(
+                            icon: Icons.add,
+                            label: l10n.quickAddItem,
+                            sublabel: l10n.onLastList,
+                            onTap: () => _openRecentListWith(
+                                ListDetailAction.addItem),
+                          ),
+                          QuickActionButton(
+                            icon: Icons.mic_none_rounded,
+                            label: l10n.quickVoice,
+                            sublabel: l10n.onLastList,
+                            onTap: () => _openRecentListWith(
+                                ListDetailAction.voiceItem),
+                          ),
+                          QuickActionButton(
+                            icon: Icons.playlist_add_rounded,
+                            label: l10n.newListShort,
+                            sublabel: '',
+                            onTap: () => _showCreateListDialog(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          DashboardTile(
+                            icon: Icons.insights_outlined,
+                            title: l10n.analytics,
+                            subtitle: l10n.spendingThisMonth,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const AnalyticsScreen()),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm + 4),
+                          DashboardTile(
+                            icon: Icons.storefront_outlined,
+                            title: l10n.myStores,
+                            subtitle: l10n.aisleOrder,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const StoresScreen()),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -4262,4 +4262,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productPhoto => 'Product photo';
+
+  @override
+  String get helloGreeting => 'Hello 👋';
+
+  @override
+  String get readyToShop => 'Ready for your next groceries?';
+
+  @override
+  String get budgetOfMonth => 'Budget of the month';
+
+  @override
+  String get seeDetail => 'See details';
+
+  @override
+  String remainingThisMonth(String amount) {
+    return '$amount left this month';
+  }
+
+  @override
+  String get withinBudget => 'You\'re within budget!';
+
+  @override
+  String get budgetExceededShort => 'Budget exceeded';
+
+  @override
+  String get createBudgetCta => 'Create a budget to track your spending';
+
+  @override
+  String get spendingThisMonth => 'Spending this month';
+
+  @override
+  String get quickAddItem => 'Add an item';
+
+  @override
+  String get quickVoice => 'Add by voice';
+
+  @override
+  String get onLastList => 'On your latest list';
+
+  @override
+  String get noListYet => 'Create a list first';
+
+  @override
+  String get newListShort => 'New list';
 }

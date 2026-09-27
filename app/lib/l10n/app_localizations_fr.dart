@@ -4334,4 +4334,48 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get productPhoto => 'Photo du produit';
+
+  @override
+  String get helloGreeting => 'Bonjour 👋';
+
+  @override
+  String get readyToShop => 'Prêt pour les prochaines courses ?';
+
+  @override
+  String get budgetOfMonth => 'Budget du mois';
+
+  @override
+  String get seeDetail => 'Voir le détail';
+
+  @override
+  String remainingThisMonth(String amount) {
+    return 'Encore $amount ce mois-ci';
+  }
+
+  @override
+  String get withinBudget => 'Vous êtes dans les limites !';
+
+  @override
+  String get budgetExceededShort => 'Budget dépassé';
+
+  @override
+  String get createBudgetCta => 'Créez un budget pour suivre vos dépenses';
+
+  @override
+  String get spendingThisMonth => 'Dépenses ce mois';
+
+  @override
+  String get quickAddItem => 'Ajouter un article';
+
+  @override
+  String get quickVoice => 'Ajouter par la voix';
+
+  @override
+  String get onLastList => 'Sur votre dernière liste';
+
+  @override
+  String get noListYet => 'Créez d\'abord une liste';
+
+  @override
+  String get newListShort => 'Nouvelle liste';
 }

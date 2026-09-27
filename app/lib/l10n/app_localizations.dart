@@ -8148,6 +8148,90 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Photo du produit'**
   String get productPhoto;
+
+  /// No description provided for @helloGreeting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour 👋'**
+  String get helloGreeting;
+
+  /// No description provided for @readyToShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prêt pour les prochaines courses ?'**
+  String get readyToShop;
+
+  /// No description provided for @budgetOfMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget du mois'**
+  String get budgetOfMonth;
+
+  /// No description provided for @seeDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le détail'**
+  String get seeDetail;
+
+  /// No description provided for @remainingThisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encore {amount} ce mois-ci'**
+  String remainingThisMonth(String amount);
+
+  /// No description provided for @withinBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes dans les limites !'**
+  String get withinBudget;
+
+  /// No description provided for @budgetExceededShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget dépassé'**
+  String get budgetExceededShort;
+
+  /// No description provided for @createBudgetCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez un budget pour suivre vos dépenses'**
+  String get createBudgetCta;
+
+  /// No description provided for @spendingThisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses ce mois'**
+  String get spendingThisMonth;
+
+  /// No description provided for @quickAddItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un article'**
+  String get quickAddItem;
+
+  /// No description provided for @quickVoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter par la voix'**
+  String get quickVoice;
+
+  /// No description provided for @onLastList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sur votre dernière liste'**
+  String get onLastList;
+
+  /// No description provided for @noListYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez d\'abord une liste'**
+  String get noListYet;
+
+  /// No description provided for @newListShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle liste'**
+  String get newListShort;
 }
 
 class _AppLocalizationsDelegate

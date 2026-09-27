@@ -1701,5 +1701,26 @@
   "photoRemoved": "Photo retirée",
   "photoUploadFailed": "Échec de l'envoi de la photo",
   "addPhoto": "Ajouter une photo",
-  "productPhoto": "Photo du produit"
+  "productPhoto": "Photo du produit",
+  "helloGreeting": "Bonjour 👋",
+  "readyToShop": "Prêt pour les prochaines courses ?",
+  "budgetOfMonth": "Budget du mois",
+  "seeDetail": "Voir le détail",
+  "remainingThisMonth": "Encore {amount} ce mois-ci",
+  "@remainingThisMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "withinBudget": "Vous êtes dans les limites !",
+  "budgetExceededShort": "Budget dépassé",
+  "createBudgetCta": "Créez un budget pour suivre vos dépenses",
+  "spendingThisMonth": "Dépenses ce mois",
+  "quickAddItem": "Ajouter un article",
+  "quickVoice": "Ajouter par la voix",
+  "onLastList": "Sur votre dernière liste",
+  "noListYet": "Créez d'abord une liste",
+  "newListShort": "Nouvelle liste"
 }
