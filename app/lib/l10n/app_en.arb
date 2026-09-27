@@ -2142,5 +2142,8 @@
     }
   },
   "search": "Search",
-  "scanBarcode": "Scan a barcode"
+  "scanBarcode": "Scan a barcode",
+  "updateRequiredTitle": "Update required",
+  "updateAvailableTitle": "Update available",
+  "updateNow": "Update now"
 }

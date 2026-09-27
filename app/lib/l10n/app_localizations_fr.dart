@@ -4913,4 +4913,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get scanBarcode => 'Scanner un code-barres';
+
+  @override
+  String get updateRequiredTitle => 'Mise à jour obligatoire';
+
+  @override
+  String get updateAvailableTitle => 'Mise à jour disponible';
+
+  @override
+  String get updateNow => 'Mettre à jour';
 }

@@ -4837,4 +4837,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanBarcode => 'Scan a barcode';
+
+  @override
+  String get updateRequiredTitle => 'Update required';
+
+  @override
+  String get updateAvailableTitle => 'Update available';
+
+  @override
+  String get updateNow => 'Update now';
 }

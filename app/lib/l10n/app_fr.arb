@@ -2143,5 +2143,8 @@
   "settingBudgetForecast": "Projection budget",
   "settingBudgetForecastHint": "Rythme, projection de fin de mois et budget par jour",
   "search": "Rechercher",
-  "scanBarcode": "Scanner un code-barres"
+  "scanBarcode": "Scanner un code-barres",
+  "updateRequiredTitle": "Mise à jour obligatoire",
+  "updateAvailableTitle": "Mise à jour disponible",
+  "updateNow": "Mettre à jour"
 }

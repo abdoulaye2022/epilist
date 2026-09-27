@@ -9120,6 +9120,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Scanner un code-barres'**
   String get scanBarcode;
+
+  /// No description provided for @updateRequiredTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour obligatoire'**
+  String get updateRequiredTitle;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour disponible'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get updateNow;
 }
 
 class _AppLocalizationsDelegate
