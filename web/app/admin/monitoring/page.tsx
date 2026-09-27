@@ -42,6 +42,18 @@ export default function AdminMonitoringPage() {
     load();
   };
 
+  const purgeAll = async () => {
+    if (!confirm("Supprimer TOUTES les erreurs du journal ?")) return;
+    await adminApi.del("/admin/errors?all=1");
+    load();
+  };
+
+  /// Retire une entrée une fois la correction appliquée.
+  const remove = async (id: number) => {
+    await adminApi.del(`/admin/errors/${id}`);
+    load();
+  };
+
   const pages = Math.max(1, Math.ceil(total / perPage));
 
   return (
@@ -66,6 +78,12 @@ export default function AdminMonitoringPage() {
           >
             <Trash2 className="h-4 w-4" /> Purger &gt; 30 j
           </button>
+          <button
+            onClick={purgeAll}
+            className="flex items-center gap-2 rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" /> Tout effacer
+          </button>
         </div>
       </div>
 
@@ -84,6 +102,7 @@ export default function AdminMonitoringPage() {
                 <th className="px-4 py-3">Requête</th>
                 <th className="px-4 py-3">Utilisateur</th>
                 <th className="px-4 py-3">Message</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -103,6 +122,15 @@ export default function AdminMonitoringPage() {
                   </td>
                   <td className="max-w-xl px-4 py-3 text-xs text-gray-700">
                     {row.message}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => remove(row.id)}
+                      title="Supprimer (correction appliquée)"
+                      className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               ))}

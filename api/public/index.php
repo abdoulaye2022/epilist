@@ -317,6 +317,7 @@ $app->group('', function ($group) {
     $group->get('/admin/stats', [AdminController::class, 'stats'])->add(new AdminMiddleware());
     $group->get('/admin/errors', [AdminController::class, 'errors'])->add(new AdminMiddleware());
     $group->delete('/admin/errors', [AdminController::class, 'purgeErrors'])->add(new AdminMiddleware());
+    $group->delete('/admin/errors/{id}', [AdminController::class, 'deleteError'])->add(new AdminMiddleware());
     $group->get('/admin/app-versions', [AppVersionController::class, 'index'])->add(new AdminMiddleware());
     $group->put('/admin/app-versions/{platform}', [AppVersionController::class, 'update'])->add(new AdminMiddleware());
     $group->post('/admin/app-versions/{platform}/reset-stats', [AppVersionController::class, 'resetStats'])->add(new AdminMiddleware());

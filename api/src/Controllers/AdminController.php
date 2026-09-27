@@ -238,15 +238,38 @@ class AdminController
         ]);
     }
 
-    /** DELETE /admin/errors — purge des entrées de plus de 30 jours. */
+    /**
+     * DELETE /admin/errors — purge des entrées de plus de 30 jours,
+     * ou tout le journal avec ?all=1.
+     */
     public function purgeErrors(Request $request, Response $response): Response
     {
-        $deleted = DB::table('api_error_logs')
-            ->where('created_at', '<', Carbon::now()->subDays(30))
-            ->delete();
+        $all = filter_var(
+            $request->getQueryParams()['all'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        );
+        $query = DB::table('api_error_logs');
+        if (!$all) {
+            $query->where('created_at', '<', Carbon::now()->subDays(30));
+        }
+        $deleted = $query->delete();
         return $this->json($response, [
             'success' => true,
-            'message' => "$deleted entrées purgées (plus de 30 jours)",
+            'message' => $all
+                ? "$deleted entrées supprimées"
+                : "$deleted entrées purgées (plus de 30 jours)",
         ]);
+    }
+
+    /** DELETE /admin/errors/{id} — retire une erreur corrigée. */
+    public function deleteError(Request $request, Response $response, array $args): Response
+    {
+        $deleted = DB::table('api_error_logs')
+            ->where('id', (int) $args['id'])
+            ->delete();
+        if (!$deleted) {
+            return $this->json($response, ['success' => false, 'message' => 'Entrée introuvable'], 404);
+        }
+        return $this->json($response, ['success' => true, 'message' => 'Entrée supprimée']);
     }
 }
