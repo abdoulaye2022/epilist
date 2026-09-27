@@ -50,7 +50,7 @@ class ProfileErrorState extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Connectez-vous à Internet pour charger votre profil',
+                    AppLocalizations.of(context)!.connectToLoadProfile,
                     style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                     textAlign: TextAlign.center,
                   ),

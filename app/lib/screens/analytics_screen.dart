@@ -254,8 +254,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        const Text(
-          'Commencez à faire vos courses pour voir vos analyses',
+        Text(
+          AppLocalizations.of(context)!.analyticsEmptyHint,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
         ),

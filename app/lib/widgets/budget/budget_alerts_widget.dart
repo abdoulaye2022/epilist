@@ -369,17 +369,17 @@ class BudgetAlertsWidget extends StatelessWidget {
                 _buildSuggestionItem(
                   Icons.analytics,
                   l10n.analytics ?? 'Review Recent Purchases',
-                  'Check your recent expenses to identify unnecessary spending',
+                  AppLocalizations.of(context)!.baCheckExpenses,
                 ),
                 _buildSuggestionItem(
                   Icons.tune,
                   l10n.update ?? 'Adjust Budget Amount',
-                  'Consider increasing the budget if expenses are justified',
+                  AppLocalizations.of(context)!.baIncreaseBudget,
                 ),
                 _buildSuggestionItem(
                   Icons.trending_down,
-                  'Reduce Spending',
-                  'Focus on essential items only for the remaining period',
+                  AppLocalizations.of(context)!.baReduceTitle,
+                  AppLocalizations.of(context)!.baReduceDesc,
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

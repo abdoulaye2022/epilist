@@ -207,7 +207,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     ? IconButton(
                       icon: Icon(Icons.refresh, color: AppColors.warning),
                       onPressed: _resetToOriginal,
-                      tooltip: 'Restaurer le nom original',
+                      tooltip: AppLocalizations.of(context)!.restoreOriginalName,
                     )
                     : null,
           ),

@@ -83,7 +83,7 @@ class SuggestionCard extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Details row: quantity, price, "buy soon" indicator
+              // Details row: quantity, price, AppLocalizations.of(context)!.buySoon indicator
               Row(
                 children: [
                   // Quantity
@@ -151,7 +151,7 @@ class SuggestionCard extends StatelessWidget {
 
                   const Spacer(),
 
-                  // "Buy soon" indicator
+                  // AppLocalizations.of(context)!.buySoon indicator
                   if (suggestion.shouldBuySoon)
                     Container(
                       padding: const EdgeInsets.symmetric(

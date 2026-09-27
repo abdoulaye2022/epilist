@@ -184,19 +184,19 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
     switch (_currentFilter) {
       case ListFilter.all:
-        message = 'Aucune liste trouvee';
+        message = AppLocalizations.of(context)!.noListFound;
         icon = Icons.inbox_outlined;
         break;
       case ListFilter.active:
-        message = 'Aucune liste active';
+        message = AppLocalizations.of(context)!.noActiveList;
         icon = Icons.schedule_outlined;
         break;
       case ListFilter.completed:
-        message = 'Aucune liste terminee';
+        message = AppLocalizations.of(context)!.noCompletedList;
         icon = Icons.check_circle_outline;
         break;
       case ListFilter.shared:
-        message = 'Aucune liste partagee';
+        message = AppLocalizations.of(context)!.noSharedList;
         icon = Icons.people_outline;
         break;
     }
@@ -224,7 +224,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Essayez un autre filtre',
+              AppLocalizations.of(context)!.tryAnotherFilter,
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textDisabled,

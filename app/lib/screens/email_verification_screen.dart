@@ -258,7 +258,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
         const SizedBox(height: 16),
 
-        // ✅ NOUVEAU: Bouton "Coller le code" (VERSION LOCALISÉE)
+        // ✅ NOUVEAU: Bouton AppLocalizations.of(context)!.pasteCode (VERSION LOCALISÉE)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -66,7 +66,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.confirmAction),
-        content: const Text('Reset all email preferences to default values?'),
+        content: Text(AppLocalizations.of(context)!.epResetConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -90,7 +90,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
         if (mounted) {
           SmartSnackBarManager.showSuccessSnackBar(
             context,
-            'Preferences reset successfully',
+            AppLocalizations.of(context)!.epResetDone,
           );
         }
       }
@@ -103,13 +103,13 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Email Preferences'),
+        title: Text(AppLocalizations.of(context)!.epTitle),
         actions: [
           if (!_isLoading && _preferences != null)
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _resetPreferences,
-              tooltip: 'Reset to defaults',
+              tooltip: AppLocalizations.of(context)!.epResetDefaults,
             ),
         ],
       ),
@@ -151,14 +151,14 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                       padding: const EdgeInsets.all(16),
                       children: [
                         _buildSection(
-                          title: 'Transactional Emails',
-                          subtitle: 'Essential emails about your account',
+                          title: AppLocalizations.of(context)!.epTransactional,
+                          subtitle: AppLocalizations.of(context)!.epTransactionalDesc,
                           icon: Icons.security,
                           color: Colors.blue,
                           children: [
                             _buildSwitchTile(
-                              title: 'Email Verification',
-                              subtitle: 'Verification email when you create an account',
+                              title: AppLocalizations.of(context)!.epVerifTitle,
+                              subtitle: AppLocalizations.of(context)!.epVerifDesc,
                               value: _preferences!.emailVerification,
                               onChanged: (val) {
                                 setState(() {
@@ -167,8 +167,8 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                               },
                             ),
                             _buildSwitchTile(
-                              title: 'Password Change Request',
-                              subtitle: 'Email with code to reset your password',
+                              title: AppLocalizations.of(context)!.epPwdReqTitle,
+                              subtitle: AppLocalizations.of(context)!.epPwdReqDesc,
                               value: _preferences!.passwordChangeRequest,
                               onChanged: (val) {
                                 setState(() {
@@ -177,8 +177,8 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                               },
                             ),
                             _buildSwitchTile(
-                              title: 'Password Changed Confirmation',
-                              subtitle: 'Security alert when password is changed',
+                              title: AppLocalizations.of(context)!.epPwdChangedTitle,
+                              subtitle: AppLocalizations.of(context)!.epPwdChangedDesc,
                               value: _preferences!.passwordChanged,
                               onChanged: (val) {
                                 setState(() {
@@ -190,14 +190,14 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         ),
                         const SizedBox(height: 24),
                         _buildSection(
-                          title: 'List Notifications',
-                          subtitle: 'Updates about shared shopping lists',
+                          title: AppLocalizations.of(context)!.epListNotif,
+                          subtitle: AppLocalizations.of(context)!.epListNotifDesc,
                           icon: Icons.list_alt,
                           color: Colors.green,
                           children: [
                             _buildSwitchTile(
-                              title: 'List Shared With Me',
-                              subtitle: 'Someone shared a list with you',
+                              title: AppLocalizations.of(context)!.epListSharedTitle,
+                              subtitle: AppLocalizations.of(context)!.epListSharedDesc,
                               value: _preferences!.listSharedWithMe,
                               onChanged: (val) {
                                 setState(() {
@@ -206,8 +206,8 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                               },
                             ),
                             _buildSwitchTile(
-                              title: 'List Completed',
-                              subtitle: 'All items in a shared list are done',
+                              title: AppLocalizations.of(context)!.epListCompletedTitle,
+                              subtitle: AppLocalizations.of(context)!.epListCompletedDesc,
                               value: _preferences!.listCompleted,
                               onChanged: (val) {
                                 setState(() {
@@ -219,14 +219,14 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         ),
                         const SizedBox(height: 24),
                         _buildSection(
-                          title: 'Budget Alerts',
-                          subtitle: 'Notifications about your spending',
+                          title: AppLocalizations.of(context)!.epBudgetAlerts,
+                          subtitle: AppLocalizations.of(context)!.epBudgetAlertsDesc,
                           icon: Icons.account_balance_wallet,
                           color: Colors.orange,
                           children: [
                             _buildSwitchTile(
-                              title: 'Budget Exceeded',
-                              subtitle: 'Alert when you go over budget',
+                              title: AppLocalizations.of(context)!.epBudgetExceededTitle,
+                              subtitle: AppLocalizations.of(context)!.epBudgetExceededDesc,
                               value: _preferences!.budgetAlert,
                               onChanged: (val) {
                                 setState(() {
@@ -235,8 +235,8 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                               },
                             ),
                             _buildSwitchTile(
-                              title: 'Monthly Summary',
-                              subtitle: 'Budget recap at the end of each month',
+                              title: AppLocalizations.of(context)!.epMonthlySummaryTitle,
+                              subtitle: AppLocalizations.of(context)!.epMonthlySummaryDesc,
                               value: _preferences!.budgetSummary,
                               onChanged: (val) {
                                 setState(() {
@@ -249,13 +249,13 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         const SizedBox(height: 24),
                         _buildSection(
                           title: 'Tips & Tricks',
-                          subtitle: 'Helpful advice to use EpiList better',
+                          subtitle: AppLocalizations.of(context)!.epTipsDesc,
                           icon: Icons.lightbulb_outline,
                           color: Colors.amber,
                           children: [
                             _buildSwitchTile(
                               title: 'Tips & Reminders',
-                              subtitle: 'Get helpful tips and reminders',
+                              subtitle: AppLocalizations.of(context)!.epTipsToggleDesc,
                               value: _preferences!.tipsAndTricks,
                               onChanged: (val) {
                                 setState(() {

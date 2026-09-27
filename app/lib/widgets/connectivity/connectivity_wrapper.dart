@@ -220,7 +220,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                         // Afficher un message si toujours hors ligne
                         SmartSnackBarManager.showWarningSnackBar(
                           context,
-                          'Toujours hors ligne',
+                          AppLocalizations.of(context)!.stillOffline,
                           duration: const Duration(seconds: 2),
                         );
                       }

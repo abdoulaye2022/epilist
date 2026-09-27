@@ -122,7 +122,7 @@ class BudgetDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Budget Alloué', // TODO: Add to l10n
+                  AppLocalizations.of(context)!.budgetAllocated, // TODO: Add to l10n
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
@@ -437,7 +437,7 @@ class BudgetDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Details', // TODO: Add to l10n
+              AppLocalizations.of(context)!.details, // TODO: Add to l10n
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -447,9 +447,24 @@ class BudgetDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            _buildInfoRow(l10n.type, budget.periodDisplayName, Icons.event_repeat),
+            _buildInfoRow(
+              l10n.type,
+              switch (budget.periodType) {
+                BudgetPeriodType.weekly => l10n.weekly,
+                BudgetPeriodType.monthly => l10n.monthly,
+                BudgetPeriodType.yearly => l10n.yearly,
+                BudgetPeriodType.custom => l10n.custom,
+              },
+              Icons.event_repeat,
+            ),
             const Divider(height: 24),
-            _buildInfoRow(l10n.scope, budget.scopeDisplayName, Icons.list_alt),
+            _buildInfoRow(
+              l10n.scope,
+              budget.isGeneral
+                  ? l10n.generalBudget
+                  : l10n.scopeList(budget.listName ?? '—'),
+              Icons.list_alt,
+            ),
             const Divider(height: 24),
             _buildInfoRow(
               l10n.alertThreshold,
@@ -459,7 +474,7 @@ class BudgetDetailsScreen extends StatelessWidget {
             const Divider(height: 24),
             _buildInfoRow(
               l10n.status,
-              budget.isActive ? l10n.active : 'Inactive', // TODO: Add to l10n
+              budget.isActive ? l10n.active : AppLocalizations.of(context)!.inactive, // TODO: Add to l10n
               budget.isActive ? Icons.check_circle : Icons.pause_circle,
               valueColor: budget.isActive ? AppColors.primary : AppColors.textSecondary,
             ),

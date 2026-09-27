@@ -87,7 +87,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
             const SizedBox(width: 12),
             Text(
               AppLocalizations.of(context)?.loadingSuggestions ??
-                  'Loading suggestions...',
+                  AppLocalizations.of(context)!.loadingSuggestions,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -101,7 +101,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    // Get top suggestions (prioritize high confidence and "buy soon")
+    // Get top suggestions (prioritize high confidence and AppLocalizations.of(context)!.buySoon)
     final topSuggestions = _getTopSuggestions(state.suggestions);
 
     if (topSuggestions.isEmpty) {

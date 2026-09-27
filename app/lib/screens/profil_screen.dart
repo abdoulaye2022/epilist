@@ -217,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: Icons.auto_awesome,
           title: l10n.manageSuggestions,
           subtitle:
-              'Gérer vos suggestions personnalisées', // Exemple de sous-titre
+              AppLocalizations.of(context)!.manageYourSuggestions, // Exemple de sous-titre
           onTap: _navigateToSuggestionManagement,
           iconColor: AppColors.warning,
           iconBackgroundColor: Colors.orange.withOpacity(0.1),
@@ -251,8 +251,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 12),
         ProfileActionTile(
           icon: Icons.mail_outline,
-          title: 'Email Preferences',
-          subtitle: 'Manage email notifications',
+          title: AppLocalizations.of(context)!.emailPreferences,
+          subtitle: AppLocalizations.of(context)!.manageEmailNotifications,
           onTap: () {
             Navigator.push(
               context,

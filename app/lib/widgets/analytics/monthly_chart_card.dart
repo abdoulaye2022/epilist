@@ -549,7 +549,7 @@ class MonthlyChartCard extends StatelessWidget {
 
   /// ✅ MODIFIÉ: Tooltip avec traduction du nom de mois et devise dynamique
   String _buildTooltipMessage(dynamic month, AppLocalizations l10n, String currencyCode) {
-    if (month is! Map<String, dynamic>) return 'Données invalides';
+    if (month is! Map<String, dynamic>) return l10n.invalidData;
 
     final monthName =
         _getStringValue(month, 'month_name') ??
@@ -648,7 +648,7 @@ class MonthlyChartCard extends StatelessWidget {
               Icon(Icons.info_outline, size: 16, color: AppColors.accent),
               const SizedBox(width: 6),
               Text(
-                'Informations sur la période',
+                l10n.periodInfo,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

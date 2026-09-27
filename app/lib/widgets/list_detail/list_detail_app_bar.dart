@@ -457,7 +457,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildInfoDescription(AppLocalizations l10n) {
     return Text(
-      'Détails et permissions de cette liste',
+      l10n.listDetailsAndPermissions,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
     );
@@ -493,7 +493,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
               const SizedBox(height: 16),
               // ✅ CORRECTION: Utiliser seulement le label sans le nom en double
               _buildInfoRow(
-                'Partagée par', // Label simple
+                l10n.sharedByLabel, // Label simple
                 shoppingList.sharedBy!.name, // Valeur
               ),
             ],
@@ -651,7 +651,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         border: Border.all(color: Colors.green[200]!),
                       ),
                       child: Text(
-                        'Autorisé',
+                        l10n.allowed,
                         style: TextStyle(
                           fontSize: 11,
                           color: AppColors.primaryDark,
@@ -671,7 +671,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                         border: Border.all(color: Colors.red[200]!),
                       ),
                       child: Text(
-                        'Refusé',
+                        l10n.denied,
                         style: TextStyle(
                           fontSize: 11,
                           color: AppColors.error,

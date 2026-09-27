@@ -893,7 +893,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               Icon(Icons.info_outline, size: 16, color: AppColors.accent),
               const SizedBox(width: 6),
               Text(
-                'Informations sur la période',
+                AppLocalizations.of(context)!.periodInfo,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

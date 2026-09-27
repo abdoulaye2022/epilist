@@ -193,7 +193,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
   void _exportToPDF() {
     SmartSnackBarManager.showInfoSnackBar(
       context,
-      'Export PDF en cours...',
+      AppLocalizations.of(context)!.exportPdfInProgress,
       duration: const Duration(seconds: 2),
     );
   }
@@ -201,7 +201,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
   void _exportToCSV() {
     SmartSnackBarManager.showInfoSnackBar(
       context,
-      'Export CSV en cours...',
+      AppLocalizations.of(context)!.exportCsvInProgress,
       duration: const Duration(seconds: 2),
     );
   }

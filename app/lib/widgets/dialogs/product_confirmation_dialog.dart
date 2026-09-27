@@ -1,3 +1,4 @@
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/product_info.dart';
@@ -42,7 +43,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Produit trouvé',
+                      AppLocalizations.of(context)!.productFound,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -185,7 +186,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: onConfirm,
                     icon: const Icon(Icons.add),
-                    label: const Text('Ajouter à la liste'),
+                    label: Text(AppLocalizations.of(context)!.addToList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primaryColor,
                       foregroundColor: Colors.white,

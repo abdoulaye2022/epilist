@@ -40,7 +40,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
         children: [
           Icon(Icons.edit, color: AppColors.accent),
           const SizedBox(width: 12),
-          const Text('Saisir un code-barres'),
+          Text(AppLocalizations.of(context)!.enterBarcodeTitle),
         ],
       ),
       content: SizedBox(
@@ -52,7 +52,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Scanner non disponible sur le simulateur',
+                AppLocalizations.of(context)!.scannerUnavailableSimulator,
                 style: TextStyle(
                   fontSize: 14,
                   color: AppColors.warning,
@@ -61,7 +61,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Saisissez un code-barres manuellement ou choisissez un exemple',
+                AppLocalizations.of(context)!.enterBarcodeHint,
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -87,10 +87,10 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Veuillez saisir un code-barres';
+                    return AppLocalizations.of(context)!.pleaseEnterBarcode;
                   }
                   if (value.length < 8) {
-                    return 'Code-barres trop court (min 8 chiffres)';
+                    return AppLocalizations.of(context)!.barcodeTooShort;
                   }
                   return null;
                 },
@@ -100,7 +100,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
 
               // Exemples
               Text(
-                'Exemples de codes-barres:',
+                AppLocalizations.of(context)!.barcodeExamples,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

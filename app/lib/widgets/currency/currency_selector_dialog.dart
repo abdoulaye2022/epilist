@@ -149,7 +149,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
   // ✅ NOUVEAU: Titre simple
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      'Sélectionner une devise',
+      AppLocalizations.of(context)!.selectCurrencyTitle,
       style: const TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -177,7 +177,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             CircularProgressIndicator(color: AppColors.primary, strokeWidth: 3),
             const SizedBox(height: 16),
             Text(
-              'Chargement des devises...',
+              AppLocalizations.of(context)!.loadingCurrencies,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
           ],
@@ -194,7 +194,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             Icon(Icons.error_outline, size: 48, color: Colors.orange[400]),
             const SizedBox(height: 16),
             Text(
-              'Aucune devise disponible',
+              AppLocalizations.of(context)!.noCurrencyAvailable,
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
@@ -203,7 +203,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Impossible de charger les devises depuis le serveur',
+              AppLocalizations.of(context)!.currencyLoadFailed,
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
             ),
@@ -217,7 +217,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Devise actuelle',
+          AppLocalizations.of(context)!.currentCurrency,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

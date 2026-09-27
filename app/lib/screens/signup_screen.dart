@@ -127,11 +127,11 @@ class _SignUpPageState extends State<SignUpPage> {
         String message;
 
         if (authState.authMethod == 'google') {
-          message = 'Compte Google créé et connecté avec succès !';
+          message = AppLocalizations.of(context)!.googleAccountCreated;
         } else if (authState.authMethod == 'apple') {
-          message = 'Compte Apple créé et connecté avec succès !';
+          message = AppLocalizations.of(context)!.appleAccountCreated;
         } else {
-          message = 'Compte créé et connecté !';
+          message = AppLocalizations.of(context)!.accountCreatedConnected;
         }
 
         SmartSnackBarManager.showSuccessSnackBar(context, message);
@@ -144,9 +144,9 @@ class _SignUpPageState extends State<SignUpPage> {
         // ✅ ANDROID: Messages d'erreur spécifiques pour inscription
         String errorMessage = failure.error;
         if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
-            errorMessage.contains('Un compte existe déjà')) {
+            errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
           errorMessage =
-              'Un compte existe déjà avec cet email. Essayez de vous connecter.';
+              AppLocalizations.of(context)!.accountExistsTryLogin;
 
           // Suggérer de passer à l'écran de connexion
           Future.delayed(const Duration(seconds: 2), () {
@@ -169,9 +169,9 @@ class _SignUpPageState extends State<SignUpPage> {
         String errorMessage = ssoError.error;
 
         if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
-            errorMessage.contains('Un compte existe déjà')) {
+            errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
           errorMessage =
-              'Un compte Google existe déjà. Redirection vers la connexion...';
+              AppLocalizations.of(context)!.googleAccountExistsRedirect;
 
           SmartSnackBarManager.showInfoSnackBar(context, errorMessage);
 
@@ -192,7 +192,7 @@ class _SignUpPageState extends State<SignUpPage> {
       case RegistrationSuccess:
         SmartSnackBarManager.showSuccessSnackBar(
           context,
-          'Compte créé avec succès ! Vérifiez votre email.',
+          AppLocalizations.of(context)!.accountCreatedVerifyEmail,
         );
         _navigateToLogin();
         break;
@@ -285,7 +285,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   _navigateToLogin();
                 },
                 child: Text(
-                  'Plus tard',
+                  AppLocalizations.of(context)!.later,
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
               ),
@@ -298,7 +298,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Compléter'),
+                child: Text(AppLocalizations.of(context)!.completeAction),
               ),
             ],
           ),
@@ -753,8 +753,8 @@ class _SignUpPageState extends State<SignUpPage> {
       if (!isAvailable) {
         String errorMessage =
             Platform.isIOS
-                ? 'Apple Sign-In non disponible sur cet appareil'
-                : 'Apple Sign-In est uniquement disponible sur iOS';
+                ? AppLocalizations.of(context)!.appleUnavailableDevice
+                : AppLocalizations.of(context)!.appleOnlyIos;
 
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;

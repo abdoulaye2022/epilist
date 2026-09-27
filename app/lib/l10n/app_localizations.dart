@@ -9150,6 +9150,942 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'sur la liste choisie'**
   String get toChosenList;
+
+  /// No description provided for @budgetAllocated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget alloué'**
+  String get budgetAllocated;
+
+  /// No description provided for @details.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails'**
+  String get details;
+
+  /// No description provided for @inactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get inactive;
+
+  /// No description provided for @scopeList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste : {name}'**
+  String scopeList(String name);
+
+  /// No description provided for @later.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get later;
+
+  /// No description provided for @completeAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compléter'**
+  String get completeAction;
+
+  /// No description provided for @exportPdfInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export PDF en cours…'**
+  String get exportPdfInProgress;
+
+  /// No description provided for @exportCsvInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export CSV en cours…'**
+  String get exportCsvInProgress;
+
+  /// No description provided for @stillOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toujours hors ligne'**
+  String get stillOffline;
+
+  /// No description provided for @connectToLoadProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez-vous à Internet pour charger votre profil'**
+  String get connectToLoadProfile;
+
+  /// No description provided for @restoreOriginalName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurer le nom original'**
+  String get restoreOriginalName;
+
+  /// No description provided for @productFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit trouvé'**
+  String get productFound;
+
+  /// No description provided for @noInternetBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.'**
+  String get noInternetBody;
+
+  /// No description provided for @analyticsEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencez à faire vos courses pour voir vos analyses'**
+  String get analyticsEmptyHint;
+
+  /// No description provided for @tryOtherKeywords.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez avec d\'autres mots-clés'**
+  String get tryOtherKeywords;
+
+  /// No description provided for @suggestionsAfterPurchases.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les suggestions apparaîtront après vos achats'**
+  String get suggestionsAfterPurchases;
+
+  /// No description provided for @selectCurrencyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une devise'**
+  String get selectCurrencyTitle;
+
+  /// No description provided for @noCurrencyAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune devise disponible'**
+  String get noCurrencyAvailable;
+
+  /// No description provided for @currencyLoadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les devises depuis le serveur'**
+  String get currencyLoadFailed;
+
+  /// No description provided for @enterBarcodeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisir un code-barres'**
+  String get enterBarcodeTitle;
+
+  /// No description provided for @scannerUnavailableSimulator.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner non disponible sur le simulateur'**
+  String get scannerUnavailableSimulator;
+
+  /// No description provided for @enterBarcodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez un code-barres manuellement ou choisissez un exemple'**
+  String get enterBarcodeHint;
+
+  /// No description provided for @pleaseEnterBarcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez saisir un code-barres'**
+  String get pleaseEnterBarcode;
+
+  /// No description provided for @barcodeTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code-barres trop court (min 8 chiffres)'**
+  String get barcodeTooShort;
+
+  /// No description provided for @barcodeExamples.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exemples de codes-barres :'**
+  String get barcodeExamples;
+
+  /// No description provided for @alignBarcodeInFrame.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alignez le code-barres dans le cadre'**
+  String get alignBarcodeInFrame;
+
+  /// No description provided for @positionBarcodeInZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Positionnez le code-barres dans la zone de scan'**
+  String get positionBarcodeInZone;
+
+  /// No description provided for @codeDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code détecté !'**
+  String get codeDetected;
+
+  /// No description provided for @manualEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie manuelle'**
+  String get manualEntry;
+
+  /// No description provided for @searchingProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche du produit…'**
+  String get searchingProduct;
+
+  /// No description provided for @productNotFoundBarcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit non trouvé. Code-barres : {barcode}'**
+  String productNotFoundBarcode(String barcode);
+
+  /// No description provided for @quantityMustBeValid.
+  ///
+  /// In fr, this message translates to:
+  /// **'La quantité doit être un nombre valide (minimum 1)'**
+  String get quantityMustBeValid;
+
+  /// No description provided for @priceMustBeValid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix doit être un nombre valide'**
+  String get priceMustBeValid;
+
+  /// No description provided for @itemAlreadyPresent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article déjà présent'**
+  String get itemAlreadyPresent;
+
+  /// No description provided for @itemExistsInList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet article existe déjà dans votre liste :'**
+  String get itemExistsInList;
+
+  /// No description provided for @similarItemExists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un article similaire existe déjà dans votre liste :'**
+  String get similarItemExists;
+
+  /// No description provided for @whatToDo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que souhaitez-vous faire ?'**
+  String get whatToDo;
+
+  /// No description provided for @limitedPermission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Limitée'**
+  String get limitedPermission;
+
+  /// No description provided for @yourCurrentPermission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre permission actuelle : {permission}'**
+  String yourCurrentPermission(String permission);
+
+  /// No description provided for @listDetailsAndPermissions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails et permissions de cette liste'**
+  String get listDetailsAndPermissions;
+
+  /// No description provided for @sharedByLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagée par'**
+  String get sharedByLabel;
+
+  /// No description provided for @allowed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisé'**
+  String get allowed;
+
+  /// No description provided for @denied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusé'**
+  String get denied;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get categoryLabel;
+
+  /// No description provided for @googleAccountCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Google créé et connecté avec succès !'**
+  String get googleAccountCreated;
+
+  /// No description provided for @appleAccountCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte Apple créé et connecté avec succès !'**
+  String get appleAccountCreated;
+
+  /// No description provided for @accountCreatedConnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte créé et connecté !'**
+  String get accountCreatedConnected;
+
+  /// No description provided for @accountAlreadyExists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte existe déjà'**
+  String get accountAlreadyExists;
+
+  /// No description provided for @accountExistsTryLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte existe déjà avec cet email. Essayez de vous connecter.'**
+  String get accountExistsTryLogin;
+
+  /// No description provided for @googleAccountExistsRedirect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte Google existe déjà. Redirection vers la connexion…'**
+  String get googleAccountExistsRedirect;
+
+  /// No description provided for @accountCreatedVerifyEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte créé avec succès ! Vérifiez votre email.'**
+  String get accountCreatedVerifyEmail;
+
+  /// No description provided for @appleUnavailableDevice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Sign-In non disponible sur cet appareil'**
+  String get appleUnavailableDevice;
+
+  /// No description provided for @appleOnlyIos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Sign-In est uniquement disponible sur iOS'**
+  String get appleOnlyIos;
+
+  /// No description provided for @googleSignInSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Google réussie !'**
+  String get googleSignInSuccess;
+
+  /// No description provided for @appleSignInSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion Apple réussie !'**
+  String get appleSignInSuccess;
+
+  /// No description provided for @noAccountFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte trouvé'**
+  String get noAccountFound;
+
+  /// No description provided for @linkGoogleWithPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.'**
+  String get linkGoogleWithPassword;
+
+  /// No description provided for @connectionProblem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problème de connexion. Vérifiez votre internet et réessayez.'**
+  String get connectionProblem;
+
+  /// No description provided for @appleSignInError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la connexion Apple'**
+  String get appleSignInError;
+
+  /// No description provided for @manageYourSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer vos suggestions personnalisées'**
+  String get manageYourSuggestions;
+
+  /// No description provided for @emailPreferences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences email'**
+  String get emailPreferences;
+
+  /// No description provided for @manageEmailNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les notifications par email'**
+  String get manageEmailNotifications;
+
+  /// No description provided for @showingOwnListsOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affichage uniquement de vos propres listes'**
+  String get showingOwnListsOnly;
+
+  /// No description provided for @noListFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune liste trouvée'**
+  String get noListFound;
+
+  /// No description provided for @noActiveList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune liste active'**
+  String get noActiveList;
+
+  /// No description provided for @noCompletedList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune liste terminée'**
+  String get noCompletedList;
+
+  /// No description provided for @noSharedList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune liste partagée'**
+  String get noSharedList;
+
+  /// No description provided for @tryAnotherFilter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez un autre filtre'**
+  String get tryAnotherFilter;
+
+  /// No description provided for @invalidData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données invalides'**
+  String get invalidData;
+
+  /// No description provided for @periodInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations sur la période'**
+  String get periodInfo;
+
+  /// No description provided for @periodLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période : {period}'**
+  String periodLabel(String period);
+
+  /// No description provided for @epTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences email'**
+  String get epTitle;
+
+  /// No description provided for @epResetDefaults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réinitialiser'**
+  String get epResetDefaults;
+
+  /// No description provided for @epResetConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réinitialiser toutes les préférences email aux valeurs par défaut ?'**
+  String get epResetConfirm;
+
+  /// No description provided for @epResetDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences réinitialisées'**
+  String get epResetDone;
+
+  /// No description provided for @epTransactional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emails transactionnels'**
+  String get epTransactional;
+
+  /// No description provided for @epTransactionalDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emails essentiels concernant votre compte'**
+  String get epTransactionalDesc;
+
+  /// No description provided for @epVerifTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification d\'email'**
+  String get epVerifTitle;
+
+  /// No description provided for @epVerifDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email de vérification à la création du compte'**
+  String get epVerifDesc;
+
+  /// No description provided for @epPwdReqTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande de changement de mot de passe'**
+  String get epPwdReqTitle;
+
+  /// No description provided for @epPwdReqDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email avec le code pour réinitialiser votre mot de passe'**
+  String get epPwdReqDesc;
+
+  /// No description provided for @epPwdChangedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmation de changement de mot de passe'**
+  String get epPwdChangedTitle;
+
+  /// No description provided for @epPwdChangedDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte de sécurité quand le mot de passe change'**
+  String get epPwdChangedDesc;
+
+  /// No description provided for @epListNotif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications de listes'**
+  String get epListNotif;
+
+  /// No description provided for @epListNotifDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mises à jour de vos listes partagées'**
+  String get epListNotifDesc;
+
+  /// No description provided for @epListSharedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste partagée avec moi'**
+  String get epListSharedTitle;
+
+  /// No description provided for @epListSharedDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelqu\'un partage une liste avec vous'**
+  String get epListSharedDesc;
+
+  /// No description provided for @epListCompletedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste complétée'**
+  String get epListCompletedTitle;
+
+  /// No description provided for @epListCompletedDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous les articles d\'une liste partagée sont cochés'**
+  String get epListCompletedDesc;
+
+  /// No description provided for @epBudgetAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes budget'**
+  String get epBudgetAlerts;
+
+  /// No description provided for @epBudgetAlertsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications concernant vos dépenses'**
+  String get epBudgetAlertsDesc;
+
+  /// No description provided for @epBudgetExceededTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget dépassé'**
+  String get epBudgetExceededTitle;
+
+  /// No description provided for @epBudgetExceededDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte en cas de dépassement du budget'**
+  String get epBudgetExceededDesc;
+
+  /// No description provided for @epMonthlySummaryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé mensuel'**
+  String get epMonthlySummaryTitle;
+
+  /// No description provided for @epMonthlySummaryDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récapitulatif budget à la fin de chaque mois'**
+  String get epMonthlySummaryDesc;
+
+  /// No description provided for @epTipsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseils utiles pour mieux utiliser EpiList'**
+  String get epTipsDesc;
+
+  /// No description provided for @epTipsToggleDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir des astuces et rappels'**
+  String get epTipsToggleDesc;
+
+  /// No description provided for @siTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation de partage'**
+  String get siTitle;
+
+  /// No description provided for @siAccepted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation acceptée !'**
+  String get siAccepted;
+
+  /// No description provided for @siDeclined.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation refusée'**
+  String get siDeclined;
+
+  /// No description provided for @siValidating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation de l\'invitation…'**
+  String get siValidating;
+
+  /// No description provided for @siVerifyingToken.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification du lien de partage'**
+  String get siVerifyingToken;
+
+  /// No description provided for @siAlreadyAccepted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez déjà accepté cette invitation pour la liste'**
+  String get siAlreadyAccepted;
+
+  /// No description provided for @siAlreadyDeclined.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez refusé cette invitation pour la liste'**
+  String get siAlreadyDeclined;
+
+  /// No description provided for @siGoToList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la liste'**
+  String get siGoToList;
+
+  /// No description provided for @siBackHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get siBackHome;
+
+  /// No description provided for @siSharedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagée par'**
+  String get siSharedBy;
+
+  /// No description provided for @siExpiresOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le'**
+  String get siExpiresOn;
+
+  /// No description provided for @siCreatedOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créée le'**
+  String get siCreatedOn;
+
+  /// No description provided for @siListPreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu de la liste'**
+  String get siListPreview;
+
+  /// No description provided for @siEstimatedBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget estimé'**
+  String get siEstimatedBudget;
+
+  /// No description provided for @siAccept.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accepter l\'invitation'**
+  String get siAccept;
+
+  /// No description provided for @siAcceptConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous accepter l\'invitation de'**
+  String get siAcceptConfirm;
+
+  /// No description provided for @siDecline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser l\'invitation'**
+  String get siDecline;
+
+  /// No description provided for @siDeclineConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous refuser l\'invitation de'**
+  String get siDeclineConfirm;
+
+  /// No description provided for @siDeclineWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devrez demander une nouvelle invitation pour accéder à cette liste.'**
+  String get siDeclineWarning;
+
+  /// No description provided for @siReadOnlyDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez consulter la liste mais pas la modifier'**
+  String get siReadOnlyDesc;
+
+  /// No description provided for @siPermViewItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les articles et leur statut'**
+  String get siPermViewItems;
+
+  /// No description provided for @siPermViewPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les prix et les quantités'**
+  String get siPermViewPrices;
+
+  /// No description provided for @siEditDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez modifier la liste mais pas la supprimer'**
+  String get siEditDesc;
+
+  /// No description provided for @siPermAddEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter et modifier des articles'**
+  String get siPermAddEdit;
+
+  /// No description provided for @siPermMarkPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer les articles comme achetés'**
+  String get siPermMarkPurchased;
+
+  /// No description provided for @siPermEditPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier les prix et les quantités'**
+  String get siPermEditPrices;
+
+  /// No description provided for @siFullRights.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez tous les droits sur cette liste'**
+  String get siFullRights;
+
+  /// No description provided for @siPermModifyDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier et supprimer la liste'**
+  String get siPermModifyDelete;
+
+  /// No description provided for @siPermManageItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer tous les articles'**
+  String get siPermManageItems;
+
+  /// No description provided for @siPermShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager avec d\'autres utilisateurs'**
+  String get siPermShare;
+
+  /// No description provided for @siInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation invalide'**
+  String get siInvalid;
+
+  /// No description provided for @siInDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans {days} jours'**
+  String siInDays(int days);
+
+  /// No description provided for @adCheckingStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification du statut de suppression…'**
+  String get adCheckingStatus;
+
+  /// No description provided for @adErrorLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de chargement du statut'**
+  String get adErrorLoading;
+
+  /// No description provided for @adScheduled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suppression du compte programmée'**
+  String get adScheduled;
+
+  /// No description provided for @adCancelDeletion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la suppression'**
+  String get adCancelDeletion;
+
+  /// No description provided for @adPeriodExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'La période d\'annulation de 30 jours est expirée'**
+  String get adPeriodExpired;
+
+  /// No description provided for @adCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suppression du compte annulée !'**
+  String get adCancelled;
+
+  /// No description provided for @adCancelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voulez-vous vraiment annuler la suppression de votre compte ? Votre compte redeviendra actif immédiatement.'**
+  String get adCancelConfirm;
+
+  /// No description provided for @adKeepDeletion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non, garder la suppression'**
+  String get adKeepDeletion;
+
+  /// No description provided for @adYesCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, annuler'**
+  String get adYesCancel;
+
+  /// No description provided for @startShoppingForSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faites vos courses pour recevoir des suggestions personnalisées'**
+  String get startShoppingForSuggestions;
+
+  /// No description provided for @suggestionsExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous analysons votre historique d\'achats pour suggérer des produits dont vous pourriez avoir besoin.'**
+  String get suggestionsExplain;
+
+  /// No description provided for @suggestionsFrequency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Selon la fréquence de vos achats'**
+  String get suggestionsFrequency;
+
+  /// No description provided for @suggestionsSeasonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits achetés à certaines périodes'**
+  String get suggestionsSeasonal;
+
+  /// No description provided for @suggestionsAssociations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles souvent achetés ensemble'**
+  String get suggestionsAssociations;
+
+  /// No description provided for @baCheckExpenses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez vos dépenses récentes pour repérer le superflu'**
+  String get baCheckExpenses;
+
+  /// No description provided for @baIncreaseBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envisagez d\'augmenter le budget si les dépenses sont justifiées'**
+  String get baIncreaseBudget;
+
+  /// No description provided for @baReduceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réduire les dépenses'**
+  String get baReduceTitle;
+
+  /// No description provided for @baReduceDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Concentrez-vous sur l\'essentiel pour le reste de la période'**
+  String get baReduceDesc;
+
+  /// No description provided for @permReadOnlyMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne pouvez pas {action} car cette liste est en mode lecture seule.'**
+  String permReadOnlyMessage(String action);
+
+  /// No description provided for @permNoPermissionMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas la permission de {action}.'**
+  String permNoPermissionMessage(String action);
+
+  /// No description provided for @permActionEditItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'modifier des articles'**
+  String get permActionEditItems;
+
+  /// No description provided for @permActionEditStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'modifier le statut des articles'**
+  String get permActionEditStatus;
+
+  /// No description provided for @permActionEditList.
+  ///
+  /// In fr, this message translates to:
+  /// **'modifier cette liste'**
+  String get permActionEditList;
+
+  /// No description provided for @permActionShareList.
+  ///
+  /// In fr, this message translates to:
+  /// **'partager cette liste'**
+  String get permActionShareList;
+
+  /// No description provided for @permActionAccessChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'accéder au chat'**
+  String get permActionAccessChat;
+
+  /// No description provided for @permActionManageShares.
+  ///
+  /// In fr, this message translates to:
+  /// **'gérer les partages'**
+  String get permActionManageShares;
+
+  /// No description provided for @permActionAddItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'ajouter des articles'**
+  String get permActionAddItems;
 }
 
 class _AppLocalizationsDelegate

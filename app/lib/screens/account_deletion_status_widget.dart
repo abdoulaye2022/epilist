@@ -1,4 +1,5 @@
 // widgets/profile/account_deletion_status_widget.dart - DEBUG VERSION
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +67,7 @@ class _AccountDeletionStatusWidgetState
               color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 SizedBox(
                   width: 16,
@@ -74,7 +75,7 @@ class _AccountDeletionStatusWidgetState
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
                 SizedBox(width: 12),
-                Text('Checking deletion status...'),
+                Text(AppLocalizations.of(context)!.adCheckingStatus),
               ],
             ),
           );
@@ -96,7 +97,7 @@ class _AccountDeletionStatusWidgetState
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Error loading status',
+                    AppLocalizations.of(context)!.adErrorLoading,
                     style: TextStyle(color: AppColors.error),
                   ),
                 ),
@@ -141,7 +142,7 @@ class _AccountDeletionStatusWidgetState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Account deletion scheduled',
+                  AppLocalizations.of(context)!.adScheduled,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -193,7 +194,7 @@ class _AccountDeletionStatusWidgetState
               child: ElevatedButton.icon(
                 onPressed: _cancelDeletion,
                 icon: const Icon(Icons.undo),
-                label: const Text('Cancel deletion'),
+                label: Text(AppLocalizations.of(context)!.adCancelDeletion),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -218,7 +219,7 @@ class _AccountDeletionStatusWidgetState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'The 30-day cancellation period has expired',
+                      AppLocalizations.of(context)!.adPeriodExpired,
                       style: TextStyle(
                         color: AppColors.error,
                         fontSize: 12,
@@ -241,7 +242,7 @@ class _AccountDeletionStatusWidgetState
     if (state is AccountDeletionCancelled) {
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        'Account deletion cancelled successfully!',
+        AppLocalizations.of(context)!.adCancelled,
       );
 
       // Reload status
@@ -257,21 +258,18 @@ class _AccountDeletionStatusWidgetState
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
                 Icon(Icons.undo, color: Colors.green),
                 SizedBox(width: 12),
-                Text('Cancel deletion'),
+                Text(AppLocalizations.of(context)!.adCancelDeletion),
               ],
             ),
-            content: const Text(
-              'Are you sure you want to cancel the deletion of your account? '
-              'Your account will become active immediately.',
-            ),
+            content: Text(AppLocalizations.of(context)!.adCancelConfirm),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('No, keep deletion'),
+                child: Text(AppLocalizations.of(context)!.adKeepDeletion),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -283,7 +281,7 @@ class _AccountDeletionStatusWidgetState
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Yes, cancel'),
+                child: Text(AppLocalizations.of(context)!.adYesCancel),
               ),
             ],
           ),

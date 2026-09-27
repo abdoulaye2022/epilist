@@ -346,12 +346,12 @@ class _LoginScreenState extends State<LoginScreen> {
         String message;
         if (authState.authMethod == 'google') {
           if (authState.message?.contains('créé') == true) {
-            message = 'Compte Google créé et connecté avec succès !';
+            message = AppLocalizations.of(context)!.googleAccountCreated;
           } else {
-            message = 'Connexion Google réussie !';
+            message = AppLocalizations.of(context)!.googleSignInSuccess;
           }
         } else if (authState.authMethod == 'apple') {
-          message = 'Connexion Apple réussie !';
+          message = AppLocalizations.of(context)!.appleSignInSuccess;
         } else {
           message = l10n.loginSuccessful;
         }
@@ -369,7 +369,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final ssoError = state as SSOError;
         String errorMessage = ssoError.error;
 
-        if (errorMessage.contains('Aucun compte trouvé')) {
+        if (errorMessage.contains(AppLocalizations.of(context)!.noAccountFound)) {
           errorMessage =
               'Aucun compte trouvé avec cet email Google. Création automatique en cours...';
           Future.delayed(const Duration(seconds: 2), () {
@@ -377,9 +377,8 @@ class _LoginScreenState extends State<LoginScreen> {
               _signInWithGoogle();
             }
           });
-        } else if (errorMessage.contains('Un compte existe déjà')) {
-          errorMessage =
-              'Un compte existe avec cet email. Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.';
+        } else if (errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
+          errorMessage = AppLocalizations.of(context)!.linkGoogleWithPassword;
           if (ssoError.details?.isNotEmpty == true) {
             try {
               final email = _extractEmailFromError(ssoError.details!);
@@ -393,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (errorMessage.contains('network') ||
             errorMessage.contains('réseau')) {
           errorMessage =
-              'Problème de connexion. Vérifiez votre internet et réessayez.';
+              AppLocalizations.of(context)!.connectionProblem;
         }
 
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
@@ -439,8 +438,8 @@ class _LoginScreenState extends State<LoginScreen> {
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!isAvailable) {
         String errorMessage = Platform.isIOS
-            ? 'Apple Sign-In non disponible sur cet appareil'
-            : 'Apple Sign-In est uniquement disponible sur iOS';
+            ? AppLocalizations.of(context)!.appleUnavailableDevice
+            : AppLocalizations.of(context)!.appleOnlyIos;
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
@@ -448,7 +447,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
         context,
-        'Erreur lors de la connexion Apple',
+        AppLocalizations.of(context)!.appleSignInError,
       );
     }
   }

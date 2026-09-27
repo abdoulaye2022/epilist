@@ -1,3 +1,4 @@
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'dart:async';
@@ -143,7 +144,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Scanner le code-barres',
+                              AppLocalizations.of(context)!.scanBarcode,
                               style: theme.textTheme.titleLarge?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -151,7 +152,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Alignez le code-barres dans le cadre',
+                              AppLocalizations.of(context)!.alignBarcodeInFrame,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: Colors.white70,
                               ),
@@ -185,7 +186,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                         const SizedBox(width: 12),
                         Flexible(
                           child: Text(
-                            'Positionnez le code-barres dans la zone de scan',
+                            AppLocalizations.of(context)!.positionBarcodeInZone,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: Colors.white,
                             ),
@@ -228,7 +229,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Code détecté!',
+                                AppLocalizations.of(context)!.codeDetected,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -280,7 +281,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       // Manual entry button
                       _buildControlButton(
                         icon: Icons.keyboard,
-                        label: 'Saisie manuelle',
+                        label: AppLocalizations.of(context)!.manualEntry,
                         onTap: () {
                           Navigator.pop(context);
                         },

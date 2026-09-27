@@ -73,7 +73,7 @@ class _SuggestionListState extends State<SuggestionList> {
 
   /// Build loading state
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.all(24.0),
         child: Column(
@@ -81,7 +81,7 @@ class _SuggestionListState extends State<SuggestionList> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading suggestions...'),
+            Text(AppLocalizations.of(context)!.loadingSuggestions),
           ],
         ),
       ),
@@ -157,7 +157,7 @@ class _SuggestionListState extends State<SuggestionList> {
             const SizedBox(height: 8),
             Text(
               l10n?.noSuggestionsDescription ??
-                  'Start shopping to get personalized suggestions',
+                  AppLocalizations.of(context)!.startShoppingForSuggestions,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -336,7 +336,7 @@ class _SuggestionListState extends State<SuggestionList> {
             children: [
               Text(
                 l10n?.suggestionsInfoDescription ??
-                    'We analyze your shopping history to suggest products you might need.',
+                    AppLocalizations.of(context)!.suggestionsExplain,
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
@@ -344,21 +344,21 @@ class _SuggestionListState extends State<SuggestionList> {
                 Icons.auto_graph,
                 l10n?.patternBased ?? 'Pattern-based',
                 l10n?.patternBasedDescription ??
-                    'Based on how often you buy items',
+                    AppLocalizations.of(context)!.suggestionsFrequency,
               ),
               const SizedBox(height: 12),
               _buildInfoItem(
                 Icons.calendar_today,
                 l10n?.seasonal ?? 'Seasonal',
                 l10n?.seasonalDescription ??
-                    'Products you buy during specific periods',
+                    AppLocalizations.of(context)!.suggestionsSeasonal,
               ),
               const SizedBox(height: 12),
               _buildInfoItem(
                 Icons.link,
                 l10n?.associations ?? 'Associations',
                 l10n?.associationsDescription ??
-                    'Items often bought together',
+                    AppLocalizations.of(context)!.suggestionsAssociations,
               ),
               const SizedBox(height: 12),
               _buildInfoItem(

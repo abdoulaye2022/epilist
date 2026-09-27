@@ -23,77 +23,77 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
   // Liste des icônes populaires par catégorie
   final Map<String, List<Map<String, String>>> _iconCategories = {
     'Nourriture': [
-      {'code': 'restaurant', 'label': 'Restaurant'},
-      {'code': 'local_dining', 'label': 'Couverts'},
-      {'code': 'fastfood', 'label': 'Fast Food'},
-      {'code': 'lunch_dining', 'label': 'Déjeuner'},
-      {'code': 'dinner_dining', 'label': 'Dîner'},
-      {'code': 'breakfast_dining', 'label': 'Petit-déjeuner'},
-      {'code': 'local_pizza', 'label': 'Pizza'},
-      {'code': 'local_cafe', 'label': 'Café'},
-      {'code': 'local_bar', 'label': 'Bar'},
-      {'code': 'bakery_dining', 'label': 'Boulangerie'},
-      {'code': 'icecream', 'label': 'Glace'},
-      {'code': 'cake', 'label': 'Gâteau'},
-      {'code': 'apple', 'label': 'Pomme'},
-      {'code': 'egg', 'label': 'Œuf'},
-      {'code': 'set_meal', 'label': 'Repas'},
-      {'code': 'ramen_dining', 'label': 'Ramen'},
+      {'code': 'restaurant', 'label': 'Restaurant', 'labelEn': 'Restaurant'},
+      {'code': 'local_dining', 'label': 'Couverts', 'labelEn': 'Cutlery'},
+      {'code': 'fastfood', 'label': 'Fast Food', 'labelEn': 'Fast food'},
+      {'code': 'lunch_dining', 'label': 'Déjeuner', 'labelEn': 'Lunch'},
+      {'code': 'dinner_dining', 'label': 'Dîner', 'labelEn': 'Dinner'},
+      {'code': 'breakfast_dining', 'label': 'Petit-déjeuner', 'labelEn': 'Breakfast'},
+      {'code': 'local_pizza', 'label': 'Pizza', 'labelEn': 'Pizza'},
+      {'code': 'local_cafe', 'label': 'Café', 'labelEn': 'Coffee'},
+      {'code': 'local_bar', 'label': 'Bar', 'labelEn': 'Bar'},
+      {'code': 'bakery_dining', 'label': 'Boulangerie', 'labelEn': 'Bakery'},
+      {'code': 'icecream', 'label': 'Glace', 'labelEn': 'Ice cream'},
+      {'code': 'cake', 'label': 'Gâteau', 'labelEn': 'Cake'},
+      {'code': 'apple', 'label': 'Pomme', 'labelEn': 'Apple'},
+      {'code': 'egg', 'label': 'Œuf', 'labelEn': 'Egg'},
+      {'code': 'set_meal', 'label': 'Repas', 'labelEn': 'Meal'},
+      {'code': 'ramen_dining', 'label': 'Ramen', 'labelEn': 'Ramen'},
     ],
     'Shopping': [
-      {'code': 'shopping_cart', 'label': 'Panier'},
-      {'code': 'shopping_bag', 'label': 'Sac'},
-      {'code': 'local_grocery_store', 'label': 'Épicerie'},
-      {'code': 'store', 'label': 'Magasin'},
-      {'code': 'storefront', 'label': 'Devanture'},
-      {'code': 'local_mall', 'label': 'Centre commercial'},
-      {'code': 'shopping_basket', 'label': 'Panier'},
+      {'code': 'shopping_cart', 'label': 'Panier', 'labelEn': 'Cart'},
+      {'code': 'shopping_bag', 'label': 'Sac', 'labelEn': 'Bag'},
+      {'code': 'local_grocery_store', 'label': 'Épicerie', 'labelEn': 'Grocery'},
+      {'code': 'store', 'label': 'Magasin', 'labelEn': 'Store'},
+      {'code': 'storefront', 'label': 'Devanture', 'labelEn': 'Storefront'},
+      {'code': 'local_mall', 'label': 'Centre commercial', 'labelEn': 'Mall'},
+      {'code': 'shopping_basket', 'label': 'Panier', 'labelEn': 'Cart'},
     ],
     'Maison': [
-      {'code': 'home', 'label': 'Maison'},
-      {'code': 'house', 'label': 'Maison 2'},
-      {'code': 'cottage', 'label': 'Cottage'},
-      {'code': 'light', 'label': 'Lumière'},
-      {'code': 'bed', 'label': 'Lit'},
-      {'code': 'chair', 'label': 'Chaise'},
-      {'code': 'table_restaurant', 'label': 'Table'},
-      {'code': 'kitchen', 'label': 'Cuisine'},
-      {'code': 'bathtub', 'label': 'Baignoire'},
-      {'code': 'shower', 'label': 'Douche'},
+      {'code': 'home', 'label': 'Maison', 'labelEn': 'Home'},
+      {'code': 'house', 'label': 'Maison 2', 'labelEn': 'House'},
+      {'code': 'cottage', 'label': 'Cottage', 'labelEn': 'Cottage'},
+      {'code': 'light', 'label': 'Lumière', 'labelEn': 'Light'},
+      {'code': 'bed', 'label': 'Lit', 'labelEn': 'Bed'},
+      {'code': 'chair', 'label': 'Chaise', 'labelEn': 'Chair'},
+      {'code': 'table_restaurant', 'label': 'Table', 'labelEn': 'Table'},
+      {'code': 'kitchen', 'label': 'Cuisine', 'labelEn': 'Kitchen'},
+      {'code': 'bathtub', 'label': 'Baignoire', 'labelEn': 'Bathtub'},
+      {'code': 'shower', 'label': 'Douche', 'labelEn': 'Shower'},
     ],
     'Hygiène': [
-      {'code': 'cleaning_services', 'label': 'Nettoyage'},
-      {'code': 'clean_hands', 'label': 'Mains propres'},
-      {'code': 'soap', 'label': 'Savon'},
-      {'code': 'face', 'label': 'Visage'},
-      {'code': 'spa', 'label': 'Spa'},
-      {'code': 'sanitizer', 'label': 'Désinfectant'},
+      {'code': 'cleaning_services', 'label': 'Nettoyage', 'labelEn': 'Cleaning'},
+      {'code': 'clean_hands', 'label': 'Mains propres', 'labelEn': 'Clean hands'},
+      {'code': 'soap', 'label': 'Savon', 'labelEn': 'Soap'},
+      {'code': 'face', 'label': 'Visage', 'labelEn': 'Face'},
+      {'code': 'spa', 'label': 'Spa', 'labelEn': 'Spa'},
+      {'code': 'sanitizer', 'label': 'Désinfectant', 'labelEn': 'Sanitizer'},
     ],
     'Santé': [
-      {'code': 'medical_services', 'label': 'Médical'},
-      {'code': 'medication', 'label': 'Médicament'},
-      {'code': 'vaccines', 'label': 'Vaccin'},
-      {'code': 'health_and_safety', 'label': 'Santé'},
-      {'code': 'favorite', 'label': 'Cœur'},
-      {'code': 'monitor_heart', 'label': 'Moniteur'},
+      {'code': 'medical_services', 'label': 'Médical', 'labelEn': 'Medical'},
+      {'code': 'medication', 'label': 'Médicament', 'labelEn': 'Medication'},
+      {'code': 'vaccines', 'label': 'Vaccin', 'labelEn': 'Vaccine'},
+      {'code': 'health_and_safety', 'label': 'Santé', 'labelEn': 'Health'},
+      {'code': 'favorite', 'label': 'Cœur', 'labelEn': 'Heart'},
+      {'code': 'monitor_heart', 'label': 'Moniteur', 'labelEn': 'Monitor'},
     ],
     'Animaux': [
-      {'code': 'pets', 'label': 'Animaux'},
-      {'code': 'pet_supplies', 'label': 'Fournitures'},
+      {'code': 'pets', 'label': 'Animaux', 'labelEn': 'Pets'},
+      {'code': 'pet_supplies', 'label': 'Fournitures', 'labelEn': 'Supplies'},
     ],
     'Bébé': [
       {'code': 'child_care', 'label': 'Garde d\'enfant'},
-      {'code': 'baby_changing_station', 'label': 'Change bébé'},
-      {'code': 'toys', 'label': 'Jouets'},
-      {'code': 'stroller', 'label': 'Poussette'},
+      {'code': 'baby_changing_station', 'label': 'Change bébé', 'labelEn': 'Diaper change'},
+      {'code': 'toys', 'label': 'Jouets', 'labelEn': 'Toys'},
+      {'code': 'stroller', 'label': 'Poussette', 'labelEn': 'Stroller'},
     ],
     'Autre': [
-      {'code': 'category', 'label': 'Catégorie'},
-      {'code': 'label', 'label': 'Étiquette'},
-      {'code': 'eco', 'label': 'Écologie'},
-      {'code': 'emoji_nature', 'label': 'Nature'},
-      {'code': 'stars', 'label': 'Étoiles'},
-      {'code': 'auto_awesome', 'label': 'Génial'},
+      {'code': 'category', 'label': 'Catégorie', 'labelEn': 'Category'},
+      {'code': 'label', 'label': 'Étiquette', 'labelEn': 'Label'},
+      {'code': 'eco', 'label': 'Écologie', 'labelEn': 'Eco'},
+      {'code': 'emoji_nature', 'label': 'Nature', 'labelEn': 'Nature'},
+      {'code': 'stars', 'label': 'Étoiles', 'labelEn': 'Stars'},
+      {'code': 'auto_awesome', 'label': 'Génial', 'labelEn': 'Awesome'},
     ],
   };
 
@@ -210,7 +210,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                entry.key,
+                _groupLabel(context, entry.key),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.primaryColor,
@@ -247,6 +247,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
 
     final filteredIcons = allIcons.where((icon) {
       return icon['label']!.toLowerCase().contains(_searchQuery) ||
+          (icon['labelEn'] ?? '').toLowerCase().contains(_searchQuery) ||
           icon['code']!.toLowerCase().contains(_searchQuery);
     }).toList();
 
@@ -300,4 +301,28 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       ),
     );
   }
+  /// Libellé de l'icône dans la langue de l'appareil.
+  String _labelFor(Map<String, String> icon) {
+    final isEn = Localizations.localeOf(context).languageCode == 'en';
+    return (isEn ? icon['labelEn'] : icon['label']) ?? icon['label'] ?? '';
+  }
+
+  static const Map<String, String> _groupEn = {
+    'Nourriture': 'Food',
+    'Shopping': 'Shopping',
+    'Maison': 'Home',
+    'Hygiène': 'Hygiene',
+    'Santé': 'Health',
+    'Animaux': 'Pets',
+    'Bébé': 'Baby',
+    'Autres': 'Other',
+    'Divers': 'Other',
+    'Autre': 'Other',
+  };
+
+  String _groupLabel(BuildContext context, String key) {
+    final isEn = Localizations.localeOf(context).languageCode == 'en';
+    return isEn ? (_groupEn[key] ?? key) : key;
+  }
+
 }

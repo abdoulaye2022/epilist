@@ -402,7 +402,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           heroTag: "voice_fab",
           backgroundColor:
               currentList.canEdit ? Colors.purple[600] : AppColors.textDisabled,
-          tooltip: 'Ajouter par voix',
+          tooltip: AppLocalizations.of(context)!.quickVoice,
           child: const Icon(Icons.mic, color: Colors.white),
         ),
         const SizedBox(height: 12),
@@ -796,7 +796,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 );
               }
               : (value) =>
-                  _showPermissionDenied('modifier le statut des articles'),
+                  _showPermissionDenied(AppLocalizations.of(context)!.permActionEditStatus),
       activeColor: AppColors.primary,
       fillColor:
           currentList.canManageItems
@@ -892,7 +892,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             Icon(Icons.visibility, size: 14, color: AppColors.accent),
             const SizedBox(width: 4),
             Text(
-              'Lecture seule',
+              AppLocalizations.of(context)!.readOnly,
               style: TextStyle(
                 fontSize: 11,
                 color: AppColors.accent,
@@ -909,11 +909,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
       onPressed:
           currentList.canEdit
               ? () => _editItem(item)
-              : () => _showPermissionDenied('modifier des articles'),
+              : () => _showPermissionDenied(AppLocalizations.of(context)!.permActionEditItems),
       tooltip:
           currentList.canEdit
-              ? 'Modifier l\'article'
-              : 'Permission insuffisante',
+              ? AppLocalizations.of(context)!.editItem
+              : AppLocalizations.of(context)!.insufficientPermission,
     );
   }
 
@@ -921,7 +921,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _showEditListDialog() {
     if (!currentList.canEdit) {
-      _showPermissionDenied('modifier cette liste');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionEditList);
       return;
     }
 
@@ -937,7 +937,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _showShareDialog() {
     if (!currentList.canShare) {
-      _showPermissionDenied('partager cette liste');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionShareList);
       return;
     }
 
@@ -958,7 +958,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _openChatScreen() async {
     if (!currentList.isShared) {
-      _showPermissionDenied('accéder au chat');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionAccessChat);
       return;
     }
 
@@ -992,7 +992,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _showManageSharesDialog() {
     if (!currentList.isOwner || !currentList.isShared) {
-      _showPermissionDenied('gérer les partages');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionManageShares);
       return;
     }
 
@@ -1010,7 +1010,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _editItem(ListItem item) {
     if (!currentList.canEdit) {
-      _showPermissionDenied('modifier des articles');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionEditItems);
       return;
     }
 
@@ -1039,7 +1039,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _addNewItem() {
     if (!currentList.canManageItems) {
-      _showPermissionDenied('ajouter des articles');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionAddItems);
       return;
     }
 
@@ -1055,7 +1055,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _addItemByVoice() {
     if (!currentList.canManageItems) {
-      _showPermissionDenied('ajouter des articles');
+      _showPermissionDenied(AppLocalizations.of(context)!.permActionAddItems);
       return;
     }
 
@@ -1101,7 +1101,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           children: [
             Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 28),
             const SizedBox(width: 12),
-            const Expanded(child: Text('Article déjà présent')),
+            Expanded(child: Text(AppLocalizations.of(context)!.itemAlreadyPresent)),
           ],
         ),
         content: Column(
@@ -1110,8 +1110,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
           children: [
             Text(
               duplicate.suggestionType == DuplicateType.exactMatch
-                  ? 'Cet article existe déjà dans votre liste :'
-                  : 'Un article similaire existe déjà dans votre liste :',
+                  ? AppLocalizations.of(context)!.itemExistsInList
+                  : AppLocalizations.of(context)!.similarItemExists,
               style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
@@ -1147,7 +1147,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Que souhaitez-vous faire ?',
+              AppLocalizations.of(context)!.whatToDo,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -1194,7 +1194,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 ),
               );
             },
-            child: const Text('Ajouter quand même'),
+            child: Text(AppLocalizations.of(context)!.addAnyway),
           ),
         ],
       ),
@@ -1207,17 +1207,17 @@ class _ListDetailViewState extends State<_ListDetailView> {
     String permission;
 
     if (currentList.isReadOnly) {
-      title = 'Accès en lecture seule';
-      permission = currentList.permissionDisplayName ?? 'Lecture seule';
+      title = AppLocalizations.of(context)!.readOnlyAccess;
+      permission = currentList.permissionDisplayName ?? AppLocalizations.of(context)!.readOnly;
       message =
-          'Vous ne pouvez pas $action car cette liste est en mode lecture seule.\n\n'
-          'Votre permission actuelle : $permission';
+          '${AppLocalizations.of(context)!.permReadOnlyMessage(action)}\n\n'
+          '${AppLocalizations.of(context)!.yourCurrentPermission(permission)}';
     } else {
-      title = 'Permission insuffisante';
-      permission = currentList.permissionDisplayName ?? 'Limitée';
+      title = AppLocalizations.of(context)!.insufficientPermission;
+      permission = currentList.permissionDisplayName ?? AppLocalizations.of(context)!.limitedPermission;
       message =
-          'Vous n\'avez pas la permission de $action.\n\n'
-          'Votre permission actuelle : $permission';
+          '${AppLocalizations.of(context)!.permNoPermissionMessage(action)}\n\n'
+          '${AppLocalizations.of(context)!.yourCurrentPermission(permission)}';
     }
 
     showDialog(

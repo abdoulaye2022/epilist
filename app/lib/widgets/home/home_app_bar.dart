@@ -200,7 +200,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                l10n.epilistUser, // Au lieu de 'Utilisateur EpiList'
+                                l10n.epilistUser, // Au lieu de AppLocalizations.of(context)!.epilistUser
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
@@ -550,7 +550,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Utilisateur EpiList',
+                                AppLocalizations.of(context)!.epilistUser,
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,

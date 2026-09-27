@@ -84,7 +84,7 @@ class SharedListsFilter extends StatelessWidget {
                   Expanded(
                     child: Text(
                       l10n.showingOnlyOwnLists ??
-                          'Affichage uniquement de vos propres listes',
+                          AppLocalizations.of(context)!.showingOwnListsOnly,
                       style: TextStyle(
                         fontSize: 12,
                         color: theme.colorScheme.onSurface.withOpacity(0.6),

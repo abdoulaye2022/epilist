@@ -2148,5 +2148,210 @@
   "updateAvailableTitle": "Mise à jour disponible",
   "updateNow": "Mettre à jour",
   "pickListTitle": "Dans quelle liste ?",
-  "toChosenList": "sur la liste choisie"
+  "toChosenList": "sur la liste choisie",
+  "budgetAllocated": "Budget alloué",
+  "details": "Détails",
+  "inactive": "Inactif",
+  "scopeList": "Liste : {name}",
+  "@scopeList": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "later": "Plus tard",
+  "completeAction": "Compléter",
+  "exportPdfInProgress": "Export PDF en cours…",
+  "exportCsvInProgress": "Export CSV en cours…",
+  "stillOffline": "Toujours hors ligne",
+  "connectToLoadProfile": "Connectez-vous à Internet pour charger votre profil",
+  "restoreOriginalName": "Restaurer le nom original",
+  "productFound": "Produit trouvé",
+  "noInternetBody": "Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.",
+  "analyticsEmptyHint": "Commencez à faire vos courses pour voir vos analyses",
+  "tryOtherKeywords": "Essayez avec d'autres mots-clés",
+  "suggestionsAfterPurchases": "Les suggestions apparaîtront après vos achats",
+  "selectCurrencyTitle": "Sélectionner une devise",
+  "noCurrencyAvailable": "Aucune devise disponible",
+  "currencyLoadFailed": "Impossible de charger les devises depuis le serveur",
+  "enterBarcodeTitle": "Saisir un code-barres",
+  "scannerUnavailableSimulator": "Scanner non disponible sur le simulateur",
+  "enterBarcodeHint": "Saisissez un code-barres manuellement ou choisissez un exemple",
+  "pleaseEnterBarcode": "Veuillez saisir un code-barres",
+  "barcodeTooShort": "Code-barres trop court (min 8 chiffres)",
+  "barcodeExamples": "Exemples de codes-barres :",
+  "alignBarcodeInFrame": "Alignez le code-barres dans le cadre",
+  "positionBarcodeInZone": "Positionnez le code-barres dans la zone de scan",
+  "codeDetected": "Code détecté !",
+  "manualEntry": "Saisie manuelle",
+  "searchingProduct": "Recherche du produit…",
+  "productNotFoundBarcode": "Produit non trouvé. Code-barres : {barcode}",
+  "@productNotFoundBarcode": {
+    "placeholders": {
+      "barcode": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityMustBeValid": "La quantité doit être un nombre valide (minimum 1)",
+  "priceMustBeValid": "Le prix doit être un nombre valide",
+  "itemAlreadyPresent": "Article déjà présent",
+  "itemExistsInList": "Cet article existe déjà dans votre liste :",
+  "similarItemExists": "Un article similaire existe déjà dans votre liste :",
+  "whatToDo": "Que souhaitez-vous faire ?",
+  "limitedPermission": "Limitée",
+  "yourCurrentPermission": "Votre permission actuelle : {permission}",
+  "@yourCurrentPermission": {
+    "placeholders": {
+      "permission": {
+        "type": "String"
+      }
+    }
+  },
+  "listDetailsAndPermissions": "Détails et permissions de cette liste",
+  "sharedByLabel": "Partagée par",
+  "allowed": "Autorisé",
+  "denied": "Refusé",
+  "categoryLabel": "Catégorie",
+  "googleAccountCreated": "Compte Google créé et connecté avec succès !",
+  "appleAccountCreated": "Compte Apple créé et connecté avec succès !",
+  "accountCreatedConnected": "Compte créé et connecté !",
+  "accountAlreadyExists": "Un compte existe déjà",
+  "accountExistsTryLogin": "Un compte existe déjà avec cet email. Essayez de vous connecter.",
+  "googleAccountExistsRedirect": "Un compte Google existe déjà. Redirection vers la connexion…",
+  "accountCreatedVerifyEmail": "Compte créé avec succès ! Vérifiez votre email.",
+  "appleUnavailableDevice": "Apple Sign-In non disponible sur cet appareil",
+  "appleOnlyIos": "Apple Sign-In est uniquement disponible sur iOS",
+  "googleSignInSuccess": "Connexion Google réussie !",
+  "appleSignInSuccess": "Connexion Apple réussie !",
+  "noAccountFound": "Aucun compte trouvé",
+  "linkGoogleWithPassword": "Connectez-vous d'abord avec votre mot de passe pour lier votre compte Google.",
+  "connectionProblem": "Problème de connexion. Vérifiez votre internet et réessayez.",
+  "appleSignInError": "Erreur lors de la connexion Apple",
+  "manageYourSuggestions": "Gérer vos suggestions personnalisées",
+  "emailPreferences": "Préférences email",
+  "manageEmailNotifications": "Gérer les notifications par email",
+  "showingOwnListsOnly": "Affichage uniquement de vos propres listes",
+  "noListFound": "Aucune liste trouvée",
+  "noActiveList": "Aucune liste active",
+  "noCompletedList": "Aucune liste terminée",
+  "noSharedList": "Aucune liste partagée",
+  "tryAnotherFilter": "Essayez un autre filtre",
+  "invalidData": "Données invalides",
+  "periodInfo": "Informations sur la période",
+  "periodLabel": "Période : {period}",
+  "@periodLabel": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "epTitle": "Préférences email",
+  "epResetDefaults": "Réinitialiser",
+  "epResetConfirm": "Réinitialiser toutes les préférences email aux valeurs par défaut ?",
+  "epResetDone": "Préférences réinitialisées",
+  "epTransactional": "Emails transactionnels",
+  "epTransactionalDesc": "Emails essentiels concernant votre compte",
+  "epVerifTitle": "Vérification d'email",
+  "epVerifDesc": "Email de vérification à la création du compte",
+  "epPwdReqTitle": "Demande de changement de mot de passe",
+  "epPwdReqDesc": "Email avec le code pour réinitialiser votre mot de passe",
+  "epPwdChangedTitle": "Confirmation de changement de mot de passe",
+  "epPwdChangedDesc": "Alerte de sécurité quand le mot de passe change",
+  "epListNotif": "Notifications de listes",
+  "epListNotifDesc": "Mises à jour de vos listes partagées",
+  "epListSharedTitle": "Liste partagée avec moi",
+  "epListSharedDesc": "Quelqu'un partage une liste avec vous",
+  "epListCompletedTitle": "Liste complétée",
+  "epListCompletedDesc": "Tous les articles d'une liste partagée sont cochés",
+  "epBudgetAlerts": "Alertes budget",
+  "epBudgetAlertsDesc": "Notifications concernant vos dépenses",
+  "epBudgetExceededTitle": "Budget dépassé",
+  "epBudgetExceededDesc": "Alerte en cas de dépassement du budget",
+  "epMonthlySummaryTitle": "Résumé mensuel",
+  "epMonthlySummaryDesc": "Récapitulatif budget à la fin de chaque mois",
+  "epTipsDesc": "Conseils utiles pour mieux utiliser EpiList",
+  "epTipsToggleDesc": "Recevoir des astuces et rappels",
+  "siTitle": "Invitation de partage",
+  "siAccepted": "Invitation acceptée !",
+  "siDeclined": "Invitation refusée",
+  "siValidating": "Validation de l'invitation…",
+  "siVerifyingToken": "Vérification du lien de partage",
+  "siAlreadyAccepted": "Vous avez déjà accepté cette invitation pour la liste",
+  "siAlreadyDeclined": "Vous avez refusé cette invitation pour la liste",
+  "siGoToList": "Voir la liste",
+  "siBackHome": "Retour à l'accueil",
+  "siSharedBy": "Partagée par",
+  "siExpiresOn": "Expire le",
+  "siCreatedOn": "Créée le",
+  "siListPreview": "Aperçu de la liste",
+  "siEstimatedBudget": "Budget estimé",
+  "siAccept": "Accepter l'invitation",
+  "siAcceptConfirm": "Voulez-vous accepter l'invitation de",
+  "siDecline": "Refuser l'invitation",
+  "siDeclineConfirm": "Voulez-vous refuser l'invitation de",
+  "siDeclineWarning": "Vous devrez demander une nouvelle invitation pour accéder à cette liste.",
+  "siReadOnlyDesc": "Vous pouvez consulter la liste mais pas la modifier",
+  "siPermViewItems": "Voir les articles et leur statut",
+  "siPermViewPrices": "Voir les prix et les quantités",
+  "siEditDesc": "Vous pouvez modifier la liste mais pas la supprimer",
+  "siPermAddEdit": "Ajouter et modifier des articles",
+  "siPermMarkPurchased": "Marquer les articles comme achetés",
+  "siPermEditPrices": "Modifier les prix et les quantités",
+  "siFullRights": "Vous avez tous les droits sur cette liste",
+  "siPermModifyDelete": "Modifier et supprimer la liste",
+  "siPermManageItems": "Gérer tous les articles",
+  "siPermShare": "Partager avec d'autres utilisateurs",
+  "siInvalid": "Invitation invalide",
+  "siInDays": "Dans {days} jours",
+  "@siInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "adCheckingStatus": "Vérification du statut de suppression…",
+  "adErrorLoading": "Erreur de chargement du statut",
+  "adScheduled": "Suppression du compte programmée",
+  "adCancelDeletion": "Annuler la suppression",
+  "adPeriodExpired": "La période d'annulation de 30 jours est expirée",
+  "adCancelled": "Suppression du compte annulée !",
+  "adCancelConfirm": "Voulez-vous vraiment annuler la suppression de votre compte ? Votre compte redeviendra actif immédiatement.",
+  "adKeepDeletion": "Non, garder la suppression",
+  "adYesCancel": "Oui, annuler",
+  "startShoppingForSuggestions": "Faites vos courses pour recevoir des suggestions personnalisées",
+  "suggestionsExplain": "Nous analysons votre historique d'achats pour suggérer des produits dont vous pourriez avoir besoin.",
+  "suggestionsFrequency": "Selon la fréquence de vos achats",
+  "suggestionsSeasonal": "Produits achetés à certaines périodes",
+  "suggestionsAssociations": "Articles souvent achetés ensemble",
+  "baCheckExpenses": "Vérifiez vos dépenses récentes pour repérer le superflu",
+  "baIncreaseBudget": "Envisagez d'augmenter le budget si les dépenses sont justifiées",
+  "baReduceTitle": "Réduire les dépenses",
+  "baReduceDesc": "Concentrez-vous sur l'essentiel pour le reste de la période",
+  "permReadOnlyMessage": "Vous ne pouvez pas {action} car cette liste est en mode lecture seule.",
+  "@permReadOnlyMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "permNoPermissionMessage": "Vous n'avez pas la permission de {action}.",
+  "@permNoPermissionMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "permActionEditItems": "modifier des articles",
+  "permActionEditStatus": "modifier le statut des articles",
+  "permActionEditList": "modifier cette liste",
+  "permActionShareList": "partager cette liste",
+  "permActionAccessChat": "accéder au chat",
+  "permActionManageShares": "gérer les partages",
+  "permActionAddItems": "ajouter des articles"
 }

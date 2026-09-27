@@ -2147,5 +2147,210 @@
   "updateAvailableTitle": "Update available",
   "updateNow": "Update now",
   "pickListTitle": "Which list?",
-  "toChosenList": "on the list you pick"
+  "toChosenList": "on the list you pick",
+  "budgetAllocated": "Allocated budget",
+  "details": "Details",
+  "inactive": "Inactive",
+  "scopeList": "List: {name}",
+  "later": "Later",
+  "completeAction": "Complete",
+  "exportPdfInProgress": "Exporting PDF…",
+  "exportCsvInProgress": "Exporting CSV…",
+  "stillOffline": "Still offline",
+  "connectToLoadProfile": "Connect to the Internet to load your profile",
+  "restoreOriginalName": "Restore original name",
+  "productFound": "Product found",
+  "noInternetBody": "You need an Internet connection to use this app. Please check your connection and try again.",
+  "analyticsEmptyHint": "Start shopping to see your analytics",
+  "tryOtherKeywords": "Try different keywords",
+  "suggestionsAfterPurchases": "Suggestions will appear after your purchases",
+  "selectCurrencyTitle": "Select a currency",
+  "noCurrencyAvailable": "No currency available",
+  "currencyLoadFailed": "Unable to load currencies from the server",
+  "enterBarcodeTitle": "Enter a barcode",
+  "scannerUnavailableSimulator": "Scanner unavailable on the simulator",
+  "enterBarcodeHint": "Type a barcode manually or pick an example",
+  "pleaseEnterBarcode": "Please enter a barcode",
+  "barcodeTooShort": "Barcode too short (min 8 digits)",
+  "barcodeExamples": "Barcode examples:",
+  "alignBarcodeInFrame": "Align the barcode within the frame",
+  "positionBarcodeInZone": "Position the barcode in the scan area",
+  "codeDetected": "Code detected!",
+  "manualEntry": "Manual entry",
+  "searchingProduct": "Looking up product…",
+  "productNotFoundBarcode": "Product not found. Barcode: {barcode}",
+  "quantityMustBeValid": "Quantity must be a valid number (minimum 1)",
+  "priceMustBeValid": "Price must be a valid number",
+  "itemAlreadyPresent": "Item already in the list",
+  "itemExistsInList": "This item already exists in your list:",
+  "similarItemExists": "A similar item already exists in your list:",
+  "whatToDo": "What would you like to do?",
+  "limitedPermission": "Limited",
+  "yourCurrentPermission": "Your current permission: {permission}",
+  "listDetailsAndPermissions": "Details and permissions of this list",
+  "sharedByLabel": "Shared by",
+  "allowed": "Allowed",
+  "denied": "Denied",
+  "categoryLabel": "Category",
+  "googleAccountCreated": "Google account created and signed in!",
+  "appleAccountCreated": "Apple account created and signed in!",
+  "accountCreatedConnected": "Account created and signed in!",
+  "accountAlreadyExists": "An account already exists",
+  "accountExistsTryLogin": "An account already exists with this email. Try signing in.",
+  "googleAccountExistsRedirect": "A Google account already exists. Redirecting to sign-in…",
+  "accountCreatedVerifyEmail": "Account created! Check your email.",
+  "appleUnavailableDevice": "Apple Sign-In is not available on this device",
+  "appleOnlyIos": "Apple Sign-In is only available on iOS",
+  "googleSignInSuccess": "Signed in with Google!",
+  "appleSignInSuccess": "Signed in with Apple!",
+  "noAccountFound": "No account found",
+  "linkGoogleWithPassword": "Sign in with your password first to link your Google account.",
+  "connectionProblem": "Connection problem. Check your Internet and try again.",
+  "appleSignInError": "Error signing in with Apple",
+  "manageYourSuggestions": "Manage your personalized suggestions",
+  "emailPreferences": "Email preferences",
+  "manageEmailNotifications": "Manage email notifications",
+  "showingOwnListsOnly": "Showing only your own lists",
+  "noListFound": "No list found",
+  "noActiveList": "No active list",
+  "noCompletedList": "No completed list",
+  "noSharedList": "No shared list",
+  "tryAnotherFilter": "Try another filter",
+  "invalidData": "Invalid data",
+  "periodInfo": "Period information",
+  "periodLabel": "Period: {period}",
+  "epTitle": "Email preferences",
+  "epResetDefaults": "Reset to defaults",
+  "epResetConfirm": "Reset all email preferences to their default values?",
+  "epResetDone": "Preferences reset",
+  "epTransactional": "Transactional emails",
+  "epTransactionalDesc": "Essential emails about your account",
+  "epVerifTitle": "Email verification",
+  "epVerifDesc": "Verification email when you create an account",
+  "epPwdReqTitle": "Password change request",
+  "epPwdReqDesc": "Email with the code to reset your password",
+  "epPwdChangedTitle": "Password changed confirmation",
+  "epPwdChangedDesc": "Security alert when your password changes",
+  "epListNotif": "List notifications",
+  "epListNotifDesc": "Updates about your shared lists",
+  "epListSharedTitle": "List shared with me",
+  "epListSharedDesc": "Someone shares a list with you",
+  "epListCompletedTitle": "List completed",
+  "epListCompletedDesc": "All items in a shared list are checked",
+  "epBudgetAlerts": "Budget alerts",
+  "epBudgetAlertsDesc": "Notifications about your spending",
+  "epBudgetExceededTitle": "Budget exceeded",
+  "epBudgetExceededDesc": "Alert when you go over budget",
+  "epMonthlySummaryTitle": "Monthly summary",
+  "epMonthlySummaryDesc": "Budget recap at the end of each month",
+  "epTipsDesc": "Helpful advice to get more from EpiList",
+  "epTipsToggleDesc": "Receive tips and reminders",
+  "siTitle": "Share invitation",
+  "siAccepted": "Invitation accepted!",
+  "siDeclined": "Invitation declined",
+  "siValidating": "Validating invitation…",
+  "siVerifyingToken": "Verifying share link",
+  "siAlreadyAccepted": "You have already accepted this invitation for the list",
+  "siAlreadyDeclined": "You have declined this invitation for the list",
+  "siGoToList": "Go to list",
+  "siBackHome": "Back to home",
+  "siSharedBy": "Shared by",
+  "siExpiresOn": "Expires on",
+  "siCreatedOn": "Created on",
+  "siListPreview": "List preview",
+  "siEstimatedBudget": "Estimated budget",
+  "siAccept": "Accept invitation",
+  "siAcceptConfirm": "Do you want to accept the invitation from",
+  "siDecline": "Decline invitation",
+  "siDeclineConfirm": "Do you want to decline the invitation from",
+  "siDeclineWarning": "You will need to request a new invitation to access this list.",
+  "siReadOnlyDesc": "You can view the list but not modify it",
+  "siPermViewItems": "View items and their status",
+  "siPermViewPrices": "See prices and quantities",
+  "siEditDesc": "You can modify the list but not delete it",
+  "siPermAddEdit": "Add and edit items",
+  "siPermMarkPurchased": "Mark items as purchased",
+  "siPermEditPrices": "Edit prices and quantities",
+  "siFullRights": "You have full rights on this list",
+  "siPermModifyDelete": "Modify and delete the list",
+  "siPermManageItems": "Manage all items",
+  "siPermShare": "Share with other users",
+  "siInvalid": "Invalid invitation",
+  "siInDays": "In {days} days",
+  "adCheckingStatus": "Checking deletion status…",
+  "adErrorLoading": "Error loading status",
+  "adScheduled": "Account deletion scheduled",
+  "adCancelDeletion": "Cancel deletion",
+  "adPeriodExpired": "The 30-day cancellation period has expired",
+  "adCancelled": "Account deletion cancelled!",
+  "adCancelConfirm": "Are you sure you want to cancel the deletion of your account? Your account will become active immediately.",
+  "adKeepDeletion": "No, keep deletion",
+  "adYesCancel": "Yes, cancel",
+  "startShoppingForSuggestions": "Start shopping to get personalized suggestions",
+  "suggestionsExplain": "We analyze your shopping history to suggest products you might need.",
+  "suggestionsFrequency": "Based on how often you buy items",
+  "suggestionsSeasonal": "Products you buy during specific periods",
+  "suggestionsAssociations": "Items often bought together",
+  "baCheckExpenses": "Check your recent expenses to spot unnecessary spending",
+  "baIncreaseBudget": "Consider increasing the budget if expenses are justified",
+  "baReduceTitle": "Reduce spending",
+  "baReduceDesc": "Focus on essentials for the remaining period",
+  "@scopeList": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@productNotFoundBarcode": {
+    "placeholders": {
+      "barcode": {
+        "type": "String"
+      }
+    }
+  },
+  "@yourCurrentPermission": {
+    "placeholders": {
+      "permission": {
+        "type": "String"
+      }
+    }
+  },
+  "@periodLabel": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "@siInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "permReadOnlyMessage": "You cannot {action} because this list is read-only.",
+  "permNoPermissionMessage": "You do not have permission to {action}.",
+  "permActionEditItems": "edit items",
+  "permActionEditStatus": "change item status",
+  "permActionEditList": "edit this list",
+  "permActionShareList": "share this list",
+  "permActionAccessChat": "access the chat",
+  "permActionManageShares": "manage shares",
+  "permActionAddItems": "add items",
+  "@permReadOnlyMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "@permNoPermissionMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1,4 +1,5 @@
 // screens/share_invitation_screen.dart - VERSION WITH MINIMAL SNACKBARS
+import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
@@ -37,7 +38,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: const Text('Share Invitation'),
+          title: Text(AppLocalizations.of(context)!.siTitle),
           backgroundColor: Colors.white,
           elevation: 0,
           foregroundColor: AppColors.textPrimary,
@@ -63,7 +64,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
               SmartSnackBarManager.showSuccessSnackBar(
                 context,
-                'Invitation accepted successfully!',
+                AppLocalizations.of(context)!.siAccepted,
                 duration: const Duration(seconds: 2),
               );
 
@@ -76,7 +77,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
               SmartSnackBarManager.showInfoSnackBar(
                 context,
-                'Invitation declined',
+                AppLocalizations.of(context)!.siDeclined,
                 duration: const Duration(seconds: 2),
               );
 
@@ -133,7 +134,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 24),
 
           Text(
-            'Validating invitation...',
+            AppLocalizations.of(context)!.siValidating,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -144,7 +145,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 8),
 
           Text(
-            'Verifying share token',
+            AppLocalizations.of(context)!.siVerifyingToken,
             style: TextStyle(fontSize: 14, color: AppColors.textDisabled),
           ),
 
@@ -220,7 +221,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           Text(
             invitation.isExpired || !invitation.isPending
                 ? 'Invitation ${invitation.statusDisplayName.toLowerCase()}'
-                : 'Share Invitation',
+                : AppLocalizations.of(context)!.siTitle,
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -322,7 +323,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     if (invitation.isAccepted) {
       return Text(
-        'You have already accepted this invitation for the list "${invitation.listName}".',
+        '${AppLocalizations.of(context)!.siAlreadyAccepted} "${invitation.listName}".',
         style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         textAlign: TextAlign.center,
       );
@@ -330,7 +331,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     if (invitation.isDeclined) {
       return Text(
-        'You have declined this invitation for the list "${invitation.listName}".',
+        '${AppLocalizations.of(context)!.siAlreadyDeclined} "${invitation.listName}".',
         style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         textAlign: TextAlign.center,
       );
@@ -383,7 +384,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             ),
           ),
           child: Text(
-            invitation.isAccepted ? 'Go to list' : 'Back to home',
+            invitation.isAccepted ? 'Go to list' : AppLocalizations.of(context)!.siBackHome,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
@@ -516,7 +517,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.person,
-            title: 'Shared by',
+            title: AppLocalizations.of(context)!.siSharedBy,
             value:
                 '${invitation.ownerName}${invitation.ownerEmail.isNotEmpty ? ' (${invitation.ownerEmail})' : ''}',
           ),
@@ -534,7 +535,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.schedule,
-            title: 'Expires on',
+            title: AppLocalizations.of(context)!.siExpiresOn,
             value: _formatDate(invitation.expiresAt),
             valueColor: invitation.isExpired ? AppColors.error : null,
           ),
@@ -543,7 +544,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           _buildInfoRow(
             icon: Icons.calendar_today,
-            title: 'Created on',
+            title: AppLocalizations.of(context)!.siCreatedOn,
             value: _formatDate(invitation.createdAt),
           ),
 
@@ -553,7 +554,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             const SizedBox(height: 16),
 
             Text(
-              'List Preview',
+              AppLocalizations.of(context)!.siListPreview,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -588,7 +589,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               const SizedBox(height: 12),
               _buildStatCard(
                 icon: Icons.attach_money,
-                title: 'Estimated budget',
+                title: AppLocalizations.of(context)!.siEstimatedBudget,
                 value:
                     '${invitation.shoppingList!.apiTotalPrice.toStringAsFixed(2)} CAD',
                 color: Colors.orange,
@@ -633,8 +634,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Accept Invitation',
+                Text(
+                  AppLocalizations.of(context)!.siAccept,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -652,8 +653,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       height: 1.4,
                     ),
                     children: [
-                      const TextSpan(
-                        text: 'Do you want to accept the invitation from ',
+                      TextSpan(
+                        text: AppLocalizations.of(context)!.siAcceptConfirm,
                       ),
                       TextSpan(
                         text: invitation.ownerName,
@@ -801,8 +802,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Decline Invitation',
+                Text(
+                  AppLocalizations.of(context)!.siDecline,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -820,8 +821,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       height: 1.4,
                     ),
                     children: [
-                      const TextSpan(
-                        text: 'Do you want to decline the invitation from ',
+                      TextSpan(
+                        text: AppLocalizations.of(context)!.siDeclineConfirm,
                       ),
                       TextSpan(
                         text: invitation.ownerName,
@@ -861,7 +862,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'You will need to request a new invitation to access this list.',
+                          AppLocalizations.of(context)!.siDeclineWarning,
                           style: TextStyle(
                             fontSize: 13,
                             color: AppColors.warning,
@@ -1022,31 +1023,31 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
     switch (permission) {
       case SharePermission.readOnly:
-        title = 'Read Only';
-        description = 'You can view the list but not modify it';
+        title = AppLocalizations.of(context)!.readOnly;
+        description = AppLocalizations.of(context)!.siReadOnlyDesc;
         abilities = [
-          'View items and their status',
-          'See prices and quantities',
+          AppLocalizations.of(context)!.siPermViewItems,
+          AppLocalizations.of(context)!.siPermViewPrices,
         ];
         color = AppColors.accent;
         break;
       case SharePermission.edit:
         title = 'Edit';
-        description = 'You can modify the list but not delete it';
+        description = AppLocalizations.of(context)!.siEditDesc;
         abilities = [
-          'Add and modify items',
-          'Mark items as purchased',
-          'Edit prices and quantities',
+          AppLocalizations.of(context)!.siPermAddEdit,
+          AppLocalizations.of(context)!.siPermMarkPurchased,
+          AppLocalizations.of(context)!.siPermEditPrices,
         ];
         color = AppColors.primary;
         break;
       case SharePermission.admin:
         title = 'Administration';
-        description = 'You have full rights on this list';
+        description = AppLocalizations.of(context)!.siFullRights;
         abilities = [
-          'Modify and delete the list',
-          'Manage all items',
-          'Share with other users',
+          AppLocalizations.of(context)!.siPermModifyDelete,
+          AppLocalizations.of(context)!.siPermManageItems,
+          AppLocalizations.of(context)!.siPermShare,
         ];
         color = Colors.purple[600]!;
         break;
@@ -1118,8 +1119,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           children: [
             Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
             const SizedBox(height: 24),
-            const Text(
-              'Invalid Invitation',
+            Text(
+              AppLocalizations.of(context)!.siInvalid,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -1148,7 +1149,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   vertical: 12,
                 ),
               ),
-              child: const Text('Back to home'),
+              child: Text(AppLocalizations.of(context)!.siBackHome),
             ),
           ],
         ),
@@ -1174,11 +1175,11 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     if (difference < 0) {
       return 'Expired';
     } else if (difference == 0) {
-      return 'Today';
+      return AppLocalizations.of(context)!.today;
     } else if (difference == 1) {
-      return 'Tomorrow';
+      return AppLocalizations.of(context)!.tomorrow;
     } else if (difference < 7) {
-      return 'In $difference days';
+      return AppLocalizations.of(context)!.siInDays(difference);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

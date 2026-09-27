@@ -4852,4 +4852,506 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toChosenList => 'on the list you pick';
+
+  @override
+  String get budgetAllocated => 'Allocated budget';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String scopeList(String name) {
+    return 'List: $name';
+  }
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get completeAction => 'Complete';
+
+  @override
+  String get exportPdfInProgress => 'Exporting PDF…';
+
+  @override
+  String get exportCsvInProgress => 'Exporting CSV…';
+
+  @override
+  String get stillOffline => 'Still offline';
+
+  @override
+  String get connectToLoadProfile =>
+      'Connect to the Internet to load your profile';
+
+  @override
+  String get restoreOriginalName => 'Restore original name';
+
+  @override
+  String get productFound => 'Product found';
+
+  @override
+  String get noInternetBody =>
+      'You need an Internet connection to use this app. Please check your connection and try again.';
+
+  @override
+  String get analyticsEmptyHint => 'Start shopping to see your analytics';
+
+  @override
+  String get tryOtherKeywords => 'Try different keywords';
+
+  @override
+  String get suggestionsAfterPurchases =>
+      'Suggestions will appear after your purchases';
+
+  @override
+  String get selectCurrencyTitle => 'Select a currency';
+
+  @override
+  String get noCurrencyAvailable => 'No currency available';
+
+  @override
+  String get currencyLoadFailed => 'Unable to load currencies from the server';
+
+  @override
+  String get enterBarcodeTitle => 'Enter a barcode';
+
+  @override
+  String get scannerUnavailableSimulator =>
+      'Scanner unavailable on the simulator';
+
+  @override
+  String get enterBarcodeHint => 'Type a barcode manually or pick an example';
+
+  @override
+  String get pleaseEnterBarcode => 'Please enter a barcode';
+
+  @override
+  String get barcodeTooShort => 'Barcode too short (min 8 digits)';
+
+  @override
+  String get barcodeExamples => 'Barcode examples:';
+
+  @override
+  String get alignBarcodeInFrame => 'Align the barcode within the frame';
+
+  @override
+  String get positionBarcodeInZone => 'Position the barcode in the scan area';
+
+  @override
+  String get codeDetected => 'Code detected!';
+
+  @override
+  String get manualEntry => 'Manual entry';
+
+  @override
+  String get searchingProduct => 'Looking up product…';
+
+  @override
+  String productNotFoundBarcode(String barcode) {
+    return 'Product not found. Barcode: $barcode';
+  }
+
+  @override
+  String get quantityMustBeValid =>
+      'Quantity must be a valid number (minimum 1)';
+
+  @override
+  String get priceMustBeValid => 'Price must be a valid number';
+
+  @override
+  String get itemAlreadyPresent => 'Item already in the list';
+
+  @override
+  String get itemExistsInList => 'This item already exists in your list:';
+
+  @override
+  String get similarItemExists => 'A similar item already exists in your list:';
+
+  @override
+  String get whatToDo => 'What would you like to do?';
+
+  @override
+  String get limitedPermission => 'Limited';
+
+  @override
+  String yourCurrentPermission(String permission) {
+    return 'Your current permission: $permission';
+  }
+
+  @override
+  String get listDetailsAndPermissions =>
+      'Details and permissions of this list';
+
+  @override
+  String get sharedByLabel => 'Shared by';
+
+  @override
+  String get allowed => 'Allowed';
+
+  @override
+  String get denied => 'Denied';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get googleAccountCreated => 'Google account created and signed in!';
+
+  @override
+  String get appleAccountCreated => 'Apple account created and signed in!';
+
+  @override
+  String get accountCreatedConnected => 'Account created and signed in!';
+
+  @override
+  String get accountAlreadyExists => 'An account already exists';
+
+  @override
+  String get accountExistsTryLogin =>
+      'An account already exists with this email. Try signing in.';
+
+  @override
+  String get googleAccountExistsRedirect =>
+      'A Google account already exists. Redirecting to sign-in…';
+
+  @override
+  String get accountCreatedVerifyEmail => 'Account created! Check your email.';
+
+  @override
+  String get appleUnavailableDevice =>
+      'Apple Sign-In is not available on this device';
+
+  @override
+  String get appleOnlyIos => 'Apple Sign-In is only available on iOS';
+
+  @override
+  String get googleSignInSuccess => 'Signed in with Google!';
+
+  @override
+  String get appleSignInSuccess => 'Signed in with Apple!';
+
+  @override
+  String get noAccountFound => 'No account found';
+
+  @override
+  String get linkGoogleWithPassword =>
+      'Sign in with your password first to link your Google account.';
+
+  @override
+  String get connectionProblem =>
+      'Connection problem. Check your Internet and try again.';
+
+  @override
+  String get appleSignInError => 'Error signing in with Apple';
+
+  @override
+  String get manageYourSuggestions => 'Manage your personalized suggestions';
+
+  @override
+  String get emailPreferences => 'Email preferences';
+
+  @override
+  String get manageEmailNotifications => 'Manage email notifications';
+
+  @override
+  String get showingOwnListsOnly => 'Showing only your own lists';
+
+  @override
+  String get noListFound => 'No list found';
+
+  @override
+  String get noActiveList => 'No active list';
+
+  @override
+  String get noCompletedList => 'No completed list';
+
+  @override
+  String get noSharedList => 'No shared list';
+
+  @override
+  String get tryAnotherFilter => 'Try another filter';
+
+  @override
+  String get invalidData => 'Invalid data';
+
+  @override
+  String get periodInfo => 'Period information';
+
+  @override
+  String periodLabel(String period) {
+    return 'Period: $period';
+  }
+
+  @override
+  String get epTitle => 'Email preferences';
+
+  @override
+  String get epResetDefaults => 'Reset to defaults';
+
+  @override
+  String get epResetConfirm =>
+      'Reset all email preferences to their default values?';
+
+  @override
+  String get epResetDone => 'Preferences reset';
+
+  @override
+  String get epTransactional => 'Transactional emails';
+
+  @override
+  String get epTransactionalDesc => 'Essential emails about your account';
+
+  @override
+  String get epVerifTitle => 'Email verification';
+
+  @override
+  String get epVerifDesc => 'Verification email when you create an account';
+
+  @override
+  String get epPwdReqTitle => 'Password change request';
+
+  @override
+  String get epPwdReqDesc => 'Email with the code to reset your password';
+
+  @override
+  String get epPwdChangedTitle => 'Password changed confirmation';
+
+  @override
+  String get epPwdChangedDesc => 'Security alert when your password changes';
+
+  @override
+  String get epListNotif => 'List notifications';
+
+  @override
+  String get epListNotifDesc => 'Updates about your shared lists';
+
+  @override
+  String get epListSharedTitle => 'List shared with me';
+
+  @override
+  String get epListSharedDesc => 'Someone shares a list with you';
+
+  @override
+  String get epListCompletedTitle => 'List completed';
+
+  @override
+  String get epListCompletedDesc => 'All items in a shared list are checked';
+
+  @override
+  String get epBudgetAlerts => 'Budget alerts';
+
+  @override
+  String get epBudgetAlertsDesc => 'Notifications about your spending';
+
+  @override
+  String get epBudgetExceededTitle => 'Budget exceeded';
+
+  @override
+  String get epBudgetExceededDesc => 'Alert when you go over budget';
+
+  @override
+  String get epMonthlySummaryTitle => 'Monthly summary';
+
+  @override
+  String get epMonthlySummaryDesc => 'Budget recap at the end of each month';
+
+  @override
+  String get epTipsDesc => 'Helpful advice to get more from EpiList';
+
+  @override
+  String get epTipsToggleDesc => 'Receive tips and reminders';
+
+  @override
+  String get siTitle => 'Share invitation';
+
+  @override
+  String get siAccepted => 'Invitation accepted!';
+
+  @override
+  String get siDeclined => 'Invitation declined';
+
+  @override
+  String get siValidating => 'Validating invitation…';
+
+  @override
+  String get siVerifyingToken => 'Verifying share link';
+
+  @override
+  String get siAlreadyAccepted =>
+      'You have already accepted this invitation for the list';
+
+  @override
+  String get siAlreadyDeclined =>
+      'You have declined this invitation for the list';
+
+  @override
+  String get siGoToList => 'Go to list';
+
+  @override
+  String get siBackHome => 'Back to home';
+
+  @override
+  String get siSharedBy => 'Shared by';
+
+  @override
+  String get siExpiresOn => 'Expires on';
+
+  @override
+  String get siCreatedOn => 'Created on';
+
+  @override
+  String get siListPreview => 'List preview';
+
+  @override
+  String get siEstimatedBudget => 'Estimated budget';
+
+  @override
+  String get siAccept => 'Accept invitation';
+
+  @override
+  String get siAcceptConfirm => 'Do you want to accept the invitation from';
+
+  @override
+  String get siDecline => 'Decline invitation';
+
+  @override
+  String get siDeclineConfirm => 'Do you want to decline the invitation from';
+
+  @override
+  String get siDeclineWarning =>
+      'You will need to request a new invitation to access this list.';
+
+  @override
+  String get siReadOnlyDesc => 'You can view the list but not modify it';
+
+  @override
+  String get siPermViewItems => 'View items and their status';
+
+  @override
+  String get siPermViewPrices => 'See prices and quantities';
+
+  @override
+  String get siEditDesc => 'You can modify the list but not delete it';
+
+  @override
+  String get siPermAddEdit => 'Add and edit items';
+
+  @override
+  String get siPermMarkPurchased => 'Mark items as purchased';
+
+  @override
+  String get siPermEditPrices => 'Edit prices and quantities';
+
+  @override
+  String get siFullRights => 'You have full rights on this list';
+
+  @override
+  String get siPermModifyDelete => 'Modify and delete the list';
+
+  @override
+  String get siPermManageItems => 'Manage all items';
+
+  @override
+  String get siPermShare => 'Share with other users';
+
+  @override
+  String get siInvalid => 'Invalid invitation';
+
+  @override
+  String siInDays(int days) {
+    return 'In $days days';
+  }
+
+  @override
+  String get adCheckingStatus => 'Checking deletion status…';
+
+  @override
+  String get adErrorLoading => 'Error loading status';
+
+  @override
+  String get adScheduled => 'Account deletion scheduled';
+
+  @override
+  String get adCancelDeletion => 'Cancel deletion';
+
+  @override
+  String get adPeriodExpired => 'The 30-day cancellation period has expired';
+
+  @override
+  String get adCancelled => 'Account deletion cancelled!';
+
+  @override
+  String get adCancelConfirm =>
+      'Are you sure you want to cancel the deletion of your account? Your account will become active immediately.';
+
+  @override
+  String get adKeepDeletion => 'No, keep deletion';
+
+  @override
+  String get adYesCancel => 'Yes, cancel';
+
+  @override
+  String get startShoppingForSuggestions =>
+      'Start shopping to get personalized suggestions';
+
+  @override
+  String get suggestionsExplain =>
+      'We analyze your shopping history to suggest products you might need.';
+
+  @override
+  String get suggestionsFrequency => 'Based on how often you buy items';
+
+  @override
+  String get suggestionsSeasonal => 'Products you buy during specific periods';
+
+  @override
+  String get suggestionsAssociations => 'Items often bought together';
+
+  @override
+  String get baCheckExpenses =>
+      'Check your recent expenses to spot unnecessary spending';
+
+  @override
+  String get baIncreaseBudget =>
+      'Consider increasing the budget if expenses are justified';
+
+  @override
+  String get baReduceTitle => 'Reduce spending';
+
+  @override
+  String get baReduceDesc => 'Focus on essentials for the remaining period';
+
+  @override
+  String permReadOnlyMessage(String action) {
+    return 'You cannot $action because this list is read-only.';
+  }
+
+  @override
+  String permNoPermissionMessage(String action) {
+    return 'You do not have permission to $action.';
+  }
+
+  @override
+  String get permActionEditItems => 'edit items';
+
+  @override
+  String get permActionEditStatus => 'change item status';
+
+  @override
+  String get permActionEditList => 'edit this list';
+
+  @override
+  String get permActionShareList => 'share this list';
+
+  @override
+  String get permActionAccessChat => 'access the chat';
+
+  @override
+  String get permActionManageShares => 'manage shares';
+
+  @override
+  String get permActionAddItems => 'add items';
 }

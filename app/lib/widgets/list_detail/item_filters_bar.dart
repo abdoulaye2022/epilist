@@ -274,7 +274,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
 
                     // Filtre par catégorie
                     if (widget.availableCategories.isNotEmpty)
-                      _buildFilterSection('Catégorie', _buildCategoryFilter()),
+                      _buildFilterSection(AppLocalizations.of(context)!.categoryLabel, _buildCategoryFilter()),
                     if (widget.availableCategories.isNotEmpty)
                       const SizedBox(height: 16),
 
@@ -621,7 +621,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
       spacing: 8,
       runSpacing: 8,
       children: [
-        // Option "Toutes les catégories"
+        // Option AppLocalizations.of(context)!.allCategories
         _buildFilterChip(
           label: 'Toutes',
           value: null,
@@ -676,7 +676,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
       );
       return category['name'] as String;
     } catch (e) {
-      return 'Catégorie $categoryId';
+      return '${AppLocalizations.of(context)!.categoryLabel} $categoryId';
     }
   }
 

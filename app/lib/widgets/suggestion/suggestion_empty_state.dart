@@ -32,7 +32,7 @@ class SuggestionEmptyState extends StatelessWidget {
           Text(
             isSearch
                 ? l10n
-                    .noSearchResults // "Aucun résultat trouvé"
+                    .noSearchResults // AppLocalizations.of(context)!.noResultsFound
                 : l10n.noSuggestionsYet, // "Aucune suggestion pour le moment"
             style: TextStyle(
               fontSize: 20,
@@ -47,9 +47,9 @@ class SuggestionEmptyState extends StatelessWidget {
           Text(
             isSearch
                 ? l10n
-                    .tryDifferentKeywords // "Essayez avec d'autres mots-clés"
+                    .tryDifferentKeywords // AppLocalizations.of(context)!.tryOtherKeywords
                 : l10n
-                    .suggestionsWillAppearAfterShopping, // "Les suggestions apparaîtront après vos achats"
+                    .suggestionsWillAppearAfterShopping, // AppLocalizations.of(context)!.suggestionsAfterPurchases
             style: TextStyle(color: AppColors.textDisabled),
             textAlign: TextAlign.center,
           ),

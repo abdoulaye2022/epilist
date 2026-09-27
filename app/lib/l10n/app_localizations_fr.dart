@@ -4928,4 +4928,523 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get toChosenList => 'sur la liste choisie';
+
+  @override
+  String get budgetAllocated => 'Budget alloué';
+
+  @override
+  String get details => 'Détails';
+
+  @override
+  String get inactive => 'Inactif';
+
+  @override
+  String scopeList(String name) {
+    return 'Liste : $name';
+  }
+
+  @override
+  String get later => 'Plus tard';
+
+  @override
+  String get completeAction => 'Compléter';
+
+  @override
+  String get exportPdfInProgress => 'Export PDF en cours…';
+
+  @override
+  String get exportCsvInProgress => 'Export CSV en cours…';
+
+  @override
+  String get stillOffline => 'Toujours hors ligne';
+
+  @override
+  String get connectToLoadProfile =>
+      'Connectez-vous à Internet pour charger votre profil';
+
+  @override
+  String get restoreOriginalName => 'Restaurer le nom original';
+
+  @override
+  String get productFound => 'Produit trouvé';
+
+  @override
+  String get noInternetBody =>
+      'Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.';
+
+  @override
+  String get analyticsEmptyHint =>
+      'Commencez à faire vos courses pour voir vos analyses';
+
+  @override
+  String get tryOtherKeywords => 'Essayez avec d\'autres mots-clés';
+
+  @override
+  String get suggestionsAfterPurchases =>
+      'Les suggestions apparaîtront après vos achats';
+
+  @override
+  String get selectCurrencyTitle => 'Sélectionner une devise';
+
+  @override
+  String get noCurrencyAvailable => 'Aucune devise disponible';
+
+  @override
+  String get currencyLoadFailed =>
+      'Impossible de charger les devises depuis le serveur';
+
+  @override
+  String get enterBarcodeTitle => 'Saisir un code-barres';
+
+  @override
+  String get scannerUnavailableSimulator =>
+      'Scanner non disponible sur le simulateur';
+
+  @override
+  String get enterBarcodeHint =>
+      'Saisissez un code-barres manuellement ou choisissez un exemple';
+
+  @override
+  String get pleaseEnterBarcode => 'Veuillez saisir un code-barres';
+
+  @override
+  String get barcodeTooShort => 'Code-barres trop court (min 8 chiffres)';
+
+  @override
+  String get barcodeExamples => 'Exemples de codes-barres :';
+
+  @override
+  String get alignBarcodeInFrame => 'Alignez le code-barres dans le cadre';
+
+  @override
+  String get positionBarcodeInZone =>
+      'Positionnez le code-barres dans la zone de scan';
+
+  @override
+  String get codeDetected => 'Code détecté !';
+
+  @override
+  String get manualEntry => 'Saisie manuelle';
+
+  @override
+  String get searchingProduct => 'Recherche du produit…';
+
+  @override
+  String productNotFoundBarcode(String barcode) {
+    return 'Produit non trouvé. Code-barres : $barcode';
+  }
+
+  @override
+  String get quantityMustBeValid =>
+      'La quantité doit être un nombre valide (minimum 1)';
+
+  @override
+  String get priceMustBeValid => 'Le prix doit être un nombre valide';
+
+  @override
+  String get itemAlreadyPresent => 'Article déjà présent';
+
+  @override
+  String get itemExistsInList => 'Cet article existe déjà dans votre liste :';
+
+  @override
+  String get similarItemExists =>
+      'Un article similaire existe déjà dans votre liste :';
+
+  @override
+  String get whatToDo => 'Que souhaitez-vous faire ?';
+
+  @override
+  String get limitedPermission => 'Limitée';
+
+  @override
+  String yourCurrentPermission(String permission) {
+    return 'Votre permission actuelle : $permission';
+  }
+
+  @override
+  String get listDetailsAndPermissions =>
+      'Détails et permissions de cette liste';
+
+  @override
+  String get sharedByLabel => 'Partagée par';
+
+  @override
+  String get allowed => 'Autorisé';
+
+  @override
+  String get denied => 'Refusé';
+
+  @override
+  String get categoryLabel => 'Catégorie';
+
+  @override
+  String get googleAccountCreated =>
+      'Compte Google créé et connecté avec succès !';
+
+  @override
+  String get appleAccountCreated =>
+      'Compte Apple créé et connecté avec succès !';
+
+  @override
+  String get accountCreatedConnected => 'Compte créé et connecté !';
+
+  @override
+  String get accountAlreadyExists => 'Un compte existe déjà';
+
+  @override
+  String get accountExistsTryLogin =>
+      'Un compte existe déjà avec cet email. Essayez de vous connecter.';
+
+  @override
+  String get googleAccountExistsRedirect =>
+      'Un compte Google existe déjà. Redirection vers la connexion…';
+
+  @override
+  String get accountCreatedVerifyEmail =>
+      'Compte créé avec succès ! Vérifiez votre email.';
+
+  @override
+  String get appleUnavailableDevice =>
+      'Apple Sign-In non disponible sur cet appareil';
+
+  @override
+  String get appleOnlyIos => 'Apple Sign-In est uniquement disponible sur iOS';
+
+  @override
+  String get googleSignInSuccess => 'Connexion Google réussie !';
+
+  @override
+  String get appleSignInSuccess => 'Connexion Apple réussie !';
+
+  @override
+  String get noAccountFound => 'Aucun compte trouvé';
+
+  @override
+  String get linkGoogleWithPassword =>
+      'Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.';
+
+  @override
+  String get connectionProblem =>
+      'Problème de connexion. Vérifiez votre internet et réessayez.';
+
+  @override
+  String get appleSignInError => 'Erreur lors de la connexion Apple';
+
+  @override
+  String get manageYourSuggestions => 'Gérer vos suggestions personnalisées';
+
+  @override
+  String get emailPreferences => 'Préférences email';
+
+  @override
+  String get manageEmailNotifications => 'Gérer les notifications par email';
+
+  @override
+  String get showingOwnListsOnly =>
+      'Affichage uniquement de vos propres listes';
+
+  @override
+  String get noListFound => 'Aucune liste trouvée';
+
+  @override
+  String get noActiveList => 'Aucune liste active';
+
+  @override
+  String get noCompletedList => 'Aucune liste terminée';
+
+  @override
+  String get noSharedList => 'Aucune liste partagée';
+
+  @override
+  String get tryAnotherFilter => 'Essayez un autre filtre';
+
+  @override
+  String get invalidData => 'Données invalides';
+
+  @override
+  String get periodInfo => 'Informations sur la période';
+
+  @override
+  String periodLabel(String period) {
+    return 'Période : $period';
+  }
+
+  @override
+  String get epTitle => 'Préférences email';
+
+  @override
+  String get epResetDefaults => 'Réinitialiser';
+
+  @override
+  String get epResetConfirm =>
+      'Réinitialiser toutes les préférences email aux valeurs par défaut ?';
+
+  @override
+  String get epResetDone => 'Préférences réinitialisées';
+
+  @override
+  String get epTransactional => 'Emails transactionnels';
+
+  @override
+  String get epTransactionalDesc => 'Emails essentiels concernant votre compte';
+
+  @override
+  String get epVerifTitle => 'Vérification d\'email';
+
+  @override
+  String get epVerifDesc => 'Email de vérification à la création du compte';
+
+  @override
+  String get epPwdReqTitle => 'Demande de changement de mot de passe';
+
+  @override
+  String get epPwdReqDesc =>
+      'Email avec le code pour réinitialiser votre mot de passe';
+
+  @override
+  String get epPwdChangedTitle => 'Confirmation de changement de mot de passe';
+
+  @override
+  String get epPwdChangedDesc =>
+      'Alerte de sécurité quand le mot de passe change';
+
+  @override
+  String get epListNotif => 'Notifications de listes';
+
+  @override
+  String get epListNotifDesc => 'Mises à jour de vos listes partagées';
+
+  @override
+  String get epListSharedTitle => 'Liste partagée avec moi';
+
+  @override
+  String get epListSharedDesc => 'Quelqu\'un partage une liste avec vous';
+
+  @override
+  String get epListCompletedTitle => 'Liste complétée';
+
+  @override
+  String get epListCompletedDesc =>
+      'Tous les articles d\'une liste partagée sont cochés';
+
+  @override
+  String get epBudgetAlerts => 'Alertes budget';
+
+  @override
+  String get epBudgetAlertsDesc => 'Notifications concernant vos dépenses';
+
+  @override
+  String get epBudgetExceededTitle => 'Budget dépassé';
+
+  @override
+  String get epBudgetExceededDesc => 'Alerte en cas de dépassement du budget';
+
+  @override
+  String get epMonthlySummaryTitle => 'Résumé mensuel';
+
+  @override
+  String get epMonthlySummaryDesc =>
+      'Récapitulatif budget à la fin de chaque mois';
+
+  @override
+  String get epTipsDesc => 'Conseils utiles pour mieux utiliser EpiList';
+
+  @override
+  String get epTipsToggleDesc => 'Recevoir des astuces et rappels';
+
+  @override
+  String get siTitle => 'Invitation de partage';
+
+  @override
+  String get siAccepted => 'Invitation acceptée !';
+
+  @override
+  String get siDeclined => 'Invitation refusée';
+
+  @override
+  String get siValidating => 'Validation de l\'invitation…';
+
+  @override
+  String get siVerifyingToken => 'Vérification du lien de partage';
+
+  @override
+  String get siAlreadyAccepted =>
+      'Vous avez déjà accepté cette invitation pour la liste';
+
+  @override
+  String get siAlreadyDeclined =>
+      'Vous avez refusé cette invitation pour la liste';
+
+  @override
+  String get siGoToList => 'Voir la liste';
+
+  @override
+  String get siBackHome => 'Retour à l\'accueil';
+
+  @override
+  String get siSharedBy => 'Partagée par';
+
+  @override
+  String get siExpiresOn => 'Expire le';
+
+  @override
+  String get siCreatedOn => 'Créée le';
+
+  @override
+  String get siListPreview => 'Aperçu de la liste';
+
+  @override
+  String get siEstimatedBudget => 'Budget estimé';
+
+  @override
+  String get siAccept => 'Accepter l\'invitation';
+
+  @override
+  String get siAcceptConfirm => 'Voulez-vous accepter l\'invitation de';
+
+  @override
+  String get siDecline => 'Refuser l\'invitation';
+
+  @override
+  String get siDeclineConfirm => 'Voulez-vous refuser l\'invitation de';
+
+  @override
+  String get siDeclineWarning =>
+      'Vous devrez demander une nouvelle invitation pour accéder à cette liste.';
+
+  @override
+  String get siReadOnlyDesc =>
+      'Vous pouvez consulter la liste mais pas la modifier';
+
+  @override
+  String get siPermViewItems => 'Voir les articles et leur statut';
+
+  @override
+  String get siPermViewPrices => 'Voir les prix et les quantités';
+
+  @override
+  String get siEditDesc =>
+      'Vous pouvez modifier la liste mais pas la supprimer';
+
+  @override
+  String get siPermAddEdit => 'Ajouter et modifier des articles';
+
+  @override
+  String get siPermMarkPurchased => 'Marquer les articles comme achetés';
+
+  @override
+  String get siPermEditPrices => 'Modifier les prix et les quantités';
+
+  @override
+  String get siFullRights => 'Vous avez tous les droits sur cette liste';
+
+  @override
+  String get siPermModifyDelete => 'Modifier et supprimer la liste';
+
+  @override
+  String get siPermManageItems => 'Gérer tous les articles';
+
+  @override
+  String get siPermShare => 'Partager avec d\'autres utilisateurs';
+
+  @override
+  String get siInvalid => 'Invitation invalide';
+
+  @override
+  String siInDays(int days) {
+    return 'Dans $days jours';
+  }
+
+  @override
+  String get adCheckingStatus => 'Vérification du statut de suppression…';
+
+  @override
+  String get adErrorLoading => 'Erreur de chargement du statut';
+
+  @override
+  String get adScheduled => 'Suppression du compte programmée';
+
+  @override
+  String get adCancelDeletion => 'Annuler la suppression';
+
+  @override
+  String get adPeriodExpired =>
+      'La période d\'annulation de 30 jours est expirée';
+
+  @override
+  String get adCancelled => 'Suppression du compte annulée !';
+
+  @override
+  String get adCancelConfirm =>
+      'Voulez-vous vraiment annuler la suppression de votre compte ? Votre compte redeviendra actif immédiatement.';
+
+  @override
+  String get adKeepDeletion => 'Non, garder la suppression';
+
+  @override
+  String get adYesCancel => 'Oui, annuler';
+
+  @override
+  String get startShoppingForSuggestions =>
+      'Faites vos courses pour recevoir des suggestions personnalisées';
+
+  @override
+  String get suggestionsExplain =>
+      'Nous analysons votre historique d\'achats pour suggérer des produits dont vous pourriez avoir besoin.';
+
+  @override
+  String get suggestionsFrequency => 'Selon la fréquence de vos achats';
+
+  @override
+  String get suggestionsSeasonal => 'Produits achetés à certaines périodes';
+
+  @override
+  String get suggestionsAssociations => 'Articles souvent achetés ensemble';
+
+  @override
+  String get baCheckExpenses =>
+      'Vérifiez vos dépenses récentes pour repérer le superflu';
+
+  @override
+  String get baIncreaseBudget =>
+      'Envisagez d\'augmenter le budget si les dépenses sont justifiées';
+
+  @override
+  String get baReduceTitle => 'Réduire les dépenses';
+
+  @override
+  String get baReduceDesc =>
+      'Concentrez-vous sur l\'essentiel pour le reste de la période';
+
+  @override
+  String permReadOnlyMessage(String action) {
+    return 'Vous ne pouvez pas $action car cette liste est en mode lecture seule.';
+  }
+
+  @override
+  String permNoPermissionMessage(String action) {
+    return 'Vous n\'avez pas la permission de $action.';
+  }
+
+  @override
+  String get permActionEditItems => 'modifier des articles';
+
+  @override
+  String get permActionEditStatus => 'modifier le statut des articles';
+
+  @override
+  String get permActionEditList => 'modifier cette liste';
+
+  @override
+  String get permActionShareList => 'partager cette liste';
+
+  @override
+  String get permActionAccessChat => 'accéder au chat';
+
+  @override
+  String get permActionManageShares => 'gérer les partages';
+
+  @override
+  String get permActionAddItems => 'ajouter des articles';
 }

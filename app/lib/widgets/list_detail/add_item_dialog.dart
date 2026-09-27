@@ -722,7 +722,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         // Afficher un indicateur de chargement
         SmartSnackBarManager.showInfoSnackBar(
           context,
-          'Recherche du produit...',
+          AppLocalizations.of(context)!.searchingProduct,
           duration: const Duration(seconds: 2),
         );
 
@@ -799,7 +799,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     if (quantity == null || quantity < 1) {
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        'La quantité doit être un nombre valide (minimum 1)',
+        AppLocalizations.of(context)!.quantityMustBeValid,
         duration: const Duration(seconds: 2),
       );
       return;
@@ -813,7 +813,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     if (priceController.text.isNotEmpty && price == null) {
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        'Le prix doit être un nombre valide',
+        AppLocalizations.of(context)!.priceMustBeValid,
         duration: const Duration(seconds: 2),
       );
       return;
