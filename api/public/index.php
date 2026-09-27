@@ -23,6 +23,9 @@ use App\Controllers\{
     CategoryController,
     StoreController,
     PriceController,
+    IntelligenceController,
+    RecurringListController,
+    MealPlanController,
     ImageController,
     MessageController,
     SuggestionController,
@@ -274,6 +277,7 @@ $app->group('', function ($group) {
     $group->get('/budgets/dashboard', [BudgetController::class, 'dashboard']);
     $group->get('/budgets/alerts', [BudgetController::class, 'getAlerts']);
     $group->post('/budgets/quick', [BudgetController::class, 'createQuickBudget']);
+    $group->get('/budgets/forecast', [IntelligenceController::class, 'budgetForecast']);
     $group->get('/budgets/{id}', [BudgetController::class, 'show']);
     $group->put('/budgets/{id}', [BudgetController::class, 'update']);
     $group->delete('/budgets/{id}', [BudgetController::class, 'destroy']);
@@ -336,6 +340,27 @@ $app->group('', function ($group) {
     $group->put('/categories/reorder', [CategoryController::class, 'reorder']);
 
     // 🏪 MAGASINS ET ORDRE DES RAYONS (tri par rayon)
+    // 🧠 Intelligence du foyer : prédictions, inventaire, projection budget
+    $group->get('/predictions', [IntelligenceController::class, 'getPredictions']);
+    $group->post('/predictions/feedback', [IntelligenceController::class, 'predictionFeedback']);
+    $group->get('/inventory', [IntelligenceController::class, 'getInventory']);
+    $group->post('/inventory/status', [IntelligenceController::class, 'setInventoryStatus']);
+    $group->delete('/inventory/{id}', [IntelligenceController::class, 'deleteInventoryItem']);
+    // (budgets/forecast est déclaré plus haut, avant /budgets/{id})
+
+    // 🔁 Listes récurrentes intelligentes
+    $group->get('/recurring-lists', [RecurringListController::class, 'index']);
+    $group->post('/recurring-lists', [RecurringListController::class, 'store']);
+    $group->put('/recurring-lists/{id}', [RecurringListController::class, 'update']);
+    $group->delete('/recurring-lists/{id}', [RecurringListController::class, 'destroy']);
+    $group->get('/recurring-lists/{id}/preview', [RecurringListController::class, 'preview']);
+    $group->post('/recurring-lists/{id}/generate', [RecurringListController::class, 'generate']);
+
+    // 🍽️ Planificateur de repas
+    $group->get('/recipes', [MealPlanController::class, 'recipes']);
+    $group->post('/meal-plans/preview', [MealPlanController::class, 'preview']);
+    $group->post('/meal-plans', [MealPlanController::class, 'store']);
+
     $group->get('/stores', [StoreController::class, 'index']);
     $group->post('/stores', [StoreController::class, 'store']);
     $group->put('/stores/{id}', [StoreController::class, 'update']);

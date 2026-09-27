@@ -102,6 +102,13 @@ try {
         analyzeUserHabitsAndSendReminders();
     }
 
+    // 9. LISTES RÉCURRENTES AUTOMATIQUES (à chaque passage) : les modèles
+    // dus (next_run_at <= maintenant, enabled + auto_generate) génèrent
+    // leur liste pré-remplie selon prédictions + inventaire, puis une
+    // notification « Votre liste est prête ».
+    echo "Generating due recurring lists...\n";
+    generateDueRecurringLists($notificationService);
+
     echo "=== Cron completed successfully ===\n";
 
 } catch (\Exception $e) {
@@ -1131,4 +1138,47 @@ if (isset($argv[1]) && $argv[1] === 'budget-alerts') {
     }
 
     exit(0);
+}
+
+/**
+ * 9. LISTES RÉCURRENTES AUTOMATIQUES — génère les listes dues et
+ * notifie l'utilisateur. Idempotent : next_run_at est repoussé dans la
+ * même transaction que la génération.
+ */
+function generateDueRecurringLists(NotificationService $service): void
+{
+    $due = App\Models\RecurringList::with('items')
+        ->where('enabled', true)
+        ->where('auto_generate', true)
+        ->where('next_run_at', '<=', Carbon::now())
+        ->limit(50)
+        ->get();
+
+    $controller = new App\Controllers\RecurringListController();
+    $generated = 0;
+
+    foreach ($due as $recurring) {
+        try {
+            $list = $controller->generateFor($recurring->user_id, $recurring, null);
+            if ($list === null) {
+                // Rien à acheter cette fois : on repousse quand même
+                $recurring->next_run_at = $recurring->computeNextRun();
+                $recurring->save();
+                continue;
+            }
+            $generated++;
+
+            $service->sendToUser(
+                $recurring->user_id,
+                NotificationService::TYPE_WEEKLY_LIST_REMINDER,
+                'EpiList',
+                "Votre liste « {$recurring->name} » est prête 🛒",
+                ['list_id' => (string) $list->id, 'action' => 'open_list']
+            );
+        } catch (\Throwable $e) {
+            error_log("Recurring list {$recurring->id} generation failed: " . $e->getMessage());
+        }
+    }
+
+    echo "Recurring lists generated: {$generated}\n";
 }
