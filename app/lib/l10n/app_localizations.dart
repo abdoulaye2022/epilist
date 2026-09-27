@@ -8232,6 +8232,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Nouvelle liste'**
   String get newListShort;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get dashboardTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -1721,5 +1721,6 @@
   "quickVoice": "Add by voice",
   "onLastList": "On your latest list",
   "noListYet": "Create a list first",
-  "newListShort": "New list"
+  "newListShort": "New list",
+  "dashboardTitle": "Dashboard"
 }

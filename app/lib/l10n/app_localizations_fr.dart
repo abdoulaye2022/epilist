@@ -4378,4 +4378,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get newListShort => 'Nouvelle liste';
+
+  @override
+  String get dashboardTitle => 'Tableau de bord';
 }

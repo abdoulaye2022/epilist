@@ -1722,5 +1722,6 @@
   "quickVoice": "Ajouter par la voix",
   "onLastList": "Sur votre dernière liste",
   "noListYet": "Créez d'abord une liste",
-  "newListShort": "Nouvelle liste"
+  "newListShort": "Nouvelle liste",
+  "dashboardTitle": "Tableau de bord"
 }

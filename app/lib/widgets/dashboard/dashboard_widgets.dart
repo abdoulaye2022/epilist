@@ -6,6 +6,7 @@ import 'package:epilist/models/budget.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Carte sombre « Budget du mois » (inspirée de la maquette) : dépensé /
 /// alloué, barre de progression, reste du mois.
@@ -18,6 +19,36 @@ class BudgetMonthCard extends StatelessWidget {
     required this.budget,
     required this.onSeeDetail,
   });
+
+  /// Puce « 📅 mai 2025 » comme sur la maquette.
+  Widget _monthChip(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    var month = DateFormat('MMM yyyy', locale).format(DateTime.now());
+    month = month[0].toUpperCase() + month.substring(1);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.calendar_today_outlined,
+              size: 11, color: Colors.white),
+          const SizedBox(width: 5),
+          Text(
+            month,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +80,22 @@ class BudgetMonthCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm + 4),
               Expanded(
-                child: Text(
-                  l10n.budgetOfMonth,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        l10n.budgetOfMonth,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _monthChip(context),
+                  ],
                 ),
               ),
               TextButton(

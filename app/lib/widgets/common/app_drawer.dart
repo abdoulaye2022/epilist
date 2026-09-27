@@ -9,6 +9,7 @@ import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
+import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
@@ -42,10 +43,16 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   _item(
                     context,
+                    icon: Icons.space_dashboard_outlined,
+                    label: l10n.dashboardTitle,
+                    selected: true, // l'accueil EST le tableau de bord
+                    onTap: () => Navigator.pop(context),
+                  ),
+                  _item(
+                    context,
                     icon: Icons.checklist_rounded,
                     label: l10n.myShoppingLists,
-                    selected: true, // l'accueil est l'écran des listes
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => _push(context, const ShoppingListScreen()),
                   ),
                   _item(
                     context,

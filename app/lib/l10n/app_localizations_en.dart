@@ -4306,4 +4306,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newListShort => 'New list';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
 }
