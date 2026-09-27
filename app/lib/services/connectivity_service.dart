@@ -79,38 +79,58 @@ class ConnectivityService {
     }
   }
 
-  /// Vérifie si on peut réellement accéder à internet en testant plusieurs endpoints
+  /// Vérifie l'accès réel à internet.
+  ///
+  /// DURCI après deux incidents "bloqué en hors ligne alors que le réseau
+  /// va bien" :
+  ///  - endpoints de test ultra-légers, sans redirection (generate_204) ;
+  ///  - RECEVOIR une réponse HTTP suffit, quel que soit le code (un 204,
+  ///    un 302 ou même un 403 prouvent que le réseau fonctionne) ;
+  ///  - timeout STRICT par tentative et global : ce test ne peut plus
+  ///    rester suspendu (c'est ce qui figeait l'état hors ligne, les
+  ///    vérifications périodiques ne se terminant jamais).
   Future<bool> _checkInternetConnection() async {
-    // Liste d'URLs à tester (du plus rapide au plus lent)
     final testUrls = [
-      'https://www.google.com',
-      'https://www.cloudflare.com',
-      'https://httpbin.org/status/200',
+      'https://www.gstatic.com/generate_204',
+      'https://connectivitycheck.gstatic.com/generate_204',
+      'https://www.cloudflare.com/cdn-cgi/trace',
     ];
 
-    for (final url in testUrls) {
-      try {
-        // Utiliser HEAD request pour être plus rapide
-        final response = await _dio.head(url);
-
-        // Accepter les codes 200-299 et les redirections (300-399)
-        if (response.statusCode != null &&
-            response.statusCode! >= 200 &&
-            response.statusCode! < 400) {
-          return true;
+    try {
+      return await () async {
+        for (final url in testUrls) {
+          try {
+            await _dio
+                .get(
+                  url,
+                  options: Options(
+                    // N'importe quel statut = le réseau répond
+                    validateStatus: (_) => true,
+                    responseType: ResponseType.plain,
+                  ),
+                )
+                .timeout(const Duration(seconds: 4));
+            return true;
+          } catch (_) {
+            continue;
+          }
         }
-      } catch (e) {
-        // Continuer avec l'URL suivante si celle-ci échoue
-        continue;
-      }
+        return false;
+      }()
+          .timeout(const Duration(seconds: 10), onTimeout: () => false);
+    } catch (_) {
+      return false;
     }
-
-    return false;
   }
 
-  /// Vérifie manuellement la connectivité (utile pour les retry)
+  /// Vérifie manuellement la connectivité (utile pour les retry).
+  /// Ne peut jamais rester suspendue : timeout global de sécurité.
   Future<bool> checkConnectivity() async {
-    await _updateConnectivityStatus();
+    try {
+      await _updateConnectivityStatus().timeout(const Duration(seconds: 12));
+    } catch (_) {
+      // en cas de blocage improbable, on garde le dernier état connu
+    }
     return _isConnected;
   }
 

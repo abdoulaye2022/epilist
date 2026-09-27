@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class MailSender
 {
     private const SENDER_NAME = 'EpiList';
-    private const SENDER_EMAIL = 'noreply@m2atech.com';
+    private const SENDER_EMAIL = 'noreply@epilist.app'; // domaine authentifie dans Brevo
     private const MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB
     private const ALLOWED_ATTACHMENT_TYPES = [
         'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
