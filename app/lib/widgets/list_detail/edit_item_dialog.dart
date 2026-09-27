@@ -13,6 +13,7 @@ import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/models/category.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
+import 'package:epilist/widgets/price/price_history_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -139,6 +140,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     _buildPhotoSection(l10n),
                     const SizedBox(height: 16),
                     _buildForm(l10n),
+                    _buildPriceHistoryLink(l10n),
                     if (_showSuggestions) ...[
                       const SizedBox(height: 16),
                       _buildSuggestions(l10n),
@@ -152,6 +154,22 @@ class _EditItemDialogState extends State<EditItemDialog> {
           ],
         ),
       ),
+      ),
+    );
+  }
+
+  /// Lien vers l'historique de prix du produit (fiche avec provenance).
+  Widget _buildPriceHistoryLink(AppLocalizations l10n) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: () {
+          final name = productController.text.trim();
+          if (name.isEmpty) return;
+          showPriceHistorySheet(context, name);
+        },
+        icon: const Icon(Icons.query_stats, size: 18),
+        label: Text(l10n.priceHistoryTitle),
       ),
     );
   }

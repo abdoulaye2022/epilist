@@ -7,6 +7,8 @@ import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/receipts_screen.dart';
+import 'package:epilist/screens/store_comparison_screen.dart';
+import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
@@ -236,6 +238,50 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
+    // Scanner un reçu (alimente l'historique de prix)
+    if (shoppingList.canManageItems) {
+      items.add(
+        PopupMenuItem(
+          value: 'scan_receipt',
+          child: Row(
+            children: [
+              const Icon(Icons.document_scanner_outlined,
+                  size: 20, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.scanReceipt,
+                  style: const TextStyle(color: AppColors.textPrimary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Comparer les magasins (d'après les prix de vos achats)
+    items.add(
+      PopupMenuItem(
+        value: 'compare_stores',
+        child: Row(
+          children: [
+            const Icon(Icons.storefront_outlined,
+                size: 20, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.compareStores,
+                style: const TextStyle(color: AppColors.textPrimary),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
     // Séparateur avant actions destructives
     if (shoppingList.canDelete || !shoppingList.isOwner) {
       items.add(const PopupMenuDivider());
@@ -310,6 +356,20 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         break;
       case 'receipts':
         _openReceiptsScreen(context);
+        break;
+      case 'scan_receipt':
+        startReceiptScan(context, listId: shoppingList.id);
+        break;
+      case 'compare_stores':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => StoreComparisonScreen(
+              listId: shoppingList.id,
+              listName: shoppingList.name,
+            ),
+          ),
+        );
         break;
     }
   }

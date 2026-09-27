@@ -47,6 +47,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/image_upload_service.dart';
+import 'package:epilist/services/price_service.dart';
 import 'package:epilist/services/store_service.dart';
 import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
@@ -211,6 +212,9 @@ void main() async {
           RepositoryProvider<StoreService>.value(value: storeService),
           RepositoryProvider<ImageUploadService>(
             create: (_) => ImageUploadService(dio: dio),
+          ),
+          RepositoryProvider<PriceService>(
+            create: (_) => PriceService(dio: dio),
           ),
           RepositoryProvider<AnalyticsService>.value(value: analyticsService),
           RepositoryProvider<ShoppingListService>.value(

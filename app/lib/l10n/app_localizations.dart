@@ -8256,6 +8256,360 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Désactiver'**
   String get deactivate;
+
+  /// No description provided for @scanReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner un reçu'**
+  String get scanReceipt;
+
+  /// No description provided for @scanReceiptSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographiez votre reçu, EpiList lit les prix'**
+  String get scanReceiptSubtitle;
+
+  /// No description provided for @receiptFromCamera.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre le reçu en photo'**
+  String get receiptFromCamera;
+
+  /// No description provided for @receiptFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get receiptFromGallery;
+
+  /// No description provided for @readingReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture du reçu…'**
+  String get readingReceipt;
+
+  /// No description provided for @ocrFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de lire le reçu. Vous pouvez saisir les articles manuellement.'**
+  String get ocrFailed;
+
+  /// No description provided for @reviewReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier le reçu'**
+  String get reviewReceipt;
+
+  /// No description provided for @reviewReceiptHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez et corrigez avant d\'enregistrer. Rien n\'est enregistré automatiquement.'**
+  String get reviewReceiptHint;
+
+  /// No description provided for @storeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin'**
+  String get storeLabel;
+
+  /// No description provided for @purchaseDateLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date d\'achat'**
+  String get purchaseDateLabel;
+
+  /// No description provided for @receiptNumberLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° de reçu (facultatif)'**
+  String get receiptNumberLabel;
+
+  /// No description provided for @receiptTotalLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total du reçu'**
+  String get receiptTotalLabel;
+
+  /// No description provided for @receiptItemsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles ({count})'**
+  String receiptItemsSection(int count);
+
+  /// No description provided for @addReceiptItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un article'**
+  String get addReceiptItem;
+
+  /// No description provided for @uncertainLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'À vérifier'**
+  String get uncertainLine;
+
+  /// No description provided for @discountLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rabais / retour (non compté)'**
+  String get discountLine;
+
+  /// No description provided for @unrecognizedLinesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lignes non reconnues ({count})'**
+  String unrecognizedLinesTitle(int count);
+
+  /// No description provided for @totalMismatchWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'La somme des articles ({sum}) ne correspond pas au total lu ({total}).'**
+  String totalMismatchWarning(String sum, String total);
+
+  /// No description provided for @saveReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer le reçu'**
+  String get saveReceipt;
+
+  /// No description provided for @receiptSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçu enregistré. Les prix alimentent votre historique.'**
+  String get receiptSaved;
+
+  /// No description provided for @duplicateReceiptTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçu en double ?'**
+  String get duplicateReceiptTitle;
+
+  /// No description provided for @duplicateReceiptMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce reçu semble déjà avoir été ajouté. L\'enregistrer quand même ?'**
+  String get duplicateReceiptMessage;
+
+  /// No description provided for @saveAnyway.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer quand même'**
+  String get saveAnyway;
+
+  /// No description provided for @itemNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit'**
+  String get itemNameLabel;
+
+  /// No description provided for @rawLabelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé du reçu : {label}'**
+  String rawLabelHint(String label);
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix'**
+  String get priceLabel;
+
+  /// No description provided for @suggestionApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestion : {name}'**
+  String suggestionApplied(String name);
+
+  /// No description provided for @priceHistoryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique de prix'**
+  String get priceHistoryTitle;
+
+  /// No description provided for @noPriceHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun prix connu pour ce produit. Il apparaîtra après vos prochains achats ou scans de reçus.'**
+  String get noPriceHistory;
+
+  /// No description provided for @lastPaidPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier prix payé'**
+  String get lastPaidPrice;
+
+  /// No description provided for @usualPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix habituel'**
+  String get usualPrice;
+
+  /// No description provided for @priceRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Min – max'**
+  String get priceRange;
+
+  /// No description provided for @aboveUsualPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix supérieur à votre moyenne habituelle (+{pct} %)'**
+  String aboveUsualPrice(String pct);
+
+  /// No description provided for @belowUsualPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix inférieur à votre moyenne habituelle ({pct} %)'**
+  String belowUsualPrice(String pct);
+
+  /// No description provided for @seenOnReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vu sur votre reçu {store} · {date}'**
+  String seenOnReceipt(String store, String date);
+
+  /// No description provided for @seenOnPurchase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acheté chez {store} · {date}'**
+  String seenOnPurchase(String store, String date);
+
+  /// No description provided for @observationsInWindow.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} observations sur {days} jours'**
+  String observationsInWindow(int count, int days);
+
+  /// No description provided for @compareStores.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparer les magasins'**
+  String get compareStores;
+
+  /// No description provided for @storeComparisonTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparateur de magasins'**
+  String get storeComparisonTitle;
+
+  /// No description provided for @comparisonBasedOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basé sur vos achats des {days} derniers jours. Ce ne sont pas des prix officiels.'**
+  String comparisonBasedOn(int days);
+
+  /// No description provided for @knownPricesOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'{known} prix connus sur {total} articles'**
+  String knownPricesOn(int known, int total);
+
+  /// No description provided for @noComparisonData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore assez de données. Scannez quelques reçus pour comparer vos magasins.'**
+  String get noComparisonData;
+
+  /// No description provided for @priceFreshnessFresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'récent'**
+  String get priceFreshnessFresh;
+
+  /// No description provided for @priceFreshnessAcceptable.
+  ///
+  /// In fr, this message translates to:
+  /// **'< 1 mois'**
+  String get priceFreshnessAcceptable;
+
+  /// No description provided for @priceFreshnessOld.
+  ///
+  /// In fr, this message translates to:
+  /// **'< 3 mois'**
+  String get priceFreshnessOld;
+
+  /// No description provided for @priceFreshnessStale.
+  ///
+  /// In fr, this message translates to:
+  /// **'ancien'**
+  String get priceFreshnessStale;
+
+  /// No description provided for @unknownPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'prix inconnu'**
+  String get unknownPrice;
+
+  /// No description provided for @optimizePlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Optimiser mes achats'**
+  String get optimizePlan;
+
+  /// No description provided for @optimizationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan d\'achat optimisé'**
+  String get optimizationTitle;
+
+  /// No description provided for @maxStoresLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasins max'**
+  String get maxStoresLabel;
+
+  /// No description provided for @estimatedSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Économie estimée : {amount}'**
+  String estimatedSaving(String amount);
+
+  /// No description provided for @singleStorePlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout au même endroit : {store} ({amount})'**
+  String singleStorePlan(String store, String amount);
+
+  /// No description provided for @notWorthSplitting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diviser vos achats ne vaut pas la peine : l\'économie serait trop faible.'**
+  String get notWorthSplitting;
+
+  /// No description provided for @estimatedElsewhereNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix inconnus dans ces magasins, estimés d\'après vos autres achats : {items}'**
+  String estimatedElsewhereNote(String items);
+
+  /// No description provided for @notEnoughPriceData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas assez de données de prix pour optimiser cette liste.'**
+  String get notEnoughPriceData;
+
+  /// No description provided for @windowDaysLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fenêtre'**
+  String get windowDaysLabel;
+
+  /// No description provided for @daysShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days} j'**
+  String daysShort(int days);
+
+  /// No description provided for @quickScan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner'**
+  String get quickScan;
+
+  /// No description provided for @aReceipt.
+  ///
+  /// In fr, this message translates to:
+  /// **'un reçu'**
+  String get aReceipt;
 }
 
 class _AppLocalizationsDelegate

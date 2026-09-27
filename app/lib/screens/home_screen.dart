@@ -33,6 +33,7 @@ import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
+import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -235,6 +236,20 @@ class _HomeScreenState extends State<HomeScreen>
     ).then((_) => _loadShoppingLists());
   }
 
+  /// Scanne un reçu et le rattache à la liste la plus récente.
+  void _scanReceipt() {
+    final l10n = AppLocalizations.of(context)!;
+    final state = context.read<ShoppingListBloc>().state;
+    final lists = state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
+    if (lists.isEmpty) {
+      SmartSnackBarManager.showInfoSnackBar(context, l10n.noListYet);
+      _showCreateListDialog(context);
+      return;
+    }
+    startReceiptScan(context, listId: lists.first.id)
+        .then((_) => _loadDashboardData());
+  }
+
   /// Ouvre l'ecran Budgets et rafraichit la carte au retour
   /// (creation/modification d'un budget).
   void _openBudgets() {
@@ -424,6 +439,12 @@ class _HomeScreenState extends State<HomeScreen>
                             sublabel: l10n.onLastList,
                             onTap: () => _openRecentListWith(
                                 ListDetailAction.voiceItem),
+                          ),
+                          QuickActionButton(
+                            icon: Icons.receipt_long_outlined,
+                            label: l10n.quickScan,
+                            sublabel: l10n.aReceipt,
+                            onTap: _scanReceipt,
                           ),
                           QuickActionButton(
                             icon: Icons.playlist_add_rounded,

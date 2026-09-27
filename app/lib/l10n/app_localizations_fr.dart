@@ -4392,4 +4392,222 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deactivate => 'Désactiver';
+
+  @override
+  String get scanReceipt => 'Scanner un reçu';
+
+  @override
+  String get scanReceiptSubtitle =>
+      'Photographiez votre reçu, EpiList lit les prix';
+
+  @override
+  String get receiptFromCamera => 'Prendre le reçu en photo';
+
+  @override
+  String get receiptFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get readingReceipt => 'Lecture du reçu…';
+
+  @override
+  String get ocrFailed =>
+      'Impossible de lire le reçu. Vous pouvez saisir les articles manuellement.';
+
+  @override
+  String get reviewReceipt => 'Vérifier le reçu';
+
+  @override
+  String get reviewReceiptHint =>
+      'Vérifiez et corrigez avant d\'enregistrer. Rien n\'est enregistré automatiquement.';
+
+  @override
+  String get storeLabel => 'Magasin';
+
+  @override
+  String get purchaseDateLabel => 'Date d\'achat';
+
+  @override
+  String get receiptNumberLabel => 'N° de reçu (facultatif)';
+
+  @override
+  String get receiptTotalLabel => 'Total du reçu';
+
+  @override
+  String receiptItemsSection(int count) {
+    return 'Articles ($count)';
+  }
+
+  @override
+  String get addReceiptItem => 'Ajouter un article';
+
+  @override
+  String get uncertainLine => 'À vérifier';
+
+  @override
+  String get discountLine => 'Rabais / retour (non compté)';
+
+  @override
+  String unrecognizedLinesTitle(int count) {
+    return 'Lignes non reconnues ($count)';
+  }
+
+  @override
+  String totalMismatchWarning(String sum, String total) {
+    return 'La somme des articles ($sum) ne correspond pas au total lu ($total).';
+  }
+
+  @override
+  String get saveReceipt => 'Enregistrer le reçu';
+
+  @override
+  String get receiptSaved =>
+      'Reçu enregistré. Les prix alimentent votre historique.';
+
+  @override
+  String get duplicateReceiptTitle => 'Reçu en double ?';
+
+  @override
+  String get duplicateReceiptMessage =>
+      'Ce reçu semble déjà avoir été ajouté. L\'enregistrer quand même ?';
+
+  @override
+  String get saveAnyway => 'Enregistrer quand même';
+
+  @override
+  String get itemNameLabel => 'Produit';
+
+  @override
+  String rawLabelHint(String label) {
+    return 'Libellé du reçu : $label';
+  }
+
+  @override
+  String get priceLabel => 'Prix';
+
+  @override
+  String suggestionApplied(String name) {
+    return 'Suggestion : $name';
+  }
+
+  @override
+  String get priceHistoryTitle => 'Historique de prix';
+
+  @override
+  String get noPriceHistory =>
+      'Aucun prix connu pour ce produit. Il apparaîtra après vos prochains achats ou scans de reçus.';
+
+  @override
+  String get lastPaidPrice => 'Dernier prix payé';
+
+  @override
+  String get usualPrice => 'Prix habituel';
+
+  @override
+  String get priceRange => 'Min – max';
+
+  @override
+  String aboveUsualPrice(String pct) {
+    return 'Prix supérieur à votre moyenne habituelle (+$pct %)';
+  }
+
+  @override
+  String belowUsualPrice(String pct) {
+    return 'Prix inférieur à votre moyenne habituelle ($pct %)';
+  }
+
+  @override
+  String seenOnReceipt(String store, String date) {
+    return 'Vu sur votre reçu $store · $date';
+  }
+
+  @override
+  String seenOnPurchase(String store, String date) {
+    return 'Acheté chez $store · $date';
+  }
+
+  @override
+  String observationsInWindow(int count, int days) {
+    return '$count observations sur $days jours';
+  }
+
+  @override
+  String get compareStores => 'Comparer les magasins';
+
+  @override
+  String get storeComparisonTitle => 'Comparateur de magasins';
+
+  @override
+  String comparisonBasedOn(int days) {
+    return 'Basé sur vos achats des $days derniers jours. Ce ne sont pas des prix officiels.';
+  }
+
+  @override
+  String knownPricesOn(int known, int total) {
+    return '$known prix connus sur $total articles';
+  }
+
+  @override
+  String get noComparisonData =>
+      'Pas encore assez de données. Scannez quelques reçus pour comparer vos magasins.';
+
+  @override
+  String get priceFreshnessFresh => 'récent';
+
+  @override
+  String get priceFreshnessAcceptable => '< 1 mois';
+
+  @override
+  String get priceFreshnessOld => '< 3 mois';
+
+  @override
+  String get priceFreshnessStale => 'ancien';
+
+  @override
+  String get unknownPrice => 'prix inconnu';
+
+  @override
+  String get optimizePlan => 'Optimiser mes achats';
+
+  @override
+  String get optimizationTitle => 'Plan d\'achat optimisé';
+
+  @override
+  String get maxStoresLabel => 'Magasins max';
+
+  @override
+  String estimatedSaving(String amount) {
+    return 'Économie estimée : $amount';
+  }
+
+  @override
+  String singleStorePlan(String store, String amount) {
+    return 'Tout au même endroit : $store ($amount)';
+  }
+
+  @override
+  String get notWorthSplitting =>
+      'Diviser vos achats ne vaut pas la peine : l\'économie serait trop faible.';
+
+  @override
+  String estimatedElsewhereNote(String items) {
+    return 'Prix inconnus dans ces magasins, estimés d\'après vos autres achats : $items';
+  }
+
+  @override
+  String get notEnoughPriceData =>
+      'Pas assez de données de prix pour optimiser cette liste.';
+
+  @override
+  String get windowDaysLabel => 'Fenêtre';
+
+  @override
+  String daysShort(int days) {
+    return '$days j';
+  }
+
+  @override
+  String get quickScan => 'Scanner';
+
+  @override
+  String get aReceipt => 'un reçu';
 }

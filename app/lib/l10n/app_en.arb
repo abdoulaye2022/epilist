@@ -1732,5 +1732,194 @@
     }
   },
   "pickMonth": "Pick a month",
-  "deactivate": "Deactivate"
+  "deactivate": "Deactivate",
+  "scanReceipt": "Scan a receipt",
+  "scanReceiptSubtitle": "Snap your receipt, EpiList reads the prices",
+  "receiptFromCamera": "Take a photo of the receipt",
+  "receiptFromGallery": "Choose from gallery",
+  "readingReceipt": "Reading receipt…",
+  "ocrFailed": "Couldn't read the receipt. You can enter the items manually.",
+  "reviewReceipt": "Review receipt",
+  "reviewReceiptHint": "Check and fix before saving. Nothing is saved automatically.",
+  "storeLabel": "Store",
+  "purchaseDateLabel": "Purchase date",
+  "receiptNumberLabel": "Receipt # (optional)",
+  "receiptTotalLabel": "Receipt total",
+  "receiptItemsSection": "Items ({count})",
+  "addReceiptItem": "Add an item",
+  "uncertainLine": "Needs review",
+  "discountLine": "Discount / return (not counted)",
+  "unrecognizedLinesTitle": "Unrecognized lines ({count})",
+  "totalMismatchWarning": "Items sum ({sum}) doesn't match the read total ({total}).",
+  "saveReceipt": "Save receipt",
+  "receiptSaved": "Receipt saved. Prices feed your history.",
+  "duplicateReceiptTitle": "Duplicate receipt?",
+  "duplicateReceiptMessage": "This receipt seems to have been added already. Save it anyway?",
+  "saveAnyway": "Save anyway",
+  "itemNameLabel": "Product",
+  "rawLabelHint": "Receipt label: {label}",
+  "priceLabel": "Price",
+  "suggestionApplied": "Suggestion: {name}",
+  "priceHistoryTitle": "Price history",
+  "noPriceHistory": "No known price for this product yet. It will appear after your next purchases or receipt scans.",
+  "lastPaidPrice": "Last price paid",
+  "usualPrice": "Usual price",
+  "priceRange": "Min – max",
+  "aboveUsualPrice": "Higher than your usual average (+{pct}%)",
+  "belowUsualPrice": "Lower than your usual average ({pct}%)",
+  "seenOnReceipt": "Seen on your {store} receipt · {date}",
+  "seenOnPurchase": "Bought at {store} · {date}",
+  "observationsInWindow": "{count} observations over {days} days",
+  "compareStores": "Compare stores",
+  "storeComparisonTitle": "Store comparison",
+  "comparisonBasedOn": "Based on your purchases from the last {days} days. These are not official prices.",
+  "knownPricesOn": "{known} known prices out of {total} items",
+  "noComparisonData": "Not enough data yet. Scan a few receipts to compare your stores.",
+  "priceFreshnessFresh": "recent",
+  "priceFreshnessAcceptable": "< 1 month",
+  "priceFreshnessOld": "< 3 months",
+  "priceFreshnessStale": "old",
+  "unknownPrice": "unknown price",
+  "optimizePlan": "Optimize my shopping",
+  "optimizationTitle": "Optimized shopping plan",
+  "maxStoresLabel": "Max stores",
+  "estimatedSaving": "Estimated saving: {amount}",
+  "singleStorePlan": "Everything in one place: {store} ({amount})",
+  "notWorthSplitting": "Splitting your shopping isn't worth it: the saving would be too small.",
+  "estimatedElsewhereNote": "Prices unknown in these stores, estimated from your other purchases: {items}",
+  "notEnoughPriceData": "Not enough price data to optimize this list.",
+  "windowDaysLabel": "Window",
+  "daysShort": "{days}d",
+  "@receiptItemsSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@unrecognizedLinesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@totalMismatchWarning": {
+    "placeholders": {
+      "sum": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "@rawLabelHint": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "@suggestionApplied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@aboveUsualPrice": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@belowUsualPrice": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@seenOnReceipt": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@seenOnPurchase": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@observationsInWindow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@comparisonBasedOn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@knownPricesOn": {
+    "placeholders": {
+      "known": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@estimatedSaving": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@singleStorePlan": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@estimatedElsewhereNote": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "@daysShort": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "quickScan": "Scan",
+  "aReceipt": "a receipt"
 }

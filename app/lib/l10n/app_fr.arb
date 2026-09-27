@@ -1733,5 +1733,194 @@
     }
   },
   "pickMonth": "Choisir le mois",
-  "deactivate": "Désactiver"
+  "deactivate": "Désactiver",
+  "scanReceipt": "Scanner un reçu",
+  "scanReceiptSubtitle": "Photographiez votre reçu, EpiList lit les prix",
+  "receiptFromCamera": "Prendre le reçu en photo",
+  "receiptFromGallery": "Choisir dans la galerie",
+  "readingReceipt": "Lecture du reçu…",
+  "ocrFailed": "Impossible de lire le reçu. Vous pouvez saisir les articles manuellement.",
+  "reviewReceipt": "Vérifier le reçu",
+  "reviewReceiptHint": "Vérifiez et corrigez avant d'enregistrer. Rien n'est enregistré automatiquement.",
+  "storeLabel": "Magasin",
+  "purchaseDateLabel": "Date d'achat",
+  "receiptNumberLabel": "N° de reçu (facultatif)",
+  "receiptTotalLabel": "Total du reçu",
+  "receiptItemsSection": "Articles ({count})",
+  "@receiptItemsSection": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addReceiptItem": "Ajouter un article",
+  "uncertainLine": "À vérifier",
+  "discountLine": "Rabais / retour (non compté)",
+  "unrecognizedLinesTitle": "Lignes non reconnues ({count})",
+  "@unrecognizedLinesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalMismatchWarning": "La somme des articles ({sum}) ne correspond pas au total lu ({total}).",
+  "@totalMismatchWarning": {
+    "placeholders": {
+      "sum": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "saveReceipt": "Enregistrer le reçu",
+  "receiptSaved": "Reçu enregistré. Les prix alimentent votre historique.",
+  "duplicateReceiptTitle": "Reçu en double ?",
+  "duplicateReceiptMessage": "Ce reçu semble déjà avoir été ajouté. L'enregistrer quand même ?",
+  "saveAnyway": "Enregistrer quand même",
+  "itemNameLabel": "Produit",
+  "rawLabelHint": "Libellé du reçu : {label}",
+  "@rawLabelHint": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "priceLabel": "Prix",
+  "suggestionApplied": "Suggestion : {name}",
+  "@suggestionApplied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "priceHistoryTitle": "Historique de prix",
+  "noPriceHistory": "Aucun prix connu pour ce produit. Il apparaîtra après vos prochains achats ou scans de reçus.",
+  "lastPaidPrice": "Dernier prix payé",
+  "usualPrice": "Prix habituel",
+  "priceRange": "Min – max",
+  "aboveUsualPrice": "Prix supérieur à votre moyenne habituelle (+{pct} %)",
+  "@aboveUsualPrice": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "belowUsualPrice": "Prix inférieur à votre moyenne habituelle ({pct} %)",
+  "@belowUsualPrice": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "seenOnReceipt": "Vu sur votre reçu {store} · {date}",
+  "@seenOnReceipt": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seenOnPurchase": "Acheté chez {store} · {date}",
+  "@seenOnPurchase": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "observationsInWindow": "{count} observations sur {days} jours",
+  "@observationsInWindow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "compareStores": "Comparer les magasins",
+  "storeComparisonTitle": "Comparateur de magasins",
+  "comparisonBasedOn": "Basé sur vos achats des {days} derniers jours. Ce ne sont pas des prix officiels.",
+  "@comparisonBasedOn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "knownPricesOn": "{known} prix connus sur {total} articles",
+  "@knownPricesOn": {
+    "placeholders": {
+      "known": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noComparisonData": "Pas encore assez de données. Scannez quelques reçus pour comparer vos magasins.",
+  "priceFreshnessFresh": "récent",
+  "priceFreshnessAcceptable": "< 1 mois",
+  "priceFreshnessOld": "< 3 mois",
+  "priceFreshnessStale": "ancien",
+  "unknownPrice": "prix inconnu",
+  "optimizePlan": "Optimiser mes achats",
+  "optimizationTitle": "Plan d'achat optimisé",
+  "maxStoresLabel": "Magasins max",
+  "estimatedSaving": "Économie estimée : {amount}",
+  "@estimatedSaving": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "singleStorePlan": "Tout au même endroit : {store} ({amount})",
+  "@singleStorePlan": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "notWorthSplitting": "Diviser vos achats ne vaut pas la peine : l'économie serait trop faible.",
+  "estimatedElsewhereNote": "Prix inconnus dans ces magasins, estimés d'après vos autres achats : {items}",
+  "@estimatedElsewhereNote": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "notEnoughPriceData": "Pas assez de données de prix pour optimiser cette liste.",
+  "windowDaysLabel": "Fenêtre",
+  "daysShort": "{days} j",
+  "@daysShort": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "quickScan": "Scanner",
+  "aReceipt": "un reçu"
 }
