@@ -114,21 +114,22 @@ export default function HeroSection() {
           </div>
 
           {/* Colonne visuelle */}
-          <div className="relative mx-auto w-full max-w-md">
+          <div className="relative mx-auto w-full max-w-[320px]">
             <div
               className="absolute -inset-6 rounded-[2.5rem] bg-green-100/70 blur-2xl"
               aria-hidden="true"
             ></div>
             <div className="relative rounded-3xl border border-gray-200 bg-white p-3 shadow-xl">
+              {/* Capture du tableau de bord dans la langue de la page */}
               <Image
-                src="/dash.png"
+                src={language === "fr" ? "/app-fr.jpg" : "/app-en.jpg"}
                 alt={
                   language === "fr"
                     ? "Tableau de bord de l'application EpiList"
                     : "EpiList app dashboard"
                 }
-                width={500}
-                height={600}
+                width={900}
+                height={1956}
                 className="w-full h-auto rounded-2xl object-cover"
                 priority
               />
