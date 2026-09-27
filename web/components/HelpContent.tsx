@@ -80,11 +80,11 @@ export default function HelpContent() {
                 <p className="mb-5 text-gray-600">{t("helpContactText")}</p>
                 <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6 text-sm font-medium">
                   <a
-                    href="mailto:support@epilist.app"
+                    href="mailto:contact@m2atech.com"
                     className="inline-flex items-center gap-2 text-epilist-green hover:text-green-700"
                   >
                     <Mail className="h-4 w-4" />
-                    support@epilist.app
+                    contact@m2atech.com
                   </a>
                   <span className="inline-flex items-center gap-2 text-gray-600">
                     <Clock className="h-4 w-4" />

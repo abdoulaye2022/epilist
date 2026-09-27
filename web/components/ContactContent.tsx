@@ -59,6 +59,25 @@ export default function ContactContent() {
       return;
     }
 
+    // Validation côté client (mêmes règles que l'API) pour des messages
+    // d'erreur clairs et bilingues avant tout appel réseau.
+    if (formData.message.trim().length < 10) {
+      setSubmitError(
+        language === "fr"
+          ? "Votre message doit contenir au moins 10 caractères."
+          : "Your message must be at least 10 characters long."
+      );
+      return;
+    }
+    if (formData.subject.trim().length === 0) {
+      setSubmitError(
+        language === "fr"
+          ? "Veuillez indiquer un sujet."
+          : "Please enter a subject."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await fetch(`${API_URL}/contact/feedback-anonymous`, {
@@ -75,7 +94,14 @@ export default function ContactContent() {
 
       const data = await res.json().catch(() => null);
       if (!res.ok || data?.success === false) {
-        throw new Error(data?.message ?? `Erreur ${res.status}`);
+        // Erreurs de validation de l'API : afficher la vraie raison
+        // plutôt qu'un échec générique.
+        const fieldErrors = data?.errors
+          ? Object.values(data.errors as Record<string, string[]>)
+              .flat()
+              .join(" ")
+          : null;
+        throw new Error(fieldErrors ?? data?.message ?? `Erreur ${res.status}`);
       }
 
       setIsSubmitted(true);
@@ -85,10 +111,14 @@ export default function ContactContent() {
         setFormData({ name: "", email: "", subject: "", message: "" });
       }, 3000);
     } catch (err) {
+      // Affiche la raison précise (ex. validation) quand on l'a
+      const detail = err instanceof Error && err.message ? err.message : null;
       setSubmitError(
-        language === "fr"
-          ? "L'envoi a échoué. Réessayez dans un instant ou écrivez-nous directement par email."
-          : "Sending failed. Try again shortly or email us directly."
+        detail && !detail.startsWith("Erreur ")
+          ? detail
+          : language === "fr"
+            ? "L'envoi a échoué. Réessayez dans un instant ou écrivez-nous par email."
+            : "Sending failed. Try again shortly or email us directly."
       );
     } finally {
       setIsSubmitting(false);
@@ -255,6 +285,7 @@ export default function ContactContent() {
                             <textarea
                               id="message"
                               name="message"
+                              minLength={10}
                               value={formData.message}
                               onChange={handleInputChange}
                               placeholder={t("messagePlaceholder")}

@@ -532,11 +532,11 @@ class CampaignController
         if ($lang === 'en') {
             $greeting = $firstName ? "Hello {$firstName}," : "Hello,";
             $footerText1 = "This page concerns your marketing email preferences.<br>You will continue to receive important emails about your account.";
-            $footerText2 = "Questions? Contact us at <a href='mailto:support@epilist.com'>support@epilist.com</a>";
+            $footerText2 = "Questions? Contact us at <a href='mailto:contact@m2atech.com'>contact@m2atech.com</a>";
         } else {
             $greeting = $firstName ? "Bonjour {$firstName}," : "Bonjour,";
             $footerText1 = "Cette page concerne vos préférences d'emails marketing.<br>Vous continuerez à recevoir les emails importants concernant votre compte.";
-            $footerText2 = "Des questions? Contactez-nous à <a href='mailto:support@epilist.com'>support@epilist.com</a>";
+            $footerText2 = "Des questions? Contactez-nous à <a href='mailto:contact@m2atech.com'>contact@m2atech.com</a>";
         }
 
         return "<!DOCTYPE html>

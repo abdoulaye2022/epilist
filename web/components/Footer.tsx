@@ -61,11 +61,11 @@ export default function Footer() {
               {t("footerTagline")}
             </p>
             <a
-              href="mailto:support@epilist.app"
+              href="mailto:contact@m2atech.com"
               className="mt-4 inline-flex items-center gap-2 text-sm text-gray-400 hover:text-green-400 transition-colors"
             >
               <Mail className="h-4 w-4" />
-              support@epilist.app
+              contact@m2atech.com
             </a>
           </div>
 
