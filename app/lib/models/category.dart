@@ -5,6 +5,11 @@ class Category {
   final int id;
   final int userId;
   final String name;
+
+  /// Identité commune des catégories par défaut (dairy, bakery...),
+  /// indépendante de l'utilisateur. Null pour les catégories personnalisées.
+  /// C'est sur ce kind que l'ordre des rayons d'un magasin est défini.
+  final String? kind;
   final String iconCode; // Code de l'icône Material (ex: "shopping_cart")
   final String colorHex; // Couleur en hexadécimal (ex: "#4CAF50")
   final int orderIndex; // Pour trier les catégories
@@ -16,6 +21,7 @@ class Category {
     required this.id,
     required this.userId,
     required this.name,
+    this.kind,
     required this.iconCode,
     required this.colorHex,
     this.orderIndex = 0,
@@ -224,6 +230,7 @@ class Category {
       id: _parseInt(json['id']),
       userId: _parseInt(json['user_id']),
       name: json['name'] as String? ?? '',
+      kind: json['kind'] as String?,
       iconCode: json['icon_code'] as String? ?? 'category',
       colorHex: json['color_hex'] as String? ?? '#4CAF50',
       orderIndex: _parseInt(json['order_index']),
@@ -249,6 +256,7 @@ class Category {
       'id': id,
       'user_id': userId,
       'name': name,
+      'kind': kind,
       'icon_code': iconCode,
       'color_hex': colorHex,
       'order_index': orderIndex,

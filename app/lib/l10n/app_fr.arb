@@ -75,7 +75,7 @@
   "settings": "Paramètres",
   "appSettings": "Paramètres de l'application",
   "security": "Sécurité",
-  "information": "Informations",
+  "information": "Information",
   "aboutEpiList": "À propos d'EpiList",
   "privacyPolicy": "Politique de confidentialité",
   "termsOfService": "Conditions d'utilisation",
@@ -217,7 +217,7 @@
   "createNewShare": "Créer un nouveau partage",
   "close": "Fermer",
   "today": "aujourd'hui",
-  "yesterday": "hier",
+  "yesterday": "Hier",
   "daysAgo": "il y a {days} jours",
   "@daysAgo": {
     "placeholders": {
@@ -274,7 +274,7 @@
   "readOnlyDescription": "Peut voir la liste mais pas la modifier",
   "editDescription": "Peut ajouter, modifier et marquer des articles",
   "adminDescription": "Peut tout faire, y compris partager et supprimer",
-  "total": "Total",
+  "total": "total",
   "progress": "Progression",
   "editList": "Modifier la liste",
   "thisListIsEmpty": "Cette liste est vide",
@@ -358,28 +358,40 @@
   "cannotActionReadOnly": "Vous ne pouvez pas {action} car cette liste est en mode lecture seule.\n\nVotre permission actuelle : {permission}",
   "@cannotActionReadOnly": {
     "placeholders": {
-      "action": {"type": "String"},
-      "permission": {"type": "String"}
+      "action": {
+        "type": "String"
+      },
+      "permission": {
+        "type": "String"
+      }
     }
   },
   "cannotActionPermission": "Vous n'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}",
   "@cannotActionPermission": {
     "placeholders": {
-      "action": {"type": "String"},
-      "permission": {"type": "String"}
+      "action": {
+        "type": "String"
+      },
+      "permission": {
+        "type": "String"
+      }
     }
   },
   "sharedByUser": "Partagée par {userName}",
   "@sharedByUser": {
     "placeholders": {
-      "userName": {"type": "String"}
+      "userName": {
+        "type": "String"
+      }
     }
   },
   "deleteItemTitle": "Supprimer l'article",
   "deleteQuickConfirm": "Supprimer \"{itemName}\" ?",
   "@deleteQuickConfirm": {
     "placeholders": {
-      "itemName": {"type": "String"}
+      "itemName": {
+        "type": "String"
+      }
     }
   },
   "newItem": "Nouvel Article",
@@ -431,7 +443,9 @@
   "verificationCodeSentToEmail": "Un code de vérification a été envoyé à {email}",
   "@verificationCodeSentToEmail": {
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "requestDeletion": "Demander la suppression",
@@ -439,7 +453,9 @@
   "accountWillBeDeletedOn": "Votre compte sera supprimé le {date}. Vous avez 30 jours pour annuler cette action.",
   "@accountWillBeDeletedOn": {
     "placeholders": {
-      "date": {"type": "String"}
+      "date": {
+        "type": "String"
+      }
     }
   },
   "deleteListTitle": "Supprimer la liste",
@@ -451,7 +467,9 @@
   "sureToDeleteItemFromList": "Êtes-vous sûr de vouloir supprimer \"{itemName}\" de votre liste ?",
   "@sureToDeleteItemFromList": {
     "placeholders": {
-      "itemName": {"type": "String"}
+      "itemName": {
+        "type": "String"
+      }
     }
   },
   "sureToLeaveQuestion": "Êtes-vous sûr de vouloir quitter",
@@ -505,7 +523,7 @@
   "accountDeletedIn30DaysCanCancel": "Votre compte sera supprimé dans 30 jours. Vous pouvez annuler cette action pendant cette période.",
   "accountDeletionCodeSent": "Code de suppression envoyé ! Vérifiez votre email.",
   "listCreatedSuccessfully": "Liste créée avec succès",
-  "listUpdatedSuccessfully": "Liste modifiée avec succès", 
+  "listUpdatedSuccessfully": "Liste modifiée avec succès",
   "listDeletedSuccessfully": "Liste supprimée avec succès",
   "listDuplicatedSuccessfully": "Liste dupliquée avec succès",
   "listsLoadedSuccessfully": "Listes chargées avec succès",
@@ -533,8 +551,12 @@
   "invitationMessage": "{owner} vous invite sur \"{listName}\"",
   "@invitationMessage": {
     "placeholders": {
-      "owner": {"type": "String"},
-      "listName": {"type": "String"}
+      "owner": {
+        "type": "String"
+      },
+      "listName": {
+        "type": "String"
+      }
     }
   },
   "directLinkRecommended": "Lien direct EpiList (recommandé)",
@@ -567,13 +589,12 @@
   "noInternetMessage": "Vous devez être connecté à Internet pour utiliser cette application. Veuillez vérifier votre connexion et réessayer.",
   "connectionTips": "Conseils :",
   "checkWifiConnection": "Vérifiez votre connexion Wi-Fi",
-  "checkMobileData": "Activez vos données mobiles", 
+  "checkMobileData": "Activez vos données mobiles",
   "restartRouter": "Redémarrez votre routeur si nécessaire",
-  "offlineMode": "Mode hors ligne - Connexion requise",
+  "offlineMode": "Mode hors ligne",
   "backOnline": "Connexion rétablie !",
   "connectionRequired": "Connexion Internet requise",
   "connectionRequiredForInvitation": "Connexion Internet requise pour ouvrir l'invitation",
-  "manageShares": "Gérer les partages",
   "productSuggestions": "Suggestions de produits",
   "noSuggestionsFound": "Aucune suggestion trouvée",
   "searchingSuggestions": "Recherche de suggestions...",
@@ -631,7 +652,7 @@
   "suggestionSaved": "Suggestion sauvegardée",
   "noSuggestionsYet": "Aucune suggestion pour le moment",
   "startTypingForSuggestions": "Commencez à taper pour voir vos suggestions",
-  "basedOnHistory": "Basé sur votre historique",
+  "basedOnHistory": "Basé sur votre historique d'achats",
   "autoComplete": "Saisie automatique",
   "suggestionHelper": "Vos produits fréquents apparaîtront ici",
   "lastUsed": "Dernière utilisation",
@@ -688,18 +709,26 @@
   "@suggestionDescription": {
     "description": "Description complète d'une suggestion",
     "placeholders": {
-      "name": {"type": "String"},
-      "usage": {"type": "String"},
-      "price": {"type": "String"},
-      "store": {"type": "String"}
+      "name": {
+        "type": "String"
+      },
+      "usage": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      }
     }
   },
   "similarItemDetected": "Article similaire détecté",
-  "itemToAdd": "Article à ajouter", 
+  "itemToAdd": "Article à ajouter",
   "product": "Produit",
   "store": "Magasin",
   "similarItemsFound": "Articles similaires trouvés",
-  "identical": "Identique", 
+  "identical": "Identique",
   "similar": "Similaire",
   "mergeWithExisting": "Fusionner avec l'existant",
   "addAnyway": "Ajouter quand même",
@@ -764,13 +793,13 @@
   "aboutMissionText": "EpiList révolutionne la façon dont vous gérez vos courses. Créez des listes intelligentes, suivez vos dépenses en temps réel, partagez avec votre famille et ne manquez plus jamais un article important grâce à notre système de gestion collaborative.",
   "aboutFeatures": "Fonctionnalités principales",
   "aboutFeaturesText": "• Création de compte sécurisée (prénom, nom, email)\n• Listes d'épicerie personnalisées et intelligentes\n• Ajout d'articles avec quantité, prix et magasin\n• Calcul automatique des totaux et pourcentages\n• Marquage en temps réel des articles achetés\n• Duplication rapide des listes existantes\n• Partage sécurisé via liens avec permissions\n• Gestion des droits (lecture, édition, administration)\n• Synchronisation sur tous vos appareils\n• Interface moderne et intuitive",
-  "aboutCollaboration": "Collaboration familiale", 
+  "aboutCollaboration": "Collaboration familiale",
   "aboutCollaborationText": "EpiList facilite les courses en famille avec son système de partage avancé. Partagez vos listes d'un simple lien, définissez qui peut voir, modifier ou administrer chaque liste. Tout le monde reste synchronisé en temps réel!",
   "aboutDevelopment": "Développement",
   "aboutDevelopmentText": "EpiList est développé avec passion par M2atech Solutions Inc. pour vous offrir la meilleure expérience de gestion d'épicerie. Nous sommes constamment à l'écoute de vos retours pour améliorer l'app et ajouter de nouvelles fonctionnalités innovantes.",
   "aboutContact": "Nous contacter",
   "aboutRateApp": "Évaluer l'app",
-  "aboutShareApp": "Partager EpiList", 
+  "aboutShareApp": "Partager EpiList",
   "aboutWebsite": "Site web",
   "aboutRightsReserved": "Tous droits réservés.",
   "aboutDevelopedWith": "Développé avec",
@@ -851,7 +880,6 @@
   "updateCurrency": "Mettre à jour la devise",
   "select": "Sélectionner",
   "each": "chacun",
-  "total": "total",
   "unitPrice": "Prix unitaire",
   "totalPrice": "Prix total",
   "formattedPrice": "Prix formaté",
@@ -971,8 +999,8 @@
   "shared": "Partagée",
   "sharedWithYou": "Partagée avec vous",
   "sortBy": "Trier par",
-  "sortByAmount": "Par montant",
-  "sortByQuantity": "Par quantité", 
+  "sortByAmount": "Trier par montant",
+  "sortByQuantity": "Par quantité",
   "sortByFrequency": "Par fréquence",
   "unknownProduct": "Produit inconnu",
   "itemsCount": "articles",
@@ -981,7 +1009,7 @@
   "stores": "Magasins",
   "averagePriceLabel": "Prix moyen",
   "amountSort": "Montant",
-  "quantitySort": "Quantité", 
+  "quantitySort": "Quantité",
   "frequencySort": "Fréquence",
   "loadingAnalytics": "Chargement des analyses...",
   "errorLoadingAnalytics": "Erreur lors du chargement des analyses",
@@ -1005,7 +1033,7 @@
   "selectPeriod": "Sélectionner la période",
   "changePeriod": "Changer la période",
   "daily": "Quotidien",
-  "weekly": "Hebdomadaire", 
+  "weekly": "Hebdomadaire",
   "monthly": "Mensuel",
   "yearly": "Annuel",
   "period": "Période",
@@ -1028,10 +1056,10 @@
   "timeoutErrorAnalytics": "Délai d'attente dépassé pour les analyses",
   "noSpendingRecorded": "Aucune dépense enregistrée",
   "dailyTrends": "Tendances quotidiennes",
-  "weeklyTrends": "Tendances hebdomadaires", 
+  "weeklyTrends": "Tendances hebdomadaires",
   "yearlyTrends": "Tendances annuelles",
-  "day": "Jour",
-  "week": "Semaine", 
+  "day": "jour",
+  "week": "Semaine",
   "month": "Mois",
   "year": "Année",
   "dailyAverage": "Moyenne/jour",
@@ -1050,7 +1078,7 @@
   "averageSpending": "Dépense moyenne",
   "totalForPeriod": "Total pour la période",
   "previousPeriod": "Période précédente",
-  "nextPeriod": "Période suivante", 
+  "nextPeriod": "Période suivante",
   "currentPeriod": "Période actuelle",
   "comparePeriods": "Comparer les périodes",
   "dataLoadingError": "Erreur de chargement des données",
@@ -1094,7 +1122,7 @@
   "amountRequired": "Le montant est requis",
   "invalidAmount": "Montant invalide",
   "amountMustBePositive": "Le montant doit être positif",
-  "amountTooHigh": "Le montant est trop élevé",
+  "amountTooHigh": "Montant trop élevé (max 999 999,99)",
   "spendingSummary": "Résumé des dépenses",
   "totalExpensesSummary": "Vue d'ensemble de vos dépenses",
   "totalFromReceipts": "Total des factures",
@@ -1122,7 +1150,7 @@
   "added": "Ajouté",
   "receiptAddedSuccessfully": "Facture ajoutée avec succès",
   "receiptUpdatedSuccessfully": "Facture mise à jour avec succès",
-  "receiptDeletedSuccessfully": "Facture supprimée avec succès", 
+  "receiptDeletedSuccessfully": "Facture supprimée avec succès",
   "receiptsLoadedSuccessfully": "Factures chargées avec succès",
   "errorLoadingReceipts": "Erreur lors du chargement des factures",
   "errorAddingReceipt": "Erreur lors de l'ajout de la facture",
@@ -1167,8 +1195,7 @@
   "filterByDate": "Filtrer par date",
   "filterByAmount": "Filtrer par montant",
   "sortByDate": "Trier par date",
-  "sortByStore": "Trier par magasin",
-  "sortByAmount": "Trier par montant",
+  "sortByStore": "Magasin",
   "newestFirst": "Plus récent en premier",
   "oldestFirst": "Plus ancien en premier",
   "highestFirst": "Montant le plus élevé en premier",
@@ -1269,7 +1296,7 @@
   "expired": "Expirés",
   "upcoming": "À venir",
   "warning": "Attention",
-  "sortByName": "Trier par nom",
+  "sortByName": "Nom",
   "filters": "Filtres",
   "scope": "Portée",
   "general": "Général",
@@ -1280,13 +1307,11 @@
   "spendingProgress": "Progression des dépenses",
   "specificList": "Liste spécifique",
   "budgetPeriod": "Période du budget",
-  "enterAmount": "Entrez le montant",
   "pleaseEnterAmount": "Veuillez entrer le montant",
   "pleaseEnterValidAmount": "Veuillez entrer un montant valide",
   "budgetScope": "Portée du budget",
   "enterBudgetName": "Entrez le nom du budget",
   "pleaseEnterBudgetName": "Veuillez entrer le nom du budget",
-  "budgetNameTooShort": "Le nom du budget est trop court",
   "preview": "Aperçu",
   "type": "Type",
   "amount": "Montant",
@@ -1295,12 +1320,10 @@
   "unknownList": "Liste inconnue",
   "date": "Date",
   "suggestions": "Suggestions",
-  "day": "jour",
   "days": "jours",
   "all": "Tous",
-  "amountTooHigh": "Montant trop élevé (max 999 999,99)",
   "budgetPeriodTypeWeekly": "Hebdomadaire",
-  "budgetPeriodTypeMonthly": "Mensuel", 
+  "budgetPeriodTypeMonthly": "Mensuel",
   "budgetPeriodTypeYearly": "Annuel",
   "budgetPeriodTypeCustom": "Personnalisé",
   "budgetFilterAll": "Tous",
@@ -1330,16 +1353,16 @@
   "pauseBudget": "Mettre en pause le budget",
   "resumeBudget": "Reprendre le budget",
   "budgetOnTrack": "Budget sous contrôle",
-  "budgetWarning": "Alerte budget", 
+  "budgetWarning": "Alerte budget",
   "budgetExceeded": "Budget dépassé",
   "budgetDetails": "Détails du budget",
   "budgetProgress": "Progression du budget",
   "spentAmount": "Montant dépensé",
-  "remainingAmount": "Montant restant", 
+  "remainingAmount": "Montant restant",
   "budgetStatus": "Statut du budget",
   "budgetCreateError": "Erreur lors de la création du budget",
   "budgetUpdateError": "Erreur lors de la mise à jour du budget",
-  "budgetDeleteError": "Erreur lors de la suppression du budget", 
+  "budgetDeleteError": "Erreur lors de la suppression du budget",
   "budgetLoadError": "Erreur lors du chargement du budget",
   "noResultsFound": "Aucun résultat trouvé",
   "tryAdjustingFilters": "Essayez d'ajuster vos filtres ou d'effacer les filtres actuels",
@@ -1367,15 +1390,23 @@
   "cannotPerformActionReadOnly": "Vous ne pouvez pas {action} car cette liste est en mode lecture seule.\n\nVotre permission actuelle : {permission}",
   "@cannotPerformActionReadOnly": {
     "placeholders": {
-      "action": {"type": "String"},
-      "permission": {"type": "String"}
+      "action": {
+        "type": "String"
+      },
+      "permission": {
+        "type": "String"
+      }
     }
   },
   "cannotPerformAction": "Vous n'avez pas la permission de {action}.\n\nVotre permission actuelle : {permission}",
   "@cannotPerformAction": {
     "placeholders": {
-      "action": {"type": "String"},
-      "permission": {"type": "String"}
+      "action": {
+        "type": "String"
+      },
+      "permission": {
+        "type": "String"
+      }
     }
   },
   "codePastedSuccessfully": "Code collé avec succès !",
@@ -1405,7 +1436,7 @@
   "exportStarted": "Export démarré",
   "checkDownloadsFolder": "Vérifiez votre dossier de téléchargements",
   "pdfExportError": "Erreur d'export PDF",
-  "csvExportError": "Erreur d'export CSV", 
+  "csvExportError": "Erreur d'export CSV",
   "fileCreationError": "Erreur de création de fichier",
   "permissionDeniedError": "Permission refusée pour la création de fichier",
   "overBudget": "Dépassement budget",
@@ -1422,10 +1453,10 @@
   "ownListsOnly": "Mes listes uniquement",
   "dataSourceBreakdown": "Répartition des sources de données",
   "andXMore": "Et",
-"moreCategories": "autres catégories",
-"january": "Janvier",
+  "moreCategories": "autres catégories",
+  "january": "Janvier",
   "february": "Février",
-  "march": "Mars", 
+  "march": "Mars",
   "april": "Avril",
   "may": "Mai",
   "june": "Juin",
@@ -1438,7 +1469,7 @@
   "jan": "Jan",
   "feb": "Fév",
   "mar": "Mar",
-  "apr": "Avr", 
+  "apr": "Avr",
   "mayShort": "Mai",
   "jun": "Jun",
   "jul": "Jul",
@@ -1447,7 +1478,7 @@
   "oct": "Oct",
   "nov": "Nov",
   "dec": "Déc",
-   "monday": "Lundi",
+  "monday": "Lundi",
   "tuesday": "Mardi",
   "wednesday": "Mercredi",
   "thursday": "Jeudi",
@@ -1462,25 +1493,20 @@
   "saturdayShort": "Sam",
   "sundayShort": "Dim",
   "support": "Support",
-"sendFeedback": "Envoyer un feedback",
-"feedbackSubtitle": "Aidez-nous à améliorer EpiList",
-"feedbackDescription": "Votre feedback nous aide à améliorer EpiList. Décrivez votre expérience, signalez un bug ou proposez une amélioration.",
-"feedbackType": "Type de feedback",
-"priority": "Priorité",
-"subject": "Sujet",
-"message": "Message",
-"subjectHint": "Décrivez brièvement votre feedback...",
-"subjectRequired": "Le sujet est requis",
-"subjectTooShort": "Le sujet doit contenir au moins 5 caractères",
-"messageHint": "Décrivez en détail votre feedback, problème rencontré ou suggestion d'amélioration...",
-"messageRequired": "Le message est requis",
-"messageTooShort": "Le message doit contenir au moins 10 caractères",
-"feedbackPrivacyNote": "Votre feedback sera envoyé à notre équipe technique. Aucune information personnelle sensible ne sera partagée.",
-"feedbackType": "Type de feedback",
-  "priority": "Priorité",
+  "sendFeedback": "Envoyer un feedback",
+  "feedbackSubtitle": "Aidez-nous à améliorer EpiList",
   "feedbackDescription": "Votre feedback nous aide à améliorer EpiList. Décrivez votre expérience, signalez un bug ou proposez une amélioration.",
+  "feedbackType": "Type de feedback",
+  "priority": "Priorité",
+  "subject": "Sujet",
+  "message": "Message",
+  "subjectHint": "Décrivez brièvement votre feedback...",
+  "subjectRequired": "Le sujet est requis",
+  "subjectTooShort": "Le sujet doit contenir au moins 5 caractères",
+  "messageHint": "Décrivez en détail votre feedback, problème rencontré ou suggestion d'amélioration...",
+  "messageRequired": "Le message est requis",
+  "messageTooShort": "Le message doit contenir au moins 10 caractères",
   "feedbackPrivacyNote": "Votre feedback sera envoyé à notre équipe technique. Aucune information personnelle sensible ne sera partagée.",
-  
   "bugReport": "Signaler un bug",
   "bugReportDescription": "Problème technique ou dysfonctionnement",
   "newFeature": "Nouvelle fonctionnalité",
@@ -1491,26 +1517,13 @@
   "questionDescription": "Aide ou question sur l'utilisation",
   "other": "Autre",
   "otherDescription": "Autre type de feedback",
-  
   "priorityLow": "Faible",
   "priorityNormal": "Normal",
   "priorityHigh": "Élevée",
   "priorityUrgent": "Urgente",
-  
-  "sendFeedback": "Envoyer un feedback",
-  "subject": "Sujet",
-  "subjectHint": "Décrivez brièvement votre feedback...",
-  "subjectRequired": "Le sujet est requis",
-  "subjectTooShort": "Le sujet doit contenir au moins 5 caractères",
-  "message": "Message",
-  "messageHint": "Décrivez en détail votre feedback, problème rencontré ou suggestion d'amélioration...",
-  "messageRequired": "Le message est requis",
-  "messageTooShort": "Le message doit contenir au moins 10 caractères",
-  "send": "Envoyer",
-  "cancel": "Annuler",
   "continueWithGoogle": "Continuer avec Google",
   "continueWithApple": "Continuer avec Apple",
-  "signUpWithGoogle": "S'inscrire avec Google", 
+  "signUpWithGoogle": "S'inscrire avec Google",
   "signUpWithApple": "S'inscrire avec Apple",
   "ssoDisclaimer": "En utilisant SSO, vous acceptez nos conditions d'utilisation",
   "ssoSignupDisclaimer": "En vous inscrivant via SSO, vous acceptez nos conditions",
@@ -1518,18 +1531,13 @@
   "loginSuccessful": "Connexion réussie",
   "dontHaveAccount": "Vous n'avez pas de compte ?",
   "activeFilters": "Filtres actifs",
-  "sortBy": "Trier par",
-  "filterByStore": "Filtrer par magasin",
   "allStores": "Tous les magasins",
   "noStoresAvailable": "Aucun magasin disponible",
   "purchased": "Achetés",
   "unpurchased": "Non achetés",
-  "sortByName": "Nom",
   "sortByPrice": "Prix",
-  "sortByStore": "Magasin",
   "sortByDateAdded": "Date d'ajout",
   "category": "Catégorie",
-  "categories": "Catégories",
   "addCategory": "Ajouter une catégorie",
   "editCategory": "Modifier la catégorie",
   "deleteCategory": "Supprimer la catégorie",
@@ -1578,7 +1586,6 @@
   "errorLoadingMessages": "Erreur lors du chargement des messages",
   "deleteMessage": "Supprimer le message",
   "deleteMessageConfirmation": "Êtes-vous sûr de vouloir supprimer ce message ?",
-  "yesterday": "Hier",
   "chatWithTeam": "Discuter avec l'équipe",
   "openChat": "Ouvrir la discussion",
   "smartSuggestions": "Suggestions Intelligentes",
@@ -1587,13 +1594,10 @@
   "reject": "Rejeter",
   "addToList": "Ajouter à la liste",
   "suggestionAdded": "Suggestion ajoutée à la liste",
-  "errorLoadingSuggestions": "Erreur lors du chargement des suggestions",
-  "noSuggestionsYet": "Aucune suggestion pour le moment",
   "noSuggestionsDescription": "Commencez vos achats pour obtenir des suggestions personnalisées",
   "highConfidence": "Fortement recommandé",
   "mediumConfidence": "Bonnes correspondances",
   "lowConfidence": "Pourrait vous plaire",
-  "information": "Information",
   "suggestionsInfoDescription": "Nous analysons votre historique d'achats pour suggérer les produits dont vous pourriez avoir besoin.",
   "patternBased": "Basé sur les habitudes",
   "patternBasedDescription": "Selon la fréquence d'achat de vos articles",
@@ -1603,7 +1607,6 @@
   "associationsDescription": "Articles souvent achetés ensemble",
   "trending": "Tendances",
   "trendingDescription": "Articles populaires en ce moment",
-  "basedOnHistory": "Basé sur votre historique d'achats",
   "oftenBoughtWith": "Souvent acheté avec {item}",
   "seasonalProduct": "Produit saisonnier",
   "confidenceScore": "Confiance",
@@ -1612,7 +1615,6 @@
   "editReceiptDescription": "Modifiez les informations de votre facture",
   "noChangeDetected": "Aucune modification détectée",
   "synchronizing": "Synchronisation",
-  "offlineMode": "Mode hors ligne",
   "offlineWithPendingActions": "Hors ligne avec actions en attente",
   "pendingActions": "Actions en attente",
   "allSynced": "Tout est synchronisé",
@@ -1628,7 +1630,6 @@
   "idle": "Inactif",
   "offlineDataWillSync": "Vos modifications seront synchronisées automatiquement lorsque vous serez de nouveau en ligne",
   "syncNow": "Synchroniser maintenant",
-  "close": "Fermer",
   "offlineModeModificationsWillSync": "Mode hors ligne - Les modifications seront synchronisées plus tard",
   "connectionRestored": "Connexion rétablie",
   "preferencesSavedSuccessfully": "Préférences enregistrées avec succès",
@@ -1650,5 +1651,29 @@
   "voiceRetry": "Réessayer",
   "voiceAdd": "Ajouter",
   "voiceExamplesTitle": "Exemples de commandes:",
-  "voiceExamples": "• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\""
+  "voiceExamples": "• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\"",
+  "myStores": "Mes magasins",
+  "addStore": "Ajouter un magasin",
+  "renameStore": "Renommer le magasin",
+  "deleteStore": "Supprimer le magasin",
+  "deleteStoreConfirm": "Supprimer « {name} » ? L'ordre de ses rayons sera conservé si vous le recréez.",
+  "@deleteStoreConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "aisleOrder": "Ordre des rayons",
+  "aisleOrderHint": "Glissez les rayons dans l'ordre où vous les parcourez dans ce magasin. Votre liste se triera automatiquement.",
+  "noStoresYet": "Aucun magasin",
+  "noStoresHint": "Ajoutez vos magasins pour trier vos listes selon l'ordre de leurs rayons.",
+  "storeCreated": "Magasin ajouté",
+  "storeRenamed": "Magasin renommé",
+  "storeDeleted": "Magasin supprimé",
+  "aisleOrderSaved": "Ordre des rayons enregistré",
+  "sortByAisle": "Par rayon",
+  "chooseStore": "Je suis au magasin...",
+  "noActiveStore": "Aucun magasin",
+  "aisleOrderNotConfigured": "Configurez d'abord l'ordre des rayons de ce magasin dans Profil > Mes magasins."
 }

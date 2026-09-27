@@ -21,6 +21,7 @@ use App\Controllers\{
     CampaignController,
     ContactController,  //  AJOUT DE L'IMPORT MANQUANT
     CategoryController,
+    StoreController,
     MessageController,
     SuggestionController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
@@ -323,6 +324,15 @@ $app->group('', function ($group) {
     });
 
     $group->put('/categories/reorder', [CategoryController::class, 'reorder']);
+
+    // 🏪 MAGASINS ET ORDRE DES RAYONS (tri par rayon)
+    $group->get('/stores', [StoreController::class, 'index']);
+    $group->post('/stores', [StoreController::class, 'store']);
+    $group->put('/stores/{id}', [StoreController::class, 'update']);
+    $group->delete('/stores/{id}', [StoreController::class, 'destroy']);
+    $group->get('/stores/{id}/category-order', [StoreController::class, 'getCategoryOrder']);
+    $group->put('/stores/{id}/category-order', [StoreController::class, 'setCategoryOrder']);
+
     $group->get('/categories/{id}', [CategoryController::class, 'show']);
     $group->put('/categories/{id}', [CategoryController::class, 'update']);
     $group->delete('/categories/{id}', [CategoryController::class, 'destroy']);

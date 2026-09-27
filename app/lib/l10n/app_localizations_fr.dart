@@ -4228,4 +4228,60 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get voiceExamples =>
       '• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\"';
+
+  @override
+  String get myStores => 'Mes magasins';
+
+  @override
+  String get addStore => 'Ajouter un magasin';
+
+  @override
+  String get renameStore => 'Renommer le magasin';
+
+  @override
+  String get deleteStore => 'Supprimer le magasin';
+
+  @override
+  String deleteStoreConfirm(String name) {
+    return 'Supprimer « $name » ? L\'ordre de ses rayons sera conservé si vous le recréez.';
+  }
+
+  @override
+  String get aisleOrder => 'Ordre des rayons';
+
+  @override
+  String get aisleOrderHint =>
+      'Glissez les rayons dans l\'ordre où vous les parcourez dans ce magasin. Votre liste se triera automatiquement.';
+
+  @override
+  String get noStoresYet => 'Aucun magasin';
+
+  @override
+  String get noStoresHint =>
+      'Ajoutez vos magasins pour trier vos listes selon l\'ordre de leurs rayons.';
+
+  @override
+  String get storeCreated => 'Magasin ajouté';
+
+  @override
+  String get storeRenamed => 'Magasin renommé';
+
+  @override
+  String get storeDeleted => 'Magasin supprimé';
+
+  @override
+  String get aisleOrderSaved => 'Ordre des rayons enregistré';
+
+  @override
+  String get sortByAisle => 'Par rayon';
+
+  @override
+  String get chooseStore => 'Je suis au magasin...';
+
+  @override
+  String get noActiveStore => 'Aucun magasin';
+
+  @override
+  String get aisleOrderNotConfigured =>
+      'Configurez d\'abord l\'ordre des rayons de ce magasin dans Profil > Mes magasins.';
 }

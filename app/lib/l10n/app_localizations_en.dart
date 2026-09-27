@@ -4156,4 +4156,60 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get voiceExamples =>
       '• \"3 apples\"\n• \"5 kilograms of tomatoes\"\n• \"Bread\"\n• \"2 liters of milk\"';
+
+  @override
+  String get myStores => 'My stores';
+
+  @override
+  String get addStore => 'Add a store';
+
+  @override
+  String get renameStore => 'Rename store';
+
+  @override
+  String get deleteStore => 'Delete store';
+
+  @override
+  String deleteStoreConfirm(String name) {
+    return 'Delete “$name”? Its aisle order will be kept if you recreate it.';
+  }
+
+  @override
+  String get aisleOrder => 'Aisle order';
+
+  @override
+  String get aisleOrderHint =>
+      'Drag the aisles in the order you walk through them in this store. Your list will sort itself automatically.';
+
+  @override
+  String get noStoresYet => 'No stores';
+
+  @override
+  String get noStoresHint =>
+      'Add your stores to sort your lists by their aisle order.';
+
+  @override
+  String get storeCreated => 'Store added';
+
+  @override
+  String get storeRenamed => 'Store renamed';
+
+  @override
+  String get storeDeleted => 'Store deleted';
+
+  @override
+  String get aisleOrderSaved => 'Aisle order saved';
+
+  @override
+  String get sortByAisle => 'By aisle';
+
+  @override
+  String get chooseStore => 'I\'m at store...';
+
+  @override
+  String get noActiveStore => 'No store';
+
+  @override
+  String get aisleOrderNotConfigured =>
+      'First set this store\'s aisle order in Profile > My stores.';
 }

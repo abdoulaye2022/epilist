@@ -26,7 +26,10 @@ import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
 import 'package:epilist/widgets/list_detail/list_stats_header.dart';
 import 'package:epilist/widgets/list_detail/list_detail_app_bar.dart'; // ✅ AJOUT
 import 'package:epilist/widgets/list_detail/empty_items_state.dart';
+import 'package:epilist/models/store.dart';
 import 'package:epilist/services/category_guesser.dart';
+import 'package:epilist/services/store_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/widgets/list_detail/item_filters_bar.dart';
 import 'package:epilist/widgets/list_detail/voice_input_dialog.dart';
 import 'package:epilist/widgets/share_list_dialog.dart';
@@ -71,6 +74,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
   late ShoppingList currentList;
   ItemFilterCriteria _filterCriteria = ItemFilterCriteria();
 
+  // Tri par rayon : magasin actif (choix local à l'appareil, par liste)
+  // et classement rayon -> position pour ce magasin.
+  List<Store> _myStores = [];
+  Store? _activeStore;
+  Map<int, int> _aisleRank = {};
+
+  String get _activeStorePrefKey => 'active_store_for_list_${currentList.id}';
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +90,144 @@ class _ListDetailViewState extends State<_ListDetailView> {
     // Charger les catégories
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoryBloc>().add(const LoadCategories());
+      _loadStoresAndActiveStore();
     });
+  }
+
+  Future<void> _loadStoresAndActiveStore() async {
+    try {
+      final stores = await context.read<StoreService>().getStores();
+      final prefs = await SharedPreferences.getInstance();
+      final savedId = prefs.getInt(_activeStorePrefKey);
+      if (!mounted) return;
+      setState(() {
+        _myStores = stores;
+        _activeStore = savedId == null
+            ? null
+            : stores.where((s) => s.id == savedId).firstOrNull;
+        _rebuildAisleRank();
+      });
+    } catch (_) {
+      // Hors ligne ou API indisponible : le tri par rayon est simplement
+      // masqué, le reste de l'écran fonctionne normalement.
+    }
+  }
+
+  /// Construit categoryId -> position du rayon, à partir de l'ordre des
+  /// kinds du magasin actif et des catégories de l'utilisateur.
+  void _rebuildAisleRank() {
+    final store = _activeStore;
+    final categoryState = context.read<CategoryBloc>().state;
+    if (store == null ||
+        !store.hasAisleOrder ||
+        categoryState is! CategoryLoaded) {
+      _aisleRank = {};
+      return;
+    }
+    final kindRank = <String, int>{
+      for (var i = 0; i < store.categoryOrder.length; i++)
+        store.categoryOrder[i]: i,
+    };
+    _aisleRank = {
+      for (final cat in categoryState.categories)
+        if (cat.kind != null && kindRank.containsKey(cat.kind))
+          cat.id: kindRank[cat.kind]!,
+    };
+  }
+
+  Future<void> _selectActiveStore(Store? store) async {
+    final l10n = AppLocalizations.of(context)!;
+    final prefs = await SharedPreferences.getInstance();
+    if (store == null) {
+      await prefs.remove(_activeStorePrefKey);
+    } else {
+      await prefs.setInt(_activeStorePrefKey, store.id);
+    }
+    if (!mounted) return;
+    setState(() {
+      _activeStore = store;
+      _rebuildAisleRank();
+      if (store != null && store.hasAisleOrder) {
+        _filterCriteria.sortBy = ItemSortBy.aisle;
+      } else if (_filterCriteria.sortBy == ItemSortBy.aisle) {
+        _filterCriteria.sortBy = ItemSortBy.dateAdded;
+      }
+    });
+    if (store != null && !store.hasAisleOrder) {
+      SmartSnackBarManager.showWarningSnackBar(
+        context,
+        l10n.aisleOrderNotConfigured,
+        duration: const Duration(seconds: 4),
+      );
+    }
+  }
+
+  /// Sélecteur « Je suis au magasin... » : n'apparaît que si l'utilisateur
+  /// a configuré au moins un magasin.
+  Widget _buildActiveStoreSelector() {
+    final l10n = AppLocalizations.of(context)!;
+    final active = _activeStore;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Row(
+        children: [
+          Icon(Icons.storefront,
+              size: 20,
+              color: active != null ? Colors.green[600] : Colors.grey[500]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              active?.name ?? l10n.chooseStore,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight:
+                    active != null ? FontWeight.w600 : FontWeight.normal,
+                color: active != null ? Colors.black87 : Colors.grey[600],
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          PopupMenuButton<int>(
+            color: Colors.white,
+            icon: Icon(Icons.expand_more, color: Colors.grey[600]),
+            onSelected: (id) {
+              _selectActiveStore(
+                  id == -1 ? null : _myStores.where((s) => s.id == id).firstOrNull);
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: -1,
+                child: Text(l10n.noActiveStore,
+                    style: const TextStyle(color: Colors.black87)),
+              ),
+              ..._myStores.map(
+                (s) => PopupMenuItem(
+                  value: s.id,
+                  child: Row(
+                    children: [
+                      Icon(
+                        s.hasAisleOrder ? Icons.route : Icons.storefront,
+                        size: 18,
+                        color: s.hasAisleOrder
+                            ? Colors.green[600]
+                            : Colors.grey[500],
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(s.name,
+                            style: const TextStyle(color: Colors.black87),
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   // Méthode pour rafraîchir les données de la liste
@@ -234,6 +382,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildBody(ListItemState state) {
+    // Recalculé à chaque build : couvre le cas où les catégories arrivent
+    // après les magasins (course au chargement). ~12 entrées, coût nul.
+    _rebuildAisleRank();
+
     List<ListItem> items = [];
     List<ListItem> filteredItems = [];
     bool isLoading = false;
@@ -242,7 +394,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       isLoading = true;
     } else if (state is ListItemLoaded) {
       items = state.items;
-      filteredItems = _filterCriteria.apply(items);
+      filteredItems = _filterCriteria.apply(items, aisleRank: _aisleRank);
     }
 
     // Extraire les magasins uniques pour le filtre
@@ -265,6 +417,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             (sum, item) => sum + (item.price ?? 0) * item.quantity,
           ),
         ),
+        if (_myStores.isNotEmpty) _buildActiveStoreSelector(),
         // Widget de filtres
         BlocBuilder<CategoryBloc, CategoryState>(
           builder: (context, categoryState) {
@@ -287,6 +440,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
               },
               availableStores: availableStores,
               availableCategories: categories,
+              aisleSortAvailable: _activeStore?.hasAisleOrder == true,
             );
           },
         ),

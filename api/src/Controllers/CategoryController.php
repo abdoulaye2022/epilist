@@ -344,18 +344,18 @@ class CategoryController
 
             // Catégories par défaut
             $defaultCategories = [
-                ['name' => 'Fruits & Légumes', 'icon_code' => 'eco', 'color_hex' => '#4CAF50'],
-                ['name' => 'Viandes & Poissons', 'icon_code' => 'set_meal', 'color_hex' => '#F44336'],
-                ['name' => 'Produits laitiers', 'icon_code' => 'egg', 'color_hex' => '#FFC107'],
-                ['name' => 'Boulangerie', 'icon_code' => 'bakery_dining', 'color_hex' => '#FF9800'],
-                ['name' => 'Boissons', 'icon_code' => 'local_cafe', 'color_hex' => '#00BCD4'],
-                ['name' => 'Snacks & Sucreries', 'icon_code' => 'cake', 'color_hex' => '#E91E63'],
-                ['name' => 'Hygiène & Beauté', 'icon_code' => 'spa', 'color_hex' => '#9C27B0'],
-                ['name' => 'Entretien ménager', 'icon_code' => 'cleaning_services', 'color_hex' => '#2196F3'],
-                ['name' => 'Bébé & Enfants', 'icon_code' => 'child_care', 'color_hex' => '#FF5722'],
-                ['name' => 'Animaux', 'icon_code' => 'pets', 'color_hex' => '#795548'],
-                ['name' => 'Santé & Pharmacie', 'icon_code' => 'medical_services', 'color_hex' => '#F44336'],
-                ['name' => 'Autre', 'icon_code' => 'category', 'color_hex' => '#9E9E9E'],
+                ['name' => 'Fruits & Légumes', 'kind' => 'fruits_vegetables', 'icon_code' => 'eco', 'color_hex' => '#4CAF50'],
+                ['name' => 'Viandes & Poissons', 'kind' => 'meat_fish', 'icon_code' => 'set_meal', 'color_hex' => '#F44336'],
+                ['name' => 'Produits laitiers', 'kind' => 'dairy', 'icon_code' => 'egg', 'color_hex' => '#FFC107'],
+                ['name' => 'Boulangerie', 'kind' => 'bakery', 'icon_code' => 'bakery_dining', 'color_hex' => '#FF9800'],
+                ['name' => 'Boissons', 'kind' => 'drinks', 'icon_code' => 'local_cafe', 'color_hex' => '#00BCD4'],
+                ['name' => 'Snacks & Sucreries', 'kind' => 'snacks', 'icon_code' => 'cake', 'color_hex' => '#E91E63'],
+                ['name' => 'Hygiène & Beauté', 'kind' => 'hygiene', 'icon_code' => 'spa', 'color_hex' => '#9C27B0'],
+                ['name' => 'Entretien ménager', 'kind' => 'household', 'icon_code' => 'cleaning_services', 'color_hex' => '#2196F3'],
+                ['name' => 'Bébé & Enfants', 'kind' => 'baby', 'icon_code' => 'child_care', 'color_hex' => '#FF5722'],
+                ['name' => 'Animaux', 'kind' => 'pets', 'icon_code' => 'pets', 'color_hex' => '#795548'],
+                ['name' => 'Santé & Pharmacie', 'kind' => 'health', 'icon_code' => 'medical_services', 'color_hex' => '#F44336'],
+                ['name' => 'Autre', 'kind' => 'other', 'icon_code' => 'category', 'color_hex' => '#9E9E9E'],
             ];
 
             $categories = [];
@@ -363,6 +363,7 @@ class CategoryController
                 $category = Category::create([
                     'user_id' => $userId,
                     'name' => $categoryData['name'],
+                    'kind' => $categoryData['kind'] ?? null,
                     'icon_code' => $categoryData['icon_code'],
                     'color_hex' => $categoryData['color_hex'],
                     'order_index' => $index,

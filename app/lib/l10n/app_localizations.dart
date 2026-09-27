@@ -7950,6 +7950,108 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'• \"3 pommes\"\n• \"5 kilogrammes de tomates\"\n• \"Pain\"\n• \"2 litres de lait\"'**
   String get voiceExamples;
+
+  /// No description provided for @myStores.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes magasins'**
+  String get myStores;
+
+  /// No description provided for @addStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un magasin'**
+  String get addStore;
+
+  /// No description provided for @renameStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renommer le magasin'**
+  String get renameStore;
+
+  /// No description provided for @deleteStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le magasin'**
+  String get deleteStore;
+
+  /// No description provided for @deleteStoreConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer « {name} » ? L\'ordre de ses rayons sera conservé si vous le recréez.'**
+  String deleteStoreConfirm(String name);
+
+  /// No description provided for @aisleOrder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ordre des rayons'**
+  String get aisleOrder;
+
+  /// No description provided for @aisleOrderHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Glissez les rayons dans l\'ordre où vous les parcourez dans ce magasin. Votre liste se triera automatiquement.'**
+  String get aisleOrderHint;
+
+  /// No description provided for @noStoresYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun magasin'**
+  String get noStoresYet;
+
+  /// No description provided for @noStoresHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos magasins pour trier vos listes selon l\'ordre de leurs rayons.'**
+  String get noStoresHint;
+
+  /// No description provided for @storeCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin ajouté'**
+  String get storeCreated;
+
+  /// No description provided for @storeRenamed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin renommé'**
+  String get storeRenamed;
+
+  /// No description provided for @storeDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin supprimé'**
+  String get storeDeleted;
+
+  /// No description provided for @aisleOrderSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ordre des rayons enregistré'**
+  String get aisleOrderSaved;
+
+  /// No description provided for @sortByAisle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par rayon'**
+  String get sortByAisle;
+
+  /// No description provided for @chooseStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je suis au magasin...'**
+  String get chooseStore;
+
+  /// No description provided for @noActiveStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun magasin'**
+  String get noActiveStore;
+
+  /// No description provided for @aisleOrderNotConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurez d\'abord l\'ordre des rayons de ce magasin dans Profil > Mes magasins.'**
+  String get aisleOrderNotConfigured;
 }
 
 class _AppLocalizationsDelegate

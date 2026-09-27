@@ -29,6 +29,7 @@ import 'package:epilist/widgets/profile/profile_section.dart';
 import 'package:epilist/widgets/profile/language_setting_tile.dart';
 import 'package:epilist/screens/suggestion_management_widget.dart';
 import 'package:epilist/screens/email_preferences_screen.dart';
+import 'package:epilist/screens/stores_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -213,7 +214,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           iconColor: Colors.orange[600],
           iconBackgroundColor: Colors.orange.withOpacity(0.1),
         ),
+        ProfileActionTile(
+          icon: Icons.storefront,
+          title: l10n.myStores,
+          subtitle: l10n.aisleOrder,
+          onTap: _navigateToStores,
+          iconColor: Colors.green[600],
+          iconBackgroundColor: Colors.green.withOpacity(0.1),
+        ),
       ],
+    );
+  }
+
+  void _navigateToStores() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const StoresScreen()),
     );
   }
 

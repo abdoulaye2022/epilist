@@ -8,6 +8,9 @@ enum ItemSortBy {
   price,
   store,
   dateAdded,
+
+  /// Ordre des rayons du magasin actif (tri par rayon).
+  aisle,
 }
 
 class ItemFilterCriteria {
@@ -48,7 +51,10 @@ class ItemFilterCriteria {
     return count;
   }
 
-  List<ListItem> apply(List<ListItem> items) {
+  /// [aisleRank] : position du rayon par categoryId (magasin actif).
+  /// Requis seulement pour le tri par rayon ; un article sans catégorie ou
+  /// dont le rayon n'est pas ordonné passe en fin de liste.
+  List<ListItem> apply(List<ListItem> items, {Map<int, int>? aisleRank}) {
     List<ListItem> filtered = List.from(items);
 
     // Filtrer par magasin
@@ -110,6 +116,20 @@ class ItemFilterCriteria {
         case ItemSortBy.dateAdded:
           comparison = a.createdAt.compareTo(b.createdAt);
           break;
+        case ItemSortBy.aisle:
+          const unranked = 1 << 20;
+          int rankOf(ListItem item) {
+            final catId = item.categoryId;
+            if (catId == null || aisleRank == null) return unranked;
+            return aisleRank[catId] ?? unranked;
+          }
+          comparison = rankOf(a).compareTo(rankOf(b));
+          if (comparison == 0) {
+            comparison = a.productName
+                .toLowerCase()
+                .compareTo(b.productName.toLowerCase());
+          }
+          break;
       }
 
       return ascending ? comparison : -comparison;
@@ -125,12 +145,17 @@ class ItemFiltersBar extends StatefulWidget {
   final List<String> availableStores;
   final List<Map<String, dynamic>> availableCategories;
 
+  /// true quand un magasin actif avec un ordre de rayons est sélectionné :
+  /// l'option de tri « Par rayon » n'apparaît que dans ce cas.
+  final bool aisleSortAvailable;
+
   const ItemFiltersBar({
     super.key,
     required this.criteria,
     required this.onCriteriaChanged,
     required this.availableStores,
     this.availableCategories = const [],
+    this.aisleSortAvailable = false,
   });
 
   @override
@@ -291,6 +316,8 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
   Widget _buildSortOptions() {
     final l10n = AppLocalizations.of(context)!;
     final sortOptions = [
+      if (widget.aisleSortAvailable)
+        {'key': ItemSortBy.aisle, 'label': l10n.sortByAisle, 'icon': Icons.route},
       {'key': ItemSortBy.name, 'label': l10n.sortByName, 'icon': Icons.sort_by_alpha},
       {'key': ItemSortBy.price, 'label': l10n.sortByPrice, 'icon': Icons.attach_money},
       {'key': ItemSortBy.store, 'label': l10n.sortByStore, 'icon': Icons.store},
@@ -663,6 +690,8 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
         return l10n.sortByStore;
       case ItemSortBy.dateAdded:
         return l10n.sortByDateAdded;
+      case ItemSortBy.aisle:
+        return l10n.sortByAisle;
     }
   }
 
