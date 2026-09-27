@@ -11,34 +11,39 @@ class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
-  // Instance Dio dédiée pour les tests de connectivité
-  late final Dio _dio;
+  // Dio paresseux et RECRÉABLE : même si quelqu'un appelle dispose(),
+  // le prochain test réseau repart sur une instance saine (un Dio fermé
+  // ferait échouer tous les checks -> faux « hors ligne » permanent).
+  Dio? _dioInstance;
+  Dio get _dio => _dioInstance ??= Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
+          sendTimeout: const Duration(seconds: 5),
+          headers: {
+            'Cache-Control': 'no-cache',
+            'User-Agent': 'EpiList-ConnectivityCheck/1.0',
+          },
+          followRedirects: false,
+          maxRedirects: 0,
+        ),
+      );
 
   // Stream controller pour notifier les changements de connectivité
-  final _connectivityController = StreamController<bool>.broadcast();
-  Stream<bool> get connectivityStream => _connectivityController.stream;
+  StreamController<bool> _connectivityController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get connectivityStream {
+    if (_connectivityController.isClosed) {
+      _connectivityController = StreamController<bool>.broadcast();
+    }
+    return _connectivityController.stream;
+  }
 
   bool _isConnected = true;
   bool get isConnected => _isConnected;
 
   /// Initialise le service de connectivité
   Future<void> initialize() async {
-    // Configurer Dio pour les tests de connectivité
-    _dio = Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-        sendTimeout: const Duration(seconds: 5),
-        headers: {
-          'Cache-Control': 'no-cache',
-          'User-Agent': 'EpiList-ConnectivityCheck/1.0',
-        },
-        // Désactiver les redirections pour un test plus rapide
-        followRedirects: false,
-        maxRedirects: 0,
-      ),
-    );
-
     // Vérifier la connectivité initiale
     await _updateConnectivityStatus();
 
@@ -188,10 +193,12 @@ class ConnectivityService {
     }
   }
 
-  /// Nettoie les ressources
+  /// « Dispose » sans danger : ce singleton vit toute la vie du
+  /// processus. On coupe seulement l'abonnement système ; le stream et
+  /// le Dio restent utilisables (ou se recréent) pour que les tests
+  /// réseau ne tombent jamais en panne définitive.
   void dispose() {
     _connectivitySubscription?.cancel();
-    _connectivityController.close();
-    _dio.close();
+    _connectivitySubscription = null;
   }
 }

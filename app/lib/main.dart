@@ -486,8 +486,12 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    // NE PAS disposer ConnectivityService ici : c'est un singleton qui vit
+    // toute la vie du processus. AuthWrapper est remplacé lors de la
+    // navigation post-déconnexion (pushNamedAndRemoveUntil('/login')) ;
+    // le disposer fermait son Dio et son stream -> tous les tests réseau
+    // suivants échouaient -> « Mode hors ligne » permanent après logout.
     WidgetsBinding.instance.removeObserver(this);
-    ConnectivityService().dispose();
     DeepLinkHandler.dispose();
     super.dispose();
   }
