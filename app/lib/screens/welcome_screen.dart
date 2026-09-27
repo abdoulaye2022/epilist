@@ -1,4 +1,6 @@
-// screens/welcome_screen.dart - VERSION OPTIMISÉE ET SIMPLIFIÉE
+// screens/welcome_screen.dart - Première impression : sobre, aérée, ancrée
+// sur la marque. Sélecteur de langue compact en haut, promesses de l'app au
+// centre, action principale en bas.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,279 +20,220 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-
-              // ✅ LOGO SIMPLIFIÉ
-              _buildLogo(),
-
-              const SizedBox(height: 32),
-
-              // ✅ TITRE ET DESCRIPTION
-              _buildHeader(l10n),
-
-              const SizedBox(height: 40),
-
-              // ✅ SÉLECTION DE LANGUE SIMPLIFIÉE
-              _buildLanguageSelector(context, l10n),
-
-              const SizedBox(height: 40),
-
-              // ✅ BOUTON PRINCIPAL SIMPLIFIÉ
-              _buildMainButton(context, l10n),
-
-              const SizedBox(height: 32),
-
-              // ✅ LIENS INFORMATIFS SIMPLIFIÉS
-              _buildInfoLinks(context, l10n),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ✅ LOGO SIMPLIFIÉ SANS BACKGROUND
-  Widget _buildLogo() {
-    return Container(
-      width: 120,
-      height: 120,
-      decoration: const BoxDecoration(
-        color: Colors.transparent, // ✅ Background transparent
-      ),
-      child: Image.asset(
-        'assets/images/app_logo.png',
-        width: 120,
-        height: 120,
-        fit: BoxFit.contain,
-        errorBuilder:
-            (_, __, ___) => Icon(
-              Icons.shopping_cart_rounded,
-              size: 60,
-              color: AppColors.primary,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _buildLanguageToggle(context),
+                      ),
+                      const Spacer(flex: 2),
+                      _buildLogo(),
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        l10n.welcomeToEpiList,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        l10n.groceryListApp,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      _buildFeatureRow(
+                        Icons.group_outlined,
+                        l10n.shareAndCollaborate,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      _buildFeatureRow(
+                        Icons.route_outlined,
+                        l10n.sortByAisle,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      _buildFeatureRow(
+                        Icons.savings_outlined,
+                        l10n.trackYourBudget,
+                      ),
+                      const Spacer(flex: 3),
+                      SizedBox(
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: () => _navigateToLogin(context),
+                          child: Text(l10n.getStarted),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      _buildFooterLinks(context, l10n),
+                    ],
+                  ),
+                ),
+              ),
             ),
+          ),
+        ),
       ),
     );
   }
 
-  // ✅ TITRE ET DESCRIPTION SIMPLIFIÉS
-  Widget _buildHeader(AppLocalizations l10n) {
-    return Column(
-      children: [
-        Text(
-          l10n.welcomeToEpiList,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+  Widget _buildLogo() {
+    return Center(
+      child: Container(
+        width: 104,
+        height: 104,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Image.asset(
+          'assets/images/app_logo.png',
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Icon(
+            Icons.shopping_cart_rounded,
+            size: 48,
+            color: AppColors.primary,
           ),
-          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.groceryListApp,
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 
-  // ✅ SÉLECTEUR DE LANGUE SIMPLIFIÉ
-  Widget _buildLanguageSelector(BuildContext context, AppLocalizations l10n) {
+  /// Sélecteur de langue compact : deux segments FR / EN.
+  Widget _buildLanguageToggle(BuildContext context) {
     return BlocBuilder<LocalizationBloc, LocalizationState>(
       builder: (context, state) {
-        String currentLanguage = 'fr';
-        if (state is LocalizationLoaded) {
-          currentLanguage = state.locale.languageCode;
+        final current =
+            state is LocalizationLoaded ? state.locale.languageCode : 'fr';
+
+        Widget segment(String code, String label) {
+          final selected = current == code;
+          return GestureDetector(
+            onTap: () =>
+                context.read<LocalizationBloc>().add(ChangeLanguage(code)),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 7,
+              ),
+              decoration: BoxDecoration(
+                color: selected ? AppColors.surface : Colors.transparent,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: selected ? AppColors.border : Colors.transparent,
+                ),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
+                ),
+              ),
+            ),
+          );
         }
 
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            color: const Color(0xFFEFF1EF),
+            borderRadius: BorderRadius.circular(999),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.language, color: AppColors.textSecondary, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.selectLanguage,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildLanguageButton(
-                      context,
-                      'fr',
-                      '🇫🇷 ${l10n.french}',
-                      currentLanguage == 'fr',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildLanguageButton(
-                      context,
-                      'en',
-                      '🇺🇸 ${l10n.english}',
-                      currentLanguage == 'en',
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [segment('fr', 'FR'), segment('en', 'EN')],
           ),
         );
       },
     );
   }
 
-  // ✅ BOUTON DE LANGUE SIMPLIFIÉ
-  Widget _buildLanguageButton(
-    BuildContext context,
-    String languageCode,
-    String label,
-    bool isSelected,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        context.read<LocalizationBloc>().add(ChangeLanguage(languageCode));
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.background,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  // ✅ BOUTON PRINCIPAL SIMPLIFIÉ
-  Widget _buildMainButton(BuildContext context, AppLocalizations l10n) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: () => _navigateToLogin(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 2,
-        ),
-        child: Text(
-          l10n.getStarted,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-
-  // ✅ LIENS INFORMATIFS SIMPLIFIÉS
-  Widget _buildInfoLinks(BuildContext context, AppLocalizations l10n) {
-    return Column(
+  Widget _buildFeatureRow(IconData icon, String label) {
+    return Row(
       children: [
-        Text(
-          l10n.information,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+        Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight,
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
+          child: Icon(icon, size: 21, color: AppColors.primaryDark),
         ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildInfoButton(
-              context,
-              icon: Icons.info_outline,
-              label: l10n.aboutEpiList,
-              onTap: () => _navigateToAbout(context),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textPrimary,
             ),
-            _buildInfoButton(
-              context,
-              icon: Icons.privacy_tip_outlined,
-              label: l10n.privacyPolicy,
-              onTap: () => _navigateToPrivacyPolicy(context),
-            ),
-            _buildInfoButton(
-              context,
-              icon: Icons.article_outlined,
-              label: l10n.termsOfService,
-              onTap: () => _navigateToTerms(context),
-            ),
-          ],
+          ),
         ),
       ],
     );
   }
 
-  // ✅ BOUTON D'INFO SIMPLIFIÉ
-  Widget _buildInfoButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 80,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.textSecondary, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+  Widget _buildFooterLinks(BuildContext context, AppLocalizations l10n) {
+    Widget link(String label, VoidCallback onTap) => TextButton(
+          onPressed: onTap,
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.textSecondary,
+            minimumSize: Size.zero,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            textStyle: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
-      ),
+          ),
+          child: Text(label),
+        );
+
+    Widget dot() => const Text(
+          '·',
+          style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+        );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        link(l10n.aboutEpiList, () => _navigateToAbout(context)),
+        dot(),
+        link(l10n.privacyPolicy, () => _navigateToPrivacyPolicy(context)),
+        dot(),
+        link(l10n.termsOfService, () => _showTerms(context)),
+      ],
     );
   }
 
-  // ✅ MÉTHODES DE NAVIGATION SIMPLIFIÉES
   void _navigateToLogin(BuildContext context) {
     Navigator.push(
       context,
@@ -312,20 +255,19 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 
-  void _navigateToTerms(BuildContext context) {
+  void _showTerms(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(AppLocalizations.of(context)!.termsOfService),
-            content: Text(AppLocalizations.of(context)!.termsAcceptanceText),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(AppLocalizations.of(context)!.understood),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.termsOfService),
+        content: Text(AppLocalizations.of(context)!.termsAcceptanceText),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.understood),
           ),
+        ],
+      ),
     );
   }
 }

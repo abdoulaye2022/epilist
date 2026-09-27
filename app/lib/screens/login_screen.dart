@@ -1,4 +1,5 @@
-// screens/login_screen.dart - VERSION CORRIGÉE SANS OVERFLOW
+// screens/login_screen.dart - Connexion : sobre et directe. Les styles
+// viennent du design system (app_theme.dart), l'écran n'en redéfinit aucun.
 import 'package:epilist/theme/app_theme.dart';
 import 'dart:io';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
@@ -30,43 +31,36 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isGoogleLoading = false;
   bool _isAppleLoading = false;
 
+  bool get _anyLoading => _isLoading || _isGoogleLoading || _isAppleLoading;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: _handleAuthState,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
-
-                // ✅ HEADER SIMPLIFIÉ
                 _buildHeader(l10n),
-
-                const SizedBox(height: 40),
-
-                // ✅ BOUTONS SSO AVEC APPLE RESTAURÉ
-                _buildSSOButtons(l10n),
-
-                const SizedBox(height: 24),
-
-                // ✅ DIVIDER NORMAL
-                _buildDivider(l10n),
-
-                const SizedBox(height: 24),
-
-                // ✅ FORMULAIRE AVEC BORDURES VERTES FINES
+                const SizedBox(height: AppSpacing.xl),
                 _buildLoginForm(l10n),
-
-                const SizedBox(height: 24),
-
-                // ✅ LIENS CORRIGÉS SANS OVERFLOW
+                const SizedBox(height: AppSpacing.lg),
+                _buildDivider(l10n),
+                const SizedBox(height: AppSpacing.lg),
+                _buildSSOButtons(l10n),
+                const SizedBox(height: AppSpacing.lg),
                 _buildFooterLinks(l10n),
               ],
             ),
@@ -76,24 +70,267 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ✅ GESTION D'ÉTAT SIMPLIFIÉE
+  Widget _buildHeader(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Image.asset(
+            'assets/images/app_logo.png',
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.shopping_cart_rounded,
+              size: 32,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          l10n.login,
+          style: const TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          l10n.manageGroceryListsEasily,
+          style: const TextStyle(
+            fontSize: 15,
+            color: AppColors.textSecondary,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginForm(AppLocalizations l10n) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            enabled: !_isLoading,
+            decoration: InputDecoration(
+              labelText: l10n.email,
+              prefixIcon: const Icon(Icons.mail_outline, size: 20),
+            ),
+            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) return l10n.pleaseEnterEmail;
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                  .hasMatch(value!.trim())) {
+                return l10n.invalidEmail;
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextFormField(
+            controller: _passwordController,
+            obscureText: _isObscure,
+            enabled: !_isLoading,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              labelText: l10n.password,
+              prefixIcon: const Icon(Icons.lock_outline, size: 20),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isObscure
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  size: 20,
+                ),
+                onPressed: () => setState(() => _isObscure = !_isObscure),
+              ),
+            ),
+            onFieldSubmitted: (_) => _login(),
+            validator: (value) {
+              if (value?.isEmpty ?? true) return l10n.pleaseEnterPassword;
+              if (value!.length < 3) return l10n.passwordMinThreeCharacters;
+              return null;
+            },
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _isLoading ? null : _showForgotPasswordDialog,
+              child: Text(l10n.forgotPassword),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _anyLoading ? null : _login,
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(l10n.login),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider(AppLocalizations l10n) {
+    return Row(
+      children: [
+        const Expanded(child: Divider()),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            l10n.or,
+            style: const TextStyle(
+              color: AppColors.textDisabled,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const Expanded(child: Divider()),
+      ],
+    );
+  }
+
+  Widget _buildSSOButtons(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: 50,
+          child: OutlinedButton.icon(
+            onPressed: _anyLoading ? null : _signInWithGoogle,
+            style: OutlinedButton.styleFrom(backgroundColor: AppColors.surface),
+            icon: _isGoogleLoading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.textSecondary,
+                    ),
+                  )
+                : const Icon(
+                    Icons.g_mobiledata,
+                    size: 26,
+                    color: Color(0xFF4285F4),
+                  ),
+            label: Text(
+              _isGoogleLoading ? '…' : l10n.continueWithGoogle,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ),
+        if (Platform.isIOS) ...[
+          const SizedBox(height: AppSpacing.sm + 4),
+          SizedBox(
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: _anyLoading ? null : _signInWithApple,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+              ),
+              icon: _isAppleLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.apple, size: 20),
+              label: Text(
+                _isAppleLoading ? '…' : l10n.continueWithApple,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildFooterLinks(AppLocalizations l10n) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            l10n.dontHaveAccount,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        TextButton(
+          onPressed: _isLoading
+              ? null
+              : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SignUpPage()),
+                  ),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(l10n.createAccount),
+        ),
+      ],
+    );
+  }
+
+  // ===========================================================================
+  // LOGIQUE (inchangée par la refonte visuelle)
+  // ===========================================================================
+
   void _handleAuthState(BuildContext context, AuthState state) {
     final l10n = AppLocalizations.of(context)!;
 
-    // Gestion du loading par type d'authentification
     setState(() {
       if (state is SSOLoading) {
-        // Loading SSO spécifique
         _isGoogleLoading = state.provider == 'google';
         _isAppleLoading = state.provider == 'apple';
-        _isLoading = false; // Pas de loading pour le formulaire classique
+        _isLoading = false;
       } else if (state is AuthLoading) {
-        // Loading classique (email/password)
         _isLoading = true;
         _isGoogleLoading = false;
         _isAppleLoading = false;
       } else {
-        // Reset de tous les loading (success, error, initial, etc.)
         _isLoading = false;
         _isGoogleLoading = false;
         _isAppleLoading = false;
@@ -107,7 +344,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         String message;
         if (authState.authMethod == 'google') {
-          // ✅ ANDROID: Message intelligent selon le contexte
           if (authState.message?.contains('créé') == true) {
             message = 'Compte Google créé et connecté avec succès !';
           } else {
@@ -130,16 +366,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       case SSOError:
         final ssoError = state as SSOError;
-
-        // ✅ ANDROID: Gestion intelligente des erreurs SSO
         String errorMessage = ssoError.error;
 
-        // Messages plus conviviaux pour Android
         if (errorMessage.contains('Aucun compte trouvé')) {
           errorMessage =
               'Aucun compte trouvé avec cet email Google. Création automatique en cours...';
-
-          // ✅ Retry automatique après une courte pause
           Future.delayed(const Duration(seconds: 2), () {
             if (mounted && !_isLoading) {
               _signInWithGoogle();
@@ -148,8 +379,6 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (errorMessage.contains('Un compte existe déjà')) {
           errorMessage =
               'Un compte existe avec cet email. Connectez-vous d\'abord avec votre mot de passe pour lier votre compte Google.';
-
-          // ✅ Pré-remplir l'email si disponible
           if (ssoError.details?.isNotEmpty == true) {
             try {
               final email = _extractEmailFromError(ssoError.details!);
@@ -180,7 +409,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ✅ NOUVELLE MÉTHODE: Extraire email des détails d'erreur
   String _extractEmailFromError(String errorDetails) {
     try {
       final emailRegex = RegExp(
@@ -193,371 +421,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ✅ HEADER SIMPLIFIÉ
-  Widget _buildHeader(AppLocalizations l10n) {
-    return Column(
-      children: [
-        // Logo simple sans background
-        Container(
-          width: 80,
-          height: 80,
-          decoration: const BoxDecoration(
-            color: Colors.transparent, // ✅ Background transparent
-          ),
-          child: Image.asset(
-            'assets/images/app_logo.png',
-            width: 80,
-            height: 80,
-            fit: BoxFit.contain,
-            errorBuilder:
-                (_, __, ___) => Icon(
-                  Icons.shopping_cart_rounded,
-                  size: 40,
-                  color: AppColors.primary,
-                ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'EpiList',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryDark,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.manageGroceryListsEasily,
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  // ✅ BOUTONS SSO AVEC APPLE CACHÉ SUR ANDROID
-  Widget _buildSSOButtons(AppLocalizations l10n) {
-    return Column(
-      children: [
-        // Bouton Google normal
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: OutlinedButton.icon(
-            onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signInWithGoogle,
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.white,
-              side: BorderSide(color: AppColors.border),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon:
-                _isGoogleLoading
-                    ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.textSecondary,
-                      ),
-                    )
-                    : Icon(
-                      Icons.g_mobiledata,
-                      color: AppColors.error,
-                      size: 20,
-                    ),
-            label: Text(
-              _isGoogleLoading ? 'Connexion...' : l10n.continueWithGoogle,
-              style: const TextStyle(
-                fontSize: 15,
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-
-        // ✅ Bouton Apple uniquement sur iOS (PRÉSERVÉ)
-        if (Platform.isIOS) ...[
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-              onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signInWithApple,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              icon:
-                  _isAppleLoading
-                      ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                      : const Icon(Icons.apple, size: 18),
-              label: Text(
-                _isAppleLoading ? 'Connexion...' : l10n.continueWithApple,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  // ✅ DIVIDER NORMAL
-  Widget _buildDivider(AppLocalizations l10n) {
-    return Row(
-      children: [
-        const Expanded(child: Divider()),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(l10n.or, style: TextStyle(color: AppColors.textSecondary)),
-        ),
-        const Expanded(child: Divider()),
-      ],
-    );
-  }
-
-  // ✅ FORMULAIRE AVEC BORDURES VERTES FINES UNIQUEMENT
-  Widget _buildLoginForm(AppLocalizations l10n) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          // Email avec bordure verte fine
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            enabled: !_isLoading,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
-            ),
-            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-            validator: (value) {
-              if (value?.trim().isEmpty ?? true) return l10n.pleaseEnterEmail;
-              if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value!.trim())) {
-                return l10n.invalidEmail;
-              }
-              return null;
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // Password avec bordure verte fine
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _isObscure,
-            enabled: !_isLoading,
-            textInputAction: TextInputAction.done,
-            decoration: InputDecoration(
-              labelText: l10n.password,
-              prefixIcon: const Icon(Icons.lock_outline),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isObscure ? Icons.visibility : Icons.visibility_off,
-                ),
-                onPressed: () => setState(() => _isObscure = !_isObscure),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.green[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-              filled: true,
-              fillColor: AppColors.background,
-            ),
-            onFieldSubmitted: (_) => _login(),
-            validator: (value) {
-              if (value?.isEmpty ?? true) return l10n.pleaseEnterPassword;
-              if (value!.length < 3) return l10n.passwordMinThreeCharacters;
-              return null;
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          // Mot de passe oublié
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: _isLoading ? null : _showForgotPasswordDialog,
-              child: Text(
-                l10n.forgotPassword,
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Bouton de connexion normal
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child:
-                  _isLoading
-                      ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                      : Text(
-                        l10n.login,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ✅ LIENS DU FOOTER CORRIGÉS SANS OVERFLOW
-  Widget _buildFooterLinks(AppLocalizations l10n) {
-    return Center(
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(
-            l10n.dontHaveAccount,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
-            textAlign: TextAlign.center,
-          ),
-          TextButton(
-            onPressed:
-                _isLoading
-                    ? null
-                    : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SignUpPage()),
-                    ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              l10n.createAccount,
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ✅ ALTERNATIVE: Version en colonnes pour très petits écrans
-  Widget _buildFooterLinksAlternative(AppLocalizations l10n) {
-    return Column(
-      children: [
-        Text(
-          l10n.dontHaveAccount,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        TextButton(
-          onPressed:
-              _isLoading
-                  ? null
-                  : () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SignUpPage()),
-                  ),
-          child: Text(
-            l10n.createAccount,
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ✅ MÉTHODES SSO SIMPLIFIÉES
-
   void _signInWithGoogle() async {
     if (_isLoading) return;
-
     try {
-      debugPrint('🔵 [LoginScreen] === DÉBUT CONNEXION GOOGLE ===');
-      debugPrint('🔵 [LoginScreen] Déclenchement GoogleSignInRequested event...');
-
-      // ✅ ANDROID: Utiliser toujours GoogleSignInRequested (logique unifiée côté serveur)
       context.read<AuthBloc>().add(const GoogleSignInRequested());
-
-      debugPrint('🔵 [LoginScreen] Event GoogleSignInRequested envoyé au Bloc');
     } catch (e) {
-      debugPrint('❌ [LoginScreen] ERREUR CRITIQUE: $e');
-      debugPrint('❌ [LoginScreen] Stack trace: ${StackTrace.current}');
       SmartSnackBarManager.showErrorSnackBar(
         context,
         'Erreur lors de la connexion Google: ${e.toString()}',
@@ -565,22 +433,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ✅ MÉTHODE APPLE SIGN-IN RESTAURÉE AVEC VÉRIFICATION
   void _signInWithApple() async {
     try {
-      // Vérifier la disponibilité d'Apple Sign-In
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!isAvailable) {
-        String errorMessage =
-            Platform.isIOS
-                ? 'Apple Sign-In non disponible sur cet appareil'
-                : 'Apple Sign-In est uniquement disponible sur iOS';
-
+        String errorMessage = Platform.isIOS
+            ? 'Apple Sign-In non disponible sur cet appareil'
+            : 'Apple Sign-In est uniquement disponible sur iOS';
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
-
-      // Déclencher la connexion Apple
       context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
       SmartSnackBarManager.showErrorSnackBar(
@@ -594,161 +456,67 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-        LoginButtonPressed(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
-      );
+            LoginButtonPressed(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            ),
+          );
     }
   }
 
-  // ✅ DIALOG MODERNE POUR MOT DE PASSE OUBLIÉ
   void _showForgotPasswordDialog() {
     final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
-      builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 10,
-            insetPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 24,
-            ),
-            child: Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 400),
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Icône principale
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.orange[50],
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Icon(
-                        Icons.lock_reset_rounded,
-                        size: 40,
-                        color: AppColors.warning,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Titre
-                    Text(
-                      l10n.forgotPassword,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Description
-                    Text(
-                      l10n.resetPasswordSecurely,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Boutons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: AppColors.border),
-                              ),
-                            ),
-                            child: Text(
-                              l10n.cancel,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => PasswordChangeScreen(
-                                        initialEmail:
-                                            _emailController.text
-                                                    .trim()
-                                                    .isNotEmpty
-                                                ? _emailController.text.trim()
-                                                : null,
-                                      ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.warning,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 2,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.security, size: 18),
-                                const SizedBox(width: 6),
-                                Text(
-                                  l10n.reset,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: const Icon(
+                Icons.lock_reset_rounded,
+                size: 22,
+                color: AppColors.primaryDark,
               ),
             ),
+            const SizedBox(width: AppSpacing.sm + 4),
+            Expanded(child: Text(l10n.forgotPassword)),
+          ],
+        ),
+        content: Text(l10n.resetPasswordSecurely),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.textSecondary,
+            ),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PasswordChangeScreen(
+                    initialEmail: _emailController.text.trim().isNotEmpty
+                        ? _emailController.text.trim()
+                        : null,
+                  ),
+                ),
+              );
+            },
+            child: Text(l10n.reset),
+          ),
+        ],
+      ),
     );
   }
 
@@ -769,11 +537,10 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (_) => EmailVerificationScreen(
-                  email: email,
-                  fromRegistration: false,
-                ),
+            builder: (_) => EmailVerificationScreen(
+              email: email,
+              fromRegistration: false,
+            ),
           ),
         );
       }

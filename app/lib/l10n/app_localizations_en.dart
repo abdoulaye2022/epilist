@@ -4232,4 +4232,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uncategorizedAisle => 'Uncategorized';
+
+  @override
+  String get shareAndCollaborate => 'Share your lists with family';
+
+  @override
+  String get trackYourBudget => 'Track your grocery budgets';
 }

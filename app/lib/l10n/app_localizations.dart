@@ -8088,6 +8088,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Non classé'**
   String get uncategorizedAisle;
+
+  /// No description provided for @shareAndCollaborate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez vos listes en famille'**
+  String get shareAndCollaborate;
+
+  /// No description provided for @trackYourBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivez vos budgets d\'épicerie'**
+  String get trackYourBudget;
 }
 
 class _AppLocalizationsDelegate

@@ -1691,5 +1691,7 @@
   "storesMerged": "Magasins fusionnés",
   "mergeUnavailableOffline": "Fusion indisponible hors ligne",
   "storePendingSync": "En attente de synchronisation",
-  "uncategorizedAisle": "Non classé"
+  "uncategorizedAisle": "Non classé",
+  "shareAndCollaborate": "Partagez vos listes en famille",
+  "trackYourBudget": "Suivez vos budgets d'épicerie"
 }

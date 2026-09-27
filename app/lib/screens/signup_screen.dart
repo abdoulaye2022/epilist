@@ -364,37 +364,30 @@ class _SignUpPageState extends State<SignUpPage> {
         // Bouton Google corrigé
         SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 50,
           child: OutlinedButton.icon(
             onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signUpWithGoogle,
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.white,
-              side: BorderSide(color: AppColors.border),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon:
-                _isGoogleLoading
-                    ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.textSecondary,
-                      ),
-                    )
-                    : Icon(
-                      Icons.g_mobiledata,
-                      color: AppColors.error,
-                      size: 20,
+            style: OutlinedButton.styleFrom(backgroundColor: AppColors.surface),
+            icon: _isGoogleLoading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.textSecondary,
                     ),
+                  )
+                : const Icon(
+                    Icons.g_mobiledata,
+                    size: 26,
+                    color: Color(0xFF4285F4),
+                  ),
             label: Text(
-              _isGoogleLoading ? 'Création...' : l10n.signUpWithGoogle,
+              _isGoogleLoading ? '…' : l10n.signUpWithGoogle,
               style: const TextStyle(
                 fontSize: 15,
+                fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -405,15 +398,12 @@ class _SignUpPageState extends State<SignUpPage> {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 50,
             child: ElevatedButton.icon(
               onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signUpWithApple,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
               ),
               icon:
                   _isAppleLoading
@@ -455,8 +445,15 @@ class _SignUpPageState extends State<SignUpPage> {
       children: [
         const Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(l10n.or, style: TextStyle(color: AppColors.textSecondary)),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            l10n.or,
+            style: const TextStyle(
+              color: AppColors.textDisabled,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
         const Expanded(child: Divider()),
       ],
@@ -580,33 +577,19 @@ class _SignUpPageState extends State<SignUpPage> {
           // Bouton d'inscription normal
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 52,
             child: ElevatedButton(
               onPressed: (_isLoading || !_acceptTerms) ? null : _signUp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child:
-                  _isLoading
-                      ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                      : Text(
-                        l10n.createMyAccount,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
                       ),
+                    )
+                  : Text(l10n.createMyAccount),
             ),
           ),
         ],
@@ -629,35 +612,11 @@ class _SignUpPageState extends State<SignUpPage> {
       enabled: !_isLoading,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      // Bordures, remplissage et couleurs : hérités du design system.
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon), // Couleur par défaut
+        prefixIcon: Icon(icon, size: 20),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.primary,
-          ), // Bordure verte fine
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Colors.green[300]!,
-          ), // Bordure verte fine
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.primary,
-          ), // Bordure verte fine
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.red[400]!),
-        ),
-        filled: true,
-        fillColor: AppColors.background,
-        // Pas de labelStyle pour garder les couleurs par défaut
       ),
       validator: validator,
     );
@@ -724,8 +683,7 @@ class _SignUpPageState extends State<SignUpPage> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.green[200]!),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Row(
             children: [

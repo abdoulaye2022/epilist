@@ -1690,5 +1690,7 @@
   "storesMerged": "Stores merged",
   "mergeUnavailableOffline": "Merge unavailable offline",
   "storePendingSync": "Waiting for sync",
-  "uncategorizedAisle": "Uncategorized"
+  "uncategorizedAisle": "Uncategorized",
+  "shareAndCollaborate": "Share your lists with family",
+  "trackYourBudget": "Track your grocery budgets"
 }

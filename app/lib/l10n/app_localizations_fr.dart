@@ -4304,4 +4304,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get uncategorizedAisle => 'Non classé';
+
+  @override
+  String get shareAndCollaborate => 'Partagez vos listes en famille';
+
+  @override
+  String get trackYourBudget => 'Suivez vos budgets d\'épicerie';
 }
