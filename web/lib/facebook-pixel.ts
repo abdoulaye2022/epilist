@@ -28,7 +28,7 @@ export const fbEvent = (eventName: string, parameters: Record<string, any> = {})
 // ==========================================
 
 type Platform = 'ios' | 'android'
-type DownloadSource = 'header' | 'hero_main_cta' | 'hero_main_cta_desktop' | 'cta_section' | 'footer'
+type DownloadSource = 'header' | 'hero_main_cta' | 'hero_main_cta_desktop' | 'cta_section' | 'footer' | 'download_page'
 
 // Tracking téléchargement app pour Facebook (événement de conversion)
 export const fbTrackAppDownload = (platform: Platform, source: DownloadSource): void => {

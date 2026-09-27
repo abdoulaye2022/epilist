@@ -1,222 +1,138 @@
 "use client";
 
+// Page Télécharger : traduite fr/en, sans effets de souris ni faux
+// compteurs, avec les captures de l'application.
 import { trackAppDownloadUnified } from "@/lib/unified-tracking";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {
-  Download,
-  Star,
-  Users,
-  Clock,
-  Shield,
-  Smartphone,
-  Check,
-  Apple,
-  PlayCircle,
-  ArrowRight,
-  Zap,
-  Heart,
-  Award,
-} from "lucide-react";
+import { Download, Zap, Heart, MapPin, Apple, Play } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+const APP_STORE_URL =
+  "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+const GOOGLE_PLAY_URL =
+  "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
+
 export default function DownloadContent() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { t } = useLanguage();
 
-  // URLs des stores
-  const APP_STORE_URL =
-    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
-  const GOOGLE_PLAY_URL =
-    "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
-
-  useEffect(() => {
-    setIsVisible(true);
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
   const handleDownload = (platform: "ios" | "android") => {
-    trackAppDownloadUnified(platform, "cta_section");
+    trackAppDownloadUnified(platform, "download_page");
     const url = platform === "ios" ? APP_STORE_URL : GOOGLE_PLAY_URL;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const perks = [
+    { icon: Zap, title: t("dlFeature1Title"), desc: t("dlFeature1Desc") },
+    { icon: Heart, title: t("dlFeature2Title"), desc: t("dlFeature2Desc") },
+    { icon: MapPin, title: t("dlFeature3Title"), desc: t("dlFeature3Desc") },
+  ];
+
+  const screenshots = [
+    { src: "liste.png", n: 1 },
+    { src: "analyse.png", n: 2 },
+    { src: "budget.png", n: 3 },
+  ] as const;
+
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <section className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white relative overflow-hidden pt-20">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute w-96 h-96 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse"
-            style={{
-              left: `${20 + mousePosition.x * 0.02}%`,
-              top: `${10 + mousePosition.y * 0.02}%`,
-            }}
-          />
-        </div>
+      <section className="bg-gradient-to-b from-green-50/60 to-white pt-32 pb-16">
+        <div className="container mx-auto px-4 text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-4 py-1.5 text-sm font-medium text-green-700">
+            <Download className="h-4 w-4" />
+            {t("dlBadge")}
+          </div>
 
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-full text-sm font-medium mb-6 shadow-lg">
-              <Download className="h-4 w-4" />
-              <span>Téléchargement gratuit</span>
-            </div>
+          <h1 className="mx-auto max-w-2xl text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-5">
+            {t("dlTitle")}
+          </h1>
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-600">
+            {t("dlSubtitle")}
+          </p>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Téléchargez{" "}
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                EpiList
+          {/* Boutons de téléchargement */}
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button
+              onClick={() => handleDownload("ios")}
+              size="lg"
+              className="h-14 w-60 rounded-xl bg-gray-900 text-white shadow-md hover:bg-black"
+            >
+              <Apple className="mr-3 h-6 w-6" />
+              <span className="text-left leading-tight">
+                <span className="block text-[11px] font-normal opacity-80">
+                  {t("dlOnStore")}
+                </span>
+                <span className="block text-base font-semibold">
+                  {t("appStore")}
+                </span>
               </span>
-              <br />
-              <span className="text-3xl md:text-5xl">100% Gratuit</span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12">
-              🛒 L'application de courses familiale la plus populaire au Canada.
-              Synchronisation temps réel, mode hors ligne, sans publicité !
-            </p>
-
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm mb-12">
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-green-500 text-green-500"
-                    />
-                  ))}
-                </div>
-                <span className="font-semibold text-gray-700">4.9/5</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span className="font-semibold text-gray-700">
-                  200+ utilisateurs actifs
+            </Button>
+            <Button
+              onClick={() => handleDownload("android")}
+              size="lg"
+              className="h-14 w-60 rounded-xl bg-epilist-green text-white shadow-md hover:bg-green-600"
+            >
+              <Play className="mr-3 h-6 w-6" />
+              <span className="text-left leading-tight">
+                <span className="block text-[11px] font-normal opacity-90">
+                  {t("dlOnStore")}
                 </span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span className="font-semibold text-gray-700">
-                  100% sécurisé
+                <span className="block text-base font-semibold">
+                  {t("googlePlay")}
                 </span>
+              </span>
+            </Button>
+          </div>
+
+          {/* Trois garanties */}
+          <div className="mx-auto mt-14 grid max-w-3xl gap-5 md:grid-cols-3">
+            {perks.map((item, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-gray-200 bg-white p-6"
+              >
+                <div className="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-epilist-green">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mb-1 font-semibold text-gray-900">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-gray-600">{item.desc}</p>
               </div>
-            </div>
-
-            {/* Download Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button
-                onClick={() => handleDownload("ios")}
-                size="lg"
-                className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-2xl flex items-center space-x-4 text-lg font-medium shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Apple className="h-8 w-8" />
-                <div className="text-left">
-                  <div className="text-xs opacity-80">Télécharger sur</div>
-                  <div className="text-lg font-semibold">App Store</div>
-                </div>
-              </Button>
-
-              <Button
-                onClick={() => handleDownload("android")}
-                size="lg"
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-2xl flex items-center space-x-4 text-lg font-medium shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-              >
-                <PlayCircle className="h-8 w-8" />
-                <div className="text-left">
-                  <div className="text-xs opacity-90">Télécharger sur</div>
-                  <div className="text-lg font-semibold">Google Play</div>
-                </div>
-              </Button>
-            </div>
-
-            {/* Features Preview */}
-            <div className="grid md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
-              {[
-                {
-                  icon: Zap,
-                  title: "Installation rapide",
-                  desc: "Prêt en 30 secondes",
-                },
-                {
-                  icon: Heart,
-                  title: "Gratuit à vie",
-                  desc: "Aucun frais caché",
-                },
-                { icon: Award, title: "App #1", desc: "Au Canada" },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
-                >
-                  <item.icon className="h-8 w-8 text-green-500 mx-auto mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Screenshots Section */}
-      <section className="py-24 bg-white">
+      {/* Captures d'écran */}
+      <section className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">
-            Aperçu de l'application
+          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900">
+            {t("dlScreensTitle")}
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {[
-              {
-                src: "liste.png",
-                alt: "EpiList - Gestion des listes de courses",
-                title: "Listes intelligentes",
-                desc: "Créez et organisez vos listes facilement",
-              },
-              {
-                src: "analyse.png",
-                alt: "EpiList - Analyse des dépenses",
-                title: "Analyse détaillée",
-                desc: "Suivez vos habitudes d'achat",
-              },
-              {
-                src: "budget.png",
-                alt: "EpiList - Gestion du budget",
-                title: "Budget maîtrisé",
-                desc: "Contrôlez vos dépenses en temps réel",
-              },
-            ].map((screenshot, i) => (
-              <div key={i} className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity" />
-                <div className="relative bg-white rounded-3xl p-4 shadow-2xl">
+          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+            {screenshots.map(({ src, n }, i) => (
+              <div key={n} className="text-center">
+                <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
                   <Image
-                    src={`/${screenshot.src}`}
-                    alt={screenshot.alt}
+                    src={`/${src}`}
+                    alt={t(`dlShot${n}Title` as any)}
                     width={300}
                     height={600}
-                    className="w-full h-auto rounded-2xl"
-                    priority={i === 0} // Optimisation pour la première image
+                    className="h-auto w-full rounded-2xl"
+                    priority={i === 0}
                   />
-                  <div className="text-center mt-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {screenshot.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm">{screenshot.desc}</p>
-                  </div>
                 </div>
+                <h3 className="mt-4 font-semibold text-gray-900">
+                  {t(`dlShot${n}Title` as any)}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t(`dlShot${n}Desc` as any)}
+                </p>
               </div>
             ))}
           </div>

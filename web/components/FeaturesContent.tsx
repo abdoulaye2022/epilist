@@ -169,22 +169,22 @@ export default function FeaturesContent() {
       <section className="pt-32 pb-24 bg-gradient-to-br from-white via-gray-50 to-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center space-x-2 rounded-full border border-green-200 bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700 mb-6">
               <Smartphone className="h-4 w-4" />
-              <span>Fonctionnalités avancées</span>
+              <span>{t("advancedFeatures")}</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
               {t("language") === "fr" ? "Toutes les " : "All "}
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-epilist-green">
                 {t("language") === "fr" ? "fonctionnalités" : "features"}
               </span>
             </h1>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               {t("language") === "fr"
-                ? "Découvrez pourquoi 200+ utilisateurs font confiance à EpiList pour simplifier leurs courses quotidiennes."
-                : "Discover why 200+ users trust EpiList to simplify their daily shopping."}
+                ? "Tout ce qu\u2019EpiList peut faire pour simplifier vos courses au quotidien."
+                : "Everything EpiList can do to simplify your everyday groceries."}
             </p>
           </div>
 
@@ -193,11 +193,11 @@ export default function FeaturesContent() {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white hover:scale-105"
+                className="group border border-gray-200 shadow-none transition-all duration-200 hover:border-green-300 hover:shadow-md"
               >
                 <CardContent className="p-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300">
-                    <feature.icon className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-5">
+                    <feature.icon className="h-6 w-6 text-epilist-green" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4">
                     {feature.title}
@@ -221,25 +221,28 @@ export default function FeaturesContent() {
                     : "Features",
               },
               {
-                number: "200+",
+                number: "2",
                 label:
                   t("language") === "fr"
-                    ? "Utilisateurs actifs"
-                    : "Active Users",
+                    ? "Langues" : "Languages",
               },
               {
-                number: "4.9/5",
+                number: "150+",
                 label:
-                  t("language") === "fr" ? "Note moyenne" : "Average Rating",
+                  t("language") === "fr"
+                    ? "Devises supportées"
+                    : "Supported currencies",
               },
               {
-                number: "450+",
+                number: "100 %",
                 label:
-                  t("language") === "fr" ? "Listes créées" : "Lists Created",
+                  t("language") === "fr"
+                    ? "Gratuite, sans publicité"
+                    : "Free, ad-free",
               },
             ].map((stat, i) => (
               <div key={i}>
-                <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                <div className="text-4xl font-bold text-epilist-green mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-600 font-medium">{stat.label}</div>

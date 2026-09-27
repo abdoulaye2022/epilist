@@ -124,7 +124,7 @@ export default function UnsubscribePage() {
                 }}
               />
               {/* Fallback emoji si l'image ne charge pas */}
-              <span className="text-2xl hidden">🛒</span>
+              <span className="text-2xl hidden font-bold text-green-600">E</span>
             </div>
             <h1 className="text-2xl font-bold text-white">EpiList</h1>
             <p className="text-emerald-100 mt-2">
@@ -166,7 +166,7 @@ export default function UnsubscribePage() {
                   </svg>
                 </div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                  ✅ Désabonnement confirmé
+                  Désabonnement confirmé
                 </h2>
                 <p className="text-gray-600 mb-4">{message}</p>
 
@@ -180,7 +180,7 @@ export default function UnsubscribePage() {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                   <h3 className="font-semibold text-blue-800 mb-2">
-                    📧 Ce que cela signifie :
+                    Ce que cela signifie :
                   </h3>
                   <ul className="text-sm text-blue-700 space-y-1 text-left">
                     <li>
@@ -306,7 +306,7 @@ export default function UnsubscribePage() {
               © 2025 EpiList - Application de gestion de courses
               <br />
               <span className="text-emerald-600">
-                🍁 Développée avec ❤️ au Nouveau-Brunswick, Canada
+                EpiList · M2atech Solutions Inc. · Nouveau-Brunswick, Canada
               </span>
             </p>
           </div>

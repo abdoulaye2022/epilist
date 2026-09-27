@@ -1,322 +1,141 @@
 "use client";
 
-import { trackAppDownload, trackDemoView } from "@/lib/gtag";
-
-import { useEffect, useState } from "react";
+// Hero sobre : un badge honnête, un titre net, deux CTA, la capture de
+// l'app. Pas d'effets de souris ni de compteurs invérifiables.
+import { trackAppDownload } from "@/lib/gtag";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Download,
-  Star,
   ArrowDown,
-  Play,
   Users,
-  Clock,
-  Shield,
+  WifiOff,
+  BadgeCheck,
+  MapPin,
 } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
+import { href } from "@/lib/routes";
+
+const APP_STORE_URL =
+  "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+const GOOGLE_PLAY_URL =
+  "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
 
 export default function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  // URLs des stores
-  const APP_STORE_URL =
-    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
-  const GOOGLE_PLAY_URL =
-    "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
-
-  useEffect(() => {
-    setIsVisible(true);
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const scrollToFeatures = () => {
-    const element = document.getElementById("fonctionnalites");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Fonction pour détecter l'appareil et ouvrir le bon store
   const handleDownload = (): void => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-
     if (isIOS) {
       trackAppDownload("ios", "hero_main_cta");
       window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
-    } else if (isAndroid) {
-      trackAppDownload("android", "hero_main_cta");
-      window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
     } else {
-      // Sur desktop, on assume Android/Google Play
-      trackAppDownload("android", "hero_main_cta_desktop");
+      trackAppDownload("android", "hero_main_cta");
       window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
     }
   };
 
-  // Fonction pour ouvrir la démo vidéo (peut être modifiée selon vos besoins)
-  const handleWatchDemo = (): void => {
-    trackDemoView("hero_demo_button");
-    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+  const scrollToFeatures = () => {
+    document
+      .getElementById("fonctionnalites")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div
-          className="absolute w-96 h-96 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse"
-          style={{
-            left: `${20 + mousePosition.x * 0.02}%`,
-            top: `${10 + mousePosition.y * 0.02}%`,
-          }}
-        ></div>
-        <div
-          className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-full blur-3xl animate-pulse"
-          style={{
-            right: `${15 + mousePosition.x * 0.015}%`,
-            bottom: `${20 + mousePosition.y * 0.015}%`,
-            animationDelay: "1s",
-          }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse transform -translate-x-1/2 -translate-y-1/2"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
-
-      <div className="container mx-auto px-4 pt-32 pb-16 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
-          <div
-            className={`space-y-8 ${
-              isVisible ? "animate-fade-in-up" : "opacity-0"
-            }`}
-          >
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center gap-6 text-sm">
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/20">
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-green-500 text-green-500"
-                    />
-                  ))}
-                </div>
-                <span className="font-semibold text-gray-700">4.9/5</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/20">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span className="font-semibold text-gray-700">
-                  200+ {t("activeUsers")}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/20">
-                <Shield className="h-4 w-4 text-green-500" />
-                <span className="font-semibold text-gray-700">
-                  100% {t("secureData")}
-                </span>
-              </div>
+    <section className="bg-gradient-to-b from-green-50/60 to-white">
+      <div className="container mx-auto px-4 pt-28 pb-16 lg:pt-36 lg:pb-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Colonne texte */}
+          <div className="space-y-7">
+            <div className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-4 py-1.5 text-sm font-medium text-green-700">
+              <MapPin className="h-4 w-4" />
+              {t("madeInCanada")}
             </div>
 
-            {/* Main Headline */}
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight">
-                {t("heroTitle")}{" "}
-                <span className="relative">
-                  <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                    {t("heroTitleHighlight")}
-                  </span>
-                  <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
-                </span>
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl">
-                {t("heroSubtitle")}{" "}
-                <span className="text-green-600 font-semibold">
-                  {t("heroSubtitleHighlight")}
-                </span>
-              </p>
-            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+              {t("heroTitle")}{" "}
+              <span className="text-epilist-green">
+                {t("heroTitleHighlight")}
+              </span>
+            </h1>
 
-            {/* Key Benefits */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                {
-                  icon: Clock,
-                  text: t("timeSaved"),
-                  color: "text-green-600",
-                },
-                {
-                  icon: Users,
-                  text: t("familySync"),
-                  color: "text-blue-600",
-                },
-                {
-                  icon: Shield,
-                  text: t("secureData"),
-                  color: "text-green-600",
-                },
-              ].map((benefit, index) => (
-                <div
-                  key={index}
-                  className="flex items-center space-x-3 bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 group border border-white/20"
-                >
-                  <benefit.icon
-                    className={`h-6 w-6 ${benefit.color} group-hover:scale-110 transition-transform duration-300`}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    {benefit.text}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl">
+              {t("heroSubtitle")}{" "}
+              <span className="text-gray-900 font-semibold">
+                {t("heroSubtitleHighlight")}
+              </span>
+            </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleDownload}
                 size="lg"
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white group transition-all duration-300 transform hover:scale-105 relative overflow-hidden cursor-pointer shadow-lg hover:shadow-xl"
+                className="bg-epilist-green hover:bg-green-600 text-white shadow-md h-12 px-7 text-base"
               >
-                <span className="relative z-10 flex items-center">
-                  <Download className="mr-3 h-5 w-5 group-hover:animate-bounce" />
-                  {t("downloadNow")}
-                </span>
+                <Download className="mr-2 h-5 w-5" />
+                {t("downloadNow")}
               </Button>
-              <Button
-                onClick={handleWatchDemo}
-                size="lg"
-                variant="outline"
-                className="border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all duration-300 group relative overflow-hidden cursor-pointer"
-              >
-                <span className="relative z-10 flex items-center">
-                  <Play className="mr-3 h-5 w-5 group-hover:animate-bounce" />
-                  {t("watchDemo")}
-                </span>
-                <div className="absolute inset-0 bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </Button>
+              <Link href={href("features", language)}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 px-7 text-base border-gray-300 text-gray-700 hover:border-epilist-green hover:text-epilist-green w-full sm:w-auto"
+                >
+                  {t("discoverFeatures")}
+                </Button>
+              </Link>
             </div>
 
-            {/* Social Proof */}
-            <div className="flex items-center space-x-8 text-sm text-gray-500 pt-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span>{t("freeForLife")}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"
-                  style={{ animationDelay: "0.5s" }}
-                ></div>
-                <span>{t("noAds")}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-3 h-3 bg-green-500 rounded-full animate-pulse"
-                  style={{ animationDelay: "1s" }}
-                ></div>
-                <span>{t("instantInstall")}</span>
-              </div>
+            {/* Garanties simples et vraies */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-gray-600">
+              <span className="inline-flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 text-epilist-green" />
+                {t("freeForLife")}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <WifiOff className="h-4 w-4 text-epilist-green" />
+                {language === "fr" ? "Fonctionne hors ligne" : "Works offline"}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <Users className="h-4 w-4 text-epilist-green" />
+                {t("familySync")}
+              </span>
             </div>
           </div>
 
-          {/* Right Content - Hero Image */}
-          <div
-            className={`relative ${
-              isVisible ? "animate-fade-in-up" : "opacity-0"
-            }`}
-            style={{ animationDelay: "0.3s" }}
-          >
-            <div className="relative mx-auto max-w-lg">
-              {/* Main Hero Image */}
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-                <div className="relative bg-white rounded-3xl p-4 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105">
-                  <Image
-                    src="/dash.png" // Remplacez par le chemin de votre image
-                    alt="EpiList App Interface"
-                    width={500}
-                    height={600}
-                    className="w-full h-auto rounded-2xl object-cover"
-                    priority
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                  />
-                </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute -top-8 -right-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-pulse border border-white/20">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {t("synchronized")}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-pulse border border-white/20"
-                style={{ animationDelay: "1s" }}
-              >
-                <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium text-gray-700">
-                    3 {t("members")}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className="absolute top-1/2 -left-12 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-xl animate-pulse border border-white/20"
-                style={{ animationDelay: "2s" }}
-              >
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-3 w-3 fill-green-500 text-green-500"
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs font-medium text-gray-700">4.9</span>
-                </div>
-              </div>
-
-              <div
-                className="absolute top-1/4 -right-12 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-xl animate-pulse border border-white/20"
-                style={{ animationDelay: "1.5s" }}
-              >
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-green-500" />
-                  <span className="text-xs font-medium text-gray-700">
-                    {t("language") === "fr" ? "Temps réel" : "Real-time"}
-                  </span>
-                </div>
-              </div>
+          {/* Colonne visuelle */}
+          <div className="relative mx-auto w-full max-w-md">
+            <div
+              className="absolute -inset-6 rounded-[2.5rem] bg-green-100/70 blur-2xl"
+              aria-hidden="true"
+            ></div>
+            <div className="relative rounded-3xl border border-gray-200 bg-white p-3 shadow-xl">
+              <Image
+                src="/dash.png"
+                alt={
+                  language === "fr"
+                    ? "Tableau de bord de l'application EpiList"
+                    : "EpiList app dashboard"
+                }
+                width={500}
+                height={600}
+                className="w-full h-auto rounded-2xl object-cover"
+                priority
+              />
             </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="text-center mt-20">
+        {/* Indicateur de défilement */}
+        <div className="text-center mt-16">
           <button
             onClick={scrollToFeatures}
-            className="inline-flex flex-col items-center space-y-2 text-gray-500 hover:text-green-600 transition-colors group"
+            className="inline-flex flex-col items-center gap-1.5 text-gray-400 hover:text-epilist-green transition-colors"
           >
             <span className="text-sm font-medium">{t("discoverFeatures")}</span>
-            <ArrowDown className="h-6 w-6 group-hover:animate-bounce" />
+            <ArrowDown className="h-5 w-5" />
           </button>
         </div>
       </div>

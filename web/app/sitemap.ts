@@ -1,65 +1,33 @@
 import { MetadataRoute } from 'next'
+import { routes, BASE_URL, type RouteKey } from '@/lib/routes'
 
+// Sitemap bilingue : chaque page existe en français et en anglais,
+// avec ses alternates hreflang.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://epilist.app'
-  
-  return [
-    // Page principale
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    // Pages principales
-    {
-      url: `${baseUrl}/telecharger`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/fonctionnalites`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/aide`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/a-propos`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/comparaison-applications-courses`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    // Pages légales
-    {
-      url: `${baseUrl}/conditions-utilisation`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/politique-confidentialite`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-  ]
+  const priorities: Record<RouteKey, number> = {
+    home: 1,
+    download: 0.9,
+    features: 0.8,
+    contact: 0.7,
+    help: 0.7,
+    about: 0.6,
+    comparison: 0.6,
+    privacy: 0.3,
+    terms: 0.3,
+  }
+
+  // (Next 13.5 ne supporte pas `alternates` dans le sitemap : les
+  // hreflang sont déclarés dans les metadata de chaque page.)
+  const entries: MetadataRoute.Sitemap = []
+  for (const key of Object.keys(routes) as RouteKey[]) {
+    for (const lang of ['fr', 'en'] as const) {
+      entries.push({
+        url: `${BASE_URL}${routes[key][lang]}`,
+        lastModified: new Date(),
+        changeFrequency: key === 'home' || key === 'download' ? 'weekly' : 'monthly',
+        priority: priorities[key],
+      })
+    }
+  }
+  return entries
 }

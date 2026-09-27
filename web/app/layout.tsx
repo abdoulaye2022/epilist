@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   // Titre et description optimisés SEO
   title: {
     default:
-      "EpiList - Application de Liste de Courses Familiale | Sync Temps Réel, Multi-Devises, Mode Hors Ligne",
+      "EpiList — Listes de courses partagées, budget et prix intelligents",
     template: "%s | EpiList",
   },
   description:
-    "EpiList révolutionne vos courses avec listes partagées, synchronisation temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications instantanées et analytiques visuelles. 100% gratuit, sans publicité. Téléchargez maintenant !",
+    "Listes de courses partagées en temps réel, suivi de budget, scanner de reçus, comparateur de prix et suggestions selon vos habitudes. Gratuit, sans publicité, hors ligne, iOS et Android.",
 
   keywords: [
     "liste de courses",
@@ -79,9 +79,9 @@ export const metadata: Metadata = {
     alternateLocale: "en_CA",
     url: baseUrl,
     siteName: "EpiList",
-    title: "EpiList - L'App de Courses Familiale #1 au Canada",
+    title: "EpiList — Listes de courses partagées, budget et prix intelligents",
     description:
-      "🛒 Simplifiez vos courses ! Listes partagées, sync temps réel, 150+ devises, mode hors ligne avancé, catégories personnalisables, reçus photo, notifications. 200+ utilisateurs actifs nous font confiance. Gratuit à vie !",
+      "Listes partagées, synchronisation en temps réel, budget, scanner de reçus et comparateur de prix. Gratuit et sans publicité.",
     images: [
       {
         url: "/images/og-image-main.jpg",
@@ -104,9 +104,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@epilistapp",
     creator: "@epilistapp",
-    title: "EpiList - App Courses Familiale 🛒",
+    title: "EpiList — Listes de courses partagées",
     description:
-      "Sync temps réel • 150+ devises • Mode hors ligne avancé • SSO • Catégories • Reçus photo • Notifications • Analytiques • 100% gratuit • 4.9⭐",
+      "Listes partagées, budget, scanner de reçus, comparateur de prix. Gratuit, hors ligne, fr/en.",
     images: ["/images/twitter-card-main.jpg"],
   },
 
@@ -231,7 +231,7 @@ export default function RootLayout({
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-green-600 text-white px-4 py-2 rounded z-50"
         >
-          Aller au contenu principal
+          Aller au contenu principal / Skip to content
         </a>
       </body>
     </html>

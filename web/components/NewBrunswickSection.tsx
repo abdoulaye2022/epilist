@@ -1,158 +1,56 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Leaf, Users, Award, Flag, Globe } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
+// Ancrage local : conçue au Nouveau-Brunswick. Icônes Lucide, pas
+// d'emoji, une bande sobre sur fond sombre.
+import { MapPin, Leaf, ShieldCheck, HeartHandshake } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function NewBrunswickSection() {
-  const [isVisible, setIsVisible] = useState(false);
   const { t } = useLanguage();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    const element = document.getElementById('nouveau-brunswick');
-    if (element) observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
+  const items = [
+    { icon: Leaf, title: t("nbFeature1"), desc: t("nbFeature1Desc") },
+    { icon: ShieldCheck, title: t("nbFeature2"), desc: t("nbFeature2Desc") },
+    { icon: HeartHandshake, title: t("nbFeature3"), desc: t("nbFeature3Desc") },
+  ];
 
   return (
-    <section id="nouveau-brunswick" className="py-24 bg-gradient-to-br from-red-50 via-white to-red-50 relative overflow-hidden">
-      {/* Canadian Flag Colors Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-red-600/10 to-red-500/10 rounded-full blur-3xl animate-float-reverse"></div>
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-full text-sm font-medium mb-6">
-            <Flag className="h-4 w-4" />
-            <span>Made in Canada</span>
+    <section className="bg-gray-900 py-20 lg:py-24">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-2xl text-center mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-4 py-1.5 text-sm font-medium text-green-400 mb-6">
+            <MapPin className="h-4 w-4" />
+            {t("madeInCanada")}
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            {t('nbTitle')}{' '}
-            <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
-              {t('nbTitleHighlight')}
-            </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            {t("nbTitle")}{" "}
+            <span className="text-green-400">{t("nbTitleHighlight")}</span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-            {t('nbSubtitle')}
-          </p>
-          <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            {t('nbDescription')}
-          </p>
+          <p className="mt-4 text-lg text-gray-400">{t("nbSubtitle")}</p>
         </div>
 
-        {/* New Brunswick Features */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {[
-            {
-              icon: Award,
-              title: t('nbFeature1'),
-              description: t('nbFeature1Desc'),
-              color: 'from-red-500 to-red-600'
-            },
-            {
-              icon: Globe,
-              title: t('nbFeature2'),
-              description: t('nbFeature2Desc'),
-              color: 'from-red-500 to-red-600'
-            },
-            {
-              icon: Users,
-              title: t('nbFeature3'),
-              description: t('nbFeature3Desc'),
-              color: 'from-red-500 to-red-600'
-            }
-          ].map((feature, index) => (
-            <Card
+        <div className="grid gap-5 md:grid-cols-3">
+          {items.map((item, index) => (
+            <div
               key={index}
-              className={`group hover:shadow-card-hover transition-all duration-500 cursor-pointer border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:bg-white ${
-                isVisible ? 'animate-fade-in-up' : 'opacity-0'
-              }`}
-              style={{ animationDelay: `${index * 200}ms` }}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
             >
-              <CardContent className="p-8 text-center relative overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* Icon */}
-                <div className="relative mb-6">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg mx-auto`}>
-                    <feature.icon className="h-8 w-8 text-white" />
-                  </div>
-                  <div className={`absolute inset-0 w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300 mx-auto`}></div>
-                </div>
-
-                {/* Content */}
-                <div className="relative">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors duration-300">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
-
-                {/* Hover Effect */}
-                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center`}></div>
-              </CardContent>
-            </Card>
+              <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-green-500/15 text-green-400">
+                <item.icon className="h-5 w-5" />
+              </div>
+              <h3 className="text-base font-semibold text-white mb-1.5">
+                {item.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-gray-400">
+                {item.desc}
+              </p>
+            </div>
           ))}
         </div>
 
-        {/* New Brunswick Map & Stats */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Map Side */}
-            <div className="text-center">
-              <div className="relative inline-block">
-                <div className="w-64 h-64 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="h-24 w-24 text-red-600" />
-                </div>
-                <div className="absolute -top-4 -right-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse-gentle">
-                  🍁 Canada
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Fredericton, NB</h3>
-              <p className="text-gray-600">Capitale technologique des Maritimes</p>
-            </div>
-
-            {/* Stats Side */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Pourquoi le Nouveau-Brunswick ?</h3>
-              <div className="space-y-4">
-                {[
-                  { icon: '🏛️', title: 'Province officiellement bilingue', desc: 'Français et anglais à égalité' },
-                  { icon: '🌊', title: 'Innovation maritime', desc: 'Hub technologique de l\'Atlantique' },
-                  { icon: '👨‍👩‍👧‍👦', title: 'Valeurs familiales', desc: 'Communauté unie et solidaire' },
-                  { icon: '🌲', title: 'Qualité de vie', desc: 'Équilibre travail-famille parfait' }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-4 p-4 bg-red-50/50 rounded-xl">
-                    <div className="text-2xl">{item.icon}</div>
-                    <div>
-                      <h4 className="font-bold text-gray-900">{item.title}</h4>
-                      <p className="text-gray-600 text-sm">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <p className="mt-12 text-center text-sm text-gray-500 max-w-2xl mx-auto">
+          {t("nbDescription")}
+        </p>
       </div>
     </section>
   );

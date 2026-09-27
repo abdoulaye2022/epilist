@@ -1,234 +1,163 @@
 "use client";
 
+// Comparaison factuelle : tableau traduit fr/en, initiales dans des
+// pastilles au lieu d'emojis, pas de notes inventées.
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, X, Star, DollarSign, Users, Wifi } from "lucide-react";
+import { Check, X, DollarSign, Wifi, MapPin } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/hooks/useLanguage";
+
+type Cell = boolean | string;
 
 export default function ComparisonContent() {
-  const features = [
-    {
-      name: "Prix",
-      epilist: "Gratuit à vie",
-      anylist: "9.99$/mois",
-      cozi: "4.99$/mois",
-      our: "2.99$/mois",
-    },
-    {
-      name: "Sync famille",
-      epilist: true,
-      anylist: true,
-      cozi: true,
-      our: true,
-    },
-    {
-      name: "Mode hors ligne",
-      epilist: true,
-      anylist: false,
-      cozi: false,
-      our: true,
-    },
-    {
-      name: "Sans publicité",
-      epilist: true,
-      anylist: false,
-      cozi: false,
-      our: false,
-    },
-    {
-      name: "IA suggestions",
-      epilist: true,
-      anylist: true,
-      cozi: false,
-      our: false,
-    },
-    {
-      name: "Support 24/7",
-      epilist: true,
-      anylist: false,
-      cozi: false,
-      our: false,
-    },
-  ];
+  const { t, language } = useLanguage();
+  const perMonth = (price: string) =>
+    language === "fr" ? `${price} $/mois` : `$${price}/mo`;
 
   const apps = [
-    {
-      name: "EpiList",
-      logo: "🛒",
-      rating: "4.9",
-      color: "from-green-500 to-blue-500",
-      highlight: true,
-    },
-    {
-      name: "AnyList",
-      logo: "📝",
-      rating: "4.7",
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      name: "Cozi",
-      logo: "🏠",
-      rating: "4.5",
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      name: "OurGroceries",
-      logo: "🍎",
-      rating: "4.3",
-      color: "from-blue-500 to-indigo-500",
-    },
+    { name: "EpiList", highlight: true },
+    { name: "AnyList", highlight: false },
+    { name: "Cozi", highlight: false },
+    { name: "OurGroceries", highlight: false },
   ];
 
+  const rows: { label: string; values: Cell[] }[] = [
+    {
+      label: t("cmpRowPrice"),
+      values: [
+        t("cmpFreeForever"),
+        perMonth(language === "fr" ? "9,99" : "9.99"),
+        perMonth(language === "fr" ? "4,99" : "4.99"),
+        perMonth(language === "fr" ? "2,99" : "2.99"),
+      ],
+    },
+    { label: t("cmpRowShare"), values: [true, true, true, true] },
+    { label: t("cmpRowOffline"), values: [true, false, false, true] },
+    { label: t("cmpRowNoAds"), values: [true, false, false, false] },
+    { label: t("cmpRowSuggestions"), values: [true, true, false, false] },
+    { label: t("cmpRowPrices"), values: [true, false, false, false] },
+  ];
+
+  const why = [
+    { icon: DollarSign, title: t("cmpWhy1Title"), desc: t("cmpWhy1Desc") },
+    { icon: Wifi, title: t("cmpWhy2Title"), desc: t("cmpWhy2Desc") },
+    { icon: MapPin, title: t("cmpWhy3Title"), desc: t("cmpWhy3Desc") },
+  ];
+
+  const cell = (value: Cell, highlight: boolean) =>
+    typeof value === "boolean" ? (
+      value ? (
+        <Check className="mx-auto h-5 w-5 text-epilist-green" />
+      ) : (
+        <X className="mx-auto h-5 w-5 text-gray-300" />
+      )
+    ) : (
+      <span
+        className={
+          highlight ? "font-semibold text-epilist-green" : "text-gray-600"
+        }
+      >
+        {value}
+      </span>
+    );
+
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      <section className="pt-32 pb-24 bg-gradient-to-br from-white via-gray-50 to-white">
+      <section className="pt-32 pb-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Pourquoi choisir{" "}
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                EpiList ?
-              </span>
+          <div className="mx-auto max-w-2xl text-center mb-14">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-5">
+              {t("cmpTitle")}
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comparaison objective avec les principales applications de courses
-              2025
-            </p>
+            <p className="text-lg text-gray-600">{t("cmpSubtitle")}</p>
           </div>
 
-          {/* Comparison Table */}
-          <div className="max-w-6xl mx-auto overflow-x-auto">
-            <table className="w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Tableau */}
+          <div className="mx-auto max-w-5xl overflow-x-auto">
+            <table className="w-full overflow-hidden rounded-2xl border border-gray-200 bg-white text-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <th className="p-6 text-left font-semibold text-gray-900">
-                    Fonctionnalités
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th className="p-5 text-left font-semibold text-gray-900">
+                    {t("cmpColFeatures")}
                   </th>
-                  {apps.map((app, i) => (
+                  {apps.map((app) => (
                     <th
-                      key={i}
-                      className={`p-6 text-center ${
-                        app.highlight
-                          ? "bg-gradient-to-r from-green-50 to-blue-50"
-                          : ""
+                      key={app.name}
+                      className={`p-5 text-center ${
+                        app.highlight ? "bg-green-50" : ""
                       }`}
                     >
-                      <div className="flex flex-col items-center">
-                        <div className="text-3xl mb-2">{app.logo}</div>
-                        <div
-                          className={`font-bold ${
-                            app.highlight ? "text-green-600" : "text-gray-900"
+                      <div className="flex flex-col items-center gap-2">
+                        <span
+                          className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold ${
+                            app.highlight
+                              ? "bg-epilist-green text-white"
+                              : "bg-gray-100 text-gray-600"
                           }`}
                         >
+                          {app.name.charAt(0)}
+                        </span>
+                        <span
+                          className={
+                            app.highlight
+                              ? "font-bold text-epilist-green"
+                              : "font-semibold text-gray-900"
+                          }
+                        >
                           {app.name}
-                        </div>
-                        <div className="flex items-center mt-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm ml-1">{app.rating}</span>
-                        </div>
+                        </span>
                       </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {features.map((feature, i) => (
+                {rows.map((row, i) => (
                   <tr
                     key={i}
-                    className={`border-t ${
-                      i % 2 === 0 ? "bg-gray-50/50" : "bg-white"
+                    className={`border-t border-gray-100 ${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                     }`}
                   >
-                    <td className="p-6 font-medium text-gray-900">
-                      {feature.name}
+                    <td className="p-5 font-medium text-gray-900">
+                      {row.label}
                     </td>
-                    <td className="p-6 text-center bg-gradient-to-r from-green-50 to-blue-50">
-                      {typeof feature.epilist === "boolean" ? (
-                        feature.epilist ? (
-                          <Check className="h-6 w-6 text-green-500 mx-auto" />
-                        ) : (
-                          <X className="h-6 w-6 text-red-500 mx-auto" />
-                        )
-                      ) : (
-                        <span className="font-semibold text-green-600">
-                          {feature.epilist}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-6 text-center">
-                      {typeof feature.anylist === "boolean" ? (
-                        feature.anylist ? (
-                          <Check className="h-6 w-6 text-green-500 mx-auto" />
-                        ) : (
-                          <X className="h-6 w-6 text-red-500 mx-auto" />
-                        )
-                      ) : (
-                        <span className="text-gray-600">{feature.anylist}</span>
-                      )}
-                    </td>
-                    <td className="p-6 text-center">
-                      {typeof feature.cozi === "boolean" ? (
-                        feature.cozi ? (
-                          <Check className="h-6 w-6 text-green-500 mx-auto" />
-                        ) : (
-                          <X className="h-6 w-6 text-red-500 mx-auto" />
-                        )
-                      ) : (
-                        <span className="text-gray-600">{feature.cozi}</span>
-                      )}
-                    </td>
-                    <td className="p-6 text-center">
-                      {typeof feature.our === "boolean" ? (
-                        feature.our ? (
-                          <Check className="h-6 w-6 text-green-500 mx-auto" />
-                        ) : (
-                          <X className="h-6 w-6 text-red-500 mx-auto" />
-                        )
-                      ) : (
-                        <span className="text-gray-600">{feature.our}</span>
-                      )}
-                    </td>
+                    {row.values.map((value, j) => (
+                      <td
+                        key={j}
+                        className={`p-5 text-center ${
+                          apps[j].highlight ? "bg-green-50/60" : ""
+                        }`}
+                      >
+                        {cell(value, apps[j].highlight)}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* Why EpiList */}
-          <div className="mt-20">
-            <Card className="max-w-4xl mx-auto border-0 shadow-2xl bg-gradient-to-br from-green-50 to-blue-50">
-              <CardContent className="p-12 text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">
-                  Pourquoi 200+ utilisateurs choisissent EpiList
+          {/* Pourquoi EpiList */}
+          <div className="mt-16">
+            <Card className="mx-auto max-w-4xl border border-gray-200 shadow-sm">
+              <CardContent className="p-10">
+                <h2 className="mb-8 text-center text-2xl font-bold text-gray-900">
+                  {t("cmpWhyTitle")}
                 </h2>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {[
-                    {
-                      icon: DollarSign,
-                      title: "100% Gratuit",
-                      desc: "Pas de piège, pas d'abonnement caché",
-                    },
-                    {
-                      icon: Wifi,
-                      title: "Fonctionne partout",
-                      desc: "Mode hors ligne complet",
-                    },
-                    {
-                      icon: Users,
-                      title: "Fait au Canada",
-                      desc: "Pour les familles canadiennes",
-                    },
-                  ].map((item, i) => (
+                <div className="grid gap-8 md:grid-cols-3">
+                  {why.map((item, i) => (
                     <div key={i} className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <item.icon className="h-8 w-8 text-white" />
+                      <div className="mx-auto mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-epilist-green">
+                        <item.icon className="h-5 w-5" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      <h3 className="mb-1 font-semibold text-gray-900">
                         {item.title}
                       </h3>
-                      <p className="text-gray-600">{item.desc}</p>
+                      <p className="text-sm text-gray-600">{item.desc}</p>
                     </div>
                   ))}
                 </div>

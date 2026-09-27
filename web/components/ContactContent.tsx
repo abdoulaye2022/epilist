@@ -19,7 +19,7 @@ import {
 import Link from "next/link";
 
 export default function ContactContent() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -86,7 +86,9 @@ export default function ContactContent() {
       }, 3000);
     } catch (err) {
       setSubmitError(
-        "L'envoi a échoué. Réessayez dans un instant ou écrivez-nous directement par email."
+        language === "fr"
+          ? "L'envoi a échoué. Réessayez dans un instant ou écrivez-nous directement par email."
+          : "Sending failed. Try again shortly or email us directly."
       );
     } finally {
       setIsSubmitting(false);

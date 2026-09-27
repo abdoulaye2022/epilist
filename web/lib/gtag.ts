@@ -45,6 +45,7 @@ type DownloadSource =
   | 'hero_main_cta_desktop'
   | 'cta_section'
   | 'footer'
+  | 'download_page'
 
 type DemoSource = 
   | 'hero_demo_button'

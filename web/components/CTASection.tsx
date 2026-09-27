@@ -1,175 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+// Appel à l'action final : fond vert de marque, deux badges de stores,
+// trois garanties honnêtes.
+import { trackAppDownload } from "@/lib/gtag";
 import { Button } from "@/components/ui/button";
-import {
-  Download,
-  ArrowRight,
-  Users,
-  Shield,
-  Zap,
-  Star,
-  CheckCircle,
-} from "lucide-react";
+import { Apple, Play, BadgeCheck, WifiOff, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 
+const APP_STORE_URL =
+  "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+const GOOGLE_PLAY_URL =
+  "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
+
 export default function CTASection() {
-  const [isVisible, setIsVisible] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  // URLs des stores
-  const APP_STORE_URL =
-    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
-  const GOOGLE_PLAY_URL =
-    "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    const element = document.getElementById("cta-section");
-    if (element) observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Fonction pour détecter l'appareil et ouvrir le bon store
-  const handleDownload = () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-
-    if (isIOS) {
-      window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
-    } else if (isAndroid) {
-      window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
-    } else {
-      // Par défaut sur desktop, ouvrir Google Play
-      window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  // Fonction pour la démo (peut être modifiée selon vos besoins)
-  const handleWatchDemo = () => {
-    // Option 1: Rediriger vers une vidéo YouTube/Vimeo
-    // window.open('https://youtube.com/watch?v=VOTRE_VIDEO_ID', '_blank', 'noopener,noreferrer');
-
-    // Option 2: Rediriger vers Google Play pour l'instant
-    window.open(GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
-
-    // Option 3: Scroll vers une section de démo sur votre site
-    // const demoElement = document.getElementById('demo-section');
-    // if (demoElement) {
-    //   demoElement.scrollIntoView({ behavior: 'smooth' });
-    // }
+  const open = (store: "ios" | "android") => {
+    trackAppDownload(store, "cta_section");
+    window.open(store === "ios" ? APP_STORE_URL : GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <section
-      id="cta-section"
-      className="py-24 bg-gradient-to-br from-epilist-green via-epilist-blue to-epilist-green relative overflow-hidden"
-    >
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-float-reverse"></div>
-      </div>
+    <section className="bg-epilist-green py-20 lg:py-24">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="mx-auto max-w-2xl text-3xl md:text-4xl font-bold text-white tracking-tight">
+          {t("ctaTitle")}
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-green-50">
+          {t("ctaSubtitle")}
+        </p>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div
-          className={`text-center text-white ${
-            isVisible ? "animate-fade-in" : "opacity-0"
-          }`}
-        >
-          {/* Main CTA */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              {t("ctaTitle")}
-            </h2>
-            <p className="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
-              {t("ctaSubtitle")}
-            </p>
+        <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Button
+            onClick={() => open("ios")}
+            size="lg"
+            className="h-12 w-56 bg-gray-900 text-white hover:bg-black shadow-md"
+          >
+            <Apple className="mr-2 h-5 w-5" />
+            {t("appStore")}
+          </Button>
+          <Button
+            onClick={() => open("android")}
+            size="lg"
+            className="h-12 w-56 bg-white text-gray-900 hover:bg-gray-100 shadow-md"
+          >
+            <Play className="mr-2 h-5 w-5" />
+            {t("googlePlay")}
+          </Button>
+        </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-              <Button
-                onClick={handleDownload}
-                size="lg"
-                className="bg-white text-epilist-green hover:bg-white/90 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group cursor-pointer"
-              >
-                <Download className="mr-3 h-6 w-6 group-hover:animate-bounce-gentle" />
-                {t("downloadNow")}
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button
-                onClick={handleWatchDemo}
-                size="lg"
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-epilist-green transition-all duration-300 group cursor-pointer"
-              >
-                {t("watchDemo")}
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-8 text-white/80">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5" />
-                <span>{t("free")}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5" />
-                <span>{t("adFree")}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5" />
-                <span>{t("quickInstall")}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <Users className="h-12 w-12 text-white mx-auto mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">200+</div>
-                <div className="text-white/80">{t("activeUsers")}</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <Star className="h-12 w-12 text-white mx-auto mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">4.9/5</div>
-                <div className="text-white/80">{t("averageRating")}</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300">
-              <CardContent className="p-8 text-center">
-                <Shield className="h-12 w-12 text-white mx-auto mb-4" />
-                <div className="text-3xl font-bold text-white mb-2">100%</div>
-                <div className="text-white/80">{t("secureData")}</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Bottom Text */}
-          <div className="max-w-3xl mx-auto">
-            <p className="text-lg text-white/90 leading-relaxed">
-              {t("ctaBottomText")}
-            </p>
-          </div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-green-50">
+          <span className="inline-flex items-center gap-2">
+            <BadgeCheck className="h-4 w-4" />
+            {t("free")}
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <WifiOff className="h-4 w-4" />
+            {language === "fr" ? "Fonctionne hors ligne" : "Works offline"}
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" />
+            {t("secureData")}
+          </span>
         </div>
       </div>
     </section>

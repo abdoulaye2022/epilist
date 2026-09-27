@@ -3,7 +3,7 @@ import * as fbPixel from './facebook-pixel'
 import * as hotjar from './hotjar'
 
 type Platform = 'ios' | 'android'
-type DownloadSource = 'header' | 'hero_main_cta' | 'hero_main_cta_desktop' | 'cta_section' | 'footer'
+type DownloadSource = 'header' | 'hero_main_cta' | 'hero_main_cta_desktop' | 'cta_section' | 'footer' | 'download_page'
 
 // Tracking téléchargement sur toutes les plateformes
 export const trackAppDownloadUnified = (platform: Platform, source: DownloadSource): void => {

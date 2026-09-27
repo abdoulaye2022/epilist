@@ -1,101 +1,72 @@
 "use client";
 
+// Page À propos : entièrement traduite (fr/en), design sobre.
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Users, Heart, Award, Target, Zap } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Image from "next/image";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function AboutContent() {
+  const { t } = useLanguage();
+
   const values = [
-    {
-      icon: Heart,
-      title: "Famille d'abord",
-      desc: "Nous créons des outils qui renforcent les liens familiaux et simplifient le quotidien.",
-    },
-    {
-      icon: Zap,
-      title: "Innovation locale",
-      desc: "Startup tech fièrement basée au Nouveau-Brunswick, nous innovons depuis les Maritimes.",
-    },
-    {
-      icon: Users,
-      title: "Communauté",
-      desc: "200+ utilisateurs actifs nous font confiance. Chaque retour nous aide à améliorer EpiList.",
-    },
+    { icon: Heart, title: t("aboutValue1Title"), desc: t("aboutValue1Desc") },
+    { icon: Zap, title: t("aboutValue2Title"), desc: t("aboutValue2Desc") },
+    { icon: Users, title: t("aboutValue3Title"), desc: t("aboutValue3Desc") },
   ];
 
-  const stats = [
-    { number: "2024", label: "Année de création" },
-    { number: "200+", label: "Utilisateurs actifs" },
-    { number: "4.9⭐", label: "Note app stores" },
-    { number: "100%", label: "Gratuit à vie" },
-  ];
+  const stats = [1, 2, 3, 4] as const;
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      <section className="pt-32 pb-24 bg-gradient-to-br from-white via-gray-50 to-white">
+      <section className="pt-32 pb-20">
         <div className="container mx-auto px-4">
-          {/* Hero */}
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-full text-sm font-medium mb-6">
+          {/* En-tête */}
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <div className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-1.5 text-sm font-medium text-green-700 mb-6">
               <MapPin className="h-4 w-4" />
-              <span>Nouveau-Brunswick, Canada</span>
+              {t("madeInCanada")}
             </div>
-
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              À propos d'{" "}
-              <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                EpiList
-              </span>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-5">
+              {t("aboutPageTitle")}
             </h1>
-
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
-              Nous sommes une équipe passionnée basée au Nouveau-Brunswick,
-              dédiée à simplifier la vie des familles canadiennes grâce à la
-              technologie.
-            </p>
+            <p className="text-lg text-gray-600">{t("aboutPageSubtitle")}</p>
           </div>
 
           {/* Mission */}
-          <div className="max-w-4xl mx-auto mb-20">
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50">
-              <CardContent className="p-12 text-center">
-                <Target className="h-16 w-16 text-green-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  Notre Mission
-                </h2>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Révolutionner la façon dont les familles s'organisent au
-                  quotidien. EpiList n'est pas qu'une app de courses, c'est un
-                  outil qui renforce les liens familiaux en simplifiant les
-                  tâches du quotidien.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="mx-auto max-w-3xl border border-gray-200 shadow-sm mb-16">
+            <CardContent className="p-10 text-center">
+              <div className="mx-auto mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-epilist-green">
+                <Target className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {t("aboutMissionTitle")}
+              </h2>
+              <p className="text-lg leading-relaxed text-gray-600">
+                {t("aboutMissionText")}
+              </p>
+            </CardContent>
+          </Card>
 
-          {/* Values */}
-          <div className="mb-20">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-              Nos Valeurs
+          {/* Valeurs */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">
+              {t("aboutValuesTitle")}
             </h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-5 md:grid-cols-3">
               {values.map((value, index) => (
-                <Card
-                  key={index}
-                  className="group hover:shadow-xl transition-all duration-300"
-                >
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                      <value.icon className="h-8 w-8 text-white" />
+                <Card key={index} className="border border-gray-200 shadow-none">
+                  <CardContent className="p-7 text-center">
+                    <div className="mx-auto mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-green-50 text-epilist-green">
+                      <value.icon className="h-5 w-5" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    <h3 className="text-base font-semibold text-gray-900 mb-2">
                       {value.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-sm leading-relaxed text-gray-600">
                       {value.desc}
                     </p>
                   </CardContent>
@@ -104,49 +75,42 @@ export default function AboutContent() {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="mb-20">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-              EpiList en chiffres
+          {/* Chiffres honnêtes */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">
+              {t("aboutStatsTitle")}
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {stats.map((stat, index) => (
+            <div className="grid grid-cols-2 gap-5 md:grid-cols-4 text-center">
+              {stats.map((n) => (
                 <div
-                  key={index}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg"
+                  key={n}
+                  className="rounded-2xl border border-gray-200 bg-white p-6"
                 >
-                  <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                    {stat.number}
+                  <div className="text-3xl font-bold text-epilist-green mb-1">
+                    {t(`aboutStat${n}Value` as any)}
                   </div>
-                  <div className="text-gray-600 font-medium">{stat.label}</div>
+                  <div className="text-sm text-gray-600">
+                    {t(`aboutStat${n}Label` as any)}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Team */}
-          <div className="text-center">
-            <Card className="max-w-3xl mx-auto">
-              <CardContent className="p-12">
-                <Award className="h-16 w-16 text-green-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  Équipe Maritime
-                </h2>
-                <p className="text-xl text-gray-600 leading-relaxed mb-8">
-                  Fiers de représenter l'innovation technologique des Maritimes
-                  ! Notre équipe diversifiée combine expertise technique et
-                  compréhension profonde des besoins des familles canadiennes.
-                </p>
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
-                  <p className="text-lg text-gray-700">
-                    💡 <strong>Saviez-vous ?</strong> EpiList a été conçue et
-                    développée entièrement au Nouveau-Brunswick, contribuant à
-                    l'écosystème tech maritime.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Équipe */}
+          <Card className="mx-auto max-w-3xl border border-gray-200 shadow-sm">
+            <CardContent className="p-10 text-center">
+              <div className="mx-auto mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-epilist-green">
+                <Award className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {t("aboutTeamTitle")}
+              </h2>
+              <p className="text-lg leading-relaxed text-gray-600">
+                {t("aboutTeamText")}
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
