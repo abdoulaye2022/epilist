@@ -20,7 +20,8 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          # Doit correspondre au PHP du serveur de prod (8.3.x sur OVH)
+          php-version: '8.3'
           tools: composer
           coverage: none
 

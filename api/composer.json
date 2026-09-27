@@ -23,5 +23,10 @@
         "vlucas/valitron": "^1.4",
         "getbrevo/brevo-php": "1.x.x",
         "kreait/firebase-php": "^7.0"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        }
     }
 }
