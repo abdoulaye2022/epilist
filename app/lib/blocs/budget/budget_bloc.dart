@@ -2,6 +2,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/connectivity_service.dart';
+import 'package:epilist/services/offline_queue_service.dart';
 import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -13,6 +15,7 @@ part 'budget_state.dart';
 class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final BudgetService _budgetService;
   final LocalizationBloc _localizationBloc;
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   BudgetBloc({
     required BudgetService budgetService,
@@ -174,6 +177,13 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         periodType: event.periodType,
         listId: event.listId,
       );
+
+      // Un chargement sans filtre est la vue complète : on la met en cache
+      // pour le mode hors ligne (la carte budget du dashboard en dépend).
+      if (event.status == null && event.periodType == null && event.listId == null) {
+        await OfflineStorageService.saveBudgets(budgets);
+      }
+
       emit(
         BudgetLoaded(
           budgets: budgets,
@@ -185,6 +195,19 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       );
     } catch (e) {
       debugPrint('Error loading budgets with filters: $e');
+
+      // Repli hors ligne : servir le cache (non filtré) plutôt qu'une carte vide.
+      try {
+        final cachedBudgets = await OfflineStorageService.getBudgets();
+        if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
+          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Cache load failed: $cacheError');
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(BudgetError(errorMessage));
     }
@@ -236,6 +259,22 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
     } catch (e) {
       debugPrint('Error creating budget: $e');
+
+      // ✅ Hors ligne : mettre la requête COMPLÈTE en file, elle sera
+      // rejouée à l'identique au retour du réseau.
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.actionCreateBudget,
+          payload: event.request.toJson(),
+        );
+
+        emit(BudgetOperationSuccess(_getTranslatedSuccessMessage('create')));
+        if (previousState is BudgetLoaded) {
+          emit(previousState);
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
 
       // ✅ IMPORTANT: Restaurer l'état précédent (pas vider)
@@ -281,6 +320,24 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
     } catch (e) {
       debugPrint('Error updating budget: $e');
+
+      // ✅ Hors ligne : requête complète en file.
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.actionUpdateBudget,
+          payload: {
+            'budget_id': event.budgetId,
+            ...event.request.toJson(),
+          },
+        );
+
+        emit(BudgetOperationSuccess(_getTranslatedSuccessMessage('update')));
+        if (previousState is BudgetLoaded) {
+          emit(previousState);
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
 
       // ✅ IMPORTANT: Restaurer l'état précédent (pas vider)
@@ -323,6 +380,25 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
     } catch (e) {
       debugPrint('Error deleting budget: $e');
+
+      // ✅ Hors ligne : suppression en file + retrait local immédiat.
+      if (!_connectivityService.isConnected) {
+        await OfflineQueueService.enqueueAction(
+          actionType: OfflineQueueService.actionDeleteBudget,
+          payload: {'budget_id': event.budgetId},
+        );
+
+        emit(BudgetOperationSuccess(_getTranslatedSuccessMessage('delete')));
+        if (previousState is BudgetLoaded) {
+          final remaining = previousState.allBudgets
+              .where((b) => b.id != event.budgetId)
+              .toList();
+          await OfflineStorageService.saveBudgets(remaining);
+          emit(previousState.copyWith(budgets: remaining, allBudgets: remaining));
+        }
+        return;
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
 
       // ✅ IMPORTANT: Restaurer l'état précédent (pas vider)
@@ -431,6 +507,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     try {
       final budgets = await _budgetService.getBudgets();
 
+      // Cache hors ligne tenu à jour à chaque rafraîchissement réussi.
+      await OfflineStorageService.saveBudgets(budgets);
+
       if (state is BudgetLoaded) {
         final currentState = state as BudgetLoaded;
         emit(currentState.copyWith(budgets: budgets, allBudgets: budgets));
@@ -439,6 +518,21 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
     } catch (e) {
       debugPrint('Error refreshing budgets: $e');
+
+      // Repli hors ligne : garder l'état courant s'il a des données,
+      // sinon servir le cache.
+      if (state is BudgetLoaded) return;
+      try {
+        final cachedBudgets = await OfflineStorageService.getBudgets();
+        if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
+          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
+          return;
+        }
+      } catch (cacheError) {
+        debugPrint('❌ Cache load failed: $cacheError');
+      }
+
       final errorMessage = _getTranslatedErrorMessage(e);
       emit(BudgetError(errorMessage));
     }

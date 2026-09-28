@@ -156,13 +156,19 @@ void main() async {
       authService: authService,
     );
 
-    // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne
+    // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne.
+    // TOUS les services rejouables doivent être injectés : un service
+    // manquant signifiait « action marquée synchronisée sans requête »
+    // (perte silencieuse de factures notamment).
     debugPrint('🔄 Initialisation du service de synchronisation...');
     final storeService = StoreService(dio: dio);
     await OfflineSyncService().initialize(
       shoppingListService: shoppingListService,
       listItemService: listItemService,
       storeService: storeService,
+      receiptService: ReceiptService(dio: dio, authService: authService),
+      budgetService: BudgetService(dio: dio, authService: authService),
+      categoryService: categoryService,
     );
     debugPrint('✅ Service de synchronisation initialisé');
 

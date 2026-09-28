@@ -48,7 +48,11 @@ class TokenStore {
     await _migrateIfNeeded();
     try {
       return await _storage.read(key: _accessKey);
-    } catch (_) {
+    } catch (e) {
+      // Distinguer « jeton absent » (déconnexion normale) de « stockage
+      // illisible » (Keystore invalidé, accès concurrent depuis l'isolate
+      // FCM...) : ce second cas est la piste des déconnexions aléatoires.
+      debugPrint('🔐 [TokenStore] LECTURE IMPOSSIBLE (access): $e');
       return null;
     }
   }
@@ -57,7 +61,8 @@ class TokenStore {
     await _migrateIfNeeded();
     try {
       return await _storage.read(key: _refreshKey);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('🔐 [TokenStore] LECTURE IMPOSSIBLE (refresh): $e');
       return null;
     }
   }

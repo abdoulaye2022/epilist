@@ -3,14 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/models/budget.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/services/offline_queue_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/store_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/category_service.dart';
+import 'package:epilist/services/token_store.dart';
 import 'package:epilist/config/app_config.dart';
 
 /// Service de synchronisation pour le mode hors ligne
@@ -31,6 +34,12 @@ class OfflineSyncService {
   StoreService? _storeService;
   ReceiptService? _receiptService;
   BudgetService? _budgetService;
+  CategoryService? _categoryService;
+
+  /// Correspondance id local (négatif) → id serveur, construite pendant la
+  /// passe de synchro (ex. create_list) et persistée dans la file pour les
+  /// actions qui suivent.
+  final Map<int, int> _idMap = {};
 
   StreamSubscription<bool>? _connectivitySubscription;
   bool _isSyncing = false;
@@ -47,6 +56,7 @@ class OfflineSyncService {
     StoreService? storeService,
     ReceiptService? receiptService,
     BudgetService? budgetService,
+    CategoryService? categoryService,
   }) async {
     if (_isInitialized) return;
 
@@ -55,6 +65,7 @@ class OfflineSyncService {
     _storeService = storeService;
     _receiptService = receiptService;
     _budgetService = budgetService;
+    _categoryService = categoryService;
 
     // Initialiser la queue
     await OfflineQueueService.initialize();
@@ -143,6 +154,14 @@ class OfflineSyncService {
       }
 
       debugPrint('✅ [OfflineSync] Synchronisation terminée: $successCount succès, $failureCount échecs');
+
+      // Rafraîchir le cache des listes après une synchro qui a modifié des
+      // données : sinon le prochain démarrage hors ligne montre des
+      // compteurs périmés (état d'avant les actions rejouées).
+      if (successCount > 0) {
+        await _refreshListsCache();
+      }
+
       _syncStatusController.add(
         failureCount > 0 ? SyncStatus.partiallyFailed : SyncStatus.success,
       );
@@ -152,6 +171,40 @@ class OfflineSyncService {
     } finally {
       _isSyncing = false;
     }
+  }
+
+  /// Traduit un id local (négatif) vers l'id serveur si connu.
+  int _mapId(int id) => id < 0 ? (_idMap[id] ?? id) : id;
+
+  /// Un service manquant est un ÉCHEC explicite : avec l'ancien `?.`,
+  /// l'action était marquée synchronisée sans qu'aucune requête ne parte
+  /// (perte silencieuse).
+  bool _missing(Object? service, String name) {
+    if (service != null) return false;
+    debugPrint('❌ [OfflineSync] Service $name non injecté, action conservée en file');
+    return true;
+  }
+
+  /// Recharge et sauvegarde le cache des listes après une synchro réussie.
+  Future<void> _refreshListsCache() async {
+    try {
+      final lists = await _shoppingListService?.getShoppingLists();
+      if (lists != null) {
+        await OfflineStorageService.saveShoppingLists(lists);
+        debugPrint('💾 [OfflineSync] Cache des listes rafraîchi après synchro');
+      }
+    } catch (e) {
+      debugPrint('⚠️ [OfflineSync] Rafraîchissement du cache listes impossible: $e');
+    }
+  }
+
+  /// Enregistre une correspondance id local → id serveur et la propage
+  /// aux actions encore en file.
+  Future<void> _registerIdMapping(String? localId, int serverId) async {
+    final local = int.tryParse(localId ?? '');
+    if (local == null || local >= 0) return;
+    _idMap[local] = serverId;
+    await OfflineQueueService.remapLocalIds({local: serverId});
   }
 
   /// Synchronise une action spécifique
@@ -165,44 +218,67 @@ class OfflineSyncService {
       switch (type) {
         // Shopping Lists
         case OfflineQueueService.actionCreateList:
-          await _shoppingListService?.createShoppingList(
+          if (_missing(_shoppingListService, 'listes')) return false;
+          final created = await _shoppingListService!.createShoppingList(
             payload['name'] as String,
           );
+          await _registerIdMapping(action['local_id'] as String?, created.id);
           return true;
 
         case OfflineQueueService.actionUpdateList:
-          await _shoppingListService?.updateShoppingList(
-            payload['id'] as int,
+          if (_missing(_shoppingListService, 'listes')) return false;
+          final listId = _mapId(payload['id'] as int);
+          if (listId < 0) return false; // create_list pas encore synchronisé
+          await _shoppingListService!.updateShoppingList(
+            listId,
             payload['name'] as String,
           );
           return true;
 
         case OfflineQueueService.actionDeleteList:
-          await _shoppingListService?.deleteShoppingList(payload['id'] as int);
+          if (_missing(_shoppingListService, 'listes')) return false;
+          final listId = _mapId(payload['id'] as int);
+          // Liste jamais créée côté serveur : rien à supprimer.
+          if (listId < 0) return true;
+          await _shoppingListService!.deleteShoppingList(listId);
           return true;
 
         case OfflineQueueService.actionDuplicateList:
-          await _shoppingListService?.duplicateShoppingList(payload['id'] as int);
+          if (_missing(_shoppingListService, 'listes')) return false;
+          final listId = _mapId(payload['id'] as int);
+          if (listId < 0) return false;
+          await _shoppingListService!.duplicateShoppingList(listId);
           return true;
 
         // List Items
         case OfflineQueueService.actionCreateItem:
-          await _listItemService?.addListItem(
-            listId: payload['list_id'] as int,
+          if (_missing(_listItemService, 'articles')) return false;
+          final listId = _mapId(payload['list_id'] as int);
+          if (listId < 0) return false;
+          final result = await _listItemService!.addListItem(
+            listId: listId,
             productName: payload['product_name'] as String,
-            price: payload['price'] as double?,
+            price: (payload['price'] as num?)?.toDouble(),
             quantity: payload['quantity'] as int? ?? 1,
             categoryId: payload['category_id'] as int?,
             storeName: payload['store_name'] as String?,
           );
+          final createdId = result.item?.id;
+          if (createdId != null) {
+            await _registerIdMapping(action['local_id'] as String?, createdId);
+          }
           return true;
 
         case OfflineQueueService.actionUpdateItem:
-          await _listItemService?.updateListItem(
-            listId: payload['list_id'] as int,
-            itemId: payload['item_id'] as int,
+          if (_missing(_listItemService, 'articles')) return false;
+          final listId = _mapId(payload['list_id'] as int);
+          final itemId = _mapId(payload['item_id'] as int);
+          if (listId < 0 || itemId < 0) return false;
+          await _listItemService!.updateListItem(
+            listId: listId,
+            itemId: itemId,
             productName: payload['product_name'] as String,
-            price: payload['price'] as double?,
+            price: (payload['price'] as num?)?.toDouble(),
             quantity: payload['quantity'] as int? ?? 1,
             categoryId: payload['category_id'] as int?,
             storeName: payload['store_name'] as String?,
@@ -210,37 +286,50 @@ class OfflineSyncService {
           return true;
 
         case OfflineQueueService.actionDeleteItem:
-          await _listItemService?.deleteListItem(
-            listId: payload['list_id'] as int,
-            itemId: payload['item_id'] as int,
+          if (_missing(_listItemService, 'articles')) return false;
+          final listId = _mapId(payload['list_id'] as int);
+          final itemId = _mapId(payload['item_id'] as int);
+          if (itemId < 0) return true; // article jamais créé côté serveur
+          if (listId < 0) return false;
+          await _listItemService!.deleteListItem(
+            listId: listId,
+            itemId: itemId,
           );
           return true;
 
         case OfflineQueueService.actionToggleItem:
-          await _listItemService?.togglePurchasedStatus(
-            listId: payload['list_id'] as int,
-            itemId: payload['item_id'] as int,
+          if (_missing(_listItemService, 'articles')) return false;
+          final listId = _mapId(payload['list_id'] as int);
+          final itemId = _mapId(payload['item_id'] as int);
+          if (listId < 0 || itemId < 0) return false;
+          await _listItemService!.togglePurchasedStatus(
+            listId: listId,
+            itemId: itemId,
             isPurchased: payload['is_purchased'] as bool,
           );
           return true;
 
         // Receipts
         case OfflineQueueService.actionCreateReceipt:
-          await _receiptService?.createReceipt(
-            listId: payload['list_id'] as int,
+          if (_missing(_receiptService, 'factures')) return false;
+          final listId = _mapId(payload['list_id'] as int);
+          if (listId < 0) return false;
+          await _receiptService!.createReceipt(
+            listId: listId,
             storeName: payload['store_name'] as String,
-            totalAmount: payload['total_amount'] as double,
+            totalAmount: (payload['total_amount'] as num).toDouble(),
             purchaseDate: DateTime.parse(payload['purchase_date'] as String),
             notes: payload['notes'] as String?,
           );
           return true;
 
         case OfflineQueueService.actionUpdateReceipt:
-          await _receiptService?.updateReceipt(
-            listId: payload['list_id'] as int,
+          if (_missing(_receiptService, 'factures')) return false;
+          await _receiptService!.updateReceipt(
+            listId: _mapId(payload['list_id'] as int),
             receiptId: payload['receipt_id'] as int,
             storeName: payload['store_name'] as String?,
-            totalAmount: payload['total_amount'] as double?,
+            totalAmount: (payload['total_amount'] as num?)?.toDouble(),
             purchaseDate: payload['purchase_date'] != null
                 ? DateTime.parse(payload['purchase_date'] as String)
                 : null,
@@ -249,27 +338,107 @@ class OfflineSyncService {
           return true;
 
         case OfflineQueueService.actionDeleteReceipt:
-          await _receiptService?.deleteReceipt(
-            payload['list_id'] as int,
+          if (_missing(_receiptService, 'factures')) return false;
+          await _receiptService!.deleteReceipt(
+            _mapId(payload['list_id'] as int),
             payload['receipt_id'] as int,
           );
           return true;
 
-        // Budgets
+        // Budgets : le payload porte désormais la requête complète
+        // (CreateBudgetRequest/UpdateBudgetRequest.toJson côté bloc).
         case OfflineQueueService.actionCreateBudget:
-          // Note: Budget creation requires more data than stored in queue
-          // This is a simplified version - consider storing full budget data
-          debugPrint('⚠️ [OfflineSync] Budget creation from queue requires full data');
-          return false;
+          if (_missing(_budgetService, 'budgets')) return false;
+          await _budgetService!.createBudget(
+            CreateBudgetRequest(
+              name: payload['name'] as String,
+              budgetAmount: (payload['budget_amount'] as num).toDouble(),
+              periodType:
+                  BudgetPeriodType.values.byName(payload['period_type'] as String),
+              startDate: DateTime.parse(payload['start_date'] as String),
+              endDate: DateTime.parse(payload['end_date'] as String),
+              alertThreshold: payload['alert_threshold'] as int? ?? 80,
+              listId: payload['list_id'] != null
+                  ? _mapId(payload['list_id'] as int)
+                  : null,
+            ),
+          );
+          return true;
 
         case OfflineQueueService.actionUpdateBudget:
-          // Note: Budget update requires UpdateBudgetRequest
-          // This is a simplified version - consider storing full budget data
-          debugPrint('⚠️ [OfflineSync] Budget update from queue requires full data');
-          return false;
+          if (_missing(_budgetService, 'budgets')) return false;
+          final budgetId = payload['budget_id'] as int;
+          if (budgetId < 0) return false;
+          await _budgetService!.updateBudget(
+            budgetId,
+            UpdateBudgetRequest(
+              name: payload['name'] as String?,
+              budgetAmount: (payload['budget_amount'] as num?)?.toDouble(),
+              periodType: payload['period_type'] != null
+                  ? BudgetPeriodType.values.byName(payload['period_type'] as String)
+                  : null,
+              startDate: payload['start_date'] != null
+                  ? DateTime.parse(payload['start_date'] as String)
+                  : null,
+              endDate: payload['end_date'] != null
+                  ? DateTime.parse(payload['end_date'] as String)
+                  : null,
+              alertThreshold: payload['alert_threshold'] as int?,
+              isActive: payload['is_active'] as bool?,
+            ),
+          );
+          return true;
 
         case OfflineQueueService.actionDeleteBudget:
-          await _budgetService?.deleteBudget(payload['budget_id'] as int);
+          if (_missing(_budgetService, 'budgets')) return false;
+          final budgetId = payload['budget_id'] as int;
+          if (budgetId < 0) return true; // budget jamais créé côté serveur
+          await _budgetService!.deleteBudget(budgetId);
+          return true;
+
+        // Catégories : ces actions étaient mises en file par le bloc mais
+        // jamais rejouées (« type inconnu » → abandon).
+        case OfflineQueueService.actionCreateCategory:
+          if (_missing(_categoryService, 'catégories')) return false;
+          final created = await _categoryService!.createCategory(
+            name: payload['name'] as String,
+            iconCode: payload['icon_code'] as String,
+            colorHex: payload['color_hex'] as String,
+            orderIndex: payload['order_index'] as int? ?? 0,
+          );
+          await _registerIdMapping(action['local_id'] as String?, created.id);
+          return true;
+
+        case OfflineQueueService.actionUpdateCategory:
+          if (_missing(_categoryService, 'catégories')) return false;
+          final categoryId = _mapId(payload['category_id'] as int);
+          if (categoryId < 0) return false;
+          await _categoryService!.updateCategory(
+            categoryId: categoryId,
+            name: payload['name'] as String?,
+            iconCode: payload['icon_code'] as String?,
+            colorHex: payload['color_hex'] as String?,
+            orderIndex: payload['order_index'] as int?,
+          );
+          return true;
+
+        case OfflineQueueService.actionDeleteCategory:
+          if (_missing(_categoryService, 'catégories')) return false;
+          final categoryId = _mapId(payload['category_id'] as int);
+          if (categoryId < 0) return true; // catégorie jamais créée côté serveur
+          await _categoryService!.deleteCategory(categoryId);
+          return true;
+
+        case OfflineQueueService.actionReorderCategories:
+          if (_missing(_categoryService, 'catégories')) return false;
+          final ids = (payload['category_ids'] as List)
+              .cast<int>()
+              .map(_mapId)
+              .where((id) => id > 0)
+              .toList();
+          if (ids.isNotEmpty) {
+            await _categoryService!.reorderCategories(ids);
+          }
           return true;
 
         // Magasins (tri par rayon). Les actions sur un id temporaire
@@ -364,11 +533,12 @@ class OfflineSyncService {
     }
   }
 
-  /// Get authentication token from SharedPreferences
+  /// Token d'accès depuis le stockage sécurisé. L'ancienne lecture
+  /// SharedPreferences['access_token'] retournait toujours null depuis la
+  /// migration TokenStore (la clé legacy est supprimée à la migration).
   Future<String?> _getToken() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString('access_token');
+      return await TokenStore.readAccess();
     } catch (e) {
       debugPrint('❌ [OfflineSync] Error getting token: $e');
       return null;

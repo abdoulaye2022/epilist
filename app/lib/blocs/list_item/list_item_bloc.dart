@@ -196,8 +196,10 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     } catch (e) {
       debugPrint("Error adding item: $e");
 
-      // ✅ Si hors ligne, mettre en queue
+      // ✅ Si hors ligne, mettre en queue. Le local_id sert au remappage
+      // id local → id serveur à la synchro (toggle/édition du même article).
       if (!_connectivityService.isConnected) {
+        final tempId = -DateTime.now().millisecondsSinceEpoch;
         await OfflineQueueService.enqueueAction(
           actionType: OfflineQueueService.actionCreateItem,
           payload: {
@@ -208,11 +210,12 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
             'store_name': event.storeName,
             'category_id': event.categoryId,
           },
+          localId: '$tempId',
         );
 
         // Créer un item temporaire local avec ID négatif
         final tempItem = ListItem(
-          id: -DateTime.now().millisecondsSinceEpoch,
+          id: tempId,
           listId: event.listId,
           productName: event.productName,
           quantity: event.quantity,

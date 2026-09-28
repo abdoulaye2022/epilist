@@ -237,6 +237,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
+        final now = DateTime.now();
+        final tempId = -now.millisecondsSinceEpoch;
         await OfflineQueueService.enqueueAction(
           actionType: OfflineQueueService.actionCreateCategory,
           payload: {
@@ -245,12 +247,12 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
             'color_hex': event.colorHex,
             'order_index': event.orderIndex,
           },
+          localId: '$tempId',
         );
 
         // Créer une catégorie temporaire locale avec ID négatif
-        final now = DateTime.now();
         final tempCategory = Category(
-          id: -now.millisecondsSinceEpoch,
+          id: tempId,
           userId: 0, // Temporaire
           name: event.name,
           iconCode: event.iconCode,

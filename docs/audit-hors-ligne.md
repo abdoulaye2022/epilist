@@ -1,5 +1,13 @@
 # Audit du mode hors ligne — 27 septembre 2026
 
+> **MISE À JOUR (même jour) : les 11 constats ci-dessous sont corrigés.**
+> Validation sur émulateur : liste + article créés hors ligne synchronisés
+> avec remappage d'id (vérifié en BD serveur), file persistante à travers
+> les redémarrages, cache des listes rafraîchi après synchro, carte budget
+> servie depuis le cache au démarrage à froid hors ligne. Détail des
+> correctifs dans le commit « Mode hors ligne : correction des 11 constats
+> de l'audit ».
+
 Audit combiné : lecture du code (`connectivity_service`, `offline_storage_service`,
 `offline_queue_service`, `offline_sync_service`, blocs) **et** tests réels sur
 émulateur Android 16 (coupure réseau via adb, ajout hors ligne, resynchronisation,

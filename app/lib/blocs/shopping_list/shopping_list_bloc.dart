@@ -165,15 +165,19 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
   ) async {
     // ✅ OPTIMISATION: Vérifier la connectivité AVANT l'appel API
     if (!_connectivityService.isConnected) {
-      // Mode hors ligne : créer liste temporaire et mettre en queue
+      // Mode hors ligne : créer liste temporaire et mettre en queue.
+      // Le local_id permet à la synchro de remapper l'id négatif vers l'id
+      // serveur pour les actions suivantes (articles ajoutés à cette liste).
+      final tempId = -DateTime.now().millisecondsSinceEpoch;
       await OfflineQueueService.enqueueAction(
         actionType: OfflineQueueService.actionCreateList,
         payload: {'name': event.name},
+        localId: '$tempId',
       );
 
       // Créer une liste temporaire locale avec ID négatif
       final tempList = ShoppingList(
-        id: -DateTime.now().millisecondsSinceEpoch,
+        id: tempId,
         name: event.name,
         userId: 0,
         createdAt: DateTime.now(),
@@ -181,15 +185,22 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         items: [],
       );
 
+      // Quel que soit l'état courant, la liste temporaire doit être visible
+      // et persistée : sans état Loaded, on repart du cache. Sinon la liste
+      // créée hors ligne « disparaît » jusqu'à la synchro.
+      List<ShoppingList> baseLists;
       if (state is ShoppingListLoaded) {
-        final currentState = state as ShoppingListLoaded;
-        final updatedLists = [tempList, ...currentState.lists];
-        await OfflineStorageService.saveShoppingLists(updatedLists);
-
-        final successMessage = _getTranslatedSuccessMessage('create');
-        emit(ShoppingListOperationSuccess(successMessage));
-        emit(ShoppingListLoaded(updatedLists));
+        baseLists = (state as ShoppingListLoaded).lists;
+      } else {
+        baseLists = await OfflineStorageService.getShoppingLists() ?? [];
       }
+
+      final updatedLists = [tempList, ...baseLists];
+      await OfflineStorageService.saveShoppingLists(updatedLists);
+
+      final successMessage = _getTranslatedSuccessMessage('create');
+      emit(ShoppingListOperationSuccess(successMessage));
+      emit(ShoppingListLoaded(updatedLists));
       return;
     }
 

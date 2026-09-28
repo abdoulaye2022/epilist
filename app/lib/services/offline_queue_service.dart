@@ -70,11 +70,55 @@ class OfflineQueueService {
     } else {
       debugPrint('✅ [OfflineQueue] Queue version OK: $_version');
     }
+
+    await _requeueOrphanedProcessing();
+  }
+
+  /// Requalifie en `pending` les actions restées bloquées en `processing`
+  /// (app tuée en pleine synchro) : au démarrage, aucune synchro ne tourne,
+  /// donc tout `processing` est orphelin. Sans ça, ces actions ne sont plus
+  /// jamais reprises (getPendingActions ne lit que `pending`).
+  static Future<void> _requeueOrphanedProcessing() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final queue = await _getQueue();
+      var changed = 0;
+
+      for (final action in queue) {
+        if (action['status'] == 'processing') {
+          action['status'] = 'pending';
+          changed++;
+        }
+      }
+
+      if (changed > 0) {
+        await prefs.setString(_queueKey, json.encode(queue));
+        await _updateStatus();
+        debugPrint('🔁 [OfflineQueue] $changed action(s) "processing" orpheline(s) requalifiée(s) en pending');
+      }
+    } catch (e) {
+      debugPrint('❌ [OfflineQueue] Error requeuing orphaned actions: $e');
+    }
   }
 
   // ============================================================================
   // GESTION DE LA FILE D'ATTENTE
   // ============================================================================
+
+  /// Actions idempotentes : un doublon exact en file n'apporte rien et sera
+  /// rejoué deux fois pour le même résultat. Les créations (create_item...)
+  /// ne sont PAS dédupliquées : ajouter deux fois le même produit est un
+  /// choix légitime de l'utilisateur.
+  static const Set<String> _dedupableActions = {
+    actionUpdateList,
+    actionUpdateItem,
+    actionToggleItem,
+    actionUpdateCategory,
+    actionReorderCategories,
+    actionSetStoreOrder,
+    actionUpdateEmailPreferences,
+    actionUpdateProfile,
+  };
 
   /// Ajouter une action à la file d'attente
   static Future<bool> enqueueAction({
@@ -83,6 +127,12 @@ class OfflineQueueService {
     String? localId,
   }) async {
     try {
+      if (_dedupableActions.contains(actionType) &&
+          await isDuplicateAction(actionType: actionType, payload: payload)) {
+        debugPrint('↩️ [OfflineQueue] Doublon ignoré: $actionType');
+        return true;
+      }
+
       final prefs = await SharedPreferences.getInstance();
       final queue = await _getQueue();
 
@@ -393,5 +443,47 @@ class OfflineQueueService {
   ) async {
     final queue = await _getQueue();
     return queue.where((a) => a['local_id'] == localId).toList();
+  }
+
+  // Champs de payload susceptibles de porter un id local (négatif).
+  static const List<String> _idFields = [
+    'id',
+    'list_id',
+    'item_id',
+    'category_id',
+    'store_id',
+    'budget_id',
+    'receipt_id',
+  ];
+
+  /// Remplace dans TOUTE la file les ids locaux (négatifs) par les ids
+  /// serveur obtenus à la synchro. Seules les valeurs négatives sont
+  /// touchées : un id serveur ne peut jamais être confondu avec un temporaire.
+  static Future<void> remapLocalIds(Map<int, int> idMap) async {
+    if (idMap.isEmpty) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final queue = await _getQueue();
+      var changed = 0;
+
+      for (final action in queue) {
+        final payload = action['payload'];
+        if (payload is! Map) continue;
+        for (final field in _idFields) {
+          final value = payload[field];
+          if (value is int && value < 0 && idMap.containsKey(value)) {
+            payload[field] = idMap[value];
+            changed++;
+          }
+        }
+      }
+
+      if (changed > 0) {
+        await prefs.setString(_queueKey, json.encode(queue));
+        debugPrint('🔗 [OfflineQueue] $changed id(s) local(aux) remappé(s) vers les ids serveur');
+      }
+    } catch (e) {
+      debugPrint('❌ [OfflineQueue] Error remapping local ids: $e');
+    }
   }
 }

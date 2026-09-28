@@ -114,7 +114,10 @@ class ConnectivityService {
                     responseType: ResponseType.plain,
                   ),
                 )
-                .timeout(const Duration(seconds: 4));
+                // 3 s par tentative : hors ligne, l'échec est quasi
+                // immédiat (pas de route) ; ce plafond ne joue que sur
+                // les réseaux zombies et raccourcit le démarrage à froid.
+                .timeout(const Duration(seconds: 3));
             return true;
           } catch (_) {
             continue;
@@ -122,7 +125,7 @@ class ConnectivityService {
         }
         return false;
       }()
-          .timeout(const Duration(seconds: 10), onTimeout: () => false);
+          .timeout(const Duration(seconds: 8), onTimeout: () => false);
     } catch (_) {
       return false;
     }

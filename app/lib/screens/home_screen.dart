@@ -26,6 +26,7 @@ import 'package:epilist/main.dart' show routeObserver;
 import 'package:epilist/models/budget.dart';
 import 'package:intl/intl.dart';
 import 'package:epilist/services/budget_service.dart';
+import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -125,8 +126,19 @@ class _HomeScreenState extends State<HomeScreen>
       final budgets = await context.read<BudgetService>().getBudgets();
       if (!mounted) return;
       setState(() => _allBudgets = budgets);
+      // Cache hors ligne : la carte budget du dashboard doit survivre
+      // à un démarrage sans réseau.
+      await OfflineStorageService.saveBudgets(budgets);
     } catch (_) {
-      // hors ligne / pas de budget : la carte passe en invite
+      // Hors ligne : servir le cache plutôt qu'une carte vide.
+      try {
+        final cached = await OfflineStorageService.getBudgets();
+        if (mounted && cached != null && cached.isNotEmpty) {
+          setState(() => _allBudgets = cached);
+        }
+      } catch (_) {
+        // pas de cache : la carte passe en invite
+      }
     }
     _loadIntelligence();
   }
