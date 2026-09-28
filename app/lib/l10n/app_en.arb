@@ -2244,6 +2244,8 @@
   "epBudgetExceededDesc": "Alert when you go over budget",
   "epMonthlySummaryTitle": "Monthly summary",
   "epMonthlySummaryDesc": "Budget recap at the end of each month",
+  "epTipsTitle": "Tips & Tricks",
+  "epTipsToggleTitle": "Tips & Reminders",
   "epTipsDesc": "Helpful advice to get more from EpiList",
   "epTipsToggleDesc": "Receive tips and reminders",
   "siTitle": "Share invitation",
@@ -2353,5 +2355,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "days": "days"
 }

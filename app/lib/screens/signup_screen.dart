@@ -201,12 +201,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
 
   // ✅ HEADER SIMPLIFIÉ
+  // Centré, comme l'en-tête du login.
   Widget _buildHeader(AppLocalizations l10n) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           l10n.createAccount,
+          textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
@@ -216,6 +218,7 @@ class _SignUpPageState extends State<SignUpPage> {
         const SizedBox(height: 8),
         Text(
           l10n.joinEpiListToManage,
+          textAlign: TextAlign.center,
           style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
         ),
       ],

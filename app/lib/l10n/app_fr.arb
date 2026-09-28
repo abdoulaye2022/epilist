@@ -2273,6 +2273,8 @@
   "epBudgetExceededDesc": "Alerte en cas de dépassement du budget",
   "epMonthlySummaryTitle": "Résumé mensuel",
   "epMonthlySummaryDesc": "Récapitulatif budget à la fin de chaque mois",
+  "epTipsTitle": "Astuces et conseils",
+  "epTipsToggleTitle": "Astuces et rappels",
   "epTipsDesc": "Conseils utiles pour mieux utiliser EpiList",
   "epTipsToggleDesc": "Recevoir des astuces et rappels",
   "siTitle": "Invitation de partage",

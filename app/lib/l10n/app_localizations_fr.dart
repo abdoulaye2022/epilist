@@ -5252,6 +5252,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Récapitulatif budget à la fin de chaque mois';
 
   @override
+  String get epTipsTitle => 'Astuces et conseils';
+
+  @override
+  String get epTipsToggleTitle => 'Astuces et rappels';
+
+  @override
   String get epTipsDesc => 'Conseils utiles pour mieux utiliser EpiList';
 
   @override

@@ -1,5 +1,6 @@
 // screens/chat_screen.dart
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
@@ -81,7 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+
 
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
@@ -90,31 +91,31 @@ class _ChatScreenState extends State<ChatScreen> {
         }
 
         return Scaffold(
+          backgroundColor: AppColors.background,
+          // Barre blanche plate, comme partout ailleurs dans l'app.
           appBar: AppBar(
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Styles explicites : l'AppBarTheme global (fond clair,
-                // texte sombre) prime sinon sur foregroundColor.
                 Text(
                   widget.listName,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 Text(
                   l10n.chatTitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.white70,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12.5,
                   ),
                 ),
               ],
             ),
-            backgroundColor: theme.primaryColor,
-            foregroundColor: Colors.white,
-            iconTheme: const IconThemeData(color: Colors.white),
+            backgroundColor: Colors.white,
+            foregroundColor: AppColors.textPrimary,
             elevation: 0,
           ),
           body: Column(
@@ -185,15 +186,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
               // Message input
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
+                  border: Border(top: BorderSide(color: AppColors.border)),
                 ),
                 padding: EdgeInsets.only(
                   left: 16,
@@ -218,7 +213,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide(color: theme.primaryColor),
+                            borderSide: const BorderSide(color: AppColors.primary),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -235,7 +230,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     const SizedBox(width: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: theme.primaryColor,
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -258,26 +253,34 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 80,
-            color: AppColors.border,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l10n.noMessagesYet,
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
+          Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: const Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 36,
+              color: AppColors.primaryDark,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.noMessagesYet,
+            style: const TextStyle(
+              fontSize: 17,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.startConversation,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textDisabled,
+            style: const TextStyle(
+              fontSize: 13.5,
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -331,26 +334,45 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _confirmDelete(ListMessage message) {
     final l10n = AppLocalizations.of(context)!;
+    final chatBloc = context.read<ChatBloc>();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteMessage),
-        content: Text(l10n.deleteMessageConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
+      builder: (dialogContext) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppDialogHeader(
+                icon: Icons.delete_outline,
+                title: l10n.deleteMessage,
+                color: AppColors.error,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                l10n.deleteMessageConfirmation,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppDialogActions(
+                cancelLabel: l10n.cancel,
+                submitLabel: l10n.delete,
+                destructive: true,
+                onCancel: () => Navigator.pop(dialogContext),
+                onSubmit: () {
+                  Navigator.pop(dialogContext);
+                  chatBloc.add(DeleteMessage(message.id));
+                },
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<ChatBloc>().add(DeleteMessage(message.id));
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text(l10n.delete),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -370,10 +392,8 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
       child: Row(
         mainAxisAlignment:
             isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -381,64 +401,63 @@ class _MessageBubble extends StatelessWidget {
         children: [
           if (!isCurrentUser) ...[
             _buildAvatar(),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
           ],
           Flexible(
             child: GestureDetector(
               onLongPress: isCurrentUser ? onDelete : null,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 14,
                   vertical: 10,
                 ),
+                // Ma bulle : vert plein. Les autres : carte blanche
+                // bordée, comme les cartes du reste de l'app.
                 decoration: BoxDecoration(
-                  color: isCurrentUser
-                      ? theme.primaryColor
-                      : AppColors.border,
+                  color: isCurrentUser ? AppColors.primary : Colors.white,
+                  border: isCurrentUser
+                      ? null
+                      : Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(20),
-                    topRight: const Radius.circular(20),
-                    bottomLeft: Radius.circular(isCurrentUser ? 20 : 4),
-                    bottomRight: Radius.circular(isCurrentUser ? 4 : 20),
+                    topLeft: const Radius.circular(16),
+                    topRight: const Radius.circular(16),
+                    bottomLeft: Radius.circular(isCurrentUser ? 16 : 4),
+                    bottomRight: Radius.circular(isCurrentUser ? 4 : 16),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (!isCurrentUser && message.user != null)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                        padding: const EdgeInsets.only(bottom: 3),
                         child: Text(
                           message.user!.displayName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: theme.primaryColor,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryDark,
                           ),
                         ),
                       ),
                     Text(
                       message.message,
                       style: TextStyle(
-                        color: isCurrentUser ? Colors.white : AppColors.textPrimary,
+                        color: isCurrentUser
+                            ? Colors.white
+                            : AppColors.textPrimary,
                         fontSize: 15,
+                        height: 1.35,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       _formatTime(message.createdAt, context),
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10.5,
                         color: isCurrentUser
                             ? Colors.white.withValues(alpha: 0.7)
-                            : AppColors.textSecondary,
+                            : AppColors.textDisabled,
                       ),
                     ),
                   ],
@@ -447,7 +466,7 @@ class _MessageBubble extends StatelessWidget {
             ),
           ),
           if (isCurrentUser) ...[
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             _buildAvatar(),
           ],
         ],
@@ -457,25 +476,17 @@ class _MessageBubble extends StatelessWidget {
 
   Widget _buildAvatar() {
     final initials = message.user?.initials ?? '?';
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-    ];
-    final color = colors[message.userId % colors.length];
 
+    // Même langage que UserAvatar : initiales sombres sur vert doux.
     return CircleAvatar(
-      radius: 16,
-      backgroundColor: color,
+      radius: 15,
+      backgroundColor: AppColors.primaryLight,
       child: Text(
         initials,
         style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+          color: AppColors.primaryDark,
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

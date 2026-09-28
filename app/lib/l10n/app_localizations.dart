@@ -9727,6 +9727,18 @@ abstract class AppLocalizations {
   /// **'Récapitulatif budget à la fin de chaque mois'**
   String get epMonthlySummaryDesc;
 
+  /// No description provided for @epTipsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Astuces et conseils'**
+  String get epTipsTitle;
+
+  /// No description provided for @epTipsToggleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Astuces et rappels'**
+  String get epTipsToggleTitle;
+
   /// No description provided for @epTipsDesc.
   ///
   /// In fr, this message translates to:

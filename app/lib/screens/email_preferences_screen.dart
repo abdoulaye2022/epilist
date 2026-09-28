@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/email_preference.dart';
 import '../services/email_preference_service.dart';
 import '../utils/smart_snackbar_manager.dart';
+import '../widgets/common/app_dialog.dart';
 
 class EmailPreferencesScreen extends StatefulWidget {
   const EmailPreferencesScreen({super.key});
@@ -62,21 +63,39 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
   }
 
   Future<void> _resetPreferences() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.confirmAction),
-        content: Text(AppLocalizations.of(context)!.epResetConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)!.cancel),
+      builder: (dialogContext) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppDialogHeader(
+                icon: Icons.restart_alt_rounded,
+                title: l10n.epResetDefaults,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                l10n.epResetConfirm,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppDialogActions(
+                cancelLabel: l10n.cancel,
+                submitLabel: l10n.epResetDefaults,
+                onCancel: () => Navigator.pop(dialogContext, false),
+                onSubmit: () => Navigator.pop(dialogContext, true),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -102,6 +121,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.epTitle),
         actions: [
@@ -117,32 +137,40 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _preferences == null
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.emailPreferencesUnavailableOffline,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          l10n.visitPageOnlineToCache,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.cloud_off_rounded,
+                            size: 56, color: Colors.grey[400]),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          l10n.emailPreferencesUnavailableOffline,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
                           textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: _loadPreferences,
-                        icon: const Icon(Icons.refresh),
-                        label: Text(l10n.tryAgain),
-                      ),
-                    ],
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          l10n.visitPageOnlineToCache,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            color: AppColors.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        OutlinedButton.icon(
+                          onPressed: _loadPreferences,
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: Text(l10n.tryAgain),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               : Stack(
@@ -248,13 +276,13 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                         ),
                         const SizedBox(height: 24),
                         _buildSection(
-                          title: 'Tips & Tricks',
+                          title: AppLocalizations.of(context)!.epTipsTitle,
                           subtitle: AppLocalizations.of(context)!.epTipsDesc,
                           icon: Icons.lightbulb_outline,
                           color: Colors.amber,
                           children: [
                             _buildSwitchTile(
-                              title: 'Tips & Reminders',
+                              title: AppLocalizations.of(context)!.epTipsToggleTitle,
                               subtitle: AppLocalizations.of(context)!.epTipsToggleDesc,
                               value: _preferences!.tipsAndTricks,
                               onChanged: (val) {
@@ -280,8 +308,10 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       floatingActionButton: !_isLoading && _preferences != null
           ? FloatingActionButton.extended(
               onPressed: _isSaving ? null : _savePreferences,
-              icon: const Icon(Icons.save),
+              icon: const Icon(Icons.save_outlined),
               label: Text(l10n.save),
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
             )
           : null,
     );
@@ -294,52 +324,56 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     required Color color,
     required List<Widget> children,
   }) {
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(icon, color: color),
+    // Carte plate bordée, en-tête compact : le gabarit des autres écrans.
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                child: Icon(icon, color: color, size: 19),
+              ),
+              const SizedBox(width: AppSpacing.sm + 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
                       ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.textSecondary,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const Divider(height: 24),
-            ...children,
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          ...children,
+        ],
       ),
     );
   }
@@ -351,11 +385,24 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     required ValueChanged<bool> onChanged,
   }) {
     return SwitchListTile(
-      title: Text(title),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+      ),
       value: value,
       onChanged: onChanged,
+      activeThumbColor: Colors.white,
+      activeTrackColor: AppColors.primary,
       contentPadding: EdgeInsets.zero,
+      dense: true,
     );
   }
 }

@@ -8,6 +8,7 @@ import '../widgets/category/category_list_item.dart';
 import '../widgets/category/add_edit_category_dialog.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
+import '../widgets/common/app_dialog.dart';
 
 class CategoryManagementScreen extends StatefulWidget {
   const CategoryManagementScreen({super.key});
@@ -28,9 +29,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.manageCategories),
         actions: [
@@ -66,29 +67,31 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
           if (state is CategoryError && state.categories == null) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: theme.textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context.read<CategoryBloc>().add(const LoadCategories());
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: Text(l10n.refreshTooltip),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 56, color: Colors.red[300]),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      state.message,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        context.read<CategoryBloc>().add(const LoadCategories());
+                      },
+                      icon: const Icon(Icons.refresh, size: 18),
+                      label: Text(l10n.refreshTooltip),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -106,71 +109,72 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
           if (categories.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.category_outlined,
-                    size: 64,
-                    color: AppColors.textDisabled,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.noCategoriesYet,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.createFirstCategoryDescription,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      context
-                          .read<CategoryBloc>()
-                          .add(const InitializeDefaultCategories());
-                    },
-                    icon: const Icon(Icons.auto_awesome),
-                    label: Text(l10n.categories),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryLight,
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: const Icon(
+                        Icons.category_outlined,
+                        size: 36,
+                        color: AppColors.primaryDark,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      l10n.noCategoriesYet,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.createFirstCategoryDescription,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context
+                            .read<CategoryBloc>()
+                            .add(const InitializeDefaultCategories());
+                      },
+                      icon: const Icon(Icons.auto_awesome, size: 18),
+                      label: Text(l10n.categories),
+                    ),
+                  ],
+                ),
               ),
             );
           }
 
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header avec nombre de catégories
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: theme.primaryColor.withValues(alpha: 0.1),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.category,
-                      color: theme.primaryColor,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${categories.length} ${l10n.categories.toLowerCase()}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              // Compteur discret, sans bandeau coloré.
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+                child: Text(
+                  '${categories.length} ${l10n.categories.toLowerCase()}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
 
@@ -196,12 +200,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddCategoryDialog(context),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          l10n.addCategory,
-          style: const TextStyle(color: Colors.white),
-        ),
-        backgroundColor: theme.primaryColor,
+        icon: const Icon(Icons.add),
+        label: Text(l10n.addCategory),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
     );
@@ -253,64 +254,36 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
   void _showDeleteConfirmation(BuildContext context, Category category) {
     final l10n = AppLocalizations.of(context)!;
+    final categoryBloc = context.read<CategoryBloc>();
+
     showDialog(
       context: context,
       builder: (dialogContext) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 10,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Icône de suppression
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.red[50],
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                child: Icon(
-                  Icons.delete_rounded,
-                  size: 40,
-                  color: AppColors.error,
-                ),
+              AppDialogHeader(
+                icon: Icons.delete_outline,
+                title: l10n.deleteCategory,
+                color: AppColors.error,
               ),
-
-              const SizedBox(height: 20),
-
-              // Titre
-              Text(
-                l10n.deleteCategory,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Message
+              const SizedBox(height: AppSpacing.md),
               RichText(
-                textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: const TextStyle(
+                    fontSize: 14,
                     color: AppColors.textSecondary,
                     height: 1.4,
                   ),
                   children: [
                     TextSpan(text: l10n.deleteCategoryConfirm),
                     TextSpan(
-                      text: ' "${category.name}"',
+                      text: ' « ${category.name} »',
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
@@ -318,91 +291,25 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                   ],
                 ),
               ),
-
-              const SizedBox(height: 8),
-
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 l10n.actionIrreversible,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.error,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: const TextStyle(fontSize: 12.5, color: AppColors.error),
               ),
-
-              const SizedBox(height: 24),
-
-              // Boutons
-              Row(
-                children: [
-                  // Bouton Annuler
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: AppColors.border),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.cancel,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  // Bouton Supprimer
-                  Expanded(
-                    child: BlocBuilder<CategoryBloc, CategoryState>(
-                      builder: (context, state) {
-                        final isLoading = state is CategoryOperationInProgress;
-                        return ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  context.read<CategoryBloc>().add(DeleteCategory(category.id));
-                                  Navigator.of(dialogContext).pop();
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.error,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.red[300],
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                          ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  l10n.delete,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.lg),
+              BlocBuilder<CategoryBloc, CategoryState>(
+                bloc: categoryBloc,
+                builder: (context, state) => AppDialogActions(
+                  cancelLabel: l10n.cancel,
+                  submitLabel: l10n.delete,
+                  destructive: true,
+                  loading: state is CategoryOperationInProgress,
+                  onCancel: () => Navigator.of(dialogContext).pop(),
+                  onSubmit: () {
+                    categoryBloc.add(DeleteCategory(category.id));
+                    Navigator.of(dialogContext).pop();
+                  },
+                ),
               ),
             ],
           ),

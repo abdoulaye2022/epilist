@@ -1,3 +1,4 @@
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -209,11 +210,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           margin: const EdgeInsets.symmetric(horizontal: 32),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.9),
+                            color: AppColors.primary.withValues(alpha: 0.92),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.green.withValues(alpha: 0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -317,11 +318,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.green.withValues(alpha: 0.3)
+              ? AppColors.primary.withValues(alpha: 0.3)
               : Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive ? Colors.green : Colors.white.withValues(alpha: 0.3),
+            color: isActive ? AppColors.primary : Colors.white.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -330,14 +331,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
           children: [
             Icon(
               icon,
-              color: isActive ? Colors.green : Colors.white,
+              color: isActive ? AppColors.primary : Colors.white,
               size: 28,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? Colors.green : Colors.white,
+                color: isActive ? AppColors.primary : Colors.white,
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
@@ -384,7 +385,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // Draw corner brackets
     final Paint cornerPaint = Paint()
-      ..color = Colors.green
+      ..color = AppColors.primary
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -435,7 +436,7 @@ class ScannerOverlayPainter extends CustomPainter {
         ..shader = LinearGradient(
           colors: [
             Colors.transparent,
-            Colors.green.withValues(alpha: 0.8),
+            AppColors.primary.withValues(alpha: 0.8),
             Colors.transparent,
           ],
         ).createShader(Rect.fromLTWH(left, lineY - 2, scanAreaSize, 4))
@@ -452,7 +453,7 @@ class ScannerOverlayPainter extends CustomPainter {
         ..shader = LinearGradient(
           colors: [
             Colors.transparent,
-            Colors.green.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.3),
             Colors.transparent,
           ],
         ).createShader(Rect.fromLTWH(left, lineY - 10, scanAreaSize, 20))

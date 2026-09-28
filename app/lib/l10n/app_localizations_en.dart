@@ -3193,7 +3193,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggestions => 'Suggestions';
 
   @override
-  String get days => 'jours';
+  String get days => 'days';
 
   @override
   String get all => 'All';
@@ -5161,6 +5161,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get epMonthlySummaryDesc => 'Budget recap at the end of each month';
+
+  @override
+  String get epTipsTitle => 'Tips & Tricks';
+
+  @override
+  String get epTipsToggleTitle => 'Tips & Reminders';
 
   @override
   String get epTipsDesc => 'Helpful advice to get more from EpiList';

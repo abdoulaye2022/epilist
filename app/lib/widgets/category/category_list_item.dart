@@ -1,4 +1,6 @@
 // widgets/category/category_list_item.dart
+// Carte plate bordée, comme partout dans l'app : pastille d'icône teintée
+// à la couleur de la catégorie, actions discrètes à droite.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
@@ -17,66 +19,49 @@ class CategoryListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      elevation: 2,
-      color: Colors.white,
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 2,
+        ),
         leading: Container(
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
-            color: category.color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: category.color.withValues(alpha: 0.5),
-              width: 2,
-            ),
+            color: category.color.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            category.icon,
-            color: category.color,
-            size: 28,
-          ),
+          child: Icon(category.icon, color: category.color, size: 22),
         ),
         title: Text(
           category.name,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
           ),
-        ),
-        subtitle: Row(
-          children: [
-            Container(
-              width: 16,
-              height: 16,
-              decoration: BoxDecoration(
-                color: category.color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              category.colorHex,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.edit),
-              color: theme.primaryColor,
+              icon: const Icon(Icons.edit_outlined, size: 20),
+              color: AppColors.textSecondary,
               onPressed: onEdit,
             ),
             IconButton(
-              icon: const Icon(Icons.delete),
-              color: Colors.red,
+              icon: const Icon(Icons.delete_outline, size: 20),
+              color: AppColors.error,
               onPressed: onDelete,
             ),
           ],
