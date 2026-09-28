@@ -2,15 +2,17 @@
 
 // Centre d'aide : FAQ accordéon entièrement traduite (fr/en), sans emoji.
 import { useState } from "react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronDown, ChevronRight, Mail, Clock, LifeBuoy } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/hooks/useLanguage";
+import { href } from "@/lib/routes";
 
 export default function HelpContent() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const faqs = [1, 2, 3, 4, 5, 6] as const;
 
@@ -79,13 +81,13 @@ export default function HelpContent() {
                 </h3>
                 <p className="mb-5 text-gray-600">{t("helpContactText")}</p>
                 <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6 text-sm font-medium">
-                  <a
-                    href="mailto:contact@m2atech.com"
+                  <Link
+                    href={href("contact", language)}
                     className="inline-flex items-center gap-2 text-epilist-green hover:text-green-700"
                   >
                     <Mail className="h-4 w-4" />
-                    contact@m2atech.com
-                  </a>
+                    {t("contactUs")}
+                  </Link>
                   <span className="inline-flex items-center gap-2 text-gray-600">
                     <Clock className="h-4 w-4" />
                     {t("helpResponseTime")}

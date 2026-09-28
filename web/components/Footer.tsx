@@ -60,13 +60,13 @@ export default function Footer() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-gray-400">
               {t("footerTagline")}
             </p>
-            <a
-              href="mailto:contact@m2atech.com"
+            <Link
+              href={href("contact", language)}
               className="mt-4 inline-flex items-center gap-2 text-sm text-gray-400 hover:text-green-400 transition-colors"
             >
               <Mail className="h-4 w-4" />
-              contact@m2atech.com
-            </a>
+              {t("contactUs")}
+            </Link>
           </div>
 
           {/* Colonnes de liens */}
