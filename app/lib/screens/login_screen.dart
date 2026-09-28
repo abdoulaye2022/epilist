@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildHeader(AppLocalizations l10n) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           width: 64,
@@ -96,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: AppSpacing.lg),
         Text(
           l10n.login,
+          textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w700,
@@ -105,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: AppSpacing.xs),
         Text(
           l10n.manageGroceryListsEasily,
+          textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 15,
             color: AppColors.textSecondary,
