@@ -21,7 +21,7 @@ class EmailVerificationScreen extends StatefulWidget {
   });
 
   @override
-  _EmailVerificationScreenState createState() =>
+  State<EmailVerificationScreen> createState() =>
       _EmailVerificationScreenState();
 }
 
@@ -35,18 +35,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   Timer? _resendTimer;
   int _resendCountdown = 0;
   bool _canResend = true;
-  bool _initialCodeSent = false;
   bool _isLoading = false;
-  bool _isRedirecting = false;
+  final bool _isRedirecting = false;
   bool _hasNavigated = false; // ✅ AJOUT: Variable manquante
 
   @override
   void initState() {
     super.initState();
     _startResendCountdown();
-    setState(() {
-      _initialCodeSent = true;
-    });
   }
 
   // ✅ MÉTHODE MANQUANTE: Démarrage du compte à rebours
@@ -145,6 +141,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       if (clipboardData != null && clipboardData.text != null) {
         _handlePastedCode(clipboardData.text!);
       } else {
+        if (!mounted) return;
         SmartSnackBarManager.showWarningSnackBar(
           context,
           l10n.noCodeFoundInClipboard,
@@ -152,6 +149,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(
         context,
         l10n.errorPastingCode,
@@ -381,7 +379,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             if (!_hasNavigated) {
               setState(() => _hasNavigated = true);
               Future.delayed(const Duration(seconds: 2), () {
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
@@ -407,7 +405,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             if (!_hasNavigated) {
               setState(() => _hasNavigated = true);
               Future.delayed(const Duration(seconds: 2), () {
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const MainShell()),
@@ -445,7 +443,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             if (!_hasNavigated) {
               setState(() => _hasNavigated = true);
               Future.delayed(const Duration(milliseconds: 500), () {
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(

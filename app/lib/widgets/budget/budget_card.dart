@@ -246,7 +246,7 @@ class BudgetAlertsWidget extends StatelessWidget {
           color: Colors.white, // ✅ BACKGROUND BLANC
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _getAlertColor().withOpacity(0.3),
+            color: _getAlertColor().withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -259,7 +259,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getAlertColor().withOpacity(0.1),
+                    color: _getAlertColor().withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -393,9 +393,9 @@ class BudgetAlertsWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _getAlertColor().withOpacity(0.1),
+                  color: _getAlertColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _getAlertColor().withOpacity(0.2)),
+                  border: Border.all(color: _getAlertColor().withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -442,7 +442,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _showSuggestions(context),
                   icon: const Icon(Icons.lightbulb_outline, size: 16),
-                  label: Text(l10n.suggestions ?? 'Tips'),
+                  label: Text(l10n.suggestions),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _getAlertColor(),
                     foregroundColor: Colors.white,
@@ -489,14 +489,13 @@ class BudgetAlertsWidget extends StatelessWidget {
 
   String _getDaysText(AppLocalizations l10n) {
     if (budget.daysRemaining == 1) {
-      return l10n.day ?? 'day';
+      return l10n.day;
     } else {
-      return '${l10n.day ?? 'days'}s';
+      return '${l10n.day}s';
     }
   }
 
   void _showSuggestions(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     // Implementation des suggestions...
   }
 }
@@ -709,7 +708,7 @@ class BudgetSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.background, // ✅ BACKGROUND GRIS TRÈS CLAIR
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [

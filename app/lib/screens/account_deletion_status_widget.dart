@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:flutter/foundation.dart';
 
 class AccountDeletionStatusWidget extends StatefulWidget {
   const AccountDeletionStatusWidget({super.key});

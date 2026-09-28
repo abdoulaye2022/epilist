@@ -2,7 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:epilist/models/share_invitation.dart';
 import 'package:epilist/models/shared_enums.dart';
-import 'package:epilist/models/shared_list.dart' hide SharePermission;
+import 'package:epilist/models/shared_list.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/deep_link_handler.dart';

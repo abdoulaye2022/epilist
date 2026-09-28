@@ -30,8 +30,8 @@ class LanguageSettingTile extends StatelessWidget {
             child: InkWell(
               onTap: () => _showLanguageDialog(context, l10n, currentLanguage),
               borderRadius: BorderRadius.circular(12),
-              splashColor: Colors.green.withOpacity(0.1),
-              highlightColor: Colors.green.withOpacity(0.05),
+              splashColor: Colors.green.withValues(alpha: 0.1),
+              highlightColor: Colors.green.withValues(alpha: 0.05),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -306,7 +306,7 @@ class LanguageSettingTile extends StatelessWidget {
               isSelected
                   ? [
                     BoxShadow(
-                      color: Colors.green.withOpacity(0.1),
+                      color: Colors.green.withValues(alpha: 0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),

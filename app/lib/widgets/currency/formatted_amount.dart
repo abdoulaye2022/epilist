@@ -5,7 +5,6 @@ import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_state.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
-import 'package:epilist/models/user.dart';
 import 'package:epilist/models/currency.dart';
 
 /// Widget pour afficher un montant avec la devise d'affichage de l'utilisateur

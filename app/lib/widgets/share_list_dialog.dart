@@ -160,7 +160,14 @@ class _ShareListDialogState extends State<ShareListDialog> {
             border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
+          child: RadioGroup<SharePermission>(
+            groupValue: _selectedPermission,
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _selectedPermission = value);
+              }
+            },
+            child: Column(
             children:
                 SharePermission.values.asMap().entries.map((entry) {
                   final index = entry.key;
@@ -183,12 +190,6 @@ class _ShareListDialogState extends State<ShareListDialog> {
                     ),
                     child: RadioListTile<SharePermission>(
                       value: permission,
-                      groupValue: _selectedPermission,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPermission = value!;
-                        });
-                      },
                       title: Text(
                         _getPermissionTitle(permission),
                         style: TextStyle(
@@ -213,6 +214,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                     ),
                   );
                 }).toList(),
+            ),
           ),
         ),
       ],
@@ -235,7 +237,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<int>(
-          value: _expirationDays,
+          initialValue: _expirationDays,
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.schedule_outlined, color: AppColors.textSecondary),
             border: OutlineInputBorder(
@@ -592,14 +594,13 @@ class _ShareListDialogState extends State<ShareListDialog> {
           widget.listName,
           l10n.you,
         );
-        await Share.share(link, subject: shareData['subject']);
+        await SharePlus.instance.share(ShareParams(text: link, subject: shareData['subject']));
       } else {
-        await Share.share(
-          link,
-          subject: l10n.epilistInvitation(widget.listName),
+        await SharePlus.instance.share(ShareParams(text: link, subject: l10n.epilistInvitation(widget.listName)),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(
         context,
         l10n.shareError,

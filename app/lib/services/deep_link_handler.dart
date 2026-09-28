@@ -89,8 +89,7 @@ class DeepLinkHandler {
     final l10n = AppLocalizations.of(_context!)!;
     switch (key) {
       case 'auth_success_navigation':
-        return l10n.authSuccessNavigation ??
-            'Authentification réussie, navigation vers invitation';
+        return l10n.authSuccessNavigation;
       default:
         return 'Message non disponible';
     }
@@ -120,9 +119,7 @@ class DeepLinkHandler {
     debugPrint('🚀 Initialisation DeepLinkHandler');
     _context = context;
 
-    if (_appLinks == null) {
-      _appLinks = AppLinks();
-    }
+    _appLinks ??= AppLinks();
 
     _initializeDeepLinks();
     _processPendingLink();
@@ -525,7 +522,7 @@ class DeepLinkHandler {
     return webUrl;
   }
 
-  @deprecated
+  @Deprecated('Utiliser la nouvelle API de liens')
   static String generateAppShareUrl(String token) {
     return generateDirectAppUrl(token);
   }
@@ -548,7 +545,7 @@ class DeepLinkHandler {
 
     final invitationTitle =
         _context != null
-            ? '${AppLocalizations.of(_context!)!.invitationEpiList ?? 'Invitation EpiList'} - $listName'
+            ? '${AppLocalizations.of(_context!)!.invitationEpiList} - $listName'
             : 'Invitation EpiList - $listName';
 
     final invitationText =
@@ -568,8 +565,7 @@ class DeepLinkHandler {
 
     final invitationSubject =
         _context != null
-            ? AppLocalizations.of(_context!)!.invitationSubject ??
-                'Invitation à partager une liste d\'épicerie - EpiList'
+            ? AppLocalizations.of(_context!)!.invitationSubject
             : 'Invitation à partager une liste d\'épicerie - EpiList';
 
     return {
@@ -589,19 +585,17 @@ class DeepLinkHandler {
   ) {
     final l10n = AppLocalizations.of(_context!)!;
     final message =
-        l10n.invitationMessage?.call(ownerName, listName) ??
-        l10n.invitationMessage ??
-        '$ownerName vous invite sur "$listName"';
+        l10n.invitationMessage.call(ownerName, listName);
 
     return '''🛒 $message
 
-📱 ${l10n.directLinkRecommended ?? 'Lien direct EpiList (recommandé)'} :
+📱 ${l10n.directLinkRecommended} :
 $directUrl
 
-🌐 ${l10n.orViaBrowser ?? 'Ou via navigateur'} :
+🌐 ${l10n.orViaBrowser} :
 $webUrl
 
-${l10n.directLinkAutoOpen ?? 'Le lien direct ouvrira automatiquement l\'app !'}''';
+${l10n.directLinkAutoOpen}''';
   }
 
   static String _getFallbackInvitationText(
@@ -632,10 +626,10 @@ Le lien direct ouvrira automatiquement l'app !''';
       final l10n = AppLocalizations.of(_context!)!;
       return '''🛒 ${l10n.invitationMessage(ownerName, listName)}
 
-📱 ${l10n.clickToOpenEpiList ?? 'Cliquez pour ouvrir EpiList'} :
+📱 ${l10n.clickToOpenEpiList} :
 $directUrl
 
-${l10n.appWillOpenAutomatically ?? 'L\'app s\'ouvrira automatiquement !'}''';
+${l10n.appWillOpenAutomatically}''';
     }
 
     return '''🛒 $ownerName vous invite sur "$listName"

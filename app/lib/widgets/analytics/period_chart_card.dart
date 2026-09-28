@@ -53,7 +53,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final periodData = _extractPeriodData();
-    final summary = widget.data['summary'] ?? {};
     final currentPeriod = widget.data['period'] ?? 'month';
 
     if (currentPeriod != _selectedPeriod) {
@@ -167,7 +166,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   String _translateMonthShort(String monthShort, AppLocalizations l10n) {
     if (monthShort.isEmpty) return monthShort;
 
-    final originalShort = monthShort;
     final lowerShort = monthShort.toLowerCase().trim();
 
     // 🔧 CORRECTION: Gérer tous les formats possibles d'abréviation
@@ -417,68 +415,6 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   }
 
   /// ✅ NOUVEAU: Traduit un nom de jour complet (français ET anglais)
-  String _translateDayName(String dayName, AppLocalizations l10n) {
-    if (dayName.isEmpty) return dayName;
-
-    final lowerDay = dayName.toLowerCase().trim();
-
-    // Mapping des noms complets (français ET anglais)
-    switch (lowerDay) {
-      // ==================== LUNDI ====================
-      case 'lundi':
-      case 'monday':
-        return l10n.monday;
-
-      // ==================== MARDI ====================
-      case 'mardi':
-      case 'tuesday':
-        return l10n.tuesday;
-
-      // ==================== MERCREDI ====================
-      case 'mercredi':
-      case 'wednesday':
-        return l10n.wednesday;
-
-      // ==================== JEUDI ====================
-      case 'jeudi':
-      case 'thursday':
-        return l10n.thursday;
-
-      // ==================== VENDREDI ====================
-      case 'vendredi':
-      case 'friday':
-        return l10n.friday;
-
-      // ==================== SAMEDI ====================
-      case 'samedi':
-      case 'saturday':
-        return l10n.saturday;
-
-      // ==================== DIMANCHE ====================
-      case 'dimanche':
-      case 'sunday':
-        return l10n.sunday;
-
-      default:
-        // Fallback: essayer de détecter par les premières lettres (français ET anglais)
-        if (lowerDay.startsWith('lun') || lowerDay.startsWith('mon'))
-          return l10n.monday;
-        if (lowerDay.startsWith('mar') || lowerDay.startsWith('tue'))
-          return l10n.tuesday;
-        if (lowerDay.startsWith('mer') || lowerDay.startsWith('wed'))
-          return l10n.wednesday;
-        if (lowerDay.startsWith('jeu') || lowerDay.startsWith('thu'))
-          return l10n.thursday;
-        if (lowerDay.startsWith('ven') || lowerDay.startsWith('fri'))
-          return l10n.friday;
-        if (lowerDay.startsWith('sam') || lowerDay.startsWith('sat'))
-          return l10n.saturday;
-        if (lowerDay.startsWith('dim') || lowerDay.startsWith('sun'))
-          return l10n.sunday;
-
-        return dayName; // Retourner tel quel si pas de correspondance
-    }
-  }
 
   /// ✅ NOUVEAU: Traduit une abréviation de jour (français ET anglais)
   String _translateDayShort(String dayShort, AppLocalizations l10n) {
@@ -598,7 +534,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     if (periodsWithData > 0) {
       return total / periodsWithData;
     }
-    return total / (periodData.length > 0 ? periodData.length : 1);
+    return total / (periodData.isNotEmpty ? periodData.length : 1);
   }
 
   /// Extrait les données selon la période sélectionnée
@@ -743,7 +679,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
             Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
             const SizedBox(height: 12),
             Text(
-              l10n.noSpendingRecorded ?? 'Aucune dépense enregistrée',
+              l10n.noSpendingRecorded,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
@@ -820,9 +756,9 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

@@ -43,7 +43,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
   int? _selectedListId;
 
   List<ShoppingList> _availableLists = [];
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -293,7 +293,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
 
   Widget _buildPeriodTypeField(AppLocalizations l10n) {
     return DropdownButtonFormField<BudgetPeriodType>(
-      value: _selectedPeriodType,
+      initialValue: _selectedPeriodType,
       decoration: InputDecoration(labelText: l10n.periodType),
       items:
           BudgetPeriodType.values.map((type) {
@@ -369,7 +369,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         }
       },
       child: DropdownButtonFormField<int?>(
-        value: _selectedListId,
+        initialValue: _selectedListId,
         decoration: InputDecoration(
           labelText: l10n.associatedList,
           hintText: l10n.generalBudget,
@@ -401,7 +401,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
             Icon(Icons.warning_amber, color: AppColors.warning, size: 20),
             const SizedBox(width: 8),
             Text(
-              '${l10n.alertThreshold}: ${_alertThreshold}%',
+              '${l10n.alertThreshold}: $_alertThreshold%',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

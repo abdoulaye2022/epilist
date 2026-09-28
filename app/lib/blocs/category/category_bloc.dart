@@ -238,7 +238,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_CREATE_CATEGORY,
+          actionType: OfflineQueueService.actionCreateCategory,
           payload: {
             'name': event.name,
             'icon_code': event.iconCode,
@@ -255,7 +255,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
           name: event.name,
           iconCode: event.iconCode,
           colorHex: event.colorHex,
-          orderIndex: event.orderIndex ?? 0,
+          orderIndex: event.orderIndex,
           createdAt: now,
           updatedAt: now,
         );
@@ -342,7 +342,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_UPDATE_CATEGORY,
+          actionType: OfflineQueueService.actionUpdateCategory,
           payload: {
             'category_id': event.categoryId,
             'name': event.name,
@@ -442,7 +442,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_DELETE_CATEGORY,
+          actionType: OfflineQueueService.actionDeleteCategory,
           payload: {
             'category_id': event.categoryId,
           },

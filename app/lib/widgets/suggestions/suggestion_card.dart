@@ -231,7 +231,6 @@ class SuggestionCard extends StatelessWidget {
 
   /// Build confidence badge based on confidence level
   Widget _buildConfidenceBadge(BuildContext context) {
-    final theme = Theme.of(context);
     final level = suggestion.confidenceLevel;
 
     Color backgroundColor;

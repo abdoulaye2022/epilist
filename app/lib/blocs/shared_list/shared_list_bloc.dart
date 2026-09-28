@@ -3,8 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart'; // ✅ NOUVEAU
-import 'package:epilist/models/shared_list.dart';
-import 'package:epilist/models/share_invitation.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:flutter/foundation.dart';
 

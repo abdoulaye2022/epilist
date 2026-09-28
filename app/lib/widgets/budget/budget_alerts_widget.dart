@@ -23,15 +23,15 @@ class BudgetAlertsWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _getAlertColor().withOpacity(0.3),
+            color: _getAlertColor().withValues(alpha: 0.3),
             width: 1.5,
           ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              _getAlertColor().withOpacity(0.05),
-              _getAlertColor().withOpacity(0.1),
+              _getAlertColor().withValues(alpha: 0.05),
+              _getAlertColor().withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -44,7 +44,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getAlertColor().withOpacity(0.2),
+                    color: _getAlertColor().withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -98,7 +98,7 @@ class BudgetAlertsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -180,9 +180,9 @@ class BudgetAlertsWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _getAlertColor().withOpacity(0.1),
+                  color: _getAlertColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _getAlertColor().withOpacity(0.2)),
+                  border: Border.all(color: _getAlertColor().withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
@@ -233,7 +233,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _showSuggestions(context),
                   icon: const Icon(Icons.lightbulb_outline, size: 16),
-                  label: Text(l10n.suggestions ?? 'Tips'),
+                  label: Text(l10n.suggestions),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _getAlertColor(),
                     foregroundColor: Colors.white,
@@ -275,7 +275,7 @@ class BudgetAlertsWidget extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 isOverBudget
-                    ? (l10n.overBudget ?? 'Over Budget')
+                    ? (l10n.overBudget)
                     : l10n.remaining,
                 style: TextStyle(
                   fontSize: 13,
@@ -331,9 +331,9 @@ class BudgetAlertsWidget extends StatelessWidget {
 
   String _getDaysText(AppLocalizations l10n) {
     if (budget.daysRemaining == 1) {
-      return l10n.day ?? 'day';
+      return l10n.day;
     } else {
-      return '${l10n.day ?? 'days'}s';
+      return '${l10n.day}s';
     }
   }
 
@@ -357,7 +357,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                     Icon(Icons.lightbulb_outline, color: Colors.amber[600]),
                     const SizedBox(width: 8),
                     Text(
-                      l10n.suggestions ?? 'Budget Suggestions',
+                      l10n.suggestions,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -368,12 +368,12 @@ class BudgetAlertsWidget extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildSuggestionItem(
                   Icons.analytics,
-                  l10n.analytics ?? 'Review Recent Purchases',
+                  l10n.analytics,
                   AppLocalizations.of(context)!.baCheckExpenses,
                 ),
                 _buildSuggestionItem(
                   Icons.tune,
-                  l10n.update ?? 'Adjust Budget Amount',
+                  l10n.update,
                   AppLocalizations.of(context)!.baIncreaseBudget,
                 ),
                 _buildSuggestionItem(

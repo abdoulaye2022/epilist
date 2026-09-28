@@ -1,7 +1,6 @@
 // services/analytics_service.dart - VERSION AVEC FILTRAGE
 import 'package:dio/dio.dart';
 import 'package:epilist/services/auth_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AnalyticsService {

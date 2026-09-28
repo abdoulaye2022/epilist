@@ -133,7 +133,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(iconData, size: 22, color: color),
@@ -239,7 +239,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
               foregroundColor: Colors.white,
-              disabledBackgroundColor: color.withOpacity(0.5),
+              disabledBackgroundColor: color.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

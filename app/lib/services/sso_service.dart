@@ -376,7 +376,6 @@ class SSOService {
       // ✅ Vérifications spécifiques iOS
       final audience = payload['aud'] as String?;
       final issuer = payload['iss'] as String?;
-      final email = payload['email'] as String?;
       final emailVerified = payload['email_verified'];
 
       // ✅ CORRECTION: Accepter TOUS les client IDs du même projet Firebase
@@ -547,7 +546,7 @@ class SSOService {
       }
 
       final email =
-          credential.email ?? '${userIdentifier}@privaterelay.appleid.com';
+          credential.email ?? '$userIdentifier@privaterelay.appleid.com';
       final firstName = credential.givenName ?? '';
       final lastName = credential.familyName ?? '';
       final displayName = '$firstName $lastName'.trim();

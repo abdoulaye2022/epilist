@@ -56,7 +56,7 @@ class ListDetailScreen extends StatefulWidget {
   });
 
   @override
-  _ListDetailScreenState createState() => _ListDetailScreenState();
+  State<ListDetailScreen> createState() => _ListDetailScreenState();
 }
 
 class _ListDetailScreenState extends State<ListDetailScreen> {
@@ -529,9 +529,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bannerColor.withOpacity(0.1),
+        color: bannerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: bannerColor.withOpacity(0.3)),
+        border: Border.all(color: bannerColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -801,7 +801,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       fillColor:
           currentList.canManageItems
               ? null
-              : MaterialStateProperty.all(AppColors.border),
+              : WidgetStateProperty.all(AppColors.border),
     );
   }
 

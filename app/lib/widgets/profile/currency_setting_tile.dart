@@ -8,7 +8,6 @@ import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/currency/currency_state.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/currency.dart';
-import 'package:epilist/models/user.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
 class CurrencySettingTile extends StatefulWidget {
@@ -20,7 +19,6 @@ class CurrencySettingTile extends StatefulWidget {
 
 class _CurrencySettingTileState extends State<CurrencySettingTile> {
   Currency? _currentCurrency;
-  User? _currentUser;
 
   @override
   void initState() {
@@ -31,7 +29,6 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
   void _loadInitialData() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthSuccess) {
-      _currentUser = authState.user;
       _currentCurrency = authState.user.currency;
     }
 
@@ -48,7 +45,6 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
           listener: (context, state) {
             if (state is AuthSuccess) {
               setState(() {
-                _currentUser = state.user;
                 _currentCurrency = state.user.currency;
               });
             }
@@ -83,7 +79,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
             border: Border.all(color: AppColors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 1),

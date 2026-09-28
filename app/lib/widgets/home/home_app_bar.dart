@@ -67,7 +67,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
     }
   }
 
-  String _getGreeting(l10n) {
+  String _getGreeting(AppLocalizations l10n) {
     final hour = DateTime.now().hour;
     if (hour < 12) {
       return l10n.goodMorning;
@@ -94,11 +94,11 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
           // ✅ Mettre à jour depuis l'état actuel si disponible
           if (authState is AuthSuccess) {
-            firstName = authState.user?.firstName ?? _cachedFirstName;
-            lastName = authState.user?.lastName ?? _cachedLastName;
+            firstName = authState.user.firstName;
+            lastName = authState.user.lastName;
           } else if (authState is ProfileUpdated) {
-            firstName = authState.user?.firstName ?? _cachedFirstName;
-            lastName = authState.user?.lastName ?? _cachedLastName;
+            firstName = authState.user.firstName;
+            lastName = authState.user.lastName;
           }
 
           return AppBar(
@@ -223,7 +223,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                l10n.profile ?? 'Profil',
+                                l10n.profile,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -245,7 +245,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                             children: [
                               const Icon(Icons.list_alt, color: AppColors.textPrimary),
                               const SizedBox(width: 12),
-                              Text(l10n.allLists ?? 'Toutes les listes'),
+                              Text(l10n.allLists),
                             ],
                           ),
                         ),
@@ -284,7 +284,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                               const Icon(Icons.logout, color: Colors.red),
                               const SizedBox(width: 12),
                               Text(
-                                l10n.logout ?? 'Déconnexion',
+                                l10n.logout,
                                 style: const TextStyle(color: Colors.red),
                               ),
                             ],
@@ -438,11 +438,11 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
           String? lastName = _cachedLastName;
 
           if (authState is AuthSuccess) {
-            firstName = authState.user?.firstName ?? _cachedFirstName;
-            lastName = authState.user?.lastName ?? _cachedLastName;
+            firstName = authState.user.firstName;
+            lastName = authState.user.lastName;
           } else if (authState is ProfileUpdated) {
-            firstName = authState.user?.firstName ?? _cachedFirstName;
-            lastName = authState.user?.lastName ?? _cachedLastName;
+            firstName = authState.user.firstName;
+            lastName = authState.user.lastName;
           }
 
           return AppBar(
@@ -573,7 +573,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                l10n.profile ?? 'Profil',
+                                l10n.profile,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -594,7 +594,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                             children: [
                               const Icon(Icons.list_alt, color: AppColors.textPrimary),
                               const SizedBox(width: 12),
-                              Text(l10n.allLists ?? 'Toutes les listes'),
+                              Text(l10n.allLists),
                             ],
                           ),
                         ),
@@ -610,7 +610,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                               const Icon(Icons.logout, color: Colors.red),
                               const SizedBox(width: 12),
                               Text(
-                                l10n.logout ?? 'Déconnexion',
+                                l10n.logout,
                                 style: const TextStyle(color: Colors.red),
                               ),
                             ],

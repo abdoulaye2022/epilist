@@ -134,7 +134,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     Emitter<ReceiptState> emit,
   ) async {
     try {
-      final newReceipt = await _receiptService.createReceipt(
+      await _receiptService.createReceipt(
         listId: event.listId,
         storeName: event.storeName,
         totalAmount: event.totalAmount,

@@ -66,9 +66,9 @@ class ComparisonCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: trendColor.withOpacity(0.1),
+                color: trendColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: trendColor.withOpacity(0.3)),
+                border: Border.all(color: trendColor.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
@@ -103,7 +103,7 @@ class ComparisonCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '${absoluteChange > 0 ? '+' : ''}',
+                                absoluteChange > 0 ? '+' : '',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
@@ -141,16 +141,16 @@ class ComparisonCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _buildPeriodComparison(
-                      l10n.currentPeriod ?? 'Période actuelle',
-                      data['current_period']?.toDouble() ?? 0.0,
+                      l10n.currentPeriod,
+                      data['current_period']?.toDouble(),
                       Colors.blue,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildPeriodComparison(
-                      l10n.previousPeriod ?? 'Période précédente',
-                      data['previous_period']?.toDouble() ?? 0.0,
+                      l10n.previousPeriod,
+                      data['previous_period']?.toDouble(),
                       Colors.grey,
                     ),
                   ),
@@ -168,9 +168,9 @@ class ComparisonCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

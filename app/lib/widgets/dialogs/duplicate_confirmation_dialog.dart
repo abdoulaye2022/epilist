@@ -1,7 +1,6 @@
 // widgets/dialogs/duplicate_confirmation_dialog.dart - VERSION TRADUITE
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -244,7 +243,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: matchColor.withOpacity(0.1),
+          color: matchColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(

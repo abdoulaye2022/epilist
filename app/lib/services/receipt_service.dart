@@ -80,7 +80,7 @@ class ReceiptService {
           return <Receipt>[];
         }
 
-        final receiptsList = receiptsData as List;
+        final receiptsList = receiptsData;
         debugPrint('📊 Nombre de factures trouvées: ${receiptsList.length}');
 
         // Parser chaque facture avec gestion d'erreur individuelle

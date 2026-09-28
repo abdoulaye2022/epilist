@@ -739,7 +739,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       imageUrl: _photoUrl!,
                       fit: BoxFit.cover,
                       errorWidget:
-                          (_, __, ___) => const Icon(
+                          (_, _, _) => const Icon(
                             Icons.broken_image_outlined,
                             color: AppColors.textDisabled,
                           ),

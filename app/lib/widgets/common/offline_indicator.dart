@@ -26,7 +26,6 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
   bool _isOnline = false;
   int _pendingCount = 0;
   bool _isSyncing = false;
-  bool _initialized = false;
 
   @override
   void initState() {
@@ -43,7 +42,6 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
       setState(() {
         _isOnline = isOnline;
         _pendingCount = pendingCount;
-        _initialized = true;
       });
     }
 
@@ -119,7 +117,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                         Text(
                           _getStatusSubtitle(l10n)!,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 12,
                           ),
                         ),
@@ -132,7 +130,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -147,7 +145,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.info_outline,
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   size: 20,
                 ),
               ],
@@ -379,9 +377,9 @@ class _OfflineDetailsDialog extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color.withOpacity(0.3)),
+            border: Border.all(color: color.withValues(alpha: 0.3)),
           ),
           child: Text(
             value,

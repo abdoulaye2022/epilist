@@ -159,9 +159,9 @@ class EmptyItemsState extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: infoColor.withOpacity(0.1),
+        color: infoColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: infoColor.withOpacity(0.3)),
+        border: Border.all(color: infoColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

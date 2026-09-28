@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Image.asset(
             'assets/images/app_logo.png',
             fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => const Icon(
+            errorBuilder: (_, _, _) => const Icon(
               Icons.shopping_cart_rounded,
               size: 32,
               color: AppColors.primary,
@@ -436,6 +436,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _signInWithApple() async {
     try {
       final isAvailable = await SSOService.isAppleSignInAvailable();
+      if (!mounted) return;
       if (!isAvailable) {
         String errorMessage = Platform.isIOS
             ? AppLocalizations.of(context)!.appleUnavailableDevice
@@ -445,6 +446,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
+      if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(
         context,
         AppLocalizations.of(context)!.appleSignInError,

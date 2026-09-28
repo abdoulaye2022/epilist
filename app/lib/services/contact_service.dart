@@ -238,7 +238,7 @@ class ContactService {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected && data != null) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_SEND_FEEDBACK,
+          actionType: OfflineQueueService.actionSendFeedback,
           payload: data,
         );
 

@@ -199,7 +199,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_CREATE_ITEM,
+          actionType: OfflineQueueService.actionCreateItem,
           payload: {
             'list_id': event.listId,
             'product_name': event.productName,
@@ -421,7 +421,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     // Mode hors ligne : mettre en queue et mise à jour locale
     if (!_connectivityService.isConnected) {
       await OfflineQueueService.enqueueAction(
-        actionType: OfflineQueueService.ACTION_UPDATE_ITEM,
+        actionType: OfflineQueueService.actionUpdateItem,
         payload: {
           'list_id': event.listId,
           'item_id': event.itemId,
@@ -504,7 +504,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     if (!_connectivityService.isConnected) {
       // Mode hors ligne : mettre en queue et toggle local
       await OfflineQueueService.enqueueAction(
-        actionType: OfflineQueueService.ACTION_TOGGLE_ITEM,
+        actionType: OfflineQueueService.actionToggleItem,
         payload: {
           'list_id': event.listId,
           'item_id': event.itemId,
@@ -563,7 +563,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     if (!_connectivityService.isConnected) {
       // Mode hors ligne : mettre en queue et supprimer localement
       await OfflineQueueService.enqueueAction(
-        actionType: OfflineQueueService.ACTION_DELETE_ITEM,
+        actionType: OfflineQueueService.actionDeleteItem,
         payload: {
           'list_id': event.listId,
           'item_id': event.itemId,

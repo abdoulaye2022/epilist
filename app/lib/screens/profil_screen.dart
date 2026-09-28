@@ -9,7 +9,6 @@ import 'package:epilist/blocs/contact/contact_bloc.dart'; // ✅ NOUVEAU
 import 'package:epilist/models/currency.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
-import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/terms_of_service.dart';
@@ -220,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               AppLocalizations.of(context)!.manageYourSuggestions, // Exemple de sous-titre
           onTap: _navigateToSuggestionManagement,
           iconColor: AppColors.warning,
-          iconBackgroundColor: Colors.orange.withOpacity(0.1),
+          iconBackgroundColor: Colors.orange.withValues(alpha: 0.1),
         ),
         ProfileActionTile(
           icon: Icons.storefront,
@@ -228,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           subtitle: l10n.aisleOrder,
           onTap: _navigateToStores,
           iconColor: AppColors.primary,
-          iconBackgroundColor: Colors.green.withOpacity(0.1),
+          iconBackgroundColor: Colors.green.withValues(alpha: 0.1),
         ),
       ],
     );
@@ -274,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, 1),
@@ -419,15 +418,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ✅ NOUVELLE SECTION SUPPORT AVEC BOUTON FEEDBACK
   Widget _buildSupportSection(AppLocalizations l10n) {
     return ProfileSection(
-      title: l10n.support ?? 'Support',
+      title: l10n.support,
       children: [
         ProfileActionTile(
           icon: Icons.feedback_outlined,
-          title: l10n.sendFeedback ?? 'Envoyer un feedback',
-          subtitle: l10n.feedbackSubtitle ?? 'Aidez-nous à améliorer EpiList',
+          title: l10n.sendFeedback,
+          subtitle: l10n.feedbackSubtitle,
           onTap: _showFeedbackDialog,
           iconColor: AppColors.primary, // Couleur verte pour l'icône
-          iconBackgroundColor: Colors.green.withOpacity(0.1), // Fond vert clair
+          iconBackgroundColor: Colors.green.withValues(alpha: 0.1), // Fond vert clair
         ),
         // Vous pouvez ajouter d'autres éléments de support ici si nécessaire
       ],

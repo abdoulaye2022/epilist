@@ -127,7 +127,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                         Colors.transparent,
                       ],
                     ),
@@ -172,7 +172,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     margin: const EdgeInsets.symmetric(horizontal: 32),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -209,11 +209,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           margin: const EdgeInsets.symmetric(horizontal: 32),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.9),
+                            color: Colors.green.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.green.withOpacity(0.3),
+                                color: Colors.green.withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -262,7 +262,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: [
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                         Colors.transparent,
                       ],
                     ),
@@ -317,11 +317,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.green.withOpacity(0.3)
-              : Colors.white.withOpacity(0.1),
+              ? Colors.green.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive ? Colors.green : Colors.white.withOpacity(0.3),
+            color: isActive ? Colors.green : Colors.white.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -368,7 +368,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // Draw dark overlay
     final Paint overlayPaint = Paint()
-      ..color = Colors.black.withOpacity(0.5);
+      ..color = Colors.black.withValues(alpha: 0.5);
 
     canvas.drawPath(
       Path.combine(
@@ -435,7 +435,7 @@ class ScannerOverlayPainter extends CustomPainter {
         ..shader = LinearGradient(
           colors: [
             Colors.transparent,
-            Colors.green.withOpacity(0.8),
+            Colors.green.withValues(alpha: 0.8),
             Colors.transparent,
           ],
         ).createShader(Rect.fromLTWH(left, lineY - 2, scanAreaSize, 4))
@@ -452,7 +452,7 @@ class ScannerOverlayPainter extends CustomPainter {
         ..shader = LinearGradient(
           colors: [
             Colors.transparent,
-            Colors.green.withOpacity(0.3),
+            Colors.green.withValues(alpha: 0.3),
             Colors.transparent,
           ],
         ).createShader(Rect.fromLTWH(left, lineY - 10, scanAreaSize, 20))

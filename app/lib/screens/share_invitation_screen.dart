@@ -9,8 +9,6 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
-import 'package:epilist/models/shared_list.dart' hide SharePermission;
-import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/main_shell.dart';
 
 class ShareInvitationScreen extends StatefulWidget {
@@ -33,8 +31,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => !_hasPerformedAction,
+    return PopScope(
+      canPop: !_hasPerformedAction,
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -82,7 +80,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               );
 
               Future.delayed(const Duration(seconds: 1), () {
-                if (mounted) {
+                if (context.mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const MainShell()),
                     (route) => false,
@@ -202,10 +200,10 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: _getStatusColor(invitation).withOpacity(0.1),
+              color: _getStatusColor(invitation).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(60),
               border: Border.all(
-                color: _getStatusColor(invitation).withOpacity(0.3),
+                color: _getStatusColor(invitation).withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -280,9 +278,9 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -486,7 +484,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -1068,7 +1066,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(

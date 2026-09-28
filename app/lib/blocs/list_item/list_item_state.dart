@@ -147,10 +147,10 @@ class DuplicateItem extends Equatable {
   String get displayText {
     String text = productName;
     if (storeName != null && storeName!.isNotEmpty) {
-      text += ' (${storeName})';
+      text += ' ($storeName)';
     }
     if (price != null) {
-      text += ' - ${formattedPrice}';
+      text += ' - $formattedPrice';
     }
     return text;
   }

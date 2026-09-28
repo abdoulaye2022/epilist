@@ -20,38 +20,38 @@ class OfflineQueueService {
   // TYPES D'ACTIONS
   // ============================================================================
 
-  static const String ACTION_CREATE_LIST = 'create_list';
-  static const String ACTION_UPDATE_LIST = 'update_list';
-  static const String ACTION_DELETE_LIST = 'delete_list';
-  static const String ACTION_DUPLICATE_LIST = 'duplicate_list';
+  static const String actionCreateList = 'create_list';
+  static const String actionUpdateList = 'update_list';
+  static const String actionDeleteList = 'delete_list';
+  static const String actionDuplicateList = 'duplicate_list';
 
-  static const String ACTION_CREATE_ITEM = 'create_item';
-  static const String ACTION_UPDATE_ITEM = 'update_item';
-  static const String ACTION_DELETE_ITEM = 'delete_item';
-  static const String ACTION_TOGGLE_ITEM = 'toggle_item';
+  static const String actionCreateItem = 'create_item';
+  static const String actionUpdateItem = 'update_item';
+  static const String actionDeleteItem = 'delete_item';
+  static const String actionToggleItem = 'toggle_item';
 
-  static const String ACTION_CREATE_RECEIPT = 'create_receipt';
-  static const String ACTION_UPDATE_RECEIPT = 'update_receipt';
-  static const String ACTION_DELETE_RECEIPT = 'delete_receipt';
+  static const String actionCreateReceipt = 'create_receipt';
+  static const String actionUpdateReceipt = 'update_receipt';
+  static const String actionDeleteReceipt = 'delete_receipt';
 
-  static const String ACTION_CREATE_BUDGET = 'create_budget';
-  static const String ACTION_UPDATE_BUDGET = 'update_budget';
-  static const String ACTION_DELETE_BUDGET = 'delete_budget';
+  static const String actionCreateBudget = 'create_budget';
+  static const String actionUpdateBudget = 'update_budget';
+  static const String actionDeleteBudget = 'delete_budget';
 
-  static const String ACTION_CREATE_CATEGORY = 'create_category';
-  static const String ACTION_UPDATE_CATEGORY = 'update_category';
-  static const String ACTION_DELETE_CATEGORY = 'delete_category';
-  static const String ACTION_REORDER_CATEGORIES = 'reorder_categories';
+  static const String actionCreateCategory = 'create_category';
+  static const String actionUpdateCategory = 'update_category';
+  static const String actionDeleteCategory = 'delete_category';
+  static const String actionReorderCategories = 'reorder_categories';
 
-  static const String ACTION_UPDATE_PROFILE = 'update_profile';
+  static const String actionUpdateProfile = 'update_profile';
 
   // Magasins (tri par rayon)
-  static const String ACTION_CREATE_STORE = 'create_store';
-  static const String ACTION_RENAME_STORE = 'rename_store';
-  static const String ACTION_DELETE_STORE = 'delete_store';
-  static const String ACTION_SET_STORE_ORDER = 'set_store_order';
-  static const String ACTION_UPDATE_EMAIL_PREFERENCES = 'update_email_preferences';
-  static const String ACTION_SEND_FEEDBACK = 'send_feedback';
+  static const String actionCreateStore = 'create_store';
+  static const String actionRenameStore = 'rename_store';
+  static const String actionDeleteStore = 'delete_store';
+  static const String actionSetStoreOrder = 'set_store_order';
+  static const String actionUpdateEmailPreferences = 'update_email_preferences';
+  static const String actionSendFeedback = 'send_feedback';
 
   // ============================================================================
   // INITIALISATION

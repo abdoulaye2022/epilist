@@ -1,5 +1,4 @@
 // models/budget.dart
-import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/currency.dart';
 import 'package:equatable/equatable.dart';
 
@@ -412,10 +411,12 @@ class UpdateBudgetRequest extends Equatable {
     if (name != null) json['name'] = name;
     if (budgetAmount != null) json['budget_amount'] = budgetAmount;
     if (periodType != null) json['period_type'] = periodType!.name;
-    if (startDate != null)
+    if (startDate != null) {
       json['start_date'] = startDate!.toIso8601String().split('T')[0];
-    if (endDate != null)
+    }
+    if (endDate != null) {
       json['end_date'] = endDate!.toIso8601String().split('T')[0];
+    }
     if (alertThreshold != null) json['alert_threshold'] = alertThreshold;
     if (isActive != null) json['is_active'] = isActive;
     return json;

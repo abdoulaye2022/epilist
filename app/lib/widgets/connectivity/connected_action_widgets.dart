@@ -41,7 +41,7 @@ class ConnectedElevatedButton extends StatelessWidget {
             backgroundColor:
                 isConnected
                     ? style?.backgroundColor
-                    : MaterialStateProperty.all(AppColors.textDisabled),
+                    : WidgetStateProperty.all(AppColors.textDisabled),
           ) ??
           ElevatedButton.styleFrom(
             backgroundColor: isConnected ? null : AppColors.textDisabled,
@@ -102,7 +102,7 @@ class ConnectedFloatingActionButton extends StatelessWidget {
       tooltip:
           isConnected
               ? tooltip
-              : (l10n.connectionRequired ?? 'Connexion requise'),
+              : (l10n.connectionRequired),
       child:
           isConnected ? child : const Icon(Icons.wifi_off, color: Colors.white),
     );
@@ -173,7 +173,7 @@ class ConnectedListTile extends StatelessWidget {
       final l10n = AppLocalizations.of(context)!;
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        l10n.connectionRequired ?? 'Connexion Internet requise',
+        l10n.connectionRequired,
       );
     }
   }
@@ -213,7 +213,7 @@ class ConnectedRefreshIndicator extends StatelessWidget {
       final l10n = AppLocalizations.of(context)!;
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        l10n.connectionRequired ?? 'Connexion Internet requise pour actualiser',
+        l10n.connectionRequired,
       );
     }
   }
@@ -254,7 +254,7 @@ class ConnectedIconButton extends StatelessWidget {
       tooltip:
           isConnected
               ? tooltip
-              : (l10n.connectionRequired ?? 'Connexion requise'),
+              : (l10n.connectionRequired),
       color: isConnected ? null : Colors.grey,
     );
   }
@@ -264,7 +264,7 @@ class ConnectedIconButton extends StatelessWidget {
       final l10n = AppLocalizations.of(context)!;
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        l10n.connectionRequired ?? 'Connexion Internet requise',
+        l10n.connectionRequired,
       );
     }
   }
@@ -305,7 +305,7 @@ class ConnectedTextButton extends StatelessWidget {
             foregroundColor:
                 isConnected
                     ? style?.foregroundColor
-                    : MaterialStateProperty.all(Colors.grey),
+                    : WidgetStateProperty.all(Colors.grey),
           ) ??
           TextButton.styleFrom(
             foregroundColor: isConnected ? null : Colors.grey,

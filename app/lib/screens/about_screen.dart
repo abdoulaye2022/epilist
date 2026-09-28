@@ -1,6 +1,5 @@
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -35,7 +34,7 @@ class AboutPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -201,7 +200,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -262,6 +261,7 @@ class AboutPage extends StatelessWidget {
       if (await canLaunchUrl(contactUrl)) {
         await launchUrl(contactUrl, mode: LaunchMode.externalApplication);
       } else {
+        if (!context.mounted) return;
         SmartSnackBarManager.showMessage(
           context,
           l10n.aboutContactError,
@@ -269,6 +269,7 @@ class AboutPage extends StatelessWidget {
         );
       }
     } catch (e) {
+      if (!context.mounted) return;
       SmartSnackBarManager.showMessage(
         context,
         l10n.aboutContactError,
@@ -284,6 +285,7 @@ class AboutPage extends StatelessWidget {
       if (await canLaunchUrl(websiteUrl)) {
         await launchUrl(websiteUrl, mode: LaunchMode.externalApplication);
       } else {
+        if (!context.mounted) return;
         SmartSnackBarManager.showMessage(
           context,
           l10n.aboutWebsiteError,
@@ -291,6 +293,7 @@ class AboutPage extends StatelessWidget {
         );
       }
     } catch (e) {
+      if (!context.mounted) return;
       SmartSnackBarManager.showMessage(
         context,
         l10n.aboutWebsiteError,
@@ -316,6 +319,7 @@ class AboutPage extends StatelessWidget {
       if (await canLaunchUrl(storeUri)) {
         await launchUrl(storeUri, mode: LaunchMode.externalApplication);
       } else {
+        if (!context.mounted) return;
         SmartSnackBarManager.showMessage(
           context,
           l10n.aboutStoreUnavailable,
@@ -323,6 +327,7 @@ class AboutPage extends StatelessWidget {
         );
       }
     } catch (e) {
+      if (!context.mounted) return;
       SmartSnackBarManager.showMessage(
         context,
         l10n.aboutStoreError,
@@ -344,8 +349,11 @@ class AboutPage extends StatelessWidget {
         '#EpiList #Groceries #Organization #Family';
 
     try {
-      await Share.share(shareText, subject: l10n.aboutShareSubject);
+      await SharePlus.instance.share(
+        ShareParams(text: shareText, subject: l10n.aboutShareSubject),
+      );
     } catch (e) {
+      if (!context.mounted) return;
       SmartSnackBarManager.showMessage(
         context,
         l10n.aboutShareError,

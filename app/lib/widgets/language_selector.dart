@@ -205,8 +205,8 @@ class LanguageSelector extends StatelessWidget {
             BoxShadow(
               color:
                   isSelected
-                      ? Colors.green.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.3)
+                      : Colors.grey.withValues(alpha: 0.1),
               spreadRadius: isSelected ? 2 : 1,
               blurRadius: isSelected ? 8 : 4,
               offset: Offset(0, isSelected ? 4 : 2),
@@ -224,13 +224,13 @@ class LanguageSelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     isSelected
-                        ? Colors.white.withOpacity(0.2)
+                        ? Colors.white.withValues(alpha: 0.2)
                         : AppColors.background,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color:
                       isSelected
-                          ? Colors.white.withOpacity(0.3)
+                          ? Colors.white.withValues(alpha: 0.3)
                           : AppColors.border,
                 ),
               ),
@@ -264,7 +264,7 @@ class LanguageSelector extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                       color:
                           isSelected
-                              ? Colors.white.withOpacity(0.9)
+                              ? Colors.white.withValues(alpha: 0.9)
                               : AppColors.textSecondary,
                     ),
                     textAlign: isCompact ? TextAlign.left : TextAlign.center,
@@ -345,7 +345,7 @@ class LanguageSelectorDialog {
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.green.withOpacity(0.3),
+                                color: Colors.green.withValues(alpha: 0.3),
                                 spreadRadius: 2,
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),

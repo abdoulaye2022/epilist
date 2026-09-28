@@ -13,16 +13,11 @@ class BudgetNotificationService {
   static const String _lastNotificationKey = 'last_budget_notification';
 
   final FlutterLocalNotificationsPlugin _localNotifications;
-  final FirebaseMessaging _firebaseMessaging;
-  final AuthService _authService;
-
   BudgetNotificationService({
     required FlutterLocalNotificationsPlugin localNotifications,
     required FirebaseMessaging firebaseMessaging,
     required AuthService authService,
-  }) : _localNotifications = localNotifications,
-       _firebaseMessaging = firebaseMessaging,
-       _authService = authService;
+  }) : _localNotifications = localNotifications;
 
   /// Initialiser les notifications de budget
   Future<void> initialize() async {

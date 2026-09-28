@@ -146,7 +146,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
       final l10n = AppLocalizations.of(context)!;
       SmartSnackBarManager.showWarningSnackBar(
         context,
-        l10n.offlineMode ?? 'Mode hors ligne - Fonctionnalités limitées',
+        l10n.offlineMode,
         duration: const Duration(seconds: 4),
         showCloseIcon: true,
       );
@@ -158,7 +158,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
       final l10n = AppLocalizations.of(context)!;
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        l10n.backOnline ?? 'Connexion rétablie !',
+        l10n.backOnline,
         duration: const Duration(seconds: 2),
       );
     }
@@ -180,7 +180,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
               color: Colors.red.shade600,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
+                  color: Colors.red.withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -192,7 +192,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    l10n.offlineMode ?? 'Mode hors ligne - Connexion requise',
+                    l10n.offlineMode,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -217,6 +217,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                         widget.onConnectivityRestored?.call();
                         _showOnlineSnackBar();
                       } else {
+                        if (!context.mounted) return;
                         // Afficher un message si toujours hors ligne
                         SmartSnackBarManager.showWarningSnackBar(
                           context,
@@ -232,11 +233,11 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      l10n.retry ?? 'Réessayer',
+                      l10n.retry,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,

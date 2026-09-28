@@ -121,7 +121,7 @@ class TokenRefreshInterceptor extends Interceptor {
       handler.resolve(retryResponse);
     } catch (e) {
       debugPrint('❌ Erreur lors du refresh: $e');
-      throw e;
+      rethrow;
     }
   }
 

@@ -19,10 +19,12 @@ class SimpleDeepLinkTest {
     _linkSubscription = _appLinks!.uriLinkStream.listen(
       (Uri uri) {
         debugPrint('🧪 SIMPLE TEST: Lien reçu: ${uri.toString()}');
+        if (!context.mounted) return;
         _showTestResult(context, 'Lien reçu: ${uri.toString()}');
       },
       onError: (err) {
         debugPrint('🧪 SIMPLE TEST: Erreur: $err');
+        if (!context.mounted) return;
         _showTestResult(context, 'ERREUR: $err');
       },
     );
@@ -33,13 +35,16 @@ class SimpleDeepLinkTest {
       final Uri? initialUri = await _appLinks!.getInitialLink();
       if (initialUri != null) {
         debugPrint('🧪 SIMPLE TEST: Lien initial: ${initialUri.toString()}');
+        if (!context.mounted) return;
         _showTestResult(context, 'Lien initial: ${initialUri.toString()}');
       } else {
         debugPrint('🧪 SIMPLE TEST: Aucun lien initial');
+        if (!context.mounted) return;
         _showTestResult(context, 'Aucun lien initial trouvé');
       }
     } catch (e) {
       debugPrint('🧪 SIMPLE TEST: Erreur lien initial: $e');
+      if (!context.mounted) return;
       _showTestResult(context, 'ERREUR lien initial: $e');
     }
   }

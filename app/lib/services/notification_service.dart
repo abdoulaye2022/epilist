@@ -30,7 +30,6 @@ class NotificationService {
   static String? _apnsToken;
   static bool _isBasicInitialized = false;
   static bool _isFullyInitialized = false;
-  static String? _lastRegisteredToken;
   static bool _deviceRegistrationInProgress = false;
   static bool _isSimulator = false;
 
@@ -156,7 +155,6 @@ class NotificationService {
             }
 
             // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
-            final prefs = await SharedPreferences.getInstance();
             final authToken = await TokenStore.readAccess();
             if (authToken != null && authToken.isNotEmpty) {
               await _registerDeviceWithToken();
@@ -169,7 +167,7 @@ class NotificationService {
           });
 
       await _getInitialTokenSafe();
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ [EPILIST] Error in _handlePushNotificationsToken: $e');
       }
@@ -199,7 +197,7 @@ class NotificationService {
       );
 
       await _tryGetTokenSafely();
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ [EPILIST] Error in _getInitialTokenSafe: $e');
       }
@@ -243,7 +241,6 @@ class NotificationService {
 
           // ✅ OPTIMISATION: Enregistrer le token SEULEMENT si l'utilisateur est connecté
           // Lance l'enregistrement en arrière-plan après un délai de 3 secondes
-          final prefs = await SharedPreferences.getInstance();
           final authToken = await TokenStore.readAccess();
           if (authToken != null && authToken.isNotEmpty) {
             // Attendre 3 secondes avant d'enregistrer pour ne pas bloquer le démarrage
@@ -469,7 +466,6 @@ class NotificationService {
       if (response.statusCode == 201) {
         await prefs.setString('last_registered_token', _currentToken!);
         await prefs.setString('device_registered', 'true');
-        _lastRegisteredToken = _currentToken;
 
         if (kDebugMode) {
           debugPrint('✅ [EPILIST] Device registered successfully!');
@@ -537,7 +533,7 @@ class NotificationService {
       if (kDebugMode) {
         debugPrint('✅ [EPILIST] Message handlers configured');
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ [EPILIST] Error setting up message handlers: $e');
       }
@@ -595,7 +591,7 @@ class NotificationService {
           debugPrint('🤖 [EPILIST] Notification permission granted: $isGranted');
         }
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ [EPILIST] Error requesting permissions: $e');
       }
@@ -940,7 +936,6 @@ class NotificationService {
 
     _currentToken = null;
     _apnsToken = null;
-    _lastRegisteredToken = null;
     _isBasicInitialized = false;
     _isFullyInitialized = false;
     _deviceRegistrationInProgress = false;
@@ -1081,8 +1076,6 @@ class NotificationService {
 
     try {
       // Dynamic import to avoid circular dependencies
-      final navigator = Navigator.of(_context!);
-
       // Use a placeholder navigation - the actual implementation will depend on your routing
       // For now, just print the action
       if (kDebugMode) {

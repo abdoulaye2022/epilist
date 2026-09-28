@@ -17,7 +17,6 @@ class MonthlyChartCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final monthlyData = data['monthly_data'] as List<dynamic>? ?? [];
-    final summary = data['summary'] ?? {};
 
     return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, currencyState) {
@@ -417,7 +416,7 @@ class MonthlyChartCard extends StatelessWidget {
     }
 
     // Fallback: moyenne sur tous les mois
-    return total / (monthlyData.length > 0 ? monthlyData.length : 12);
+    return total / (monthlyData.isNotEmpty ? monthlyData.length : 12);
   }
 
   Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n, String currencyCode) {
@@ -446,7 +445,7 @@ class MonthlyChartCard extends StatelessWidget {
             Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
             const SizedBox(height: 12),
             Text(
-              l10n.noSpendingRecorded ?? 'Aucune dépense enregistrée',
+              l10n.noSpendingRecorded,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
@@ -694,9 +693,9 @@ class MonthlyChartCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

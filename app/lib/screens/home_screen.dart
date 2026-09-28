@@ -29,7 +29,6 @@ import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
-import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
@@ -53,7 +52,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen>
@@ -292,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: lists.length,
-              separatorBuilder: (_, __) =>
+              separatorBuilder: (_, _) =>
                   const SizedBox(width: AppSpacing.sm + 4),
               itemBuilder: (context, index) => DashboardListCard(
                 list: lists[index],
@@ -899,7 +898,7 @@ class _HomeScreenState extends State<HomeScreen>
           } else {
             SmartSnackBarManager.showWarningSnackBar(
               context,
-              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+              l10n.connectionRequired,
             );
           }
         } else {
@@ -918,7 +917,7 @@ class _HomeScreenState extends State<HomeScreen>
           } else {
             SmartSnackBarManager.showWarningSnackBar(
               context,
-              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+              l10n.connectionRequired,
             );
           }
         } else {
@@ -937,7 +936,7 @@ class _HomeScreenState extends State<HomeScreen>
           } else {
             SmartSnackBarManager.showWarningSnackBar(
               context,
-              l10n.connectionRequired ?? 'Cette fonctionnalité nécessite une connexion',
+              l10n.connectionRequired,
             );
           }
         } else {

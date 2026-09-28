@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/services/token_store.dart';
 import 'package:flutter/foundation.dart';
 import '../models/email_preference.dart';
@@ -17,7 +16,6 @@ class EmailPreferenceService {
 
   /// Get authentication token from SharedPreferences
   static Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
     return await TokenStore.readAccess();
   }
 
@@ -101,7 +99,7 @@ class EmailPreferenceService {
       // ✅ Si hors ligne, mettre en queue
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_UPDATE_EMAIL_PREFERENCES,
+          actionType: OfflineQueueService.actionUpdateEmailPreferences,
           payload: preferences.toJson(),
         );
 

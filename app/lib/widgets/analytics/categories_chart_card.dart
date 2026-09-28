@@ -119,7 +119,7 @@ class CategoriesChartCard extends StatelessWidget {
                       Icon(Icons.category, size: 48, color: AppColors.textDisabled),
                       const SizedBox(height: 8),
                       Text(
-                        l10n.noCategoriesData ?? 'Aucune donnée de catégorie',
+                        l10n.noCategoriesData,
                         style: TextStyle(color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
@@ -140,7 +140,7 @@ class CategoriesChartCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: Text(
-                  '${l10n.andXMore ?? 'Et'} ${categories.length - 8} ${l10n.moreCategories ?? 'autres catégories'}',
+                  '${l10n.andXMore} ${categories.length - 8} ${l10n.moreCategories}',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -231,9 +231,9 @@ class CategoriesChartCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -259,7 +259,7 @@ class CategoriesChartCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '$totalItems ${l10n.articles ?? 'articles'}',
+                      '$totalItems ${l10n.articles}',
                       style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                       overflow: TextOverflow.ellipsis,
                     ),

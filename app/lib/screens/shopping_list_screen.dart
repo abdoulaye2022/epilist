@@ -1,7 +1,6 @@
 // screens/shopping_list_screen.dart - VERSION AVEC NAVIGATION FACTURES CORRIGÉE
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
-import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';

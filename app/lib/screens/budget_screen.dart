@@ -6,9 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/widgets/budget/budget_card.dart';
-import 'package:epilist/widgets/budget/budget_summary_card.dart' as summary;
 import 'package:epilist/widgets/budget/create_budget_dialog.dart';
-import 'package:epilist/widgets/budget/budget_alerts_widget.dart' as alerts;
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -187,7 +185,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
         itemCount: options.length,
-        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+        separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
         itemBuilder: (context, index) {
           final (value, label) = options[index];
           final selected = current == value;
@@ -237,7 +235,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   }
 
   bool _hasActiveFilters(BudgetLoaded state) {
-    return state.hasActiveFilters ?? false;
+    return state.hasActiveFilters;
   }
 
   Widget _buildErrorState(String message, AppLocalizations l10n) {
@@ -658,33 +656,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
     );
   }
 
-  void _createMonthlyBudget(BuildContext context) {
-    final now = DateTime.now();
-    final startDate = DateTime(now.year, now.month, 1);
-    final endDate = DateTime(now.year, now.month + 1, 0);
-
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<BudgetBloc>(),
-            child: BlocListener<BudgetBloc, BudgetState>(
-              listener: (context, state) {
-                if (state is BudgetOperationSuccess) {
-                  Navigator.pop(dialogContext);
-                } else if (state is BudgetError) {
-                  Navigator.pop(dialogContext);
-                }
-              },
-              child: CreateBudgetDialog(
-                initialPeriodType: BudgetPeriodType.monthly,
-                initialStartDate: startDate,
-                initialEndDate: endDate,
-              ),
-            ),
-          ),
-    );
-  }
 
   void _openBudgetDetails(Budget budget) {
     Navigator.push(
@@ -696,6 +667,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ),
       ),
     ).then((_) {
+      if (!mounted) return;
       // Rafraîchir les budgets au retour
       context.read<BudgetBloc>().add(const RefreshBudgets());
     });

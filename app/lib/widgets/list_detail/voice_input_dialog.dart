@@ -19,7 +19,6 @@ class VoiceInputDialog extends StatefulWidget {
 
 class _VoiceInputDialogState extends State<VoiceInputDialog> {
   String? _recognizedItemName;
-  double? _recognizedQuantity;
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
 
@@ -33,7 +32,6 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
   void _handleVoiceResult(String itemName, double quantity) {
     setState(() {
       _recognizedItemName = itemName;
-      _recognizedQuantity = quantity;
       _itemController.text = itemName;
       _quantityController.text = quantity.toString();
     });
@@ -79,7 +77,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              theme.primaryColor.withOpacity(0.05),
+              theme.primaryColor.withValues(alpha: 0.05),
               Colors.white,
             ],
           ),
@@ -93,7 +91,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.primaryColor.withOpacity(0.1),
+                    color: theme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -181,7 +179,6 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                       onPressed: () {
                         setState(() {
                           _recognizedItemName = null;
-                          _recognizedQuantity = null;
                           _itemController.clear();
                           _quantityController.clear();
                         });

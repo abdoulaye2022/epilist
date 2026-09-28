@@ -669,32 +669,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     );
   }
 
-  String _getCategoryName(int categoryId) {
-    try {
-      final category = widget.availableCategories.firstWhere(
-        (cat) => cat['id'] == categoryId,
-      );
-      return category['name'] as String;
-    } catch (e) {
-      return '${AppLocalizations.of(context)!.categoryLabel} $categoryId';
-    }
-  }
 
-  String _getSortLabel() {
-    final l10n = AppLocalizations.of(context)!;
-    switch (widget.criteria.sortBy) {
-      case ItemSortBy.name:
-        return l10n.sortByName;
-      case ItemSortBy.price:
-        return l10n.sortByPrice;
-      case ItemSortBy.store:
-        return l10n.sortByStore;
-      case ItemSortBy.dateAdded:
-        return l10n.sortByDateAdded;
-      case ItemSortBy.aisle:
-        return l10n.sortByAisle;
-    }
-  }
 
   void _clearAllFilters() {
     widget.onCriteriaChanged(ItemFilterCriteria());

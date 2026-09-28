@@ -78,7 +78,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -151,7 +151,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      l10n.noInternetConnection ?? 'Aucune connexion Internet',
+      l10n.noInternetConnection,
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
@@ -163,9 +163,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
 
   Widget _buildDescription(AppLocalizations l10n) {
     return Text(
-      l10n.noInternetMessage ??
-          'Vous devez être connecté à Internet pour utiliser cette application. '
-              'Veuillez vérifier votre connexion et réessayer.',
+      l10n.noInternetMessage,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 13.5,
@@ -192,7 +190,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
               Icon(Icons.lightbulb_outline, color: AppColors.accent, size: 20),
               const SizedBox(width: 8),
               Text(
-                l10n.connectionTips ?? 'Conseils :',
+                l10n.connectionTips,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.blue[800],
@@ -204,19 +202,19 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           const SizedBox(height: 12),
           _buildTipItem(
             Icons.wifi,
-            l10n.checkWifiConnection ?? "Vérifiez votre connexion Wi-Fi",
+            l10n.checkWifiConnection,
             AppColors.accent,
           ),
           const SizedBox(height: 8),
           _buildTipItem(
             Icons.signal_cellular_alt,
-            l10n.checkMobileData ?? "Activez vos données mobiles",
+            l10n.checkMobileData,
             AppColors.primaryDark,
           ),
           const SizedBox(height: 8),
           _buildTipItem(
             Icons.router,
-            l10n.restartRouter ?? "Redémarrez votre routeur si nécessaire",
+            l10n.restartRouter,
             AppColors.warning,
           ),
         ],
@@ -274,7 +272,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                     const Icon(Icons.refresh, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      l10n.retry ?? 'Réessayer',
+                      l10n.retry,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -298,6 +296,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
         if (mounted) {
           // Animation de fermeture
           await _animationController.reverse();
+          if (!mounted) return;
           Navigator.of(context).pop();
           widget.onRetry?.call();
         }

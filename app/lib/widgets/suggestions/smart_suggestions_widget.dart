@@ -48,8 +48,6 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
 
     return BlocBuilder<SuggestionBloc, SuggestionState>(
       builder: (context, state) {
@@ -114,7 +112,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.colorScheme.primary.withOpacity(0.3),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),

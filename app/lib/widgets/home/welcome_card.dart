@@ -64,14 +64,6 @@ class _WelcomeCardState extends State<WelcomeCard> {
   }
 
   // Méthode publique pour réinitialiser la carte (optionnel - pour debugging ou settings)
-  static Future<void> resetWelcomeCard() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_welcomeCardDismissedKey);
-    } catch (e) {
-      debugPrint('Erreur lors de la réinitialisation WelcomeCard: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +90,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
         border: Border.all(color: Colors.blue[100]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),

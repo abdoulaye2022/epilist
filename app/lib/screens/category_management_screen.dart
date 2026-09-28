@@ -10,7 +10,7 @@ import '../l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
 
 class CategoryManagementScreen extends StatefulWidget {
-  const CategoryManagementScreen({Key? key}) : super(key: key);
+  const CategoryManagementScreen({super.key});
 
   @override
   State<CategoryManagementScreen> createState() =>
@@ -210,10 +210,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
   Widget _buildCategoryList(List<Category> categories) {
     return ReorderableListView.builder(
       itemCount: categories.length,
-      onReorder: (oldIndex, newIndex) {
-        if (newIndex > oldIndex) {
-          newIndex -= 1;
-        }
+      onReorderItem: (oldIndex, newIndex) {
         final reorderedIds = List<int>.from(
           categories.map((c) => c.id),
         );

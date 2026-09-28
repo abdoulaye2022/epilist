@@ -70,7 +70,7 @@ class SwipeableItemCard extends StatelessWidget {
                     width: 38,
                     height: 38,
                     fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    errorWidget: (_, _, _) => const SizedBox.shrink(),
                   ),
                 ),
               ],
@@ -172,7 +172,7 @@ class SwipeableItemCard extends StatelessWidget {
       fillColor:
           shoppingList.canManageItems
               ? null
-              : MaterialStateProperty.all(AppColors.border),
+              : WidgetStateProperty.all(AppColors.border),
     );
   }
 

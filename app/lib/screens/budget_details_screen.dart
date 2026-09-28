@@ -321,7 +321,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${daysElapsed} / ${daysTotal} ${l10n.days}',
+                      '$daysElapsed / $daysTotal ${l10n.days}',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,

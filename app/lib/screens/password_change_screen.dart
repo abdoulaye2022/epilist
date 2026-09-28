@@ -12,7 +12,7 @@ class PasswordChangeScreen extends StatefulWidget {
   const PasswordChangeScreen({super.key, this.initialEmail});
 
   @override
-  _PasswordChangeScreenState createState() => _PasswordChangeScreenState();
+  State<PasswordChangeScreen> createState() => _PasswordChangeScreenState();
 }
 
 class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
@@ -78,7 +78,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
             context.read<AuthBloc>().add(LogoutRequested());
 
             Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) {
+              if (context.mounted) {
                 Navigator.of(context).pop();
               }
             });
@@ -112,7 +112,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       spreadRadius: 1,
                       blurRadius: 8,
                       offset: Offset(0, 2),
@@ -133,7 +133,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.orange.withOpacity(0.3),
+                            color: Colors.orange.withValues(alpha: 0.3),
                             spreadRadius: 2,
                             blurRadius: 8,
                             offset: Offset(0, 4),
@@ -222,7 +222,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: Offset(0, 2),
@@ -375,7 +375,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   border: Border.all(color: Colors.blue[200]!),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: Offset(0, 2),

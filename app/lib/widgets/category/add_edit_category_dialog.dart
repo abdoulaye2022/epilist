@@ -13,9 +13,9 @@ class AddEditCategoryDialog extends StatefulWidget {
   final Category? category;
 
   const AddEditCategoryDialog({
-    Key? key,
+    super.key,
     this.category,
-  }) : super(key: key);
+  });
 
   @override
   State<AddEditCategoryDialog> createState() => _AddEditCategoryDialogState();

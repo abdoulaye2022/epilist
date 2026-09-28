@@ -516,7 +516,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       id: DateTime.now().millisecondsSinceEpoch,
       firstName: 'Utilisateur',
       lastName: provider == 'google' ? 'Google' : 'Unknown',
-      email: 'temp_${provider}@sso.com',
+      email: 'temp_$provider@sso.com',
       emailVerified: true,
       accessToken: null,
       refreshToken: null,

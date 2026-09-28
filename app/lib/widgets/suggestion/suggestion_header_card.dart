@@ -75,7 +75,7 @@ class SuggestionHeaderCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue[100]?.withOpacity(0.5),
+                color: Colors.blue[100]?.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(

@@ -88,7 +88,7 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
       final stores = [...previous, temp]
         ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       await OfflineQueueService.enqueueAction(
-        actionType: OfflineQueueService.ACTION_CREATE_STORE,
+        actionType: OfflineQueueService.actionCreateStore,
         payload: {'name': temp.name},
       );
       await _cacheStores(stores);
@@ -118,7 +118,7 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
         ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       if (event.storeId > 0) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_RENAME_STORE,
+          actionType: OfflineQueueService.actionRenameStore,
           payload: {'store_id': event.storeId, 'name': event.name.trim()},
         );
       }
@@ -146,7 +146,7 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
       final stores = previous.where((s) => s.id != event.storeId).toList();
       if (event.storeId > 0) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_DELETE_STORE,
+          actionType: OfflineQueueService.actionDeleteStore,
           payload: {'store_id': event.storeId},
         );
       }
@@ -182,7 +182,7 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
     if (_offline) {
       if (event.storeId > 0) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_SET_STORE_ORDER,
+          actionType: OfflineQueueService.actionSetStoreOrder,
           payload: {
             'store_id': event.storeId,
             'category_kinds': event.categoryKinds,

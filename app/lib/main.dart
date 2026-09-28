@@ -6,7 +6,6 @@ import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/contact/contact_bloc.dart';
-import 'package:epilist/blocs/contact/contact_event.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
@@ -39,7 +38,6 @@ import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
-import 'package:epilist/utils/snackbar_manager.dart';
 import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -564,7 +562,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           setState(() => _redirecting = true);
 
           Future.microtask(() {
-            if (mounted) {
+            if (context.mounted) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -811,7 +809,7 @@ class _LoadingDotsState extends State<LoadingDots>
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(opacity),
+                color: Colors.green.withValues(alpha: opacity),
                 shape: BoxShape.circle,
               ),
             );
@@ -855,9 +853,9 @@ class ErrorApp extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       'Détails: $error',

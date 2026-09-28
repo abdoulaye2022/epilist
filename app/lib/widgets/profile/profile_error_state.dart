@@ -41,7 +41,7 @@ class ProfileErrorState extends StatelessWidget {
               Text(
                 isConnected
                     ? l10n.cannotLoadProfile
-                    : l10n.offlineMode ?? 'Mode hors ligne',
+                    : l10n.offlineMode,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),

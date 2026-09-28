@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
           // Suggérer de passer à l'écran de connexion
           Future.delayed(const Duration(seconds: 2), () {
-            if (mounted) {
+            if (context.mounted) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -177,7 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
           // Rediriger vers l'écran de connexion
           Future.delayed(const Duration(seconds: 2), () {
-            if (mounted) {
+            if (context.mounted) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -199,130 +199,6 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  // ✅ DIALOG POUR COMPLÉTER LE PROFIL TEMPORAIRE
-  void _showProfileCompletionDialog(SSORegistrationSuccess ssoState) {
-    final l10n = AppLocalizations.of(context)!;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  ssoState.provider == 'google'
-                      ? Icons.g_mobiledata
-                      : Icons.apple,
-                  color:
-                      ssoState.provider == 'google'
-                          ? AppColors.error
-                          : Colors.black,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Profil ${ssoState.provider == 'google' ? 'Google' : 'Apple'}',
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Connexion ${ssoState.provider} réussie !',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Voulez-vous compléter votre profil maintenant ou vous connecter plus tard ?',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentLight,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue[200]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.person, color: AppColors.accent, size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${ssoState.user.firstName} ${ssoState.user.lastName}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              ssoState.user.email,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _navigateToLogin();
-                },
-                child: Text(
-                  AppLocalizations.of(context)!.later,
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _fillFormWithSSOData(ssoState.user);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(AppLocalizations.of(context)!.completeAction),
-              ),
-            ],
-          ),
-    );
-  }
-
-  // ✅ PRER-REMPLIR LE FORMULAIRE AVEC LES DONNÉES SSO
-  void _fillFormWithSSOData(dynamic user) {
-    setState(() {
-      _firstNameController.text = user.firstName ?? '';
-      _lastNameController.text = user.lastName ?? '';
-      _emailController.text = user.email ?? '';
-      _acceptTerms = true; // Auto-accepter les termes pour SSO
-    });
-
-    // Scroller vers le formulaire
-    Future.delayed(const Duration(milliseconds: 300), () {
-      Scrollable.ensureVisible(
-        _formKey.currentContext!,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
 
   // ✅ HEADER SIMPLIFIÉ
   Widget _buildHeader(AppLocalizations l10n) {
@@ -475,8 +351,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   label: l10n.firstName,
                   icon: Icons.person_outline,
                   validator: (value) {
-                    if (value?.trim().isEmpty ?? true)
+                    if (value?.trim().isEmpty ?? true) {
                       return l10n.firstNameRequired;
+                    }
                     if (value!.trim().length < 2) return l10n.tooShort;
                     return null;
                   },
@@ -489,8 +366,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   label: l10n.lastName,
                   icon: Icons.person,
                   validator: (value) {
-                    if (value?.trim().isEmpty ?? true)
+                    if (value?.trim().isEmpty ?? true) {
                       return l10n.lastNameRequired;
+                    }
                     if (value!.trim().length < 2) return l10n.tooShort;
                     return null;
                   },
@@ -561,8 +439,9 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             validator: (value) {
               if (value?.isEmpty ?? true) return l10n.confirmYourPassword;
-              if (value != _passwordController.text)
+              if (value != _passwordController.text) {
                 return l10n.passwordsDifferent;
+              }
               return null;
             },
           ),
@@ -750,12 +629,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
     try {
       final isAvailable = await SSOService.isAppleSignInAvailable();
+      if (!mounted) return;
       if (!isAvailable) {
         String errorMessage =
             Platform.isIOS
                 ? AppLocalizations.of(context)!.appleUnavailableDevice
                 : AppLocalizations.of(context)!.appleOnlyIos;
-
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
@@ -763,6 +642,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // ✅ Utiliser AppleSignInRequested pour l'inscription (PRÉSERVÉ)
       context.read<AuthBloc>().add(const AppleSignInRequested());
     } catch (e) {
+      if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(
         context,
         'Erreur lors de l\'inscription Apple: ${e.toString()}',

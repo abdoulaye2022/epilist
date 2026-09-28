@@ -84,13 +84,13 @@ class ShoppingListCard extends StatelessWidget {
                                 done ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
-                        if (list.hasReceipts ?? false) ...[
+                        if (list.hasReceipts) ...[
                           const SizedBox(width: 8),
                           const Icon(Icons.receipt_long,
                               size: 12, color: AppColors.textDisabled),
                           const SizedBox(width: 2),
                           Text(
-                            '${list.receiptsCount ?? 0}',
+                            '${list.receiptsCount}',
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.textDisabled,
@@ -224,7 +224,7 @@ class ShoppingListCard extends StatelessWidget {
             Icon(Icons.receipt_long, size: 18, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(child: Text(l10n.receipts)),
-            if ((list.hasReceipts ?? false)) ...[
+            if ((list.hasReceipts)) ...[
               const SizedBox(width: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
@@ -233,7 +233,7 @@ class ShoppingListCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${list.receiptsCount ?? 0}',
+                  '${list.receiptsCount}',
                   style: TextStyle(
                     fontSize: 9,
                     color: AppColors.accent,

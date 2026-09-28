@@ -8,9 +8,9 @@ class IconPickerDialog extends StatefulWidget {
   final String selectedIconCode;
 
   const IconPickerDialog({
-    Key? key,
+    super.key,
     required this.selectedIconCode,
-  }) : super(key: key);
+  });
 
   @override
   State<IconPickerDialog> createState() => _IconPickerDialogState();
@@ -302,10 +302,6 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     );
   }
   /// Libellé de l'icône dans la langue de l'appareil.
-  String _labelFor(Map<String, String> icon) {
-    final isEn = Localizations.localeOf(context).languageCode == 'en';
-    return (isEn ? icon['labelEn'] : icon['label']) ?? icon['label'] ?? '';
-  }
 
   static const Map<String, String> _groupEn = {
     'Nourriture': 'Food',

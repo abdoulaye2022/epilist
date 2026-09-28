@@ -149,9 +149,8 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                     child: ReorderableListView.builder(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                       itemCount: _aisles.length,
-                      onReorder: (oldIndex, newIndex) {
+                      onReorderItem: (oldIndex, newIndex) {
                         setState(() {
-                          if (newIndex > oldIndex) newIndex--;
                           final moved = _aisles.removeAt(oldIndex);
                           _aisles.insert(newIndex, moved);
                         });

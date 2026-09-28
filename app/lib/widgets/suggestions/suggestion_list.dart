@@ -35,7 +35,6 @@ class _SuggestionListState extends State<SuggestionList> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
     return BlocConsumer<SuggestionBloc, SuggestionState>(
@@ -146,7 +145,7 @@ class _SuggestionListState extends State<SuggestionList> {
             Icon(
               Icons.lightbulb_outline,
               size: 64,
-              color: theme.colorScheme.secondary.withOpacity(0.5),
+              color: theme.colorScheme.secondary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(

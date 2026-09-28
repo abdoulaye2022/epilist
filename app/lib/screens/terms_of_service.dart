@@ -5,6 +5,8 @@ import 'package:epilist/l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
 
 class TermsOfServicePage extends StatelessWidget {
+  const TermsOfServicePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -32,165 +34,82 @@ class TermsOfServicePage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              l10n.termsLastUpdated ?? 'Dernière mise à jour : 5 juillet 2025',
+              l10n.termsLastUpdated,
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
             ),
             SizedBox(height: 24),
 
             _buildTermSection(
-              l10n.termsAcceptanceTitle ?? '1. Acceptation des conditions',
-              l10n.termsAcceptanceText ??
-                  'En utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation. '
-                      'Si vous n\'acceptez pas ces conditions dans leur intégralité, veuillez ne pas utiliser l\'application.',
+              l10n.termsAcceptanceTitle,
+              l10n.termsAcceptanceText,
             ),
 
             _buildTermSection(
-              l10n.termsServiceTitle ?? '2. Description du service',
-              l10n.termsServiceText ??
-                  'EpiList est une application mobile de gestion de listes d\'épicerie qui permet :\n\n'
-                      '• Créer un compte avec prénom, nom, email et mot de passe\n'
-                      '• Créer, modifier et supprimer des listes d\'épicerie\n'
-                      '• Ajouter des articles avec nom, quantité, prix et magasin (optionnel)\n'
-                      '• Marquer les articles comme achetés ou les supprimer\n'
-                      '• Calculer automatiquement les totaux et pourcentages d\'achats\n'
-                      '• Dupliquer les listes existantes\n'
-                      '• Partager les listes avec des liens sécurisés\n'
-                      '• Gérer les permissions d\'accès (lecture, édition, administration)\n\n'
-                      'Le service est fourni "en l\'état" et "selon disponibilité".',
+              l10n.termsServiceTitle,
+              l10n.termsServiceText,
             ),
 
             _buildTermSection(
-              l10n.termsAccountTitle ?? '3. Compte utilisateur et sécurité',
-              l10n.termsAccountText ??
-                  'Pour utiliser EpiList, vous devez :\n\n'
-                      '• Créer un compte avec des informations exactes (prénom, nom, email)\n'
-                      '• Choisir un mot de passe sécurisé et le garder confidentiel\n'
-                      '• Être responsable de toutes les activités effectuées sous votre compte\n'
-                      '• Nous notifier immédiatement de toute utilisation non autorisée\n'
-                      '• Mettre à jour vos informations personnelles si nécessaire\n\n'
-                      'Vous êtes seul responsable de la sécurité de vos identifiants de connexion.',
+              l10n.termsAccountTitle,
+              l10n.termsAccountText,
             ),
 
             _buildTermSection(
-              l10n.termsUsageTitle ?? '4. Utilisation des listes et partage',
-              l10n.termsUsageText ??
-                  'Concernant l\'utilisation des fonctionnalités de l\'application :\n\n'
-                      '• Vous pouvez créer des listes d\'épicerie illimitées\n'
-                      '• Les liens de partage sont de votre responsabilité\n'
-                      '• Vous contrôlez les permissions d\'accès que vous accordez\n'
-                      '• Les personnes invitées doivent respecter les permissions définies\n'
-                      '• Vous pouvez révoquer l\'accès à tout moment\n'
-                      '• Le contenu partagé doit rester approprié et légal\n\n'
-                      'Vous êtes responsable de la gestion de vos listes partagées.',
+              l10n.termsUsageTitle,
+              l10n.termsUsageText,
             ),
 
             _buildTermSection(
-              l10n.termsAcceptableTitle ?? '5. Utilisation acceptable',
-              l10n.termsAcceptableText ??
-                  'Vous acceptez de :\n\n'
-                      '• Utiliser l\'application uniquement pour la gestion de listes d\'épicerie\n'
-                      '• Ne pas tenter de perturber le fonctionnement du service\n'
-                      '• Ne pas accéder illégalement aux données d\'autres utilisateurs\n'
-                      '• Respecter les droits de propriété intellectuelle\n'
-                      '• Ne pas utiliser l\'application à des fins commerciales sans autorisation\n'
-                      '• Ne pas partager de contenu offensant ou illégal\n\n'
-                      'Toute utilisation abusive peut entraîner une suspension immédiate du compte.',
+              l10n.termsAcceptableTitle,
+              l10n.termsAcceptableText,
             ),
 
             _buildTermSection(
-              l10n.termsOwnershipTitle ?? '6. Propriété du contenu',
-              l10n.termsOwnershipText ??
-                  'Concernant le contenu que vous créez dans EpiList :\n\n'
-                      '• Vous conservez la propriété de vos listes et données personnelles\n'
-                      '• Vous nous accordez une licence limitée pour fournir le service\n'
-                      '• Vous êtes responsable de l\'exactitude de vos informations\n'
-                      '• Nous ne revendiquons aucun droit sur vos données personnelles\n'
-                      '• Vous pouvez exporter vos données à tout moment\n\n'
-                      'Vos données vous appartiennent et restent sous votre contrôle.',
+              l10n.termsOwnershipTitle,
+              l10n.termsOwnershipText,
             ),
 
             _buildTermSection(
-              l10n.termsCalculationsTitle ?? '7. Calculs et prix',
-              l10n.termsCalculationsText ??
-                  'Concernant les fonctionnalités de calcul :\n\n'
-                      '• Les totaux et pourcentages sont calculés automatiquement\n'
-                      '• Nous ne garantissons pas l\'exactitude absolue des calculs\n'
-                      '• Les prix saisis sont de votre responsabilité\n'
-                      '• Vérifiez toujours les calculs pour vos achats importants\n'
-                      '• Nous ne sommes pas responsables des erreurs de prix\n\n'
-                      'Utilisez les calculs comme aide, pas comme référence absolue.',
+              l10n.termsCalculationsTitle,
+              l10n.termsCalculationsText,
             ),
 
             _buildTermSection(
-              l10n.termsAvailabilityTitle ?? '8. Disponibilité du service',
-              l10n.termsAvailabilityText ??
-                  'Nous nous efforçons d\'assurer une disponibilité continue du service, '
-                      'mais nous ne garantissons pas :\n\n'
-                      '• Un accès ininterrompu 24h/24\n'
-                      '• L\'absence complète de bugs ou d\'erreurs\n'
-                      '• La compatibilité avec tous les appareils\n'
-                      '• La sauvegarde permanente de toutes les données\n\n'
-                      'Des maintenances programmées peuvent causer des interruptions temporaires.',
+              l10n.termsAvailabilityTitle,
+              l10n.termsAvailabilityText,
             ),
 
             _buildTermSection(
-              l10n.termsLiabilityTitle ?? '9. Limitation de responsabilité',
-              l10n.termsLiabilityText ??
-                  'EpiList et ses développeurs ne peuvent être tenus responsables de :\n\n'
-                      '• Dommages indirects ou consécutifs\n'
-                      '• Perte de données due à des problèmes techniques\n'
-                      '• Erreurs dans les calculs de prix ou totaux\n'
-                      '• Utilisation incorrecte des informations fournies\n'
-                      '• Problèmes liés au partage de listes\n'
-                      '• Achats effectués basés sur les listes créées\n\n'
-                      'Votre utilisation de l\'application se fait à vos propres risques.',
+              l10n.termsLiabilityTitle,
+              l10n.termsLiabilityText,
             ),
 
             _buildTermSection(
-              l10n.termsTerminationTitle ?? '10. Suspension et résiliation',
-              l10n.termsTerminationText ??
-                  'Nous nous réservons le droit de suspendre ou résilier votre accès :\n\n'
-                      '• En cas de violation de ces conditions d\'utilisation\n'
-                      '• Pour des raisons de sécurité ou de maintenance\n'
-                      '• Si le compte est inactif depuis plus de 24 mois\n'
-                      '• En cas d\'utilisation abusive des fonctionnalités de partage\n\n'
-                      'Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l\'application.',
+              l10n.termsTerminationTitle,
+              l10n.termsTerminationText,
             ),
 
             _buildTermSection(
-              l10n.termsModificationsTitle ?? '11. Modifications',
-              l10n.termsModificationsText ??
-                  'Nous nous réservons le droit de :\n\n'
-                      '• Modifier ou améliorer les fonctionnalités de l\'application\n'
-                      '• Mettre à jour ces conditions d\'utilisation\n'
-                      '• Suspendre temporairement le service pour maintenance\n'
-                      '• Discontinuer définitivement le service avec préavis de 60 jours\n\n'
-                      'Les changements importants vous seront notifiés par email ou dans l\'application.',
+              l10n.termsModificationsTitle,
+              l10n.termsModificationsText,
             ),
 
             _buildTermSection(
-              l10n.termsJurisdictionTitle ??
-                  '12. Loi applicable et juridiction',
-              l10n.termsJurisdictionText ??
-                  'Ces conditions d\'utilisation sont régies par la loi canadienne. '
-                      'Tout litige relatif à l\'utilisation d\'EpiList sera soumis à la juridiction '
-                      'des tribunaux compétents du Nouveau-Brunswick, Canada.',
+              l10n.termsJurisdictionTitle,
+              l10n.termsJurisdictionText,
             ),
 
             _buildContactSection(
               context,
-              l10n.termsContactTitle ?? '13. Contact et support',
-              l10n.termsContactText ??
-                  'Pour toute question concernant ces conditions d\'utilisation ou pour '
-                      'de l\'assistance, veuillez nous contacter via notre site web.\n\n'
-                      'Nous nous engageons à répondre le plus rapidement possible.',
+              l10n.termsContactTitle,
+              l10n.termsContactText,
               l10n,
             ),
 
             SizedBox(height: 32),
             Center(
               child: Text(
-                '© 2025 EpiList - ${l10n.aboutRightsReserved ?? "Tous droits réservés"}',
+                '© 2025 EpiList - ${l10n.aboutRightsReserved}',
                 style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
               ),
             ),
@@ -243,18 +162,18 @@ class TermsOfServicePage extends StatelessWidget {
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url, mode: LaunchMode.externalApplication);
                 } else {
+                  if (!context.mounted) return;
                   SmartSnackBarManager.showMessage(
                     context,
-                    l10n.aboutContactError ??
-                        'Impossible d\'ouvrir le lien. Visitez https://epilist.app/terms',
+                    l10n.aboutContactError,
                     type: SnackBarType.error,
                   );
                 }
               } catch (e) {
+                if (!context.mounted) return;
                 SmartSnackBarManager.showMessage(
                   context,
-                  l10n.aboutContactError ??
-                      'Erreur lors de l\'ouverture du lien. Visitez https://epilist.app/terms',
+                  l10n.aboutContactError,
                   type: SnackBarType.error,
                 );
               }
@@ -266,7 +185,7 @@ class TermsOfServicePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text(l10n.aboutContact ?? 'Nous contacter'),
+            child: Text(l10n.aboutContact),
           ),
         ],
       ),

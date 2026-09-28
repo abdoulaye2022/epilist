@@ -167,7 +167,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     if (!_connectivityService.isConnected) {
       // Mode hors ligne : créer liste temporaire et mettre en queue
       await OfflineQueueService.enqueueAction(
-        actionType: OfflineQueueService.ACTION_CREATE_LIST,
+        actionType: OfflineQueueService.actionCreateList,
         payload: {'name': event.name},
       );
 
@@ -227,7 +227,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       // Mode hors ligne : mettre en queue et mise à jour locale
       if (state is ShoppingListLoaded) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_UPDATE_LIST,
+          actionType: OfflineQueueService.actionUpdateList,
           payload: {'id': event.id, 'name': event.name},
         );
 
@@ -295,7 +295,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       // Mode hors ligne : mettre en queue et supprimer localement
       if (state is ShoppingListLoaded) {
         await OfflineQueueService.enqueueAction(
-          actionType: OfflineQueueService.ACTION_DELETE_LIST,
+          actionType: OfflineQueueService.actionDeleteList,
           payload: {'id': event.id},
         );
 

@@ -78,26 +78,6 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
   }
 
   /// ✅ NOUVEAU: Traduit localement les descriptions avec fallback
-  String _translateFeedbackTypeDescription(
-    String value,
-    String? serverDescription,
-    AppLocalizations l10n,
-  ) {
-    switch (value) {
-      case 'bug':
-        return l10n.bugReportDescription;
-      case 'feature':
-        return l10n.newFeatureDescription;
-      case 'improvement':
-        return l10n.improvementDescription;
-      case 'question':
-        return l10n.questionDescription;
-      case 'other':
-        return l10n.otherDescription;
-      default:
-        return serverDescription ?? '';
-    }
-  }
 
   /// ✅ NOUVEAU: Traduit localement les priorités avec fallback
   String _translatePriorityLabel(

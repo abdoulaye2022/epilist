@@ -164,29 +164,29 @@ class OfflineSyncService {
     try {
       switch (type) {
         // Shopping Lists
-        case OfflineQueueService.ACTION_CREATE_LIST:
+        case OfflineQueueService.actionCreateList:
           await _shoppingListService?.createShoppingList(
             payload['name'] as String,
           );
           return true;
 
-        case OfflineQueueService.ACTION_UPDATE_LIST:
+        case OfflineQueueService.actionUpdateList:
           await _shoppingListService?.updateShoppingList(
             payload['id'] as int,
             payload['name'] as String,
           );
           return true;
 
-        case OfflineQueueService.ACTION_DELETE_LIST:
+        case OfflineQueueService.actionDeleteList:
           await _shoppingListService?.deleteShoppingList(payload['id'] as int);
           return true;
 
-        case OfflineQueueService.ACTION_DUPLICATE_LIST:
+        case OfflineQueueService.actionDuplicateList:
           await _shoppingListService?.duplicateShoppingList(payload['id'] as int);
           return true;
 
         // List Items
-        case OfflineQueueService.ACTION_CREATE_ITEM:
+        case OfflineQueueService.actionCreateItem:
           await _listItemService?.addListItem(
             listId: payload['list_id'] as int,
             productName: payload['product_name'] as String,
@@ -197,7 +197,7 @@ class OfflineSyncService {
           );
           return true;
 
-        case OfflineQueueService.ACTION_UPDATE_ITEM:
+        case OfflineQueueService.actionUpdateItem:
           await _listItemService?.updateListItem(
             listId: payload['list_id'] as int,
             itemId: payload['item_id'] as int,
@@ -209,14 +209,14 @@ class OfflineSyncService {
           );
           return true;
 
-        case OfflineQueueService.ACTION_DELETE_ITEM:
+        case OfflineQueueService.actionDeleteItem:
           await _listItemService?.deleteListItem(
             listId: payload['list_id'] as int,
             itemId: payload['item_id'] as int,
           );
           return true;
 
-        case OfflineQueueService.ACTION_TOGGLE_ITEM:
+        case OfflineQueueService.actionToggleItem:
           await _listItemService?.togglePurchasedStatus(
             listId: payload['list_id'] as int,
             itemId: payload['item_id'] as int,
@@ -225,7 +225,7 @@ class OfflineSyncService {
           return true;
 
         // Receipts
-        case OfflineQueueService.ACTION_CREATE_RECEIPT:
+        case OfflineQueueService.actionCreateReceipt:
           await _receiptService?.createReceipt(
             listId: payload['list_id'] as int,
             storeName: payload['store_name'] as String,
@@ -235,7 +235,7 @@ class OfflineSyncService {
           );
           return true;
 
-        case OfflineQueueService.ACTION_UPDATE_RECEIPT:
+        case OfflineQueueService.actionUpdateReceipt:
           await _receiptService?.updateReceipt(
             listId: payload['list_id'] as int,
             receiptId: payload['receipt_id'] as int,
@@ -248,7 +248,7 @@ class OfflineSyncService {
           );
           return true;
 
-        case OfflineQueueService.ACTION_DELETE_RECEIPT:
+        case OfflineQueueService.actionDeleteReceipt:
           await _receiptService?.deleteReceipt(
             payload['list_id'] as int,
             payload['receipt_id'] as int,
@@ -256,42 +256,42 @@ class OfflineSyncService {
           return true;
 
         // Budgets
-        case OfflineQueueService.ACTION_CREATE_BUDGET:
+        case OfflineQueueService.actionCreateBudget:
           // Note: Budget creation requires more data than stored in queue
           // This is a simplified version - consider storing full budget data
           debugPrint('⚠️ [OfflineSync] Budget creation from queue requires full data');
           return false;
 
-        case OfflineQueueService.ACTION_UPDATE_BUDGET:
+        case OfflineQueueService.actionUpdateBudget:
           // Note: Budget update requires UpdateBudgetRequest
           // This is a simplified version - consider storing full budget data
           debugPrint('⚠️ [OfflineSync] Budget update from queue requires full data');
           return false;
 
-        case OfflineQueueService.ACTION_DELETE_BUDGET:
+        case OfflineQueueService.actionDeleteBudget:
           await _budgetService?.deleteBudget(payload['budget_id'] as int);
           return true;
 
         // Magasins (tri par rayon). Les actions sur un id temporaire
         // (negatif, cree hors ligne) sont ignorees : l'ecran bloque leur
         // edition tant que la synchro n'est pas passee.
-        case OfflineQueueService.ACTION_CREATE_STORE:
+        case OfflineQueueService.actionCreateStore:
           await _storeService?.createStore(payload['name'] as String);
           return true;
 
-        case OfflineQueueService.ACTION_RENAME_STORE:
+        case OfflineQueueService.actionRenameStore:
           final storeId = payload['store_id'] as int;
           if (storeId < 0) return true;
           await _storeService?.renameStore(storeId, payload['name'] as String);
           return true;
 
-        case OfflineQueueService.ACTION_DELETE_STORE:
+        case OfflineQueueService.actionDeleteStore:
           final storeId = payload['store_id'] as int;
           if (storeId < 0) return true;
           await _storeService?.deleteStore(storeId);
           return true;
 
-        case OfflineQueueService.ACTION_SET_STORE_ORDER:
+        case OfflineQueueService.actionSetStoreOrder:
           final storeId = payload['store_id'] as int;
           if (storeId < 0) return true;
           await _storeService?.setCategoryOrder(
@@ -301,12 +301,12 @@ class OfflineSyncService {
           return true;
 
         // User Profile - TODO: Implémenter quand UserService sera disponible
-        case OfflineQueueService.ACTION_UPDATE_PROFILE:
-          debugPrint('⚠️ [OfflineSync] ACTION_UPDATE_PROFILE not yet implemented');
+        case OfflineQueueService.actionUpdateProfile:
+          debugPrint('⚠️ [OfflineSync] actionUpdateProfile not yet implemented');
           return true; // Ignorer pour l'instant
 
         // Email Preferences
-        case OfflineQueueService.ACTION_UPDATE_EMAIL_PREFERENCES:
+        case OfflineQueueService.actionUpdateEmailPreferences:
           final token = await _getToken();
           if (token == null) return false;
 
@@ -326,7 +326,7 @@ class OfflineSyncService {
           return false;
 
         // Send Feedback
-        case OfflineQueueService.ACTION_SEND_FEEDBACK:
+        case OfflineQueueService.actionSendFeedback:
           final token = await _getToken();
           // Déterminer l'endpoint selon si l'utilisateur est connecté
           final endpoint = token != null

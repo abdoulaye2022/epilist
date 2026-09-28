@@ -49,7 +49,7 @@ class DashboardCard extends StatelessWidget {
                       // ✅ NOUVEAU: Indicateur de source des données
                       if (!includeShared)
                         Text(
-                          l10n.ownListsOnly ?? 'Listes personnelles uniquement',
+                          l10n.ownListsOnly,
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColors.warning,
@@ -126,7 +126,7 @@ class DashboardCard extends StatelessWidget {
             // ✅ Section des 7 derniers jours avec traduction
             if (last7Days.isNotEmpty) ...[
               Text(
-                l10n.last7Days ?? 'Derniers 7 jours',
+                l10n.last7Days,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -210,7 +210,7 @@ class DashboardCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.busiestDay ?? "Jour le plus actif"}: ${_getBusiestDay(last7Days, l10n)}', // ✅ AJOUT: Passer l10n
+                      '${l10n.busiestDay}: ${_getBusiestDay(last7Days, l10n)}', // ✅ AJOUT: Passer l10n
                       style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
@@ -226,7 +226,7 @@ class DashboardCard extends StatelessWidget {
                   Icon(Icons.local_offer, color: AppColors.error, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    '${l10n.highestPurchase ?? "Plus gros jour"}: ',
+                    '${l10n.highestPurchase}: ',
                     style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
                   ),
                   FormattedAmount(
@@ -247,7 +247,7 @@ class DashboardCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${l10n.weeklyActivity ?? "Activité hebdomadaire"}: ${_getActiveDaysCount(last7Days)} jours actifs',
+                      '${l10n.weeklyActivity}: ${_getActiveDaysCount(last7Days)} jours actifs',
                       style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
@@ -297,62 +297,33 @@ class DashboardCard extends StatelessWidget {
         return l10n.sunday;
       default:
         // Fallback: essayer de détecter par les premières lettres
-        if (lowerDay.startsWith('mon') || lowerDay.startsWith('lun'))
+        if (lowerDay.startsWith('mon') || lowerDay.startsWith('lun')) {
           return l10n.monday;
-        if (lowerDay.startsWith('tue') || lowerDay.startsWith('mar'))
+        }
+        if (lowerDay.startsWith('tue') || lowerDay.startsWith('mar')) {
           return l10n.tuesday;
-        if (lowerDay.startsWith('wed') || lowerDay.startsWith('mer'))
+        }
+        if (lowerDay.startsWith('wed') || lowerDay.startsWith('mer')) {
           return l10n.wednesday;
-        if (lowerDay.startsWith('thu') || lowerDay.startsWith('jeu'))
+        }
+        if (lowerDay.startsWith('thu') || lowerDay.startsWith('jeu')) {
           return l10n.thursday;
-        if (lowerDay.startsWith('fri') || lowerDay.startsWith('ven'))
+        }
+        if (lowerDay.startsWith('fri') || lowerDay.startsWith('ven')) {
           return l10n.friday;
-        if (lowerDay.startsWith('sat') || lowerDay.startsWith('sam'))
+        }
+        if (lowerDay.startsWith('sat') || lowerDay.startsWith('sam')) {
           return l10n.saturday;
-        if (lowerDay.startsWith('sun') || lowerDay.startsWith('dim'))
+        }
+        if (lowerDay.startsWith('sun') || lowerDay.startsWith('dim')) {
           return l10n.sunday;
+        }
 
         return dayName; // Retourner tel quel si pas de correspondance
     }
   }
 
   /// ✅ NOUVEAU: Traduit une abréviation de jour (anglais vers français)
-  String _translateDayShort(String dayShort, AppLocalizations l10n) {
-    if (dayShort.isEmpty) return dayShort;
-
-    final lowerShort = dayShort.toLowerCase().trim();
-
-    // Mapping des abréviations
-    switch (lowerShort) {
-      case 'mon':
-      case 'lun':
-        return l10n.mondayShort;
-      case 'tue':
-      case 'mar':
-        return l10n.tuesdayShort;
-      case 'wed':
-      case 'mer':
-        return l10n.wednesdayShort;
-      case 'thu':
-      case 'jeu':
-        return l10n.thursdayShort;
-      case 'fri':
-      case 'ven':
-        return l10n.fridayShort;
-      case 'sat':
-      case 'sam':
-        return l10n.saturdayShort;
-      case 'sun':
-      case 'dim':
-        return l10n.sundayShort;
-      default:
-        // Fallback: si c'est plus long, prendre les 3 premières lettres
-        if (dayShort.length > 3) {
-          return _translateDayShort(dayShort.substring(0, 3), l10n);
-        }
-        return dayShort;
-    }
-  }
 
   // ✅ NOUVEAU: Widget pour afficher les informations de source des données
   Widget _buildDataSourceInfo(
@@ -376,9 +347,9 @@ class DashboardCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.05),
+        color: Colors.blue.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,7 +360,7 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  l10n.dataSourceBreakdown ?? 'Sources des données',
+                  l10n.dataSourceBreakdown,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -418,7 +389,7 @@ class DashboardCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        '${l10n.myLists ?? "Mes listes"}: ${ownPercentage.toStringAsFixed(1)}%',
+                        '${l10n.myLists}: ${ownPercentage.toStringAsFixed(1)}%',
                         style: const TextStyle(fontSize: 11),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -435,14 +406,14 @@ class DashboardCard extends StatelessWidget {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.7),
+                        color: Colors.blue.withValues(alpha: 0.7),
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        '${l10n.sharedLists ?? "Partagées"}: ${sharedPercentage.toStringAsFixed(1)}%',
+                        '${l10n.sharedLists}: ${sharedPercentage.toStringAsFixed(1)}%',
                         style: const TextStyle(fontSize: 11),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -468,9 +439,9 @@ class DashboardCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,14 +510,14 @@ class DashboardCard extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             totalSpent > 0
-                ? Colors.green.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color:
               totalSpent > 0
-                  ? Colors.green.withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.3),
+                  ? Colors.green.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.3),
         ),
       ),
       child: Column(

@@ -315,7 +315,7 @@ class TopProductsCard extends StatelessWidget {
             color: AppColors.accent,
           ),
         );
-        subValue = '${l10n.itemsCount}';
+        subValue = l10n.itemsCount;
         icon = Icons.shopping_cart;
         color = AppColors.accent;
         break;
@@ -328,7 +328,7 @@ class TopProductsCard extends StatelessWidget {
             color: Colors.purple[600],
           ),
         );
-        subValue = '${l10n.timesPlural}';
+        subValue = l10n.timesPlural;
         icon = Icons.repeat;
         color = Colors.purple[600]!;
         break;
@@ -363,9 +363,9 @@ class TopProductsCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
