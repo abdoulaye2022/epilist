@@ -216,22 +216,24 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       backgroundColor: AppColors.background,
       appBar: AppBar(
         // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
+        // Même gabarit d'en-tête que la Discussion : titre sombre compact,
+        // nom de la liste en sous-titre.
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.receipts,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryDark, // ✅ Texte vert au lieu de blanc
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
               ),
             ),
             Text(
               widget.shoppingList.name,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary, // ✅ Gris au lieu de blanc70
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.normal,
               ),
             ),
@@ -301,27 +303,22 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
         ],
 
         // ✅ TabBar avec style harmonisé (texte noir sur fond blanc)
+        // Onglets textuels sobres : plus légers que l'ancienne rangée
+        // icône + libellé tout en vert.
         bottom: TabBar(
           controller: _tabController,
-          labelColor: AppColors.primaryDark, // ✅ Onglet sélectionné en vert
-          unselectedLabelColor:
-              AppColors.textSecondary, // ✅ Onglets non sélectionnés en gris
-          indicatorColor: AppColors.primaryDark, // ✅ Indicateur vert
-          indicatorWeight: 3,
-          onTap: _onTabChanged, // ✅ Garder la logique existante
+          labelColor: AppColors.primaryDark,
+          unselectedLabelColor: AppColors.textSecondary,
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 2.5,
+          labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          unselectedLabelStyle:
+              const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          onTap: _onTabChanged,
           tabs: [
-            Tab(
-              icon: Icon(Icons.receipt_long, color: AppColors.primary),
-              text: l10n.allReceipts,
-            ),
-            Tab(
-              icon: Icon(Icons.store, color: AppColors.primary),
-              text: l10n.byStore,
-            ),
-            Tab(
-              icon: Icon(Icons.analytics, color: AppColors.primary),
-              text: l10n.statistics,
-            ),
+            Tab(text: l10n.allReceipts),
+            Tab(text: l10n.byStore),
+            Tab(text: l10n.statistics),
           ],
         ),
       ),

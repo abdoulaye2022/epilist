@@ -46,8 +46,11 @@ Future<bool> startReceiptScan(BuildContext context, {required int listId}) async
 
   final picked = await ImagePicker().pickImage(
     source: source,
-    maxWidth: 2200, // assez fin pour l'OCR, sans exploser la mémoire
-    imageQuality: 92,
+    // 2800/q95 : le modèle ML Kit embarqué sur iOS est moins tolérant au
+    // petit texte que celui de Play Services sur Android — une entrée plus
+    // fine comble l'écart sur les reçus longs, sans exploser la mémoire.
+    maxWidth: 2800,
+    imageQuality: 95,
   );
   if (picked == null || !context.mounted) return false;
 

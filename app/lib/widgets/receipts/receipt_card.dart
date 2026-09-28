@@ -22,19 +22,13 @@ class ReceiptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    // Carte plate bordée, sans ombre : le gabarit commun de l'app.
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -98,27 +92,28 @@ class ReceiptCard extends StatelessWidget {
         // CORRECTION : Utilisation de FormattedAmount au lieu de receipt.formattedAmount
         FormattedAmount(
           amount: receipt.totalAmount,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+          style: const TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
           ),
           showCode: false, // Pas d'affichage du code de devise ici
           fallbackCurrencyCode: 'CAD', // Devise de fallback
         ),
+        // Puce de date neutre (fini le bleu qui détonnait).
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.accentLight,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.blue[200]!),
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: AppColors.border),
           ),
           child: Text(
             _formatPurchaseDate(context, receipt.purchaseDate),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
-              color: AppColors.accent,
-              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -184,7 +179,8 @@ class ReceiptCard extends StatelessWidget {
               value: 'edit',
               child: Row(
                 children: [
-                  Icon(Icons.edit, size: 20, color: AppColors.accent),
+                  const Icon(Icons.edit_outlined,
+                      size: 20, color: AppColors.textSecondary),
                   const SizedBox(width: 12),
                   Text(l10n.edit),
                 ],
@@ -194,9 +190,11 @@ class ReceiptCard extends StatelessWidget {
               value: 'delete',
               child: Row(
                 children: [
-                  Icon(Icons.delete, size: 20, color: AppColors.error),
+                  const Icon(Icons.delete_outline,
+                      size: 20, color: AppColors.error),
                   const SizedBox(width: 12),
-                  Text(l10n.delete, style: TextStyle(color: AppColors.error)),
+                  Text(l10n.delete,
+                      style: const TextStyle(color: AppColors.error)),
                 ],
               ),
             ),
