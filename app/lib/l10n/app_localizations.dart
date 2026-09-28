@@ -2594,6 +2594,12 @@ abstract class AppLocalizations {
   /// **'Mode hors ligne'**
   String get offlineMode;
 
+  /// No description provided for @offlineUnavailableHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette section n\'est pas disponible hors ligne. Reconnectez-vous puis réessayez.'**
+  String get offlineUnavailableHint;
+
   /// No description provided for @backOnline.
   ///
   /// In fr, this message translates to:

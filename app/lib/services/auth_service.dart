@@ -21,6 +21,10 @@ class AuthenticationException implements Exception {
 
 class AuthService {
   final Dio dio;
+
+  /// Refresh en cours : tous les getToken() concurrents attendent le même
+  /// appel (voir le commentaire dans getToken).
+  Future<Map<String, String>>? _refreshInFlight;
   final SharedPreferences sharedPreferences;
 
   // Clés pour le stockage
@@ -103,16 +107,32 @@ class AuthService {
           final refreshToken = await getRefreshToken();
           if (refreshToken != null && refreshToken.isNotEmpty) {
             try {
-              final newTokens = await this.refreshToken(refreshToken);
-              await saveTokens(
-                newTokens['access_token']!,
-                newTokens['refresh_token']!,
-              );
-              debugPrint('✅ [AuthService] Token refreshé automatiquement');
+              // MUTEX indispensable : au démarrage, des dizaines d'appels
+              // getToken() partent en parallèle. Avec la ROTATION côté
+              // serveur, deux refresh concurrents = le second part avec un
+              // refresh token déjà révoqué → 401 → déconnexion aléatoire.
+              // Tous les appelants attendent donc le MÊME refresh.
+              _refreshInFlight ??= this
+                  .refreshToken(refreshToken)
+                  .then((newTokens) async {
+                    await saveTokens(
+                      newTokens['access_token']!,
+                      newTokens['refresh_token']!,
+                    );
+                    debugPrint('✅ [AuthService] Token refreshé automatiquement');
+                    return newTokens;
+                  })
+                  .whenComplete(() => _refreshInFlight = null);
+              final newTokens = await _refreshInFlight!;
               return newTokens['access_token'];
             } catch (e) {
               debugPrint('❌ [AuthService] Échec du refresh automatique: $e');
-              await clearUserData();
+              // Ne purger la session que sur un refus explicite du serveur
+              // (token révoqué/expiré). Un échec réseau transitoire ne doit
+              // pas déconnecter l'utilisateur.
+              if (e.toString().contains('Refresh token invalide')) {
+                await clearUserData();
+              }
               return null;
             }
           }

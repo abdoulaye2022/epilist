@@ -5,6 +5,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,6 +78,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       body: BlocListener<AnalyticsBloc, AnalyticsState>(
         listener: (context, state) {
           if (state is AnalyticsError) {
+            // Hors ligne, l'état vide explique déjà la situation : pas de
+            // snackbar rouge « Erreur de réseau » par-dessus.
+            if (!ConnectivityService().isConnected) return;
             SmartSnackBarManager.showErrorSnackBar(
               context,
               state.message,
@@ -238,14 +242,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
+    // Hors ligne sans cache : dire la vraie raison plutôt que
+    // « Commencez à faire vos courses » (trompeur).
+    final offline = !ConnectivityService().isConnected;
+
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.18),
-        Icon(Icons.insights_outlined, size: 64, color: Colors.grey[400]),
+        Icon(
+          offline ? Icons.cloud_off_rounded : Icons.insights_outlined,
+          size: 64,
+          color: Colors.grey[400],
+        ),
         const SizedBox(height: AppSpacing.md),
         Text(
-          l10n.noAnalyticsData,
+          offline ? l10n.offlineMode : l10n.noAnalyticsData,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 17,
@@ -255,7 +267,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          AppLocalizations.of(context)!.analyticsEmptyHint,
+          offline
+              ? l10n.offlineUnavailableHint
+              : AppLocalizations.of(context)!.analyticsEmptyHint,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
         ),

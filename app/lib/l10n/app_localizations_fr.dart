@@ -1385,6 +1385,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get offlineMode => 'Mode hors ligne';
 
   @override
+  String get offlineUnavailableHint =>
+      'Cette section n\'est pas disponible hors ligne. Reconnectez-vous puis réessayez.';
+
+  @override
   String get backOnline => 'Connexion rétablie !';
 
   @override

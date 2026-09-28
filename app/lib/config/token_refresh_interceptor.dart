@@ -19,11 +19,27 @@ class TokenRefreshInterceptor extends Interceptor {
     required this.dio,
   });
 
+  // Endpoints d'authentification qui ne doivent JAMAIS déclencher
+  // getToken() : /auth/refresh passe par ce même Dio, et getToken() sur un
+  // token expiré relance un refresh → récursion infinie (app bloquée au
+  // splash, constaté sur simulateur avec un token > 1 h).
+  static const _noAuthPaths = [
+    '/auth/refresh',
+    '/auth/login',
+    '/auth/register',
+    '/auth/confirm-email',
+    '/auth/resend-verification',
+  ];
+
   @override
   Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    if (_noAuthPaths.any(options.path.contains)) {
+      return handler.next(options);
+    }
+
     // Ajouter automatiquement le token à chaque requête
     final token = await authService.getToken();
     if (token != null && token.isNotEmpty) {

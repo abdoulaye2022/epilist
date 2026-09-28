@@ -7,6 +7,7 @@ import 'package:epilist/blocs/chat/chat_event.dart';
 import 'package:epilist/blocs/chat/chat_state.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/list_message.dart';
+import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
@@ -93,7 +94,16 @@ class _ChatScreenState extends State<ChatScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.listName),
+                // Styles explicites : l'AppBarTheme global (fond clair,
+                // texte sombre) prime sinon sur foregroundColor.
+                Text(
+                  widget.listName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 Text(
                   l10n.chatTitle,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -104,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             backgroundColor: theme.primaryColor,
             foregroundColor: Colors.white,
+            iconTheme: const IconThemeData(color: Colors.white),
             elevation: 0,
           ),
           body: Column(
@@ -275,27 +286,37 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildErrorView(AppLocalizations l10n, String error) {
+    // Hors ligne : un état explicite, jamais l'exception brute (la
+    // discussion vit sur le serveur, il n'y a pas de cache local).
+    final offline = !ConnectivityService().isConnected;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            Icon(
+              offline ? Icons.cloud_off_rounded : Icons.error_outline,
+              size: 64,
+              color: offline ? Colors.grey[400] : Colors.red[300],
+            ),
             const SizedBox(height: 16),
             Text(
-              l10n.errorLoadingMessages,
+              offline ? l10n.offlineMode : l10n.errorLoadingMessages,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              error,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
+            if (offline) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.offlineUnavailableHint,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ],
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _loadMessages,

@@ -4,6 +4,7 @@ import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/receipts/add_receipt_dialog.dart';
 import 'package:epilist/widgets/receipts/edit_receipt_dialog.dart';
@@ -368,11 +369,33 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       ),
       floatingActionButton:
           widget.shoppingList.canEdit
-              ? FloatingActionButton(
-                onPressed: _showAddReceiptDialog,
-                backgroundColor: AppColors.primary,
-                child: const Icon(Icons.add, color: Colors.white),
-              )
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Scanner un reçu (OCR) : même flux que l'accueil.
+                    FloatingActionButton(
+                      heroTag: 'receipts_scan_fab',
+                      onPressed: () {
+                        startReceiptScan(
+                          context,
+                          listId: widget.shoppingList.id,
+                        ).then((saved) {
+                          if (saved && mounted) _loadDataForCurrentTab();
+                        });
+                      },
+                      backgroundColor: AppColors.primaryLight,
+                      foregroundColor: AppColors.primaryDark,
+                      child: const Icon(Icons.receipt_long_rounded),
+                    ),
+                    const SizedBox(height: AppSpacing.sm + 4),
+                    FloatingActionButton(
+                      heroTag: 'receipts_add_fab',
+                      onPressed: _showAddReceiptDialog,
+                      backgroundColor: AppColors.primary,
+                      child: const Icon(Icons.add, color: Colors.white),
+                    ),
+                  ],
+                )
               : null,
     );
   }

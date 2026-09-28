@@ -1359,6 +1359,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get offlineMode => 'Offline Mode';
 
   @override
+  String get offlineUnavailableHint =>
+      'This section is not available offline. Reconnect and try again.';
+
+  @override
   String get backOnline => 'Connection restored!';
 
   @override

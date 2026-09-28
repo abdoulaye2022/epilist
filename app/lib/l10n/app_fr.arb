@@ -592,6 +592,7 @@
   "checkMobileData": "Activez vos données mobiles",
   "restartRouter": "Redémarrez votre routeur si nécessaire",
   "offlineMode": "Mode hors ligne",
+  "offlineUnavailableHint": "Cette section n'est pas disponible hors ligne. Reconnectez-vous puis réessayez.",
   "backOnline": "Connexion rétablie !",
   "connectionRequired": "Connexion Internet requise",
   "connectionRequiredForInvitation": "Connexion Internet requise pour ouvrir l'invitation",

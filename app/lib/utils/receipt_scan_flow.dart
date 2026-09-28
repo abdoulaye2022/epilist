@@ -89,7 +89,10 @@ Future<bool> startReceiptScan(BuildContext context, {required int listId}) async
       lines,
       knownStoreNames: stores.map((s) => s.name).toList(),
     );
-  } catch (_) {
+  } catch (e) {
+    // Trace indispensable au diagnostic (ex. échec spécifique iOS) :
+    // sans elle, tout échec OCR est muet.
+    debugPrint('❌ [ReceiptScan] OCR/parsing échoué: $e');
     parsed = ParsedReceipt(); // OCR raté : validation vide, saisie manuelle
     if (context.mounted) {
       SmartSnackBarManager.showErrorSnackBar(context, l10n.ocrFailed);
