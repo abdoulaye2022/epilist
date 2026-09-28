@@ -9,6 +9,7 @@
 import { useEffect, useState } from "react";
 import { Apple, Play, RotateCcw } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
+import AdminLoading from "@/components/admin/AdminLoading";
 
 interface VersionConfig {
   platform: "ios" | "android";
@@ -26,12 +27,14 @@ interface VersionConfig {
 export default function AdminAppVersionsPage() {
   const [configs, setConfigs] = useState<VersionConfig[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const load = () => {
     adminApi
       .get<{ data: { versions: VersionConfig[] } }>("/admin/app-versions")
       .then((res) => setConfigs(res.data.versions))
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   };
 
   useEffect(load, []);
@@ -49,11 +52,15 @@ export default function AdminAppVersionsPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {configs.map((config) => (
-          <PlatformCard key={config.platform} initial={config} onSaved={load} />
-        ))}
-      </div>
+      {loading && configs.length === 0 && !error ? (
+        <AdminLoading label="Chargement des versions…" />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {configs.map((config) => (
+            <PlatformCard key={config.platform} initial={config} onSaved={load} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

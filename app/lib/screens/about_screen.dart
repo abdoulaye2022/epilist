@@ -306,7 +306,7 @@ class AboutPage extends StatelessWidget {
     // Store URLs - update with your actual URLs
     const String androidUrl =
         'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
-    const String iosUrl = 'https://apps.apple.com/app/epilist/id123456789';
+    const String iosUrl = 'https://apps.apple.com/ca/app/epilist/id6748285596';
 
     try {
       final Uri storeUri;

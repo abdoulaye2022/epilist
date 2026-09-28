@@ -16,7 +16,7 @@ class SharedListController
     private const CUSTOM_DOMAIN = 'epilist.app';
     private const APP_SCHEME = 'epilist';
     private const ANDROID_STORE_URL = 'https://play.google.com/store/apps/details?id=com.m2atech.epilist';
-    private const IOS_STORE_URL = 'https://apps.apple.com/app/epilist/id123456789';
+    private const IOS_STORE_URL = 'https://apps.apple.com/ca/app/epilist/id6748285596';
 
     /**
      * Créer un lien de partage pour une liste

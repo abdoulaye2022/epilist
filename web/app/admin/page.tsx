@@ -11,6 +11,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
+import AdminLoading from "@/components/admin/AdminLoading";
 
 interface Overview {
   users_total: number;
@@ -37,7 +38,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!data) return <p className="text-sm text-gray-500">Chargement…</p>;
+  if (!data) return <AdminLoading />;
 
   const cards = [
     { icon: Users, label: "Utilisateurs", value: data.users_total, sub: `${data.users_active_7d} actifs (7 j)` },

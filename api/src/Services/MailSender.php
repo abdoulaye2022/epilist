@@ -1158,7 +1158,7 @@ class MailSender
                             <!-- Boutons de téléchargement -->
                             <div style='display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap;'>
                                 <!-- App Store -->
-                                <a href='https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA' 
+                                <a href='https://apps.apple.com/ca/app/epilist/id6748285596' 
                                 style='display: inline-block; background: #000000; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 5px;'>
                                     <div style='display: flex; align-items: center;'>
                                         <span style='font-size: 20px; margin-right: 8px;'></span>

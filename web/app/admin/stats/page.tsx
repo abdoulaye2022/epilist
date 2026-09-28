@@ -13,6 +13,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { adminApi } from "@/lib/admin-api";
+import AdminLoading from "@/components/admin/AdminLoading";
 
 interface MonthRow {
   month: string;
@@ -62,6 +63,7 @@ export default function AdminStatsPage() {
   const [byCurrency, setByCurrency] = useState<CurrencyRow[]>([]);
   const [byLanguage, setByLanguage] = useState<LanguageRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     adminApi
@@ -81,12 +83,14 @@ export default function AdminStatsPage() {
         setByCurrency(res.data.communities?.by_currency ?? []);
         setByLanguage(res.data.communities?.by_language ?? []);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
 
   const totalUsers = byCurrency.reduce((s, r) => s + r.users, 0);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
+  if (loading) return <AdminLoading label="Chargement des statistiques…" />;
 
   return (
     <div>

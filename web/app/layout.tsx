@@ -114,7 +114,7 @@ export const metadata: Metadata = {
   appLinks: {
     ios: {
       app_store_id: "6748285596",
-      url: "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA",
+      url: "https://apps.apple.com/ca/app/epilist/id6748285596",
     },
     android: {
       package: "com.m2atech.epilist",

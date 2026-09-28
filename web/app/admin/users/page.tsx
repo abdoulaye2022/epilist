@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Search, ShieldCheck } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
+import AdminLoading from "@/components/admin/AdminLoading";
 
 interface AdminUser {
   id: number;
@@ -26,9 +27,11 @@ export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const perPage = 25;
 
   const load = useCallback(() => {
+    setLoading(true);
     adminApi
       .get<{ data: { users: AdminUser[]; total: number } }>(
         `/admin/users?search=${encodeURIComponent(search)}&page=${page}&per_page=${perPage}`
@@ -37,7 +40,8 @@ export default function AdminUsersPage() {
         setUsers(res.data.users);
         setTotal(res.data.total);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, [search, page]);
 
   useEffect(() => {
@@ -80,6 +84,9 @@ export default function AdminUsersPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
+      {loading && users.length === 0 && !error ? (
+        <AdminLoading label="Chargement des utilisateurs…" />
+      ) : (
       <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
         <table className="w-full text-sm">
           <thead>
@@ -151,6 +158,7 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       {pages > 1 && (
         <div className="mt-4 flex items-center gap-3 text-sm">

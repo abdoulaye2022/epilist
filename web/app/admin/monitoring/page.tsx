@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, Trash2 } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
+import AdminLoading from "@/components/admin/AdminLoading";
 
 interface ErrorRow {
   id: number;
@@ -20,9 +21,11 @@ export default function AdminMonitoringPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const perPage = 50;
 
   const load = useCallback(() => {
+    setLoading(true);
     adminApi
       .get<{ data: { errors: ErrorRow[]; total: number } }>(
         `/admin/errors?page=${page}&per_page=${perPage}`
@@ -31,7 +34,8 @@ export default function AdminMonitoringPage() {
         setRows(res.data.errors);
         setTotal(res.data.total);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, [page]);
 
   useEffect(load, [load]);
@@ -89,7 +93,9 @@ export default function AdminMonitoringPage() {
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-      {rows.length === 0 ? (
+      {loading && rows.length === 0 && !error ? (
+        <AdminLoading label="Chargement du journal…" />
+      ) : rows.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-500">
           Aucune erreur enregistrée. Tout roule.
         </div>

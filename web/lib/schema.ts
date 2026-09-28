@@ -42,7 +42,7 @@ export const epilistAppSchema: AppSchema = {
     ratingCount: "1247"
   },
   downloadUrl: [
-    "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA",
+    "https://apps.apple.com/ca/app/epilist/id6748285596",
     "https://play.google.com/store/apps/details?id=com.m2atech.epilist"
   ],
   description: "L'application mobile qui révolutionne votre façon de faire les courses. Créez, partagez et gérez vos listes en famille avec synchronisation temps réel.",

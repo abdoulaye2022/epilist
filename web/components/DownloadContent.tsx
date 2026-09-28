@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const APP_STORE_URL =
-  "https://apps.apple.com/ca/app/epilist/id6748285596?l=fr-CA";
+  "https://apps.apple.com/ca/app/epilist/id6748285596";
 const GOOGLE_PLAY_URL =
   "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
 

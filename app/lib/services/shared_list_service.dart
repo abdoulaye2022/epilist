@@ -400,7 +400,7 @@ class SharedListService {
     return {
       'android':
           'https://play.google.com/store/apps/details?id=com.m2atech.epilist',
-      'ios': 'https://apps.apple.com/app/epilist/id123456789',
+      'ios': 'https://apps.apple.com/ca/app/epilist/id6748285596',
     };
   }
 
