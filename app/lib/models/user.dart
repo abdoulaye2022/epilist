@@ -350,6 +350,9 @@ class User {
     String? firstName,
     String? lastName,
     String? email,
+    // avatarUrl DOIT être recopié : son absence ici faisait perdre la photo
+    // de profil à chaque copyWith (ex. withDisplayCurrency au démarrage).
+    String? avatarUrl,
     bool? emailVerified,
     String? accessToken,
     String? refreshToken,
@@ -364,6 +367,7 @@ class User {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       emailVerified: emailVerified ?? this.emailVerified,
       accessToken: accessToken ?? this.accessToken,
       refreshToken: refreshToken ?? this.refreshToken,
@@ -385,16 +389,33 @@ class User {
     return copyWith(currency: null);
   }
 
+  // L'égalité couvre les champs de profil affichés : sans ça, un
+  // AuthSuccess « frais » (avatar, prénom, devise mis à jour) est jugé
+  // identique à l'ancien par Equatable et le Bloc supprime l'émission —
+  // l'UI ne voit jamais le profil rafraîchi.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is User &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          email == other.email;
+          email == other.email &&
+          firstName == other.firstName &&
+          lastName == other.lastName &&
+          avatarUrl == other.avatarUrl &&
+          emailVerified == other.emailVerified &&
+          isActive == other.isActive &&
+          currency?.id == other.currency?.id;
 
   @override
-  int get hashCode => id.hashCode ^ email.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      email.hashCode ^
+      firstName.hashCode ^
+      lastName.hashCode ^
+      (avatarUrl?.hashCode ?? 0) ^
+      emailVerified.hashCode ^
+      (currency?.id.hashCode ?? 0);
 
   @override
   String toString() {

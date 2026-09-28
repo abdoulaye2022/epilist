@@ -55,7 +55,7 @@ class UserAvatar extends StatelessWidget {
       // foregroundImage : si le chargement échoue, le child (initiales)
       // reste visible — plus jamais de rond vide.
       foregroundImage: CachedNetworkImageProvider(url),
-      onForegroundImageError: (_, _) {},
+      onForegroundImageError: (e, _) => debugPrint('🖼️ [UserAvatar] échec image $url : $e'),
       child: Text(
         _initials,
         style: TextStyle(
