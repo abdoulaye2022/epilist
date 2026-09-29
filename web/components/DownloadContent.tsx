@@ -4,7 +4,6 @@
 // compteurs, avec les captures de l'application.
 import { trackAppDownloadUnified } from "@/lib/unified-tracking";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { Download, Zap, Heart, MapPin, Apple, Play } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import Header from "@/components/Header";
@@ -29,12 +28,6 @@ export default function DownloadContent() {
     { icon: Heart, title: t("dlFeature2Title"), desc: t("dlFeature2Desc") },
     { icon: MapPin, title: t("dlFeature3Title"), desc: t("dlFeature3Desc") },
   ];
-
-  const screenshots = [
-    { src: "liste.png", n: 1 },
-    { src: "analyse.png", n: 2 },
-    { src: "budget.png", n: 3 },
-  ] as const;
 
   return (
     <main className="min-h-screen bg-white">
@@ -102,37 +95,6 @@ export default function DownloadContent() {
                   {item.title}
                 </h3>
                 <p className="text-sm text-gray-600">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Captures d'écran */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold text-gray-900">
-            {t("dlScreensTitle")}
-          </h2>
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
-            {screenshots.map(({ src, n }, i) => (
-              <div key={n} className="text-center">
-                <div className="rounded-3xl border border-gray-200 bg-white p-3 shadow-sm">
-                  <Image
-                    src={`/${src}`}
-                    alt={t(`dlShot${n}Title` as any)}
-                    width={300}
-                    height={600}
-                    className="h-auto w-full rounded-2xl"
-                    priority={i === 0}
-                  />
-                </div>
-                <h3 className="mt-4 font-semibold text-gray-900">
-                  {t(`dlShot${n}Title` as any)}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {t(`dlShot${n}Desc` as any)}
-                </p>
               </div>
             ))}
           </div>
