@@ -88,8 +88,10 @@ try {
         $firstUser = $users->first();
         $unsubscribeUrl = $firstUser->getUnsubscribeUrl();
 
-        // ?lang=en pour tester la version anglaise du gabarit.
-        $testLang = ($_GET['lang'] ?? $firstUser->language ?? 'fr') === 'en' ? 'en' : 'fr';
+        // ?lang=en (HTTP) ou `php campaign.php en` (CLI) pour tester la
+        // version anglaise du gabarit.
+        $cliLang = (php_sapi_name() === 'cli' && isset($argv[1])) ? $argv[1] : null;
+        $testLang = ($cliLang ?? $_GET['lang'] ?? $firstUser->language ?? 'fr') === 'en' ? 'en' : 'fr';
 
         $emailSent = MailSender::sendUpdateCampaign(
             'm2atodev@gmail.com',
