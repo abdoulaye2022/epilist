@@ -843,10 +843,10 @@ class EmailTemplates
     {
         $isFr = $lang !== 'en';
 
-        // Images hébergées sur le site (déposées dans web/public/mail/).
+        // Captures du dashboard par langue, les mêmes que le hero du site.
         $heroImage = $isFr
-            ? 'https://epilist.app/mail/update-fr.png'
-            : 'https://epilist.app/mail/update-en.png';
+            ? 'https://epilist.app/app-fr.jpg'
+            : 'https://epilist.app/app-en.jpg';
         $ctaUrl = $isFr ? 'https://epilist.app/telecharger' : 'https://epilist.app/en/download';
 
         $t = $isFr ? [
@@ -899,10 +899,10 @@ class EmailTemplates
 
         $content = "
             <tr>
-                <td style='padding: 0;'>
+                <td style='padding: 28px 30px 24px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); text-align: center;'>
                     <a href='{$ctaUrl}' style='text-decoration: none;'>
-                        <img src='{$heroImage}' alt='{$t['img_alt']}' width='600'
-                             style='width: 100%; max-width: 600px; height: auto; display: block; border: none;'>
+                        <img src='{$heroImage}' alt='{$t['img_alt']}' width='260'
+                             style='width: 260px; max-width: 70%; height: auto; display: inline-block; border: none; border-radius: 18px; box-shadow: 0 10px 30px rgba(4, 120, 87, 0.25);'>
                     </a>
                 </td>
             </tr>
