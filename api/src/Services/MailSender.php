@@ -1448,6 +1448,25 @@ class MailSender
     /**
      *  CORRECTION: sendNewVersionCampaign avec gestion du lien de désabonnement
      */
+    /**
+     * Campagne « nouveautés » bilingue : sujet et contenu selon la langue
+     * du destinataire, image d'illustration par langue.
+     */
+    public static function sendUpdateCampaign(string $email, string $firstName, string $lang = 'fr', ?string $unsubscribeUrl = null): bool
+    {
+        $subject = $lang === 'en'
+            ? "What's new in EpiList: receipt scanner, smart suggestions and more"
+            : 'Du nouveau dans EpiList : scanner de reçus, suggestions et plus';
+
+        $htmlContent = \App\Services\EmailTemplates::updateCampaignEmail($firstName, $lang, $unsubscribeUrl);
+
+        return self::sendMail(
+            $subject,
+            [['email' => $email]],
+            $htmlContent
+        );
+    }
+
     public static function sendNewVersionCampaign(string $email, string $firstName, ?string $unsubscribeUrl = null): bool
     {
         $subject = "🎉 EpiList 2.0.0 - 10 nouvelles fonctionnalités révolutionnaires !";

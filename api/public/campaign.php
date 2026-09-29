@@ -57,20 +57,21 @@ $response = [
 try {
     $env = Config::get('APP_ENV');
 
-    // Récupérer les utilisateurs éligibles
+    // Récupérer les utilisateurs éligibles (les désabonnés sont exclus par
+    // email_marketing_consent, basculé à false lors du désabonnement).
     $users = User::where('email_marketing_consent', true)
         ->where('email_verified_at', '!=', null)
         ->where('is_active', true)
         ->whereNull('deletion_requested_at')
-        ->select(['id', 'email', 'first_name', 'unsubscribe_token'])
+        ->select(['id', 'email', 'first_name', 'language', 'unsubscribe_token'])
         ->get();
 
     $totalUsers = $users->count();
 
     $response['data']['total_eligible_users'] = $totalUsers;
-    $response['data']['campaign_version'] = '2.0.0';
-    $response['data']['subject'] = '🎉 EpiList 2.0.0 - 10 nouvelles fonctionnalités révolutionnaires !';
-    $response['data']['features_count'] = 10;
+    $response['data']['campaign'] = 'nouveautes-2026-09';
+    $response['data']['subject_fr'] = 'Du nouveau dans EpiList : scanner de reçus, suggestions et plus';
+    $response['data']['subject_en'] = "What's new in EpiList: receipt scanner, smart suggestions and more";
 
     if ($totalUsers === 0) {
         $response['success'] = false;
@@ -87,9 +88,13 @@ try {
         $firstUser = $users->first();
         $unsubscribeUrl = $firstUser->getUnsubscribeUrl();
 
-        $emailSent = MailSender::sendNewVersionCampaign(
+        // ?lang=en pour tester la version anglaise du gabarit.
+        $testLang = ($_GET['lang'] ?? $firstUser->language ?? 'fr') === 'en' ? 'en' : 'fr';
+
+        $emailSent = MailSender::sendUpdateCampaign(
             'm2atodev@gmail.com',
             $firstUser->first_name ?? 'Utilisateur',
+            $testLang,
             $unsubscribeUrl
         );
 
@@ -98,25 +103,13 @@ try {
             $response['message'] = 'Email de test envoyé avec succès';
             $response['data']['email_sent_to'] = 'm2atodev@gmail.com';
             $response['data']['first_name_used'] = $firstUser->first_name ?? 'Utilisateur';
+            $response['data']['lang_used'] = $testLang;
             $response['data']['unsubscribe_url_included'] = true;
             $response['data']['emails_sent'] = 1;
             $response['data']['emails_failed'] = 0;
-            $response['data']['features'] = [
-                '1. 🎤 Ajout vocal intelligent',
-                '2. ✓✓ Détection des doublons',
-                '3. 💡 Suggestions d\'habitudes d\'achat',
-                '4. 📱 Scanner de code-barres',
-                '5. 💬 Messagerie de listes intégrée',
-                '6. 📶 Mode hors ligne avancé',
-                '7. 💰 Gestion complète des dépenses',
-                '8. 🎯 Budgets intelligents',
-                '9. 📊 Statistiques avancées',
-                '10. 🔔 Notifications temps réel'
-            ];
             $response['data']['next_steps'] = [
-                'Pour envoyer en production:',
-                '1. Modifier .env: APP_ENV=production',
-                '2. Relancer http://localhost:8080/campaign.php'
+                'Tester l\'autre langue : campaign.php?lang=en',
+                'Pour envoyer en production: APP_ENV=production puis relancer campaign.php',
             ];
         } else {
             $response['success'] = false;
@@ -143,9 +136,13 @@ try {
                 try {
                     $unsubscribeUrl = $user->getUnsubscribeUrl();
 
-                    $success = MailSender::sendNewVersionCampaign(
+                    // Chaque utilisateur reçoit la campagne dans SA langue.
+                    $lang = ($user->language ?? 'fr') === 'en' ? 'en' : 'fr';
+
+                    $success = MailSender::sendUpdateCampaign(
                         $user->email,
                         $user->first_name ?? 'Utilisateur',
+                        $lang,
                         $unsubscribeUrl
                     );
 

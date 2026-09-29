@@ -833,4 +833,110 @@ class EmailTemplates
                 </html>
         ";
     }
+
+    /**
+     * Campagne « nouveautés EpiList » (bilingue) : image d'illustration par
+     * langue, liste courte des nouveautés, CTA vers l'app. Toujours envoyée
+     * avec le lien de désabonnement personnel de l'utilisateur.
+     */
+    public static function updateCampaignEmail(string $firstName, string $lang = 'fr', ?string $unsubscribeUrl = null): string
+    {
+        $isFr = $lang !== 'en';
+
+        // Images hébergées sur le site (déposées dans web/public/mail/).
+        $heroImage = $isFr
+            ? 'https://epilist.app/mail/update-fr.png'
+            : 'https://epilist.app/mail/update-en.png';
+        $ctaUrl = $isFr ? 'https://epilist.app/telecharger' : 'https://epilist.app/en/download';
+
+        $t = $isFr ? [
+            'title' => 'Du nouveau dans EpiList',
+            'greeting' => 'Bonjour',
+            'intro' => "EpiList vient de recevoir sa plus grosse mise à jour : voici ce qui vous attend dès maintenant dans l'application.",
+            'features' => [
+                ['Scanner de reçus', "Photographiez votre facture : les articles et les prix sont lus automatiquement, et votre historique de prix se construit tout seul."],
+                ['Suggestions intelligentes', "EpiList apprend vos habitudes et vous prévient quand il est probablement temps de racheter un produit."],
+                ['Listes récurrentes et plan de repas', "Vos courses hebdomadaires se préparent toutes seules, et vos recettes génèrent la liste d'ingrédients."],
+                ['Comparateur de prix', "Comparez le coût de votre liste entre vos magasins, à partir des prix que vous avez réellement payés."],
+                ['Mode magasin', "Votre liste triée rayon par rayon pour un passage plus rapide en magasin."],
+                ['Nouveau design', "Une interface plus claire, plus rapide, entièrement en français et en anglais."],
+            ],
+            'cta' => "Mettre à jour l'application",
+            'cta_hint' => "La mise à jour est gratuite et disponible dès aujourd'hui sur l'App Store et Google Play.",
+            'img_alt' => 'Les nouveautés EpiList',
+        ] : [
+            'title' => "What's new in EpiList",
+            'greeting' => 'Hello',
+            'intro' => 'EpiList just received its biggest update yet: here is what is waiting for you in the app right now.',
+            'features' => [
+                ['Receipt scanner', 'Snap a photo of your bill: items and prices are read automatically, and your price history builds itself.'],
+                ['Smart suggestions', 'EpiList learns your habits and lets you know when it is probably time to buy a product again.'],
+                ['Recurring lists and meal planner', 'Your weekly groceries prepare themselves, and your recipes generate the ingredient list.'],
+                ['Price comparison', 'Compare the cost of your list across your stores, based on the prices you actually paid.'],
+                ['Store mode', 'Your list sorted aisle by aisle for a faster trip through the store.'],
+                ['New design', 'A cleaner, faster interface, fully available in French and English.'],
+            ],
+            'cta' => 'Update the app',
+            'cta_hint' => 'The update is free and available today on the App Store and Google Play.',
+            'img_alt' => "What's new in EpiList",
+        ];
+
+        $header = self::headerContent($t['title'], $lang);
+        $footer = self::footerContent($lang, $unsubscribeUrl);
+
+        $featuresHtml = '';
+        foreach ($t['features'] as $feature) {
+            [$name, $description] = $feature;
+            $featuresHtml .= "
+                <tr>
+                    <td style='padding: 0 0 14px;'>
+                        <p style='margin: 0 0 2px; font-size: 15px; font-weight: 600; color: #047857;'>{$name}</p>
+                        <p style='margin: 0; font-size: 14px; color: #4b5563; line-height: 1.5;'>{$description}</p>
+                    </td>
+                </tr>
+            ";
+        }
+
+        $content = "
+            <tr>
+                <td style='padding: 0;'>
+                    <a href='{$ctaUrl}' style='text-decoration: none;'>
+                        <img src='{$heroImage}' alt='{$t['img_alt']}' width='600'
+                             style='width: 100%; max-width: 600px; height: auto; display: block; border: none;'>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class='content' style='padding: 32px 30px;'>
+                    <h2 style='margin: 0 0 16px; font-size: 22px; font-weight: 700; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 12px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} <strong>{$firstName}</strong>,
+                    </p>
+
+                    <p style='margin: 0 0 24px; font-size: 15px; color: #374151; line-height: 1.6;'>
+                        {$t['intro']}
+                    </p>
+
+                    <table role='presentation' width='100%' cellspacing='0' cellpadding='0' border='0'>
+                        {$featuresHtml}
+                    </table>
+
+                    <div style='text-align: center; margin: 28px 0 8px;'>
+                        <a href='{$ctaUrl}' class='button'
+                           style='display: inline-block; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; padding: 14px 30px; text-decoration: none; font-weight: 600; border-radius: 12px;'>
+                            {$t['cta']}
+                        </a>
+                        <p style='margin: 12px 0 0; font-size: 12.5px; color: #6b7280;'>
+                            {$t['cta_hint']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return $header . $content . $footer;
+    }
 }
