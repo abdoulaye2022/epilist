@@ -8,9 +8,9 @@
 ## Version française
 
 ```
-Il y a un an, je lançais EpiList : une application d'épicerie 100 % gratuite, conçue au Nouveau-Brunswick, pour simplifier les courses des familles.
+Il y a un an, M2atech Solutions Inc. lançait EpiList : une application d'épicerie 100 % gratuite, conçue au Nouveau-Brunswick, pour simplifier les courses des familles.
 
-Aujourd'hui, des centaines d'utilisateurs organisent leurs courses avec EpiList — et je suis fier d'annoncer sa plus grosse mise à jour depuis le lancement :
+Aujourd'hui, des centaines d'utilisateurs organisent leurs courses avec EpiList — et notre équipe est fière d'annoncer sa plus grosse mise à jour depuis le lancement :
 
 - Scanner de reçus : photographiez votre facture, les articles et les prix sont lus automatiquement
 - Suggestions intelligentes basées sur vos habitudes d'achat
@@ -22,9 +22,9 @@ Toujours gratuite, sans publicité, et fonctionnelle même hors ligne.
 
 Disponible sur l'App Store et Google Play : https://epilist.app
 
-Vos retours ont façonné cette version — merci, et continuez de m'en faire part.
+Vos retours ont façonné cette version — merci, et continuez de nous en faire part.
 
-#EpiList #Épicerie #AppMobile #Flutter #MadeInCanada #NouveauBrunswick #Startup #Gratuit #Courses #Budget
+#EpiList #M2atech #Épicerie #AppMobile #Flutter #MadeInCanada #NouveauBrunswick #Startup #Gratuit #Courses #Budget
 ```
 
 ---
@@ -32,9 +32,9 @@ Vos retours ont façonné cette version — merci, et continuez de m'en faire pa
 ## English version
 
 ```
-A year ago, I launched EpiList: a 100% free grocery app, built in New Brunswick, to make grocery shopping easier for families.
+A year ago, M2atech Solutions Inc. launched EpiList: a 100% free grocery app, built in New Brunswick, to make grocery shopping easier for families.
 
-Today, hundreds of users organize their groceries with EpiList — and I'm proud to announce its biggest update since launch:
+Today, hundreds of users organize their groceries with EpiList — and our team is proud to announce its biggest update since launch:
 
 - Receipt scanner: snap a photo of your bill and items and prices are read automatically
 - Smart suggestions based on your shopping habits
@@ -48,7 +48,7 @@ Available on the App Store and Google Play: https://epilist.app
 
 Your feedback shaped this release — thank you, and keep it coming.
 
-#EpiList #Groceries #MobileApp #Flutter #MadeInCanada #NewBrunswick #Startup #Free #Shopping #Budget
+#EpiList #M2atech #Groceries #MobileApp #Flutter #MadeInCanada #NewBrunswick #Startup #Free #Shopping #Budget
 ```
 
 ---
