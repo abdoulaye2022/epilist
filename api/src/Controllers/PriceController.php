@@ -562,6 +562,10 @@ class PriceController
             ->limit(100)
             ->get(['price', 'purchased_at']);
 
+        // Repère communautaire anonymisé (§33) : agrégat publié le
+        // moins cher pour ce produit, ou null. Jamais d'identité.
+        $community = \App\Services\CommunityPriceService::bestFor($normalized);
+
         $count = $rows->count();
         if ($count < 3) {
             return $this->json($response, [
@@ -572,6 +576,7 @@ class PriceController
                     'verdict' => 'unknown',
                     'observations' => $count,
                     'window_days' => self::DEFAULT_WINDOW_DAYS,
+                    'community' => $community,
                 ],
             ]);
         }
@@ -602,6 +607,7 @@ class PriceController
                 'observations' => $count,
                 'window_days' => self::DEFAULT_WINDOW_DAYS,
                 'last_freshness' => $this->freshness($lastAge),
+                'community' => $community,
             ],
         ]);
     }

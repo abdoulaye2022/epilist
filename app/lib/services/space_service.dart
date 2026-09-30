@@ -290,3 +290,25 @@ extension SpaceServicePhase5 on SpaceService {
     return (res.data['data'] as Map).cast<String, dynamic>();
   }
 }
+
+/// Phase 6 — communauté de prix anonymisée (§33) : consentement de
+/// partage (serveur) et agrégats par produit. Aucune identité ne
+/// transite : le serveur ne publie que des statistiques de groupe.
+extension SpaceServicePhase6 on SpaceService {
+  Future<bool> getCommunitySharing() async {
+    final res = await dio.get('/community/settings');
+    return res.data['data']['enabled'] as bool? ?? true;
+  }
+
+  Future<void> setCommunitySharing(bool enabled) async {
+    await dio.put('/community/settings', data: {'enabled': enabled});
+  }
+
+  Future<List<Map<String, dynamic>>> getCommunityPrices(
+      String product) async {
+    final res = await dio
+        .get('/community/prices', queryParameters: {'product': product});
+    return ((res.data['data']['stores'] as List? ?? []))
+        .cast<Map<String, dynamic>>();
+  }
+}

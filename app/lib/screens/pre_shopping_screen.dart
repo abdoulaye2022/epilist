@@ -134,6 +134,25 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                                     color: AppColors.textSecondary),
                               ),
                             ),
+                          // Repère communautaire anonymisé (§33)
+                          if (result?['community'] != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                l10n.communityLine(
+                                    _money((result!['community']
+                                        as Map)['median_price'] as num),
+                                    ((result!['community'] as Map)['store_label']
+                                            as String?) ??
+                                        '—',
+                                    (result!['community']
+                                            as Map)['contributors'] as int? ??
+                                        0),
+                                style: const TextStyle(
+                                    fontSize: 12.5,
+                                    color: AppColors.textSecondary),
+                              ),
+                            ),
                         ],
                       ),
                     ),

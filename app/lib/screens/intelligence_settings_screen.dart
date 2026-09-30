@@ -1,9 +1,12 @@
 // screens/intelligence_settings_screen.dart - Réglages « Intelligence
-// EpiList » (§43) : interrupteurs stockés en SharedPreferences.
+// EpiList » (§43) : interrupteurs stockés en SharedPreferences, sauf
+// le partage communautaire (§33) qui est un consentement SERVEUR.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/intelligence_service.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class IntelligenceSettingsScreen extends StatefulWidget {
   const IntelligenceSettingsScreen({super.key});
@@ -20,6 +23,8 @@ class _IntelligenceSettingsScreenState
   bool _autoAddOut = false;
   bool _budgetForecast = true;
   bool _loading = true;
+  // Consentement serveur (§33) ; null = état inconnu (hors ligne)
+  bool? _communityShare;
 
   @override
   void initState() {
@@ -45,6 +50,24 @@ class _IntelligenceSettingsScreenState
       _budgetForecast = forecast;
       _loading = false;
     });
+
+    // Consentement communautaire : lecture serveur, best-effort
+    try {
+      final share = await context.read<SpaceService>().getCommunitySharing();
+      if (!mounted) return;
+      setState(() => _communityShare = share);
+    } catch (_) {}
+  }
+
+  Future<void> _setCommunityShare(bool value) async {
+    final previous = _communityShare;
+    setState(() => _communityShare = value);
+    try {
+      await context.read<SpaceService>().setCommunitySharing(value);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _communityShare = previous);
+    }
   }
 
   Widget _tile({
@@ -111,6 +134,21 @@ class _IntelligenceSettingsScreenState
                   key: IntelligenceSettings.keyBudgetForecast,
                   apply: (v) => _budgetForecast = v,
                 ),
+                // Consentement communautaire (§33) — réglage SERVEUR
+                if (_communityShare != null)
+                  Card(
+                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: SwitchListTile(
+                      title: Text(l10n.communityShareTitle,
+                          style: const TextStyle(
+                              fontSize: 14.5, fontWeight: FontWeight.w600)),
+                      subtitle: Text(l10n.communityShareHint,
+                          style: const TextStyle(
+                              fontSize: 12, color: AppColors.textSecondary)),
+                      value: _communityShare!,
+                      onChanged: _setCommunityShare,
+                    ),
+                  ),
               ],
             ),
     );

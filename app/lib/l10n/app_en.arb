@@ -2699,5 +2699,21 @@
       }
     }
   },
-  "priceCheckAction": "Check"
+  "priceCheckAction": "Check",
+  "communityShareTitle": "Share my prices (anonymized)",
+  "communityShareHint": "Your prices feed community averages per product and store — never your identity. Opt out anytime.",
+  "communityLine": "Community: median ${price} · {store} ({count} contributors)",
+  "@communityLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

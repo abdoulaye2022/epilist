@@ -2699,5 +2699,21 @@
       }
     }
   },
-  "priceCheckAction": "Vérifier"
+  "priceCheckAction": "Vérifier",
+  "communityShareTitle": "Partager mes prix (anonymisé)",
+  "communityShareHint": "Vos prix nourrissent des moyennes communautaires par produit et magasin — jamais votre identité. Retirable à tout moment.",
+  "communityLine": "Communauté : médiane {price} $ · {store} ({count} contributeurs)",
+  "@communityLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

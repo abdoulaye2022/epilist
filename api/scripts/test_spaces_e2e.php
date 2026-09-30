@@ -600,5 +600,94 @@ $pdo->exec("DELETE FROM home_inventory WHERE normalized_name IN ('pain p5','fari
 $pdo->exec("DELETE FROM product_prediction_prefs WHERE normalized_name IN ('pain p5','farine p5')");
 $pdo->exec("DELETE FROM stores WHERE name = 'IGA P5'");
 
+// ==================================================================
+// PHASE 6 — communauté de prix anonymisée (§33) : agrégats sans
+// identité, règles de qualité, retrait du partage
+// ==================================================================
+if ($tokenC === '') {
+    echo "== PHASE 6 : SKIP (compte fati indisponible, 3 contributeurs requis)\n";
+} else {
+    echo "== PHASE 6 : trois contributeurs\n";
+    // Consentement activé pour les trois comptes
+    foreach ([$tokenA, $tokenB, $tokenC] as $t) {
+        req('PUT', "$base/community/settings", ['enabled' => true], $t);
+    }
+    [$s, $d] = req('GET', "$base/community/settings", null, $tokenB);
+    check('consentement lisible', $s === 200 && ($d['data']['enabled'] ?? false) === true, "status $s");
+
+    // Chaque compte importe ses reçus « Maxi P6 » sur SA liste personnelle.
+    // A ajoute une valeur ABERRANTE (59,90) et un produit isolé (Thé P6).
+    $p6Lists = [];
+    $p6Import = function (string $token, string $date, array $items, string $num) use ($base, &$p6Lists) {
+        if (!isset($p6Lists[$token])) {
+            [, $d] = req('POST', "$base/shopping-lists", ['name' => "Perso P6 $num"], $token);
+            $p6Lists[$token] = (int) ($d['data']['id'] ?? 0);
+        }
+        $total = array_sum(array_column($items, 'line_price'));
+        return req('POST', "$base/shopping-lists/{$p6Lists[$token]}/receipts/import", [
+            'store_name' => 'Maxi P6', 'purchase_date' => $date,
+            'total_amount' => $total, 'receipt_number' => $num, 'source' => 'manual',
+            'items' => array_map(fn($i) => $i + ['quantity' => 1], $items),
+        ], $token);
+    };
+    [$s] = $p6Import($tokenA, date('Y-m-d', strtotime('-6 days')), [['raw_label' => 'Cafe P6', 'line_price' => 5.99]], 'P6-A1');
+    [$s] = $p6Import($tokenA, date('Y-m-d', strtotime('-4 days')), [
+        ['raw_label' => 'Cafe P6', 'line_price' => 5.49],
+        ['raw_label' => 'The P6', 'line_price' => 4.00],
+    ], 'P6-A2');
+    [$s] = $p6Import($tokenA, date('Y-m-d', strtotime('-1 day')), [['raw_label' => 'Cafe P6', 'line_price' => 59.90]], 'P6-A3');
+    [$s] = $p6Import($tokenB, date('Y-m-d', strtotime('-5 days')), [['raw_label' => 'Cafe P6', 'line_price' => 5.79]], 'P6-B1');
+    [$s] = $p6Import($tokenB, date('Y-m-d', strtotime('-3 days')), [['raw_label' => 'Cafe P6', 'line_price' => 5.59]], 'P6-B2');
+    [$s] = $p6Import($tokenC, date('Y-m-d', strtotime('-2 days')), [['raw_label' => 'Cafe P6', 'line_price' => 5.69]], 'P6-C1');
+    check('6 observations importées (3 comptes)', $s === 201, "status $s");
+
+    echo "== Recalcul des agrégats\n";
+    $cronKey = urlencode($env['CRON_SECRET'] ?? '');
+    [$s, $d] = req('GET', "$base/community_refresh.php?key=$cronKey");
+    check('recalcul exécuté', $s === 200 && ($d['success'] ?? false) === true
+        && ($d['stats']['published'] ?? 0) >= 1, json_encode($d));
+    [$s] = req('GET', "$base/community_refresh.php?key=mauvaise-cle");
+    check('recalcul refusé sans le bon secret (403)', $s === 403, "status $s");
+
+    echo "== Agrégats anonymisés et règles de qualité\n";
+    [$s, $d] = req('GET', "$base/community/prices?product=Cafe%20P6", null, $tokenB);
+    $cStores = $d['data']['stores'] ?? [];
+    check('agrégat publié pour Cafe P6', $s === 200 && count($cStores) === 1, 'stores=' . count($cStores));
+    $agg = $cStores[0] ?? [];
+    check('3 contributeurs, 5 observations (aberrante ÉCARTÉE)',
+        ($agg['contributors'] ?? 0) === 3 && ($agg['observations'] ?? 0) === 5, json_encode($agg));
+    check('médiane communautaire 5,69', abs(($agg['median_price'] ?? 0) - 5.69) < 0.01);
+    check('aucune identité dans la réponse', strpos(json_encode($d), 'user') === false);
+    [$s, $d] = req('GET', "$base/community/prices?product=The%20P6", null, $tokenB);
+    check('1 seul contributeur : PAS publié (qualité §33)', count($d['data']['stores'] ?? []) === 0);
+
+    echo "== Repère communautaire dans « bon prix »\n";
+    [$s, $d] = req('GET', "$base/prices/check?product=Cafe%20P6&price=5.49", null, $tokenC);
+    check('C (1 seul achat) : verdict unknown MAIS repère communautaire',
+        ($d['data']['verdict'] ?? '') === 'unknown'
+        && abs(($d['data']['community']['median_price'] ?? 0) - 5.69) < 0.01,
+        json_encode($d['data'] ?? []));
+
+    echo "== Retrait du partage (§33)\n";
+    [$s] = req('PUT', "$base/community/settings", ['enabled' => false], $tokenB);
+    check('B se retire', $s === 200, "status $s");
+    [$s, $d] = req('GET', "$base/community_refresh.php?key=$cronKey");
+    [$s, $d] = req('GET', "$base/community/prices?product=Cafe%20P6", null, $tokenA);
+    check('plus que 2 contributeurs : agrégat retiré', count($d['data']['stores'] ?? []) === 0);
+    [$s] = req('PUT', "$base/community/settings", ['enabled' => true], $tokenB);
+    [$s, $d] = req('GET', "$base/community_refresh.php?key=$cronKey");
+    [$s, $d] = req('GET', "$base/community/prices?product=Cafe%20P6", null, $tokenA);
+    check('retour de B : agrégat republié', count($d['data']['stores'] ?? []) === 1);
+
+    echo "== Nettoyage P6\n";
+    foreach ($p6Lists as $t => $lid) {
+        req('DELETE', "$base/shopping-lists/$lid", null, $t);
+    }
+    $pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('cafe p6','the p6')");
+    $pdo->exec("DELETE FROM community_prices");
+    $pdo->exec("DELETE FROM stores WHERE name = 'Maxi P6'");
+    check('nettoyage P6 fait', true);
+}
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

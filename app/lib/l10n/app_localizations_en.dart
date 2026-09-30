@@ -5789,4 +5789,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceCheckAction => 'Check';
+
+  @override
+  String get communityShareTitle => 'Share my prices (anonymized)';
+
+  @override
+  String get communityShareHint =>
+      'Your prices feed community averages per product and store — never your identity. Opt out anytime.';
+
+  @override
+  String communityLine(String price, String store, int count) {
+    return 'Community: median \$$price · $store ($count contributors)';
+  }
 }

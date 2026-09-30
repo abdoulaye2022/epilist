@@ -10842,6 +10842,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vérifier'**
   String get priceCheckAction;
+
+  /// No description provided for @communityShareTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager mes prix (anonymisé)'**
+  String get communityShareTitle;
+
+  /// No description provided for @communityShareHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos prix nourrissent des moyennes communautaires par produit et magasin — jamais votre identité. Retirable à tout moment.'**
+  String get communityShareHint;
+
+  /// No description provided for @communityLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Communauté : médiane {price} \$ · {store} ({count} contributeurs)'**
+  String communityLine(String price, String store, int count);
 }
 
 class _AppLocalizationsDelegate
