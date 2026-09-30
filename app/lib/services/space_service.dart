@@ -228,3 +228,43 @@ extension SpaceServicePhase3 on SpaceService {
         data: comment == null ? null : {'comment': comment});
   }
 }
+
+/// Phase 4 — intelligence prix : prix cible et alertes de baisse.
+/// L'espace actif est porté par l'en-tête X-Space-Id (intercepteur).
+extension SpaceServicePhase4 on SpaceService {
+  Future<List<PriceAlertInfo>> getPriceAlerts() async {
+    final res = await dio.get('/price-alerts');
+    return ((res.data['data']['alerts'] as List? ?? []))
+        .map((e) => PriceAlertInfo.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<PriceTargetSuggestion> suggestPriceTarget(String product) async {
+    final res = await dio
+        .get('/price-alerts/suggest', queryParameters: {'product': product});
+    return PriceTargetSuggestion.fromJson(
+        (res.data['data'] as Map).cast<String, dynamic>());
+  }
+
+  Future<void> createPriceAlert({
+    required String productName,
+    required double targetPrice,
+  }) async {
+    await dio.post('/price-alerts', data: {
+      'product_name': productName,
+      'target_price': targetPrice,
+    });
+  }
+
+  Future<void> updatePriceAlert(int id,
+      {double? targetPrice, bool? isActive}) async {
+    await dio.put('/price-alerts/$id', data: {
+      if (targetPrice != null) 'target_price': targetPrice,
+      if (isActive != null) 'is_active': isActive,
+    });
+  }
+
+  Future<void> deletePriceAlert(int id) async {
+    await dio.delete('/price-alerts/$id');
+  }
+}

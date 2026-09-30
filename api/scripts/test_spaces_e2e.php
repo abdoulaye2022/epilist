@@ -339,5 +339,129 @@ echo "== Nettoyage P3\n";
 [$s] = req('DELETE', "$base/spaces/$r3", null, $tokenA);
 check('suppression du restaurant', $s === 200, "status $s");
 
+// ==================================================================
+// PHASE 4 — intelligence prix : observations par espace, isolation,
+// prix cible, alertes dédupliquées (§23-§27, §34)
+// ==================================================================
+echo "== PHASE 4 : foyer avec historique de prix\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'household', 'name' => 'Foyer P4'], $tokenA);
+$h4 = (int) ($d['data']['space']['id'] ?? 0);
+check('foyer P4 créé', $s === 201 && $h4 > 0, "status $s");
+[$s] = req('POST', "$base/spaces/$h4/invitations", ['email' => 'admin@gmail.com', 'role' => 'member'], $tokenA);
+$token4 = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $h4 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('POST', "$base/space-invitations/$token4/accept", null, $tokenB);
+check('B rejoint le foyer P4', $s === 200, "status $s");
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Courses P4'], $tokenA, $h4);
+$l4 = (int) ($d['data']['id'] ?? 0);
+check('liste du foyer créée', $s === 201 && $l4 > 0, "status $s");
+
+// Observations : article coché AVEC prix -> purchase_history.space_id.
+// L'anti-doublon fusionne un 2e « Lait P4 » : on RECYCLE le même
+// article (nouveau prix, décoché, recoché = nouvelle observation).
+$l4item = 0;
+$mkObs = function (float $price) use ($base, $tokenA, $l4, $pdo, &$l4item) {
+    if ($l4item === 0) {
+        req('POST', "$base/shopping-lists/$l4/items",
+            ['product_name' => 'Lait P4', 'quantity' => 1, 'price' => $price, 'store_name' => 'Metro P4'], $tokenA);
+        $l4item = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $l4 ORDER BY id DESC LIMIT 1")->fetchColumn();
+    } else {
+        req('PUT', "$base/shopping-lists/$l4/items/$l4item", ['price' => $price], $tokenA);
+        req('PATCH', "$base/shopping-lists/$l4/items/$l4item/toggle", ['is_purchased' => false], $tokenA);
+    }
+    [$s] = req('PATCH', "$base/shopping-lists/$l4/items/$l4item/toggle", ['is_purchased' => true], $tokenA);
+    return $s;
+};
+check('achat coché avec prix', $mkObs(4.99) === 200);
+$obsSpace = $pdo->query("SELECT space_id FROM purchase_history WHERE normalized_name='lait p4' ORDER BY id DESC LIMIT 1")->fetchColumn();
+check('observation rattachée au foyer (space_id)', (int) $obsSpace === $h4, "space_id=$obsSpace");
+
+echo "== Import de reçu dans l'espace du foyer\n";
+$receiptPayload = [
+    'store_name' => 'IGA P4', 'purchase_date' => date('Y-m-d'),
+    'total_amount' => 3.99, 'receipt_number' => 'P4-001', 'source' => 'manual',
+    'items' => [['raw_label' => 'LAIT NAT 2%', 'product_name' => 'Lait P4', 'quantity' => 1, 'line_price' => 3.99]],
+];
+[$s, $d] = req('POST', "$base/shopping-lists/$l4/receipts/import", $receiptPayload, $tokenA);
+check('import de reçu accepté', $s === 201, "status $s");
+$row = $pdo->query("SELECT space_id, store_name FROM purchase_history WHERE normalized_name='lait p4' AND source='manual' ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+check('observation du reçu dans le foyer', (int) ($row['space_id'] ?? 0) === $h4 && ($row['store_name'] ?? '') === 'IGA P4');
+$aliasSpace = $pdo->query("SELECT space_id FROM product_aliases WHERE normalized_alias='lait nat 2' ORDER BY id DESC LIMIT 1")->fetchColumn();
+check('alias appris rattaché au foyer', (int) $aliasSpace === $h4, "space_id=$aliasSpace");
+// Signature par ESPACE : B (autre membre) ré-importe le même reçu -> doublon
+[$s, $d] = req('POST', "$base/shopping-lists/$l4/receipts/import", $receiptPayload, $tokenB);
+check('même reçu par un autre membre = doublon (409)', $s === 409 && ($d['code'] ?? '') === 'DUPLICATE_RECEIPT', "status $s");
+
+echo "== Isolation des prix (§34)\n";
+[$s, $d] = req('GET', "$base/price-history?product=Lait%20P4", null, $tokenA, $h4);
+$obsCount = count($d['data']['observations'] ?? []);
+check('membre + en-tête foyer : observations visibles', $s === 200 && $obsCount >= 2, "obs=$obsCount");
+check('fraîcheur exposée', ($d['data']['observations'][0]['freshness'] ?? '') === 'fresh');
+[$s, $d] = req('GET', "$base/price-history?product=Lait%20P4", null, $tokenA);
+check('les prix du foyer ne fuient PAS dans le personnel', count($d['data']['observations'] ?? []) === 0);
+if ($tokenC !== '') {
+    [$s] = req('GET', "$base/price-history?product=Lait%20P4", null, $tokenC, $h4);
+    check('non-membre : historique refusé (403)', $s === 403, "status $s");
+}
+
+echo "== Prix cible (§25-§26)\n";
+check('3e observation posée', $mkObs(4.49) === 200);
+[$s, $d] = req('GET', "$base/price-alerts/suggest?product=Lait%20P4", null, $tokenB, $h4);
+$sug = $d['data'] ?? [];
+check('suggestion de seuil calculée', $s === 200 && ($sug['observations'] ?? 0) >= 3
+    && is_numeric($sug['usual_price'] ?? null) && is_numeric($sug['suggested_target'] ?? null),
+    json_encode($sug));
+[$s, $d] = req('POST', "$base/price-alerts", ['product_name' => 'Lait P4', 'target_price' => 4.50], $tokenB, $h4);
+$alertId = (int) ($d['data']['alert']['id'] ?? 0);
+check('membre crée une alerte dans le foyer', $s === 201 && $alertId > 0, "status $s");
+[$s] = req('POST', "$base/price-alerts", ['product_name' => 'Lait P4', 'target_price' => 4.00], $tokenA, $h4);
+check('alerte en double refusée (409)', $s === 409, "status $s");
+if ($tokenC !== '') {
+    [$s] = req('POST', "$base/price-alerts", ['product_name' => 'Pirate', 'target_price' => 1], $tokenC, $h4);
+    check('non-membre : création refusée (403)', $s === 403, "status $s");
+}
+[$s] = req('POST', "$base/price-alerts", ['product_name' => 'Sans seuil'], $tokenA, $h4);
+check('seuil manquant refusé (422)', $s === 422, "status $s");
+
+echo "== Déclenchement et déduplication (§27)\n";
+check('observation sous le seuil', $mkObs(4.25) === 200);
+$al = $pdo->query("SELECT last_triggered_at, last_notified_price FROM price_alerts WHERE id = $alertId")->fetch(PDO::FETCH_ASSOC);
+check('alerte déclenchée (4,25 <= 4,50)', $al['last_triggered_at'] !== null && (float) $al['last_notified_price'] === 4.25, json_encode($al));
+check('observation sous le seuil mais PLUS CHÈRE', $mkObs(4.30) === 200);
+$al = $pdo->query("SELECT last_notified_price FROM price_alerts WHERE id = $alertId")->fetch(PDO::FETCH_ASSOC);
+check('anti-spam : pas de re-notification à 4,30', (float) $al['last_notified_price'] === 4.25, json_encode($al));
+check('observation STRICTEMENT plus basse', $mkObs(3.50) === 200);
+$al = $pdo->query("SELECT last_notified_price FROM price_alerts WHERE id = $alertId")->fetch(PDO::FETCH_ASSOC);
+check('meilleure affaire re-notifiée (3,50)', (float) $al['last_notified_price'] === 3.50, json_encode($al));
+[$s, $d] = req('GET', "$base/spaces/$h4/activity", null, $tokenA);
+$types4 = array_column((array) ($d['data']['activities'] ?? []), 'type');
+check('activité price_alert_triggered journalisée', in_array('price_alert_triggered', $types4, true), implode(',', array_unique($types4)));
+
+echo "== Gestion des alertes\n";
+[$s, $d] = req('GET', "$base/price-alerts", null, $tokenA, $h4);
+$alerts4 = $d['data']['alerts'] ?? [];
+check('l\'owner voit l\'alerte du membre', count($alerts4) === 1 && ($alerts4[0]['last_observed'] ?? null) !== null, 'count=' . count($alerts4));
+[$s, $d] = req('POST', "$base/price-alerts", ['product_name' => 'Café P4', 'target_price' => 10], $tokenA);
+$persoAlert = (int) ($d['data']['alert']['id'] ?? 0);
+check('alerte personnelle créée (sans en-tête)', $s === 201 && $persoAlert > 0, "status $s");
+[$s, $d] = req('GET', "$base/price-alerts", null, $tokenA, $h4);
+check('l\'alerte personnelle n\'apparaît pas dans le foyer', count($d['data']['alerts'] ?? []) === 1);
+if ($tokenC !== '') {
+    [$s] = req('PUT', "$base/price-alerts/$alertId", ['is_active' => false], $tokenC);
+    check('non-membre : modification refusée', in_array($s, [403, 404], true), "status $s");
+}
+[$s] = req('PUT', "$base/price-alerts/$alertId", ['is_active' => false], $tokenB);
+check('le créateur désactive son alerte', $s === 200, "status $s");
+[$s] = req('DELETE', "$base/price-alerts/$alertId", null, $tokenA);
+check('l\'owner (manage_lists) supprime l\'alerte', $s === 200, "status $s");
+
+echo "== Nettoyage P4\n";
+[$s] = req('DELETE', "$base/price-alerts/$persoAlert", null, $tokenA);
+check('suppression alerte personnelle', $s === 200, "status $s");
+[$s] = req('DELETE', "$base/spaces/$h4", null, $tokenA);
+check('suppression du foyer P4', $s === 200, "status $s");
+$pdo->exec("DELETE FROM purchase_history WHERE normalized_name = 'lait p4'");
+$pdo->exec("DELETE FROM product_aliases WHERE normalized_alias = 'lait nat 2'");
+$pdo->exec("DELETE FROM stores WHERE name IN ('Metro P4', 'IGA P4')");
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

@@ -67,6 +67,11 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
       'purchase_request_created' => (Icons.assignment_outlined, l10n.actPurchaseRequestCreated(who, product)),
       'purchase_request_approved' => (Icons.assignment_turned_in_outlined, l10n.actPurchaseRequestApproved(who, product)),
       'purchase_request_rejected' => (Icons.assignment_late_outlined, l10n.actPurchaseRequestRejected(who, product)),
+      'price_alert_triggered' => (
+          Icons.trending_down_rounded,
+          l10n.actPriceAlertTriggered(
+              product, ((payload['price'] as num?) ?? 0).toStringAsFixed(2))
+        ),
       _ => (Icons.bolt_rounded, who),
     };
   }

@@ -15,6 +15,7 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
+import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/screens/purchase_requests_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/screens/suppliers_screen.dart';
@@ -75,6 +76,12 @@ class AppDrawer extends StatelessWidget {
                     icon: Icons.insights_outlined,
                     label: l10n.analytics,
                     onTap: () => _push(context, const AnalyticsScreen()),
+                  ),
+                  _item(
+                    context,
+                    icon: Icons.notifications_active_outlined,
+                    label: l10n.priceAlerts,
+                    onTap: () => _push(context, const PriceAlertsScreen()),
                   ),
                   const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
                   // Espaces professionnels (Phase 3) : demandes d'achat

@@ -179,3 +179,77 @@ class PurchaseRequestInfo {
         decisionComment: json['decision_comment'] as String?,
       );
 }
+
+/// Alerte de prix (§25-§27, Phase 4) : « préviens-moi quand {produit}
+/// passe sous {prix cible} ». Appartient à l'espace ; chaque membre la
+/// voit, le créateur (ou manage_lists) la modifie.
+class PriceAlertInfo {
+  final int id;
+  final String productName;
+  final double targetPrice;
+  final int? storeId;
+  final bool isActive;
+  final int createdByUserId;
+  final String? createdByName;
+  final DateTime? lastTriggeredAt;
+  final double? lastNotifiedPrice;
+  final double? lastObservedPrice;
+  final String? lastObservedStore;
+
+  const PriceAlertInfo({
+    required this.id,
+    required this.productName,
+    required this.targetPrice,
+    this.storeId,
+    this.isActive = true,
+    required this.createdByUserId,
+    this.createdByName,
+    this.lastTriggeredAt,
+    this.lastNotifiedPrice,
+    this.lastObservedPrice,
+    this.lastObservedStore,
+  });
+
+  factory PriceAlertInfo.fromJson(Map<String, dynamic> json) {
+    final lastObs = json['last_observed'] as Map<String, dynamic>?;
+    return PriceAlertInfo(
+      id: json['id'] as int,
+      productName: json['product_name'] as String? ?? '',
+      targetPrice: (json['target_price'] as num?)?.toDouble() ?? 0,
+      storeId: json['store_id'] as int?,
+      isActive: json['is_active'] as bool? ?? true,
+      createdByUserId: json['created_by_user_id'] as int? ?? 0,
+      createdByName: json['created_by_name'] as String?,
+      lastTriggeredAt: json['last_triggered_at'] != null
+          ? DateTime.tryParse(json['last_triggered_at'] as String)
+          : null,
+      lastNotifiedPrice: (json['last_notified_price'] as num?)?.toDouble(),
+      lastObservedPrice: (lastObs?['price'] as num?)?.toDouble(),
+      lastObservedStore: lastObs?['store_name'] as String?,
+    );
+  }
+}
+
+/// Suggestion de prix cible (§26) calculée à partir de l'historique de
+/// l'espace : prix habituel (médiane) et bon prix (25e percentile).
+class PriceTargetSuggestion {
+  final int observations;
+  final double? usualPrice;
+  final double? goodPrice;
+  final double? suggestedTarget;
+
+  const PriceTargetSuggestion({
+    required this.observations,
+    this.usualPrice,
+    this.goodPrice,
+    this.suggestedTarget,
+  });
+
+  factory PriceTargetSuggestion.fromJson(Map<String, dynamic> json) =>
+      PriceTargetSuggestion(
+        observations: json['observations'] as int? ?? 0,
+        usualPrice: (json['usual_price'] as num?)?.toDouble(),
+        goodPrice: (json['good_price'] as num?)?.toDouble(),
+        suggestedTarget: (json['suggested_target'] as num?)?.toDouble(),
+      );
+}

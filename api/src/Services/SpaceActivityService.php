@@ -27,6 +27,7 @@ class SpaceActivityService
     public const PURCHASE_REQUEST_CREATED = 'purchase_request_created';
     public const PURCHASE_REQUEST_APPROVED = 'purchase_request_approved';
     public const PURCHASE_REQUEST_REJECTED = 'purchase_request_rejected';
+    public const PRICE_ALERT_TRIGGERED = 'price_alert_triggered';
 
     public static function log(?Space $space, ?int $userId, string $type, array $payload = []): void
     {

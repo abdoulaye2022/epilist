@@ -13,6 +13,7 @@ class ProductAlias extends Model
 
     protected $fillable = [
         'user_id',
+        'space_id',
         'store_id',
         'alias',
         'normalized_alias',

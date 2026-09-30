@@ -5754,4 +5754,64 @@ class AppLocalizationsFr extends AppLocalizations {
   String actPurchaseRequestRejected(String name, String target) {
     return '$name a refusé la demande « $target »';
   }
+
+  @override
+  String get priceAlerts => 'Alertes de prix';
+
+  @override
+  String get priceAlertNew => 'Nouvelle alerte';
+
+  @override
+  String get priceAlertProduct => 'Produit';
+
+  @override
+  String get priceAlertTarget => 'Prix cible (\$)';
+
+  @override
+  String get priceAlertSuggest => 'Suggérer un seuil';
+
+  @override
+  String priceAlertSuggestion(String usual, String good, int count) {
+    return 'Prix habituel $usual \$ · bon prix $good \$ ($count achats)';
+  }
+
+  @override
+  String get priceAlertNoHistory =>
+      'Pas assez d\'historique pour suggérer un seuil.';
+
+  @override
+  String get priceAlertEmpty =>
+      'Aucune alerte de prix.\nCréez-en une pour être prévenu dès qu\'un prix passe sous votre cible.';
+
+  @override
+  String get priceAlertCreated => 'Alerte créée';
+
+  @override
+  String get priceAlertUpdated => 'Alerte mise à jour';
+
+  @override
+  String get priceAlertDeleted => 'Alerte supprimée';
+
+  @override
+  String get priceAlertDelete => 'Supprimer l\'alerte';
+
+  @override
+  String priceAlertTargetChip(String price) {
+    return 'Cible $price \$';
+  }
+
+  @override
+  String priceAlertLastSeen(String price, String store) {
+    return 'Vu à $price \$ · $store';
+  }
+
+  @override
+  String priceAlertBy(String name) {
+    return 'Par $name';
+  }
+
+  @override
+  String actPriceAlertTriggered(String product, String price) {
+    return 'Prix repéré : $product à $price \$';
+  }
 }

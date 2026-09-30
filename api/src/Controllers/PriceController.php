@@ -19,9 +19,11 @@ use App\Models\ListReceipt;
 use App\Models\ProductAlias;
 use App\Models\PurchaseHistory;
 use App\Models\ReceiptItem;
-use App\Models\SharedList;
-use App\Models\ShoppingList;
+use App\Models\Space;
 use App\Models\Store;
+use App\Services\ListAccessService;
+use App\Services\PriceAlertService;
+use App\Services\SpaceAccessService;
 use Carbon\Carbon;
 use Illuminate\Database\Capsule\Manager as DB;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -44,24 +46,35 @@ class PriceController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    /** Même règle d'accès que les autres contrôleurs de listes. */
-    private function canEditList(int $userId, int $listId): bool
+    /**
+     * L'espace PARTAGÉ d'une liste, ou null (personnelle / legacy).
+     * Les observations de prix suivent l'espace de la LISTE, pas
+     * l'en-tête X-Space-Id (§34 : pas de fuite inter-espaces).
+     */
+    private function sharedSpaceOf(?int $spaceId): ?Space
     {
-        if (ShoppingList::where('id', $listId)->where('user_id', $userId)->exists()) {
-            return true;
+        if ($spaceId === null) {
+            return null;
         }
-        $share = SharedList::where('list_id', $listId)
-            ->where('shared_with_user_id', $userId)
-            ->where('status', SharedList::STATUS_ACCEPTED)
-            ->where('is_active', true)
-            ->first();
-        return $share !== null && $share->canEdit();
+        $space = Space::find($spaceId);
+        return ($space && $space->type !== Space::TYPE_PERSONAL) ? $space : null;
     }
 
-    private function canReadList(int $userId, int $listId): bool
+    /**
+     * Historique de prix visible : celui de l'espace partagé de la
+     * liste, sinon l'espace PERSONNEL du demandeur. Les observations
+     * d'un espace partagé portent aussi le user_id de l'acheteur :
+     * le périmètre personnel les EXCLUT (space_id personnel ou NULL),
+     * sinon les prix du foyer fuiraient dans le contexte personnel.
+     */
+    private function observationScope(?Space $sharedSpace, int $userId)
     {
-        $list = ShoppingList::find($listId);
-        return $list !== null && $list->canBeAccessedBy($userId);
+        if ($sharedSpace !== null) {
+            return PurchaseHistory::where('space_id', $sharedSpace->id);
+        }
+        return SpaceAccessService::scopeQuery(
+            PurchaseHistory::query(), Space::personalFor($userId), $userId
+        );
     }
 
     // =========================================================================
@@ -82,9 +95,13 @@ class PriceController
         $listId = (int) $args['listId'];
         $data = $request->getParsedBody() ?? [];
 
-        if (!$this->canEditList($userId, $listId)) {
+        $access = ListAccessService::check($userId, $listId, 'edit');
+        if ($access === null) {
             return $this->json($response, ['success' => false, 'message' => 'Permission refusée'], 403);
         }
+        // Les observations héritent de l'espace DE LA LISTE (§34)
+        $obsSpaceId = $access['list']->space_id !== null ? (int) $access['list']->space_id : null;
+        $sharedSpace = $this->sharedSpaceOf($obsSpaceId);
 
         $storeName = trim((string) ($data['store_name'] ?? ''));
         $total = $data['total_amount'] ?? null;
@@ -104,24 +121,39 @@ class PriceController
             return $this->json($response, ['success' => false, 'message' => 'purchase_date invalide'], 422);
         }
 
-        // Magasin : id fourni (et possédé), sinon résolution/création par slug
+        // Magasin : id fourni (et accessible), sinon résolution/création
+        // par slug — DANS l'espace de la liste (partagé) ou chez
+        // l'utilisateur (personnel/legacy).
+        $storeScope = fn($q) => $sharedSpace !== null
+            ? $q->where('space_id', $sharedSpace->id)
+            : $q->where('user_id', $userId);
         $store = null;
         if (!empty($data['store_id'])) {
-            $store = Store::where('id', (int) $data['store_id'])->where('user_id', $userId)->first();
+            $store = $storeScope(Store::where('id', (int) $data['store_id']))->first();
         }
         if ($store === null) {
             $slug = Store::slugify($storeName);
-            $store = Store::withTrashed()->where('user_id', $userId)->where('slug', $slug)->first();
+            $store = $storeScope(Store::withTrashed()->where('slug', $slug))->first();
             if ($store !== null && $store->trashed()) {
                 $store->restore();
             }
-            $store ??= Store::create(['user_id' => $userId, 'name' => $storeName, 'slug' => $slug]);
+            $store ??= Store::create([
+                'user_id' => $userId,
+                'space_id' => $obsSpaceId,
+                'created_by_user_id' => $userId,
+                'name' => $storeName,
+                'slug' => $slug,
+            ]);
         }
 
-        // Déduplication : signature user|store|date|total|numero
+        // Déduplication : signature proprietaire|store|date|total|numero.
+        // Espace partagé : le propriétaire est l'ESPACE (deux membres qui
+        // importent le même reçu = un seul historique). Personnel :
+        // l'utilisateur (les signatures existantes restent valides).
         $receiptNumber = trim((string) ($data['receipt_number'] ?? ''));
         $signature = sha1(implode('|', [
-            $userId, $store->id, $purchaseDate,
+            $sharedSpace !== null ? 's' . $sharedSpace->id : (string) $userId,
+            $store->id, $purchaseDate,
             number_format((float) $total, 2, '.', ''), $receiptNumber,
         ]));
         if (empty($data['force'])) {
@@ -141,9 +173,10 @@ class PriceController
 
         try {
             $receipt = null;
+            $observed = []; // normalized => [product, prix min, store] pour les alertes
             DB::connection()->transaction(function () use (
                 $data, $items, $userId, $listId, $store, $purchaseDate,
-                $total, $receiptNumber, $signature, $source, &$receipt
+                $total, $receiptNumber, $signature, $source, $obsSpaceId, &$receipt, &$observed
             ) {
                 $receipt = ListReceipt::create([
                     'list_id' => $listId,
@@ -200,6 +233,7 @@ class PriceController
                     $isPerPiece = $unit === null || $unit === '' || $unit === 'un';
                     PurchaseHistory::create([
                         'user_id' => $userId,
+                        'space_id' => $obsSpaceId,
                         'product_name' => $canonical,
                         'normalized_name' => $normalized,
                         'category_id' => null,
@@ -224,7 +258,15 @@ class PriceController
                         },
                     ]);
 
-                    // Apprentissage : l'utilisateur a confirmé rawLabel -> produit
+                    // Alerte de prix : on retient le prix le plus bas du
+                    // reçu par produit (une seule notification possible)
+                    $lineTotal = (float) $linePrice;
+                    if ($lineTotal > 0 && (!isset($observed[$normalized]) || $lineTotal < $observed[$normalized]['price'])) {
+                        $observed[$normalized] = ['product' => $canonical, 'price' => $lineTotal];
+                    }
+
+                    // Apprentissage : l'utilisateur a confirmé rawLabel -> produit.
+                    // L'alias profite à tout l'espace de la liste (space_id).
                     if ($productName !== null && $productName !== $rawLabel) {
                         ProductAlias::updateOrCreate(
                             [
@@ -233,6 +275,7 @@ class PriceController
                                 'normalized_alias' => PurchaseHistory::normalizeProductName($rawLabel),
                             ],
                             [
+                                'space_id' => $obsSpaceId,
                                 'alias' => $rawLabel,
                                 'product_name' => $productName,
                                 'normalized_name' => $normalized,
@@ -242,6 +285,14 @@ class PriceController
                     }
                 }
             });
+
+            // Alertes de baisse (§27) : APRÈS le commit, jamais bloquant
+            foreach ($observed as $normalized => $obs) {
+                PriceAlertService::onObservation(
+                    $obsSpaceId, $userId, $obs['product'], $normalized,
+                    $obs['price'], $store->id, $store->name
+                );
+            }
 
             return $this->json($response, [
                 'success' => true,
@@ -297,23 +348,34 @@ class PriceController
         }
         $labels = array_slice($labels, 0, 80);
 
-        // Candidats canoniques de l'utilisateur (suggestions + historique)
+        // Périmètre : l'espace ACTIF. Dans un espace partagé, les alias
+        // et l'historique de TOUT l'espace servent (un membre du foyer
+        // valide « LAIT 2% NAT » une fois, tous en profitent).
+        $space = SpaceAccessService::resolveSpace($request, $userId);
+        $shared = $space->type !== Space::TYPE_PERSONAL;
+        $historyScope = fn() => $shared
+            ? PurchaseHistory::where('space_id', $space->id)
+            : SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId);
+
+        // Candidats canoniques (suggestions personnelles + historique de l'espace)
         $known = DB::connection()->table('product_suggestions')
             ->where('user_id', $userId)
             ->pluck('product_name')->all();
-        $known = array_merge($known, PurchaseHistory::where('user_id', $userId)
+        $known = array_merge($known, $historyScope()
             ->orderByDesc('purchased_at')->limit(300)->pluck('product_name')->all());
         $candidates = [];
         foreach ($known as $name) {
             $candidates[PurchaseHistory::normalizeProductName($name)] = $name;
         }
 
-        $aliases = ProductAlias::where('user_id', $userId)
+        $aliases = ($shared
+                ? ProductAlias::where('space_id', $space->id)
+                : ProductAlias::where('user_id', $userId))
             ->when($storeId, fn($q) => $q->where(fn($w) => $w->where('store_id', $storeId)->orWhereNull('store_id')))
             ->get()
             ->keyBy('normalized_alias');
 
-        $barcodes = PurchaseHistory::where('user_id', $userId)
+        $barcodes = $historyScope()
             ->whereNotNull('barcode')
             ->orderByDesc('purchased_at')->limit(500)
             ->get(['barcode', 'product_name'])
@@ -387,7 +449,10 @@ class PriceController
         $normalized = PurchaseHistory::normalizeProductName($product);
         $since = Carbon::now()->subDays($days);
 
-        $rows = PurchaseHistory::where('user_id', $userId)
+        // Périmètre : l'espace ACTIF (X-Space-Id). Un membre du foyer
+        // consulte l'historique du foyer ; sans en-tête, le personnel.
+        $space = SpaceAccessService::resolveSpace($request, $userId);
+        $rows = SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId)
             ->where('normalized_name', $normalized)
             ->where('purchased_at', '>=', $since)
             ->whereNotNull('price')
@@ -395,17 +460,22 @@ class PriceController
             ->limit(200)
             ->get();
 
-        $observations = $rows->map(fn($r) => [
-            'price' => (float) $r->price,
-            'unit_price' => $r->unit_price !== null ? (float) $r->unit_price : null,
-            'unit' => $r->unit,
-            'quantity' => (int) $r->quantity,
-            'store_id' => $r->store_id,
-            'store_name' => $r->store_name,
-            'purchased_at' => Carbon::parse($r->purchased_at)->toDateString(),
-            'source' => $r->source ?? 'shopping_list',
-            'receipt_id' => $r->receipt_id,
-        ])->values();
+        $observations = $rows->map(function ($r) {
+            $age = (int) floor(Carbon::parse($r->purchased_at)->diffInDays(Carbon::now()));
+            return [
+                'price' => (float) $r->price,
+                'unit_price' => $r->unit_price !== null ? (float) $r->unit_price : null,
+                'unit' => $r->unit,
+                'quantity' => (int) $r->quantity,
+                'store_id' => $r->store_id,
+                'store_name' => $r->store_name,
+                'purchased_at' => Carbon::parse($r->purchased_at)->toDateString(),
+                'age_days' => $age,
+                'freshness' => $this->freshness($age),
+                'source' => $r->source ?? 'shopping_list',
+                'receipt_id' => $r->receipt_id,
+            ];
+        })->values();
 
         $stats = null;
         if ($rows->isNotEmpty()) {
@@ -426,10 +496,12 @@ class PriceController
                 'observations' => $g->count(),
             ]);
 
+            $lastAge = (int) floor(Carbon::parse($rows->first()->purchased_at)->diffInDays(Carbon::now()));
             $stats = [
                 'last_price' => round($last, 2),
                 'last_store' => $rows->first()->store_name,
                 'last_at' => Carbon::parse($rows->first()->purchased_at)->toDateString(),
+                'last_freshness' => $this->freshness($lastAge),
                 'usual_price' => round($usual, 2),
                 'median_price' => round($median, 2),
                 'min_price' => round($prices->min(), 2),
@@ -461,13 +533,13 @@ class PriceController
      * fenêtre : la plus récente gagne. Retourne
      * [norm => [store_id => {price, age_days, store_name, source}]].
      */
-    private function bestPrices(int $userId, array $normalizedNames, int $days): array
+    private function bestPrices(?Space $sharedSpace, int $userId, array $normalizedNames, int $days): array
     {
         if ($normalizedNames === []) {
             return [];
         }
         $since = Carbon::now()->subDays($days);
-        $rows = PurchaseHistory::where('user_id', $userId)
+        $rows = $this->observationScope($sharedSpace, $userId)
             ->whereIn('normalized_name', $normalizedNames)
             ->where('purchased_at', '>=', $since)
             ->whereNotNull('price')
@@ -537,9 +609,11 @@ class PriceController
     {
         $userId = (int) $request->getAttribute('auth_id');
         $listId = (int) $args['id'];
-        if (!$this->canReadList($userId, $listId)) {
+        $access = ListAccessService::check($userId, $listId, 'read');
+        if ($access === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
+        $sharedSpace = $this->sharedSpaceOf($access['list']->space_id !== null ? (int) $access['list']->space_id : null);
         $days = max(14, min(365, (int) (($request->getQueryParams()['days'] ?? null) ?: self::DEFAULT_WINDOW_DAYS)));
 
         $items = $this->listItems($listId);
@@ -550,7 +624,7 @@ class PriceController
             ]);
         }
 
-        $prices = $this->bestPrices($userId, array_column($items, 'normalized'), $days);
+        $prices = $this->bestPrices($sharedSpace, $userId, array_column($items, 'normalized'), $days);
 
         // Magasins candidats = ceux où au moins un prix est connu
         $storeIds = [];
@@ -633,16 +707,18 @@ class PriceController
     {
         $userId = (int) $request->getAttribute('auth_id');
         $listId = (int) $args['id'];
-        if (!$this->canReadList($userId, $listId)) {
+        $access = ListAccessService::check($userId, $listId, 'read');
+        if ($access === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
+        $sharedSpace = $this->sharedSpaceOf($access['list']->space_id !== null ? (int) $access['list']->space_id : null);
         $q = $request->getQueryParams();
         $maxStores = max(1, min(3, (int) (($q['max_stores'] ?? null) ?: self::DEFAULT_MAX_STORES)));
         $minSaving = max(0, (float) (($q['min_saving'] ?? null) ?: self::DEFAULT_MIN_SAVING));
         $days = max(14, min(365, (int) (($q['days'] ?? null) ?: self::DEFAULT_WINDOW_DAYS)));
 
         $items = $this->listItems($listId);
-        $prices = $this->bestPrices($userId, array_column($items, 'normalized'), $days);
+        $prices = $this->bestPrices($sharedSpace, $userId, array_column($items, 'normalized'), $days);
 
         // Articles comparables = au moins un prix connu quelque part
         $comparable = array_values(array_filter($items, fn($it) => isset($prices[$it['normalized']])));

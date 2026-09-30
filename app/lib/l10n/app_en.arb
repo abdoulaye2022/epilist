@@ -2572,5 +2572,68 @@
         "type": "String"
       }
     }
+  },
+  "priceAlerts": "Price alerts",
+  "priceAlertNew": "New alert",
+  "priceAlertProduct": "Product",
+  "priceAlertTarget": "Target price ($)",
+  "priceAlertSuggest": "Suggest a target",
+  "priceAlertSuggestion": "Usual price ${usual} · good price ${good} ({count} purchases)",
+  "@priceAlertSuggestion": {
+    "placeholders": {
+      "usual": {
+        "type": "String"
+      },
+      "good": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceAlertNoHistory": "Not enough history to suggest a target.",
+  "priceAlertEmpty": "No price alerts yet.\nCreate one to be notified when a price drops below your target.",
+  "priceAlertCreated": "Alert created",
+  "priceAlertUpdated": "Alert updated",
+  "priceAlertDeleted": "Alert deleted",
+  "priceAlertDelete": "Delete alert",
+  "priceAlertTargetChip": "Target ${price}",
+  "@priceAlertTargetChip": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertLastSeen": "Seen at ${price} · {store}",
+  "@priceAlertLastSeen": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertBy": "By {name}",
+  "@priceAlertBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actPriceAlertTriggered": "Price spotted: {product} at ${price}",
+  "@actPriceAlertTriggered": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
   }
 }

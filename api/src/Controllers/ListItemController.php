@@ -29,10 +29,14 @@ class ListItemController
     {
         try {
             $now = Carbon::now();
+            // L'observation hérite de l'espace de la LISTE (Phase 4, §34)
+            $spaceId = ShoppingList::withTrashed()->find($item->list_id)?->space_id;
+            $normalized = PurchaseHistory::normalizeProductName($item->product_name);
             PurchaseHistory::create([
                 'user_id' => $userId,
+                'space_id' => $spaceId !== null ? (int) $spaceId : null,
                 'product_name' => $item->product_name,
-                'normalized_name' => PurchaseHistory::normalizeProductName($item->product_name),
+                'normalized_name' => $normalized,
                 'category_id' => $item->category_id,
                 'quantity' => $item->quantity ?? 1,
                 'price' => $item->price,
@@ -49,6 +53,20 @@ class ListItemController
                     default => 'fall',
                 },
             ]);
+
+            // Alertes de baisse de prix (§27) : seulement si un prix est
+            // connu ; magasin inconnu -> alertes « tous magasins » seules.
+            if (is_numeric($item->price) && (float) $item->price > 0) {
+                \App\Services\PriceAlertService::onObservation(
+                    $spaceId !== null ? (int) $spaceId : null,
+                    $userId,
+                    $item->product_name,
+                    $normalized,
+                    (float) $item->price,
+                    null,
+                    $item->store_name
+                );
+            }
         } catch (\Throwable $e) {
             error_log("purchase_history non enregistre: " . $e->getMessage());
         }

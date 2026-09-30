@@ -34,6 +34,7 @@ use App\Controllers\{
     SpaceController,
     SupplierController,
     PurchaseRequestController,
+    PriceAlertController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
 };
 use App\Middleware\ErrorMiddleware;
@@ -221,6 +222,12 @@ $app->group('', function ($group) {
     $group->post('/purchase-requests/{id:[0-9]+}/reject', [PurchaseRequestController::class, 'reject']);
     $group->post('/purchase-requests/{id:[0-9]+}/purchased', [PurchaseRequestController::class, 'purchased']);
     $group->post('/purchase-requests/{id:[0-9]+}/cancel', [PurchaseRequestController::class, 'cancel']);
+    // Prix cible & alertes de baisse (Phase 4, §25-§27)
+    $group->get('/price-alerts', [PriceAlertController::class, 'index']);
+    $group->get('/price-alerts/suggest', [PriceAlertController::class, 'suggest']);
+    $group->post('/price-alerts', [PriceAlertController::class, 'store']);
+    $group->put('/price-alerts/{id:[0-9]+}', [PriceAlertController::class, 'update']);
+    $group->delete('/price-alerts/{id:[0-9]+}', [PriceAlertController::class, 'destroy']);
     $group->get('/space-invitations', [SpaceController::class, 'myInvitations']);
     $group->post('/space-invitations/{token}/accept', [SpaceController::class, 'acceptInvitation']);
     $group->post('/space-invitations/{token}/decline', [SpaceController::class, 'declineInvitation']);

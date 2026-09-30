@@ -2572,5 +2572,68 @@
         "type": "String"
       }
     }
+  },
+  "priceAlerts": "Alertes de prix",
+  "priceAlertNew": "Nouvelle alerte",
+  "priceAlertProduct": "Produit",
+  "priceAlertTarget": "Prix cible ($)",
+  "priceAlertSuggest": "Suggérer un seuil",
+  "priceAlertSuggestion": "Prix habituel {usual} $ · bon prix {good} $ ({count} achats)",
+  "@priceAlertSuggestion": {
+    "placeholders": {
+      "usual": {
+        "type": "String"
+      },
+      "good": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceAlertNoHistory": "Pas assez d'historique pour suggérer un seuil.",
+  "priceAlertEmpty": "Aucune alerte de prix.\nCréez-en une pour être prévenu dès qu'un prix passe sous votre cible.",
+  "priceAlertCreated": "Alerte créée",
+  "priceAlertUpdated": "Alerte mise à jour",
+  "priceAlertDeleted": "Alerte supprimée",
+  "priceAlertDelete": "Supprimer l'alerte",
+  "priceAlertTargetChip": "Cible {price} $",
+  "@priceAlertTargetChip": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertLastSeen": "Vu à {price} $ · {store}",
+  "@priceAlertLastSeen": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertBy": "Par {name}",
+  "@priceAlertBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actPriceAlertTriggered": "Prix repéré : {product} à {price} $",
+  "@actPriceAlertTriggered": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
   }
 }

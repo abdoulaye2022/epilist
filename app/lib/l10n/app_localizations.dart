@@ -10626,6 +10626,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{name} a refusé la demande « {target} »'**
   String actPurchaseRequestRejected(String name, String target);
+
+  /// No description provided for @priceAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes de prix'**
+  String get priceAlerts;
+
+  /// No description provided for @priceAlertNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle alerte'**
+  String get priceAlertNew;
+
+  /// No description provided for @priceAlertProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit'**
+  String get priceAlertProduct;
+
+  /// No description provided for @priceAlertTarget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix cible (\$)'**
+  String get priceAlertTarget;
+
+  /// No description provided for @priceAlertSuggest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggérer un seuil'**
+  String get priceAlertSuggest;
+
+  /// No description provided for @priceAlertSuggestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix habituel {usual} \$ · bon prix {good} \$ ({count} achats)'**
+  String priceAlertSuggestion(String usual, String good, int count);
+
+  /// No description provided for @priceAlertNoHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas assez d\'historique pour suggérer un seuil.'**
+  String get priceAlertNoHistory;
+
+  /// No description provided for @priceAlertEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune alerte de prix.\nCréez-en une pour être prévenu dès qu\'un prix passe sous votre cible.'**
+  String get priceAlertEmpty;
+
+  /// No description provided for @priceAlertCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte créée'**
+  String get priceAlertCreated;
+
+  /// No description provided for @priceAlertUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte mise à jour'**
+  String get priceAlertUpdated;
+
+  /// No description provided for @priceAlertDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte supprimée'**
+  String get priceAlertDeleted;
+
+  /// No description provided for @priceAlertDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer l\'alerte'**
+  String get priceAlertDelete;
+
+  /// No description provided for @priceAlertTargetChip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cible {price} \$'**
+  String priceAlertTargetChip(String price);
+
+  /// No description provided for @priceAlertLastSeen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vu à {price} \$ · {store}'**
+  String priceAlertLastSeen(String price, String store);
+
+  /// No description provided for @priceAlertBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par {name}'**
+  String priceAlertBy(String name);
+
+  /// No description provided for @actPriceAlertTriggered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix repéré : {product} à {price} \$'**
+  String actPriceAlertTriggered(String product, String price);
 }
 
 class _AppLocalizationsDelegate

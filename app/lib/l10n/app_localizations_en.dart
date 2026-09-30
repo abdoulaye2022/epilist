@@ -5660,4 +5660,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String actPurchaseRequestRejected(String name, String target) {
     return '$name rejected the request “$target”';
   }
+
+  @override
+  String get priceAlerts => 'Price alerts';
+
+  @override
+  String get priceAlertNew => 'New alert';
+
+  @override
+  String get priceAlertProduct => 'Product';
+
+  @override
+  String get priceAlertTarget => 'Target price (\$)';
+
+  @override
+  String get priceAlertSuggest => 'Suggest a target';
+
+  @override
+  String priceAlertSuggestion(String usual, String good, int count) {
+    return 'Usual price \$$usual · good price \$$good ($count purchases)';
+  }
+
+  @override
+  String get priceAlertNoHistory => 'Not enough history to suggest a target.';
+
+  @override
+  String get priceAlertEmpty =>
+      'No price alerts yet.\nCreate one to be notified when a price drops below your target.';
+
+  @override
+  String get priceAlertCreated => 'Alert created';
+
+  @override
+  String get priceAlertUpdated => 'Alert updated';
+
+  @override
+  String get priceAlertDeleted => 'Alert deleted';
+
+  @override
+  String get priceAlertDelete => 'Delete alert';
+
+  @override
+  String priceAlertTargetChip(String price) {
+    return 'Target \$$price';
+  }
+
+  @override
+  String priceAlertLastSeen(String price, String store) {
+    return 'Seen at \$$price · $store';
+  }
+
+  @override
+  String priceAlertBy(String name) {
+    return 'By $name';
+  }
+
+  @override
+  String actPriceAlertTriggered(String product, String price) {
+    return 'Price spotted: $product at \$$price';
+  }
 }
