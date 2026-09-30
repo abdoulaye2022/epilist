@@ -15,6 +15,8 @@ class Store extends Model
     protected $table = 'stores';
 
     protected $fillable = [
+        'space_id',
+        'created_by_user_id',
         'user_id',
         'household_id',
         'name',

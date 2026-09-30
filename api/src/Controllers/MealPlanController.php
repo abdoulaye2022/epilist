@@ -40,7 +40,7 @@ class MealPlanController
 
         $recipes = Recipe::with('ingredients')
             ->where('active', true)
-            ->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', $userId))
+            ->where(fn($q) => $q->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)))
             ->orderBy('name')
             ->get()
             ->map(fn($r) => [
@@ -83,7 +83,7 @@ class MealPlanController
             $recipes = Recipe::with('ingredients')
                 ->whereIn('id', $recipeIds)
                 ->where('active', true)
-                ->where(fn($q) => $q->whereNull('user_id')->orWhere('user_id', $userId))
+                ->where(fn($q) => $q->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)))
                 ->get();
             if ($recipes->isEmpty()) {
                 return $this->json($response, ['success' => false, 'message' => 'Recettes introuvables'], 404);
@@ -106,7 +106,7 @@ class MealPlanController
             $merged = (new IngredientConsolidationService())->consolidate($raw);
 
             // Inventaire : « Déjà à la maison » (§17)
-            $inventory = HomeInventory::where('user_id', $userId)->get()->keyBy('normalized_name');
+            $inventory = \App\Services\SpaceAccessService::scopeQuery(HomeInventory::query(), \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)->get()->keyBy('normalized_name');
 
             // Prix estimés : dernier prix connu par produit (12 mois)
             $norms = array_column($merged, 'normalized_name');
@@ -177,6 +177,9 @@ class MealPlanController
                     ],
                 ],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('mealplan preview: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur aperçu'], 500);
@@ -202,11 +205,15 @@ class MealPlanController
         }
 
         try {
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, $userId, 'add_items');
             $planId = null;
             $shoppingList = null;
-            DB::connection()->transaction(function () use ($userId, $data, $recipeIds, $items, $people, &$planId, &$shoppingList) {
+            DB::connection()->transaction(function () use ($userId, $space, $data, $recipeIds, $items, $people, &$planId, &$shoppingList) {
                 $plan = MealPlan::create([
                     'user_id' => $userId,
+                    'space_id' => $space->id,
+                    'created_by_user_id' => $userId,
                     'name' => trim((string) ($data['name'] ?? '')) ?: 'Plan de repas ' . Carbon::now()->format('d/m'),
                     'people' => $people,
                     'budget_max' => isset($data['budget_max']) && is_numeric($data['budget_max'])
@@ -224,6 +231,8 @@ class MealPlanController
 
                 $shoppingList = ShoppingList::create([
                     'user_id' => $userId,
+                    'space_id' => $space->id,
+                    'created_by_user_id' => $userId,
                     'name' => $plan->name,
                 ]);
                 foreach ($items as $item) {
@@ -245,6 +254,9 @@ class MealPlanController
                 'data' => ['meal_plan_id' => $planId, 'shopping_list_id' => $shoppingList->id],
                 'message' => 'Plan créé et liste générée',
             ], 201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('mealplan store: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur création du plan'], 500);

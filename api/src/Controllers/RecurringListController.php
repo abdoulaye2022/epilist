@@ -30,9 +30,11 @@ class RecurringListController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    private function findOwned(int $userId, int $id): ?RecurringList
+    private function findOwned(\Psr\Http\Message\ServerRequestInterface $request, int $userId, int $id): ?RecurringList
     {
-        return RecurringList::where('id', $id)->where('user_id', $userId)->first();
+        $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+        return \App\Services\SpaceAccessService::scopeQuery(
+            RecurringList::where('id', $id), $space, $userId)->first();
     }
 
     private function format(RecurringList $list): array
@@ -61,8 +63,8 @@ class RecurringListController
     public function index(Request $request, Response $response): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $lists = RecurringList::with('items')
-            ->where('user_id', $userId)
+        $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+        $lists = \App\Services\SpaceAccessService::scopeQuery(RecurringList::with('items'), $space, $userId)
             ->orderBy('name')
             ->get();
 
@@ -89,10 +91,14 @@ class RecurringListController
         }
 
         try {
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, $userId, 'manage_lists');
             $list = null;
-            DB::connection()->transaction(function () use ($userId, $name, $type, $data, $items, &$list) {
+            DB::connection()->transaction(function () use ($userId, $space, $name, $type, $data, $items, &$list) {
                 $list = new RecurringList([
                     'user_id' => $userId,
+                    'space_id' => $space->id,
+                    'created_by_user_id' => $userId,
                     'name' => $name,
                     'recurrence_type' => $type,
                     'weekday' => isset($data['weekday']) ? max(1, min(7, (int) $data['weekday'])) : null,
@@ -112,6 +118,9 @@ class RecurringListController
                 'data' => ['recurring_list' => $this->format($list->load('items'))],
                 'message' => 'Liste récurrente créée',
             ], 201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('recurring store: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur création'], 500);
@@ -122,7 +131,7 @@ class RecurringListController
     public function update(Request $request, Response $response, array $args): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $list = $this->findOwned($userId, (int) $args['id']);
+        $list = $this->findOwned($request, $userId, (int) $args['id']);
         if ($list === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
@@ -162,6 +171,9 @@ class RecurringListController
                 'data' => ['recurring_list' => $this->format($list->fresh('items'))],
                 'message' => 'Liste récurrente mise à jour',
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('recurring update: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur mise à jour'], 500);
@@ -172,7 +184,7 @@ class RecurringListController
     public function destroy(Request $request, Response $response, array $args): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $list = $this->findOwned($userId, (int) $args['id']);
+        $list = $this->findOwned($request, $userId, (int) $args['id']);
         if ($list === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
@@ -212,7 +224,7 @@ class RecurringListController
     public function preview(Request $request, Response $response, array $args): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $list = $this->findOwned($userId, (int) $args['id']);
+        $list = $this->findOwned($request, $userId, (int) $args['id']);
         if ($list === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
@@ -223,6 +235,9 @@ class RecurringListController
                 'success' => true,
                 'data' => ['name' => $list->name, 'items' => $items],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('recurring preview: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur aperçu'], 500);
@@ -300,7 +315,7 @@ class RecurringListController
     public function generate(Request $request, Response $response, array $args): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $list = $this->findOwned($userId, (int) $args['id']);
+        $list = $this->findOwned($request, $userId, (int) $args['id']);
         if ($list === null) {
             return $this->json($response, ['success' => false, 'message' => 'Liste introuvable'], 404);
         }
@@ -321,6 +336,9 @@ class RecurringListController
                 'data' => ['shopping_list_id' => $shoppingList->id, 'name' => $shoppingList->name],
                 'message' => 'Liste créée',
             ], 201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('recurring generate: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur génération'], 500);
@@ -352,6 +370,8 @@ class RecurringListController
         DB::connection()->transaction(function () use ($userId, $list, $chosen, &$shoppingList) {
             $shoppingList = ShoppingList::create([
                 'user_id' => $userId,
+                'space_id' => $list->space_id,
+                'created_by_user_id' => $userId,
                 'name' => $list->name . ' — ' . Carbon::now()->format('d/m'),
             ]);
             foreach ($chosen as $item) {

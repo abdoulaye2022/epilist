@@ -10362,6 +10362,66 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Une invitation est déjà en attente pour cet email.'**
   String get spaceInvitationPending;
+
+  /// No description provided for @spaceActivity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activité'**
+  String get spaceActivity;
+
+  /// No description provided for @spaceActivityEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune activité pour le moment.'**
+  String get spaceActivityEmpty;
+
+  /// No description provided for @actListCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a créé la liste « {target} »'**
+  String actListCreated(String name, String target);
+
+  /// No description provided for @actItemAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a ajouté {target}'**
+  String actItemAdded(String name, String target);
+
+  /// No description provided for @actItemPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a acheté {target}'**
+  String actItemPurchased(String name, String target);
+
+  /// No description provided for @actReceiptAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a enregistré un reçu {target}'**
+  String actReceiptAdded(String name, String target);
+
+  /// No description provided for @actBudgetCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a créé le budget « {target} »'**
+  String actBudgetCreated(String name, String target);
+
+  /// No description provided for @actMemberJoined.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a rejoint l\'espace'**
+  String actMemberJoined(String name);
+
+  /// No description provided for @actMemberLeft.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a quitté l\'espace'**
+  String actMemberLeft(String name);
+
+  /// No description provided for @actInventoryOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'{target} est terminé (inventaire)'**
+  String actInventoryOut(String target);
 }
 
 class _AppLocalizationsDelegate

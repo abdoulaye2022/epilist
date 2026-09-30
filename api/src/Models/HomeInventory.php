@@ -21,6 +21,8 @@ class HomeInventory extends Model
     ];
 
     protected $fillable = [
+        'space_id',
+        'created_by_user_id',
         'user_id',
         'product_name',
         'normalized_name',

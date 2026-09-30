@@ -23,6 +23,8 @@ class ListItem extends Model
         'store_name',
         'is_purchased',
         'purchased_at', // ✅ Nouvelle colonne
+        'created_by_user_id',
+        'purchased_by_user_id',
         'barcode',
         'category_id',
         'created_at',

@@ -19,6 +19,8 @@ class ShoppingList extends Model
 
     protected $fillable = [
         'user_id',
+        'space_id',
+        'created_by_user_id',
         'name',
         'created_at',
         'updated_at',
@@ -37,6 +39,12 @@ class ShoppingList extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** Auteur de la liste (attribution dans les espaces partagés). */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 
     /**
@@ -118,6 +126,18 @@ class ShoppingList extends Model
         // Owner always has access
         if ($this->user_id === $userId) {
             return true;
+        }
+
+        // Espaces (Phase 2) : membre actif de l'espace de la liste.
+        if ($this->space_id !== null) {
+            $isMember = SpaceMember::where('space_id', $this->space_id)
+                ->where('user_id', $userId)
+                ->where('status', SpaceMember::STATUS_ACTIVE)
+                ->whereHas('space', fn($q) => $q->where('type', '!=', Space::TYPE_PERSONAL))
+                ->exists();
+            if ($isMember) {
+                return true;
+            }
         }
 
         // Check if user has active share access

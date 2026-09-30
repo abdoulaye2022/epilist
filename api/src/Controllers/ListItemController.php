@@ -3,6 +3,8 @@
 
 namespace App\Controllers;
 
+use App\Services\ListAccessService;
+
 use App\Models\ListItem;
 use App\Models\ShoppingList;
 use App\Models\SharedList;
@@ -251,61 +253,6 @@ class ListItemController
     /**
      * ✅ CHECK LIST ACCESS PERMISSIONS
      */
-    private function checkListAccess(int $user_id, int $list_id, string $requiredPermission = 'read'): ?array
-    {
-        // 1. Check if it's user's own list
-        $ownList = ShoppingList::where('user_id', $user_id)
-            ->where('id', $list_id)
-            ->first();
-
-        if ($ownList) {
-            return [
-                'list' => $ownList,
-                'is_owner' => true,
-                'permission' => 'admin',
-                'can_read' => true,
-                'can_edit' => true,
-                'can_delete' => true
-            ];
-        }
-
-        // 2. Check if it's a shared list
-        $sharedList = SharedList::with(['shoppingList'])
-            ->where('shared_with_user_id', $user_id)
-            ->whereHas('shoppingList', function($query) use ($list_id) {
-                $query->where('id', $list_id);
-            })
-            ->where('status', SharedList::STATUS_ACCEPTED)
-            ->where('is_active', true)
-            ->first();
-
-        if ($sharedList) {
-            $canEdit = $sharedList->canEdit();
-            $canDelete = $sharedList->canDelete();
-
-            $hasPermission = match($requiredPermission) {
-                'read' => true,
-                'edit' => $canEdit,
-                'delete' => $canDelete,
-                default => false
-            };
-
-            if (!$hasPermission) {
-                return null;
-            }
-
-            return [
-                'list' => $sharedList->shoppingList,
-                'is_owner' => false,
-                'permission' => $sharedList->permission,
-                'can_read' => true,
-                'can_edit' => $canEdit,
-                'can_delete' => $canDelete
-            ];
-        }
-
-        return null;
-    }
 
     /**
      * ✅ UPDATE PRODUCT SUGGESTIONS
@@ -328,7 +275,7 @@ class ListItemController
             $user_id = $request->getAttribute('auth_id');
             $listId = $args['listId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -360,6 +307,9 @@ class ListItemController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -385,7 +335,7 @@ class ListItemController
             $user_id = $request->getAttribute('auth_id');
 
             // Check edit permissions
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -439,8 +389,15 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
             }
 
-            // Create item with clean data
+            // Create item with clean data (+ attribution espaces)
+            $cleanData['created_by_user_id'] = (int) $user_id;
             $item = ListItem::create($cleanData);
+            \App\Services\SpaceActivityService::log(
+                \App\Models\Space::find($access['list']->space_id),
+                (int) $user_id,
+                \App\Services\SpaceActivityService::ITEM_ADDED,
+                ['list_id' => (int) $listId, 'list_name' => $access['list']->name, 'product_name' => $item->product_name]
+            );
 
             // Update suggestions
             $this->updateProductSuggestion($user_id, $cleanData);
@@ -453,6 +410,9 @@ class ListItemController
                 'message' => 'Item added successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -477,7 +437,7 @@ class ListItemController
         try {
             $user_id = $request->getAttribute('auth_id');
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -507,6 +467,7 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
             }
 
+            $cleanData['created_by_user_id'] = (int) $user_id;
             $item = ListItem::create($cleanData);
             $this->updateProductSuggestion($user_id, $cleanData);
 
@@ -516,6 +477,9 @@ class ListItemController
                 'message' => 'Item added successfully (duplicates ignored)'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -541,7 +505,7 @@ class ListItemController
         try {
             $user_id = $request->getAttribute('auth_id');
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -587,6 +551,9 @@ class ListItemController
                 'message' => 'Item updated successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -610,7 +577,7 @@ class ListItemController
             $listId = $args['listId'];
             $itemId = $args['itemId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -638,10 +605,17 @@ class ListItemController
             $item->update([
                 'is_purchased' => $newStatus,
                 'purchased_at' => $newStatus ? ($item->purchased_at ?? Carbon::now()) : null,
+                'purchased_by_user_id' => $newStatus ? (int) $user_id : null,
             ]);
 
             if ($becamePurchased) {
                 $this->recordPurchaseHistory($user_id, $item);
+                \App\Services\SpaceActivityService::log(
+                    \App\Models\Space::find($access['list']->space_id),
+                    (int) $user_id,
+                    \App\Services\SpaceActivityService::ITEM_PURCHASED,
+                    ['list_id' => (int) $listId, 'list_name' => $access['list']->name, 'product_name' => $item->product_name]
+                );
                 $this->notifyListParticipants($user_id, (int) $listId, "\"{$item->product_name}\" a été acheté");
             }
 
@@ -651,6 +625,9 @@ class ListItemController
                 'message' => $newStatus ? 'Item marked as purchased' : 'Item marked as not purchased'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -674,7 +651,7 @@ class ListItemController
             $listId = $args['listId'];
             $itemId = $args['itemId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -695,6 +672,9 @@ class ListItemController
                 'message' => 'Item deleted successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -718,7 +698,7 @@ class ListItemController
             $listId = $args['listId'];
             $itemId = $args['itemId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -743,6 +723,9 @@ class ListItemController
                 'message' => 'Item restored successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -767,7 +750,7 @@ class ListItemController
             $itemId = $args['itemId'];
 
             // Vérifier l'accès en lecture à la liste
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -805,6 +788,9 @@ class ListItemController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -831,7 +817,7 @@ class ListItemController
             $user_id = $request->getAttribute('auth_id');
 
             // Vérifier les permissions d'édition
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -904,6 +890,9 @@ class ListItemController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -928,7 +917,7 @@ class ListItemController
             $params = $request->getQueryParams();
 
             // Vérifier l'accès en lecture à la liste
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -971,6 +960,9 @@ class ListItemController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -996,7 +988,7 @@ class ListItemController
             $purchased = $data['purchased'] ?? true;
 
             // Vérifier les permissions d'édition
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -1039,6 +1031,9 @@ class ListItemController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -1062,7 +1057,7 @@ class ListItemController
             $listId = $args['listId'];
 
             // Vérifier les permissions d'édition
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -1086,6 +1081,9 @@ class ListItemController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -1109,7 +1107,7 @@ class ListItemController
             $listId = $args['listId'];
 
             // Vérifier l'accès en lecture à la liste
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -1155,6 +1153,9 @@ class ListItemController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,

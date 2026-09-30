@@ -39,10 +39,12 @@ class StoreController
         return $out;
     }
 
-    /** Le magasin doit appartenir à l'utilisateur authentifié. */
-    private function findOwnedStore(int $userId, int $storeId): ?Store
+    /** Le magasin doit appartenir à l'espace actif (Phase 2). */
+    private function findOwnedStore(\Psr\Http\Message\ServerRequestInterface $request, int $userId, int $storeId): ?Store
     {
-        return Store::where('id', $storeId)->where('user_id', $userId)->first();
+        $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+        return \App\Services\SpaceAccessService::scopeQuery(
+            Store::where('id', $storeId), $space, $userId)->first();
     }
 
     /** GET /stores — mes magasins, avec leur ordre de rayons */
@@ -50,8 +52,9 @@ class StoreController
     {
         try {
             $userId = $request->getAttribute('auth_id');
-            $stores = Store::with('categoryOrders')
-                ->where('user_id', $userId)
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, (int) $userId);
+            $stores = \App\Services\SpaceAccessService::scopeQuery(
+                    Store::with('categoryOrders'), $space, (int) $userId)
                 ->orderBy('name')
                 ->get();
 
@@ -59,6 +62,9 @@ class StoreController
                 'success' => true,
                 'data' => $stores->map(fn($s) => $this->formatStore($s, withOrder: true))->values(),
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.index: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors du chargement des magasins'], 500);
@@ -83,8 +89,10 @@ class StoreController
             $name = trim($data['name']);
             $slug = Store::slugify($name);
 
-            $existing = Store::withTrashed()
-                ->where('user_id', $userId)
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, (int) $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, (int) $userId, 'manage_lists');
+            $existing = \App\Services\SpaceAccessService::scopeQuery(
+                    Store::withTrashed(), $space, (int) $userId)
                 ->where('slug', $slug)
                 ->first();
 
@@ -107,13 +115,16 @@ class StoreController
                 ], 409);
             }
 
-            $created = Store::create(['user_id' => $userId, 'name' => $name, 'slug' => $slug]);
+            $created = Store::create(['user_id' => $userId, 'space_id' => $space->id, 'created_by_user_id' => (int) $userId, 'name' => $name, 'slug' => $slug]);
 
             return $this->json($response, [
                 'success' => true,
                 'data' => $this->formatStore($created),
                 'message' => 'Magasin créé',
             ], 201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.store: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors de la création du magasin'], 500);
@@ -135,7 +146,7 @@ class StoreController
 
         try {
             $userId = $request->getAttribute('auth_id');
-            $store = $this->findOwnedStore($userId, (int) $args['id']);
+            $store = $this->findOwnedStore($request, (int) $userId, (int) $args['id']);
             if (!$store) {
                 return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
             }
@@ -143,7 +154,9 @@ class StoreController
             $name = trim($data['name']);
             $slug = Store::slugify($name);
 
-            $conflict = Store::where('user_id', $userId)
+            $conflictSpace = \App\Services\SpaceAccessService::resolveSpace($request, (int) $userId);
+            $conflict = \App\Services\SpaceAccessService::scopeQuery(
+                    Store::query(), $conflictSpace, (int) $userId)
                 ->where('slug', $slug)
                 ->where('id', '!=', $store->id)
                 ->exists();
@@ -162,6 +175,9 @@ class StoreController
                 'data' => $this->formatStore($store->fresh('categoryOrders'), withOrder: true),
                 'message' => 'Magasin renommé',
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.update: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors du renommage'], 500);
@@ -173,7 +189,7 @@ class StoreController
     {
         try {
             $userId = $request->getAttribute('auth_id');
-            $store = $this->findOwnedStore($userId, (int) $args['id']);
+            $store = $this->findOwnedStore($request, (int) $userId, (int) $args['id']);
             if (!$store) {
                 return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
             }
@@ -181,6 +197,9 @@ class StoreController
             $store->delete();
 
             return $this->json($response, ['success' => true, 'message' => 'Magasin supprimé']);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.destroy: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors de la suppression'], 500);
@@ -200,8 +219,8 @@ class StoreController
 
         try {
             $userId = $request->getAttribute('auth_id');
-            $source = $this->findOwnedStore($userId, (int) $args['id']);
-            $target = $targetId > 0 ? $this->findOwnedStore($userId, $targetId) : null;
+            $source = $this->findOwnedStore($request, (int) $userId, (int) $args['id']);
+            $target = $targetId > 0 ? $this->findOwnedStore($request, (int) $userId, $targetId) : null;
 
             if (!$source || !$target) {
                 return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
@@ -224,6 +243,9 @@ class StoreController
                 'data' => $this->formatStore($target->fresh('categoryOrders'), withOrder: true),
                 'message' => 'Magasins fusionnés',
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.merge: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors de la fusion'], 500);
@@ -235,7 +257,7 @@ class StoreController
     {
         try {
             $userId = $request->getAttribute('auth_id');
-            $store = $this->findOwnedStore($userId, (int) $args['id']);
+            $store = $this->findOwnedStore($request, (int) $userId, (int) $args['id']);
             if (!$store) {
                 return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
             }
@@ -247,6 +269,9 @@ class StoreController
                     'category_order' => $store->categoryOrders->pluck('category_kind')->values(),
                 ],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.getCategoryOrder: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors du chargement de l\'ordre'], 500);
@@ -281,7 +306,7 @@ class StoreController
 
         try {
             $userId = $request->getAttribute('auth_id');
-            $store = $this->findOwnedStore($userId, (int) $args['id']);
+            $store = $this->findOwnedStore($request, (int) $userId, (int) $args['id']);
             if (!$store) {
                 return $this->json($response, ['success' => false, 'message' => 'Magasin introuvable'], 404);
             }
@@ -305,6 +330,9 @@ class StoreController
                 ],
                 'message' => 'Ordre des rayons enregistré',
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Erreur stores.setCategoryOrder: " . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur lors de l\'enregistrement de l\'ordre'], 500);

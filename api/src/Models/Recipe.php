@@ -11,6 +11,8 @@ class Recipe extends Model
     protected $table = 'recipes';
 
     protected $fillable = [
+        'space_id',
+        'created_by_user_id',
         'user_id',
         'name',
         'description',

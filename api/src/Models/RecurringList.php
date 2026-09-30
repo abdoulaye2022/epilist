@@ -12,6 +12,8 @@ class RecurringList extends Model
     protected $table = 'recurring_lists';
 
     protected $fillable = [
+        'space_id',
+        'created_by_user_id',
         'user_id',
         'name',
         'recurrence_type',

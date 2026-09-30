@@ -2413,5 +2413,86 @@
   "spaceNoOthers": "Vous n'avez pas encore d'autre espace.",
   "spacePhase1Note": "Les données partagées (listes, budget, inventaire) arrivent dans une prochaine mise à jour.",
   "spaceAlreadyMember": "Cette personne est déjà membre.",
-  "spaceInvitationPending": "Une invitation est déjà en attente pour cet email."
+  "spaceInvitationPending": "Une invitation est déjà en attente pour cet email.",
+  "spaceActivity": "Activité",
+  "spaceActivityEmpty": "Aucune activité pour le moment.",
+  "actListCreated": "{name} a créé la liste « {target} »",
+  "@actListCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actItemAdded": "{name} a ajouté {target}",
+  "@actItemAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actItemPurchased": "{name} a acheté {target}",
+  "@actItemPurchased": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actReceiptAdded": "{name} a enregistré un reçu {target}",
+  "@actReceiptAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actBudgetCreated": "{name} a créé le budget « {target} »",
+  "@actBudgetCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actMemberJoined": "{name} a rejoint l'espace",
+  "@actMemberJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actMemberLeft": "{name} a quitté l'espace",
+  "@actMemberLeft": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actInventoryOut": "{target} est terminé (inventaire)",
+  "@actInventoryOut": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  }
 }

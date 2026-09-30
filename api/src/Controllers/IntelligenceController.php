@@ -50,6 +50,9 @@ class IntelligenceController
                 'success' => true,
                 'data' => ['predictions' => $items, 'count' => count($items)],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('getPredictions: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur prédictions'], 500);
@@ -74,6 +77,9 @@ class IntelligenceController
         try {
             $this->predictions->recordFeedback($userId, $product, $action);
             return $this->json($response, ['success' => true, 'message' => 'Feedback enregistré']);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('predictionFeedback: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur feedback'], 500);
@@ -92,7 +98,8 @@ class IntelligenceController
         $userId = (int) $request->getAttribute('auth_id');
 
         try {
-            $items = HomeInventory::where('user_id', $userId)
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            $items = \App\Services\SpaceAccessService::scopeQuery(HomeInventory::query(), $space, $userId)
                 ->orderBy('product_name')
                 ->get();
 
@@ -124,6 +131,9 @@ class IntelligenceController
                 'success' => true,
                 'data' => ['items' => $payload, 'count' => $payload->count()],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('getInventory: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur inventaire'], 500);
@@ -149,12 +159,16 @@ class IntelligenceController
         }
 
         try {
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, $userId, 'manage_inventory');
             $item = HomeInventory::updateOrCreate(
                 [
-                    'user_id' => $userId,
+                    'space_id' => $space->id,
                     'normalized_name' => PurchaseHistory::normalizeProductName($product),
                 ],
                 [
+                    'user_id' => $userId,
+                    'created_by_user_id' => $userId,
                     'product_name' => $product,
                     'status' => $status,
                     'quantity' => isset($data['quantity']) && is_numeric($data['quantity'])
@@ -165,11 +179,20 @@ class IntelligenceController
                 ]
             );
 
+            if ($status === HomeInventory::STATUS_OUT) {
+                \App\Services\SpaceActivityService::log($space, $userId,
+                    \App\Services\SpaceActivityService::INVENTORY_OUT,
+                    ['product_name' => $product]);
+            }
+
             return $this->json($response, [
                 'success' => true,
                 'data' => ['item' => $item->fresh()],
                 'message' => 'Inventaire mis à jour',
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('setInventoryStatus: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur inventaire'], 500);
@@ -180,8 +203,10 @@ class IntelligenceController
     public function deleteInventoryItem(Request $request, Response $response, array $args): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
-        $deleted = HomeInventory::where('id', (int) $args['id'])
-            ->where('user_id', $userId)
+        $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+        \App\Services\SpaceAccessService::assertWrite($space, $userId, 'manage_inventory');
+        $deleted = \App\Services\SpaceAccessService::scopeQuery(
+                HomeInventory::where('id', (int) $args['id']), $space, $userId)
             ->delete();
 
         if (!$deleted) {
@@ -205,7 +230,8 @@ class IntelligenceController
 
         try {
             // Budget mensuel actif couvrant aujourd'hui (le plus récent)
-            $budget = Budget::where('user_id', $userId)
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            $budget = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), $space, $userId)
                 ->where('is_active', true)
                 ->where('period_type', 'monthly')
                 ->whereDate('start_date', '<=', $now)
@@ -260,6 +286,9 @@ class IntelligenceController
                     'pace_delta_pct' => $paceDeltaPct,
                 ],
             ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Throwable $e) {
             error_log('budgetForecast: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur projection'], 500);

@@ -5,7 +5,10 @@
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/screens/create_space_screen.dart';
+import 'package:epilist/screens/space_activity_screen.dart';
 import 'package:epilist/screens/space_members_screen.dart';
+import 'package:epilist/blocs/budget/budget_bloc.dart';
+import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -72,6 +75,13 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
     final l10n = AppLocalizations.of(context)!;
     await ActiveSpaceStore.set(space);
     if (!mounted) return;
+
+    // L'espace actif change : recharger les données spatialisées
+    // (Phase 2 — listes et budgets ; les écrans secondaires rechargent
+    // à l'ouverture).
+    context.read<ShoppingListBloc>().add(LoadShoppingLists());
+    context.read<BudgetBloc>().add(const RefreshBudgets());
+
     Navigator.of(context).pop();
     SmartSnackBarManager.showInfoSnackBar(
       context,
@@ -201,7 +211,20 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!space.isPersonal)
+            if (!space.isPersonal) ...[
+              IconButton(
+                icon: const Icon(Icons.history_rounded,
+                    size: 20, color: AppColors.textSecondary),
+                tooltip: l10n.spaceActivity,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SpaceActivityScreen(space: space),
+                    ),
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.group_outlined,
                     size: 20, color: AppColors.textSecondary),
@@ -215,6 +238,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                   );
                 },
               ),
+            ],
             if (selected)
               const Icon(Icons.check_circle_rounded,
                   color: AppColors.primary, size: 20),

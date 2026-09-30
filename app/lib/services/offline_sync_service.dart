@@ -13,6 +13,7 @@ import 'package:epilist/services/store_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/category_service.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/token_store.dart';
 import 'package:epilist/config/app_config.dart';
 
@@ -125,6 +126,9 @@ class OfflineSyncService {
           // Marquer comme en cours
           await OfflineQueueService.markAsProcessing(action['id'] as String);
 
+          // Rejouer DANS l'espace capturé à l'enqueue (0 = personnel).
+          SpaceHeaderInterceptor.syncOverride = (action['space_id'] as int?) ?? 0;
+
           // Exécuter l'action
           final success = await _syncAction(action);
 
@@ -148,6 +152,8 @@ class OfflineSyncService {
           );
           failureCount++;
         }
+
+        SpaceHeaderInterceptor.syncOverride = null;
 
         // Petit délai entre chaque action
         await Future.delayed(const Duration(milliseconds: 500));

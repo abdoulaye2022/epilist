@@ -89,25 +89,8 @@ class BudgetController
      */
     private function checkListAccess(int $userId, int $listId): bool
     {
-        // Check if user owns the list
-        $ownList = ShoppingList::where('user_id', $userId)
-            ->where('id', $listId)
-            ->exists();
-
-        if ($ownList) {
-            return true;
-        }
-
-        // Check if user has access to shared list
-        $sharedList = SharedList::where('shared_with_user_id', $userId)
-            ->whereHas('shoppingList', function($query) use ($listId) {
-                $query->where('id', $listId);
-            })
-            ->where('status', SharedList::STATUS_ACCEPTED)
-            ->where('is_active', true)
-            ->exists();
-
-        return $sharedList;
+        // Unifié espaces + partage historique (Phase 2).
+        return \App\Services\ListAccessService::check($userId, $listId, 'read') !== null;
     }
 
     /**
@@ -119,7 +102,7 @@ class BudgetController
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
 
-            $query = Budget::forUser($user_id)
+            $query = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->with(['shoppingList'])
                 ->orderBy('created_at', 'desc');
 
@@ -195,6 +178,9 @@ class BudgetController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget index error: " . $e->getMessage());
             
@@ -219,6 +205,8 @@ class BudgetController
 
         try {
             $user_id = $request->getAttribute('auth_id');
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id);
+            \App\Services\SpaceAccessService::assertWrite($space, (int) $user_id, 'manage_budgets');
 
             // Validation
             $errors = $this->validateBudgetData($data, false);
@@ -252,7 +240,7 @@ class BudgetController
             $startDate = Carbon::parse($data['start_date']);
             $endDate = Carbon::parse($data['end_date']);
             
-            $overlappingQuery = Budget::forUser($user_id)
+            $overlappingQuery = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->active()
                 ->where(function($query) use ($startDate, $endDate) {
                     $query->whereBetween('start_date', [$startDate, $endDate])
@@ -280,9 +268,14 @@ class BudgetController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
             }
 
-            // Create budget
+            // Create budget (l'espace/permission sont déjà vérifiés en tête)
             $data['user_id'] = $user_id;
+            $data['space_id'] = $space->id;
+            $data['created_by_user_id'] = $user_id;
             $budget = Budget::createClean($data);
+            \App\Services\SpaceActivityService::log($space, (int) $user_id,
+                \App\Services\SpaceActivityService::BUDGET_CREATED,
+                ['budget_id' => $budget->id, 'budget_name' => $budget->name, 'amount' => (float) $budget->budget_amount]);
 
             $user = User::with('currency')->find($user_id);
 
@@ -292,6 +285,9 @@ class BudgetController
                 'message' => 'Budget created successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget store error: " . $e->getMessage());
             
@@ -316,7 +312,7 @@ class BudgetController
             $user_id = $request->getAttribute('auth_id');
             $budgetId = (int) $args['id'];
 
-            $budget = Budget::forUser($user_id)
+            $budget = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->with(['shoppingList'])
                 ->find($budgetId);
 
@@ -338,6 +334,9 @@ class BudgetController
                 'data' => $budget->getApiDataForUser($user)
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget show error: " . $e->getMessage());
             
@@ -363,8 +362,9 @@ class BudgetController
 
         try {
             $user_id = $request->getAttribute('auth_id');
+            \App\Services\SpaceAccessService::assertWrite(\App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id, 'manage_budgets');
 
-            $budget = Budget::forUser($user_id)->find($budgetId);
+            $budget = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)->find($budgetId);
 
             if (!$budget) {
                 $response->getBody()->write(json_encode([
@@ -416,6 +416,9 @@ class BudgetController
                 'message' => 'Budget updated successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget update error: " . $e->getMessage());
             
@@ -438,9 +441,10 @@ class BudgetController
     {
         try {
             $user_id = $request->getAttribute('auth_id');
+            \App\Services\SpaceAccessService::assertWrite(\App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id, 'manage_budgets');
             $budgetId = (int) $args['id'];
 
-            $budget = Budget::forUser($user_id)->find($budgetId);
+            $budget = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)->find($budgetId);
 
             if (!$budget) {
                 $response->getBody()->write(json_encode([
@@ -460,6 +464,9 @@ class BudgetController
                 'message' => 'Budget deleted successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget destroy error: " . $e->getMessage());
             
@@ -483,7 +490,7 @@ class BudgetController
         try {
             $user_id = $request->getAttribute('auth_id');
 
-            $budgets = Budget::forUser($user_id)
+            $budgets = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->active()
                 ->current()
                 ->with(['shoppingList'])
@@ -516,6 +523,9 @@ class BudgetController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget alerts error: " . $e->getMessage());
             
@@ -542,14 +552,14 @@ class BudgetController
             $currency = $user->currency ?? Currency::getDefault();
 
             // Current budgets
-            $currentBudgets = Budget::forUser($user_id)
+            $currentBudgets = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->active()
                 ->current()
                 ->with(['shoppingList'])
                 ->get();
 
             // Expired budgets (last 30 days)
-            $recentExpiredBudgets = Budget::forUser($user_id)
+            $recentExpiredBudgets = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->where('end_date', '>=', Carbon::now()->subDays(30))
                 ->where('end_date', '<', Carbon::now())
                 ->with(['shoppingList'])
@@ -600,6 +610,9 @@ class BudgetController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Budget dashboard error: " . $e->getMessage());
             
@@ -660,7 +673,7 @@ class BudgetController
             };
 
             // Check for overlapping budgets
-            $overlappingQuery = Budget::forUser($user_id)
+            $overlappingQuery = \App\Services\SpaceAccessService::scopeQuery(Budget::query(), \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id), (int) $user_id)
                 ->active()
                 ->where(function($query) use ($startDate, $endDate) {
                     $query->whereBetween('start_date', [$startDate, $endDate])
@@ -696,6 +709,13 @@ class BudgetController
                 default => Budget::createMonthlyBudget($user_id, $name, $amount, null, $listId)
             };
 
+            $quickSpace = \App\Services\SpaceAccessService::resolveSpace($request, (int) $user_id);
+            \App\Services\SpaceAccessService::assertWrite($quickSpace, (int) $user_id, 'manage_budgets');
+            $budget->update(['space_id' => $quickSpace->id, 'created_by_user_id' => $user_id]);
+            \App\Services\SpaceActivityService::log($quickSpace, (int) $user_id,
+                \App\Services\SpaceActivityService::BUDGET_CREATED,
+                ['budget_id' => $budget->id, 'budget_name' => $budget->name, 'amount' => (float) $budget->budget_amount]);
+
             $user = User::with('currency')->find($user_id);
 
             $response->getBody()->write(json_encode([
@@ -704,6 +724,9 @@ class BudgetController
                 'message' => 'Quick budget created successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Quick budget creation error: " . $e->getMessage());
 

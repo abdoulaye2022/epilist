@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 // services/offline_queue_service.dart
 import 'dart:convert';
+import 'package:epilist/services/space_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service de gestion de la file d'attente des actions hors ligne
@@ -11,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// SÉCURITÉ: Ne modifie JAMAIS directement la base de données.
 /// Toutes les actions sont envoyées via l'API validée.
 class OfflineQueueService {
-  static const String _version = '1.0.0';
+  static const String _version = '2.0.0'; // 2.0.0 : space_id par action (Phase 2)
   static const String _versionKey = 'offline_queue_version';
   static const String _queueKey = 'offline_action_queue';
   static const String _statusKey = 'offline_queue_status';
@@ -139,6 +140,9 @@ class OfflineQueueService {
       final action = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'local_id': localId,
+        // Espace capturé À L'ENQUEUE : le rejeu partira vers CET espace,
+        // même si l'utilisateur en a changé entre-temps (0 = personnel).
+        'space_id': ActiveSpaceStore.current.value?.id ?? 0,
         'action_type': actionType,
         'payload': payload,
         'timestamp': DateTime.now().toIso8601String(),

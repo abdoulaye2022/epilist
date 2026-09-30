@@ -354,6 +354,9 @@ class SpaceController
         $me->status = SpaceMember::STATUS_LEFT;
         $me->save();
 
+        \App\Services\SpaceActivityService::log($me->space, $userId,
+            \App\Services\SpaceActivityService::MEMBER_LEFT, []);
+
         return $this->json($response, ['success' => true]);
     }
 
@@ -488,6 +491,22 @@ class SpaceController
         return $this->json($response, ['success' => true]);
     }
 
+    /** GET /spaces/{id}/activity — journal d'activité (membre requis). */
+    public function activity(Request $request, Response $response, array $args): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        try {
+            SpaceAccessService::assertMember((int) $args['id'], $userId);
+        } catch (SpaceAccessException $e) {
+            return $this->denied($response, $e);
+        }
+        $limit = (int) ($request->getQueryParams()['limit'] ?? 30);
+        return $this->json($response, [
+            'success' => true,
+            'data' => ['activities' => \App\Services\SpaceActivityService::recent((int) $args['id'], $limit)],
+        ]);
+    }
+
     /** GET /space-invitations — mes invitations reçues (email du compte). */
     public function myInvitations(Request $request, Response $response): Response
     {
@@ -559,6 +578,9 @@ class SpaceController
         $inv->status = SpaceInvitation::STATUS_ACCEPTED;
         $inv->accepted_at = Carbon::now();
         $inv->save();
+
+        \App\Services\SpaceActivityService::log($inv->space, $userId,
+            \App\Services\SpaceActivityService::MEMBER_JOINED, ['role' => $inv->role]);
 
         return $this->json($response, [
             'success' => true,

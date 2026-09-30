@@ -146,5 +146,111 @@ echo "== Nettoyage\n";
 [$s] = req('DELETE', "$base/spaces/$hid", null, $tokenA);
 check('suppression du foyer par l\'owner', $s === 200, "status $s");
 
+// ==================================================================
+// PHASE 2 — données du foyer (listes, items, budgets, inventaire,
+// activité, isolation hors ligne des périmètres)
+// ==================================================================
+echo "== PHASE 2 : foyer avec données\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'household', 'name' => 'Foyer P2'], $tokenA);
+$h2 = (int) ($d['data']['space']['id'] ?? 0);
+check('foyer P2 créé', $s === 201 && $h2 > 0, "status $s");
+[$s] = req('POST', "$base/spaces/$h2/invitations", ['email' => 'admin@gmail.com', 'role' => 'member'], $tokenA);
+$token2 = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $h2 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('POST', "$base/space-invitations/$token2/accept", null, $tokenB);
+check('B rejoint le foyer P2', $s === 200, "status $s");
+
+echo "== Listes de l'espace\n";
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Courses du foyer'], $tokenA, $h2);
+$hlist = (int) ($d['data']['id'] ?? 0);
+check('liste créée DANS le foyer', $s === 201 && $hlist > 0, "status $s");
+$spaceOfList = (int) $pdo->query("SELECT space_id FROM shopping_lists WHERE id = $hlist")->fetchColumn();
+check('space_id posé sur la liste', $spaceOfList === $h2, "space_id=$spaceOfList");
+
+[$s, $d] = req('GET', "$base/shopping-lists", null, $tokenB, $h2);
+$namesB = array_column((array) ($d['data'] ?? []), 'name');
+check('B voit la liste du foyer', in_array('Courses du foyer', $namesB, true));
+[$s, $d] = req('GET', "$base/shopping-lists", null, $tokenA);
+$namesPerso = array_column((array) ($d['data'] ?? []), 'name');
+check('la liste du foyer N\'apparaît PAS dans le personnel de A', !in_array('Courses du foyer', $namesPerso, true));
+[$s, $d] = req('GET', "$base/shopping-lists", null, $tokenB, $h2);
+check('listing foyer de B : uniquement les listes du foyer', count($namesB) === 1, 'count=' . count($namesB));
+
+echo "== Items : accès par appartenance + attribution\n";
+[$s, $d] = req('POST', "$base/shopping-lists/$hlist/items", ['product_name' => 'Lait foyer', 'quantity' => 1], $tokenB);
+check('B (membre) ajoute un article', in_array($s, [200, 201], true), "status $s");
+$creator = $pdo->query("SELECT created_by_user_id FROM list_items WHERE list_id = $hlist ORDER BY id DESC LIMIT 1")->fetchColumn();
+check('attribution created_by = B', (int) $creator === $bId, "creator=$creator");
+$itemId = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $hlist ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('PATCH', "$base/shopping-lists/$hlist/items/$itemId/toggle", ['is_purchased' => true], $tokenA);
+check('A coche l\'article', $s === 200, "status $s");
+$buyer = $pdo->query("SELECT purchased_by_user_id FROM list_items WHERE id = $itemId")->fetchColumn();
+check('attribution purchased_by = A', (int) $buyer === $aId, "buyer=$buyer");
+
+// Isolation : un NON-membre (fati) ne touche pas la liste du foyer.
+[$tokenC] = login($base, 'fati@gmail.com', 'Test1234!');
+if ($tokenC !== '') {
+    [$s] = req('GET', "$base/shopping-lists/$hlist/items", null, $tokenC);
+    check('non-membre : items refusés', in_array($s, [403, 404], true), "status $s");
+} else {
+    echo "  SKIP fati (mot de passe non posé)\n";
+}
+
+echo "== Permissions fines : viewer\n";
+[$s] = req('PUT', "$base/spaces/$h2/members/$bId", ['role' => 'viewer'], $tokenA);
+check('B rétrogradé viewer', $s === 200, "status $s");
+[$s] = req('POST', "$base/shopping-lists/$hlist/items", ['product_name' => 'Interdit viewer'], $tokenB);
+check('viewer ne peut pas ajouter d\'article', in_array($s, [403, 404], true), "status $s");
+[$s] = req('PUT', "$base/spaces/$h2/members/$bId", ['role' => 'member'], $tokenA);
+
+echo "== Budgets du foyer\n";
+[$s, $d] = req('POST', "$base/budgets", [
+    'name' => 'Budget foyer', 'budget_amount' => 900, 'period_type' => 'monthly',
+    'start_date' => date('Y-m-01'), 'end_date' => date('Y-m-t'),
+], $tokenA, $h2);
+check('budget créé dans le foyer', in_array($s, [200, 201], true), "status $s");
+[$s, $d] = req('GET', "$base/budgets", null, $tokenB, $h2);
+$bNames = array_column((array) ($d['data'] ?? []), 'name');
+check('B voit le budget du foyer', in_array('Budget foyer', $bNames, true));
+[$s, $d] = req('GET', "$base/budgets", null, $tokenA);
+$bPerso = array_column((array) ($d['data'] ?? []), 'name');
+check('budget foyer absent du personnel de A', !in_array('Budget foyer', $bPerso, true));
+[$s] = req('PUT', "$base/spaces/$h2/members/$bId", ['permissions' => ['manage_budgets' => false]], $tokenA);
+[$s] = req('POST', "$base/budgets", [
+    'name' => 'Interdit B', 'budget_amount' => 10, 'period_type' => 'monthly',
+    'start_date' => date('Y-m-01'), 'end_date' => date('Y-m-t'),
+], $tokenB, $h2);
+check('sans manage_budgets : création refusée', $s === 403, "status $s");
+
+echo "== Inventaire du foyer\n";
+[$s] = req('POST', "$base/inventory/status", ['product_name' => 'Riz foyer', 'status' => 'out'], $tokenA, $h2);
+check('A pose Riz foyer = terminé', $s === 200, "status $s");
+[$s, $d] = req('GET', "$base/inventory", null, $tokenB, $h2);
+$invNames = array_column((array) ($d['data']['items'] ?? []), 'product_name');
+check('B voit l\'inventaire du foyer', in_array('Riz foyer', $invNames, true));
+[$s, $d] = req('GET', "$base/inventory", null, $tokenA);
+$invPerso = array_column((array) ($d['data']['items'] ?? []), 'product_name');
+check('inventaire foyer absent du personnel', !in_array('Riz foyer', $invPerso, true));
+
+echo "== Journal d'activité\n";
+[$s, $d] = req('GET', "$base/spaces/$h2/activity", null, $tokenB);
+$types = array_column((array) ($d['data']['activities'] ?? []), 'type');
+check('activité lisible par un membre', $s === 200, "status $s");
+check('événements attendus présents',
+    in_array('member_joined', $types, true)
+    && in_array('list_created', $types, true)
+    && in_array('item_added', $types, true)
+    && in_array('item_purchased', $types, true)
+    && in_array('budget_created', $types, true)
+    && in_array('inventory_out', $types, true),
+    implode(',', array_unique($types)));
+if ($tokenC !== '') {
+    [$s] = req('GET', "$base/spaces/$h2/activity", null, $tokenC);
+    check('activité refusée à un non-membre', $s === 403, "status $s");
+}
+
+echo "== Nettoyage P2\n";
+[$s] = req('DELETE', "$base/spaces/$h2", null, $tokenA);
+check('suppression du foyer P2', $s === 200, "status $s");
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

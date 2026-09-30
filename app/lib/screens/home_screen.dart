@@ -27,6 +27,7 @@ import 'package:epilist/models/budget.dart';
 import 'package:intl/intl.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/offline_storage_service.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -95,6 +96,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     _loadShoppingLists();
     _loadDashboardData();
+
+    // Changement d'espace (Phase 2) : la carte budget et les listes
+    // de l'accueil suivent l'espace actif.
+    ActiveSpaceStore.current.addListener(_onSpaceChanged);
 
     // Initialisation des deep links
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -469,9 +474,16 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
+    ActiveSpaceStore.current.removeListener(_onSpaceChanged);
     routeObserver.unsubscribe(this);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _onSpaceChanged() {
+    if (!mounted) return;
+    _loadShoppingLists();
+    _loadDashboardData();
   }
 
   @override

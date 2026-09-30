@@ -5502,4 +5502,50 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get spaceInvitationPending =>
       'An invitation is already pending for this email.';
+
+  @override
+  String get spaceActivity => 'Activity';
+
+  @override
+  String get spaceActivityEmpty => 'No activity yet.';
+
+  @override
+  String actListCreated(String name, String target) {
+    return '$name created the list “$target”';
+  }
+
+  @override
+  String actItemAdded(String name, String target) {
+    return '$name added $target';
+  }
+
+  @override
+  String actItemPurchased(String name, String target) {
+    return '$name bought $target';
+  }
+
+  @override
+  String actReceiptAdded(String name, String target) {
+    return '$name recorded a receipt $target';
+  }
+
+  @override
+  String actBudgetCreated(String name, String target) {
+    return '$name created the budget “$target”';
+  }
+
+  @override
+  String actMemberJoined(String name) {
+    return '$name joined the space';
+  }
+
+  @override
+  String actMemberLeft(String name) {
+    return '$name left the space';
+  }
+
+  @override
+  String actInventoryOut(String target) {
+    return '$target is out (inventory)';
+  }
 }

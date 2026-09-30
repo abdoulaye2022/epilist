@@ -49,6 +49,14 @@ class AdminController
                 ->where('created_at', '>=', $now->copy()->subDay())->count(),
             'errors_7d' => $t('api_error_logs')
                 ->where('created_at', '>=', $now->copy()->subDays(7))->count(),
+            // Espaces (Phase 2, §42) — agrégats seulement, pas de données privées.
+            'spaces_total' => $t('spaces')->whereNull('deleted_at')->count(),
+            'spaces_personal' => $t('spaces')->whereNull('deleted_at')->where('type', 'personal')->count(),
+            'spaces_household' => $t('spaces')->whereNull('deleted_at')->where('type', 'household')->count(),
+            'spaces_restaurant' => $t('spaces')->whereNull('deleted_at')->where('type', 'restaurant')->count(),
+            'spaces_organization' => $t('spaces')->whereNull('deleted_at')->where('type', 'organization')->count(),
+            'space_members_avg' => (float) ($t('space_members')->where('status', 'active')->count()
+                / max(1, $t('spaces')->whereNull('deleted_at')->count())),
         ];
 
         return $this->json($response, ['success' => true, 'data' => $data]);

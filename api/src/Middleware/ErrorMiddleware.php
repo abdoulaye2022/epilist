@@ -33,6 +33,9 @@ class ErrorMiddleware
         } catch (HttpMethodNotAllowedException $e) {
             // Gestion spécifique de l'erreur "Method Not Allowed"
             return $this->createErrorResponse('Méthode HTTP non autorisée pour cette route.', 405);
+        } catch (\App\Services\SpaceAccessException $e) {
+            // Accès espace refusé (Phase 2) : réponse propre, jamais un 500.
+            return $this->createErrorResponse($e->getMessage(), $e->getStatus());
         } catch (\Exception $e) {
             // Gestion des autres erreurs
             error_log("ErrorMiddleware: EXCEPTION CAUGHT!");

@@ -204,6 +204,7 @@ $app->group('', function ($group) {
     $group->post('/spaces/{id:[0-9]+}/invitations', [SpaceController::class, 'invite']);
     $group->get('/spaces/{id:[0-9]+}/invitations', [SpaceController::class, 'invitations']);
     $group->delete('/spaces/{id:[0-9]+}/invitations/{invId:[0-9]+}', [SpaceController::class, 'revokeInvitation']);
+    $group->get('/spaces/{id:[0-9]+}/activity', [SpaceController::class, 'activity']);
     $group->get('/space-invitations', [SpaceController::class, 'myInvitations']);
     $group->post('/space-invitations/{token}/accept', [SpaceController::class, 'acceptInvitation']);
     $group->post('/space-invitations/{token}/decline', [SpaceController::class, 'declineInvitation']);

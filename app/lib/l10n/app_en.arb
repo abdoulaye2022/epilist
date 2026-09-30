@@ -2413,5 +2413,86 @@
   "spaceNoOthers": "You don't have another space yet.",
   "spacePhase1Note": "Shared data (lists, budget, inventory) arrives in an upcoming update.",
   "spaceAlreadyMember": "This person is already a member.",
-  "spaceInvitationPending": "An invitation is already pending for this email."
+  "spaceInvitationPending": "An invitation is already pending for this email.",
+  "spaceActivity": "Activity",
+  "spaceActivityEmpty": "No activity yet.",
+  "actListCreated": "{name} created the list “{target}”",
+  "@actListCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actItemAdded": "{name} added {target}",
+  "@actItemAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actItemPurchased": "{name} bought {target}",
+  "@actItemPurchased": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actReceiptAdded": "{name} recorded a receipt {target}",
+  "@actReceiptAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actBudgetCreated": "{name} created the budget “{target}”",
+  "@actBudgetCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actMemberJoined": "{name} joined the space",
+  "@actMemberJoined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actMemberLeft": "{name} left the space",
+  "@actMemberLeft": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actInventoryOut": "{target} is out (inventory)",
+  "@actInventoryOut": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  }
 }

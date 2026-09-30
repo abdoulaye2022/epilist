@@ -32,19 +32,27 @@ class SpaceAccessService
      * - Avec : l'espace N'EST retourné QUE si l'utilisateur en est
      *   membre actif — sinon 403, sans révéler si l'espace existe.
      */
+    /** Mémo par requête PHP : resolveSpace est appelé plusieurs fois. */
+    private static array $resolveMemo = [];
+
     public static function resolveSpace(Request $request, int $userId): Space
     {
         $raw = trim($request->getHeaderLine('X-Space-Id'));
 
+        $memoKey = $userId . '|' . $raw;
+        if (isset(self::$resolveMemo[$memoKey])) {
+            return self::$resolveMemo[$memoKey];
+        }
+
         if ($raw === '') {
-            return Space::personalFor($userId);
+            return self::$resolveMemo[$memoKey] = Space::personalFor($userId);
         }
 
         if (!ctype_digit($raw)) {
             throw self::deny(400, 'INVALID_SPACE_ID');
         }
 
-        return self::assertMember((int) $raw, $userId)->space;
+        return self::$resolveMemo[$memoKey] = self::assertMember((int) $raw, $userId)->space;
     }
 
     /**
@@ -65,6 +73,37 @@ class SpaceAccessService
         }
 
         return $member;
+    }
+
+    /**
+     * Périmètre générique d'une requête Eloquent sur une table portant
+     * space_id/user_id (Phase 2). Personnel : l'espace + repli
+     * historique (space_id NULL et user_id) ; partagé : strictement
+     * l'espace (aucun repli — pas de fuite du personnel).
+     */
+    public static function scopeQuery($query, Space $space, int $userId)
+    {
+        if ($space->type === Space::TYPE_PERSONAL) {
+            return $query->where(function ($q) use ($space, $userId) {
+                $q->where('space_id', $space->id)
+                  ->orWhere(function ($q2) use ($userId) {
+                      $q2->whereNull('space_id')->where('user_id', $userId);
+                  });
+            });
+        }
+        return $query->where('space_id', $space->id);
+    }
+
+    /**
+     * Vérifie la permission d'écriture dans un espace PARTAGÉ ; dans le
+     * personnel, tout est permis (propriétaire). Lève 403 sinon.
+     */
+    public static function assertWrite(Space $space, int $userId, string $permission): void
+    {
+        if ($space->type === Space::TYPE_PERSONAL) {
+            return;
+        }
+        self::assertPermission($space->id, $userId, $permission);
     }
 
     /** Membre actif AVEC la permission demandée, sinon 403. */

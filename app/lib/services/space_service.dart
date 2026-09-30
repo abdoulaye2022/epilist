@@ -53,9 +53,23 @@ class ActiveSpaceStore {
 
 /// Ajoute X-Space-Id à toutes les requêtes quand un espace non
 /// personnel est actif. Sans en-tête, le serveur sert le personnel.
+///
+/// [syncOverride] : pendant le REJEU d'une action hors ligne, l'espace
+/// capturé à l'enqueue prime sur l'espace actif (l'utilisateur a pu
+/// changer d'espace entre-temps). 0 = forcer le personnel.
 class SpaceHeaderInterceptor extends Interceptor {
+  static int? syncOverride;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final override = syncOverride;
+    if (override != null) {
+      if (override > 0) {
+        options.headers['X-Space-Id'] = override.toString();
+      }
+      handler.next(options);
+      return;
+    }
     final space = ActiveSpaceStore.current.value;
     if (space != null) {
       options.headers['X-Space-Id'] = space.id.toString();

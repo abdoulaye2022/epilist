@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 // services/offline_storage_service.dart
 import 'dart:convert';
+import 'package:epilist/services/space_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/budget.dart';
@@ -8,13 +9,22 @@ import 'package:epilist/models/receipt.dart';
 
 /// Service de stockage hors ligne sécurisé avec versioning
 class OfflineStorageService {
-  static const String _version = '1.0.0';
+  static const String _version = '2.0.0'; // 2.0.0 : cache par espace (Phase 2)
   static const String _versionKey = 'offline_cache_version';
 
   // ============================================================================
   // CLÉS DE CACHE
   // ============================================================================
   static const String _shoppingListsKey = 'cached_shopping_lists';
+
+  /// Clé cloisonnée par espace actif (Phase 2) : les données d'un foyer
+  /// ne doivent JAMAIS s'afficher hors ligne dans le personnel, et
+  /// inversement. Personnel = clé historique (sans suffixe).
+  static String _spaceKey(String base) {
+    final space = ActiveSpaceStore.current.value;
+    return space == null ? base : '$base@s${space.id}';
+  }
+
   static const String _budgetsKey = 'cached_budgets';
   static const String _receiptsKey = 'cached_receipts';
   static const String _userProfileKey = 'cached_user_profile';
@@ -79,7 +89,7 @@ class OfflineStorageService {
       final jsonList = lists.map((list) => list.toJson()).toList();
       final encoded = json.encode(jsonList);
 
-      await prefs.setString(_shoppingListsKey, encoded);
+      await prefs.setString(_spaceKey(_shoppingListsKey), encoded);
       await updateLastSync();
 
       debugPrint('💾 [OfflineStorage] Saved ${lists.length} shopping lists');
@@ -94,7 +104,7 @@ class OfflineStorageService {
   static Future<List<ShoppingList>?> getShoppingLists() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final encoded = prefs.getString(_shoppingListsKey);
+      final encoded = prefs.getString(_spaceKey(_shoppingListsKey));
 
       if (encoded == null || encoded.isEmpty) {
         debugPrint('ℹ️ [OfflineStorage] No cached shopping lists');
@@ -123,7 +133,7 @@ class OfflineStorageService {
       final jsonList = budgets.map((budget) => budget.toJson()).toList();
       final encoded = json.encode(jsonList);
 
-      await prefs.setString(_budgetsKey, encoded);
+      await prefs.setString(_spaceKey(_budgetsKey), encoded);
       await updateLastSync();
 
       debugPrint('💾 [OfflineStorage] Saved ${budgets.length} budgets');
@@ -138,7 +148,7 @@ class OfflineStorageService {
   static Future<List<Budget>?> getBudgets() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final encoded = prefs.getString(_budgetsKey);
+      final encoded = prefs.getString(_spaceKey(_budgetsKey));
 
       if (encoded == null || encoded.isEmpty) {
         debugPrint('ℹ️ [OfflineStorage] No cached budgets');
@@ -289,7 +299,7 @@ class OfflineStorageService {
   static Future<bool> saveStores(List<Map<String, dynamic>> stores) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_storesKey, json.encode(stores));
+      await prefs.setString(_spaceKey(_storesKey), json.encode(stores));
       debugPrint('💾 [OfflineStorage] Saved ${stores.length} stores');
       return true;
     } catch (e) {
@@ -302,7 +312,7 @@ class OfflineStorageService {
   static Future<List<Map<String, dynamic>>?> getStores() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final encoded = prefs.getString(_storesKey);
+      final encoded = prefs.getString(_spaceKey(_storesKey));
       if (encoded == null || encoded.isEmpty) return null;
       final decoded = json.decode(encoded) as List;
       return decoded.cast<Map<String, dynamic>>();

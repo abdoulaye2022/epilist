@@ -26,6 +26,8 @@ class Budget extends Model
     const ALERT_STATUS_EXCEEDED = 'exceeded';
 
     protected $fillable = [
+        'space_id',
+        'created_by_user_id',
         'user_id',
         'list_id',
         'name',
@@ -421,6 +423,8 @@ class Budget extends Model
     {
         $cleanData = [
             'user_id' => $data['user_id'],
+            'space_id' => $data['space_id'] ?? null,
+            'created_by_user_id' => $data['created_by_user_id'] ?? ($data['user_id'] ?? null),
             'list_id' => $data['list_id'] ?? null,
             'name' => trim($data['name']),
             'budget_amount' => self::validateBudgetAmount($data['budget_amount']),

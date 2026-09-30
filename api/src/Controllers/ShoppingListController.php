@@ -5,7 +5,12 @@ namespace App\Controllers;
 
 use App\Models\ShoppingList;
 use App\Models\SharedList;
+use App\Models\Space;
 use App\Models\User;
+use App\Services\ListAccessService;
+use App\Services\SpaceAccessException;
+use App\Services\SpaceAccessService;
+use App\Services\SpaceActivityService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Valitron\Validator;
@@ -44,10 +49,34 @@ class ShoppingListController
 
         try {
             $user_id = $request->getAttribute('auth_id');
-            
+
+            // Espaces (Phase 2) : la liste naît dans l'espace ACTIF.
+            // Dans un espace partagé, il faut la permission add_items.
+            try {
+                $space = SpaceAccessService::resolveSpace($request, (int) $user_id);
+            } catch (SpaceAccessException $e) {
+                $response->getBody()->write(json_encode(['success' => false, 'code' => $e->getMessage()]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus($e->getStatus());
+            }
+            if ($space->type !== Space::TYPE_PERSONAL) {
+                try {
+                    SpaceAccessService::assertPermission($space->id, (int) $user_id, 'add_items');
+                } catch (SpaceAccessException $e) {
+                    $response->getBody()->write(json_encode(['success' => false, 'code' => $e->getMessage()]));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus($e->getStatus());
+                }
+            }
+
             $shoppingList = ShoppingList::create([
                 'user_id' => $user_id,
+                'space_id' => $space->id,
+                'created_by_user_id' => $user_id,
                 'name' => $data['name'],
+            ]);
+
+            SpaceActivityService::log($space, (int) $user_id, SpaceActivityService::LIST_CREATED, [
+                'list_id' => $shoppingList->id,
+                'list_name' => $shoppingList->name,
             ]);
 
             // ✅ Charger la liste fraîchement créée avec ses items (même si vide) dans l'ordre cohérent
@@ -60,6 +89,9 @@ class ShoppingListController
                 'message' => 'Liste créée avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -77,9 +109,58 @@ class ShoppingListController
     {
         try {
             $user_id = $request->getAttribute('auth_id');
-            
+
+            // Espaces (Phase 2) : le listing dépend de l'espace ACTIF.
+            try {
+                $space = SpaceAccessService::resolveSpace($request, (int) $user_id);
+            } catch (SpaceAccessException $e) {
+                $response->getBody()->write(json_encode(['success' => false, 'code' => $e->getMessage()]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus($e->getStatus());
+            }
+
+            // Espace partagé : TOUTES les listes de l'espace, droits du
+            // rôle, attribution du créateur — et rien d'autre.
+            if ($space->type !== Space::TYPE_PERSONAL) {
+                $member = SpaceAccessService::assertMember($space->id, (int) $user_id);
+                $canEdit = $member->can('add_items');
+                $canDelete = $member->can('manage_lists');
+
+                $lists = ShoppingList::where('space_id', $space->id)
+                    ->with(['items' => $this->getItemsOrdering(), 'creator:id,first_name,last_name'])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                    ->map(function ($list) use ($canEdit, $canDelete, $user_id) {
+                        $arr = $list->toArray();
+                        $arr['is_shared'] = true;
+                        $arr['is_owner'] = ((int) $list->created_by_user_id === (int) $user_id);
+                        $arr['share_permission'] = $canDelete ? 'admin' : ($canEdit ? 'edit' : 'readOnly');
+                        $arr['permission_display_name'] = $this->getPermissionDisplayName($arr['share_permission']);
+                        $arr['can_edit'] = $canEdit;
+                        $arr['can_delete'] = $canDelete;
+                        $arr['created_by'] = $list->creator ? [
+                            'id' => $list->creator->id,
+                            'name' => $this->getUserDisplayName($list->creator),
+                        ] : null;
+                        unset($arr['creator']);
+                        return $arr;
+                    })
+                    ->values();
+
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => $lists,
+                    'meta' => [
+                        'space_id' => $space->id,
+                        'own_lists_count' => $lists->count(),
+                        'shared_lists_count' => 0,
+                        'total_count' => $lists->count(),
+                    ],
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             // ✅ 1. Récupérer les listes propres de l'utilisateur avec ordre cohérent des items
-            $ownLists = ShoppingList::where('user_id', $user_id)
+            $ownLists = ListAccessService::scopeLists(ShoppingList::query(), $space, (int) $user_id)
                 ->with(['items' => $this->getItemsOrdering()])
                 ->orderBy('created_at', 'desc')
                 ->get();
@@ -157,6 +238,9 @@ class ShoppingListController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -175,7 +259,33 @@ class ShoppingListController
         try {
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
-            
+
+            // Espaces (Phase 2) : liste d'un espace partagé.
+            $spaceAccess = ListAccessService::checkSharedSpace((int) $user_id, (int) $list_id, 'read');
+            if ($spaceAccess === null) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Liste non trouvée ou accès non autorisé']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+            if (is_array($spaceAccess)) {
+                $list = ShoppingList::with(['items' => $this->getItemsOrdering(), 'creator:id,first_name,last_name'])
+                    ->find((int) $list_id);
+                $listArray = $list->toArray();
+                $listArray['is_shared'] = true;
+                $listArray['is_owner'] = ((int) $list->created_by_user_id === (int) $user_id);
+                $listArray['share_permission'] = $spaceAccess['can_delete'] ? 'admin' : ($spaceAccess['can_edit'] ? 'edit' : 'readOnly');
+                $listArray['permission_display_name'] = $this->getPermissionDisplayName($listArray['share_permission']);
+                $listArray['can_edit'] = $spaceAccess['can_edit'];
+                $listArray['can_delete'] = $spaceAccess['can_delete'];
+                $listArray['created_by'] = $list->creator ? [
+                    'id' => $list->creator->id,
+                    'name' => $this->getUserDisplayName($list->creator),
+                ] : null;
+                unset($listArray['creator']);
+
+                $response->getBody()->write(json_encode(['success' => true, 'data' => $listArray]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             // ✅ 1. Vérifier si c'est une liste propre avec ordre cohérent des items
             $ownList = ShoppingList::where('user_id', $user_id)
                 ->where('id', $list_id)
@@ -251,6 +361,9 @@ class ShoppingListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -283,7 +396,24 @@ class ShoppingListController
         try {
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
-            
+
+            // Espaces (Phase 2) : renommer = manage_lists.
+            $spaceAccess = ListAccessService::checkSharedSpace((int) $user_id, (int) $list_id, 'delete');
+            if ($spaceAccess === null) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Permissions insuffisantes pour modifier cette liste']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+            if (is_array($spaceAccess)) {
+                $spaceAccess['list']->update(['name' => $data['name']]);
+                $spaceAccess['list']->refresh();
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => $spaceAccess['list'],
+                    'message' => 'Liste mise à jour avec succès',
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             // ✅ 1. Vérifier si c'est une liste propre avec ordre cohérent des items
             $ownList = ShoppingList::where('user_id', $user_id)
                 ->where('id', $list_id)
@@ -333,6 +463,9 @@ class ShoppingListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -351,7 +484,22 @@ class ShoppingListController
         try {
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
-            
+
+            // Espaces (Phase 2) : supprimer = manage_lists.
+            $spaceAccess = ListAccessService::checkSharedSpace((int) $user_id, (int) $list_id, 'delete');
+            if ($spaceAccess === null) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Permissions insuffisantes pour supprimer cette liste']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+            if (is_array($spaceAccess)) {
+                $spaceAccess['list']->delete();
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'message' => 'Liste supprimée avec succès',
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             // ✅ 1. Vérifier si c'est une liste propre
             $ownList = ShoppingList::where('user_id', $user_id)
                 ->where('id', $list_id)
@@ -396,6 +544,9 @@ class ShoppingListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -413,7 +564,24 @@ class ShoppingListController
     {
         try {
             $user_id = $request->getAttribute('auth_id');
-            
+
+            // Espaces (Phase 2) : restaurer = manage_lists dans l'espace.
+            $spaceAccess = ListAccessService::checkSharedSpace(
+                (int) $user_id, (int) $args['id'], 'delete', withTrashed: true);
+            if ($spaceAccess === null) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Permissions insuffisantes']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+            if (is_array($spaceAccess)) {
+                $spaceAccess['list']->restore();
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => $spaceAccess['list'],
+                    'message' => 'Liste restaurée avec succès',
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             // Seul le propriétaire peut restaurer
             $shoppingList = ShoppingList::withTrashed()
                 ->where('user_id', $user_id)
@@ -427,6 +595,9 @@ class ShoppingListController
                 'message' => 'Liste restaurée avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -445,9 +616,24 @@ class ShoppingListController
         try {
             $user_id = $request->getAttribute('auth_id');
             $list_id = $args['id'];
-            
+
+            // Espaces (Phase 2) : dupliquer = add_items ; la copie reste
+            // dans l'espace d'origine, créée par l'utilisateur courant.
+            $spaceAccess = ListAccessService::checkSharedSpace((int) $user_id, (int) $list_id, 'edit');
+            if ($spaceAccess === null) {
+                $response->getBody()->write(json_encode(['success' => false, 'message' => 'Permissions insuffisantes']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+            $spaceOfCopy = null;
+            $originalList = null;
+            if (is_array($spaceAccess)) {
+                $spaceOfCopy = $spaceAccess['space'];
+                $originalList = ShoppingList::with(['items' => $this->getItemsOrdering()])
+                    ->find((int) $list_id);
+            }
+
             // ✅ 1. Essayer de récupérer comme liste propre avec ordre cohérent
-            $originalList = ShoppingList::with(['items' => $this->getItemsOrdering()])
+            $originalList = $originalList ?? ShoppingList::with(['items' => $this->getItemsOrdering()])
                 ->where('user_id', $user_id)
                 ->where('id', $list_id)
                 ->first();
@@ -476,9 +662,12 @@ class ShoppingListController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            // ✅ 3. Créer une nouvelle liste (toujours propriété de l'utilisateur actuel)
+            // ✅ 3. Créer une nouvelle liste : dans l'espace d'origine si
+            // liste d'espace partagé, sinon dans le personnel historique.
             $newList = ShoppingList::create([
                 'user_id' => $user_id,
+                'space_id' => $spaceOfCopy?->id ?? $originalList->space_id,
+                'created_by_user_id' => $user_id,
                 'name' => $originalList->name . ' (Copie)',
             ]);
 
@@ -503,6 +692,9 @@ class ShoppingListController
                 'message' => 'Liste dupliquée avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,

@@ -3,6 +3,8 @@
 
 namespace App\Controllers;
 
+use App\Services\ListAccessService;
+
 use App\Models\ListReceipt;
 use App\Models\ShoppingList;
 use App\Models\SharedList;
@@ -29,61 +31,6 @@ class ListReceiptsController
     /**
      * ✅ CHECK LIST ACCESS PERMISSIONS
      */
-    private function checkListAccess(int $user_id, int $list_id, string $requiredPermission = 'read'): ?array
-    {
-        // 1. Check if it's user's own list
-        $ownList = ShoppingList::where('user_id', $user_id)
-            ->where('id', $list_id)
-            ->first();
-
-        if ($ownList) {
-            return [
-                'list' => $ownList,
-                'is_owner' => true,
-                'permission' => 'admin',
-                'can_read' => true,
-                'can_edit' => true,
-                'can_delete' => true
-            ];
-        }
-
-        // 2. Check if it's a shared list
-        $sharedList = SharedList::with(['shoppingList'])
-            ->where('shared_with_user_id', $user_id)
-            ->whereHas('shoppingList', function($query) use ($list_id) {
-                $query->where('id', $list_id);
-            })
-            ->where('status', SharedList::STATUS_ACCEPTED)
-            ->where('is_active', true)
-            ->first();
-
-        if ($sharedList) {
-            $canEdit = $sharedList->canEdit();
-            $canDelete = $sharedList->canDelete();
-
-            $hasPermission = match($requiredPermission) {
-                'read' => true,
-                'edit' => $canEdit,
-                'delete' => $canDelete,
-                default => false
-            };
-
-            if (!$hasPermission) {
-                return null;
-            }
-
-            return [
-                'list' => $sharedList->shoppingList,
-                'is_owner' => false,
-                'permission' => $sharedList->permission,
-                'can_read' => true,
-                'can_edit' => $canEdit,
-                'can_delete' => $canDelete
-            ];
-        }
-
-        return null;
-    }
 
     /**
      * ✅ VALIDATE RECEIPT DATA
@@ -136,7 +83,7 @@ class ListReceiptsController
             $user_id = $request->getAttribute('auth_id');
             $listId = (int) $args['listId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -179,6 +126,9 @@ class ListReceiptsController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ [ERROR] Receipt index error: " . $e->getMessage());
             
@@ -206,7 +156,7 @@ class ListReceiptsController
             $user_id = $request->getAttribute('auth_id');
 
             // Check edit permissions
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -236,6 +186,12 @@ class ListReceiptsController
             // Create receipt with clean data
             $data['list_id'] = $listId;
             $receipt = ListReceipt::createClean($data);
+            \App\Services\SpaceActivityService::log(
+                \App\Models\Space::find($access['list']->space_id),
+                (int) $user_id,
+                \App\Services\SpaceActivityService::RECEIPT_ADDED,
+                ['list_id' => (int) $listId, 'store_name' => $receipt->store_name, 'total_amount' => (float) $receipt->total_amount]
+            );
 
             // Get user for currency formatting
             $user = User::with('currency')->find($user_id);
@@ -246,6 +202,9 @@ class ListReceiptsController
                 'message' => 'Receipt added successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ [ERROR] Receipt store error: " . $e->getMessage());
             
@@ -271,7 +230,7 @@ class ListReceiptsController
             $listId = (int) $args['listId'];
             $receiptId = (int) $args['receiptId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -311,6 +270,9 @@ class ListReceiptsController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ [ERROR] Receipt show error: " . $e->getMessage());
             
@@ -346,7 +308,7 @@ class ListReceiptsController
             $this->debugLog("👤 User ID: " . $user_id);
 
             // Check permissions
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
 
             if (!$access) {
                 error_log("❌ [SECURITY] Access denied for user $user_id on list $listId");
@@ -421,7 +383,10 @@ class ListReceiptsController
                 try {
                     $updateData['purchase_date'] = $data['purchase_date'];
                     $this->debugLog("📅 Updating purchase_date: " . $updateData['purchase_date']);
-                } catch (\Exception $e) {
+                } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
+        } catch (\Exception $e) {
                     $this->debugLog("❌ Invalid date format: " . $data['purchase_date']);
                 }
             }
@@ -483,6 +448,9 @@ class ListReceiptsController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ Receipt update error: " . $e->getMessage());
             error_log("❌ Stack trace: " . $e->getTraceAsString());
@@ -509,7 +477,7 @@ class ListReceiptsController
             $listId = (int) $args['listId'];
             $receiptId = (int) $args['receiptId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'edit');
+            $access = ListAccessService::check($user_id, $listId, 'edit');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -544,6 +512,9 @@ class ListReceiptsController
                 'message' => 'Receipt deleted successfully'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Receipt destroy error: " . $e->getMessage());
             
@@ -568,7 +539,7 @@ class ListReceiptsController
             $user_id = $request->getAttribute('auth_id');
             $listId = (int) $args['listId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -622,6 +593,9 @@ class ListReceiptsController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Receipt byStore error: " . $e->getMessage());
             
@@ -646,7 +620,7 @@ class ListReceiptsController
             $user_id = $request->getAttribute('auth_id');
             $listId = (int) $args['listId'];
 
-            $access = $this->checkListAccess($user_id, $listId, 'read');
+            $access = ListAccessService::check($user_id, $listId, 'read');
             
             if (!$access) {
                 $response->getBody()->write(json_encode([
@@ -735,6 +709,9 @@ class ListReceiptsController
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("Receipt stats error: " . $e->getMessage());
             error_log("Receipt stats trace: " . $e->getTraceAsString());
@@ -763,7 +740,7 @@ class ListReceiptsController
             error_log("📄 [EXPORT] PDF export requested for list {$list_id} by user {$user_id}");
 
             // Vérifier l'accès
-            $access = $this->checkListAccess($user_id, $list_id, 'read');
+            $access = ListAccessService::check($user_id, $list_id, 'read');
             if (!$access) {
                 $response->getBody()->write(json_encode([
                     'success' => false,
@@ -788,6 +765,9 @@ class ListReceiptsController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ [EXPORT] PDF error: " . $e->getMessage());
 
@@ -815,7 +795,7 @@ class ListReceiptsController
             error_log("📊 [EXPORT] CSV export requested for list {$list_id} by user {$user_id}");
 
             // Vérifier l'accès
-            $access = $this->checkListAccess($user_id, $list_id, 'read');
+            $access = ListAccessService::check($user_id, $list_id, 'read');
             if (!$access) {
                 $response->getBody()->write(json_encode([
                     'success' => false,
@@ -837,6 +817,9 @@ class ListReceiptsController
                 ->withHeader('Content-Disposition', 'attachment; filename="receipts_' . date('Y-m-d') . '.csv"')
                 ->withStatus(200);
 
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
             error_log("❌ [EXPORT] CSV error: " . $e->getMessage());
 
