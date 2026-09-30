@@ -7,6 +7,9 @@ use App\Models\ListItem;
 use App\Models\ListReceipt;
 use App\Models\ShoppingList;
 use App\Models\SharedList;
+use App\Models\Space;
+use App\Services\ListAccessService;
+use App\Services\SpaceAccessService;
 use App\Models\User;
 use App\Models\Currency;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -16,6 +19,20 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AnalyticsController
 {
+    /**
+     * Espace actif de la requête (audit C1) : les statistiques se
+     * calculent DANS un espace — foyer avec l'en-tête X-Space-Id,
+     * personnel strict sinon. Résolu une fois par endpoint, AVANT le
+     * try : un non-membre reçoit 403 (middleware), jamais un 500.
+     */
+    private ?Space $activeSpace = null;
+
+    private function resolveActiveSpace(Request $request): void
+    {
+        $this->activeSpace = SpaceAccessService::resolveSpace(
+            $request, (int) $request->getAttribute('auth_id'));
+    }
+
     /**
      *  NOUVEAU: TRADUCTIONS DES JOURS SELON LA LANGUE
      */
@@ -204,12 +221,24 @@ class AnalyticsController
      */
     private function getUserAccessibleListIds(int $user_id): array
     {
-        // Listes propres
-        $ownListIds = ShoppingList::where('user_id', $user_id)
-                                 ->pluck('id')
-                                 ->toArray();
+        $space = $this->activeSpace ?? Space::personalFor($user_id);
 
-        // Listes partagées (récupérer les list_id depuis shared_lists)
+        // Espace partagé : TOUTES les listes de l'espace (quel que
+        // soit leur créateur), rien d'autre.
+        if ($space->type !== Space::TYPE_PERSONAL) {
+            return ShoppingList::where('space_id', $space->id)
+                ->pluck('id')->toArray();
+        }
+
+        // Personnel : listes propres + partage legacy, en EXCLUANT
+        // les listes des espaces partagés (leurs stats vivent chez eux).
+        $ownListIds = ShoppingList::where('user_id', $user_id)
+            ->where(function ($q) {
+                $q->whereNull('space_id')
+                  ->orWhereIn('space_id', Space::where('type', Space::TYPE_PERSONAL)->select('id'));
+            })
+            ->pluck('id')->toArray();
+
         $sharedListIds = SharedList::where('shared_with_user_id', $user_id)
                                   ->where('status', 'accepted')
                                   ->where('is_active', true)
@@ -224,28 +253,10 @@ class AnalyticsController
      */
     private function checkListAccess(int $user_id, int $list_id): ?array
     {
-        // Vérifier liste propre
-        $ownList = ShoppingList::where('user_id', $user_id)
-            ->where('id', $list_id)
-            ->first();
-
-        if ($ownList) {
-            return ['list' => $ownList, 'is_owner' => true];
-        }
-
-        // Vérifier liste partagée
-        $sharedList = SharedList::with(['shoppingList'])
-            ->where('shared_with_user_id', $user_id)
-            ->where('list_id', $list_id)
-            ->where('status', 'accepted')
-            ->where('is_active', true)
-            ->first();
-
-        if ($sharedList) {
-            return ['list' => $sharedList->shoppingList, 'is_owner' => false];
-        }
-
-        return null;
+        $access = ListAccessService::check($user_id, $list_id, 'read');
+        return $access === null
+            ? null
+            : ['list' => $access['list'], 'is_owner' => $access['is_owner']];
     }
 
     /**
@@ -617,6 +628,7 @@ class AnalyticsController
      */
     public function weeklySpendingHistory(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -854,6 +866,7 @@ class AnalyticsController
      */
 public function dashboard(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -1202,6 +1215,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function spendingTrends(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -1347,6 +1361,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function spendingByCategory(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -1459,6 +1474,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function spendingByStore(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -1619,6 +1635,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function monthlySpendingHistory(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -1964,6 +1981,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function getListsBreakdown(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -2052,6 +2070,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function topProducts(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -2191,6 +2210,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function periodComparison(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -2314,6 +2334,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function dailySpendingHistory(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -2455,6 +2476,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function yearlySpendingHistory(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
@@ -2667,6 +2689,7 @@ public function dashboard(Request $request, Response $response): Response
      */
     public function dataQualityReport(Request $request, Response $response): Response
     {
+        $this->resolveActiveSpace($request);
         try {
             $user_id = $request->getAttribute('auth_id');
             $language = $this->getUserLanguage($request);

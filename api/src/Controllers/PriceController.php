@@ -368,9 +368,15 @@ class PriceController
             $candidates[PurchaseHistory::normalizeProductName($name)] = $name;
         }
 
+        // Audit C6 : en personnel, les alias appris dans un espace
+        // partagé sont EXCLUS (même sens strict que l'historique).
         $aliases = ($shared
                 ? ProductAlias::where('space_id', $space->id)
-                : ProductAlias::where('user_id', $userId))
+                : ProductAlias::where('user_id', $userId)
+                    ->where(function ($q) {
+                        $q->whereNull('space_id')
+                          ->orWhereIn('space_id', Space::where('type', Space::TYPE_PERSONAL)->select('id'));
+                    }))
             ->when($storeId, fn($q) => $q->where(fn($w) => $w->where('store_id', $storeId)->orWhereNull('store_id')))
             ->get()
             ->keyBy('normalized_alias');

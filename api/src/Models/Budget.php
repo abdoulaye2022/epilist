@@ -227,7 +227,24 @@ class Budget extends Model
 
     private function getUserSpentAmount(): float
     {
-        $userLists = ShoppingList::accessibleBy($this->user_id)->pluck('id');
+        // Audit C2 : le périmètre d'un budget général est l'ESPACE du
+        // budget, pas « tout ce que voit son créateur ».
+        // - Budget d'un espace partagé : TOUTES les listes de l'espace
+        //   (quel que soit leur créateur) ;
+        // - budget personnel/legacy : listes du créateur + partage
+        //   legacy, en EXCLUANT les listes des espaces partagés (elles
+        //   relèvent des budgets de leur espace).
+        $space = $this->space_id !== null ? Space::find($this->space_id) : null;
+        if ($space !== null && $space->type !== Space::TYPE_PERSONAL) {
+            $userLists = ShoppingList::where('space_id', $space->id)->pluck('id');
+        } else {
+            $userLists = ShoppingList::accessibleBy($this->user_id)
+                ->where(function ($q) {
+                    $q->whereNull('space_id')
+                      ->orWhereIn('space_id', Space::where('type', Space::TYPE_PERSONAL)->select('id'));
+                })
+                ->pluck('id');
+        }
 
         // Calculer depuis les factures
         $receiptsTotal = ListReceipt::whereIn('list_id', $userLists)
@@ -323,9 +340,11 @@ class Budget extends Model
 
     public function isActive(): bool
     {
-        return $this->is_active && 
-               $this->start_date->lte(Carbon::now()) && 
-               $this->end_date->gte(Carbon::now());
+        // end_date est une DATE (minuit) : sans endOfDay(), un budget
+        // devenait « inactif » pendant tout son DERNIER jour (audit).
+        return $this->is_active &&
+               $this->start_date->lte(Carbon::now()) &&
+               $this->end_date->copy()->endOfDay()->gte(Carbon::now());
     }
 
     public function getDaysRemaining(): int

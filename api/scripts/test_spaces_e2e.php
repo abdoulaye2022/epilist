@@ -742,5 +742,122 @@ req('DELETE', "$base/shopping-lists/$lp45", null, $tokenA);
 check('nettoyage §45 fait', $s === 200, "status $s");
 $pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('beurre 45','solo 45')");
 
+// ==================================================================
+// AUDIT FINAL — correctifs C1-C6 : stats par espace, budget général
+// par espace, alias, suppression sans limbes
+// ==================================================================
+echo "== AUDIT : foyer à trois membres\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'household', 'name' => 'Foyer audit'], $tokenA);
+$h7 = (int) ($d['data']['space']['id'] ?? 0);
+check('foyer audit créé', $s === 201 && $h7 > 0, "status $s");
+foreach ([['admin@gmail.com', $tokenB], ['fati@gmail.com', $tokenC]] as [$mail, $tk]) {
+    if ($tk === '') continue;
+    req('POST', "$base/spaces/$h7/invitations", ['email' => $mail, 'role' => 'member'], $tokenA);
+    $tok = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $h7 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+    req('POST', "$base/space-invitations/$tok/accept", null, $tk);
+}
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Courses audit'], $tokenA, $h7);
+$l7 = (int) ($d['data']['id'] ?? 0);
+
+// Référence : total personnel de A AVANT toute activité du foyer
+// (un compte de dev a de vraies dépenses ; on vérifie un DELTA nul).
+$personalMonth = function (string $token) use ($base) {
+    [, $d] = req('GET', "$base/analytics/spending/monthly?months=1", null, $token);
+    foreach (($d['data']['monthly_data'] ?? []) as $m) {
+        if (is_array($m) && ($m['is_current_month'] ?? false)) return (float) ($m['total_spent'] ?? 0);
+    }
+    return 0.0;
+};
+$baselineA = $personalMonth($tokenA);
+// Même principe pour les budgets personnels de C (comptes réels : delta)
+$personalBudgetSpent = function (string $token) use ($base) {
+    [, $d] = req('GET', "$base/budgets", null, $token);
+    $sum = 0.0;
+    foreach (($d['data'] ?? []) as $b) $sum += (float) ($b['spent_amount'] ?? 0);
+    return $sum;
+};
+$baselineBudgetC = $tokenC !== '' ? $personalBudgetSpent($tokenC) : 0.0;
+
+// Achats croisés : B 40 $, C 10 $ (sur la liste créée par A)
+$buy = function (string $token, string $product, float $price) use ($base, $l7, $pdo) {
+    req('POST', "$base/shopping-lists/$l7/items", ['product_name' => $product, 'quantity' => 1, 'price' => $price], $token);
+    $iid = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $l7 ORDER BY id DESC LIMIT 1")->fetchColumn();
+    [$s] = req('PATCH', "$base/shopping-lists/$l7/items/$iid/toggle", ['is_purchased' => true], $token);
+    return $s;
+};
+check('B achète 40 $', $buy($tokenB, 'Riz audit', 40.00) === 200);
+if ($tokenC !== '') check('C achète 10 $', $buy($tokenC, 'Huile audit', 10.00) === 200);
+$expected = $tokenC !== '' ? 50.0 : 40.0;
+
+echo "== C2 : budget général = périmètre de l'ESPACE\n";
+[$s] = req('POST', "$base/budgets", [
+    'name' => 'Budget audit', 'budget_amount' => 200, 'period_type' => 'monthly',
+    'start_date' => date('Y-m-01'), 'end_date' => date('Y-m-t'),
+], $tokenA, $h7);
+check('budget général du foyer créé', in_array($s, [200, 201], true), "status $s");
+[$s, $d] = req('GET', "$base/budgets", null, $tokenB, $h7);
+$auditBudget = null;
+foreach (($d['data'] ?? []) as $b) if (($b['name'] ?? '') === 'Budget audit') $auditBudget = $b;
+$spent = (float) ($auditBudget['spent_amount'] ?? -1);
+check("dépensé du foyer = $expected (achats de TOUS les membres)", abs($spent - $expected) < 0.01, "spent=$spent");
+check('budget actif même son dernier jour (endOfDay)', ($d['meta']['active_budgets'] ?? 0) >= 1, json_encode($d['meta'] ?? []));
+if ($tokenC !== '') {
+    $afterBudgetC = $personalBudgetSpent($tokenC);
+    check('budgets persos de C : les achats du foyer NE comptent PAS (delta 0)',
+        abs($afterBudgetC - $baselineBudgetC) < 0.01,
+        "avant=$baselineBudgetC après=$afterBudgetC");
+}
+
+echo "== C1 : statistiques par espace\n";
+[$s, $d] = req('GET', "$base/analytics/spending/monthly?months=1", null, $tokenB, $h7);
+$monthNow = null;
+foreach (($d['data']['monthly_data'] ?? []) as $m) {
+    if (is_array($m) && ($m['is_current_month'] ?? false)) $monthNow = $m;
+}
+check('stats du foyer : mois courant = ' . $expected,
+    $s === 200 && $monthNow !== null && abs((float) ($monthNow['total_spent'] ?? -1) - $expected) < 0.01,
+    json_encode($monthNow));
+$afterA = $personalMonth($tokenA);
+check('stats personnelles de A : les achats du foyer absents (delta 0)',
+    abs($afterA - $baselineA) < 0.01, "avant=$baselineA après=$afterA");
+
+echo "== C6 : alias du foyer invisibles au scan personnel\n";
+[$s] = req('POST', "$base/shopping-lists/$l7/receipts/import", [
+    'store_name' => 'IGA audit', 'purchase_date' => date('Y-m-d'),
+    'total_amount' => 3.49, 'receipt_number' => 'AUD-1', 'source' => 'manual',
+    'items' => [['raw_label' => 'JUS ORNG AUDIT', 'product_name' => 'Jus orange audit', 'quantity' => 1, 'line_price' => 3.49]],
+], $tokenA);
+check('reçu avec alias importé dans le foyer', $s === 201, "status $s");
+[$s, $d] = req('POST', "$base/receipts/resolve-labels", ['labels' => ['JUS ORNG AUDIT']], $tokenA, $h7);
+check('en-tête foyer : alias résolu', ($d['data'][0]['method'] ?? '') === 'alias', json_encode($d['data'][0] ?? []));
+[$s, $d] = req('POST', "$base/receipts/resolve-labels", ['labels' => ['JUS ORNG AUDIT']], $tokenA);
+check('personnel : alias du foyer NON utilisé', ($d['data'][0]['method'] ?? '') !== 'alias', json_encode($d['data'][0] ?? []));
+
+echo "== C5 : suppression d'espace sans limbes\n";
+req('POST', "$base/price-alerts", ['product_name' => 'Riz audit', 'target_price' => 30], $tokenA, $h7);
+$auditAlert = (int) $pdo->query("SELECT id FROM price_alerts WHERE space_id = $h7 ORDER BY id DESC LIMIT 1")->fetchColumn();
+req('POST', "$base/suppliers", ['name' => 'Fournisseur audit'], $tokenA, $h7);
+if ($tokenC !== '') {
+    req('POST', "$base/spaces/$h7/leave", null, $tokenC);
+    [$s] = req('GET', "$base/analytics/spending/monthly?months=1", null, $tokenC, $h7);
+    check('après départ : stats du foyer refusées (403)', $s === 403, "status $s");
+}
+[$s] = req('DELETE', "$base/spaces/$h7", null, $tokenA);
+check('suppression du foyer audit', $s === 200, "status $s");
+[$s] = req('GET', "$base/shopping-lists/$l7", null, $tokenA);
+check('liste du foyer supprimé : inaccessible même au créateur', in_array($s, [403, 404], true), "status $s");
+$aliveAlert = $pdo->query("SELECT is_active FROM price_alerts WHERE id = $auditAlert")->fetchColumn();
+check('alerte de prix désactivée', (int) $aliveAlert === 0, "is_active=$aliveAlert");
+$aliveBudget = (int) $pdo->query("SELECT COUNT(*) FROM budgets WHERE space_id = $h7 AND is_active = 1")->fetchColumn();
+check('budget du foyer désactivé', $aliveBudget === 0, "actifs=$aliveBudget");
+$aliveSup = (int) $pdo->query("SELECT COUNT(*) FROM suppliers WHERE space_id = $h7 AND deleted_at IS NULL")->fetchColumn();
+check('fournisseur soft-supprimé', $aliveSup === 0, "vivants=$aliveSup");
+
+echo "== Nettoyage audit\n";
+$pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('riz audit','huile audit','jus orange audit')");
+$pdo->exec("DELETE FROM product_aliases WHERE normalized_alias = 'jus orng audit'");
+$pdo->exec("DELETE FROM stores WHERE name = 'IGA audit'");
+check('nettoyage audit fait', true);
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

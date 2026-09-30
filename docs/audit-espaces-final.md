@@ -1,5 +1,12 @@
 # Audit final du chantier espaces (post-livraison)
 
+> **MISE À JOUR 2026-09-30 : tous les constats C1-C6 sont CORRIGÉS**
+> et vérifiés — la suite E2E passe de 161 à **180/180**. Détail des
+> résolutions en fin de document. Bonus découvert pendant la
+> correction : `Budget::isActive()` comparait `end_date` à minuit,
+> rendant tout budget « inactif » pendant son DERNIER jour — corrigé
+> (`endOfDay`), testé.
+
 Réalisé le 2026-09-30, après la livraison des Phases 1-6 + §45.
 Méthode : relecture systématique du code (requêtes restées « par
 utilisateur », points d'accès, crons), vérifications en base locale,
@@ -92,13 +99,41 @@ des budgets généraux partagés (C2), planificateur de repas (C3),
 messages de listes d'espace (protégés par `canBeAccessedBy` étendu,
 relu mais non testé E2E). À combler avec les correctifs.
 
-## Priorisation proposée
+## Résolutions (tout corrigé le 2026-09-30, E2E 180/180)
 
-1. **C2** (budget foyer faux — visible immédiatement par un foyer réel)
-2. **C1** (statistiques par espace)
-3. **C3** (prix des plans de repas)
-4. C4, C6 (petits correctifs ciblés)
-5. C5 (décision produit, pas un correctif urgent)
+- **C1 corrigé** — `AnalyticsController` : espace actif résolu au
+  début des 12 endpoints (avant le `try` : non-membre → 403, pas 500) ;
+  `getUserAccessibleListIds` : espace partagé = toutes ses listes ;
+  personnel = propres + legacy MOINS les listes d'espaces partagés ;
+  `checkListAccess` délégué à `ListAccessService`. E2E : stats foyer =
+  50 $ (achats des DEUX membres), stats perso de A à delta 0, 403
+  après départ.
+- **C2 corrigé** — `Budget::getUserSpentAmount` : budget d'espace
+  partagé = listes de l'ESPACE (tous créateurs) ; personnel/legacy
+  exclut les listes d'espaces partagés. E2E : dépensé foyer = 50 $,
+  budgets persos de C à delta 0. Bonus : `isActive()` en `endOfDay`
+  (budget actif son dernier jour — testé un 30 du mois !).
+- **C3 corrigé** — prix estimés du planificateur de repas dans le même
+  espace que l'inventaire (`scopeQuery`). Relu + lint (pas de harnais
+  E2E recettes — assumé).
+- **C4 corrigé** — alertes budget du cron : budget d'espace partagé →
+  tous les membres actifs avec `view_budgets` ; anti-spam inchangé
+  (par budget, 24 h) ; le pré-filtre « appareils du créateur » retiré
+  (chaque destinataire est vérifié par `sendToUser`). Relu + lint
+  (cron non couvert par le harnais HTTP — assumé).
+- **C5 corrigé** — suppression d'espace SANS limbes : cascade dans
+  `SpaceController::destroy` (listes + fournisseurs soft-supprimés,
+  budgets + alertes de prix désactivés, listes récurrentes stoppées —
+  l'historique `purchase_history` reste intact) ; et durcissement de
+  `ListAccessService` (`check` + `checkSharedSpace`) : espace
+  introuvable → accès refusé, AUCUN repli « propriétaire ». E2E :
+  liste inaccessible même au créateur, budget/alerte désactivés,
+  fournisseur soft-supprimé.
+- **C6 corrigé** — `resolveLabels` en personnel exclut les alias
+  appris dans un espace partagé. E2E : alias résolu avec l'en-tête
+  foyer, ignoré en personnel.
+- C7-C9 restent assumés (documentés), inchangés.
 
-Chaque correctif devra ajouter ses vérifications E2E (couverture
-analytics/budgets partagés/meal plan) avant commit.
+Couverture E2E ajoutée : 19 vérifications (161 → **180**), incluant
+enfin analytics et budgets généraux partagés — les deux zones dont
+l'absence de tests avait laissé passer C1 et C2.

@@ -252,14 +252,11 @@ function checkBudgetAlerts(NotificationService $service): void
                     return false;
                 }
                 
-                // Vérifier que l'utilisateur a des appareils actifs
-                $hasActiveDevices = $budget->user->devices()
-                    ->where('is_active', true)
-                    ->whereNotNull('push_token')
-                    ->exists();
-                
-                return $hasActiveDevices && 
-                       method_exists($budget, 'shouldShowAlert') && 
+                // Audit C4 : ne plus exiger les appareils du CRÉATEUR —
+                // pour un budget d'espace partagé, d'autres membres
+                // peuvent recevoir l'alerte (sendToUser vérifie les
+                // appareils de chaque destinataire).
+                return method_exists($budget, 'shouldShowAlert') &&
                        $budget->shouldShowAlert();
             });
 
@@ -292,8 +289,34 @@ function checkBudgetAlerts(NotificationService $service): void
                 }
                 
                 if ($shouldSendAlert) {
-                    $success = $service->sendBudgetAlert($user, $budget, $alertType);
-                    
+                    // Audit C4 : budget d'un espace PARTAGÉ -> tous les
+                    // membres actifs avec le droit view_budgets sont
+                    // alertés, pas seulement le créateur. L'anti-spam
+                    // reste PAR BUDGET (une vague par 24 h pour tous).
+                    $recipients = [$user];
+                    if ($budget->space_id !== null) {
+                        $space = \App\Models\Space::find($budget->space_id);
+                        if ($space && $space->type !== \App\Models\Space::TYPE_PERSONAL) {
+                            $members = \App\Models\SpaceMember::with('user')
+                                ->where('space_id', $space->id)
+                                ->where('status', \App\Models\SpaceMember::STATUS_ACTIVE)
+                                ->get();
+                            $recipients = [];
+                            foreach ($members as $member) {
+                                if ($member->user && $member->can('view_budgets')) {
+                                    $recipients[] = $member->user;
+                                }
+                            }
+                        }
+                    }
+
+                    $success = false;
+                    foreach ($recipients as $recipient) {
+                        if ($service->sendBudgetAlert($recipient, $budget, $alertType)) {
+                            $success = true;
+                        }
+                    }
+
                     if ($success) {
                         $alertsSent++;
                         saveLastAlertTime($budget->id, $alertType, $now);

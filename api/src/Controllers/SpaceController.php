@@ -219,7 +219,24 @@ class SpaceController
             return $this->json($response, ['success' => false, 'code' => 'PERSONAL_SPACE_PROTECTED'], 422);
         }
 
-        $space->delete(); // soft delete ; les données liées suivront en Phase 2
+        // Audit C5 : pas de limbes. Les données de l'espace suivent la
+        // suppression — listes et fournisseurs en soft delete (l'historique
+        // purchase_history, lui, reste intact), budgets et alertes de prix
+        // désactivés, listes récurrentes stoppées (le cron ne doit plus
+        // rien générer dans un espace supprimé).
+        $spaceId = (int) $space->id;
+        $space->delete(); // soft delete
+        try {
+            \App\Models\ShoppingList::where('space_id', $spaceId)->delete();
+            \App\Models\Supplier::where('space_id', $spaceId)->delete();
+            \App\Models\Budget::where('space_id', $spaceId)->update(['is_active' => false]);
+            \App\Models\PriceAlert::where('space_id', $spaceId)->update(['is_active' => false]);
+            \Illuminate\Database\Capsule\Manager::connection()->table('recurring_lists')
+                ->where('space_id', $spaceId)->update(['enabled' => 0]);
+        } catch (\Throwable $e) {
+            error_log('space destroy cascade: ' . $e->getMessage());
+        }
+
         return $this->json($response, ['success' => true]);
     }
 

@@ -60,7 +60,12 @@ class ListAccessService
         // 1. Liste d'un espace partagé : droits du membre actif.
         if ($list->space_id !== null) {
             $space = Space::find($list->space_id);
-            if ($space && $space->type !== Space::TYPE_PERSONAL) {
+            // Audit C5 : espace introuvable (supprimé) -> AUCUN repli
+            // sur la règle « propriétaire » — la liste est inaccessible.
+            if ($space === null) {
+                return null;
+            }
+            if ($space->type !== Space::TYPE_PERSONAL) {
                 $member = SpaceMember::where('space_id', $space->id)
                     ->where('user_id', $userId)
                     ->where('status', SpaceMember::STATUS_ACTIVE)
@@ -140,7 +145,12 @@ class ListAccessService
             return false;
         }
         $space = Space::find($list->space_id);
-        if (!$space || $space->type === Space::TYPE_PERSONAL) {
+        // Audit C5 : espace supprimé -> accès refusé, PAS de repli
+        // vers le flux legacy (règle « propriétaire »).
+        if ($space === null) {
+            return null;
+        }
+        if ($space->type === Space::TYPE_PERSONAL) {
             return false;
         }
 

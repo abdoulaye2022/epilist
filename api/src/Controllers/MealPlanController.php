@@ -106,13 +106,15 @@ class MealPlanController
             $merged = (new IngredientConsolidationService())->consolidate($raw);
 
             // Inventaire : « Déjà à la maison » (§17)
-            $inventory = \App\Services\SpaceAccessService::scopeQuery(HomeInventory::query(), \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)->get()->keyBy('normalized_name');
+            $mpSpace = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            $inventory = \App\Services\SpaceAccessService::scopeQuery(HomeInventory::query(), $mpSpace, $userId)->get()->keyBy('normalized_name');
 
-            // Prix estimés : dernier prix connu par produit (12 mois)
+            // Prix estimés : dernier prix connu par produit (12 mois),
+            // dans le MÊME espace que l'inventaire (audit C3)
             $norms = array_column($merged, 'normalized_name');
             $prices = [];
             if ($norms !== []) {
-                $rows = PurchaseHistory::where('user_id', $userId)
+                $rows = \App\Services\SpaceAccessService::scopeQuery(PurchaseHistory::query(), $mpSpace, $userId)
                     ->whereIn('normalized_name', $norms)
                     ->where('purchased_at', '>=', Carbon::now()->subMonths(12))
                     ->whereNotNull('price')
