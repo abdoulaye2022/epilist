@@ -2635,5 +2635,69 @@
         "type": "String"
       }
     }
-  }
+  },
+  "preShopping": "Before you shop",
+  "preShoppingBudget": "This month's budget",
+  "preShoppingBudgetRemaining": "${amount} left · {days} days",
+  "@preShoppingBudgetRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingRequests": "{count} purchase request(s) pending",
+  "@preShoppingRequests": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingRestock": "Probably need again",
+  "preShoppingRestockEmpty": "Nothing urgent based on your habits.",
+  "preShoppingInventory": "Out of stock or below minimum",
+  "preShoppingPriceWatch": "Recently spotted prices",
+  "savingsTitle": "Estimated savings (30 d)",
+  "savingsTotal": "${amount} saved vs your usual prices",
+  "@savingsTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "savingsEmpty": "No savings detected over the period.",
+  "savingsLine": "paid ${paid} · usual ${usual}",
+  "@savingsLine": {
+    "placeholders": {
+      "paid": {
+        "type": "String"
+      },
+      "usual": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCheckTitle": "Is this a good price?",
+  "priceCheckPrice": "Displayed price ($)",
+  "priceCheckGood": "Good price",
+  "priceCheckFair": "Around your usual price",
+  "priceCheckHigh": "Above your usual price",
+  "priceCheckUnknown": "Not enough history to tell.",
+  "priceCheckUsual": "Usual ${usual} · good price ${good}",
+  "@priceCheckUsual": {
+    "placeholders": {
+      "usual": {
+        "type": "String"
+      },
+      "good": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCheckAction": "Check"
 }

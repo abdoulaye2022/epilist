@@ -10722,6 +10722,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Prix repéré : {product} à {price} \$'**
   String actPriceAlertTriggered(String product, String price);
+
+  /// No description provided for @preShopping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant les courses'**
+  String get preShopping;
+
+  /// No description provided for @preShoppingBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget du mois'**
+  String get preShoppingBudget;
+
+  /// No description provided for @preShoppingBudgetRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'{amount} \$ restants · {days} jours'**
+  String preShoppingBudgetRemaining(String amount, int days);
+
+  /// No description provided for @preShoppingRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} demande(s) d\'achat en attente'**
+  String preShoppingRequests(int count);
+
+  /// No description provided for @preShoppingRestock.
+  ///
+  /// In fr, this message translates to:
+  /// **'À racheter probablement'**
+  String get preShoppingRestock;
+
+  /// No description provided for @preShoppingRestockEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien d\'urgent selon vos habitudes.'**
+  String get preShoppingRestockEmpty;
+
+  /// No description provided for @preShoppingInventory.
+  ///
+  /// In fr, this message translates to:
+  /// **'En rupture ou sous le seuil'**
+  String get preShoppingInventory;
+
+  /// No description provided for @preShoppingPriceWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix repérés récemment'**
+  String get preShoppingPriceWatch;
+
+  /// No description provided for @savingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Économies estimées (30 j)'**
+  String get savingsTitle;
+
+  /// No description provided for @savingsTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'{amount} \$ économisés vs vos prix habituels'**
+  String savingsTotal(String amount);
+
+  /// No description provided for @savingsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune économie détectée sur la période.'**
+  String get savingsEmpty;
+
+  /// No description provided for @savingsLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'payé {paid} \$ · habituel {usual} \$'**
+  String savingsLine(String paid, String usual);
+
+  /// No description provided for @priceCheckTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Est-ce un bon prix ?'**
+  String get priceCheckTitle;
+
+  /// No description provided for @priceCheckPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix affiché (\$)'**
+  String get priceCheckPrice;
+
+  /// No description provided for @priceCheckGood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon prix'**
+  String get priceCheckGood;
+
+  /// No description provided for @priceCheckFair.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans vos prix habituels'**
+  String get priceCheckFair;
+
+  /// No description provided for @priceCheckHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au-dessus de votre prix habituel'**
+  String get priceCheckHigh;
+
+  /// No description provided for @priceCheckUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas assez d\'historique pour juger.'**
+  String get priceCheckUnknown;
+
+  /// No description provided for @priceCheckUsual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Habituel {usual} \$ · bon prix {good} \$'**
+  String priceCheckUsual(String usual, String good);
+
+  /// No description provided for @priceCheckAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier'**
+  String get priceCheckAction;
 }
 
 class _AppLocalizationsDelegate

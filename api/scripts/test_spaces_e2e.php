@@ -463,5 +463,142 @@ $pdo->exec("DELETE FROM purchase_history WHERE normalized_name = 'lait p4'");
 $pdo->exec("DELETE FROM product_aliases WHERE normalized_alias = 'lait nat 2'");
 $pdo->exec("DELETE FROM stores WHERE name IN ('Metro P4', 'IGA P4')");
 
+// ==================================================================
+// PHASE 5 — assistant intelligent : prédictions par espace (§17),
+// avant les courses (§28), bon prix (§29), économies documentées (§30)
+// ==================================================================
+echo "== PHASE 5 : foyer avec historique multi-dates\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'household', 'name' => 'Foyer P5'], $tokenA);
+$h5 = (int) ($d['data']['space']['id'] ?? 0);
+check('foyer P5 créé', $s === 201 && $h5 > 0, "status $s");
+[$s] = req('POST', "$base/spaces/$h5/invitations", ['email' => 'admin@gmail.com', 'role' => 'member'], $tokenA);
+$token5 = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $h5 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('POST', "$base/space-invitations/$token5/accept", null, $tokenB);
+check('B rejoint le foyer P5', $s === 200, "status $s");
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Courses P5'], $tokenA, $h5);
+$l5 = (int) ($d['data']['id'] ?? 0);
+
+// Trois reçus datés (le prix du lait BAISSE : 4,99 -> 4,49 -> 3,99)
+$mkReceipt = function (string $token, int $list, string $date, array $items, string $num) use ($base) {
+    $total = array_sum(array_column($items, 'line_price'));
+    return req('POST', "$base/shopping-lists/$list/receipts/import", [
+        'store_name' => 'IGA P5', 'purchase_date' => $date,
+        'total_amount' => $total, 'receipt_number' => $num, 'source' => 'manual',
+        'items' => array_map(fn($i) => $i + ['quantity' => 1], $items),
+    ], $token);
+};
+[$s] = $mkReceipt($tokenA, $l5, date('Y-m-d', strtotime('-10 days')), [
+    ['raw_label' => 'Lait P5', 'line_price' => 4.99],
+    ['raw_label' => 'Pain P5', 'line_price' => 2.50],
+], 'P5-R1');
+check('reçu J-10 importé', $s === 201, "status $s");
+[$s] = $mkReceipt($tokenA, $l5, date('Y-m-d', strtotime('-8 days')), [
+    ['raw_label' => 'Lait P5', 'line_price' => 4.49],
+    ['raw_label' => 'Pain P5', 'line_price' => 2.50],
+], 'P5-R2');
+check('reçu J-8 importé', $s === 201, "status $s");
+
+// Alerte AVANT le 3e reçu : elle doit se déclencher à l'import
+[$s, $d] = req('POST', "$base/price-alerts", ['product_name' => 'Lait P5', 'target_price' => 4.00], $tokenA, $h5);
+$alert5 = (int) ($d['data']['alert']['id'] ?? 0);
+[$s] = $mkReceipt($tokenA, $l5, date('Y-m-d', strtotime('-1 day')), [
+    ['raw_label' => 'Lait P5', 'line_price' => 3.99],
+], 'P5-R3');
+check('reçu J-1 importé (3,99, sous la cible)', $s === 201, "status $s");
+$al5 = $pdo->query("SELECT last_notified_price FROM price_alerts WHERE id = $alert5")->fetchColumn();
+check('alerte déclenchée par l\'import', abs((float) $al5 - 3.99) < 0.01, "last=$al5");
+
+echo "== Prédictions par espace (§17, §34)\n";
+[$s, $d] = req('GET', "$base/predictions?all=1&limit=100", null, $tokenB, $h5);
+$predNames = array_column((array) ($d['data']['predictions'] ?? []), 'product_name');
+check('B voit les prédictions du foyer', $s === 200 && in_array('Pain P5', $predNames, true), implode(',', $predNames));
+[$s, $d] = req('GET', "$base/predictions?all=1&limit=100", null, $tokenA);
+$predPerso = array_column((array) ($d['data']['predictions'] ?? []), 'product_name');
+check('prédictions du foyer absentes du personnel', !in_array('Pain P5', $predPerso, true));
+[$s] = req('POST', "$base/predictions/feedback", ['product_name' => 'Pain P5', 'action' => 'still_have'], $tokenB, $h5);
+check('feedback accepté dans le foyer', $s === 200, "status $s");
+$fbSpace = $pdo->query("SELECT space_id FROM home_inventory WHERE normalized_name='pain p5' ORDER BY id DESC LIMIT 1")->fetchColumn();
+check('« j\'en ai encore » écrit dans l\'inventaire DU FOYER', (int) $fbSpace === $h5, "space_id=$fbSpace");
+
+echo "== Est-ce un bon prix ? (§29)\n";
+[$s, $d] = req('GET', "$base/prices/check?product=Lait%20P5&price=3.79", null, $tokenA, $h5);
+check('3,79 = bon prix', $s === 200 && ($d['data']['verdict'] ?? '') === 'good', json_encode($d['data'] ?? []));
+[$s, $d] = req('GET', "$base/prices/check?product=Lait%20P5&price=5.50", null, $tokenA, $h5);
+check('5,50 = au-dessus du prix habituel', ($d['data']['verdict'] ?? '') === 'high');
+check('les chiffres accompagnent le verdict',
+    is_numeric($d['data']['usual_price'] ?? null) && is_numeric($d['data']['good_price'] ?? null)
+    && ($d['data']['observations'] ?? 0) >= 3);
+[$s, $d] = req('GET', "$base/prices/check?product=Lait%20P5&price=3.79", null, $tokenA);
+check('sans historique personnel : unknown (pas de fuite)', ($d['data']['verdict'] ?? '') === 'unknown');
+[$s] = req('GET', "$base/prices/check?product=Lait%20P5", null, $tokenA, $h5);
+check('prix manquant refusé (422)', $s === 422, "status $s");
+
+echo "== Économies estimées documentées (§30)\n";
+[$s, $d] = req('GET', "$base/assistant/savings?days=30", null, $tokenA, $h5);
+$sv = $d['data'] ?? [];
+check('économie du lait détectée (4,74 -> 3,99)', abs(($sv['total_saving'] ?? 0) - 0.75) < 0.01, json_encode($sv));
+$item0 = $sv['items'][0] ?? [];
+check('économie documentée (payé, habituel, repères, date)',
+    ($item0['product_name'] ?? '') === 'Lait P5' && abs(($item0['usual_price'] ?? 0) - 4.74) < 0.01
+    && ($item0['priors_count'] ?? 0) === 2 && !empty($item0['purchased_at']));
+[$s, $d] = req('GET', "$base/assistant/savings?days=30", null, $tokenA);
+check('aucune économie du foyer dans le personnel', (float) ($d['data']['total_saving'] ?? -1) === 0.0);
+
+echo "== Avant les courses (§28)\n";
+[$s] = req('POST', "$base/budgets", [
+    'name' => 'Budget P5', 'budget_amount' => 500, 'period_type' => 'monthly',
+    'start_date' => date('Y-m-01'), 'end_date' => date('Y-m-t'),
+], $tokenA, $h5);
+[$s, $d] = req('GET', "$base/assistant/pre-shopping", null, $tokenB, $h5);
+$brief = $d['data'] ?? [];
+check('brief du foyer composé', $s === 200 && ($brief['space_type'] ?? '') === 'household', "status $s");
+check('budget présent dans le brief', ($brief['budget']['budget_amount'] ?? null) == 500);
+check('alerte de prix récente dans le brief', count($brief['price_watch'] ?? []) === 1
+    && ($brief['price_watch'][0]['product_name'] ?? '') === 'Lait P5');
+check('pas de demandes d\'achat pour un foyer',
+    array_key_exists('pending_requests', $brief) && $brief['pending_requests'] === null);
+if ($tokenC !== '') {
+    [$s] = req('GET', "$base/assistant/pre-shopping", null, $tokenC, $h5);
+    check('non-membre : brief refusé (403)', $s === 403, "status $s");
+}
+
+echo "== Espace pro : le quantitatif prime (§17)\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'restaurant', 'name' => 'Resto P5'], $tokenA);
+$r5 = (int) ($d['data']['space']['id'] ?? 0);
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Achats resto P5'], $tokenA, $r5);
+$lr5 = (int) ($d['data']['id'] ?? 0);
+// Cycle LENT (écart 20 j, dernier achat J-2 : ratio 0,1 -> pas besoin)
+[$s] = $mkReceipt($tokenA, $lr5, date('Y-m-d', strtotime('-22 days')),
+    [['raw_label' => 'Farine P5', 'line_price' => 10.00]], 'P5-F1');
+[$s] = $mkReceipt($tokenA, $lr5, date('Y-m-d', strtotime('-2 days')),
+    [['raw_label' => 'Farine P5', 'line_price' => 10.00]], 'P5-F2');
+check('historique farine posé', $s === 201, "status $s");
+[$s] = req('POST', "$base/inventory/status", [
+    'product_name' => 'Farine P5', 'status' => 'out',
+    'quantity' => 0, 'unit' => 'kg', 'min_quantity' => 5,
+], $tokenA, $r5);
+[$s, $d] = req('GET', "$base/predictions?all=1&limit=100", null, $tokenA, $r5);
+$farine = null;
+foreach (($d['data']['predictions'] ?? []) as $p) if ($p['product_name'] === 'Farine P5') $farine = $p;
+check('stock à zéro = « en retard » malgré le cycle lent',
+    $farine !== null && ($farine['status'] ?? '') === 'overdue' && ($farine['below_min'] ?? false) === true,
+    json_encode($farine));
+[$s, $d] = req('POST', "$base/purchase-requests", ['product_name' => 'Farine P5', 'quantity' => 25], $tokenA, $r5);
+[$s, $d] = req('GET', "$base/assistant/pre-shopping", null, $tokenA, $r5);
+$briefR = $d['data'] ?? [];
+check('brief resto : demande en attente comptée', ($briefR['pending_requests'] ?? 0) === 1);
+check('brief resto : rupture dans l\'inventaire', count($briefR['inventory_alerts'] ?? []) >= 1
+    && ($briefR['space_type'] ?? '') === 'restaurant');
+
+echo "== Nettoyage P5\n";
+[$s] = req('DELETE', "$base/spaces/$h5", null, $tokenA);
+check('suppression du foyer P5', $s === 200, "status $s");
+[$s] = req('DELETE', "$base/spaces/$r5", null, $tokenA);
+check('suppression du resto P5', $s === 200, "status $s");
+$pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('lait p5','pain p5','farine p5')");
+$pdo->exec("DELETE FROM home_inventory WHERE normalized_name IN ('pain p5','farine p5')");
+$pdo->exec("DELETE FROM product_prediction_prefs WHERE normalized_name IN ('pain p5','farine p5')");
+$pdo->exec("DELETE FROM stores WHERE name = 'IGA P5'");
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

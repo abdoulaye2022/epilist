@@ -21,6 +21,7 @@ namespace App\Services;
 use App\Models\HomeInventory;
 use App\Models\ProductPredictionPref;
 use App\Models\PurchaseHistory;
+use App\Models\Space;
 use Carbon\Carbon;
 
 class PurchasePredictionService
@@ -43,7 +44,11 @@ class PurchasePredictionService
     public const STATUS_OVERDUE = 'overdue';
 
     /**
-     * Prédictions pour un utilisateur, triées par urgence.
+     * Prédictions pour un utilisateur DANS UN ESPACE (§17, §34) : le
+     * foyer prédit sur les achats de tout le foyer, le personnel reste
+     * strictement personnel. Les préférences (« ne plus suggérer »,
+     * snooze) restent PAR UTILISATEUR : un goût personnel ne doit pas
+     * masquer une suggestion pour les autres membres.
      *
      * @param bool $includeAll true = aussi les produits not_needed
      *                         (écran « toutes les suggestions »)
@@ -52,11 +57,12 @@ class PurchasePredictionService
      *   confidence (low|medium|high), purchases_count, avg_quantity,
      *   usual_store, inventory_status (si connu), urgency (tri)
      */
-    public function getPredictions(int $userId, bool $includeAll = false, int $limit = 50): array
+    public function getPredictions(int $userId, ?Space $space = null, bool $includeAll = false, int $limit = 50): array
     {
+        $space ??= Space::personalFor($userId);
         $since = Carbon::now()->subMonths(self::WINDOW_MONTHS);
 
-        $rows = PurchaseHistory::where('user_id', $userId)
+        $rows = SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId)
             ->where('purchased_at', '>=', $since)
             ->orderBy('purchased_at')
             ->get(['product_name', 'normalized_name', 'quantity', 'store_name', 'purchased_at']);
@@ -65,9 +71,13 @@ class PurchasePredictionService
             return [];
         }
 
+        // §17 : dans un espace pro, l'inventaire quantitatif (seuils)
+        // est un signal plus fiable que le cycle d'achat.
+        $isPro = in_array($space->type, [Space::TYPE_RESTAURANT, Space::TYPE_ORGANIZATION], true);
+
         $prefs = ProductPredictionPref::where('user_id', $userId)->get()
             ->keyBy('normalized_name');
-        $inventory = HomeInventory::where('user_id', $userId)->get()
+        $inventory = SpaceAccessService::scopeQuery(HomeInventory::query(), $space, $userId)->get()
             ->keyBy('normalized_name');
 
         $now = Carbon::now();
@@ -111,6 +121,16 @@ class PurchasePredictionService
                 $status = $this->statusFor($daysSince, $frequency, $stats['cv']);
             }
 
+            // §17 espaces pro : sous le seuil = au moins « bientôt »,
+            // stock à zéro = « en retard » (le quantitatif prime).
+            $belowMin = $inv !== null && $inv->min_quantity !== null && $inv->quantity !== null
+                && (float) $inv->quantity <= (float) $inv->min_quantity;
+            if ($isPro && $belowMin) {
+                $status = (float) $inv->quantity <= 0
+                    ? self::STATUS_OVERDUE
+                    : ($status === self::STATUS_NOT_NEEDED ? self::STATUS_SOON : $status);
+            }
+
             if (!$includeAll && $status === self::STATUS_NOT_NEEDED) {
                 continue;
             }
@@ -127,6 +147,7 @@ class PurchasePredictionService
                 'avg_quantity' => $stats['avg_quantity'],
                 'usual_store' => $stats['usual_store'],
                 'inventory_status' => $inv?->status,
+                'below_min' => $belowMin,
                 'urgency' => $frequency > 0 ? round($daysSince / $frequency, 3) : 0,
             ];
         }
@@ -234,14 +255,15 @@ class PurchasePredictionService
      * Enregistre le feedback utilisateur et adapte le comportement (§8, §38).
      * Actions : added | not_now | still_have | never.
      */
-    public function recordFeedback(int $userId, string $productName, string $action): void
+    public function recordFeedback(int $userId, string $productName, string $action, ?Space $space = null): void
     {
+        $space ??= Space::personalFor($userId);
         $normalized = PurchaseHistory::normalizeProductName($productName);
 
         // Snooze proportionnel au cycle du produit pour éviter les
         // boucles absurdes (re-suggérer 5 minutes après « J'en ai encore »)
         $frequency = null;
-        foreach ($this->getPredictions($userId, true, 200) as $p) {
+        foreach ($this->getPredictions($userId, $space, true, 200) as $p) {
             if ($p['normalized_name'] === $normalized) {
                 $frequency = $p['frequency_days'];
                 break;
@@ -269,10 +291,13 @@ class PurchasePredictionService
         );
 
         // « J'en ai encore » vaut aussi mise à jour d'inventaire estimée
+        // — dans l'ESPACE courant (l'index unique est space+produit).
         if ($action === 'still_have') {
             HomeInventory::updateOrCreate(
-                ['user_id' => $userId, 'normalized_name' => $normalized],
+                ['space_id' => $space->id, 'normalized_name' => $normalized],
                 [
+                    'user_id' => $userId,
+                    'created_by_user_id' => $userId,
                     'product_name' => $productName,
                     'status' => HomeInventory::STATUS_AT_HOME,
                     'source' => 'manual',

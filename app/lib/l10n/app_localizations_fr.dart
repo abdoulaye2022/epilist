@@ -5814,4 +5814,74 @@ class AppLocalizationsFr extends AppLocalizations {
   String actPriceAlertTriggered(String product, String price) {
     return 'Prix repéré : $product à $price \$';
   }
+
+  @override
+  String get preShopping => 'Avant les courses';
+
+  @override
+  String get preShoppingBudget => 'Budget du mois';
+
+  @override
+  String preShoppingBudgetRemaining(String amount, int days) {
+    return '$amount \$ restants · $days jours';
+  }
+
+  @override
+  String preShoppingRequests(int count) {
+    return '$count demande(s) d\'achat en attente';
+  }
+
+  @override
+  String get preShoppingRestock => 'À racheter probablement';
+
+  @override
+  String get preShoppingRestockEmpty => 'Rien d\'urgent selon vos habitudes.';
+
+  @override
+  String get preShoppingInventory => 'En rupture ou sous le seuil';
+
+  @override
+  String get preShoppingPriceWatch => 'Prix repérés récemment';
+
+  @override
+  String get savingsTitle => 'Économies estimées (30 j)';
+
+  @override
+  String savingsTotal(String amount) {
+    return '$amount \$ économisés vs vos prix habituels';
+  }
+
+  @override
+  String get savingsEmpty => 'Aucune économie détectée sur la période.';
+
+  @override
+  String savingsLine(String paid, String usual) {
+    return 'payé $paid \$ · habituel $usual \$';
+  }
+
+  @override
+  String get priceCheckTitle => 'Est-ce un bon prix ?';
+
+  @override
+  String get priceCheckPrice => 'Prix affiché (\$)';
+
+  @override
+  String get priceCheckGood => 'Bon prix';
+
+  @override
+  String get priceCheckFair => 'Dans vos prix habituels';
+
+  @override
+  String get priceCheckHigh => 'Au-dessus de votre prix habituel';
+
+  @override
+  String get priceCheckUnknown => 'Pas assez d\'historique pour juger.';
+
+  @override
+  String priceCheckUsual(String usual, String good) {
+    return 'Habituel $usual \$ · bon prix $good \$';
+  }
+
+  @override
+  String get priceCheckAction => 'Vérifier';
 }

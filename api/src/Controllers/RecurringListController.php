@@ -250,15 +250,23 @@ class RecurringListController
      */
     public function buildPreview(int $userId, RecurringList $list): array
     {
+        // L'aperçu raisonne dans l'espace DE LA LISTE récurrente (§17) :
+        // une liste du foyer s'appuie sur l'inventaire et les achats du foyer.
+        $space = $list->space_id !== null ? \App\Models\Space::find($list->space_id) : null;
+        if ($space === null || $space->deleted_at !== null) {
+            $space = \App\Models\Space::personalFor($userId);
+        }
+
         $service = new PurchasePredictionService();
         $predictions = [];
-        foreach ($service->getPredictions($userId, true, 300) as $p) {
+        foreach ($service->getPredictions($userId, $space, true, 300) as $p) {
             $predictions[$p['normalized_name']] = $p;
         }
-        $inventory = HomeInventory::where('user_id', $userId)->get()->keyBy('normalized_name');
+        $inventory = \App\Services\SpaceAccessService::scopeQuery(HomeInventory::query(), $space, $userId)
+            ->get()->keyBy('normalized_name');
 
         // Achats des 3 derniers jours = « acheté hier » (§33)
-        $recent = PurchaseHistory::where('user_id', $userId)
+        $recent = \App\Services\SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId)
             ->where('purchased_at', '>=', Carbon::now()->subDays(3))
             ->pluck('normalized_name')
             ->flip();

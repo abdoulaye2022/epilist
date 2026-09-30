@@ -45,7 +45,9 @@ class IntelligenceController
         $limit = max(1, min(100, (int) ($params['limit'] ?? 20)));
 
         try {
-            $items = $this->predictions->getPredictions($userId, $all, $limit);
+            // §17/§34 : prédictions calculées DANS l'espace actif
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            $items = $this->predictions->getPredictions($userId, $space, $all, $limit);
             return $this->json($response, [
                 'success' => true,
                 'data' => ['predictions' => $items, 'count' => count($items)],
@@ -75,7 +77,8 @@ class IntelligenceController
         }
 
         try {
-            $this->predictions->recordFeedback($userId, $product, $action);
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            $this->predictions->recordFeedback($userId, $product, $action, $space);
             return $this->json($response, ['success' => true, 'message' => 'Feedback enregistré']);
         } catch (\App\Services\SpaceAccessException $sae) {
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
@@ -105,7 +108,7 @@ class IntelligenceController
 
             // Statuts estimés par l'historique (§11) — informatif seulement
             $estimates = [];
-            foreach ($this->predictions->getPredictions($userId, true, 200) as $p) {
+            foreach ($this->predictions->getPredictions($userId, $space, true, 200) as $p) {
                 $estimates[$p['normalized_name']] = match ($p['status']) {
                     PurchasePredictionService::STATUS_OVERDUE => HomeInventory::STATUS_OUT,
                     PurchasePredictionService::STATUS_LIKELY,
@@ -267,8 +270,8 @@ class IntelligenceController
             $daysLeft = max(0, (int) ceil($now->diffInDays($endDate, false)));
             $daysElapsed = max(1, (int) floor($startDate->diffInDays($now)) + 1);
 
-            // Rythme quotidien robuste : dépenses purchase_history
-            $dailyRate = $this->robustDailyRate($userId, $startDate, $now, $spent, $daysElapsed);
+            // Rythme quotidien robuste : dépenses purchase_history DE L'ESPACE
+            $dailyRate = $this->robustDailyRate($userId, $space, $startDate, $now, $spent, $daysElapsed);
 
             $projection = $spent + $dailyRate * $daysLeft;
             $perDayRemaining = $daysLeft > 0 ? $remaining / $daysLeft : 0;
@@ -312,10 +315,10 @@ class IntelligenceController
      * depuis le début du mois — une grosse course exceptionnelle ne domine
      * pas la projection (§21).
      */
-    private function robustDailyRate(int $userId, Carbon $monthStart, Carbon $now, float $spentMonth, int $daysElapsed): float
+    private function robustDailyRate(int $userId, \App\Models\Space $space, Carbon $monthStart, Carbon $now, float $spentMonth, int $daysElapsed): float
     {
-        $sumSince = function (Carbon $since) use ($userId, $now): float {
-            return (float) PurchaseHistory::where('user_id', $userId)
+        $sumSince = function (Carbon $since) use ($userId, $space, $now): float {
+            return (float) \App\Services\SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId)
                 ->where('purchased_at', '>=', $since)
                 ->where('purchased_at', '<=', $now)
                 ->whereNotNull('price')

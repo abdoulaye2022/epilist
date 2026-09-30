@@ -35,6 +35,7 @@ use App\Controllers\{
     SupplierController,
     PurchaseRequestController,
     PriceAlertController,
+    AssistantController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
 };
 use App\Middleware\ErrorMiddleware;
@@ -222,6 +223,10 @@ $app->group('', function ($group) {
     $group->post('/purchase-requests/{id:[0-9]+}/reject', [PurchaseRequestController::class, 'reject']);
     $group->post('/purchase-requests/{id:[0-9]+}/purchased', [PurchaseRequestController::class, 'purchased']);
     $group->post('/purchase-requests/{id:[0-9]+}/cancel', [PurchaseRequestController::class, 'cancel']);
+    // Assistant intelligent (Phase 5, §28-§30)
+    $group->get('/assistant/pre-shopping', [AssistantController::class, 'preShopping']);
+    $group->get('/assistant/savings', [AssistantController::class, 'savings']);
+    $group->get('/prices/check', [PriceController::class, 'checkPrice']);
     // Prix cible & alertes de baisse (Phase 4, §25-§27)
     $group->get('/price-alerts', [PriceAlertController::class, 'index']);
     $group->get('/price-alerts/suggest', [PriceAlertController::class, 'suggest']);

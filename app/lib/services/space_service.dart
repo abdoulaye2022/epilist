@@ -268,3 +268,25 @@ extension SpaceServicePhase4 on SpaceService {
     await dio.delete('/price-alerts/$id');
   }
 }
+
+/// Phase 5 — assistant intelligent : brief avant les courses (§28),
+/// économies estimées documentées (§30), « est-ce un bon prix » (§29).
+/// Réponses laissées en Map : composition d'affichage, pas de logique.
+extension SpaceServicePhase5 on SpaceService {
+  Future<Map<String, dynamic>> getPreShopping() async {
+    final res = await dio.get('/assistant/pre-shopping');
+    return (res.data['data'] as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> getSavings({int days = 30}) async {
+    final res =
+        await dio.get('/assistant/savings', queryParameters: {'days': days});
+    return (res.data['data'] as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> checkPrice(String product, double price) async {
+    final res = await dio.get('/prices/check',
+        queryParameters: {'product': product, 'price': price});
+    return (res.data['data'] as Map).cast<String, dynamic>();
+  }
+}

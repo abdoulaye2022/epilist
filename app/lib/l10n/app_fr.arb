@@ -2635,5 +2635,69 @@
         "type": "String"
       }
     }
-  }
+  },
+  "preShopping": "Avant les courses",
+  "preShoppingBudget": "Budget du mois",
+  "preShoppingBudgetRemaining": "{amount} $ restants · {days} jours",
+  "@preShoppingBudgetRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingRequests": "{count} demande(s) d'achat en attente",
+  "@preShoppingRequests": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingRestock": "À racheter probablement",
+  "preShoppingRestockEmpty": "Rien d'urgent selon vos habitudes.",
+  "preShoppingInventory": "En rupture ou sous le seuil",
+  "preShoppingPriceWatch": "Prix repérés récemment",
+  "savingsTitle": "Économies estimées (30 j)",
+  "savingsTotal": "{amount} $ économisés vs vos prix habituels",
+  "@savingsTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "savingsEmpty": "Aucune économie détectée sur la période.",
+  "savingsLine": "payé {paid} $ · habituel {usual} $",
+  "@savingsLine": {
+    "placeholders": {
+      "paid": {
+        "type": "String"
+      },
+      "usual": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCheckTitle": "Est-ce un bon prix ?",
+  "priceCheckPrice": "Prix affiché ($)",
+  "priceCheckGood": "Bon prix",
+  "priceCheckFair": "Dans vos prix habituels",
+  "priceCheckHigh": "Au-dessus de votre prix habituel",
+  "priceCheckUnknown": "Pas assez d'historique pour juger.",
+  "priceCheckUsual": "Habituel {usual} $ · bon prix {good} $",
+  "@priceCheckUsual": {
+    "placeholders": {
+      "usual": {
+        "type": "String"
+      },
+      "good": {
+        "type": "String"
+      }
+    }
+  },
+  "priceCheckAction": "Vérifier"
 }

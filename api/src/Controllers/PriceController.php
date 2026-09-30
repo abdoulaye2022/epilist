@@ -525,6 +525,88 @@ class PriceController
     }
 
     // =========================================================================
+    // « EST-CE UN BON PRIX ? » (§29, Phase 5)
+    // =========================================================================
+
+    /**
+     * GET /prices/check?product=Lait%202%25&price=4.29
+     * Verdict PRUDENT contre l'historique de l'espace actif (90 j) :
+     *   good  — au niveau du bon prix (25e percentile) ou mieux ;
+     *   fair  — proche du prix habituel (médiane +5 %) ;
+     *   high  — au-dessus du prix habituel ;
+     *   unknown — moins de 3 observations (on ne devine pas).
+     * Toujours accompagné des chiffres : c'est une aide, pas un oracle.
+     */
+    public function checkPrice(Request $request, Response $response): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        $params = $request->getQueryParams();
+        $product = trim((string) ($params['product'] ?? ''));
+        $price = $params['price'] ?? null;
+
+        if ($product === '' || !is_numeric($price) || (float) $price <= 0) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => 'product et price (nombre positif) requis',
+            ], 422);
+        }
+        $price = (float) $price;
+        $normalized = PurchaseHistory::normalizeProductName($product);
+
+        $space = SpaceAccessService::resolveSpace($request, $userId);
+        $rows = SpaceAccessService::scopeQuery(PurchaseHistory::query(), $space, $userId)
+            ->where('normalized_name', $normalized)
+            ->where('purchased_at', '>=', Carbon::now()->subDays(self::DEFAULT_WINDOW_DAYS))
+            ->whereNotNull('price')
+            ->orderByDesc('purchased_at')
+            ->limit(100)
+            ->get(['price', 'purchased_at']);
+
+        $count = $rows->count();
+        if ($count < 3) {
+            return $this->json($response, [
+                'success' => true,
+                'data' => [
+                    'product' => $product,
+                    'normalized_name' => $normalized,
+                    'verdict' => 'unknown',
+                    'observations' => $count,
+                    'window_days' => self::DEFAULT_WINDOW_DAYS,
+                ],
+            ]);
+        }
+
+        $prices = $rows->pluck('price')->map(fn($p) => (float) $p)->sort()->values();
+        $mid = intdiv($count, 2);
+        $median = $count % 2 === 1 ? $prices[$mid] : ($prices[$mid - 1] + $prices[$mid]) / 2;
+        $p25 = $prices[max(0, (int) floor(($count - 1) * 0.25))];
+
+        $verdict = match (true) {
+            $price <= $p25 + 0.001 => 'good',
+            $price <= $median * 1.05 => 'fair',
+            default => 'high',
+        };
+        $lastAge = (int) floor(Carbon::parse($rows->first()->purchased_at)->diffInDays(Carbon::now()));
+
+        return $this->json($response, [
+            'success' => true,
+            'data' => [
+                'product' => $product,
+                'normalized_name' => $normalized,
+                'verdict' => $verdict,
+                'price' => round($price, 2),
+                'usual_price' => round($median, 2),
+                'good_price' => round($p25, 2),
+                'min_price' => round($prices->first(), 2),
+                'delta_pct' => $median > 0 ? round(($price - $median) / $median * 100, 1) : null,
+                'observations' => $count,
+                'window_days' => self::DEFAULT_WINDOW_DAYS,
+                'last_freshness' => $this->freshness($lastAge),
+            ],
+        ]);
+    }
+
+    // =========================================================================
     // COMPARATEUR & OPTIMISEUR
     // =========================================================================
 
