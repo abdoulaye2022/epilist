@@ -21,6 +21,7 @@ import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/screens/welcome_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/services/account_deletion_service.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/analytics_service.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/category_service.dart';
@@ -190,6 +191,12 @@ void main() async {
       ),
     );
 
+    // 🏠 Espaces (Phase 1) : espace actif restauré, en-tête X-Space-Id
+    // sur chaque requête (le serveur revérifie l'appartenance à chaque
+    // appel — voir docs/audit-espaces-epilist.md).
+    await ActiveSpaceStore.restore();
+    dio.interceptors.add(SpaceHeaderInterceptor());
+
     // Désactivé pour réduire les logs HTTP
     // if (kDebugMode) {
     //   dio.interceptors.add(
@@ -216,6 +223,9 @@ void main() async {
           RepositoryProvider<CurrencyService>.value(value: currencyService),
           RepositoryProvider<CategoryService>.value(value: categoryService),
           RepositoryProvider<StoreService>.value(value: storeService),
+          RepositoryProvider<SpaceService>(
+            create: (context) => SpaceService(dio: dio),
+          ),
           RepositoryProvider<ImageUploadService>(
             create: (_) => ImageUploadService(dio: dio),
           ),

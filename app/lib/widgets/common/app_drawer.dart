@@ -3,6 +3,7 @@
 // l'accueil : identité en tête, navigation claire, déconnexion en pied.
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/models/space.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
@@ -15,6 +16,8 @@ import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
+import 'package:epilist/services/space_service.dart';
+import 'package:epilist/widgets/common/space_selector_sheet.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
@@ -40,6 +43,7 @@ class AppDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildHeader(context),
+            _buildSpaceSelector(context),
             const Divider(),
             Expanded(
               child: ListView(
@@ -190,6 +194,65 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Sélecteur d'espace (§9) : « Personnel ▼ » ou « Famille Diallo ▼ »,
+  /// ouvre la feuille des espaces (bascule, invitations, création).
+  Widget _buildSpaceSelector(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ValueListenableBuilder<Space?>(
+      valueListenable: ActiveSpaceStore.current,
+      builder: (context, space, _) {
+        final label = space?.name ?? l10n.spacePersonal;
+        final icon = switch (space?.type) {
+          'household' => Icons.family_restroom_rounded,
+          'restaurant' => Icons.restaurant_rounded,
+          'organization' => Icons.apartment_rounded,
+          _ => Icons.person_rounded,
+        };
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              // Le drawer se ferme : on ouvre la feuille depuis le
+              // contexte du Navigator (sous les providers), qui survit.
+              final navContext = Navigator.of(context).context;
+              Navigator.pop(context);
+              SpaceSelectorSheet.show(navContext);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm + 4, vertical: AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(icon, size: 18, color: AppColors.primaryDark),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.expand_more_rounded,
+                      size: 18, color: AppColors.primaryDark),
+                ],
+              ),
+            ),
           ),
         );
       },

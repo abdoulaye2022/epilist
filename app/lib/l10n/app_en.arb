@@ -2356,5 +2356,62 @@
       }
     }
   },
-  "days": "days"
+  "days": "days",
+  "spaces": "Spaces",
+  "spaceActive": "Active space",
+  "spacePersonal": "Personal",
+  "spaceTypeHousehold": "Household / Family",
+  "spaceTypeRestaurant": "Restaurant",
+  "spaceTypeOrganization": "Other organization",
+  "spaceTypeHouseholdDesc": "Share lists, budget, inventory and expenses with your family.",
+  "spaceTypeRestaurantDesc": "Manage your restaurant's purchases, inventory, staff and budgets.",
+  "spaceTypeOrganizationDesc": "For any other small organization.",
+  "createSpace": "Create a space",
+  "createSpaceQuestion": "How will you use EpiList?",
+  "spaceName": "Space name",
+  "spaceNameHintHousehold": "E.g. Diallo Family",
+  "spaceNameHintRestaurant": "E.g. Baobab Restaurant",
+  "spaceOptionalInfo": "Optional information",
+  "spaceCity": "City",
+  "spaceCountry": "Country (code, e.g. CA)",
+  "spaceCreated": "Space created",
+  "spaceSwitched": "Active space: {name}",
+  "@spaceSwitched": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceMembers": "Members",
+  "spaceInvite": "Invite",
+  "spaceInviteEmail": "Email of the member to invite",
+  "spaceInviteSent": "Invitation sent",
+  "spaceRole": "Role",
+  "spaceRoleOwner": "Owner",
+  "spaceRoleAdmin": "Administrator",
+  "spaceRoleManager": "Manager",
+  "spaceRoleMember": "Member",
+  "spaceRoleViewer": "View only",
+  "spacePendingInvitations": "Pending invitations",
+  "spaceMyInvitations": "Invitations received",
+  "spaceInvitedBy": "Invited by {name}",
+  "@spaceInvitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceAccept": "Accept",
+  "spaceDecline": "Decline",
+  "spaceLeave": "Leave this space",
+  "spaceLeaveConfirm": "Leave this space? You will lose access to its data.",
+  "spaceRemoveMember": "Remove this member",
+  "spaceRevokeInvitation": "Revoke invitation",
+  "spaceManage": "Manage space",
+  "spaceNoOthers": "You don't have another space yet.",
+  "spacePhase1Note": "Shared data (lists, budget, inventory) arrives in an upcoming update.",
+  "spaceAlreadyMember": "This person is already a member.",
+  "spaceInvitationPending": "An invitation is already pending for this email."
 }

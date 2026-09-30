@@ -10104,6 +10104,264 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'ajouter des articles'**
   String get permActionAddItems;
+
+  /// No description provided for @spaces.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espaces'**
+  String get spaces;
+
+  /// No description provided for @spaceActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace actif'**
+  String get spaceActive;
+
+  /// No description provided for @spacePersonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnel'**
+  String get spacePersonal;
+
+  /// No description provided for @spaceTypeHousehold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Foyer / Famille'**
+  String get spaceTypeHousehold;
+
+  /// No description provided for @spaceTypeRestaurant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurant'**
+  String get spaceTypeRestaurant;
+
+  /// No description provided for @spaceTypeOrganization.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre organisation'**
+  String get spaceTypeOrganization;
+
+  /// No description provided for @spaceTypeHouseholdDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagez listes, budget, inventaire et dépenses avec votre famille.'**
+  String get spaceTypeHouseholdDesc;
+
+  /// No description provided for @spaceTypeRestaurantDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez achats, inventaire, employés et budgets de votre restaurant.'**
+  String get spaceTypeRestaurantDesc;
+
+  /// No description provided for @spaceTypeOrganizationDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour toute autre petite organisation.'**
+  String get spaceTypeOrganizationDesc;
+
+  /// No description provided for @createSpace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un espace'**
+  String get createSpace;
+
+  /// No description provided for @createSpaceQuestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment allez-vous utiliser EpiList ?'**
+  String get createSpaceQuestion;
+
+  /// No description provided for @spaceName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'espace'**
+  String get spaceName;
+
+  /// No description provided for @spaceNameHintHousehold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : Famille Diallo'**
+  String get spaceNameHintHousehold;
+
+  /// No description provided for @spaceNameHintRestaurant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : Restaurant Baobab'**
+  String get spaceNameHintRestaurant;
+
+  /// No description provided for @spaceOptionalInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations facultatives'**
+  String get spaceOptionalInfo;
+
+  /// No description provided for @spaceCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get spaceCity;
+
+  /// No description provided for @spaceCountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays (code, ex : CA)'**
+  String get spaceCountry;
+
+  /// No description provided for @spaceCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace créé'**
+  String get spaceCreated;
+
+  /// No description provided for @spaceSwitched.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace actif : {name}'**
+  String spaceSwitched(String name);
+
+  /// No description provided for @spaceMembers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membres'**
+  String get spaceMembers;
+
+  /// No description provided for @spaceInvite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter'**
+  String get spaceInvite;
+
+  /// No description provided for @spaceInviteEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email du membre à inviter'**
+  String get spaceInviteEmail;
+
+  /// No description provided for @spaceInviteSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation envoyée'**
+  String get spaceInviteSent;
+
+  /// No description provided for @spaceRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rôle'**
+  String get spaceRole;
+
+  /// No description provided for @spaceRoleOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propriétaire'**
+  String get spaceRoleOwner;
+
+  /// No description provided for @spaceRoleAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administrateur'**
+  String get spaceRoleAdmin;
+
+  /// No description provided for @spaceRoleManager.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestionnaire'**
+  String get spaceRoleManager;
+
+  /// No description provided for @spaceRoleMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membre'**
+  String get spaceRoleMember;
+
+  /// No description provided for @spaceRoleViewer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture seule'**
+  String get spaceRoleViewer;
+
+  /// No description provided for @spacePendingInvitations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitations en attente'**
+  String get spacePendingInvitations;
+
+  /// No description provided for @spaceMyInvitations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitations reçues'**
+  String get spaceMyInvitations;
+
+  /// No description provided for @spaceInvitedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invité par {name}'**
+  String spaceInvitedBy(String name);
+
+  /// No description provided for @spaceAccept.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accepter'**
+  String get spaceAccept;
+
+  /// No description provided for @spaceDecline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get spaceDecline;
+
+  /// No description provided for @spaceLeave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter cet espace'**
+  String get spaceLeave;
+
+  /// No description provided for @spaceLeaveConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter cet espace ? Vous n\'aurez plus accès à ses données.'**
+  String get spaceLeaveConfirm;
+
+  /// No description provided for @spaceRemoveMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer ce membre'**
+  String get spaceRemoveMember;
+
+  /// No description provided for @spaceRevokeInvitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer l\'invitation'**
+  String get spaceRevokeInvitation;
+
+  /// No description provided for @spaceManage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer l\'espace'**
+  String get spaceManage;
+
+  /// No description provided for @spaceNoOthers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'autre espace.'**
+  String get spaceNoOthers;
+
+  /// No description provided for @spacePhase1Note.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données partagées (listes, budget, inventaire) arrivent dans une prochaine mise à jour.'**
+  String get spacePhase1Note;
+
+  /// No description provided for @spaceAlreadyMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette personne est déjà membre.'**
+  String get spaceAlreadyMember;
+
+  /// No description provided for @spaceInvitationPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une invitation est déjà en attente pour cet email.'**
+  String get spaceInvitationPending;
 }
 
 class _AppLocalizationsDelegate

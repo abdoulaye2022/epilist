@@ -31,6 +31,7 @@ use App\Controllers\{
     ImageController,
     MessageController,
     SuggestionController,
+    SpaceController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
 };
 use App\Middleware\ErrorMiddleware;
@@ -189,6 +190,23 @@ $app->group('', function ($group) {
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
     $group->get('/auth/me', [AuthController::class, 'getCurrentUser']);
     $group->put('/auth/me', [AuthController::class, 'updateProfile']);
+
+    // 🏠 ESPACES (Phase 1 — fondation, voir docs/audit-espaces-epilist.md)
+    $group->get('/spaces', [SpaceController::class, 'index']);
+    $group->post('/spaces', [SpaceController::class, 'create']);
+    $group->get('/spaces/{id:[0-9]+}', [SpaceController::class, 'show']);
+    $group->put('/spaces/{id:[0-9]+}', [SpaceController::class, 'update']);
+    $group->delete('/spaces/{id:[0-9]+}', [SpaceController::class, 'destroy']);
+    $group->get('/spaces/{id:[0-9]+}/members', [SpaceController::class, 'members']);
+    $group->put('/spaces/{id:[0-9]+}/members/{userId:[0-9]+}', [SpaceController::class, 'updateMember']);
+    $group->delete('/spaces/{id:[0-9]+}/members/{userId:[0-9]+}', [SpaceController::class, 'removeMember']);
+    $group->post('/spaces/{id:[0-9]+}/leave', [SpaceController::class, 'leave']);
+    $group->post('/spaces/{id:[0-9]+}/invitations', [SpaceController::class, 'invite']);
+    $group->get('/spaces/{id:[0-9]+}/invitations', [SpaceController::class, 'invitations']);
+    $group->delete('/spaces/{id:[0-9]+}/invitations/{invId:[0-9]+}', [SpaceController::class, 'revokeInvitation']);
+    $group->get('/space-invitations', [SpaceController::class, 'myInvitations']);
+    $group->post('/space-invitations/{token}/accept', [SpaceController::class, 'acceptInvitation']);
+    $group->post('/space-invitations/{token}/decline', [SpaceController::class, 'declineInvitation']);
 
     //  ROUTES DE DEVISES PROTÉGÉES
     $group->get('/user/currency', [CurrencyController::class, 'getUserCurrency']);

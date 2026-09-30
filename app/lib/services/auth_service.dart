@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 // services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/token_store.dart';
 import 'package:epilist/models/user.dart';
 import 'package:epilist/services/sso_service.dart';
@@ -1001,6 +1002,9 @@ class AuthService {
   Future<void> clearUserData() async {
     try {
       await TokenStore.clear();
+      // Retour à l'espace personnel : l'espace actif appartient à la
+      // session de CE compte, pas au suivant.
+      await ActiveSpaceStore.clear();
       final keysToRemove = [
         _accessTokenKey,
         _refreshTokenKey,

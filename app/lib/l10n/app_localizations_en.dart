@@ -5364,4 +5364,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get permActionAddItems => 'add items';
+
+  @override
+  String get spaces => 'Spaces';
+
+  @override
+  String get spaceActive => 'Active space';
+
+  @override
+  String get spacePersonal => 'Personal';
+
+  @override
+  String get spaceTypeHousehold => 'Household / Family';
+
+  @override
+  String get spaceTypeRestaurant => 'Restaurant';
+
+  @override
+  String get spaceTypeOrganization => 'Other organization';
+
+  @override
+  String get spaceTypeHouseholdDesc =>
+      'Share lists, budget, inventory and expenses with your family.';
+
+  @override
+  String get spaceTypeRestaurantDesc =>
+      'Manage your restaurant\'s purchases, inventory, staff and budgets.';
+
+  @override
+  String get spaceTypeOrganizationDesc => 'For any other small organization.';
+
+  @override
+  String get createSpace => 'Create a space';
+
+  @override
+  String get createSpaceQuestion => 'How will you use EpiList?';
+
+  @override
+  String get spaceName => 'Space name';
+
+  @override
+  String get spaceNameHintHousehold => 'E.g. Diallo Family';
+
+  @override
+  String get spaceNameHintRestaurant => 'E.g. Baobab Restaurant';
+
+  @override
+  String get spaceOptionalInfo => 'Optional information';
+
+  @override
+  String get spaceCity => 'City';
+
+  @override
+  String get spaceCountry => 'Country (code, e.g. CA)';
+
+  @override
+  String get spaceCreated => 'Space created';
+
+  @override
+  String spaceSwitched(String name) {
+    return 'Active space: $name';
+  }
+
+  @override
+  String get spaceMembers => 'Members';
+
+  @override
+  String get spaceInvite => 'Invite';
+
+  @override
+  String get spaceInviteEmail => 'Email of the member to invite';
+
+  @override
+  String get spaceInviteSent => 'Invitation sent';
+
+  @override
+  String get spaceRole => 'Role';
+
+  @override
+  String get spaceRoleOwner => 'Owner';
+
+  @override
+  String get spaceRoleAdmin => 'Administrator';
+
+  @override
+  String get spaceRoleManager => 'Manager';
+
+  @override
+  String get spaceRoleMember => 'Member';
+
+  @override
+  String get spaceRoleViewer => 'View only';
+
+  @override
+  String get spacePendingInvitations => 'Pending invitations';
+
+  @override
+  String get spaceMyInvitations => 'Invitations received';
+
+  @override
+  String spaceInvitedBy(String name) {
+    return 'Invited by $name';
+  }
+
+  @override
+  String get spaceAccept => 'Accept';
+
+  @override
+  String get spaceDecline => 'Decline';
+
+  @override
+  String get spaceLeave => 'Leave this space';
+
+  @override
+  String get spaceLeaveConfirm =>
+      'Leave this space? You will lose access to its data.';
+
+  @override
+  String get spaceRemoveMember => 'Remove this member';
+
+  @override
+  String get spaceRevokeInvitation => 'Revoke invitation';
+
+  @override
+  String get spaceManage => 'Manage space';
+
+  @override
+  String get spaceNoOthers => 'You don\'t have another space yet.';
+
+  @override
+  String get spacePhase1Note =>
+      'Shared data (lists, budget, inventory) arrives in an upcoming update.';
+
+  @override
+  String get spaceAlreadyMember => 'This person is already a member.';
+
+  @override
+  String get spaceInvitationPending =>
+      'An invitation is already pending for this email.';
 }

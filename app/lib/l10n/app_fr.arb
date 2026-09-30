@@ -2356,5 +2356,62 @@
   "permActionShareList": "partager cette liste",
   "permActionAccessChat": "accéder au chat",
   "permActionManageShares": "gérer les partages",
-  "permActionAddItems": "ajouter des articles"
+  "permActionAddItems": "ajouter des articles",
+  "spaces": "Espaces",
+  "spaceActive": "Espace actif",
+  "spacePersonal": "Personnel",
+  "spaceTypeHousehold": "Foyer / Famille",
+  "spaceTypeRestaurant": "Restaurant",
+  "spaceTypeOrganization": "Autre organisation",
+  "spaceTypeHouseholdDesc": "Partagez listes, budget, inventaire et dépenses avec votre famille.",
+  "spaceTypeRestaurantDesc": "Gérez achats, inventaire, employés et budgets de votre restaurant.",
+  "spaceTypeOrganizationDesc": "Pour toute autre petite organisation.",
+  "createSpace": "Créer un espace",
+  "createSpaceQuestion": "Comment allez-vous utiliser EpiList ?",
+  "spaceName": "Nom de l'espace",
+  "spaceNameHintHousehold": "Ex : Famille Diallo",
+  "spaceNameHintRestaurant": "Ex : Restaurant Baobab",
+  "spaceOptionalInfo": "Informations facultatives",
+  "spaceCity": "Ville",
+  "spaceCountry": "Pays (code, ex : CA)",
+  "spaceCreated": "Espace créé",
+  "spaceSwitched": "Espace actif : {name}",
+  "@spaceSwitched": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceMembers": "Membres",
+  "spaceInvite": "Inviter",
+  "spaceInviteEmail": "Email du membre à inviter",
+  "spaceInviteSent": "Invitation envoyée",
+  "spaceRole": "Rôle",
+  "spaceRoleOwner": "Propriétaire",
+  "spaceRoleAdmin": "Administrateur",
+  "spaceRoleManager": "Gestionnaire",
+  "spaceRoleMember": "Membre",
+  "spaceRoleViewer": "Lecture seule",
+  "spacePendingInvitations": "Invitations en attente",
+  "spaceMyInvitations": "Invitations reçues",
+  "spaceInvitedBy": "Invité par {name}",
+  "@spaceInvitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceAccept": "Accepter",
+  "spaceDecline": "Refuser",
+  "spaceLeave": "Quitter cet espace",
+  "spaceLeaveConfirm": "Quitter cet espace ? Vous n'aurez plus accès à ses données.",
+  "spaceRemoveMember": "Retirer ce membre",
+  "spaceRevokeInvitation": "Révoquer l'invitation",
+  "spaceManage": "Gérer l'espace",
+  "spaceNoOthers": "Vous n'avez pas encore d'autre espace.",
+  "spacePhase1Note": "Les données partagées (listes, budget, inventaire) arrivent dans une prochaine mise à jour.",
+  "spaceAlreadyMember": "Cette personne est déjà membre.",
+  "spaceInvitationPending": "Une invitation est déjà en attente pour cet email."
 }
