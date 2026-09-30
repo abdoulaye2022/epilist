@@ -32,6 +32,8 @@ use App\Controllers\{
     MessageController,
     SuggestionController,
     SpaceController,
+    SupplierController,
+    PurchaseRequestController,
     EmailPreferenceController  // 📧 Nouveau controller pour les préférences d'email
 };
 use App\Middleware\ErrorMiddleware;
@@ -205,6 +207,20 @@ $app->group('', function ($group) {
     $group->get('/spaces/{id:[0-9]+}/invitations', [SpaceController::class, 'invitations']);
     $group->delete('/spaces/{id:[0-9]+}/invitations/{invId:[0-9]+}', [SpaceController::class, 'revokeInvitation']);
     $group->get('/spaces/{id:[0-9]+}/activity', [SpaceController::class, 'activity']);
+
+    // 🍽️ RESTAURANT (Phase 3) : fournisseurs + demandes d'achat
+    $group->get('/suppliers', [SupplierController::class, 'index']);
+    $group->post('/suppliers', [SupplierController::class, 'store']);
+    $group->put('/suppliers/{id:[0-9]+}', [SupplierController::class, 'update']);
+    $group->delete('/suppliers/{id:[0-9]+}', [SupplierController::class, 'destroy']);
+    $group->get('/purchase-requests', [PurchaseRequestController::class, 'index']);
+    $group->post('/purchase-requests', [PurchaseRequestController::class, 'store']);
+    $group->get('/purchase-requests/{id:[0-9]+}', [PurchaseRequestController::class, 'show']);
+    $group->post('/purchase-requests/{id:[0-9]+}/submit', [PurchaseRequestController::class, 'submit']);
+    $group->post('/purchase-requests/{id:[0-9]+}/approve', [PurchaseRequestController::class, 'approve']);
+    $group->post('/purchase-requests/{id:[0-9]+}/reject', [PurchaseRequestController::class, 'reject']);
+    $group->post('/purchase-requests/{id:[0-9]+}/purchased', [PurchaseRequestController::class, 'purchased']);
+    $group->post('/purchase-requests/{id:[0-9]+}/cancel', [PurchaseRequestController::class, 'cancel']);
     $group->get('/space-invitations', [SpaceController::class, 'myInvitations']);
     $group->post('/space-invitations/{token}/accept', [SpaceController::class, 'acceptInvitation']);
     $group->post('/space-invitations/{token}/decline', [SpaceController::class, 'declineInvitation']);

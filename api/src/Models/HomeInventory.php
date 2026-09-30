@@ -29,6 +29,9 @@ class HomeInventory extends Model
         'category_id',
         'status',
         'quantity',
+        'min_quantity',
+        'reorder_quantity',
+        'preferred_supplier_id',
         'unit',
         'source',
     ];

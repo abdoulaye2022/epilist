@@ -2494,5 +2494,83 @@
         "type": "String"
       }
     }
+  },
+  "purchaseRequests": "Demandes d'achat",
+  "purchaseRequestNew": "Nouvelle demande",
+  "purchaseRequestProduct": "Produit",
+  "purchaseRequestQuantity": "Quantité",
+  "purchaseRequestUnit": "Unité",
+  "purchaseRequestNote": "Note (facultatif)",
+  "purchaseRequestCreated": "Demande envoyée",
+  "purchaseRequestEmpty": "Aucune demande d'achat.",
+  "prStatusPending": "À approuver",
+  "prStatusApproved": "Approuvée",
+  "prStatusRejected": "Refusée",
+  "prStatusPurchased": "Achetée",
+  "prStatusCancelled": "Annulée",
+  "prStatusDraft": "Brouillon",
+  "prApprove": "Approuver",
+  "prReject": "Refuser",
+  "prRejectReason": "Motif du refus",
+  "prMarkPurchased": "Marquer achetée",
+  "prCancel": "Annuler la demande",
+  "prRequestedBy": "Demandé par {name}",
+  "@prRequestedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "prDecidedBy": "Décidé par {name}",
+  "@prDecidedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "suppliers": "Fournisseurs",
+  "supplierNew": "Nouveau fournisseur",
+  "supplierName": "Nom du fournisseur",
+  "supplierContact": "Personne contact",
+  "supplierPhone": "Téléphone",
+  "supplierEmail": "Email",
+  "supplierNotes": "Notes",
+  "supplierInactive": "Inactif",
+  "supplierEmpty": "Aucun fournisseur pour le moment.",
+  "supplierSaved": "Fournisseur enregistré",
+  "actPurchaseRequestCreated": "{name} a demandé {target}",
+  "@actPurchaseRequestCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actPurchaseRequestApproved": "{name} a approuvé la demande « {target} »",
+  "@actPurchaseRequestApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actPurchaseRequestRejected": "{name} a refusé la demande « {target} »",
+  "@actPurchaseRequestRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
   }
 }

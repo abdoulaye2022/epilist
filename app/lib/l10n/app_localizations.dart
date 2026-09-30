@@ -10422,6 +10422,210 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{target} est terminé (inventaire)'**
   String actInventoryOut(String target);
+
+  /// No description provided for @purchaseRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes d\'achat'**
+  String get purchaseRequests;
+
+  /// No description provided for @purchaseRequestNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle demande'**
+  String get purchaseRequestNew;
+
+  /// No description provided for @purchaseRequestProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit'**
+  String get purchaseRequestProduct;
+
+  /// No description provided for @purchaseRequestQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get purchaseRequestQuantity;
+
+  /// No description provided for @purchaseRequestUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get purchaseRequestUnit;
+
+  /// No description provided for @purchaseRequestNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note (facultatif)'**
+  String get purchaseRequestNote;
+
+  /// No description provided for @purchaseRequestCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande envoyée'**
+  String get purchaseRequestCreated;
+
+  /// No description provided for @purchaseRequestEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande d\'achat.'**
+  String get purchaseRequestEmpty;
+
+  /// No description provided for @prStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'À approuver'**
+  String get prStatusPending;
+
+  /// No description provided for @prStatusApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvée'**
+  String get prStatusApproved;
+
+  /// No description provided for @prStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusée'**
+  String get prStatusRejected;
+
+  /// No description provided for @prStatusPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Achetée'**
+  String get prStatusPurchased;
+
+  /// No description provided for @prStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get prStatusCancelled;
+
+  /// No description provided for @prStatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get prStatusDraft;
+
+  /// No description provided for @prApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver'**
+  String get prApprove;
+
+  /// No description provided for @prReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get prReject;
+
+  /// No description provided for @prRejectReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du refus'**
+  String get prRejectReason;
+
+  /// No description provided for @prMarkPurchased.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer achetée'**
+  String get prMarkPurchased;
+
+  /// No description provided for @prCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get prCancel;
+
+  /// No description provided for @prRequestedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandé par {name}'**
+  String prRequestedBy(String name);
+
+  /// No description provided for @prDecidedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décidé par {name}'**
+  String prDecidedBy(String name);
+
+  /// No description provided for @suppliers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseurs'**
+  String get suppliers;
+
+  /// No description provided for @supplierNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau fournisseur'**
+  String get supplierNew;
+
+  /// No description provided for @supplierName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du fournisseur'**
+  String get supplierName;
+
+  /// No description provided for @supplierContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personne contact'**
+  String get supplierContact;
+
+  /// No description provided for @supplierPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get supplierPhone;
+
+  /// No description provided for @supplierEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get supplierEmail;
+
+  /// No description provided for @supplierNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get supplierNotes;
+
+  /// No description provided for @supplierInactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get supplierInactive;
+
+  /// No description provided for @supplierEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun fournisseur pour le moment.'**
+  String get supplierEmpty;
+
+  /// No description provided for @supplierSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur enregistré'**
+  String get supplierSaved;
+
+  /// No description provided for @actPurchaseRequestCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a demandé {target}'**
+  String actPurchaseRequestCreated(String name, String target);
+
+  /// No description provided for @actPurchaseRequestApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a approuvé la demande « {target} »'**
+  String actPurchaseRequestApproved(String name, String target);
+
+  /// No description provided for @actPurchaseRequestRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} a refusé la demande « {target} »'**
+  String actPurchaseRequestRejected(String name, String target);
 }
 
 class _AppLocalizationsDelegate

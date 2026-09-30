@@ -252,5 +252,92 @@ echo "== Nettoyage P2\n";
 [$s] = req('DELETE', "$base/spaces/$h2", null, $tokenA);
 check('suppression du foyer P2', $s === 200, "status $s");
 
+// ==================================================================
+// PHASE 3 — restaurant : demandes d'achat, fournisseurs,
+// inventaire quantitatif
+// ==================================================================
+echo "== PHASE 3 : restaurant\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'restaurant', 'name' => 'Resto P3'], $tokenA);
+$r3 = (int) ($d['data']['space']['id'] ?? 0);
+check('restaurant créé', $s === 201 && $r3 > 0, "status $s");
+[$s] = req('POST', "$base/spaces/$r3/invitations", ['email' => 'admin@gmail.com', 'role' => 'member'], $tokenA);
+$token3 = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $r3 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('POST', "$base/space-invitations/$token3/accept", null, $tokenB);
+check('employé B (member) rejoint', $s === 200, "status $s");
+
+echo "== Demandes d'achat\n";
+[$s, $d] = req('POST', "$base/purchase-requests", ['product_name' => 'Poulet', 'quantity' => 20, 'unit' => 'kg'], $tokenB, $r3);
+$reqId = (int) ($d['data']['request']['id'] ?? 0);
+check('employé crée une demande (pending)', $s === 201 && ($d['data']['request']['status'] ?? '') === 'pending', "status $s");
+[$s] = req('POST', "$base/purchase-requests/$reqId/approve", null, $tokenB, $r3);
+check('member ne peut PAS approuver (403)', $s === 403, "status $s");
+[$s] = req('POST', "$base/purchase-requests/$reqId/reject", ['comment' => ''], $tokenA, $r3);
+check('refus sans commentaire refusé (422)', $s === 422, "status $s");
+[$s, $d] = req('POST', "$base/purchase-requests/$reqId/approve", null, $tokenA, $r3);
+check('owner approuve', $s === 200 && ($d['data']['request']['status'] ?? '') === 'approved', "status $s");
+check('approbateur tracé', ($d['data']['request']['approved_by'] ?? 0) == $aId);
+[$s] = req('POST', "$base/purchase-requests/$reqId/approve", null, $tokenA, $r3);
+check('transition invalide refusée (422)', $s === 422, "status $s");
+[$s, $d] = req('POST', "$base/purchase-requests/$reqId/purchased", null, $tokenB, $r3);
+check('employé marque acheté', $s === 200 && ($d['data']['request']['status'] ?? '') === 'purchased', "status $s");
+[$s, $d] = req('GET', "$base/purchase-requests/$reqId", null, $tokenA, $r3);
+$events = $d['data']['request']['events'] ?? [];
+check('historique complet (3 transitions)', count($events) === 3, 'events=' . count($events));
+
+// Rejet commenté + annulation par le demandeur
+[$s, $d] = req('POST', "$base/purchase-requests", ['product_name' => 'Caviar', 'quantity' => 1], $tokenB, $r3);
+$reqId2 = (int) ($d['data']['request']['id'] ?? 0);
+[$s, $d] = req('POST', "$base/purchase-requests/$reqId2/reject", ['comment' => 'Trop cher'], $tokenA, $r3);
+check('rejet avec commentaire', $s === 200 && ($d['data']['request']['decision_comment'] ?? '') === 'Trop cher', "status $s");
+[$s, $d] = req('POST', "$base/purchase-requests", ['product_name' => 'Test annulation'], $tokenB, $r3);
+$reqId3 = (int) ($d['data']['request']['id'] ?? 0);
+[$s] = req('POST', "$base/purchase-requests/$reqId3/cancel", null, $tokenB, $r3);
+check('le demandeur annule sa demande', $s === 200, "status $s");
+// Isolation : C (non-membre) ne voit rien
+if ($tokenC !== '') {
+    [$s, $d] = req('GET', "$base/purchase-requests", null, $tokenC, $r3);
+    check('non-membre : demandes refusées (403)', $s === 403, "status $s");
+}
+// Espace personnel : pas de demandes d'achat
+[$s, $d] = req('GET', "$base/purchase-requests", null, $tokenA);
+check('personnel : liste vide (pas d\'erreur)', $s === 200 && ($d['data']['requests'] ?? null) === []);
+
+echo "== Fournisseurs\n";
+[$s, $d] = req('POST', "$base/suppliers", ['name' => 'Fournisseur A', 'phone' => '506-555-0101'], $tokenA, $r3);
+$supId = (int) ($d['data']['supplier']['id'] ?? 0);
+check('création fournisseur (owner)', $s === 201 && $supId > 0, "status $s");
+[$s] = req('POST', "$base/suppliers", ['name' => 'Interdit'], $tokenB, $r3);
+check('member sans manage_suppliers refusé (403)', $s === 403, "status $s");
+[$s, $d] = req('GET', "$base/suppliers", null, $tokenB, $r3);
+check('member liste les fournisseurs', $s === 200 && count($d['data']['suppliers'] ?? []) === 1, "status $s");
+[$s] = req('PUT', "$base/suppliers/$supId", ['is_active' => false], $tokenA, $r3);
+check('désactivation fournisseur', $s === 200, "status $s");
+
+echo "== Inventaire quantitatif\n";
+[$s] = req('POST', "$base/inventory/status", [
+    'product_name' => 'Riz resto', 'status' => 'at_home',
+    'quantity' => 8, 'unit' => 'kg', 'min_quantity' => 10,
+    'reorder_quantity' => 25, 'preferred_supplier_id' => $supId,
+], $tokenA, $r3);
+check('inventaire avec seuils', $s === 200, "status $s");
+[$s, $d] = req('GET', "$base/inventory", null, $tokenB, $r3);
+$riz = null;
+foreach (($d['data']['items'] ?? []) as $i) if ($i['product_name'] === 'Riz resto') $riz = $i;
+check('below_min détecté (8 <= 10)', $riz !== null && ($riz['below_min'] ?? false) === true);
+check('seuils renvoyés', ($riz['min_quantity'] ?? null) == 10 && ($riz['reorder_quantity'] ?? null) == 25);
+
+echo "== Activité restaurant\n";
+[$s, $d] = req('GET', "$base/spaces/$r3/activity", null, $tokenA);
+$types3 = array_column((array) ($d['data']['activities'] ?? []), 'type');
+check('événements demandes présents',
+    in_array('purchase_request_created', $types3, true)
+    && in_array('purchase_request_approved', $types3, true)
+    && in_array('purchase_request_rejected', $types3, true),
+    implode(',', array_unique($types3)));
+
+echo "== Nettoyage P3\n";
+[$s] = req('DELETE', "$base/spaces/$r3", null, $tokenA);
+check('suppression du restaurant', $s === 200, "status $s");
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

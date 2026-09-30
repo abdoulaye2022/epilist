@@ -15,7 +15,9 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
+import 'package:epilist/screens/purchase_requests_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
+import 'package:epilist/screens/suppliers_screen.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/widgets/common/space_selector_sheet.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -75,6 +77,36 @@ class AppDrawer extends StatelessWidget {
                     onTap: () => _push(context, const AnalyticsScreen()),
                   ),
                   const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  // Espaces professionnels (Phase 3) : demandes d'achat
+                  // et fournisseurs, seulement quand l'espace actif
+                  // est un restaurant ou une organisation.
+                  ValueListenableBuilder<Space?>(
+                    valueListenable: ActiveSpaceStore.current,
+                    builder: (context, space, _) {
+                      final pro = space != null &&
+                          (space.type == 'restaurant' ||
+                              space.type == 'organization');
+                      if (!pro) return const SizedBox.shrink();
+                      return Column(
+                        children: [
+                          _item(
+                            context,
+                            icon: Icons.assignment_outlined,
+                            label: l10n.purchaseRequests,
+                            onTap: () => _push(
+                                context, const PurchaseRequestsScreen()),
+                          ),
+                          _item(
+                            context,
+                            icon: Icons.local_shipping_outlined,
+                            label: l10n.suppliers,
+                            onTap: () =>
+                                _push(context, const SuppliersScreen()),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   _item(
                     context,
                     icon: Icons.kitchen_outlined,

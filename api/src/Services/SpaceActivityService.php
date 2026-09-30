@@ -24,6 +24,9 @@ class SpaceActivityService
     public const MEMBER_JOINED = 'member_joined';
     public const MEMBER_LEFT = 'member_left';
     public const INVENTORY_OUT = 'inventory_out';
+    public const PURCHASE_REQUEST_CREATED = 'purchase_request_created';
+    public const PURCHASE_REQUEST_APPROVED = 'purchase_request_approved';
+    public const PURCHASE_REQUEST_REJECTED = 'purchase_request_rejected';
 
     public static function log(?Space $space, ?int $userId, string $type, array $payload = []): void
     {

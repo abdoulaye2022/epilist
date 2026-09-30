@@ -109,3 +109,73 @@ class SpaceInvitationInfo {
         token: json['token'] as String?,
       );
 }
+
+class SupplierInfo {
+  final int id;
+  final String name;
+  final String? contactName;
+  final String? phone;
+  final String? email;
+  final String? notes;
+  final bool isActive;
+
+  const SupplierInfo({
+    required this.id,
+    required this.name,
+    this.contactName,
+    this.phone,
+    this.email,
+    this.notes,
+    this.isActive = true,
+  });
+
+  factory SupplierInfo.fromJson(Map<String, dynamic> json) => SupplierInfo(
+        id: json['id'] as int,
+        name: json['name'] as String? ?? '',
+        contactName: json['contact_name'] as String?,
+        phone: json['phone'] as String?,
+        email: json['email'] as String?,
+        notes: json['notes'] as String?,
+        isActive: json['is_active'] as bool? ?? true,
+      );
+}
+
+class PurchaseRequestInfo {
+  final int id;
+  final String productName;
+  final double? quantity;
+  final String? unit;
+  final String? note;
+  final String status;
+  final int requestedBy;
+  final String requesterName;
+  final String? approverName;
+  final String? decisionComment;
+
+  const PurchaseRequestInfo({
+    required this.id,
+    required this.productName,
+    this.quantity,
+    this.unit,
+    this.note,
+    required this.status,
+    required this.requestedBy,
+    required this.requesterName,
+    this.approverName,
+    this.decisionComment,
+  });
+
+  factory PurchaseRequestInfo.fromJson(Map<String, dynamic> json) =>
+      PurchaseRequestInfo(
+        id: json['id'] as int,
+        productName: json['product_name'] as String? ?? '',
+        quantity: (json['quantity'] as num?)?.toDouble(),
+        unit: json['unit'] as String?,
+        note: json['note'] as String?,
+        status: json['status'] as String? ?? 'pending',
+        requestedBy: json['requested_by'] as int? ?? 0,
+        requesterName: json['requester_name'] as String? ?? '',
+        approverName: json['approver_name'] as String?,
+        decisionComment: json['decision_comment'] as String?,
+      );
+}

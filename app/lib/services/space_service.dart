@@ -164,3 +164,67 @@ class SpaceService {
     await dio.delete('/spaces/$spaceId/members/$userId');
   }
 }
+
+/// Extension Phase 3 : fournisseurs et demandes d'achat (restaurant).
+extension SpaceServicePhase3 on SpaceService {
+  Future<List<SupplierInfo>> getSuppliers() async {
+    final res = await dio.get('/suppliers');
+    return ((res.data['data']['suppliers'] as List? ?? []))
+        .map((e) => SupplierInfo.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> saveSupplier({
+    int? id,
+    required String name,
+    String? contactName,
+    String? phone,
+    String? email,
+    String? notes,
+    bool? isActive,
+  }) async {
+    final body = {
+      'name': name,
+      if (contactName != null) 'contact_name': contactName,
+      if (phone != null) 'phone': phone,
+      if (email != null) 'email': email,
+      if (notes != null) 'notes': notes,
+      if (isActive != null) 'is_active': isActive,
+    };
+    if (id == null) {
+      await dio.post('/suppliers', data: body);
+    } else {
+      await dio.put('/suppliers/$id', data: body);
+    }
+  }
+
+  Future<(List<PurchaseRequestInfo>, int)> getPurchaseRequests(
+      {String? status}) async {
+    final res = await dio.get('/purchase-requests',
+        queryParameters: status == null ? null : {'status': status});
+    final list = ((res.data['data']['requests'] as List? ?? []))
+        .map((e) => PurchaseRequestInfo.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return (list, res.data['data']['pending_count'] as int? ?? 0);
+  }
+
+  Future<void> createPurchaseRequest({
+    required String productName,
+    double? quantity,
+    String? unit,
+    String? note,
+  }) async {
+    await dio.post('/purchase-requests', data: {
+      'product_name': productName,
+      if (quantity != null) 'quantity': quantity,
+      if (unit != null && unit.isNotEmpty) 'unit': unit,
+      if (note != null && note.isNotEmpty) 'note': note,
+    });
+  }
+
+  Future<void> actOnPurchaseRequest(int id, String action,
+      {String? comment}) async {
+    await dio.post('/purchase-requests/$id/$action',
+        data: comment == null ? null : {'comment': comment});
+  }
+}

@@ -120,6 +120,11 @@ class IntelligenceController
                 'normalized_name' => $i->normalized_name,
                 'category_id' => $i->category_id,
                 'status' => $i->status,
+                'min_quantity' => $i->min_quantity !== null ? (float) $i->min_quantity : null,
+                'reorder_quantity' => $i->reorder_quantity !== null ? (float) $i->reorder_quantity : null,
+                'preferred_supplier_id' => $i->preferred_supplier_id,
+                'below_min' => $i->min_quantity !== null && $i->quantity !== null
+                    && (float) $i->quantity <= (float) $i->min_quantity,
                 'quantity' => $i->quantity,
                 'unit' => $i->unit,
                 'source' => $i->source,
@@ -175,6 +180,13 @@ class IntelligenceController
                         ? (float) $data['quantity'] : null,
                     'unit' => isset($data['unit']) ? substr(trim((string) $data['unit']), 0, 10) : null,
                     'category_id' => isset($data['category_id']) ? (int) $data['category_id'] : null,
+                    // Inventaire quantitatif (§21, restaurants)
+                    'min_quantity' => isset($data['min_quantity']) && is_numeric($data['min_quantity'])
+                        ? (float) $data['min_quantity'] : null,
+                    'reorder_quantity' => isset($data['reorder_quantity']) && is_numeric($data['reorder_quantity'])
+                        ? (float) $data['reorder_quantity'] : null,
+                    'preferred_supplier_id' => isset($data['preferred_supplier_id'])
+                        ? (int) $data['preferred_supplier_id'] : null,
                     'source' => 'manual',
                 ]
             );

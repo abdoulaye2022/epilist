@@ -64,6 +64,9 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
       'member_joined' => (Icons.person_add_alt_1_rounded, l10n.actMemberJoined(who)),
       'member_left' => (Icons.logout_rounded, l10n.actMemberLeft(who)),
       'inventory_out' => (Icons.remove_shopping_cart_outlined, l10n.actInventoryOut(product)),
+      'purchase_request_created' => (Icons.assignment_outlined, l10n.actPurchaseRequestCreated(who, product)),
+      'purchase_request_approved' => (Icons.assignment_turned_in_outlined, l10n.actPurchaseRequestApproved(who, product)),
+      'purchase_request_rejected' => (Icons.assignment_late_outlined, l10n.actPurchaseRequestRejected(who, product)),
       _ => (Icons.bolt_rounded, who),
     };
   }

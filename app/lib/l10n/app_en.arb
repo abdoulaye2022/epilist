@@ -2494,5 +2494,83 @@
         "type": "String"
       }
     }
+  },
+  "purchaseRequests": "Purchase requests",
+  "purchaseRequestNew": "New request",
+  "purchaseRequestProduct": "Product",
+  "purchaseRequestQuantity": "Quantity",
+  "purchaseRequestUnit": "Unit",
+  "purchaseRequestNote": "Note (optional)",
+  "purchaseRequestCreated": "Request sent",
+  "purchaseRequestEmpty": "No purchase requests.",
+  "prStatusPending": "To approve",
+  "prStatusApproved": "Approved",
+  "prStatusRejected": "Rejected",
+  "prStatusPurchased": "Purchased",
+  "prStatusCancelled": "Cancelled",
+  "prStatusDraft": "Draft",
+  "prApprove": "Approve",
+  "prReject": "Reject",
+  "prRejectReason": "Reason for rejection",
+  "prMarkPurchased": "Mark purchased",
+  "prCancel": "Cancel request",
+  "prRequestedBy": "Requested by {name}",
+  "@prRequestedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "prDecidedBy": "Decided by {name}",
+  "@prDecidedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "suppliers": "Suppliers",
+  "supplierNew": "New supplier",
+  "supplierName": "Supplier name",
+  "supplierContact": "Contact person",
+  "supplierPhone": "Phone",
+  "supplierEmail": "Email",
+  "supplierNotes": "Notes",
+  "supplierInactive": "Inactive",
+  "supplierEmpty": "No suppliers yet.",
+  "supplierSaved": "Supplier saved",
+  "actPurchaseRequestCreated": "{name} requested {target}",
+  "@actPurchaseRequestCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actPurchaseRequestApproved": "{name} approved the request “{target}”",
+  "@actPurchaseRequestApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "actPurchaseRequestRejected": "{name} rejected the request “{target}”",
+  "@actPurchaseRequestRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
   }
 }

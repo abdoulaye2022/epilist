@@ -5642,4 +5642,116 @@ class AppLocalizationsFr extends AppLocalizations {
   String actInventoryOut(String target) {
     return '$target est terminé (inventaire)';
   }
+
+  @override
+  String get purchaseRequests => 'Demandes d\'achat';
+
+  @override
+  String get purchaseRequestNew => 'Nouvelle demande';
+
+  @override
+  String get purchaseRequestProduct => 'Produit';
+
+  @override
+  String get purchaseRequestQuantity => 'Quantité';
+
+  @override
+  String get purchaseRequestUnit => 'Unité';
+
+  @override
+  String get purchaseRequestNote => 'Note (facultatif)';
+
+  @override
+  String get purchaseRequestCreated => 'Demande envoyée';
+
+  @override
+  String get purchaseRequestEmpty => 'Aucune demande d\'achat.';
+
+  @override
+  String get prStatusPending => 'À approuver';
+
+  @override
+  String get prStatusApproved => 'Approuvée';
+
+  @override
+  String get prStatusRejected => 'Refusée';
+
+  @override
+  String get prStatusPurchased => 'Achetée';
+
+  @override
+  String get prStatusCancelled => 'Annulée';
+
+  @override
+  String get prStatusDraft => 'Brouillon';
+
+  @override
+  String get prApprove => 'Approuver';
+
+  @override
+  String get prReject => 'Refuser';
+
+  @override
+  String get prRejectReason => 'Motif du refus';
+
+  @override
+  String get prMarkPurchased => 'Marquer achetée';
+
+  @override
+  String get prCancel => 'Annuler la demande';
+
+  @override
+  String prRequestedBy(String name) {
+    return 'Demandé par $name';
+  }
+
+  @override
+  String prDecidedBy(String name) {
+    return 'Décidé par $name';
+  }
+
+  @override
+  String get suppliers => 'Fournisseurs';
+
+  @override
+  String get supplierNew => 'Nouveau fournisseur';
+
+  @override
+  String get supplierName => 'Nom du fournisseur';
+
+  @override
+  String get supplierContact => 'Personne contact';
+
+  @override
+  String get supplierPhone => 'Téléphone';
+
+  @override
+  String get supplierEmail => 'Email';
+
+  @override
+  String get supplierNotes => 'Notes';
+
+  @override
+  String get supplierInactive => 'Inactif';
+
+  @override
+  String get supplierEmpty => 'Aucun fournisseur pour le moment.';
+
+  @override
+  String get supplierSaved => 'Fournisseur enregistré';
+
+  @override
+  String actPurchaseRequestCreated(String name, String target) {
+    return '$name a demandé $target';
+  }
+
+  @override
+  String actPurchaseRequestApproved(String name, String target) {
+    return '$name a approuvé la demande « $target »';
+  }
+
+  @override
+  String actPurchaseRequestRejected(String name, String target) {
+    return '$name a refusé la demande « $target »';
+  }
 }

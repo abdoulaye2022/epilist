@@ -5548,4 +5548,116 @@ class AppLocalizationsEn extends AppLocalizations {
   String actInventoryOut(String target) {
     return '$target is out (inventory)';
   }
+
+  @override
+  String get purchaseRequests => 'Purchase requests';
+
+  @override
+  String get purchaseRequestNew => 'New request';
+
+  @override
+  String get purchaseRequestProduct => 'Product';
+
+  @override
+  String get purchaseRequestQuantity => 'Quantity';
+
+  @override
+  String get purchaseRequestUnit => 'Unit';
+
+  @override
+  String get purchaseRequestNote => 'Note (optional)';
+
+  @override
+  String get purchaseRequestCreated => 'Request sent';
+
+  @override
+  String get purchaseRequestEmpty => 'No purchase requests.';
+
+  @override
+  String get prStatusPending => 'To approve';
+
+  @override
+  String get prStatusApproved => 'Approved';
+
+  @override
+  String get prStatusRejected => 'Rejected';
+
+  @override
+  String get prStatusPurchased => 'Purchased';
+
+  @override
+  String get prStatusCancelled => 'Cancelled';
+
+  @override
+  String get prStatusDraft => 'Draft';
+
+  @override
+  String get prApprove => 'Approve';
+
+  @override
+  String get prReject => 'Reject';
+
+  @override
+  String get prRejectReason => 'Reason for rejection';
+
+  @override
+  String get prMarkPurchased => 'Mark purchased';
+
+  @override
+  String get prCancel => 'Cancel request';
+
+  @override
+  String prRequestedBy(String name) {
+    return 'Requested by $name';
+  }
+
+  @override
+  String prDecidedBy(String name) {
+    return 'Decided by $name';
+  }
+
+  @override
+  String get suppliers => 'Suppliers';
+
+  @override
+  String get supplierNew => 'New supplier';
+
+  @override
+  String get supplierName => 'Supplier name';
+
+  @override
+  String get supplierContact => 'Contact person';
+
+  @override
+  String get supplierPhone => 'Phone';
+
+  @override
+  String get supplierEmail => 'Email';
+
+  @override
+  String get supplierNotes => 'Notes';
+
+  @override
+  String get supplierInactive => 'Inactive';
+
+  @override
+  String get supplierEmpty => 'No suppliers yet.';
+
+  @override
+  String get supplierSaved => 'Supplier saved';
+
+  @override
+  String actPurchaseRequestCreated(String name, String target) {
+    return '$name requested $target';
+  }
+
+  @override
+  String actPurchaseRequestApproved(String name, String target) {
+    return '$name approved the request “$target”';
+  }
+
+  @override
+  String actPurchaseRequestRejected(String name, String target) {
+    return '$name rejected the request “$target”';
+  }
 }
