@@ -131,6 +131,99 @@ class _InventoryScreenState extends State<InventoryScreen> {
     } catch (_) {}
   }
 
+  String _qty(double v) =>
+      v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
+
+  /// Quantité et seuils (§21, §45) : min = alerte « stock critique »,
+  /// réappro = quantité suggérée à la commande. Le serveur ne modifie
+  /// que les champs envoyés.
+  Future<void> _editThresholds(InventoryItem item) async {
+    final l10n = AppLocalizations.of(context)!;
+    final quantity = TextEditingController(
+        text: item.quantity != null ? _qty(item.quantity!) : '');
+    final unit = TextEditingController(text: item.unit ?? '');
+    final minQty = TextEditingController(
+        text: item.minQuantity != null ? _qty(item.minQuantity!) : '');
+    final reorder = TextEditingController(
+        text: item.reorderQuantity != null ? _qty(item.reorderQuantity!) : '');
+
+    double? parse(TextEditingController c) =>
+        double.tryParse(c.text.trim().replaceAll(',', '.'));
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(item.productName),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: quantity,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    decoration:
+                        InputDecoration(labelText: l10n.inventoryQuantity),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: TextField(
+                    controller: unit,
+                    decoration:
+                        InputDecoration(labelText: l10n.inventoryUnit),
+                  ),
+                ),
+              ],
+            ),
+            TextField(
+              controller: minQty,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration:
+                  InputDecoration(labelText: l10n.inventoryMinQuantity),
+            ),
+            TextField(
+              controller: reorder,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration:
+                  InputDecoration(labelText: l10n.inventoryReorderQuantity),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (saved != true || !mounted) return;
+    try {
+      await context.read<IntelligenceService>().setInventoryStatus(
+            item.productName,
+            item.status,
+            quantity: parse(quantity),
+            unit: unit.text.trim().isEmpty ? null : unit.text.trim(),
+            minQuantity: parse(minQty),
+            reorderQuantity: parse(reorder),
+          );
+      await _load();
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -256,6 +349,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       style: const TextStyle(
                           fontSize: 11.5, color: AppColors.warning),
                     ),
+                  // Quantitatif (§21) : quantité / seuil + alerte
+                  if (item.quantity != null && item.minQuantity != null)
+                    Text(
+                      '${_qty(item.quantity!)}${item.unit ?? ''} / '
+                      '${_qty(item.minQuantity!)}${item.unit ?? ''}'
+                      '${item.belowMin ? ' · ${l10n.inventoryBelowMin}' : ''}',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight:
+                            item.belowMin ? FontWeight.w700 : FontWeight.w500,
+                        color: item.belowMin
+                            ? AppColors.error
+                            : AppColors.textSecondary,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -299,13 +407,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert,
                   size: 18, color: AppColors.textDisabled),
-              onSelected: (_) async {
+              onSelected: (action) async {
+                if (action == 'thresholds') {
+                  await _editThresholds(item);
+                  return;
+                }
                 await context
                     .read<IntelligenceService>()
                     .deleteInventoryItem(item.id);
                 _load();
               },
               itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'thresholds',
+                  child: Text(l10n.inventoryThresholds),
+                ),
                 PopupMenuItem(
                   value: 'remove',
                   child: Text(l10n.removeFromInventory),

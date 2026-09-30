@@ -162,6 +162,22 @@ class ListItemCard extends StatelessWidget {
       details.add(_buildStoreChip(context));
     }
 
+    // Attribution (§10, §45) — seulement dans les espaces partagés
+    // (le serveur n'envoie les noms que là) : qui a ajouté, qui a acheté.
+    final attribution = item.isPurchased && item.purchasedByName != null
+        ? l10n.itemPurchasedBy(item.purchasedByName!)
+        : (item.addedByName != null
+            ? l10n.itemAddedBy(item.addedByName!)
+            : null);
+    if (attribution != null) {
+      details.add(const SizedBox(width: 8));
+      details.add(_buildDetailChip(
+        icon: Icons.person_outline_rounded,
+        text: attribution,
+        color: AppColors.textSecondary,
+      ));
+    }
+
     return Wrap(spacing: 8, runSpacing: 4, children: details);
   }
 

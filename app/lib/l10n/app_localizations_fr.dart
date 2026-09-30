@@ -5896,4 +5896,47 @@ class AppLocalizationsFr extends AppLocalizations {
   String communityLine(String price, String store, int count) {
     return 'Communauté : médiane $price \$ · $store ($count contributeurs)';
   }
+
+  @override
+  String itemAddedBy(String name) {
+    return 'Ajouté par $name';
+  }
+
+  @override
+  String itemPurchasedBy(String name) {
+    return 'Acheté par $name';
+  }
+
+  @override
+  String spaceDashPending(int count) {
+    return '$count demande(s) d\'achat en attente';
+  }
+
+  @override
+  String spaceDashCritical(int count, String names) {
+    return 'Stock critique : $count produit(s) — $names';
+  }
+
+  @override
+  String spaceDashRestock(int count, String names) {
+    return 'À racheter : $count produit(s) — $names';
+  }
+
+  @override
+  String get inventoryThresholds => 'Quantité et seuils…';
+
+  @override
+  String get inventoryQuantity => 'Quantité';
+
+  @override
+  String get inventoryUnit => 'Unité';
+
+  @override
+  String get inventoryMinQuantity => 'Seuil d\'alerte (min)';
+
+  @override
+  String get inventoryReorderQuantity => 'Quantité de réappro';
+
+  @override
+  String get inventoryBelowMin => 'sous le seuil';
 }

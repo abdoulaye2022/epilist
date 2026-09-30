@@ -2715,5 +2715,57 @@
         "type": "int"
       }
     }
-  }
+  },
+  "itemAddedBy": "Ajouté par {name}",
+  "@itemAddedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "itemPurchasedBy": "Acheté par {name}",
+  "@itemPurchasedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceDashPending": "{count} demande(s) d'achat en attente",
+  "@spaceDashPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spaceDashCritical": "Stock critique : {count} produit(s) — {names}",
+  "@spaceDashCritical": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceDashRestock": "À racheter : {count} produit(s) — {names}",
+  "@spaceDashRestock": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryThresholds": "Quantité et seuils…",
+  "inventoryQuantity": "Quantité",
+  "inventoryUnit": "Unité",
+  "inventoryMinQuantity": "Seuil d'alerte (min)",
+  "inventoryReorderQuantity": "Quantité de réappro",
+  "inventoryBelowMin": "sous le seuil"
 }

@@ -2715,5 +2715,57 @@
         "type": "int"
       }
     }
-  }
+  },
+  "itemAddedBy": "Added by {name}",
+  "@itemAddedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "itemPurchasedBy": "Bought by {name}",
+  "@itemPurchasedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceDashPending": "{count} purchase request(s) pending",
+  "@spaceDashPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spaceDashCritical": "Critical stock: {count} product(s) — {names}",
+  "@spaceDashCritical": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceDashRestock": "Probably need: {count} product(s) — {names}",
+  "@spaceDashRestock": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryThresholds": "Quantity & thresholds…",
+  "inventoryQuantity": "Quantity",
+  "inventoryUnit": "Unit",
+  "inventoryMinQuantity": "Alert threshold (min)",
+  "inventoryReorderQuantity": "Reorder quantity",
+  "inventoryBelowMin": "below threshold"
 }

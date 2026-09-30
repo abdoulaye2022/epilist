@@ -27,7 +27,9 @@ import 'package:epilist/models/budget.dart';
 import 'package:intl/intl.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/offline_storage_service.dart';
+import 'package:epilist/models/space.dart';
 import 'package:epilist/services/space_service.dart';
+import 'package:epilist/widgets/home/space_dashboard_card.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -565,6 +567,19 @@ class _HomeScreenState extends State<HomeScreen>
                     children: [
                       _buildGreeting(l10n),
                       const SizedBox(height: AppSpacing.md),
+                      // Dashboard adaptatif (§45) : seulement dans un
+                      // espace PARTAGÉ — le personnel garde l'accueil
+                      // actuel. La clé force le rechargement au
+                      // changement d'espace.
+                      ValueListenableBuilder<Space?>(
+                        valueListenable: ActiveSpaceStore.current,
+                        builder: (context, space, _) => space == null
+                            ? const SizedBox.shrink()
+                            : SpaceDashboardCard(
+                                key: ValueKey('space-dash-${space.id}'),
+                                space: space,
+                              ),
+                      ),
                       if (_monthBudget != null)
                         BudgetMonthCard(
                           budget: _monthBudget!,

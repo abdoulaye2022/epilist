@@ -59,6 +59,11 @@ class InventoryItem {
   /// Estimation issue de l'historique — informative, jamais prioritaire.
   final String? estimatedStatus;
 
+  /// Inventaire quantitatif (§21, espaces pro) : seuils et alerte.
+  final double? minQuantity;
+  final double? reorderQuantity;
+  final bool belowMin;
+
   const InventoryItem({
     required this.id,
     required this.productName,
@@ -68,6 +73,9 @@ class InventoryItem {
     this.source = 'manual',
     this.updatedAt,
     this.estimatedStatus,
+    this.minQuantity,
+    this.reorderQuantity,
+    this.belowMin = false,
   });
 
   factory InventoryItem.fromJson(Map<String, dynamic> json) => InventoryItem(
@@ -81,6 +89,9 @@ class InventoryItem {
         ? DateTime.tryParse(json['updated_at'] as String)
         : null,
     estimatedStatus: json['estimated_status'] as String?,
+    minQuantity: (json['min_quantity'] as num?)?.toDouble(),
+    reorderQuantity: (json['reorder_quantity'] as num?)?.toDouble(),
+    belowMin: json['below_min'] == true,
   );
 }
 

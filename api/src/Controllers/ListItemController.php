@@ -311,9 +311,30 @@ class ListItemController
                 ->orderBy('created_at', 'desc')
                 ->get();
 
+            // Attribution visible (§10, §45) : dans un espace PARTAGÉ,
+            // chaque article porte « ajouté par » / « acheté par ».
+            $payload = $items->toArray();
+            $listSpace = $access['list']->space_id !== null
+                ? \App\Models\Space::find($access['list']->space_id) : null;
+            if ($listSpace !== null && $listSpace->type !== \App\Models\Space::TYPE_PERSONAL) {
+                $userIds = [];
+                foreach ($items as $it) {
+                    if ($it->created_by_user_id) $userIds[(int) $it->created_by_user_id] = true;
+                    if ($it->purchased_by_user_id) $userIds[(int) $it->purchased_by_user_id] = true;
+                }
+                $names = $userIds === [] ? collect() : \App\Models\User::whereIn('id', array_keys($userIds))
+                    ->get(['id', 'first_name', 'last_name'])
+                    ->keyBy('id')
+                    ->map(fn($u) => trim($u->first_name . ' ' . $u->last_name));
+                foreach ($payload as $i => $row) {
+                    $payload[$i]['added_by_name'] = $names[$row['created_by_user_id'] ?? 0] ?? null;
+                    $payload[$i]['purchased_by_name'] = $names[$row['purchased_by_user_id'] ?? 0] ?? null;
+                }
+            }
+
             $response->getBody()->write(json_encode([
                 'success' => true,
-                'data' => $items,
+                'data' => $payload,
                 'meta' => [
                     'list_name' => $access['list']->name,
                     'is_owner' => $access['is_owner'],

@@ -15,6 +15,10 @@ class ListItem {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
+  // Attribution (§10, §45) — envoyée SEULEMENT pour les listes d'un
+  // espace partagé ; null ailleurs.
+  final String? addedByName;
+  final String? purchasedByName;
 
   ListItem({
     required this.id,
@@ -29,6 +33,8 @@ class ListItem {
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
+    this.addedByName,
+    this.purchasedByName,
   });
 
   // Getters pour compatibilité avec l'UI
@@ -175,6 +181,8 @@ class ListItem {
           json['deleted_at'] != null
               ? DateTime.parse(json['deleted_at'] as String)
               : null,
+      addedByName: _parseString(json['added_by_name']),
+      purchasedByName: _parseString(json['purchased_by_name']),
     );
   }
 
@@ -251,6 +259,9 @@ class ListItem {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
+      // Toujours préservés (jamais perdus par un copyWith partiel)
+      addedByName: addedByName,
+      purchasedByName: purchasedByName,
     );
   }
 

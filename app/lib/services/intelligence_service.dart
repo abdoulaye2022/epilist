@@ -70,13 +70,28 @@ class IntelligenceService {
         .toList();
   }
 
+  /// Upsert d'un état d'inventaire. Les champs quantitatifs (§21) ne
+  /// sont ENVOYÉS que s'ils sont fournis : le serveur ne touche pas
+  /// aux champs absents (un changement de statut n'efface jamais les
+  /// seuils).
   Future<InventoryItem> setInventoryStatus(
     String productName,
-    String status,
-  ) async {
+    String status, {
+    double? quantity,
+    String? unit,
+    double? minQuantity,
+    double? reorderQuantity,
+  }) async {
     final response = await _dio.post(
       '/inventory/status',
-      data: {'product_name': productName, 'status': status},
+      data: {
+        'product_name': productName,
+        'status': status,
+        if (quantity != null) 'quantity': quantity,
+        if (unit != null) 'unit': unit,
+        if (minQuantity != null) 'min_quantity': minQuantity,
+        if (reorderQuantity != null) 'reorder_quantity': reorderQuantity,
+      },
     );
     return InventoryItem.fromJson(
       response.data['data']['item'] as Map<String, dynamic>,

@@ -689,5 +689,58 @@ if ($tokenC === '') {
     check('nettoyage P6 fait', true);
 }
 
+// ==================================================================
+// §45 — dashboard adaptatif : attribution visible sur les articles
+// des espaces partagés (« ajouté par » / « acheté par »)
+// ==================================================================
+echo "== §45 : attribution visible\n";
+[$s, $d] = req('POST', "$base/spaces", ['type' => 'household', 'name' => 'Foyer §45'], $tokenA);
+$h45 = (int) ($d['data']['space']['id'] ?? 0);
+[$s] = req('POST', "$base/spaces/$h45/invitations", ['email' => 'admin@gmail.com', 'role' => 'member'], $tokenA);
+$token45 = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $h45 AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
+req('POST', "$base/space-invitations/$token45/accept", null, $tokenB);
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Liste §45'], $tokenA, $h45);
+$l45 = (int) ($d['data']['id'] ?? 0);
+req('POST', "$base/shopping-lists/$l45/items", ['product_name' => 'Beurre §45', 'quantity' => 1], $tokenB);
+$i45 = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $l45 ORDER BY id DESC LIMIT 1")->fetchColumn();
+req('PATCH', "$base/shopping-lists/$l45/items/$i45/toggle", ['is_purchased' => true], $tokenA);
+[$s, $d] = req('GET', "$base/shopping-lists/$l45/items", null, $tokenB);
+$item45 = null;
+foreach (($d['data'] ?? []) as $it) if (($it['id'] ?? 0) === $i45) $item45 = $it;
+check('article du foyer : « ajouté par » présent',
+    $item45 !== null && !empty($item45['added_by_name']), json_encode($item45['added_by_name'] ?? null));
+check('« acheté par » = l\'autre membre',
+    !empty($item45['purchased_by_name']) && $item45['purchased_by_name'] !== $item45['added_by_name'],
+    json_encode([$item45['added_by_name'] ?? null, $item45['purchased_by_name'] ?? null]));
+// Liste personnelle : pas d'attribution (aucun nom exposé inutilement)
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Perso §45'], $tokenA);
+$lp45 = (int) ($d['data']['id'] ?? 0);
+req('POST', "$base/shopping-lists/$lp45/items", ['product_name' => 'Solo §45'], $tokenA);
+[$s, $d] = req('GET', "$base/shopping-lists/$lp45/items", null, $tokenA);
+check('liste personnelle : pas de champ d\'attribution',
+    !array_key_exists('added_by_name', $d['data'][0] ?? []));
+
+echo "== §45 : un changement de statut n'efface plus les seuils\n";
+req('POST', "$base/inventory/status", [
+    'product_name' => 'Sel §45', 'status' => 'at_home',
+    'quantity' => 2, 'unit' => 'kg', 'min_quantity' => 5, 'reorder_quantity' => 10,
+], $tokenA, $h45);
+req('POST', "$base/inventory/status", ['product_name' => 'Sel §45', 'status' => 'running_low'], $tokenA, $h45);
+[$s, $d] = req('GET', "$base/inventory", null, $tokenA, $h45);
+$sel = null;
+foreach (($d['data']['items'] ?? []) as $i) if ($i['product_name'] === 'Sel §45') $sel = $i;
+check('statut changé, seuils et quantité INTACTS',
+    $sel !== null && ($sel['status'] ?? '') === 'running_low'
+    && ($sel['min_quantity'] ?? null) == 5 && ($sel['reorder_quantity'] ?? null) == 10
+    && ($sel['quantity'] ?? null) == 2 && ($sel['unit'] ?? '') === 'kg',
+    json_encode($sel));
+
+echo "== Nettoyage §45\n";
+$pdo->exec("DELETE FROM home_inventory WHERE normalized_name = 'sel 45'");
+req('DELETE', "$base/shopping-lists/$lp45", null, $tokenA);
+[$s] = req('DELETE', "$base/spaces/$h45", null, $tokenA);
+check('nettoyage §45 fait', $s === 200, "status $s");
+$pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('beurre 45','solo 45')");
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

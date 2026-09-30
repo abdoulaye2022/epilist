@@ -169,29 +169,40 @@ class IntelligenceController
         try {
             $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
             \App\Services\SpaceAccessService::assertWrite($space, $userId, 'manage_inventory');
+            // Les champs ABSENTS du payload ne sont pas touchés : un
+            // simple changement de statut ne doit jamais effacer la
+            // quantité ni les seuils (§21). Une clé envoyée à null ou
+            // non numérique efface volontairement la valeur.
+            $values = [
+                'user_id' => $userId,
+                'created_by_user_id' => $userId,
+                'product_name' => $product,
+                'status' => $status,
+                'source' => 'manual',
+            ];
+            foreach (['quantity', 'min_quantity', 'reorder_quantity'] as $field) {
+                if (array_key_exists($field, $data)) {
+                    $values[$field] = is_numeric($data[$field]) ? (float) $data[$field] : null;
+                }
+            }
+            if (array_key_exists('unit', $data)) {
+                $unit = trim((string) $data['unit']);
+                $values['unit'] = $unit !== '' ? substr($unit, 0, 10) : null;
+            }
+            if (array_key_exists('category_id', $data)) {
+                $values['category_id'] = is_numeric($data['category_id']) ? (int) $data['category_id'] : null;
+            }
+            if (array_key_exists('preferred_supplier_id', $data)) {
+                $values['preferred_supplier_id'] = is_numeric($data['preferred_supplier_id'])
+                    ? (int) $data['preferred_supplier_id'] : null;
+            }
+
             $item = HomeInventory::updateOrCreate(
                 [
                     'space_id' => $space->id,
                     'normalized_name' => PurchaseHistory::normalizeProductName($product),
                 ],
-                [
-                    'user_id' => $userId,
-                    'created_by_user_id' => $userId,
-                    'product_name' => $product,
-                    'status' => $status,
-                    'quantity' => isset($data['quantity']) && is_numeric($data['quantity'])
-                        ? (float) $data['quantity'] : null,
-                    'unit' => isset($data['unit']) ? substr(trim((string) $data['unit']), 0, 10) : null,
-                    'category_id' => isset($data['category_id']) ? (int) $data['category_id'] : null,
-                    // Inventaire quantitatif (§21, restaurants)
-                    'min_quantity' => isset($data['min_quantity']) && is_numeric($data['min_quantity'])
-                        ? (float) $data['min_quantity'] : null,
-                    'reorder_quantity' => isset($data['reorder_quantity']) && is_numeric($data['reorder_quantity'])
-                        ? (float) $data['reorder_quantity'] : null,
-                    'preferred_supplier_id' => isset($data['preferred_supplier_id'])
-                        ? (int) $data['preferred_supplier_id'] : null,
-                    'source' => 'manual',
-                ]
+                $values
             );
 
             if ($status === HomeInventory::STATUS_OUT) {

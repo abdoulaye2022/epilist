@@ -10860,6 +10860,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Communauté : médiane {price} \$ · {store} ({count} contributeurs)'**
   String communityLine(String price, String store, int count);
+
+  /// No description provided for @itemAddedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouté par {name}'**
+  String itemAddedBy(String name);
+
+  /// No description provided for @itemPurchasedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acheté par {name}'**
+  String itemPurchasedBy(String name);
+
+  /// No description provided for @spaceDashPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} demande(s) d\'achat en attente'**
+  String spaceDashPending(int count);
+
+  /// No description provided for @spaceDashCritical.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock critique : {count} produit(s) — {names}'**
+  String spaceDashCritical(int count, String names);
+
+  /// No description provided for @spaceDashRestock.
+  ///
+  /// In fr, this message translates to:
+  /// **'À racheter : {count} produit(s) — {names}'**
+  String spaceDashRestock(int count, String names);
+
+  /// No description provided for @inventoryThresholds.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité et seuils…'**
+  String get inventoryThresholds;
+
+  /// No description provided for @inventoryQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get inventoryQuantity;
+
+  /// No description provided for @inventoryUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get inventoryUnit;
+
+  /// No description provided for @inventoryMinQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil d\'alerte (min)'**
+  String get inventoryMinQuantity;
+
+  /// No description provided for @inventoryReorderQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité de réappro'**
+  String get inventoryReorderQuantity;
+
+  /// No description provided for @inventoryBelowMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'sous le seuil'**
+  String get inventoryBelowMin;
 }
 
 class _AppLocalizationsDelegate
