@@ -1,10 +1,26 @@
-// utils/smart_snackbar_manager.dart - VERSION CORRIGÉE
+// utils/smart_snackbar_manager.dart
+//
+// Les bannières se ferment TOUJOURS d'elles-mêmes au bout de leur durée.
+// Le bouton « Fermer » ne sert qu'à aller plus vite : une bannière
+// d'erreur ne doit jamais rester plantée à l'écran en attendant un clic.
+import 'dart:async';
+
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SmartSnackBarManager {
   static bool _isSnackBarVisible = false;
   static ScaffoldMessengerState? _currentMessenger;
+
+  /// Filet de sécurité : ferme la bannière si le minuteur interne de
+  /// Flutter ne l'a pas fait (file d'attente de bannières, animations
+  /// système désactivées...).
+  static Timer? _autoDismissTimer;
+
+  /// Numéro de la bannière courante. Sans lui, la fermeture d'une
+  /// bannière PRÉCÉDENTE remettait l'indicateur de visibilité à faux
+  /// alors qu'une nouvelle venait d'être affichée.
+  static int _generation = 0;
 
   /// Affiche automatiquement le bon type de SnackBar selon l'état
   static void showForState(
@@ -206,6 +222,9 @@ class SmartSnackBarManager {
     // ✅ NOUVEAU: Utiliser showCloseIcon si fourni, sinon la config par défaut
     final shouldShowCloseAction = showCloseIcon ?? config.showCloseAction;
 
+    _autoDismissTimer?.cancel();
+    final generation = ++_generation;
+
     messenger
         .showSnackBar(
           SnackBar(
@@ -247,9 +266,20 @@ class SmartSnackBarManager {
         )
         .closed
         .then((_) {
+          // Ignorer la fermeture d'une bannière remplacée entre-temps.
+          if (generation != _generation) return;
+          _autoDismissTimer?.cancel();
           _isSnackBarVisible = false;
           _currentMessenger = null;
         });
+
+    // Fermeture garantie, même si le minuteur interne n'aboutit pas.
+    _autoDismissTimer = Timer(duration + const Duration(milliseconds: 300), () {
+      if (generation != _generation) return;
+      messenger.hideCurrentSnackBar();
+      _isSnackBarVisible = false;
+      _currentMessenger = null;
+    });
   }
 
   /// Configuration pour chaque type de SnackBar
