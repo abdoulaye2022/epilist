@@ -1,5 +1,15 @@
 // services/notification_service.dart - VERSION OPTIMISÉE POUR LOGIN UNIQUEMENT
 
+import 'package:epilist/blocs/chat/chat_bloc.dart';
+import 'package:epilist/config/app_navigator.dart';
+import 'package:epilist/screens/budget_screen.dart';
+import 'package:epilist/screens/chat_screen.dart';
+import 'package:epilist/screens/list_detail_screen.dart';
+import 'package:epilist/screens/price_alerts_screen.dart';
+import 'package:epilist/services/auth_service.dart';
+import 'package:epilist/services/chat_service.dart';
+import 'package:epilist/services/shopping_list_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
@@ -25,7 +35,6 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
-  static BuildContext? _context;
   static String? _currentToken;
   static String? _apnsToken;
   static bool _isBasicInitialized = false;
@@ -48,7 +57,8 @@ class NotificationService {
     }
 
     try {
-      _context = context;
+      // La navigation passe par appNavigatorKey (valable même quand
+      // aucun écran n'est monté) : inutile de mémoriser un contexte ici.
 
       // 1. Détecter le simulateur
       await _detectSimulator();
@@ -806,8 +816,15 @@ class NotificationService {
   static bool get isBasicInitialized => _isBasicInitialized;
   static bool get isFullyInitialized => _isFullyInitialized;
 
+  /// Signale que l'application est prête (ou revenue au premier plan).
   static void updateContext(BuildContext context) {
-    _context = context;
+    // L'application vient d'être prête (ou de revenir au premier plan) :
+    // c'est le moment d'honorer une notification touchée plus tôt.
+    final pending = _pendingNotification;
+    if (pending != null) {
+      _pendingNotification = null;
+      _openFromNotification(pending);
+    }
   }
 
   static Future<bool> isDeviceRegistered() async {
@@ -1018,79 +1035,149 @@ class NotificationService {
     }
   }
 
+  // =====================================================================
+  // OUVERTURE DE L'ÉCRAN CONCERNÉ PAR LA NOTIFICATION
+  //
+  // Trois chemins mènent ici : application au premier plan (notification
+  // locale touchée), en arrière-plan (onMessageOpenedApp), ou fermée
+  // (getInitialMessage au lancement). Dans ce dernier cas le navigateur
+  // n'existe pas encore : l'ouverture est MÉMORISÉE puis rejouée dès que
+  // l'application est prête (updateContext).
+  // =====================================================================
+
+  /// Ouverture différée en attente (démarrage à froid, ou session pas
+  /// encore ouverte).
+  static Map<String, dynamic>? _pendingNotification;
+
   static Future<void> _handleNotificationOpened(RemoteMessage message) async {
     if (kDebugMode) {
-      debugPrint('👆 [EPILIST] Notification opened: ${message.data}');
+      debugPrint('👆 [EPILIST] Notification ouverte: ${message.data}');
     }
-
-    try {
-      final action = message.data['action'];
-
-      if (action == 'open_chat' && _context != null) {
-        final listId = message.data['list_id'];
-        final listName = message.data['list_name'];
-
-        if (listId != null && listName != null) {
-          // Navigate to chat screen
-          await _navigateToChat(int.parse(listId), listName);
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ [EPILIST] Error handling notification: $e');
-      }
-    }
+    await _openFromNotification(Map<String, dynamic>.from(message.data));
   }
 
   static Future<void> _onNotificationTapped(
     NotificationResponse response,
   ) async {
     if (kDebugMode) {
-      debugPrint('👆 [EPILIST] Local notification tapped: ${response.payload}');
+      debugPrint('👆 [EPILIST] Notification locale touchée: ${response.payload}');
     }
-
     try {
-      if (response.payload != null) {
-        final data = jsonDecode(response.payload!);
-        final action = data['action'];
-
-        if (action == 'open_chat' && _context != null) {
-          final listId = data['list_id'];
-          final listName = data['list_name'];
-
-          if (listId != null && listName != null) {
-            // Navigate to chat screen
-            await _navigateToChat(int.parse(listId.toString()), listName.toString());
-          }
-        }
+      if (response.payload == null) return;
+      final decoded = jsonDecode(response.payload!);
+      if (decoded is Map) {
+        await _openFromNotification(Map<String, dynamic>.from(decoded));
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ [EPILIST] Error handling notification tap: $e');
+        debugPrint('❌ [EPILIST] Charge utile illisible: $e');
       }
     }
   }
 
-  static Future<void> _navigateToChat(int listId, String listName) async {
-    if (_context == null) return;
+  /// Aiguillage : quel écran ouvrir pour cette notification ?
+  static Future<void> _openFromNotification(Map<String, dynamic> data) async {
+    final navigator = appNavigatorKey.currentState;
+    final context = appNavigatorKey.currentContext;
+
+    // Application pas encore prête : on rejouera (voir updateContext).
+    if (navigator == null || context == null) {
+      _pendingNotification = data;
+      return;
+    }
+
+    // Services lus AVANT toute attente : un BuildContext ne doit pas
+    // traverser un « await » (il peut ne plus être valide après).
+    final authService = context.read<AuthService>();
+    final listService = context.read<ShoppingListService>();
+
+    // Jamais par-dessus l'écran de connexion : sans session, on garde
+    // l'ouverture en attente jusqu'à ce que l'utilisateur se connecte.
+    final token = await TokenStore.readAccess();
+    if (token == null || token.isEmpty) {
+      _pendingNotification = data;
+      return;
+    }
+
+    _pendingNotification = null;
+
+    final action = (data['action'] ?? '').toString();
+    final type = (data['type'] ?? '').toString();
+    final listId = int.tryParse((data['list_id'] ?? '').toString());
+    final listName = (data['list_name'] ?? '').toString();
 
     try {
-      // Dynamic import to avoid circular dependencies
-      // Use a placeholder navigation - the actual implementation will depend on your routing
-      // For now, just print the action
-      if (kDebugMode) {
-        debugPrint('📱 [EPILIST] Navigating to chat for list $listId: $listName');
+      if (action == 'open_chat' && listId != null) {
+        await _openChat(navigator, authService, listId, listName);
+        return;
       }
 
-      // TODO: Implement actual navigation to ChatScreen
-      // This would typically be done through your app's router/navigation system
-      // Example:
-      // navigator.pushNamed('/chat', arguments: {'listId': listId, 'listName': listName});
+      final opensList = action == 'open_list' ||
+          action == 'add_receipt' ||
+          type == 'list_updated' ||
+          type == 'list_shared' ||
+          type == 'list_completed';
+      if (opensList && listId != null) {
+        await _openList(navigator, listService, listId);
+        return;
+      }
+
+      if (type.startsWith('budget')) {
+        navigator.push(
+            MaterialPageRoute(builder: (_) => const BudgetScreen()));
+        return;
+      }
+
+      if (type == 'price_alert') {
+        navigator.push(
+            MaterialPageRoute(builder: (_) => const PriceAlertsScreen()));
+        return;
+      }
+
+      // Type inconnu : ne rien ouvrir vaut mieux qu'ouvrir au hasard.
+      if (kDebugMode) {
+        debugPrint('ℹ️ [EPILIST] Notification sans écran associé (type=$type)');
+      }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('❌ [EPILIST] Error navigating to chat: $e');
+        debugPrint('❌ [EPILIST] Ouverture impossible: $e');
       }
     }
+  }
+
+  /// Conversation d'une liste (mêmes dépendances que depuis l'app).
+  static Future<void> _openChat(
+    NavigatorState navigator,
+    AuthService authService,
+    int listId,
+    String listName,
+  ) async {
+    final token = await authService.getToken();
+    final dio = Dio()
+      ..options.baseUrl = AppConfig.baseUrl
+      ..options.headers['Authorization'] = 'Bearer $token';
+
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => ChatBloc(chatService: ChatService(dio: dio)),
+          child: ChatScreen(listId: listId, listName: listName),
+        ),
+      ),
+    );
+  }
+
+  /// Détail d'une liste : la notification ne porte que son identifiant,
+  /// l'objet complet est donc récupéré avant d'ouvrir l'écran.
+  static Future<void> _openList(
+    NavigatorState navigator,
+    ShoppingListService listService,
+    int listId,
+  ) async {
+    final list = await listService.getShoppingListById(listId);
+    navigator.push(
+      MaterialPageRoute(builder: (_) => ListDetailScreen(shoppingList: list)),
+    );
   }
 
   static void dispose() {

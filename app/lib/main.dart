@@ -12,6 +12,7 @@ import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/suggestion/suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
+import 'package:epilist/config/app_navigator.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
@@ -391,6 +392,9 @@ class MyApp extends StatelessWidget {
 
         return MaterialApp(
           title: 'EpiList',
+          // Permet d'ouvrir un écran depuis un clic sur une notification,
+          // quand aucun BuildContext d'écran n'est disponible.
+          navigatorKey: appNavigatorKey,
           debugShowCheckedModeBanner: false,
           locale: currentLocale,
           localizationsDelegates: const [
