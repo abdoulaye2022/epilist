@@ -1,17 +1,15 @@
 // config/app_config.dart
 class AppConfig {
-  // ACTIF — API locale directe (port 8001, voir launch.sh).
-  // Fonctionne sur :
-  //   - simulateur iOS           : tel quel ;
-  //   - appareil Android en USB  : « adb reverse tcp:8001 tcp:8001 »
-  //     (launch.sh le fait automatiquement si un appareil est branche) ;
-  //   - emulateur Android        : remplacer par http://10.0.2.2:8001.
-  // Le HTTP en clair n'est autorise qu'en build DEBUG
-  // (android/app/src/debug/res/xml/network_security_config.xml).
-  static const String baseUrl = 'http://localhost:8001';
+  // ACTIF — PRODUCTION. C'est la valeur que doit porter le depot : une
+  // build de release partie avec une URL locale ne joindrait rien.
+  static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
 
-  // Production — a RETABLIR avant toute build de release / TestFlight
-  // static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
+  // Development — API locale (port 8001, voir launch.sh). Fonctionne sur
+  // le simulateur iOS tel quel, et sur un appareil Android branche en USB
+  // grace au pont « adb reverse tcp:8001 tcp:8001 » que launch.sh pose
+  // automatiquement. Le HTTP en clair n'est autorise qu'en build DEBUG
+  // (android/app/src/debug/res/xml/network_security_config.xml).
+  // static const String baseUrl = 'http://localhost:8001';
 
   // Development - emulateur Android (l'hote vu depuis l'emulateur)
   // static const String baseUrl = 'http://10.0.2.2:8001';
