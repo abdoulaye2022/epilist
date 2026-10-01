@@ -1093,6 +1093,180 @@ class AuthController
     // 2. le code -> les jetons. Le mot de passe seul ne suffit plus.
 
     /** POST /auth/admin/otp { email, password } */
+    // =====================================================================
+    // VÉRIFICATION EN DEUX ÉTAPES (2FA) PAR EMAIL — OPTIONNELLE
+    //
+    // Désactivée par défaut : la connexion reste en une étape. Chaque
+    // utilisateur peut l'activer depuis son profil ; il reçoit alors un
+    // code à 6 chiffres par email à chaque connexion.
+    // Les colonnes admin_otp_code / admin_otp_expires_at portent ce code
+    // (héritage du 2FA administrateur, désormais généralisé).
+    // =====================================================================
+
+    /** Durée de validité d'un code (secondes). */
+    private const TWO_FACTOR_TTL = 600;
+
+    /**
+     * Génère un code, le stocke haché et l'envoie par email.
+     * En développement, MailSender redirige vers la boîte de test.
+     */
+    private function sendTwoFactorCode(User $user): void
+    {
+        $code = (string) random_int(100000, 999999);
+        $user->admin_otp_code = password_hash($code, PASSWORD_DEFAULT);
+        $user->admin_otp_expires_at = date('Y-m-d H:i:s', time() + self::TWO_FACTOR_TTL);
+        $user->save();
+
+        $lang = in_array($user->language ?? null, ['fr', 'en'], true) ? $user->language : 'fr';
+        $header = \App\Services\EmailTemplates::headerContent(
+            $lang === 'en' ? 'Your sign-in code' : 'Votre code de connexion', $lang);
+        $footer = \App\Services\EmailTemplates::footerContent($lang);
+
+        if ($lang === 'en') {
+            $body = "
+            <tr><td style='padding: 30px;'>
+                <p style='margin:0 0 12px; font-size:15px; color:#1a202c;'>Hi {$user->first_name},</p>
+                <p style='margin:0 0 16px; font-size:14px; color:#4a5568;'>
+                    Here is your EpiList sign-in code. It expires in 10 minutes.</p>
+                <div class='verification-code'>{$code}</div>
+                <p style='margin:16px 0 0; font-size:12px; color:#718096;'>
+                    If you did not try to sign in, change your password right away.</p>
+            </td></tr>";
+            $subject = 'Your EpiList sign-in code';
+        } else {
+            $body = "
+            <tr><td style='padding: 30px;'>
+                <p style='margin:0 0 12px; font-size:15px; color:#1a202c;'>Bonjour {$user->first_name},</p>
+                <p style='margin:0 0 16px; font-size:14px; color:#4a5568;'>
+                    Voici votre code de connexion EpiList. Il expire dans 10 minutes.</p>
+                <div class='verification-code'>{$code}</div>
+                <p style='margin:16px 0 0; font-size:12px; color:#718096;'>
+                    Si vous n'êtes pas à l'origine de cette connexion, changez votre
+                    mot de passe immédiatement.</p>
+            </td></tr>";
+            $subject = 'Votre code de connexion EpiList';
+        }
+
+        \App\Services\MailSender::sendMail(
+            $subject,
+            [['email' => $user->email, 'name' => trim($user->first_name . ' ' . $user->last_name)]],
+            $header . $body . $footer
+        );
+    }
+
+    /** Le code fourni est-il valide ET non expiré ? (usage unique) */
+    private function twoFactorCodeMatches(?User $user, string $code): bool
+    {
+        return $user
+            && $user->admin_otp_code
+            && $user->admin_otp_expires_at
+            && strtotime((string) $user->admin_otp_expires_at) >= time()
+            && password_verify($code, $user->admin_otp_code);
+    }
+
+    /** GET /auth/2fa — état du réglage pour l'utilisateur connecté. */
+    public function twoFactorStatus(Request $request, Response $response)
+    {
+        $user = User::find((int) $request->getAttribute('auth_id'));
+        if (!$user) {
+            return $this->createErrorResponse('Utilisateur introuvable', 404);
+        }
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'data' => [
+                    'enabled' => (bool) $user->two_factor_enabled,
+                    'method' => 'email',
+                    'email' => $user->email,
+                ],
+            ]))
+        );
+    }
+
+    /**
+     * POST /auth/2fa { enabled: bool, password: string }
+     * Activer OU désactiver exige le mot de passe courant : un appareil
+     * laissé déverrouillé ne doit pas suffire à retirer la protection.
+     */
+    public function twoFactorUpdate(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody() ?? [];
+        $user = User::find((int) $request->getAttribute('auth_id'));
+        if (!$user) {
+            return $this->createErrorResponse('Utilisateur introuvable', 404);
+        }
+        if (!array_key_exists('enabled', $data)) {
+            return $this->createErrorResponse('enabled requis', 422);
+        }
+
+        $password = (string) ($data['password'] ?? '');
+        if ($user->password_hash === null || !password_verify($password, $user->password_hash)) {
+            return $this->createErrorResponse('Mot de passe incorrect', 401, 'INVALID_PASSWORD');
+        }
+
+        $enabled = filter_var($data['enabled'], FILTER_VALIDATE_BOOLEAN);
+        $user->two_factor_enabled = $enabled ? 1 : 0;
+        // Un code en attente n'a plus lieu d'être après un changement.
+        $user->admin_otp_code = null;
+        $user->admin_otp_expires_at = null;
+        $user->save();
+
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'data' => ['enabled' => $enabled, 'method' => 'email'],
+                'message' => $enabled
+                    ? 'Vérification en deux étapes activée'
+                    : 'Vérification en deux étapes désactivée',
+            ]))
+        );
+    }
+
+    /**
+     * POST /auth/2fa/verify { email, code }
+     * Deuxième étape de connexion, pour TOUT utilisateur ayant activé le
+     * 2FA (le flux administrateur garde sa propre route, équivalente).
+     */
+    public function twoFactorVerify(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody() ?? [];
+        $email = trim((string) ($data['email'] ?? ''));
+        $code = trim((string) ($data['code'] ?? ''));
+        $ipAddress = $this->getClientIP($request);
+
+        if (!$this->rateLimiter->checkIPLimit('two_factor_verify', $ipAddress)) {
+            return $this->createErrorResponse('Trop de tentatives. Réessayez plus tard.', 429);
+        }
+        $this->rateLimiter->recordAttempt('two_factor_verify', $ipAddress);
+
+        $user = User::with('currency')->where('email', $email)->first();
+        if (!$this->twoFactorCodeMatches($user, $code)) {
+            return $this->createErrorResponse('Code invalide ou expiré', 401, 'INVALID_CODE');
+        }
+
+        // Usage unique : le code est consommé.
+        $user->admin_otp_code = null;
+        $user->admin_otp_expires_at = null;
+        $user->save();
+        $this->rateLimiter->resetAttempts('two_factor', $email);
+
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'message' => 'Connexion réussie',
+                'access_token' => $this->jwtService->generateToken(['auth_id' => $user->id]),
+                'refresh_token' => $this->jwtService->generateRefreshToken(['auth_id' => $user->id]),
+                'data' => $this->formatUserData($user),
+            ]))
+        );
+    }
+
     public function adminOtpRequest(Request $request, Response $response)
     {
         $data = $request->getParsedBody() ?? [];
@@ -1119,9 +1293,24 @@ class AuthController
             return $this->createErrorResponse('Identifiants invalides', 401);
         }
 
+        // 2FA désactivée sur ce compte : connexion directe, sans code.
+        if (!$user->two_factor_enabled) {
+            return new JsonResponse(
+                200,
+                new Headers(['Content-Type' => 'application/json']),
+                (new StreamFactory())->createStream(json_encode([
+                    'success' => true,
+                    'message' => 'Connexion administrateur réussie',
+                    'data' => ['requires_2fa' => false] + $this->formatUserData($user),
+                    'access_token' => $this->jwtService->generateToken(['auth_id' => $user->id]),
+                    'refresh_token' => $this->jwtService->generateRefreshToken(['auth_id' => $user->id]),
+                ]))
+            );
+        }
+
         $code = (string) random_int(100000, 999999);
         $user->admin_otp_code = password_hash($code, PASSWORD_DEFAULT);
-        $user->admin_otp_expires_at = date('Y-m-d H:i:s', time() + 600); // 10 min
+        $user->admin_otp_expires_at = date('Y-m-d H:i:s', time() + self::TWO_FACTOR_TTL);
         $user->save();
 
         $header = \App\Services\EmailTemplates::headerContent('Code de connexion administrateur', 'fr');
@@ -1149,6 +1338,7 @@ class AuthController
             (new StreamFactory())->createStream(json_encode([
                 'success' => true,
                 'message' => 'Code envoyé par email',
+                'data' => ['requires_2fa' => true, 'method' => 'email'],
             ]))
         );
     }
@@ -1410,6 +1600,31 @@ class AuthController
                 return $response
                     ->withHeader('Content-Type', 'application/json')
                     ->withStatus(403);
+            }
+
+            // 2FA par email (optionnelle) : si l'utilisateur l'a activée,
+            // aucun jeton n'est délivré ici — un code part par email et la
+            // connexion se termine sur /auth/2fa/verify.
+            if ($user->two_factor_enabled) {
+                try {
+                    $this->sendTwoFactorCode($user);
+                } catch (\Throwable $e) {
+                    error_log('2FA: envoi du code impossible: ' . $e->getMessage());
+                    return $this->createErrorResponse(
+                        "Impossible d'envoyer le code de vérification. Réessayez.", 500);
+                }
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'code' => 'TWO_FACTOR_REQUIRED',
+                    'message' => 'Un code de vérification vous a été envoyé par email.',
+                    'data' => [
+                        'requires_2fa' => true,
+                        'method' => 'email',
+                        'email' => $user->email,
+                        'expires_in' => self::TWO_FACTOR_TTL,
+                    ],
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             }
 
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {

@@ -21,8 +21,13 @@ export default function AdminLoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await adminApi.requestOtp(email.trim(), password);
-      setStep("otp");
+      // Sans 2FA, les jetons arrivent dès cette étape : on entre directement.
+      const needsCode = await adminApi.requestOtp(email.trim(), password);
+      if (needsCode) {
+        setStep("otp");
+      } else {
+        router.replace("/admin");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Connexion refusée");
     } finally {

@@ -10926,6 +10926,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'sous le seuil'**
   String get inventoryBelowMin;
+
+  /// No description provided for @twoFactorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en deux étapes'**
+  String get twoFactorTitle;
+
+  /// No description provided for @twoFactorSentTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous avons envoyé un code à 6 chiffres à {email}.'**
+  String twoFactorSentTo(String email);
+
+  /// No description provided for @twoFactorExpires.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code expire dans 10 minutes.'**
+  String get twoFactorExpires;
+
+  /// No description provided for @twoFactorInvalidCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide ou expiré'**
+  String get twoFactorInvalidCode;
+
+  /// No description provided for @twoFactorResend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renvoyer le code'**
+  String get twoFactorResend;
+
+  /// No description provided for @twoFactorResending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi en cours…'**
+  String get twoFactorResending;
+
+  /// No description provided for @twoFactorCodeSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un nouveau code vous a été envoyé'**
+  String get twoFactorCodeSent;
+
+  /// No description provided for @twoFactorResendHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenez en arrière et reconnectez-vous pour recevoir un nouveau code.'**
+  String get twoFactorResendHint;
+
+  /// No description provided for @twoFactorSetting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en deux étapes'**
+  String get twoFactorSetting;
+
+  /// No description provided for @twoFactorSettingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevez un code par email à chaque connexion. Optionnel, activable à tout moment.'**
+  String get twoFactorSettingHint;
+
+  /// No description provided for @twoFactorPasswordPrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmez votre mot de passe pour modifier ce réglage.'**
+  String get twoFactorPasswordPrompt;
+
+  /// No description provided for @twoFactorEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en deux étapes activée'**
+  String get twoFactorEnabled;
+
+  /// No description provided for @twoFactorDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en deux étapes désactivée'**
+  String get twoFactorDisabled;
+
+  /// No description provided for @twoFactorWrongPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe incorrect'**
+  String get twoFactorWrongPassword;
+
+  /// No description provided for @enabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activée'**
+  String get enabled;
+
+  /// No description provided for @disabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivée'**
+  String get disabled;
 }
 
 class _AppLocalizationsDelegate

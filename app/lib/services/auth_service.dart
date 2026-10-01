@@ -735,6 +735,58 @@ class AuthService {
   // ===================== AUTHENTIFICATION CLASSIQUE =====================
 
   /// ✅ LOGIN CLASSIQUE
+  /// Deuxième étape de connexion (2FA par email) : échange le code à
+  /// 6 chiffres contre les jetons, puis met le cache à jour comme un
+  /// login normal.
+  Future<Map<String, String>> verifyTwoFactor(String email, String code) async {
+    try {
+      final response = await dio.post(
+        '/auth/2fa/verify',
+        data: {'email': email, 'code': code},
+      );
+
+      final data = response.data;
+      final accessToken = data['access_token'] as String?;
+      final refreshToken = data['refresh_token'] as String?;
+      if (accessToken == null || refreshToken == null) {
+        throw AuthenticationException('Tokens manquants', 'MISSING_TOKENS');
+      }
+
+      await saveTokens(accessToken, refreshToken);
+      await saveUserToCache(User.fromLoginResponse({
+        'access_token': accessToken,
+        'refresh_token': refreshToken,
+        'data': data['data'],
+      }));
+
+      return {'access_token': accessToken, 'refresh_token': refreshToken};
+    } on DioException catch (e) {
+      final code = (e.response?.data is Map)
+          ? e.response?.data['code'] as String?
+          : null;
+      if (e.response?.statusCode == 429) {
+        throw AuthenticationException(
+          'Trop de tentatives. Réessayez plus tard.', 'TOO_MANY_ATTEMPTS');
+      }
+      throw AuthenticationException(
+        code == 'INVALID_CODE' ? 'Code invalide ou expiré' : 'Vérification impossible',
+        code ?? 'VERIFY_FAILED',
+      );
+    }
+  }
+
+  /// Réglage « vérification en deux étapes » du compte connecté.
+  Future<bool> getTwoFactorEnabled() async {
+    final res = await dio.get('/auth/2fa');
+    return res.data['data']['enabled'] as bool? ?? false;
+  }
+
+  /// Active ou désactive le 2FA. Le mot de passe courant est exigé par
+  /// le serveur : un appareil déverrouillé ne suffit pas.
+  Future<void> setTwoFactorEnabled(bool enabled, String password) async {
+    await dio.post('/auth/2fa', data: {'enabled': enabled, 'password': password});
+  }
+
   Future<Map<String, String>> login(String email, String password) async {
     try {
       debugPrint('🔐 [AuthService] Début du login classique...');
@@ -747,6 +799,16 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = response.data;
         // La réponse contient les tokens : ne pas la logguer
+
+        // Vérification en deux étapes activée sur ce compte : le serveur
+        // répond 200 SANS jeton, un code vient de partir par email.
+        if (data['code'] == 'TWO_FACTOR_REQUIRED') {
+          throw AuthenticationException(
+            'Code de vérification requis',
+            'TWO_FACTOR_REQUIRED',
+            email: (data['data']?['email'] as String?) ?? email,
+          );
+        }
 
         final accessToken = data['access_token'] as String?;
         final refreshToken = data['refresh_token'] as String?;

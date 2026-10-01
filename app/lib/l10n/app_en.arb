@@ -2767,5 +2767,28 @@
   "inventoryUnit": "Unit",
   "inventoryMinQuantity": "Alert threshold (min)",
   "inventoryReorderQuantity": "Reorder quantity",
-  "inventoryBelowMin": "below threshold"
+  "inventoryBelowMin": "below threshold",
+  "twoFactorTitle": "Two-step verification",
+  "twoFactorSentTo": "We sent a 6-digit code to {email}.",
+  "@twoFactorSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "twoFactorExpires": "The code expires in 10 minutes.",
+  "twoFactorInvalidCode": "Invalid or expired code",
+  "twoFactorResend": "Resend code",
+  "twoFactorResending": "Sending…",
+  "twoFactorCodeSent": "A new code has been sent",
+  "twoFactorResendHint": "Go back and sign in again to get a new code.",
+  "twoFactorSetting": "Two-step verification",
+  "twoFactorSettingHint": "Get a code by email each time you sign in. Optional, you can turn it on anytime.",
+  "twoFactorPasswordPrompt": "Confirm your password to change this setting.",
+  "twoFactorEnabled": "Two-step verification enabled",
+  "twoFactorDisabled": "Two-step verification disabled",
+  "twoFactorWrongPassword": "Incorrect password",
+  "enabled": "Enabled",
+  "disabled": "Disabled"
 }

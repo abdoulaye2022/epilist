@@ -7,6 +7,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/main_shell.dart';
 import 'package:epilist/screens/password_change_screen.dart';
 import 'package:epilist/screens/signup_screen.dart';
+import 'package:epilist/screens/two_factor_screen.dart';
 import 'package:epilist/screens/email_verification_screen.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/services/sso_service.dart';
@@ -407,6 +408,20 @@ class _LoginScreenState extends State<LoginScreen> {
           l10n.emailMustBeVerified,
         );
         _navigateToEmailVerification(emailState.email);
+        break;
+
+      // Vérification en deux étapes activée sur ce compte : saisie du code.
+      case TwoFactorRequired:
+        final twoFactorState = state as TwoFactorRequired;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TwoFactorScreen(
+              email: twoFactorState.email,
+              password: _passwordController.text,
+            ),
+          ),
+        );
         break;
     }
   }

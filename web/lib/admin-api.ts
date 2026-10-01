@@ -131,8 +131,13 @@ export const adminApi = {
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
   del: <T>(path: string) => request<T>('DELETE', path),
 
-  /** Étape 1 de la connexion admin : envoie le code OTP par email. */
-  async requestOtp(email: string, password: string): Promise<void> {
+  /**
+   * Étape 1 de la connexion admin. La vérification en deux étapes étant
+   * OPTIONNELLE, deux issues possibles :
+   *  - 2FA activée  -> un code part par email, retourne true (2e étape) ;
+   *  - 2FA inactive -> les jetons arrivent ici, retourne false (connecté).
+   */
+  async requestOtp(email: string, password: string): Promise<boolean> {
     const res = await fetch(`${API_URL}/auth/admin/otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,6 +147,11 @@ export const adminApi = {
     if (!res.ok || !data?.success) {
       throw new AdminApiError(data?.message ?? 'Connexion refusée', res.status);
     }
+    if (data.access_token) {
+      setAdminTokens(data.access_token, data.refresh_token ?? null);
+      return false;
+    }
+    return true;
   },
 
   /** Étape 2 : vérifie le code et récupère les jetons (accès + refresh). */

@@ -122,6 +122,8 @@ $app->addErrorMiddleware(true, true, true);
 $app->post('/auth/login', [AuthController::class, 'login']);
 $app->post('/auth/refresh', [AuthController::class, 'refresh_token']);
 // 2FA espace admin (web) : code par email puis jetons
+// 2FA par email (optionnelle) : 2e etape de connexion, tout utilisateur
+$app->post('/auth/2fa/verify', [AuthController::class, 'twoFactorVerify']);
 $app->post('/auth/admin/otp', [AuthController::class, 'adminOtpRequest']);
 $app->post('/auth/admin/verify-otp', [AuthController::class, 'adminOtpVerify']);
 $app->post('/auth/register', [AuthController::class, 'register']);
@@ -193,6 +195,9 @@ $app->post('/auth/sso/apple/register', [AuthController::class, 'appleRegister'])
 $app->group('', function ($group) {
     //  ROUTES D'AUTHENTIFICATION PROTÉGÉES
     $group->post('/check-auth', [AuthController::class, 'checkAuth']);
+    // Reglage 2FA de l'utilisateur connecte (activation = mot de passe exige)
+    $group->get('/auth/2fa', [AuthController::class, 'twoFactorStatus']);
+    $group->post('/auth/2fa', [AuthController::class, 'twoFactorUpdate']);
     $group->get('/auth/me', [AuthController::class, 'getCurrentUser']);
     $group->put('/auth/me', [AuthController::class, 'updateProfile']);
 

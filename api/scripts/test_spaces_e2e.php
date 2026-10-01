@@ -39,10 +39,37 @@ function check(string $name, bool $ok, string $detail = ''): void
     else { $fail++; echo "  FAIL $name" . ($detail ? " — $detail" : '') . "\n"; }
 }
 
+// Accès base : nécessaire dès le départ (jetons d'invitation, et code
+// 2FA des comptes qui ont activé la vérification en deux étapes).
+$envLines = file(__DIR__ . '/../.env');
+$env = [];
+foreach ($envLines as $l) if (preg_match('/^([A-Z_]+)=(.*)$/', trim($l), $m)) $env[$m[1]] = trim($m[2], '"\'');
+$pdo = new PDO("mysql:host={$env['DB_HOST']};port={$env['DB_PORT']};dbname={$env['DB_DATABASE']};charset=utf8mb4", $env['DB_USERNAME'], $env['DB_PASSWORD']);
+
+/** Pose un code 2FA connu pour un compte et retourne ce code. */
+function seedTwoFactorCode(PDO $pdo, string $email, string $code = '123456'): string
+{
+    $st = $pdo->prepare('UPDATE users SET admin_otp_code = ?, admin_otp_expires_at = ? WHERE email = ?');
+    $st->execute([password_hash($code, PASSWORD_DEFAULT), date('Y-m-d H:i:s', time() + 600), $email]);
+    return $code;
+}
+
+/**
+ * Connexion complète, 2FA comprise : si le compte a activé la
+ * vérification en deux étapes, le code est posé en base puis échangé.
+ */
 function login(string $base, string $email, string $password): array
 {
+    global $pdo;
     [$s, $d] = req('POST', "$base/auth/login", ['email' => $email, 'password' => $password]);
     if ($s !== 200) { fwrite(STDERR, "Login $email impossible ($s)\n"); exit(1); }
+
+    if (($d['code'] ?? '') === 'TWO_FACTOR_REQUIRED') {
+        $code = seedTwoFactorCode($pdo, $email);
+        [$s, $d] = req('POST', "$base/auth/2fa/verify", ['email' => $email, 'code' => $code]);
+        if ($s !== 200) { fwrite(STDERR, "2FA $email impossible ($s)\n"); exit(1); }
+    }
+
     return [$d['access_token'] ?? $d['data']['access_token'] ?? '', $d];
 }
 
@@ -94,10 +121,6 @@ check('B voit l\'invitation reçue', $mine !== null);
 
 // Le jeton n'est pas exposé dans les listes : on le lit en base pour
 // tester le mismatch d'email (un tiers qui intercepte le lien).
-$envLines = file(__DIR__ . '/../.env');
-$env = [];
-foreach ($envLines as $l) if (preg_match('/^([A-Z_]+)=(.*)$/', trim($l), $m)) $env[$m[1]] = trim($m[2], '"\'');
-$pdo = new PDO("mysql:host={$env['DB_HOST']};port={$env['DB_PORT']};dbname={$env['DB_DATABASE']};charset=utf8mb4", $env['DB_USERNAME'], $env['DB_PASSWORD']);
 $token = $pdo->query("SELECT token FROM space_invitations WHERE space_id = $hid AND status='pending' ORDER BY id DESC LIMIT 1")->fetchColumn();
 check('jeton retrouvé en base', is_string($token) && strlen($token) === 64);
 
@@ -858,6 +881,67 @@ $pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('riz audit','
 $pdo->exec("DELETE FROM product_aliases WHERE normalized_alias = 'jus orng audit'");
 $pdo->exec("DELETE FROM stores WHERE name = 'IGA audit'");
 check('nettoyage audit fait', true);
+
+// ==================================================================
+// 2FA PAR EMAIL — OPTIONNELLE : désactivée par défaut, activable par
+// l'utilisateur, exige le mot de passe pour changer de réglage
+// ==================================================================
+echo "== 2FA : réglage par utilisateur\n";
+$t2fa = $pdo->prepare('UPDATE users SET two_factor_enabled = 0, admin_otp_code = NULL WHERE email = ?');
+$t2fa->execute(['ali@gmail.com']);
+
+[$tokenA] = login($base, 'ali@gmail.com', 'Test1234!');
+[$s, $d] = req('GET', "$base/auth/2fa", null, $tokenA);
+check('réglage lisible, désactivé par défaut',
+    $s === 200 && ($d['data']['enabled'] ?? true) === false && ($d['data']['method'] ?? '') === 'email',
+    json_encode($d['data'] ?? []));
+
+[$s] = req('POST', "$base/auth/2fa", ['enabled' => true], $tokenA);
+check('activation sans mot de passe refusée (401)', $s === 401, "status $s");
+[$s] = req('POST', "$base/auth/2fa", ['enabled' => true, 'password' => 'mauvais'], $tokenA);
+check('mot de passe erroné refusé (401)', $s === 401, "status $s");
+[$s, $d] = req('POST', "$base/auth/2fa", ['enabled' => true, 'password' => 'Test1234!'], $tokenA);
+check('activation avec mot de passe', $s === 200 && ($d['data']['enabled'] ?? false) === true, "status $s");
+
+echo "== 2FA : connexion en deux étapes\n";
+[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+check('login challengé, AUCUN jeton délivré',
+    $s === 200 && ($d['code'] ?? '') === 'TWO_FACTOR_REQUIRED' && empty($d['access_token']),
+    json_encode(array_keys($d)));
+check('le serveur annonce la méthode email', ($d['data']['method'] ?? '') === 'email');
+
+$code2fa = seedTwoFactorCode($pdo, 'ali@gmail.com', '424242');
+[$s] = req('POST', "$base/auth/2fa/verify", ['email' => 'ali@gmail.com', 'code' => '000000']);
+check('mauvais code refusé (401)', $s === 401, "status $s");
+[$s, $d] = req('POST', "$base/auth/2fa/verify", ['email' => 'ali@gmail.com', 'code' => $code2fa]);
+$tokenA2 = $d['access_token'] ?? '';
+check('bon code : jetons délivrés', $s === 200 && $tokenA2 !== '' && !empty($d['refresh_token']), "status $s");
+[$s] = req('POST', "$base/auth/2fa/verify", ['email' => 'ali@gmail.com', 'code' => $code2fa]);
+check('code à usage unique (rejeu refusé)', $s === 401, "status $s");
+
+// Code expiré : on antidate l'échéance
+$pdo->prepare('UPDATE users SET admin_otp_code = ?, admin_otp_expires_at = ? WHERE email = ?')
+    ->execute([password_hash('777777', PASSWORD_DEFAULT), date('Y-m-d H:i:s', time() - 60), 'ali@gmail.com']);
+[$s] = req('POST', "$base/auth/2fa/verify", ['email' => 'ali@gmail.com', 'code' => '777777']);
+check('code expiré refusé (401)', $s === 401, "status $s");
+
+echo "== 2FA : désactivation\n";
+[$s] = req('POST', "$base/auth/2fa", ['enabled' => false, 'password' => 'Test1234!'], $tokenA2);
+check('désactivation acceptée', $s === 200, "status $s");
+[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+check('login revenu en UNE étape', $s === 200 && !empty($d['access_token']), "status $s");
+
+echo "== 2FA : administrateur (même règle)\n";
+$pdo->prepare('UPDATE users SET two_factor_enabled = 0 WHERE email = ?')->execute(['admin@gmail.com']);
+[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => 'Abc1234!']);
+check('admin sans 2FA : connexion directe',
+    $s === 200 && !empty($d['access_token']) && ($d['data']['requires_2fa'] ?? null) === false, "status $s");
+$pdo->prepare('UPDATE users SET two_factor_enabled = 1 WHERE email = ?')->execute(['admin@gmail.com']);
+[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => 'Abc1234!']);
+check('admin avec 2FA : code exigé, aucun jeton',
+    $s === 200 && empty($d['access_token']) && ($d['data']['requires_2fa'] ?? false) === true, "status $s");
+[$s] = req('POST', "$base/auth/admin/otp", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+check('non-admin refusé sur la route admin (401)', $s === 401, "status $s");
 
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

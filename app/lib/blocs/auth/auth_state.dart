@@ -118,6 +118,17 @@ class EmailVerificationRequired extends AuthState {
   List<Object> get props => [email];
 }
 
+/// 2FA par email activée : un code a été envoyé, la connexion attend
+/// sa saisie (voir TwoFactorScreen).
+class TwoFactorRequired extends AuthState {
+  final String email;
+
+  const TwoFactorRequired(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
 class EmailConfirmationSuccess extends AuthState {}
 
 class VerificationCodeResent extends AuthState {

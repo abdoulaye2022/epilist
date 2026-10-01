@@ -809,6 +809,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final emailToUse = e.email?.isNotEmpty == true ? e.email! : email;
         emit(EmailVerificationRequired(emailToUse));
         return;
+      case 'TWO_FACTOR_REQUIRED':
+        emit(TwoFactorRequired(e.email?.isNotEmpty == true ? e.email! : email));
+        return;
       default:
         errorCode = 'INVALID_CREDENTIALS';
     }

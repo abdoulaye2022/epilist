@@ -5844,4 +5844,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryBelowMin => 'below threshold';
+
+  @override
+  String get twoFactorTitle => 'Two-step verification';
+
+  @override
+  String twoFactorSentTo(String email) {
+    return 'We sent a 6-digit code to $email.';
+  }
+
+  @override
+  String get twoFactorExpires => 'The code expires in 10 minutes.';
+
+  @override
+  String get twoFactorInvalidCode => 'Invalid or expired code';
+
+  @override
+  String get twoFactorResend => 'Resend code';
+
+  @override
+  String get twoFactorResending => 'Sending…';
+
+  @override
+  String get twoFactorCodeSent => 'A new code has been sent';
+
+  @override
+  String get twoFactorResendHint =>
+      'Go back and sign in again to get a new code.';
+
+  @override
+  String get twoFactorSetting => 'Two-step verification';
+
+  @override
+  String get twoFactorSettingHint =>
+      'Get a code by email each time you sign in. Optional, you can turn it on anytime.';
+
+  @override
+  String get twoFactorPasswordPrompt =>
+      'Confirm your password to change this setting.';
+
+  @override
+  String get twoFactorEnabled => 'Two-step verification enabled';
+
+  @override
+  String get twoFactorDisabled => 'Two-step verification disabled';
+
+  @override
+  String get twoFactorWrongPassword => 'Incorrect password';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
 }

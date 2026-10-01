@@ -41,7 +41,12 @@ class User extends Model
         'is_active',
         'email_marketing_consent',
         'email_marketing_unsubscribed_at',
-        'unsubscribe_token'
+        'unsubscribe_token',
+        // Vérification en deux étapes par email (opt-in, voir AuthController)
+        'two_factor_enabled',
+        'admin_otp_code',
+        'admin_otp_expires_at',
+        'community_prices_enabled'
     ];
 
     protected $hidden = [
@@ -49,6 +54,7 @@ class User extends Model
         'email_verification_code',
         'password_change_code',
         'account_deletion_code',
+        'admin_otp_code', // code 2FA : jamais exposé par l'API
         'deleted_at'
     ];
 
@@ -67,7 +73,9 @@ class User extends Model
         'account_deletion_code_expires_at' => 'datetime',
         'deletion_requested_at' => 'datetime',
         'email_marketing_consent' => 'boolean',
-        'email_marketing_unsubscribed_at' => 'datetime'
+        'email_marketing_unsubscribed_at' => 'datetime',
+        'two_factor_enabled' => 'boolean',
+        'community_prices_enabled' => 'boolean'
     ];
 
     protected $attributes = [

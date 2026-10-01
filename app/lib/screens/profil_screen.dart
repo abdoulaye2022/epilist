@@ -1,5 +1,7 @@
 // screens/profile_screen.dart - VERSION AVEC FEEDBACK
 
+import 'package:dio/dio.dart';
+import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/currency/currency_bloc.dart';
@@ -44,10 +46,24 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   User? _currentUser;
 
+  /// null tant que le réglage n'est pas connu du serveur
+  bool? _twoFactorEnabled;
+
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadTwoFactor();
+  }
+
+  Future<void> _loadTwoFactor() async {
+    try {
+      final enabled = await context.read<AuthService>().getTwoFactorEnabled();
+      if (!mounted) return;
+      setState(() => _twoFactorEnabled = enabled);
+    } catch (_) {
+      // hors ligne : la tuile reste discrète
+    }
   }
 
   void _loadUserProfile() {
@@ -411,8 +427,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onTap: _showSecurityDialog,
           // Utilise les couleurs par défaut (pas besoin de spécifier)
         ),
+        // Vérification en deux étapes : OPTIONNELLE, par email.
+        ProfileActionTile(
+          icon: _twoFactorEnabled == true
+              ? Icons.verified_user_outlined
+              : Icons.shield_outlined,
+          title: l10n.twoFactorSetting,
+          subtitle: _twoFactorEnabled == null
+              ? '…'
+              : (_twoFactorEnabled! ? l10n.enabled : l10n.disabled),
+          onTap: _toggleTwoFactor,
+        ),
       ],
     );
+  }
+
+  /// Active/désactive la vérification en deux étapes. Le serveur exige le
+  /// mot de passe courant : on le demande avant d'envoyer.
+  Future<void> _toggleTwoFactor() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (_twoFactorEnabled == null) return;
+    final target = !_twoFactorEnabled!;
+
+    final passwordController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.twoFactorSetting),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.twoFactorSettingHint,
+                style: const TextStyle(fontSize: 13)),
+            const SizedBox(height: 16),
+            Text(l10n.twoFactorPasswordPrompt,
+                style: const TextStyle(fontSize: 12.5)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              autofocus: true,
+              decoration: InputDecoration(labelText: l10n.password),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(target ? l10n.activate : l10n.deactivate),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+    try {
+      await context
+          .read<AuthService>()
+          .setTwoFactorEnabled(target, passwordController.text);
+      if (!mounted) return;
+      setState(() => _twoFactorEnabled = target);
+      SmartSnackBarManager.showSuccessSnackBar(
+          context, target ? l10n.twoFactorEnabled : l10n.twoFactorDisabled);
+    } on DioException catch (e) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(
+        context,
+        e.response?.statusCode == 401
+            ? l10n.twoFactorWrongPassword
+            : l10n.anErrorOccurred,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.anErrorOccurred);
+    }
   }
 
   // ✅ NOUVELLE SECTION SUPPORT AVEC BOUTON FEEDBACK
