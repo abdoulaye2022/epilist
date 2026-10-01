@@ -5139,10 +5139,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageYourSuggestions => 'Gérer vos suggestions personnalisées';
 
   @override
-  String get emailPreferences => 'Préférences email';
+  String get emailPreferences => 'Notifications';
 
   @override
-  String get manageEmailNotifications => 'Gérer les notifications par email';
+  String get manageEmailNotifications => 'Choisir ce que vous recevez';
 
   @override
   String get showingOwnListsOnly =>
@@ -5175,7 +5175,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get epTitle => 'Préférences email';
+  String get epTitle => 'Notifications';
 
   @override
   String get epResetDefaults => 'Réinitialiser';
@@ -5992,4 +5992,44 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get disabled => 'Désactivée';
+
+  @override
+  String get npPushTitle => 'Notifications push';
+
+  @override
+  String get npPushDesc => 'Ce que vous recevez sur cet appareil';
+
+  @override
+  String get npListsTitle => 'Listes partagées';
+
+  @override
+  String get npListsDesc => 'Messages, partages et modifications de vos listes';
+
+  @override
+  String get npBudgetTitle => 'Budgets';
+
+  @override
+  String get npBudgetDesc => 'Seuils atteints, dépassements et résumé';
+
+  @override
+  String get npPriceTitle => 'Alertes de prix';
+
+  @override
+  String get npPriceDesc => 'Quand un produit passe sous votre prix cible';
+
+  @override
+  String get npRemindersTitle => 'Rappels';
+
+  @override
+  String get npRemindersDesc => 'Pense-bêtes pour préparer vos courses';
+
+  @override
+  String get npEmailsTitle => 'Emails';
+
+  @override
+  String get npEmailsDesc => 'Rien à régler';
+
+  @override
+  String get npEmailsBody =>
+      'Nous ne vous écrivons que lorsque c\'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.';
 }

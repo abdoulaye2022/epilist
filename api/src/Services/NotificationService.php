@@ -69,32 +69,48 @@ class NotificationService
      * ✅ NOUVELLE MÉTHODE: Vérifier si l'utilisateur accepte ce type de notification
      * Mapping des types de notifications vers les préférences email
      */
+    /**
+     * L'utilisateur accepte-t-il CE push ?
+     *
+     * Les notifications push ont leurs propres interrupteurs
+     * (colonnes push_*), indépendants des emails : couper les emails de
+     * budget ne doit pas couper les push de budget (constat C2).
+     * Un type non classé reste autorisé — mieux vaut une notification
+     * utile qu'un silence inexpliqué.
+     */
     private function canSendNotification(User $user, string $notificationType): bool
     {
-        // Mapping des types de notifications vers les colonnes de préférences
         $preferenceMap = [
-            self::TYPE_BUDGET_ALERT => 'budget_alert',
-            self::TYPE_BUDGET_WARNING => 'budget_alert',
-            self::TYPE_BUDGET_EXCEEDED => 'budget_alert',
-            self::TYPE_DAILY_SUMMARY => 'budget_summary',
-            self::TYPE_LIST_COMPLETED => 'list_completed',
-            self::TYPE_LIST_SHARED => 'list_shared_with_me',
-            self::TYPE_LIST_UPDATED => 'list_shared_with_me',
-            self::TYPE_DAILY_LIST_REMINDER => 'tips_and_tricks', // Rappels considérés comme tips
-            self::TYPE_WEEKLY_LIST_REMINDER => 'tips_and_tricks',
-            self::TYPE_USER_INACTIVE => 'tips_and_tricks',
-            self::TYPE_NEW_MESSAGE => 'list_shared_with_me', // Messages dans listes partagées
+            // Activité des listes partagées
+            self::TYPE_LIST_SHARED => 'push_list_activity',
+            self::TYPE_LIST_UPDATED => 'push_list_activity',
+            self::TYPE_NEW_MESSAGE => 'push_list_activity',
+            self::TYPE_LIST_COMPLETED => 'push_list_activity',
+            // Budgets
+            self::TYPE_BUDGET_ALERT => 'push_budget',
+            self::TYPE_BUDGET_WARNING => 'push_budget',
+            self::TYPE_BUDGET_EXCEEDED => 'push_budget',
+            self::TYPE_DAILY_SUMMARY => 'push_budget',
+            // Prix (Phase 4)
+            'price_alert' => 'push_price_alert',
+            // Relances d'usage
+            self::TYPE_USER_INACTIVE => 'push_reminders',
+            self::TYPE_WEEKLY_LIST_REMINDER => 'push_reminders',
+            self::TYPE_DAILY_LIST_REMINDER => 'push_reminders',
+            self::TYPE_PURCHASE_REMINDER => 'push_reminders',
         ];
 
-        // Si le type n'est pas mappé, autoriser par défaut
-        if (!isset($preferenceMap[$notificationType])) {
+        $preferenceKey = $preferenceMap[$notificationType] ?? null;
+        if ($preferenceKey === null) {
             return true;
         }
 
-        $preferenceKey = $preferenceMap[$notificationType];
+        $prefs = EmailPreference::where('user_id', $user->id)->first();
+        if (!$prefs) {
+            return true; // aucun réglage enregistré : tout est actif
+        }
 
-        // Vérifier les préférences de l'utilisateur
-        return EmailPreference::isEmailEnabled($user->id, $preferenceKey);
+        return (bool) ($prefs->$preferenceKey ?? true);
     }
 
     /**
@@ -106,10 +122,9 @@ class NotificationService
             //  S'assurer que $amount est bien un float
             $amount = (float) $amount;
             $currency = $user->getPreferredCurrency();
-            
+
             //  Utiliser le formatage international de FormattedAmount
             return $this->formatAmountInternational($amount, $currency, $showCode);
-            
         } catch (\Exception $e) {
             error_log("Error formatting amount for user {$user->id}: " . $e->getMessage());
             // Fallback: format CAD par défaut

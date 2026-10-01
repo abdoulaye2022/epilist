@@ -19,9 +19,18 @@ class EmailPreference extends Model
         'budget_alert',
         'budget_summary',
         'tips_and_tricks',
+        // Notifications push : interrupteurs INDÉPENDANTS des emails
+        'push_list_activity',
+        'push_budget',
+        'push_price_alert',
+        'push_reminders',
     ];
 
     protected $casts = [
+        'push_list_activity' => 'boolean',
+        'push_budget' => 'boolean',
+        'push_price_alert' => 'boolean',
+        'push_reminders' => 'boolean',
         'email_verification' => 'boolean',
         'password_change_request' => 'boolean',
         'password_changed' => 'boolean',

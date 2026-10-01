@@ -1595,8 +1595,25 @@ class MailSender
      * @param string $emailType Type d'email (ex: 'email_verification', 'password_changed', 'list_shared_with_me', etc.)
      * @return bool True si l'email est activé, false sinon
      */
+    /**
+     * Emails qu'on ne peut PAS refuser : sans eux, le compte devient
+     * inutilisable (activation, récupération) ou l'utilisateur ignore
+     * un événement de sécurité. Ils passent avant toute préférence.
+     */
+    private const MANDATORY_EMAILS = [
+        'email_verification',        // activation du compte
+        'password_change_request',   // récupération du mot de passe
+        'password_changed',          // alerte de sécurité
+    ];
+
     public static function canSendEmail(int $userId, string $emailType): bool
     {
+        // Jamais bloqué : couper ces emails enfermerait l'utilisateur
+        // dehors de son propre compte (constat C1 de l'audit).
+        if (in_array($emailType, self::MANDATORY_EMAILS, true)) {
+            return true;
+        }
+
         try {
             // Importer le modèle
             $emailPreference = \App\Models\EmailPreference::where('user_id', $userId)->first();

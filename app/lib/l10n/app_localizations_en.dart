@@ -5055,10 +5055,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageYourSuggestions => 'Manage your personalized suggestions';
 
   @override
-  String get emailPreferences => 'Email preferences';
+  String get emailPreferences => 'Notifications';
 
   @override
-  String get manageEmailNotifications => 'Manage email notifications';
+  String get manageEmailNotifications => 'Choose what you receive';
 
   @override
   String get showingOwnListsOnly => 'Showing only your own lists';
@@ -5090,7 +5090,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get epTitle => 'Email preferences';
+  String get epTitle => 'Notifications';
 
   @override
   String get epResetDefaults => 'Reset to defaults';
@@ -5897,4 +5897,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disabled => 'Disabled';
+
+  @override
+  String get npPushTitle => 'Push notifications';
+
+  @override
+  String get npPushDesc => 'What you receive on this device';
+
+  @override
+  String get npListsTitle => 'Shared lists';
+
+  @override
+  String get npListsDesc => 'Messages, shares and changes to your lists';
+
+  @override
+  String get npBudgetTitle => 'Budgets';
+
+  @override
+  String get npBudgetDesc => 'Thresholds, overruns and summary';
+
+  @override
+  String get npPriceTitle => 'Price alerts';
+
+  @override
+  String get npPriceDesc => 'When a product drops below your target price';
+
+  @override
+  String get npRemindersTitle => 'Reminders';
+
+  @override
+  String get npRemindersDesc => 'Nudges to help you prepare your shopping';
+
+  @override
+  String get npEmailsTitle => 'Emails';
+
+  @override
+  String get npEmailsDesc => 'Nothing to set';
+
+  @override
+  String get npEmailsBody =>
+      'We only email you when it is essential: account activation, password recovery, security alert, sign-in code and account deletion. Everything else goes through the notifications above.';
 }

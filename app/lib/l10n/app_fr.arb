@@ -2231,8 +2231,8 @@
   "connectionProblem": "Problème de connexion. Vérifiez votre internet et réessayez.",
   "appleSignInError": "Erreur lors de la connexion Apple",
   "manageYourSuggestions": "Gérer vos suggestions personnalisées",
-  "emailPreferences": "Préférences email",
-  "manageEmailNotifications": "Gérer les notifications par email",
+  "emailPreferences": "Notifications",
+  "manageEmailNotifications": "Choisir ce que vous recevez",
   "showingOwnListsOnly": "Affichage uniquement de vos propres listes",
   "noListFound": "Aucune liste trouvée",
   "noActiveList": "Aucune liste active",
@@ -2249,7 +2249,7 @@
       }
     }
   },
-  "epTitle": "Préférences email",
+  "epTitle": "Notifications",
   "epResetDefaults": "Réinitialiser",
   "epResetConfirm": "Réinitialiser toutes les préférences email aux valeurs par défaut ?",
   "epResetDone": "Préférences réinitialisées",
@@ -2790,5 +2790,18 @@
   "twoFactorDisabled": "Vérification en deux étapes désactivée",
   "twoFactorWrongPassword": "Mot de passe incorrect",
   "enabled": "Activée",
-  "disabled": "Désactivée"
+  "disabled": "Désactivée",
+  "npPushTitle": "Notifications push",
+  "npPushDesc": "Ce que vous recevez sur cet appareil",
+  "npListsTitle": "Listes partagées",
+  "npListsDesc": "Messages, partages et modifications de vos listes",
+  "npBudgetTitle": "Budgets",
+  "npBudgetDesc": "Seuils atteints, dépassements et résumé",
+  "npPriceTitle": "Alertes de prix",
+  "npPriceDesc": "Quand un produit passe sous votre prix cible",
+  "npRemindersTitle": "Rappels",
+  "npRemindersDesc": "Pense-bêtes pour préparer vos courses",
+  "npEmailsTitle": "Emails",
+  "npEmailsDesc": "Rien à régler",
+  "npEmailsBody": "Nous ne vous écrivons que lorsque c'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus."
 }

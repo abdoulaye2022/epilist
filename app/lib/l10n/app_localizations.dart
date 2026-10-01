@@ -9520,13 +9520,13 @@ abstract class AppLocalizations {
   /// No description provided for @emailPreferences.
   ///
   /// In fr, this message translates to:
-  /// **'Préférences email'**
+  /// **'Notifications'**
   String get emailPreferences;
 
   /// No description provided for @manageEmailNotifications.
   ///
   /// In fr, this message translates to:
-  /// **'Gérer les notifications par email'**
+  /// **'Choisir ce que vous recevez'**
   String get manageEmailNotifications;
 
   /// No description provided for @showingOwnListsOnly.
@@ -9586,7 +9586,7 @@ abstract class AppLocalizations {
   /// No description provided for @epTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Préférences email'**
+  /// **'Notifications'**
   String get epTitle;
 
   /// No description provided for @epResetDefaults.
@@ -11022,6 +11022,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Désactivée'**
   String get disabled;
+
+  /// No description provided for @npPushTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications push'**
+  String get npPushTitle;
+
+  /// No description provided for @npPushDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous recevez sur cet appareil'**
+  String get npPushDesc;
+
+  /// No description provided for @npListsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Listes partagées'**
+  String get npListsTitle;
+
+  /// No description provided for @npListsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Messages, partages et modifications de vos listes'**
+  String get npListsDesc;
+
+  /// No description provided for @npBudgetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budgets'**
+  String get npBudgetTitle;
+
+  /// No description provided for @npBudgetDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuils atteints, dépassements et résumé'**
+  String get npBudgetDesc;
+
+  /// No description provided for @npPriceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes de prix'**
+  String get npPriceTitle;
+
+  /// No description provided for @npPriceDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand un produit passe sous votre prix cible'**
+  String get npPriceDesc;
+
+  /// No description provided for @npRemindersTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappels'**
+  String get npRemindersTitle;
+
+  /// No description provided for @npRemindersDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pense-bêtes pour préparer vos courses'**
+  String get npRemindersDesc;
+
+  /// No description provided for @npEmailsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emails'**
+  String get npEmailsTitle;
+
+  /// No description provided for @npEmailsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien à régler'**
+  String get npEmailsDesc;
+
+  /// No description provided for @npEmailsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous ne vous écrivons que lorsque c\'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.'**
+  String get npEmailsBody;
 }
 
 class _AppLocalizationsDelegate

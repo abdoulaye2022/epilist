@@ -346,8 +346,25 @@ class AuthController
         }
     }
 
+    /**
+     * Email de bienvenue : VOLONTAIREMENT DÉSACTIVÉ.
+     *
+     * Politique courrier d'EpiList : on n'écrit à l'utilisateur que
+     * lorsqu'un email est indispensable (activation du compte,
+     * récupération du mot de passe, alerte de sécurité, suppression de
+     * compte, code à deux étapes). Un message de bienvenue n'entre pas
+     * dans cette catégorie — l'accueil se fait dans l'application.
+     *
+     * Pour le rétablir : passer SEND_WELCOME_EMAIL à true.
+     */
+    private const SEND_WELCOME_EMAIL = false;
+
     private function sendWelcomeEmailSafely(User $user): void
     {
+        if (!self::SEND_WELCOME_EMAIL) {
+            return;
+        }
+
         try {
             $emailToSend = $user->email;
 
@@ -514,9 +531,9 @@ class AuthController
                     // Envoyer email de bienvenue (seulement si email réel)
                     if (!$this->ssoService->isApplePrivateEmail($email)) {
                         try {
-                            $mailSender = new MailSender();
-                            $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-                            error_log(" [AuthController] Email de bienvenue envoyé");
+                            // Email de bienvenue désactivé (politique courrier :
+                            // voir sendWelcomeEmailSafely).
+                            error_log(" [AuthController] Bienvenue : pas d'email (par politique)");
                         } catch (\Exception $emailError) {
                             error_log(" [AuthController] Erreur email de bienvenue: " . $emailError->getMessage());
                         }
@@ -745,9 +762,9 @@ class AuthController
                 // 8. Envoyer email de bienvenue (seulement si email réel)
                 if (!$this->ssoService->isApplePrivateEmail($email)) {
                     try {
-                        $mailSender = new MailSender();
-                        $mailSender->sendWelcomeEmail($user->email, $user->first_name);
-                        error_log(" [AuthController] Email de bienvenue envoyé pour inscription Apple");
+                        // Email de bienvenue désactivé (politique courrier :
+                        // voir sendWelcomeEmailSafely).
+                        error_log(" [AuthController] Bienvenue Apple : pas d'email (par politique)");
                     } catch (\Exception $emailError) {
                         error_log(" [AuthController] Erreur email bienvenue inscription: " . $emailError->getMessage());
                     }

@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Models\Budget;
 use App\Models\User;
-use App\Services\MailSender;
 use Carbon\Carbon;
 
 class BudgetAlertService
@@ -82,11 +81,9 @@ class BudgetAlertService
             return null;
         }
 
-        // Vérifier les préférences email de l'utilisateur
-        if (!MailSender::canSendEmail($user->id, 'budget_alert')) {
-            error_log("📧 [BudgetAlertService] Budget alert email disabled for user {$user->id}");
-            return null;
-        }
+        // Plus de garde sur les préférences EMAIL : l'alerte part en push,
+        // et le canal push a ses propres réglages (push_budget), vérifiés
+        // par NotificationService au moment de l'envoi.
 
         // Vérifier si une alerte a déjà été envoyée récemment (éviter spam)
         if (self::wasAlertRecentlySent($budget)) {
@@ -135,11 +132,8 @@ class BudgetAlertService
             return false;
         }
 
-        // Vérifier les préférences email de l'utilisateur
-        if (!MailSender::canSendEmail($user->id, 'budget_alert')) {
-            error_log("📧 [BudgetAlertService] Budget alert email disabled for user {$user->id}");
-            return false;
-        }
+        // Plus de garde sur les préférences EMAIL : l'alerte part en push,
+        // dont les réglages (push_budget) sont vérifiés à l'envoi.
 
         // Vérifier si une alerte a déjà été envoyée récemment (éviter spam)
         if (self::wasAlertRecentlySent($budget)) {
@@ -196,29 +190,17 @@ class BudgetAlertService
 
         $t = $translations[$language] ?? $translations['fr'];
 
-        $htmlContent = self::getEmailTemplate($budget, $user, [
-            'title' => $t['title'],
-            'intro' => $t['intro'],
-            'color' => '#dc2626',
-            'icon' => '🚨',
-            'stats' => [
-                ['label' => $t['spent'], 'value' => $currency->formatAmount($budget->getSpentAmount())],
-                ['label' => $t['budget'], 'value' => $currency->formatAmount($budget->budget_amount)],
-                ['label' => $t['exceeded'], 'value' => $currency->formatAmount($exceededAmount), 'color' => '#dc2626'],
-                ['label' => $t['percentage'], 'value' => number_format($exceededPercentage, 1) . '%', 'color' => '#dc2626']
-            ],
-            'action_text' => $t['action'],
-            'tip' => $t['tip'],
-            'language' => $language
-        ]);
 
-        $sent = MailSender::sendMailWithPreferences(
-            $user->id,
-            'budget_alert',
-            $t['subject'],
-            [['email' => $user->email, 'name' => $user->name]],
-            $htmlContent
-        );
+        // PUSH et non email : une alerte de budget n'est pas un courrier
+        // obligatoire. Le canal push respecte le réglage push_budget de
+        // l'utilisateur (voir NotificationService::canSendNotification).
+        $sent = false;
+        try {
+            $sent = (new \App\Services\NotificationService())
+                ->sendBudgetAlert($user, $budget, 'exceeded');
+        } catch (\Throwable $e) {
+            error_log('[BudgetAlertService] Push impossible: ' . $e->getMessage());
+        }
 
         if ($sent) {
             self::recordAlertSent($budget, 'exceeded');
@@ -266,29 +248,17 @@ class BudgetAlertService
 
         $t = $translations[$language] ?? $translations['fr'];
 
-        $htmlContent = self::getEmailTemplate($budget, $user, [
-            'title' => $t['title'],
-            'intro' => $t['intro'],
-            'color' => '#ea580c',
-            'icon' => '⚠️',
-            'stats' => [
-                ['label' => $t['spent'], 'value' => $currency->formatAmount($budget->getSpentAmount())],
-                ['label' => $t['budget'], 'value' => $currency->formatAmount($budget->budget_amount)],
-                ['label' => $t['remaining'], 'value' => $currency->formatAmount($remainingAmount), 'color' => '#ea580c'],
-                ['label' => $t['percentage'], 'value' => number_format($spentPercentage, 1) . '%', 'color' => '#ea580c']
-            ],
-            'action_text' => $t['action'],
-            'tip' => $t['tip'],
-            'language' => $language
-        ]);
 
-        $sent = MailSender::sendMailWithPreferences(
-            $user->id,
-            'budget_alert',
-            $t['subject'],
-            [['email' => $user->email, 'name' => $user->name]],
-            $htmlContent
-        );
+        // PUSH et non email : une alerte de budget n'est pas un courrier
+        // obligatoire. Le canal push respecte le réglage push_budget de
+        // l'utilisateur (voir NotificationService::canSendNotification).
+        $sent = false;
+        try {
+            $sent = (new \App\Services\NotificationService())
+                ->sendBudgetAlert($user, $budget, 'warning');
+        } catch (\Throwable $e) {
+            error_log('[BudgetAlertService] Push impossible: ' . $e->getMessage());
+        }
 
         if ($sent) {
             self::recordAlertSent($budget, 'warning');

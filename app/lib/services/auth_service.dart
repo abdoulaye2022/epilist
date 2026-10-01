@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 // services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/notification_service.dart';
 import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/token_store.dart';
@@ -1090,6 +1091,12 @@ class AuthService {
 
   Future<void> clearUserData() async {
     try {
+      // Couper le push AVANT d'effacer la session : il faut encore le
+      // jeton pour que le serveur accepte la désactivation. Sans cela,
+      // l'appareil continue de recevoir les notifications du compte
+      // précédent (constat C3 de l'audit des notifications).
+      await NotificationService.deactivateDeviceOnServer();
+
       await TokenStore.clear();
       // Retour à l'espace personnel : l'espace actif appartient à la
       // session de CE compte, pas au suivant.

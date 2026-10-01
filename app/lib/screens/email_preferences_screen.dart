@@ -183,121 +183,74 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                     ListView(
                       padding: const EdgeInsets.all(16),
                       children: [
+                        // NOTIFICATIONS PUSH — le canal principal.
+                        // Chaque interrupteur est indépendant des emails.
                         _buildSection(
-                          title: AppLocalizations.of(context)!.epTransactional,
-                          subtitle: AppLocalizations.of(context)!.epTransactionalDesc,
-                          icon: Icons.security,
-                          color: Colors.blue,
-                          children: [
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epVerifTitle,
-                              subtitle: AppLocalizations.of(context)!.epVerifDesc,
-                              value: _preferences!.emailVerification,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(emailVerification: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epPwdReqTitle,
-                              subtitle: AppLocalizations.of(context)!.epPwdReqDesc,
-                              value: _preferences!.passwordChangeRequest,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(passwordChangeRequest: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epPwdChangedTitle,
-                              subtitle: AppLocalizations.of(context)!.epPwdChangedDesc,
-                              value: _preferences!.passwordChanged,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(passwordChanged: val);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSection(
-                          title: AppLocalizations.of(context)!.epListNotif,
-                          subtitle: AppLocalizations.of(context)!.epListNotifDesc,
-                          icon: Icons.list_alt,
+                          title: AppLocalizations.of(context)!.npPushTitle,
+                          subtitle: AppLocalizations.of(context)!.npPushDesc,
+                          icon: Icons.notifications_active_outlined,
                           color: Colors.green,
                           children: [
                             _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epListSharedTitle,
-                              subtitle: AppLocalizations.of(context)!.epListSharedDesc,
-                              value: _preferences!.listSharedWithMe,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(listSharedWithMe: val);
-                                });
-                              },
+                              title: AppLocalizations.of(context)!.npListsTitle,
+                              subtitle: AppLocalizations.of(context)!.npListsDesc,
+                              value: _preferences!.pushListActivity,
+                              onChanged: (val) => setState(() {
+                                _preferences =
+                                    _preferences!.copyWith(pushListActivity: val);
+                              }),
                             ),
                             _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epListCompletedTitle,
-                              subtitle: AppLocalizations.of(context)!.epListCompletedDesc,
-                              value: _preferences!.listCompleted,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(listCompleted: val);
-                                });
-                              },
+                              title: AppLocalizations.of(context)!.npBudgetTitle,
+                              subtitle: AppLocalizations.of(context)!.npBudgetDesc,
+                              value: _preferences!.pushBudget,
+                              onChanged: (val) => setState(() {
+                                _preferences =
+                                    _preferences!.copyWith(pushBudget: val);
+                              }),
+                            ),
+                            _buildSwitchTile(
+                              title: AppLocalizations.of(context)!.npPriceTitle,
+                              subtitle: AppLocalizations.of(context)!.npPriceDesc,
+                              value: _preferences!.pushPriceAlert,
+                              onChanged: (val) => setState(() {
+                                _preferences =
+                                    _preferences!.copyWith(pushPriceAlert: val);
+                              }),
+                            ),
+                            _buildSwitchTile(
+                              title: AppLocalizations.of(context)!.npRemindersTitle,
+                              subtitle: AppLocalizations.of(context)!.npRemindersDesc,
+                              value: _preferences!.pushReminders,
+                              onChanged: (val) => setState(() {
+                                _preferences =
+                                    _preferences!.copyWith(pushReminders: val);
+                              }),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+
+                        // EMAILS : rien à régler ici. Nous n'écrivons que
+                        // lorsqu'un email est indispensable.
                         _buildSection(
-                          title: AppLocalizations.of(context)!.epBudgetAlerts,
-                          subtitle: AppLocalizations.of(context)!.epBudgetAlertsDesc,
-                          icon: Icons.account_balance_wallet,
-                          color: Colors.orange,
+                          title: AppLocalizations.of(context)!.npEmailsTitle,
+                          subtitle: AppLocalizations.of(context)!.npEmailsDesc,
+                          icon: Icons.mark_email_read_outlined,
+                          color: Colors.blueGrey,
                           children: [
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epBudgetExceededTitle,
-                              subtitle: AppLocalizations.of(context)!.epBudgetExceededDesc,
-                              value: _preferences!.budgetAlert,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(budgetAlert: val);
-                                });
-                              },
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epMonthlySummaryTitle,
-                              subtitle: AppLocalizations.of(context)!.epMonthlySummaryDesc,
-                              value: _preferences!.budgetSummary,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(budgetSummary: val);
-                                });
-                              },
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                              child: Text(
+                                AppLocalizations.of(context)!.npEmailsBody,
+                                style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textSecondary,
+                                    height: 1.45),
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        _buildSection(
-                          title: AppLocalizations.of(context)!.epTipsTitle,
-                          subtitle: AppLocalizations.of(context)!.epTipsDesc,
-                          icon: Icons.lightbulb_outline,
-                          color: Colors.amber,
-                          children: [
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.epTipsToggleTitle,
-                              subtitle: AppLocalizations.of(context)!.epTipsToggleDesc,
-                              value: _preferences!.tipsAndTricks,
-                              onChanged: (val) {
-                                setState(() {
-                                  _preferences = _preferences!.copyWith(tipsAndTricks: val);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
+
                         const SizedBox(height: 100),
                       ],
                     ),

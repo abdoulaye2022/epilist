@@ -936,6 +936,36 @@ class NotificationService {
     await _registerDeviceWithToken();
   }
 
+  /// Désactive CET appareil côté serveur : il ne recevra plus les
+  /// notifications du compte qui se déconnecte. Sans cet appel, un
+  /// téléphone partagé continue de recevoir les push du compte
+  /// précédent. Appelé par AuthService.clearUserData(), tant que le
+  /// jeton est encore disponible. Best-effort : jamais bloquant.
+  static Future<void> deactivateDeviceOnServer() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final deviceId = prefs.getString('device_id');
+      final token = await TokenStore.readAccess();
+      if (deviceId == null || deviceId.isEmpty) return;
+      if (token == null || token.isEmpty) return;
+
+      final dio = Dio()
+        ..options.baseUrl = AppConfig.baseUrl
+        ..options.headers['Authorization'] = 'Bearer $token'
+        ..options.connectTimeout = const Duration(seconds: 8)
+        ..options.receiveTimeout = const Duration(seconds: 8);
+
+      await dio.post('/devices/deactivate', data: {'device_id': deviceId});
+      if (kDebugMode) {
+        debugPrint('🔕 [EPILIST] Appareil désactivé côté serveur');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('⚠️ [EPILIST] Désactivation serveur impossible: $e');
+      }
+    }
+  }
+
   static Future<void> clearDeviceData() async {
     final prefs = await SharedPreferences.getInstance();
     final keysToRemove = [

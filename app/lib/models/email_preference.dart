@@ -20,6 +20,12 @@ class EmailPreference {
   // Tips and tricks
   final bool tipsAndTricks;
 
+  // Notifications push — INDÉPENDANTES des emails
+  final bool pushListActivity;
+  final bool pushBudget;
+  final bool pushPriceAlert;
+  final bool pushReminders;
+
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -34,6 +40,10 @@ class EmailPreference {
     this.budgetAlert = true,
     this.budgetSummary = true,
     this.tipsAndTricks = true,
+    this.pushListActivity = true,
+    this.pushBudget = true,
+    this.pushPriceAlert = true,
+    this.pushReminders = true,
     this.createdAt,
     this.updatedAt,
   });
@@ -50,6 +60,10 @@ class EmailPreference {
       budgetAlert: json['budget_alert'] == 1 || json['budget_alert'] == true,
       budgetSummary: json['budget_summary'] == 1 || json['budget_summary'] == true,
       tipsAndTricks: json['tips_and_tricks'] == 1 || json['tips_and_tricks'] == true,
+      pushListActivity: json['push_list_activity'] != 0 && json['push_list_activity'] != false,
+      pushBudget: json['push_budget'] != 0 && json['push_budget'] != false,
+      pushPriceAlert: json['push_price_alert'] != 0 && json['push_price_alert'] != false,
+      pushReminders: json['push_reminders'] != 0 && json['push_reminders'] != false,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
     );
@@ -66,6 +80,10 @@ class EmailPreference {
       'budget_alert': budgetAlert,
       'budget_summary': budgetSummary,
       'tips_and_tricks': tipsAndTricks,
+      'push_list_activity': pushListActivity,
+      'push_budget': pushBudget,
+      'push_price_alert': pushPriceAlert,
+      'push_reminders': pushReminders,
     };
   }
 
@@ -80,6 +98,10 @@ class EmailPreference {
     bool? budgetAlert,
     bool? budgetSummary,
     bool? tipsAndTricks,
+    bool? pushListActivity,
+    bool? pushBudget,
+    bool? pushPriceAlert,
+    bool? pushReminders,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -94,6 +116,10 @@ class EmailPreference {
       budgetAlert: budgetAlert ?? this.budgetAlert,
       budgetSummary: budgetSummary ?? this.budgetSummary,
       tipsAndTricks: tipsAndTricks ?? this.tipsAndTricks,
+      pushListActivity: pushListActivity ?? this.pushListActivity,
+      pushBudget: pushBudget ?? this.pushBudget,
+      pushPriceAlert: pushPriceAlert ?? this.pushPriceAlert,
+      pushReminders: pushReminders ?? this.pushReminders,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -70,6 +70,11 @@ class EmailPreferenceController
                 'product_updates',
                 'tips_and_tricks',
                 'notification_frequency',
+                // Notifications push (indépendantes des emails)
+                'push_list_activity',
+                'push_budget',
+                'push_price_alert',
+                'push_reminders',
             ]);
 
             $validator->rule('in', 'notification_frequency', ['realtime', 'daily', 'weekly']);
@@ -84,7 +89,8 @@ class EmailPreferenceController
             $booleanFields = [
                 'email_verification', 'password_change_request', 'password_changed',
                 'list_shared_with_me', 'list_item_added', 'list_item_checked', 'list_completed',
-                'budget_alert', 'budget_summary', 'marketing_emails', 'product_updates', 'tips_and_tricks'
+                'budget_alert', 'budget_summary', 'marketing_emails', 'product_updates', 'tips_and_tricks',
+                'push_list_activity', 'push_budget', 'push_price_alert', 'push_reminders',
             ];
 
             foreach ($booleanFields as $field) {
