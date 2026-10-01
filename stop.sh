@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script d'arrêt de l'environnement de développement EpiList
-# Arrête: API PHP (8000), Site web Next.js (3000), tunnel ngrok
+# Arrête: API PHP (8001), Site web Next.js (3001), tunnel ngrok
 # Usage: ./stop.sh
 
 set -u
@@ -9,9 +9,13 @@ set -u
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$ROOT_DIR/.dev"
 
-API_PORT=8000
-WEB_PORT=3000
-NGROK_PORT=4040
+API_PORT=8001
+WEB_PORT=3001
+
+# Inspecteur ngrok : le port réellement utilisé est écrit par launch.sh.
+# On ne balaie JAMAIS 4040 en dur : c'est souvent l'agent ngrok d'un AUTRE
+# projet, et le tuer couperait son tunnel.
+NGROK_PORT=$(cat "$RUN_DIR/ngrok.web_port" 2>/dev/null || echo "")
 
 # Couleurs
 GREEN='\033[0;32m'
@@ -96,7 +100,8 @@ stop_by_port() { # $1 = nom du service, $2 = port
 
 stop_by_port "API PHP" "$API_PORT"
 stop_by_port "Site web Next.js" "$WEB_PORT"
-stop_by_port "Tunnel ngrok" "$NGROK_PORT"
+[ -n "$NGROK_PORT" ] && stop_by_port "Tunnel ngrok" "$NGROK_PORT"
+rm -f "$RUN_DIR/ngrok.web_port" "$RUN_DIR/ngrok-epilist.yml"
 
 # 3. Nettoyage de l'URL ngrok mémorisée
 rm -f "$RUN_DIR/ngrok.url"
@@ -110,14 +115,14 @@ fi
 
 # Vérification finale
 REMAINING=""
-for PORT in "$API_PORT" "$WEB_PORT" "$NGROK_PORT"; do
+for PORT in "$API_PORT" "$WEB_PORT" ${NGROK_PORT:+$NGROK_PORT}; do
     lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1 && REMAINING="$REMAINING $PORT"
 done
 
 if [ -n "$REMAINING" ]; then
     warning "Ports encore occupés :$REMAINING"
 else
-    success "Tous les ports sont libres (${API_PORT}, ${WEB_PORT}, ${NGROK_PORT})"
+    success "Tous les ports sont libres (${API_PORT}, ${WEB_PORT}${NGROK_PORT:+, $NGROK_PORT})"
 fi
 
 echo ""

@@ -9,7 +9,7 @@
 // isolation inter-espaces, rôles, invitations (création / acceptation /
 // refus / révocation / nominative), protections de l'espace personnel.
 
-$base = $argv[1] ?? 'http://localhost:8000';
+$base = $argv[1] ?? 'http://localhost:8001';
 $pass = 0;
 $fail = 0;
 

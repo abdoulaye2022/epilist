@@ -393,7 +393,7 @@ Récupère les suggestions personnalisées pour l'utilisateur connecté.
 
 **Exemple:**
 ```bash
-curl -X GET "http://localhost:8000/api/suggestions?limit=5&current_items=Lait,Pain" \
+curl -X GET "http://localhost:8001/api/suggestions?limit=5&current_items=Lait,Pain" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -440,7 +440,7 @@ Obtient une suggestion pour un produit spécifique.
 
 **Exemple:**
 ```bash
-curl -X GET "http://localhost:8000/api/suggestions/product?product_name=Lait" \
+curl -X GET "http://localhost:8001/api/suggestions/product?product_name=Lait" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 

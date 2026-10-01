@@ -3,15 +3,15 @@ class AppConfig {
   // Production
   static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
 
-  // L'API locale tourne sur le port 8000 (voir launch.sh)
+  // L'API locale tourne sur le port 8001 (voir launch.sh)
 
   // Development - local server (FAST - simulateur / emulateur uniquement)
-  // Pour iOS Simulator:   'http://localhost:8000'
-  // Pour Android Emulator: 'http://10.0.2.2:8000'
-  // static const String baseUrl = 'http://localhost:8000';
+  // Pour iOS Simulator:   'http://localhost:8001'
+  // Pour Android Emulator: 'http://10.0.2.2:8001'
+  // static const String baseUrl = 'http://localhost:8001';
 
   // Development - IP locale (FAST - appareil reel sur le meme Wi-Fi)
-  // static const String baseUrl = 'http://192.168.1.100:8000';
+  // static const String baseUrl = 'http://192.168.1.100:8001';
 
   // Development - ngrok (appareil reel) : domaine reserve permanent,
   // l'URL ne change pas d'un demarrage a l'autre (voir launch.sh).

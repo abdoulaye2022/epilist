@@ -16,7 +16,7 @@ import {
 const baseUrl =
   process.env.NODE_ENV === "production"
     ? "https://epilist.app"
-    : "http://localhost:3000";
+    : "http://localhost:3001";
 
 // Metadata principal optimisé
 export const metadata: Metadata = {

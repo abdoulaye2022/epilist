@@ -787,7 +787,7 @@ class User extends Model
         } else {
             // URL par défaut vers le frontend Next.js selon l'environnement
             $baseUrl = ($_ENV['APP_ENV'] ?? 'prod') === 'dev'
-                ? 'http://localhost:3000'  // Frontend Next.js en développement
+                ? 'http://localhost:3001'  // Frontend Next.js en développement (voir launch.sh)
                 : 'https://epilist.app';    // Frontend Next.js en production
         }
 

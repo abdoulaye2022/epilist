@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script de démarrage de l'environnement de développement EpiList
-# Lance: API PHP (8000), Site web Next.js (3000), tunnel ngrok vers l'API
+# Lance: API PHP (8001), Site web Next.js (3001), tunnel ngrok vers l'API
 # Usage: ./launch.sh
 
 set -u
@@ -9,9 +9,14 @@ set -u
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$ROOT_DIR/.dev"
 
-API_PORT=8000
-WEB_PORT=3000
-NGROK_API=http://127.0.0.1:4040
+# Ports de dev : 8000 et 3000 restent souvent squattes par un service
+# residuel (ancien php -S, autre projet Next.js) — on s'en ecarte.
+API_PORT=8001
+WEB_PORT=3001
+# Port de l'inspecteur ngrok (API locale de l'agent). Le defaut 4040 est
+# souvent pris par l'agent ngrok d'un AUTRE projet : on part de 4041 et on
+# decale si besoin. Surchargeable : NGROK_WEB_PORT=4045 ./launch.sh
+NGROK_WEB_PORT="${NGROK_WEB_PORT:-4041}"
 
 # Domaine ngrok réservé (permanent) : l'URL ne change jamais, ce qui évite de
 # devoir remettre à jour app/lib/config/app_config.dart à chaque démarrage.
@@ -73,12 +78,21 @@ fi
 # ------------------------------------------------------------------
 port_busy() { lsof -nP -iTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1; }
 
-for PORT in "$API_PORT" "$WEB_PORT" 4040; do
+for PORT in "$API_PORT" "$WEB_PORT"; do
     if port_busy "$PORT"; then
         error "Le port $PORT est déjà utilisé. Lance ./stop.sh d'abord."
+        lsof -nP -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | tail -n +2 \
+            | awk '{printf "    occupe par %s (PID %s)\n", $1, $2}'
         exit 1
     fi
 done
+
+# L'inspecteur ngrok n'est PAS bloquant : on se decale sur le premier port
+# libre plutot que d'exiger l'arret de l'agent d'un autre projet.
+while port_busy "$NGROK_WEB_PORT" && [ "$NGROK_WEB_PORT" -lt 4060 ]; do
+    NGROK_WEB_PORT=$((NGROK_WEB_PORT + 1))
+done
+NGROK_API="http://127.0.0.1:$NGROK_WEB_PORT"
 
 # ------------------------------------------------------------------
 # 3. Dépendances
@@ -102,7 +116,7 @@ if [ ! -x "$ROOT_DIR/web/node_modules/.bin/next" ]; then
 fi
 
 # ------------------------------------------------------------------
-# 4. API PHP sur le port 8000
+# 4. API PHP sur le port $API_PORT
 # ------------------------------------------------------------------
 info "Démarrage de l'API sur http://localhost:$API_PORT ..."
 # stdin sur /dev/null + disown : sinon les services héritent des descripteurs
@@ -113,7 +127,7 @@ echo $! > "$RUN_DIR/api.pid"
 disown
 
 # ------------------------------------------------------------------
-# 5. Site web Next.js sur le port 3000
+# 5. Site web Next.js sur le port $WEB_PORT
 # ------------------------------------------------------------------
 info "Démarrage du site web sur http://localhost:$WEB_PORT ..."
 # exec dans le sous-shell : $! est directement le PID de npm, pas celui du sous-shell
@@ -126,8 +140,28 @@ disown
 # 6. Tunnel ngrok vers l'API
 # ------------------------------------------------------------------
 info "Démarrage du tunnel ngrok ($NGROK_DOMAIN) vers le port $API_PORT ..."
-ngrok http --url="https://$NGROK_DOMAIN" "$API_PORT" --log=stdout \
-    < /dev/null > "$RUN_DIR/ngrok.log" 2>&1 &
+# Config additionnelle : seul moyen de deplacer l'inspecteur (pas de flag
+# CLI en v3). --config remplace le defaut, donc on passe LES DEUX fichiers
+# (le defaut porte l'authtoken) ; ngrok les fusionne dans l'ordre.
+NGROK_CONF_DEFAULT=$(ngrok config check 2>/dev/null \
+    | sed -n 's/.*configuration file at //p')
+cat > "$RUN_DIR/ngrok-epilist.yml" <<YML
+version: "3"
+agent:
+    web_addr: 127.0.0.1:$NGROK_WEB_PORT
+YML
+echo "$NGROK_WEB_PORT" > "$RUN_DIR/ngrok.web_port"
+
+if [ -n "$NGROK_CONF_DEFAULT" ] && [ -f "$NGROK_CONF_DEFAULT" ]; then
+    ngrok http --url="https://$NGROK_DOMAIN" "$API_PORT" --log=stdout \
+        --config "$NGROK_CONF_DEFAULT" --config "$RUN_DIR/ngrok-epilist.yml" \
+        < /dev/null > "$RUN_DIR/ngrok.log" 2>&1 &
+else
+    warning "Config ngrok par défaut introuvable — inspecteur sur le port par défaut"
+    NGROK_API="http://127.0.0.1:4040"
+    ngrok http --url="https://$NGROK_DOMAIN" "$API_PORT" --log=stdout \
+        < /dev/null > "$RUN_DIR/ngrok.log" 2>&1 &
+fi
 echo $! > "$RUN_DIR/ngrok.pid"
 disown
 
@@ -171,7 +205,10 @@ else
     error "Tunnel ngrok indisponible — dernières lignes du log :"
     grep -iE "err|fail" "$RUN_DIR/ngrok.log" 2>/dev/null | tail -3 \
         || tail -3 "$RUN_DIR/ngrok.log" 2>/dev/null
-    warning "Le domaine $NGROK_DOMAIN est peut-être déjà utilisé par une autre session."
+    warning "Le domaine $NGROK_DOMAIN est peut-être déjà pris par l'agent ngrok"
+    warning "d'un AUTRE projet (un domaine réservé ne sert qu'un agent à la fois)."
+    warning "Autre domaine : NGROK_DOMAIN=autre.ngrok.app ./launch.sh"
+    warning "L'API et le site restent utilisables en local."
 fi
 
 # ------------------------------------------------------------------
@@ -186,7 +223,7 @@ echo -e "  Site web       ${GREEN}http://localhost:$WEB_PORT${NC}"
 if [ -n "$NGROK_URL" ]; then
     echo -e "  Tunnel ngrok   ${GREEN}$NGROK_URL${NC}  →  port $API_PORT"
 fi
-echo -e "  Interface ngrok $NGROK_API"
+echo -e "  Interface ngrok ${NGROK_API}  (inspecteur sur $NGROK_WEB_PORT)"
 echo ""
 echo "  Logs   : $RUN_DIR/{api,web,ngrok}.log"
 echo "  Arrêt  : ./stop.sh"

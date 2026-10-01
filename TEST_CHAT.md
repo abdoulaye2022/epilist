@@ -276,7 +276,7 @@ grep -n "MessageController" api/public/index.php
 # Redémarrer le serveur PHP
 pkill -f "php -S"
 cd api/public
-php -S localhost:8000
+php -S localhost:8001
 ```
 
 ### Problème: Messages ne s'affichent pas
@@ -289,7 +289,7 @@ php -S localhost:8000
 - Vérifier les logs: `flutter logs | grep Chat`
 - Tester l'API directement avec curl:
 ```bash
-curl -X GET "http://localhost:8000/api/lists/1/messages" \
+curl -X GET "http://localhost:8001/api/lists/1/messages" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -329,17 +329,17 @@ WHERE list_id = 1 AND is_read = 0;
 ### Tester l'API avec curl:
 ```bash
 # Obtenir un token
-TOKEN=$(curl -s -X POST http://localhost:8000/api/login \
+TOKEN=$(curl -s -X POST http://localhost:8001/api/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@test.com","password":"password"}' \
   | jq -r '.data.access_token')
 
 # Obtenir les messages
-curl -X GET "http://localhost:8000/api/lists/1/messages" \
+curl -X GET "http://localhost:8001/api/lists/1/messages" \
   -H "Authorization: Bearer $TOKEN"
 
 # Envoyer un message
-curl -X POST "http://localhost:8000/api/lists/1/messages" \
+curl -X POST "http://localhost:8001/api/lists/1/messages" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"message":"Test depuis curl","message_type":"text"}'
