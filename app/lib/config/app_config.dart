@@ -1,21 +1,27 @@
 // config/app_config.dart
 class AppConfig {
-  // ACTIF — Development via ngrok : domaine reserve permanent, l'URL ne
-  // change pas d'un demarrage a l'autre. Le tunnel pointe vers l'API
-  // locale (port 8001, voir launch.sh) et marche sur appareil REEL comme
-  // sur simulateur/emulateur.
-  // Prerequis : ./launch.sh demarre, tunnel ngrok actif sur ce domaine.
-  static const String baseUrl = 'https://m2atech.ngrok.app';
+  // ACTIF — API locale directe (port 8001, voir launch.sh).
+  // Fonctionne sur :
+  //   - simulateur iOS           : tel quel ;
+  //   - appareil Android en USB  : « adb reverse tcp:8001 tcp:8001 »
+  //     (launch.sh le fait automatiquement si un appareil est branche) ;
+  //   - emulateur Android        : remplacer par http://10.0.2.2:8001.
+  // Le HTTP en clair n'est autorise qu'en build DEBUG
+  // (android/app/src/debug/res/xml/network_security_config.xml).
+  static const String baseUrl = 'http://localhost:8001';
 
   // Production — a RETABLIR avant toute build de release / TestFlight
   // static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
 
-  // Development - local server (FAST - simulateur / emulateur uniquement)
-  // Pour iOS Simulator:   'http://localhost:8001'
-  // Pour Android Emulator: 'http://10.0.2.2:8001'
-  // static const String baseUrl = 'http://localhost:8001';
+  // Development - emulateur Android (l'hote vu depuis l'emulateur)
+  // static const String baseUrl = 'http://10.0.2.2:8001';
 
-  // Development - IP locale (FAST - appareil reel sur le meme Wi-Fi)
+  // Development - ngrok : ATTENTION, le domaine reserve m2atech.ngrok.app
+  // est partage avec un AUTRE projet. S'il est deja pris, l'app tape sur
+  // l'API de cet autre projet (symptome : « utilisateur inexistant »).
+  // static const String baseUrl = 'https://m2atech.ngrok.app';
+
+  // Development - IP locale (appareil reel sur le meme Wi-Fi)
   // static const String baseUrl = 'http://192.168.1.100:8001';
 
   // Logs de debug (debugPrint) dans la console.

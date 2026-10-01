@@ -168,6 +168,22 @@ echo $! > "$RUN_DIR/ngrok.pid"
 disown
 
 # ------------------------------------------------------------------
+# 6 bis. Pont USB pour les appareils Android branchés
+# ------------------------------------------------------------------
+# « adb reverse » mappe le localhost DE L'APPAREIL vers le port de l'API
+# sur ce Mac : l'app mobile peut viser http://localhost:$API_PORT sans
+# ngrok ni adresse IP. Le pont est perdu à chaque débranchement, d'où sa
+# remise en place ici. Silencieux si adb ou appareil absent.
+if command -v adb >/dev/null 2>&1; then
+    ADB_DEVICES=$(adb devices 2>/dev/null | awk 'NR>1 && $2=="device" {print $1}')
+    for DEVICE in $ADB_DEVICES; do
+        if adb -s "$DEVICE" reverse tcp:"$API_PORT" tcp:"$API_PORT" >/dev/null 2>&1; then
+            success "Pont USB pour $DEVICE : localhost:$API_PORT -> API locale"
+        fi
+    done
+fi
+
+# ------------------------------------------------------------------
 # 7. Attente et vérification
 # ------------------------------------------------------------------
 echo ""
