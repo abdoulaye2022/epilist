@@ -72,8 +72,13 @@ class AppDialogActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+    // Wrap plutôt que Row : sur un écran étroit, ou avec des libellés
+    // longs (traduction, grande taille de police système), les deux
+    // boutons passent sur deux lignes au lieu de déborder.
+    return Wrap(
+      alignment: WrapAlignment.end,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.xs,
       children: [
         TextButton(
           onPressed: loading
@@ -81,7 +86,6 @@ class AppDialogActions extends StatelessWidget {
               : (onCancel ?? () => Navigator.of(context).pop()),
           child: Text(cancelLabel),
         ),
-        const SizedBox(width: AppSpacing.sm),
         FilledButton(
           onPressed: loading ? null : onSubmit,
           style: destructive

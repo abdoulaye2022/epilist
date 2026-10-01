@@ -3,7 +3,9 @@
 // (Phase 1) contre l'API locale. Usage :
 //   php scripts/test_spaces_e2e.php [base_url]
 // Prérequis : API locale démarrée, comptes de test locaux
-//   ali@gmail.com / Test1234!   et   admin@gmail.com / Abc1234!
+//   ali@gmail.com et admin@gmail.com (mots de passe par defaut
+//   Test1234! / Abc1234! ; surchargeables par E2E_PWD_A / E2E_PWD_B
+//   quand ils ont ete changes en testant l'app)
 //
 // Couvre les exigences §49 du cahier des charges pour la Phase 1 :
 // isolation inter-espaces, rôles, invitations (création / acceptation /
@@ -73,9 +75,16 @@ function login(string $base, string $email, string $password): array
     return [$d['access_token'] ?? $d['data']['access_token'] ?? '', $d];
 }
 
+// Mots de passe des comptes de test : surchargeables par variables
+// d'environnement, car ils changent dès qu'on teste l'app pour de vrai.
+//   E2E_PWD_A=... E2E_PWD_B=... E2E_PWD_C=... php scripts/test_spaces_e2e.php
+$pwdA = getenv('E2E_PWD_A') ?: 'Test1234!';
+$pwdB = getenv('E2E_PWD_B') ?: 'Abc1234!';
+$pwdC = getenv('E2E_PWD_C') ?: 'Test1234!';
+
 echo "== Connexion des deux comptes de test\n";
-[$tokenA] = login($base, 'ali@gmail.com', 'Test1234!');
-[$tokenB] = login($base, 'admin@gmail.com', 'Abc1234!');
+[$tokenA] = login($base, 'ali@gmail.com', $pwdA);
+[$tokenB] = login($base, 'admin@gmail.com', $pwdB);
 check('tokens obtenus', $tokenA !== '' && $tokenB !== '');
 
 echo "== Espace personnel\n";
@@ -210,7 +219,7 @@ $buyer = $pdo->query("SELECT purchased_by_user_id FROM list_items WHERE id = $it
 check('attribution purchased_by = A', (int) $buyer === $aId, "buyer=$buyer");
 
 // Isolation : un NON-membre (fati) ne touche pas la liste du foyer.
-[$tokenC] = login($base, 'fati@gmail.com', 'Test1234!');
+[$tokenC] = login($base, 'fati@gmail.com', $pwdC);
 if ($tokenC !== '') {
     [$s] = req('GET', "$base/shopping-lists/$hlist/items", null, $tokenC);
     check('non-membre : items refusés', in_array($s, [403, 404], true), "status $s");
@@ -890,7 +899,7 @@ echo "== 2FA : réglage par utilisateur\n";
 $t2fa = $pdo->prepare('UPDATE users SET two_factor_enabled = 0, admin_otp_code = NULL WHERE email = ?');
 $t2fa->execute(['ali@gmail.com']);
 
-[$tokenA] = login($base, 'ali@gmail.com', 'Test1234!');
+[$tokenA] = login($base, 'ali@gmail.com', $pwdA);
 [$s, $d] = req('GET', "$base/auth/2fa", null, $tokenA);
 check('réglage lisible, désactivé par défaut',
     $s === 200 && ($d['data']['enabled'] ?? true) === false && ($d['data']['method'] ?? '') === 'email',
@@ -900,11 +909,11 @@ check('réglage lisible, désactivé par défaut',
 check('activation sans mot de passe refusée (401)', $s === 401, "status $s");
 [$s] = req('POST', "$base/auth/2fa", ['enabled' => true, 'password' => 'mauvais'], $tokenA);
 check('mot de passe erroné refusé (401)', $s === 401, "status $s");
-[$s, $d] = req('POST', "$base/auth/2fa", ['enabled' => true, 'password' => 'Test1234!'], $tokenA);
+[$s, $d] = req('POST', "$base/auth/2fa", ['enabled' => true, 'password' => $pwdA], $tokenA);
 check('activation avec mot de passe', $s === 200 && ($d['data']['enabled'] ?? false) === true, "status $s");
 
 echo "== 2FA : connexion en deux étapes\n";
-[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => $pwdA]);
 check('login challengé, AUCUN jeton délivré',
     $s === 200 && ($d['code'] ?? '') === 'TWO_FACTOR_REQUIRED' && empty($d['access_token']),
     json_encode(array_keys($d)));
@@ -926,21 +935,21 @@ $pdo->prepare('UPDATE users SET admin_otp_code = ?, admin_otp_expires_at = ? WHE
 check('code expiré refusé (401)', $s === 401, "status $s");
 
 echo "== 2FA : désactivation\n";
-[$s] = req('POST', "$base/auth/2fa", ['enabled' => false, 'password' => 'Test1234!'], $tokenA2);
+[$s] = req('POST', "$base/auth/2fa", ['enabled' => false, 'password' => $pwdA], $tokenA2);
 check('désactivation acceptée', $s === 200, "status $s");
-[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+[$s, $d] = req('POST', "$base/auth/login", ['email' => 'ali@gmail.com', 'password' => $pwdA]);
 check('login revenu en UNE étape', $s === 200 && !empty($d['access_token']), "status $s");
 
 echo "== 2FA : administrateur (même règle)\n";
 $pdo->prepare('UPDATE users SET two_factor_enabled = 0 WHERE email = ?')->execute(['admin@gmail.com']);
-[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => 'Abc1234!']);
+[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => $pwdB]);
 check('admin sans 2FA : connexion directe',
     $s === 200 && !empty($d['access_token']) && ($d['data']['requires_2fa'] ?? null) === false, "status $s");
 $pdo->prepare('UPDATE users SET two_factor_enabled = 1 WHERE email = ?')->execute(['admin@gmail.com']);
-[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => 'Abc1234!']);
+[$s, $d] = req('POST', "$base/auth/admin/otp", ['email' => 'admin@gmail.com', 'password' => $pwdB]);
 check('admin avec 2FA : code exigé, aucun jeton',
     $s === 200 && empty($d['access_token']) && ($d['data']['requires_2fa'] ?? false) === true, "status $s");
-[$s] = req('POST', "$base/auth/admin/otp", ['email' => 'ali@gmail.com', 'password' => 'Test1234!']);
+[$s] = req('POST', "$base/auth/admin/otp", ['email' => 'ali@gmail.com', 'password' => $pwdA]);
 check('non-admin refusé sur la route admin (401)', $s === 401, "status $s");
 
 echo "\nRésultat : $pass OK, $fail échec(s)\n";

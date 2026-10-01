@@ -172,8 +172,13 @@ class ProductConfirmationDialog extends StatelessWidget {
             // Boutons d'action
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              // Wrap plutôt que Row : le libellé du bouton d'action est
+              // traduit et peut s'allonger — sur écran étroit les deux
+              // boutons passent sur deux lignes au lieu de déborder.
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 12,
+                runSpacing: 8,
                 children: [
                   TextButton(
                     onPressed: onCancel,
@@ -182,7 +187,6 @@ class ProductConfirmationDialog extends StatelessWidget {
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                   ),
-                  const SizedBox(width: 12),
                   ElevatedButton.icon(
                     onPressed: onConfirm,
                     icon: const Icon(Icons.add),

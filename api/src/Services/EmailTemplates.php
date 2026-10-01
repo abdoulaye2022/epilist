@@ -131,16 +131,9 @@ class EmailTemplates
                     'greeting' => 'Bonjour',
                     'intro' => 'Votre mot de passe EpiList a été changé avec succès.',
                     'change_time' => 'Date et heure du changement :',
-                    'security_title' => '🔐 Sécurité de votre compte',
-                    'security_text' => 'Si vous n\'êtes pas à l\'origine de ce changement, veuillez nous contacter immédiatement.',
-                    'tips_title' => '💡 Conseils de sécurité :',
-                    'tip_1' => 'Utilisez un mot de passe unique pour EpiList',
-                    'tip_2' => 'Ne partagez jamais votre mot de passe',
-                    'tip_3' => 'Changez votre mot de passe régulièrement',
-                    'tip_4' => 'Utilisez un gestionnaire de mots de passe sécurisé',
-                    'action_required' => 'Action requise :',
-                    'action_text' => 'Si ce n\'était pas vous, changez immédiatement votre mot de passe et contactez notre support.',
-                    'closing' => 'Votre sécurité est notre priorité.<br><br>Cordialement,<br>L\'équipe EpiList',
+                    'security_title' => '🔐 Vous n\'êtes pas à l\'origine de ce changement ?',
+                    'security_text' => 'Changez votre mot de passe immédiatement et contactez-nous.',
+                    'closing' => 'Cordialement,<br>L\'équipe EpiList',
                 ],
                 'en' => [
                     'subject' => '✅ Your EpiList password has been changed',
@@ -148,16 +141,9 @@ class EmailTemplates
                     'greeting' => 'Hello',
                     'intro' => 'Your EpiList password has been successfully changed.',
                     'change_time' => 'Date and time of change:',
-                    'security_title' => '🔐 Account Security',
-                    'security_text' => 'If you did not make this change, please contact us immediately.',
-                    'tips_title' => '💡 Security Tips:',
-                    'tip_1' => 'Use a unique password for EpiList',
-                    'tip_2' => 'Never share your password',
-                    'tip_3' => 'Change your password regularly',
-                    'tip_4' => 'Use a secure password manager',
-                    'action_required' => 'Action Required:',
-                    'action_text' => 'If this wasn\'t you, change your password immediately and contact our support.',
-                    'closing' => 'Your security is our priority.<br><br>Best regards,<br>The EpiList Team',
+                    'security_title' => '🔐 Didn\'t make this change?',
+                    'security_text' => 'Change your password immediately and contact us.',
+                    'closing' => 'Best regards,<br>The EpiList Team',
                 ],
             ],
             'list_shared' => [
@@ -450,7 +436,7 @@ class EmailTemplates
                         {$t['intro']}
                     </p>
 
-                    <div style='background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;'>
+                    <div style='background: #f0fdf4; border: 1px solid #a7f3d0; border-radius: 10px; padding: 16px; margin: 22px 0; text-align: center;'>
                         <p style='margin: 0 0 8px; font-size: 14px; color: #047857; font-weight: 600;'>
                             {$t['change_time']}
                         </p>
@@ -459,43 +445,10 @@ class EmailTemplates
                         </p>
                     </div>
 
-                    <div style='background: #fef2f2; border: 2px solid #f87171; border-radius: 12px; padding: 20px; margin: 25px 0;'>
+                    <div style='background: #fef2f2; border: 1px solid #fca5a5; border-radius: 10px; padding: 16px; margin: 22px 0;'>
                         <h3 style='margin: 0 0 12px; font-size: 16px; color: #dc2626;'>{$t['security_title']}</h3>
                         <p style='margin: 0; font-size: 14px; color: #991b1b; line-height: 1.6;'>
                             {$t['security_text']}
-                        </p>
-                    </div>
-
-                    <h3 style='margin: 30px 0 15px; font-size: 18px; color: #047857;'>{$t['tips_title']}</h3>
-
-                    <div style='margin: 20px 0;'>
-                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
-                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
-                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_1']}</div>
-                        </div>
-
-                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
-                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
-                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_2']}</div>
-                        </div>
-
-                        <div style='display: flex; align-items: flex-start; margin-bottom: 12px;'>
-                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
-                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_3']}</div>
-                        </div>
-
-                        <div style='display: flex; align-items: flex-start;'>
-                            <div style='background: #10b981; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;'>✓</div>
-                            <div style='color: #374151; font-size: 14px; line-height: 1.6;'>{$t['tip_4']}</div>
-                        </div>
-                    </div>
-
-                    <div style='background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 16px; margin: 25px 0;'>
-                        <p style='margin: 0 0 8px; font-size: 14px; color: #92400e; font-weight: 600;'>
-                            {$t['action_required']}
-                        </p>
-                        <p style='margin: 0; font-size: 13px; color: #92400e; line-height: 1.6;'>
-                            {$t['action_text']}
                         </p>
                     </div>
 

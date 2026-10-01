@@ -71,8 +71,13 @@ class UpdateModal extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.lg),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              // Wrap plutôt que Row : « Pas maintenant » + « Mettre à
+              // jour » dépassaient sur les écrans étroits ; ici les deux
+              // boutons passent sur deux lignes au lieu de déborder.
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.xs,
                 children: [
                   // verrou 2 : pas d'échappatoire quand c'est requis
                   if (!force)
@@ -83,7 +88,6 @@ class UpdateModal extends StatelessWidget {
                       },
                       child: Text(l10n.predictionNotNow),
                     ),
-                  const SizedBox(width: AppSpacing.sm),
                   FilledButton(
                     onPressed: () async {
                       // La stat part AVANT l'ouverture du magasin (le
