@@ -952,5 +952,45 @@ check('admin avec 2FA : code exigé, aucun jeton',
 [$s] = req('POST', "$base/auth/admin/otp", ['email' => 'ali@gmail.com', 'password' => $pwdA]);
 check('non-admin refusé sur la route admin (401)', $s === 401, "status $s");
 
+// ==================================================================
+// INVENTAIRE : un achat remet le produit « à la maison »
+// ==================================================================
+echo "== Inventaire : réapprovisionnement par l'achat\n";
+[$s, $d] = req('POST', "$base/shopping-lists", ['name' => 'Liste réappro'], $tokenA);
+$lr = (int) ($d['data']['id'] ?? 0);
+
+// Produit SUIVI et marqué terminé
+req('POST', "$base/inventory/status",
+    ['product_name' => 'Lait réappro', 'status' => 'out'], $tokenA);
+req('POST', "$base/shopping-lists/$lr/items",
+    ['product_name' => 'Lait réappro', 'quantity' => 1, 'price' => 3.99], $tokenA);
+$ir = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $lr ORDER BY id DESC LIMIT 1")->fetchColumn();
+[$s] = req('PATCH', "$base/shopping-lists/$lr/items/$ir/toggle", ['is_purchased' => true], $tokenA);
+check('article coché', $s === 200, "status $s");
+$inv = $pdo->query("SELECT status, source FROM home_inventory WHERE normalized_name = 'lait reappro'")->fetch(PDO::FETCH_ASSOC);
+check('produit suivi : remis « à la maison » par l\'achat',
+    ($inv['status'] ?? '') === 'at_home' && ($inv['source'] ?? '') === 'purchase',
+    json_encode($inv));
+
+// Produit NON suivi : l'inventaire ne doit pas se remplir tout seul
+req('POST', "$base/shopping-lists/$lr/items",
+    ['product_name' => 'Jamais suivi réappro', 'quantity' => 1], $tokenA);
+$ir2 = (int) $pdo->query("SELECT id FROM list_items WHERE list_id = $lr ORDER BY id DESC LIMIT 1")->fetchColumn();
+req('PATCH', "$base/shopping-lists/$lr/items/$ir2/toggle", ['is_purchased' => true], $tokenA);
+$n = (int) $pdo->query("SELECT COUNT(*) FROM home_inventory WHERE normalized_name = 'jamais suivi reappro'")->fetchColumn();
+check('produit non suivi : aucune entrée créée', $n === 0, "entrees=$n");
+
+// Une action manuelle POSTÉRIEURE reste prioritaire
+req('POST', "$base/inventory/status",
+    ['product_name' => 'Lait réappro', 'status' => 'out'], $tokenA);
+$inv2 = $pdo->query("SELECT status, source FROM home_inventory WHERE normalized_name = 'lait reappro'")->fetch(PDO::FETCH_ASSOC);
+check('le choix manuel postérieur l\'emporte',
+    ($inv2['status'] ?? '') === 'out' && ($inv2['source'] ?? '') === 'manual', json_encode($inv2));
+
+req('DELETE', "$base/shopping-lists/$lr", null, $tokenA);
+$pdo->exec("DELETE FROM home_inventory WHERE normalized_name = 'lait reappro'");
+$pdo->exec("DELETE FROM purchase_history WHERE normalized_name IN ('lait reappro','jamais suivi reappro')");
+check('nettoyage réappro fait', true);
+
 echo "\nRésultat : $pass OK, $fail échec(s)\n";
 exit($fail === 0 ? 0 : 1);

@@ -25,6 +25,55 @@ class ListItemController
      * saisonniers, associations) : la table n'était JAMAIS remplie avant.
      * Ne doit jamais faire échouer l'action principale.
      */
+    /**
+     * Acheter un produit le remet « à la maison ».
+     *
+     * Sans cela, un produit marqué « Terminé » puis acheté et coché
+     * restait affiché comme terminé jusqu'à correction manuelle.
+     *
+     * Deux garde-fous :
+     *  - on ne met à jour QUE les produits déjà suivis. L'inventaire
+     *    est une liste choisie par l'utilisateur, pas le journal de
+     *    tout ce qu'il a acheté ;
+     *  - les QUANTITÉS ne sont pas touchées. Une liste compte des
+     *    articles, l'inventaire des kilos ou des litres : additionner
+     *    les deux fabriquerait des chiffres faux. Elles restent
+     *    manuelles (espaces professionnels).
+     *
+     * Jamais bloquant : un échec ici ne doit pas faire rater l'achat.
+     */
+    private function restockInventoryAfterPurchase(?int $spaceId, int $userId, string $normalized): void
+    {
+        try {
+            $query = \App\Models\HomeInventory::where('normalized_name', $normalized);
+
+            // Même périmètre que partout ailleurs : l'espace de la liste,
+            // avec le repli historique (space_id NULL) pour le personnel.
+            if ($spaceId !== null) {
+                $query->where('space_id', $spaceId);
+            } else {
+                $query->where(function ($q) use ($userId) {
+                    $q->whereNull('space_id')->where('user_id', $userId);
+                });
+            }
+
+            $entry = $query->first();
+            if ($entry === null) {
+                return; // produit non suivi : on ne crée rien
+            }
+
+            if ($entry->status === \App\Models\HomeInventory::STATUS_AT_HOME) {
+                return; // déjà à la maison : rien à écrire
+            }
+
+            $entry->status = \App\Models\HomeInventory::STATUS_AT_HOME;
+            $entry->source = 'purchase';
+            $entry->save();
+        } catch (\Throwable $e) {
+            error_log('Inventaire non remis a jour apres achat: ' . $e->getMessage());
+        }
+    }
+
     private function recordPurchaseHistory(int $userId, ListItem $item): void
     {
         try {
@@ -53,6 +102,13 @@ class ListItemController
                     default => 'fall',
                 },
             ]);
+
+            // Un achat remet le produit « à la maison » dans l'inventaire.
+            $this->restockInventoryAfterPurchase(
+                $spaceId !== null ? (int) $spaceId : null,
+                $userId,
+                $normalized
+            );
 
             // Alertes de baisse de prix (§27) : seulement si un prix est
             // connu ; magasin inconnu -> alertes « tous magasins » seules.
