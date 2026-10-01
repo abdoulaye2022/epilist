@@ -4,6 +4,7 @@
 // masque simplement ce que le rôle courant ne permet pas.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -30,6 +31,10 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
   @override
   void initState() {
     super.initState();
+    _members = ScreenCache.read<List<SpaceMemberInfo>>('space_members_${widget.space.id}');
+    _pending = ScreenCache.read<List<Map<String, dynamic>>>(
+            'space_pending_${widget.space.id}') ??
+        const [];
     _load();
   }
 
@@ -41,6 +46,8 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
         pending = await _service.pendingInvitations(widget.space.id);
       }
       if (!mounted) return;
+      ScreenCache.write('space_members_${widget.space.id}', members);
+      ScreenCache.write('space_pending_${widget.space.id}', pending);
       setState(() {
         _members = members;
         _pending = pending;
@@ -48,7 +55,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = true);
+      if (_members == null) setState(() => _error = true);
     }
   }
 

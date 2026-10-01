@@ -5,6 +5,7 @@
 // de masquer les actions hors rôle.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -31,12 +32,16 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
   @override
   void initState() {
     super.initState();
+    // Afficher d'abord la derniere version connue (pas de spinner
+    // si on est deja venu), puis rafraichir en silence.
+    _requests = ScreenCache.read<List<PurchaseRequestInfo>>('purchase_requests');
     _load();
   }
 
   Future<void> _load() async {
     try {
       final (list, _) = await _service.getPurchaseRequests();
+      ScreenCache.write('purchase_requests', list);
       if (!mounted) return;
       setState(() {
         _requests = list;
@@ -44,7 +49,8 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = true);
+      // Un rafraichissement rate n'efface pas les donnees affichees.
+      if (_requests == null) setState(() => _error = true);
     }
   }
 

@@ -4,6 +4,7 @@
 // avec couverture affichée) -> création du plan + liste de courses.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -28,6 +29,11 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   @override
   void initState() {
     super.initState();
+    final cached = ScreenCache.read<List<RecipeSummary>>('recipes');
+    if (cached != null) {
+      _recipes = cached;
+      _loading = false;
+    }
     _load();
   }
 
@@ -41,6 +47,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     try {
       final recipes = await context.read<IntelligenceService>().getRecipes();
       if (!mounted) return;
+      ScreenCache.write('recipes', recipes);
       setState(() {
         _recipes = recipes;
         _loading = false;

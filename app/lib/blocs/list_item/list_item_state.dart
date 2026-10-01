@@ -15,10 +15,15 @@ class ListItemLoading extends ListItemState {}
 class ListItemLoaded extends ListItemState {
   final List<ListItem> items;
 
-  const ListItemLoaded(this.items);
+  /// Liste d'origine : permet de savoir si les articles affiches sont
+  /// bien ceux de la liste demandee. Sans cela, revenir sur une AUTRE
+  /// liste montrerait brievement les articles de la precedente.
+  final int listId;
+
+  const ListItemLoaded(this.items, this.listId);
 
   @override
-  List<Object> get props => [items];
+  List<Object> get props => [items, listId];
 }
 
 class ListItemOperationSuccess extends ListItemState {

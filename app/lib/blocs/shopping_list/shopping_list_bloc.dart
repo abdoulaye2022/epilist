@@ -133,7 +133,14 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     LoadShoppingLists event,
     Emitter<ShoppingListState> emit,
   ) async {
-    emit(ShoppingListLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is ShoppingListInitial || state is ShoppingListError;
+    if (nothingDisplayed) {
+      emit(ShoppingListLoading());
+    }
     try {
       final lists = await _shoppingListService.getShoppingLists();
 
@@ -154,8 +161,10 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       }
 
       // ✅ Aucune donnée disponible
-      final errorMessage = _getTranslatedErrorMessage(e);
-      emit(ShoppingListError(errorMessage));
+      // Echec silencieux si des donnees sont deja a l'ecran.
+      if (nothingDisplayed) {
+        emit(ShoppingListError(_getTranslatedErrorMessage(e)));
+      }
     }
   }
 

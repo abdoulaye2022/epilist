@@ -3,6 +3,7 @@
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -24,6 +25,11 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
   @override
   void initState() {
     super.initState();
+    final cached = ScreenCache.read<List<ProductPrediction>>('predictions');
+    if (cached != null) {
+      _predictions = cached;
+      _loading = false;
+    }
     _load();
   }
 
@@ -33,6 +39,7 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
           .read<IntelligenceService>()
           .getPredictions(limit: 50);
       if (!mounted) return;
+      ScreenCache.write('predictions', predictions);
       setState(() {
         _predictions = predictions;
         _loading = false;

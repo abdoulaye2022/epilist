@@ -3,6 +3,7 @@
 // le texte est rendu ici, traduit fr/en.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +26,12 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
   @override
   void initState() {
     super.initState();
+    // Afficher la derniere version connue, puis rafraichir en silence.
+    _activities = ScreenCache.read<List<Map<String, dynamic>>>(_cacheKey);
     _load();
   }
+
+  String get _cacheKey => 'space_activity_${widget.space.id}';
 
   Future<void> _load() async {
     try {
@@ -35,14 +40,17 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
           .dio
           .get('/spaces/${widget.space.id}/activity?limit=50');
       if (!mounted) return;
+      final activities = ((res.data['data']['activities'] as List? ?? []))
+          .cast<Map<String, dynamic>>();
+      ScreenCache.write(_cacheKey, activities);
       setState(() {
-        _activities = ((res.data['data']['activities'] as List? ?? []))
-            .cast<Map<String, dynamic>>();
+        _activities = activities;
         _error = false;
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = true);
+      // Un rafraichissement rate n'efface pas ce qui est affiche.
+      if (_activities == null) setState(() => _error = true);
     }
   }
 

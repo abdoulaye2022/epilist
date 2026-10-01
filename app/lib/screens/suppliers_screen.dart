@@ -3,6 +3,7 @@
 // Écriture réservée à manage_suppliers (le serveur tranche).
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -28,12 +29,16 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   @override
   void initState() {
     super.initState();
+    // Afficher d'abord la derniere version connue (pas de spinner
+    // si on est deja venu), puis rafraichir en silence.
+    _suppliers = ScreenCache.read<List<SupplierInfo>>('suppliers');
     _load();
   }
 
   Future<void> _load() async {
     try {
       final list = await _service.getSuppliers();
+      ScreenCache.write('suppliers', list);
       if (!mounted) return;
       setState(() {
         _suppliers = list;
@@ -41,7 +46,8 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = true);
+      // Un rafraichissement rate n'efface pas les donnees affichees.
+      if (_suppliers == null) setState(() => _error = true);
     }
   }
 

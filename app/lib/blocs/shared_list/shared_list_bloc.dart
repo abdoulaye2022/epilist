@@ -117,7 +117,14 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
     LoadSharedLists event,
     Emitter<SharedListState> emit,
   ) async {
-    emit(SharedListLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is SharedListInitial || state is SharedListError;
+    if (nothingDisplayed) {
+      emit(SharedListLoading());
+    }
     try {
       final sharedLists = await _sharedListService.getSharedLists();
       emit(SharedListsLoaded(sharedLists));
@@ -126,7 +133,10 @@ class SharedListBloc extends Bloc<SharedListEvent, SharedListState> {
 
       // ✅ UTILISER la nouvelle méthode de traduction
       final errorMessage = _getTranslatedErrorMessage('load_shared', e);
-      emit(SharedListError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(SharedListError(errorMessage));
+      }
     }
   }
 

@@ -5,6 +5,7 @@
 // les économies estimées DOCUMENTÉES (§30). L'icône de l'AppBar ouvre
 // « Est-ce un bon prix ? » (§29) : verdict prudent + les chiffres.
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
@@ -28,6 +29,8 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
   @override
   void initState() {
     super.initState();
+    _brief = ScreenCache.read<Map<String, dynamic>>('pre_shopping_brief');
+    _savings = ScreenCache.read<Map<String, dynamic>>('pre_shopping_savings');
     _load();
   }
 
@@ -36,6 +39,8 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       final results = await Future.wait(
           [_service.getPreShopping(), _service.getSavings()]);
       if (!mounted) return;
+      ScreenCache.write('pre_shopping_brief', results[0]);
+      ScreenCache.write('pre_shopping_savings', results[1]);
       setState(() {
         _brief = results[0];
         _savings = results[1];
@@ -43,7 +48,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = true);
+      if (_brief == null) setState(() => _error = true);
     }
   }
 

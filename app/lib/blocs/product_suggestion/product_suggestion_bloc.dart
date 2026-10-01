@@ -65,7 +65,14 @@ class ProductSuggestionBloc
       return;
     }
 
-    emit(ProductSuggestionLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is ProductSuggestionInitial || state is ProductSuggestionError;
+    if (nothingDisplayed) {
+      emit(ProductSuggestionLoading());
+    }
 
     try {
       final suggestions = await _suggestionService.searchSuggestions(

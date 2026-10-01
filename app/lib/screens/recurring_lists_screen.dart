@@ -3,6 +3,7 @@
 // pré-coché selon les habitudes (validation en quelques secondes, §34).
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -24,6 +25,12 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
   @override
   void initState() {
     super.initState();
+    // Derniere version connue d'abord, rafraichissement en silence.
+    final cached = ScreenCache.read<List<RecurringListModel>>('recurring_lists');
+    if (cached != null) {
+      _lists = cached;
+      _loading = false;
+    }
     _load();
   }
 
@@ -32,6 +39,7 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
       final lists =
           await context.read<IntelligenceService>().getRecurringLists();
       if (!mounted) return;
+      ScreenCache.write('recurring_lists', lists);
       setState(() {
         _lists = lists;
         _loading = false;

@@ -80,7 +80,14 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     LoadDashboard event,
     Emitter<AnalyticsState> emit,
   ) async {
-    emit(AnalyticsLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is AnalyticsInitial || state is AnalyticsError;
+    if (nothingDisplayed) {
+      emit(AnalyticsLoading());
+    }
     try {
       _currentCurrency = event.currencyCode;
       final data = await _analyticsService.getDashboard(
@@ -107,7 +114,10 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
         debugPrint('❌ Analytics cache load failed: $cacheError');
       }
 
-      emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(AnalyticsError(_getTranslatedErrorMessage(e)));
+      }
     }
   }
 

@@ -64,14 +64,24 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
   }
 
   Future<void> _onLoadStores(LoadStores event, Emitter<StoreState> emit) async {
-    emit(StoreLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is StoreInitial || state is StoreError;
+    if (nothingDisplayed) {
+      emit(StoreLoading());
+    }
     try {
       final stores = await storeService.getStores();
       emit(StoreLoaded(stores));
     } catch (e) {
       debugPrint('❌ [StoreBloc] Erreur chargement magasins: $e');
-      emit(StoreError('Impossible de charger les magasins',
-          stores: _currentStores));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(StoreError('Impossible de charger les magasins',
+            stores: _currentStores));
+      }
     }
   }
 

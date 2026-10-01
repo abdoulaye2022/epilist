@@ -111,10 +111,17 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     LoadListItems event,
     Emitter<ListItemState> emit,
   ) async {
-    emit(ListItemLoading());
+    // Rafraichissement silencieux : on ne montre l'ecran de chargement
+    // que si les articles affiches ne sont PAS ceux de cette liste
+    // (premiere ouverture, ou passage a une autre liste).
+    final current = state;
+    final sameList = current is ListItemLoaded && current.listId == event.listId;
+    if (!sameList) {
+      emit(ListItemLoading());
+    }
     try {
       final items = await _listItemService.getListItems(event.listId);
-      emit(ListItemLoaded(items));
+      emit(ListItemLoaded(items, event.listId));
     } catch (e) {
       debugPrint("Error loading items: $e");
 
@@ -128,7 +135,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
             orElse: () => throw Exception('List not found in cache'),
           );
           debugPrint('📦 Loading ${cachedList.items.length} items from cache (offline mode)');
-          emit(ListItemLoaded(cachedList.items));
+          emit(ListItemLoaded(cachedList.items, event.listId));
           return;
         }
       } catch (cacheError) {
@@ -165,7 +172,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
           final successMessage = _getTranslatedSuccessMessage('add');
           emit(ListItemOperationSuccess(successMessage));
-          emit(ListItemLoaded(updatedItems));
+          emit(ListItemLoaded(updatedItems, event.listId));
         } else {
           final successMessage = _getTranslatedSuccessMessage('add');
           emit(ListItemOperationSuccess(successMessage));
@@ -233,7 +240,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
           final successMessage = _getTranslatedSuccessMessage('add');
           emit(ListItemOperationSuccess(successMessage));
-          emit(ListItemLoaded(updatedItems));
+          emit(ListItemLoaded(updatedItems, event.listId));
         }
         return;
       }
@@ -265,7 +272,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('force_add');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       } else {
         final successMessage = _getTranslatedSuccessMessage('force_add');
         emit(ListItemOperationSuccess(successMessage));
@@ -305,7 +312,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('merge');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       } else {
         final successMessage = _getTranslatedSuccessMessage('merge');
         emit(ListItemOperationSuccess(successMessage));
@@ -455,7 +462,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('update');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       }
       return;
     }
@@ -486,7 +493,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('update');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       } else {
         final successMessage = _getTranslatedSuccessMessage('update');
         emit(ListItemOperationSuccess(successMessage));
@@ -526,7 +533,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
               return item;
             }).toList();
 
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       }
       return;
     }
@@ -549,7 +556,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
               return item;
             }).toList();
 
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       }
     } catch (e) {
       debugPrint("Error toggling status: $e");
@@ -583,7 +590,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('delete');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       }
       return;
     }
@@ -604,7 +611,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
 
         final successMessage = _getTranslatedSuccessMessage('delete');
         emit(ListItemOperationSuccess(successMessage));
-        emit(ListItemLoaded(updatedItems));
+        emit(ListItemLoaded(updatedItems, event.listId));
       }
     } catch (e) {
       debugPrint("Error deleting item: $e");

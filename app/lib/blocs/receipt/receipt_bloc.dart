@@ -118,14 +118,24 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     LoadReceipts event,
     Emitter<ReceiptState> emit,
   ) async {
-    emit(ReceiptLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is ReceiptInitial || state is ReceiptError;
+    if (nothingDisplayed) {
+      emit(ReceiptLoading());
+    }
     try {
       final receipts = await _receiptService.getListReceipts(event.listId);
       emit(ReceiptLoaded(receipts));
     } catch (e) {
       debugPrint("Error loading receipts: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
-      emit(ReceiptError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(ReceiptError(errorMessage));
+      }
     }
   }
 
@@ -246,14 +256,24 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     LoadReceiptStats event,
     Emitter<ReceiptState> emit,
   ) async {
-    emit(ReceiptLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is ReceiptInitial || state is ReceiptError;
+    if (nothingDisplayed) {
+      emit(ReceiptLoading());
+    }
     try {
       final stats = await _receiptService.getReceiptStats(event.listId);
       emit(ReceiptStatsLoaded(stats));
     } catch (e) {
       debugPrint("Error loading receipt stats: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
-      emit(ReceiptError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(ReceiptError(errorMessage));
+      }
     }
   }
 }

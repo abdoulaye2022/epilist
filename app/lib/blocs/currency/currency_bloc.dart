@@ -37,7 +37,14 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     LoadCurrencies event,
     Emitter<CurrencyState> emit,
   ) async {
-    emit(CurrencyLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is CurrencyInitial || state is CurrencyError;
+    if (nothingDisplayed) {
+      emit(CurrencyLoading());
+    }
 
     try {
       final currencies = await currencyService.getCachedCurrencies(
@@ -86,7 +93,14 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     LoadUserCurrency event,
     Emitter<CurrencyState> emit,
   ) async {
-    emit(CurrencyLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is CurrencyInitial || state is CurrencyError;
+    if (nothingDisplayed) {
+      emit(CurrencyLoading());
+    }
 
     try {
       final userCurrency = await currencyService.getUserCurrency();

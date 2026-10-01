@@ -6,6 +6,7 @@
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -28,6 +29,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   void initState() {
     super.initState();
+    final cached = ScreenCache.read<List<InventoryItem>>('inventory');
+    if (cached != null) {
+      _items = cached;
+      _loading = false;
+    }
     _load();
   }
 
@@ -35,6 +41,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     try {
       final items = await context.read<IntelligenceService>().getInventory();
       if (!mounted) return;
+      ScreenCache.write('inventory', items);
       setState(() {
         _items = items;
         _loading = false;

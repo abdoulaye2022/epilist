@@ -137,7 +137,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     LoadBudgets event,
     Emitter<BudgetState> emit,
   ) async {
-    emit(BudgetLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is BudgetInitial || state is BudgetError;
+    if (nothingDisplayed) {
+      emit(BudgetLoading());
+    }
     try {
       final budgets = await _budgetService.getBudgets();
 
@@ -161,7 +168,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
 
       final errorMessage = _getTranslatedErrorMessage(e);
-      emit(BudgetError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(BudgetError(errorMessage));
+      }
     }
   }
 
@@ -170,7 +180,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     LoadBudgetsWithFilters event,
     Emitter<BudgetState> emit,
   ) async {
-    emit(BudgetLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is BudgetInitial || state is BudgetError;
+    if (nothingDisplayed) {
+      emit(BudgetLoading());
+    }
     try {
       final budgets = await _budgetService.getBudgets(
         status: event.status,
@@ -209,7 +226,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
 
       final errorMessage = _getTranslatedErrorMessage(e);
-      emit(BudgetError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(BudgetError(errorMessage));
+      }
     }
   }
 
@@ -416,7 +436,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     LoadBudgetDashboard event,
     Emitter<BudgetState> emit,
   ) async {
-    emit(BudgetLoading());
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is BudgetInitial || state is BudgetError;
+    if (nothingDisplayed) {
+      emit(BudgetLoading());
+    }
     try {
       final dashboardData = await _budgetService.getBudgetDashboard();
       final alerts = await _budgetService.getBudgetAlerts();
@@ -433,7 +460,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     } catch (e) {
       debugPrint('Error loading budget dashboard: $e');
       final errorMessage = _getTranslatedErrorMessage(e);
-      emit(BudgetError(errorMessage));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(BudgetError(errorMessage));
+      }
     }
   }
 

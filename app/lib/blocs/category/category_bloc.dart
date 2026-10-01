@@ -124,8 +124,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     LoadCategories event,
     Emitter<CategoryState> emit,
   ) async {
+    // Rafraichissement silencieux : l'ecran de chargement n'apparait
+    // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
+    // l'ecran restent visibles pendant la mise a jour, et un
+    // rafraichissement rate ne les remplace pas par une erreur.
+    final nothingDisplayed = state is CategoryInitial || state is CategoryError;
     try {
-      emit(const CategoryLoading());
+      if (nothingDisplayed) {
+        emit(const CategoryLoading());
+      }
       final categories = await _categoryService.getCategories();
 
       // ✅ Sauvegarder dans le cache
@@ -149,7 +156,10 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         debugPrint('❌ Categories cache load failed: $cacheError');
       }
 
-      emit(CategoryError(message: _getTranslatedErrorMessage(e)));
+      // Echec silencieux si des donnees sont deja affichees.
+      if (nothingDisplayed) {
+        emit(CategoryError(message: _getTranslatedErrorMessage(e)));
+      }
     }
   }
 

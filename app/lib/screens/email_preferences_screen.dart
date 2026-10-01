@@ -1,5 +1,6 @@
 // lib/screens/email_preferences_screen.dart
 
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
@@ -23,16 +24,20 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
   @override
   void initState() {
     super.initState();
+    _preferences = ScreenCache.read<EmailPreference>('email_preferences');
     _loadPreferences();
   }
 
   Future<void> _loadPreferences() async {
-    setState(() => _isLoading = true);
+    // Spinner seulement si on n'a rien a montrer.
+    if (_preferences == null) setState(() => _isLoading = true);
 
     final prefs = await EmailPreferenceService.getPreferences();
+    if (!mounted) return;
+    if (prefs != null) ScreenCache.write('email_preferences', prefs);
 
     setState(() {
-      _preferences = prefs;
+      _preferences = prefs ?? _preferences;
       _isLoading = false;
     });
   }

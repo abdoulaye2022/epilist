@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 // services/auth_service.dart - VERSION COMPLÈTE AVEC APPLE SIGN-IN RESTAURÉ
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/token_store.dart';
 import 'package:epilist/models/user.dart';
@@ -1067,6 +1068,8 @@ class AuthService {
       // Retour à l'espace personnel : l'espace actif appartient à la
       // session de CE compte, pas au suivant.
       await ActiveSpaceStore.clear();
+      // Les données affichées par les écrans appartiennent à CE compte.
+      ScreenCache.clear();
       final keysToRemove = [
         _accessTokenKey,
         _refreshTokenKey,
