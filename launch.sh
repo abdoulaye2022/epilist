@@ -159,7 +159,9 @@ if [ -n "$NGROK_CONF_DEFAULT" ] && [ -f "$NGROK_CONF_DEFAULT" ]; then
 else
     warning "Config ngrok par défaut introuvable — inspecteur sur le port par défaut"
     NGROK_API="http://127.0.0.1:4040"
-    ngrok http --url="https://$NGROK_DOMAIN" "$API_PORT" --log=stdout \
+    # cd dans le projet : sans --config, c'est le repertoire courant qui
+    # permet a stop.sh de reconnaitre CE ngrok comme le notre.
+    (cd "$ROOT_DIR" && exec ngrok http --url="https://$NGROK_DOMAIN" "$API_PORT" --log=stdout) \
         < /dev/null > "$RUN_DIR/ngrok.log" 2>&1 &
 fi
 echo $! > "$RUN_DIR/ngrok.pid"

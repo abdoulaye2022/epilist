@@ -1,9 +1,14 @@
 // config/app_config.dart
 class AppConfig {
-  // Production
-  static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
+  // ACTIF — Development via ngrok : domaine reserve permanent, l'URL ne
+  // change pas d'un demarrage a l'autre. Le tunnel pointe vers l'API
+  // locale (port 8001, voir launch.sh) et marche sur appareil REEL comme
+  // sur simulateur/emulateur.
+  // Prerequis : ./launch.sh demarre, tunnel ngrok actif sur ce domaine.
+  static const String baseUrl = 'https://m2atech.ngrok.app';
 
-  // L'API locale tourne sur le port 8001 (voir launch.sh)
+  // Production — a RETABLIR avant toute build de release / TestFlight
+  // static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
 
   // Development - local server (FAST - simulateur / emulateur uniquement)
   // Pour iOS Simulator:   'http://localhost:8001'
@@ -12,10 +17,6 @@ class AppConfig {
 
   // Development - IP locale (FAST - appareil reel sur le meme Wi-Fi)
   // static const String baseUrl = 'http://192.168.1.100:8001';
-
-  // Development - ngrok (appareil reel) : domaine reserve permanent,
-  // l'URL ne change pas d'un demarrage a l'autre (voir launch.sh).
-  // static const String baseUrl = 'https://m2atech.ngrok.app';
 
   // Logs de debug (debugPrint) dans la console.
   // false = silence total, meme en `flutter run`.

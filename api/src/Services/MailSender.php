@@ -17,6 +17,15 @@ class MailSender
 {
     private const SENDER_NAME = 'EpiList';
     private const SENDER_EMAIL = 'noreply@epilist.app'; // domaine authentifie dans Brevo
+
+    /**
+     * Boite de test : en developpement (APP_ENV=dev), AUCUN email ne part
+     * vers une vraie adresse — tout atterrit ici. La garde est posee dans
+     * sendMail(), seul point du projet qui appelle l'API Brevo : tout
+     * email present ET futur est couvert, sans redirection a recopier
+     * dans chaque controleur.
+     */
+    private const DEV_MAILBOX = 'm2atodev@gmail.com';
     private const MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB
     private const ALLOWED_ATTACHMENT_TYPES = [
         'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
@@ -29,8 +38,28 @@ class MailSender
     public static function sendMail(string $subject, array $recipients, string $htmlBody, array $attachments = []): bool
     {
         try {
-            // Validation des paramètres
+            // Validation des paramètres (sur les VRAIS destinataires)
             self::validateEmailParameters($subject, $recipients, $htmlBody, $attachments);
+
+            // 🔒 Développement : tout le courrier est détourné vers la boîte
+            // de test, et le sujet rappelle le destinataire réel. En
+            // production (APP_ENV != dev), rien ne change.
+            if (Config::get('APP_ENV') === 'dev') {
+                $realTargets = implode(', ', array_map(
+                    fn($r) => $r['email'] ?? '?',
+                    array_slice($recipients, 0, 3)
+                ));
+                if (count($recipients) > 3) {
+                    $realTargets .= ' +' . (count($recipients) - 3);
+                }
+                error_log("[MailSender] DEV — « {$subject} » destiné à [{$realTargets}]"
+                    . ' redirigé vers ' . self::DEV_MAILBOX);
+                $subject = '[DEV → ' . mb_substr($realTargets, 0, 80) . "] {$subject}";
+                $recipients = [[
+                    'email' => self::DEV_MAILBOX,
+                    'name' => $recipients[0]['name'] ?? 'EpiList dev',
+                ]];
+            }
 
             // Configuration de l'API Brevo avec gestion des warnings
             $config = self::createBrevoConfiguration();

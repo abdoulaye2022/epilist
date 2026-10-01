@@ -249,7 +249,7 @@ class AuthController
             $existingUser = User::where('email', $email)->first();
             if ($existingUser) {
                 error_log(" [AuthController] Utilisateur Google existe déjà: {$email}");
-                
+
                 //  ANDROID: Rediriger vers login au lieu d'erreur
                 return $this->createErrorResponse(
                     'Un compte existe déjà avec cet email. Redirection vers la connexion.',
@@ -350,12 +350,6 @@ class AuthController
     {
         try {
             $emailToSend = $user->email;
-
-            //  ANDROID: En développement, rediriger vers l'email de test
-            if (Config::get('APP_ENV') == 'dev') {
-                $emailToSend = 'm2atodev@gmail.com';
-                error_log(" [AuthController] Email de bienvenue redirigé vers: " . $emailToSend);
-            }
 
             // 🌍 Envoyer l'email dans la langue de l'utilisateur
             $subject = EmailTemplates::getSubject('welcome', $user->language ?? 'fr');
@@ -519,10 +513,6 @@ class AuthController
 
                     // Envoyer email de bienvenue (seulement si email réel)
                     if (!$this->ssoService->isApplePrivateEmail($email)) {
-                        if(Config::get('APP_ENV') == 'dev') {
-                            $user->email = 'm2atodev@gmail.com';
-                        }
-
                         try {
                             $mailSender = new MailSender();
                             $mailSender->sendWelcomeEmail($user->email, $user->first_name);
@@ -754,10 +744,6 @@ class AuthController
 
                 // 8. Envoyer email de bienvenue (seulement si email réel)
                 if (!$this->ssoService->isApplePrivateEmail($email)) {
-                    if(Config::get('APP_ENV') == 'dev') {
-                        $user->email = 'm2atodev@gmail.com';
-                    }
-
                     try {
                         $mailSender = new MailSender();
                         $mailSender->sendWelcomeEmail($user->email, $user->first_name);
@@ -1709,10 +1695,6 @@ class AuthController
             ]);
 
             // Envoyer email de confirmation
-            if(Config::get('APP_ENV') == 'dev') {
-                $user->email = 'm2atodev@gmail.com';
-            }
-
             try {
                 $mailSender = new MailSender();
                 $mailSender->sendAccountDeletionConfirmation($user->email, $user->first_name, $confirmationCode);
@@ -2297,10 +2279,6 @@ class AuthController
             $this->rateLimiter->recordGlobalAttempt('registration');
 
             // Envoyer l'email de vérification
-            if(Config::get('APP_ENV') == 'dev') {
-                $user->email = 'm2atodev@gmail.com';
-            }
-
             // 🌍 Envoyer l'email dans la langue de l'utilisateur
             $subject = EmailTemplates::getSubject('verification', $user->language);
             $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language);
@@ -2549,10 +2527,6 @@ class AuthController
 
             // 🌍 Envoyer l'email de vérification dans la langue de l'utilisateur
             $emailToSend = $user->email;
-            if(Config::get('APP_ENV')=='dev') {
-                $emailToSend = 'm2atodev@gmail.com';
-            }
-
             $subject = EmailTemplates::getSubject('verification', $user->language ?? 'fr');
             $htmlContent = EmailTemplates::verificationEmail($user->first_name, $verificationCode, $user->language ?? 'fr');
 
@@ -2652,10 +2626,6 @@ class AuthController
             $user->password_change_code = $code;
             $user->password_change_code_expires_at = $expiration;
             $user->save();
-
-            if(Config::get('APP_ENV')=='dev') {
-                $user->email = 'm2atodev@gmail.com';
-            }
 
             // 🌍 Envoyer l'email dans la langue appropriée
             $subject = EmailTemplates::getSubject('password_change', $emailLanguage);
@@ -2801,10 +2771,6 @@ class AuthController
             // 🌍 Envoyer l'email de confirmation de changement de mot de passe
             try {
                 $emailToSend = $user->email;
-                if(Config::get('APP_ENV') == 'dev') {
-                    $emailToSend = 'm2atodev@gmail.com';
-                }
-
                 $changeDateTime = Carbon::now()->setTimezone('America/Moncton')->format('Y-m-d H:i:s') . ' (AT)';
                 $subject = EmailTemplates::getSubject('password_changed', $user->language ?? 'fr');
                 $htmlContent = EmailTemplates::passwordChangedEmail($user->first_name, $changeDateTime, $user->language ?? 'fr');
