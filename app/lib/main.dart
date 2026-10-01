@@ -170,6 +170,7 @@ void main() async {
       receiptService: ReceiptService(dio: dio, authService: authService),
       budgetService: BudgetService(dio: dio, authService: authService),
       categoryService: categoryService,
+      authService: authService,
     );
     debugPrint('✅ Service de synchronisation initialisé');
 
@@ -524,15 +525,22 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
     }
   }
 
+  /// L'affichage ne doit PAS attendre les liens profonds. Avant, un
+  /// Future.delayed(1500 ms) retardait l'interface ENTIÈRE, quel que
+  /// soit l'état de la session. Désormais : l'interface est libérée dès
+  /// la première image, et les liens profonds s'initialisent juste
+  /// après (court délai, le temps que le navigateur soit prêt).
   Future<void> _initializeDeepLinksWithDelay() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _isInitializing) {
+        setState(() => _isInitializing = false);
+      }
+    });
 
+    await Future.delayed(const Duration(milliseconds: 300));
     if (mounted && !_deepLinkInitialized) {
       DeepLinkHandler.initialize(context);
-      setState(() {
-        _deepLinkInitialized = true;
-        _isInitializing = false;
-      });
+      _deepLinkInitialized = true;
     }
   }
 
@@ -653,7 +661,6 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
         },
         builder: (context, state) {
           if (_isInitializing ||
-              !_deepLinkInitialized ||
               state is AuthInitial ||
               state is AuthLoading) {
             String message = l10n.initialization;

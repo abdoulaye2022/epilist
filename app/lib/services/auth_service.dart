@@ -943,6 +943,32 @@ class AuthService {
     }
   }
 
+  /// Profil mis en cache, lecture STRICTEMENT locale (aucun réseau).
+  /// Sert au démarrage : afficher l'application sans attendre le serveur.
+  User? cachedUser() {
+    try {
+      final raw = sharedPreferences.getString(_userKey);
+      if (raw == null || raw.isEmpty) return null;
+      return User.fromJsonString(raw);
+    } catch (e) {
+      debugPrint('❌ [AuthService] Cache utilisateur illisible: $e');
+      return null;
+    }
+  }
+
+  /// Une session est-elle stockée sur l'appareil ? Ne déclenche AUCUN
+  /// rafraîchissement : on veut juste savoir s'il y a de quoi continuer.
+  Future<bool> hasStoredSession() async {
+    try {
+      final access = await TokenStore.readAccess();
+      if (access != null && access.isNotEmpty) return true;
+      final refresh = await TokenStore.readRefresh();
+      return refresh != null && refresh.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<bool> isAuthenticated() async {
     try {
       final accessToken = await getToken();

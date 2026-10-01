@@ -666,6 +666,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     CheckAuthentication event,
     Emitter<AuthState> emit,
   ) async {
+    // DÉMARRAGE INSTANTANÉ (pas d'écran « Vérification… »)
+    //
+    // La session vit sur l'appareil : jeton + profil en cache. Quand les
+    // deux sont là, on entre DIRECTEMENT dans l'application et tout le
+    // reste (profil frais, enregistrement FCM, refresh du jeton) se fait
+    // en arrière-plan. L'ancien code attendait le réseau — et même un
+    // Future.delayed(500 ms) — avant d'afficher quoi que ce soit.
+    //
+    // Un jeton expiré n'est PAS un obstacle au démarrage : la première
+    // requête le rafraîchit (getToken), et la session n'est purgée que
+    // sur un refus explicite du serveur.
+    final cached = authService.cachedUser();
+    if (cached != null && await authService.hasStoredSession()) {
+      final ssoProvider = await authService.getCurrentSSOProvider();
+      emit(AuthSuccess(user: cached, authMethod: ssoProvider ?? 'email'));
+      _scheduleTokenRefresh();
+      _runStartupTasksInBackground();
+      add(RefreshCurrentUser()); // profil frais, sans bloquer l'affichage
+      return;
+    }
+
     emit(AuthLoading());
 
     try {
@@ -681,18 +702,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           _scheduleTokenRefresh();
 
-          try {
-            await Future.delayed(const Duration(milliseconds: 500));
-            final isRegistered = await NotificationService.isDeviceRegistered();
-            if (!isRegistered) {
-              debugPrint('📱 [AuthBloc] Device non enregistré, enregistrement...');
-              await NotificationService.registerAfterLogin();
-            }
-          } catch (fcmError) {
-            debugPrint(
-              '⚠️ [AuthBloc] Erreur FCM lors de la vérification: $fcmError',
-            );
-          }
+          _runStartupTasksInBackground();
 
           final ssoProvider = await authService.getCurrentSSOProvider();
           emit(AuthSuccess(user: user, authMethod: ssoProvider ?? 'email'));
@@ -1366,6 +1376,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());
       emit(AuthFailure(error: errorMessage));
     }
+  }
+
+  /// Travaux de démarrage qui ne doivent JAMAIS retarder l'affichage :
+  /// vérification de l'enregistrement FCM. Lancés sans être attendus,
+  /// échec sans conséquence.
+  void _runStartupTasksInBackground() {
+    Future(() async {
+      try {
+        final isRegistered = await NotificationService.isDeviceRegistered();
+        if (!isRegistered) {
+          debugPrint('📱 [AuthBloc] Device non enregistré, enregistrement...');
+          await NotificationService.registerAfterLogin();
+        }
+      } catch (fcmError) {
+        debugPrint('⚠️ [AuthBloc] Erreur FCM au démarrage: $fcmError');
+      }
+    });
   }
 
   void _scheduleTokenRefresh() async {

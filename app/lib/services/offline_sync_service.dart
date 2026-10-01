@@ -14,6 +14,7 @@ import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/budget_service.dart';
 import 'package:epilist/services/category_service.dart';
 import 'package:epilist/services/space_service.dart';
+import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/token_store.dart';
 import 'package:epilist/config/app_config.dart';
 
@@ -42,6 +43,11 @@ class OfflineSyncService {
   /// actions qui suivent.
   final Map<int, int> _idMap = {};
 
+  /// Sert à obtenir un jeton VALIDE (rafraîchi si besoin) : la synchro
+  /// part souvent après une longue coupure, quand le jeton stocké a
+  /// toutes les chances d'avoir expiré.
+  AuthService? _authService;
+
   StreamSubscription<bool>? _connectivitySubscription;
   bool _isSyncing = false;
   bool _isInitialized = false;
@@ -58,6 +64,7 @@ class OfflineSyncService {
     ReceiptService? receiptService,
     BudgetService? budgetService,
     CategoryService? categoryService,
+    AuthService? authService,
   }) async {
     if (_isInitialized) return;
 
@@ -67,6 +74,7 @@ class OfflineSyncService {
     _receiptService = receiptService;
     _budgetService = budgetService;
     _categoryService = categoryService;
+    _authService = authService;
 
     // Initialiser la queue
     await OfflineQueueService.initialize();
@@ -544,6 +552,13 @@ class OfflineSyncService {
   /// migration TokenStore (la clé legacy est supprimée à la migration).
   Future<String?> _getToken() async {
     try {
+      // getToken() vérifie l'expiration et rafraîchit au besoin (avec
+      // mutex). Lire le jeton brut enverrait des actions avec un jeton
+      // périmé — exactement le cas d'une longue période hors ligne.
+      final auth = _authService;
+      if (auth != null) {
+        return await auth.getToken();
+      }
       return await TokenStore.readAccess();
     } catch (e) {
       debugPrint('❌ [OfflineSync] Error getting token: $e');

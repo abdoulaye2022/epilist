@@ -101,3 +101,51 @@ chargement normal.
 ## Vérifié
 
 `flutter analyze` 0, 18/18 tests, build debug OK.
+
+---
+
+# Démarrage instantané et jetons
+
+Livré le 2026-10-01, même objectif : ne plus faire attendre pour rien.
+
+## « Vérification de l'authentification… » à chaque ouverture
+
+Trois attentes s'additionnaient AVANT le premier écran utile :
+
+1. `Future.delayed(1500 ms)` dans `main.dart` — il ne servait qu'à
+   retarder l'initialisation des liens profonds, mais il bloquait
+   l'interface **entière**, session valide ou non ;
+2. `Future.delayed(500 ms)` dans `AuthBloc` avant la vérification FCM ;
+3. l'enregistrement FCM lui-même, attendu avant d'afficher l'accueil.
+
+Désormais :
+
+- **l'interface est libérée dès la première image** (post-frame), et les
+  liens profonds s'initialisent juste après, sans rien bloquer ;
+- `CheckAuthentication` tranche **localement** : profil en cache +
+  session stockée ⇒ `AuthSuccess` immédiat, sans écran d'attente ;
+- profil frais, enregistrement FCM et programmation du refresh partent
+  **en arrière-plan**.
+
+L'écran « Vérification… » n'apparaît plus que quand la lecture locale ne
+suffit pas à trancher (pas de cache : première installation, ou après
+déconnexion).
+
+Un jeton **expiré** n'empêche pas ce démarrage immédiat : la première
+requête le rafraîchit, et la session n'est purgée que sur un refus
+explicite du serveur.
+
+## Jeton expiré : rien ne doit passer
+
+- **Requêtes normales** : déjà correct. `TokenRefreshInterceptor`
+  appelle `getToken()` avant chaque appel ; `getToken()` vérifie
+  l'expiration **localement** (horodatage stocké, aucun réseau) et
+  rafraîchit si besoin, derrière un mutex qui évite les refresh
+  concurrents (rotation côté serveur).
+- **Synchronisation hors ligne** : c'était un vrai défaut. Le service
+  lisait le jeton **brut** (`TokenStore.readAccess()`), sans contrôle
+  d'expiration ni rafraîchissement — et comme il construit ses en-têtes
+  à la main, il ne passait pas par l'intercepteur. Après une longue
+  coupure (le cas où la synchro sert le plus), toutes les actions
+  partaient avec un jeton périmé. Il utilise maintenant
+  `AuthService.getToken()`.
