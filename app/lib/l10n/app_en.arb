@@ -2803,5 +2803,8 @@
   "npRemindersDesc": "Nudges to help you prepare your shopping",
   "npEmailsTitle": "Emails",
   "npEmailsDesc": "Nothing to set",
-  "npEmailsBody": "We only email you when it is essential: account activation, password recovery, security alert, sign-in code and account deletion. Everything else goes through the notifications above."
+  "npEmailsBody": "We only email you when it is essential: account activation, password recovery, security alert, sign-in code and account deletion. Everything else goes through the notifications above.",
+  "inventoryThresholdsTitle": "Quantity & thresholds",
+  "inventoryMinQuantityHint": "Below this, the product is flagged",
+  "inventoryReorderQuantityHint": "Suggested quantity when reordering"
 }

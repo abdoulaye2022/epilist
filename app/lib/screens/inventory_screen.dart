@@ -10,6 +10,7 @@ import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -159,59 +160,97 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(item.productName),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: quantity,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration:
-                        InputDecoration(labelText: l10n.inventoryQuantity),
-                  ),
+      builder: (ctx) => Dialog(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppDialogHeader(
+                icon: Icons.inventory_2_outlined,
+                title: l10n.inventoryThresholdsTitle,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              // Le produit concerné, en sous-titre : l'en-tête porte
+              // l'intention, pas le nom.
+              Padding(
+                padding: const EdgeInsets.only(left: 48),
+                child: Text(
+                  item.productName,
+                  style: const TextStyle(
+                      fontSize: 13, color: AppColors.textSecondary),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: TextField(
-                    controller: unit,
-                    decoration:
-                        InputDecoration(labelText: l10n.inventoryUnit),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: quantity,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: l10n.inventoryQuantity,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        isDense: true,
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: TextField(
+                      controller: unit,
+                      decoration: InputDecoration(
+                        labelText: l10n.inventoryUnit,
+                        hintText: 'kg',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: minQty,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  labelText: l10n.inventoryMinQuantity,
+                  helperText: l10n.inventoryMinQuantityHint,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  isDense: true,
                 ),
-              ],
-            ),
-            TextField(
-              controller: minQty,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration:
-                  InputDecoration(labelText: l10n.inventoryMinQuantity),
-            ),
-            TextField(
-              controller: reorder,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration:
-                  InputDecoration(labelText: l10n.inventoryReorderQuantity),
-            ),
-          ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: reorder,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                  labelText: l10n.inventoryReorderQuantity,
+                  helperText: l10n.inventoryReorderQuantityHint,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  isDense: true,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppDialogActions(
+                cancelLabel: l10n.cancel,
+                submitLabel: l10n.save,
+                onCancel: () => Navigator.of(ctx).pop(false),
+                onSubmit: () => Navigator.of(ctx).pop(true),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.save),
-          ),
-        ],
       ),
     );
     if (saved != true || !mounted) return;

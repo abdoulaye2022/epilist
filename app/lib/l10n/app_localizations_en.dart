@@ -5937,4 +5937,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get npEmailsBody =>
       'We only email you when it is essential: account activation, password recovery, security alert, sign-in code and account deletion. Everything else goes through the notifications above.';
+
+  @override
+  String get inventoryThresholdsTitle => 'Quantity & thresholds';
+
+  @override
+  String get inventoryMinQuantityHint => 'Below this, the product is flagged';
+
+  @override
+  String get inventoryReorderQuantityHint =>
+      'Suggested quantity when reordering';
 }

@@ -11100,6 +11100,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Nous ne vous écrivons que lorsque c\'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.'**
   String get npEmailsBody;
+
+  /// No description provided for @inventoryThresholdsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité et seuils'**
+  String get inventoryThresholdsTitle;
+
+  /// No description provided for @inventoryMinQuantityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'En dessous, le produit est signalé'**
+  String get inventoryMinQuantityHint;
+
+  /// No description provided for @inventoryReorderQuantityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité suggérée à la commande'**
+  String get inventoryReorderQuantityHint;
 }
 
 class _AppLocalizationsDelegate

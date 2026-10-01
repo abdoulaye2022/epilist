@@ -6032,4 +6032,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get npEmailsBody =>
       'Nous ne vous écrivons que lorsque c\'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.';
+
+  @override
+  String get inventoryThresholdsTitle => 'Quantité et seuils';
+
+  @override
+  String get inventoryMinQuantityHint => 'En dessous, le produit est signalé';
+
+  @override
+  String get inventoryReorderQuantityHint => 'Quantité suggérée à la commande';
 }
