@@ -15,25 +15,44 @@
 
 -- ----------------------------------------------------------------------------
 -- ÉTAPE 0 — PRÉREQUIS : ces migrations plus anciennes doivent déjà être
--- passées. Si une valeur vaut 0 ci-dessous, ARRÊTEZ-VOUS et exécutez
--- d'abord la migration correspondante, sinon la suite échouera.
+-- passées. Le résultat affiche UNE LIGNE PAR VÉRIFICATION : tout doit
+-- indiquer « OK ». Si une ligne affiche « >>> MANQUE », ARRÊTEZ-VOUS et
+-- exécutez d'abord le fichier qu'elle nomme, sinon la suite échouera.
+--
+-- Conseil phpMyAdmin : exécutez d'ABORD cette requête seule (sélectionnez
+-- le bloc ci-dessous), lisez le tableau, puis lancez le reste du fichier.
 -- ----------------------------------------------------------------------------
-SELECT
-    (SELECT COUNT(*) FROM information_schema.TABLES
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_history')   AS prerequis_price_intelligence,
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_history'
-          AND COLUMN_NAME = 'source')                                          AS prerequis_source,
-    (SELECT COUNT(*) FROM information_schema.TABLES
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory')     AS prerequis_household_intelligence,
-    (SELECT COUNT(*) FROM information_schema.TABLES
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'refresh_tokens')     AS prerequis_refresh_tokens,
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'
-          AND COLUMN_NAME = 'admin_otp_code')                                  AS prerequis_admin_otp,
-    (SELECT COUNT(*) FROM information_schema.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'list_receipts'
-          AND COLUMN_NAME = 'image_url')                                       AS prerequis_images;
+SELECT 'purchase_history (intelligence prix)' AS verification,
+       IF((SELECT COUNT(*) FROM information_schema.TABLES
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_history') > 0,
+          'OK', '>>> MANQUE : add_price_intelligence.sql') AS etat
+UNION ALL SELECT 'purchase_history.source',
+       IF((SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_history'
+             AND COLUMN_NAME = 'source') > 0,
+          'OK', '>>> MANQUE : add_price_intelligence.sql')
+UNION ALL SELECT 'home_inventory (intelligence foyer)',
+       IF((SELECT COUNT(*) FROM information_schema.TABLES
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory') > 0,
+          'OK', '>>> MANQUE : add_household_intelligence.sql')
+UNION ALL SELECT 'refresh_tokens',
+       IF((SELECT COUNT(*) FROM information_schema.TABLES
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'refresh_tokens') > 0,
+          'OK', '>>> MANQUE : add_refresh_tokens.sql')
+UNION ALL SELECT 'users.admin_otp_code',
+       IF((SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users'
+             AND COLUMN_NAME = 'admin_otp_code') > 0,
+          'OK', '>>> MANQUE : add_admin_space.sql')
+UNION ALL SELECT 'list_receipts.image_url',
+       IF((SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'list_receipts'
+             AND COLUMN_NAME = 'image_url') > 0,
+          'OK', '>>> MANQUE : add_images.sql')
+UNION ALL SELECT 'espaces deja installes ?',
+       IF((SELECT COUNT(*) FROM information_schema.TABLES
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'spaces') > 0,
+          'DEJA FAIT (relance sans risque)', 'pas encore - normal');
 
 
 -- ############################################################################
