@@ -292,43 +292,49 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: ListTile(
-        dense: true,
-        leading: CircleAvatar(
-          radius: 18,
-          backgroundColor: AppColors.primaryLight,
-          child: Text(
-            initials.toUpperCase(),
-            style: const TextStyle(
-              color: AppColors.primaryDark,
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
+      child: Material(
+        // Material propre au ListTile : le fond du conteneur parent
+        // masquerait sinon son fond et ses effets de pression
+        // (assertion « ink splashes may be invisible »).
+        type: MaterialType.transparency,
+        child: ListTile(
+          dense: true,
+          leading: CircleAvatar(
+            radius: 18,
+            backgroundColor: AppColors.primaryLight,
+            child: Text(
+              initials.toUpperCase(),
+              style: const TextStyle(
+                color: AppColors.primaryDark,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
             ),
           ),
+          title: Text(
+            m.fullName.isEmpty ? m.email : m.fullName,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          ),
+          subtitle: Text(
+            _roleLabel(m.role, l10n),
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          ),
+          trailing: (widget.space.canManageMembers && m.role != 'owner')
+              ? IconButton(
+                  icon: const Icon(Icons.person_remove_outlined,
+                      size: 20, color: AppColors.error),
+                  tooltip: l10n.spaceRemoveMember,
+                  onPressed: () async {
+                    try {
+                      await _service.removeMember(widget.space.id, m.userId);
+                      _load();
+                    } catch (_) {}
+                  },
+                )
+              : null,
         ),
-        title: Text(
-          m.fullName.isEmpty ? m.email : m.fullName,
-          style: const TextStyle(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-        ),
-        subtitle: Text(
-          _roleLabel(m.role, l10n),
-          style:
-              const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-        ),
-        trailing: (widget.space.canManageMembers && m.role != 'owner')
-            ? IconButton(
-                icon: const Icon(Icons.person_remove_outlined,
-                    size: 20, color: AppColors.error),
-                tooltip: l10n.spaceRemoveMember,
-                onPressed: () async {
-                  try {
-                    await _service.removeMember(widget.space.id, m.userId);
-                    _load();
-                  } catch (_) {}
-                },
-              )
-            : null,
       ),
     );
   }
@@ -341,25 +347,31 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: ListTile(
-        dense: true,
-        leading: const Icon(Icons.schedule_rounded,
-            size: 20, color: AppColors.textSecondary),
-        title: Text(
-          inv['email'] as String? ?? '',
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.close_rounded,
-              size: 20, color: AppColors.error),
-          tooltip: l10n.spaceRevokeInvitation,
-          onPressed: () async {
-            try {
-              await _service.revokeInvitation(
-                  widget.space.id, inv['id'] as int);
-              _load();
-            } catch (_) {}
-          },
+      child: Material(
+        // Material propre au ListTile : le fond du conteneur parent
+        // masquerait sinon son fond et ses effets de pression
+        // (assertion « ink splashes may be invisible »).
+        type: MaterialType.transparency,
+        child: ListTile(
+          dense: true,
+          leading: const Icon(Icons.schedule_rounded,
+              size: 20, color: AppColors.textSecondary),
+          title: Text(
+            inv['email'] as String? ?? '',
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.close_rounded,
+                size: 20, color: AppColors.error),
+            tooltip: l10n.spaceRevokeInvitation,
+            onPressed: () async {
+              try {
+                await _service.revokeInvitation(
+                    widget.space.id, inv['id'] as int);
+                _load();
+              } catch (_) {}
+            },
+          ),
         ),
       ),
     );

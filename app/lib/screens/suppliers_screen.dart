@@ -186,59 +186,65 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: AppColors.border),
                             ),
-                            child: ListTile(
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryLight,
-                                  borderRadius: BorderRadius.circular(12),
+                            child: Material(
+                              // Material propre au ListTile : le fond du conteneur parent
+                              // masquerait sinon son fond et ses effets de pression
+                              // (assertion « ink splashes may be invisible »).
+                              type: MaterialType.transparency,
+                              child: ListTile(
+                                leading: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryLight,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                      Icons.local_shipping_outlined,
+                                      size: 20,
+                                      color: AppColors.primaryDark),
                                 ),
-                                child: const Icon(
-                                    Icons.local_shipping_outlined,
-                                    size: 20,
-                                    color: AppColors.primaryDark),
-                              ),
-                              title: Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      s.name,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: s.isActive
-                                            ? AppColors.textPrimary
-                                            : AppColors.textDisabled,
+                                title: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        s.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: s.isActive
+                                              ? AppColors.textPrimary
+                                              : AppColors.textDisabled,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  if (!s.isActive) ...[
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      l10n.supplierInactive,
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          color: AppColors.textDisabled),
-                                    ),
+                                    if (!s.isActive) ...[
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        l10n.supplierInactive,
+                                        style: const TextStyle(
+                                            fontSize: 11,
+                                            color: AppColors.textDisabled),
+                                      ),
+                                    ],
                                   ],
-                                ],
+                                ),
+                                subtitle: (s.phone != null || s.email != null)
+                                    ? Text(
+                                        [s.phone, s.email]
+                                            .whereType<String>()
+                                            .join(' · '),
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.textSecondary),
+                                      )
+                                    : null,
+                                trailing: _canManage
+                                    ? const Icon(Icons.chevron_right_rounded,
+                                        color: AppColors.textSecondary)
+                                    : null,
+                                onTap: _canManage ? () => _edit(s) : null,
                               ),
-                              subtitle: (s.phone != null || s.email != null)
-                                  ? Text(
-                                      [s.phone, s.email]
-                                          .whereType<String>()
-                                          .join(' · '),
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.textSecondary),
-                                    )
-                                  : null,
-                              trailing: _canManage
-                                  ? const Icon(Icons.chevron_right_rounded,
-                                      color: AppColors.textSecondary)
-                                  : null,
-                              onTap: _canManage ? () => _edit(s) : null,
                             ),
                           );
                         },

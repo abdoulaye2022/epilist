@@ -192,59 +192,65 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
         border: Border.all(
             color: selected ? AppColors.primary : AppColors.border),
       ),
-      child: ListTile(
-        dense: true,
-        leading: Icon(_iconFor(space.type),
-            color: AppColors.primaryDark, size: 22),
-        title: Text(
-          label,
-          style: const TextStyle(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-        ),
-        subtitle: space.isPersonal
-            ? null
-            : Text(
-                '${space.membersCount} · ${_roleLabel(space.myRole, l10n)}',
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary),
-              ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!space.isPersonal) ...[
-              IconButton(
-                icon: const Icon(Icons.history_rounded,
-                    size: 20, color: AppColors.textSecondary),
-                tooltip: l10n.spaceActivity,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => SpaceActivityScreen(space: space),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.group_outlined,
-                    size: 20, color: AppColors.textSecondary),
-                tooltip: l10n.spaceMembers,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => SpaceMembersScreen(space: space),
-                    ),
-                  );
-                },
-              ),
+      child: Material(
+        // Material propre au ListTile : le fond du conteneur parent
+        // masquerait sinon son fond et ses effets de pression
+        // (assertion « ink splashes may be invisible »).
+        type: MaterialType.transparency,
+        child: ListTile(
+          dense: true,
+          leading: Icon(_iconFor(space.type),
+              color: AppColors.primaryDark, size: 22),
+          title: Text(
+            label,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          ),
+          subtitle: space.isPersonal
+              ? null
+              : Text(
+                  '${space.membersCount} · ${_roleLabel(space.myRole, l10n)}',
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
+                ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!space.isPersonal) ...[
+                IconButton(
+                  icon: const Icon(Icons.history_rounded,
+                      size: 20, color: AppColors.textSecondary),
+                  tooltip: l10n.spaceActivity,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => SpaceActivityScreen(space: space),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.group_outlined,
+                      size: 20, color: AppColors.textSecondary),
+                  tooltip: l10n.spaceMembers,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => SpaceMembersScreen(space: space),
+                      ),
+                    );
+                  },
+                ),
+              ],
+              if (selected)
+                const Icon(Icons.check_circle_rounded,
+                    color: AppColors.primary, size: 20),
             ],
-            if (selected)
-              const Icon(Icons.check_circle_rounded,
-                  color: AppColors.primary, size: 20),
-          ],
+          ),
+          onTap: () => _select(space),
         ),
-        onTap: () => _select(space),
       ),
     );
   }

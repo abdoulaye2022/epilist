@@ -29,42 +29,48 @@ class CategoryListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.border),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: 2,
-        ),
-        leading: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: category.color.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(12),
+      child: Material(
+        // Material propre au ListTile : le fond du conteneur parent
+        // masquerait sinon son fond et ses effets de pression
+        // (assertion « ink splashes may be invisible »).
+        type: MaterialType.transparency,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: 2,
           ),
-          child: Icon(category.icon, color: category.color, size: 22),
-        ),
-        title: Text(
-          category.name,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+          leading: Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: category.color.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(category.icon, color: category.color, size: 22),
           ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit_outlined, size: 20),
-              color: AppColors.textSecondary,
-              onPressed: onEdit,
+          title: Text(
+            category.name,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
             ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, size: 20),
-              color: AppColors.error,
-              onPressed: onDelete,
-            ),
-          ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                color: AppColors.textSecondary,
+                onPressed: onEdit,
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, size: 20),
+                color: AppColors.error,
+                onPressed: onDelete,
+              ),
+            ],
+          ),
         ),
       ),
     );

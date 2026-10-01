@@ -27,12 +27,18 @@ class SuggestionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           color: Colors.white,
         ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          leading: _buildLeadingIcon(),
-          title: _buildTitle(),
-          subtitle: _buildSubtitle(context, l10n),
-          trailing: _buildTrailing(context, l10n),
+        child: Material(
+          // Material propre au ListTile : le fond du conteneur parent
+          // masquerait sinon son fond et ses effets de pression
+          // (assertion « ink splashes may be invisible »).
+          type: MaterialType.transparency,
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            leading: _buildLeadingIcon(),
+            title: _buildTitle(),
+            subtitle: _buildSubtitle(context, l10n),
+            trailing: _buildTrailing(context, l10n),
+          ),
         ),
       ),
     );

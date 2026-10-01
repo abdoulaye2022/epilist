@@ -319,72 +319,78 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: ListTile(
-        onTap: () => _edit(a),
-        onLongPress: () => _delete(a),
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: a.isActive
-                ? AppColors.primaryLight
-                : AppColors.background,
-            borderRadius: BorderRadius.circular(12),
+      child: Material(
+        // Material propre au ListTile : le fond du conteneur parent
+        // masquerait sinon son fond et ses effets de pression
+        // (assertion « ink splashes may be invisible »).
+        type: MaterialType.transparency,
+        child: ListTile(
+          onTap: () => _edit(a),
+          onLongPress: () => _delete(a),
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: a.isActive
+                  ? AppColors.primaryLight
+                  : AppColors.background,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              a.isActive
+                  ? Icons.notifications_active_outlined
+                  : Icons.notifications_paused_outlined,
+              size: 20,
+              color: a.isActive
+                  ? AppColors.primaryDark
+                  : AppColors.textDisabled,
+            ),
           ),
-          child: Icon(
-            a.isActive
-                ? Icons.notifications_active_outlined
-                : Icons.notifications_paused_outlined,
-            size: 20,
-            color: a.isActive
-                ? AppColors.primaryDark
-                : AppColors.textDisabled,
-          ),
-        ),
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(
-                a.productName,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: a.isActive
-                      ? AppColors.textPrimary
-                      : AppColors.textDisabled,
+          title: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  a.productName,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: a.isActive
+                        ? AppColors.textPrimary
+                        : AppColors.textDisabled,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 6),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                l10n.priceAlertTargetChip(_money(a.targetPrice)),
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primaryDark,
+              const SizedBox(width: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  l10n.priceAlertTargetChip(_money(a.targetPrice)),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryDark,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        subtitle: subtitle.isEmpty
-            ? null
-            : Text(
-                subtitle.join(' · '),
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary),
-              ),
-        trailing: Switch(
-          value: a.isActive,
-          activeThumbColor: AppColors.primary,
-          onChanged: (v) => _toggleActive(a, v),
+            ],
+          ),
+          subtitle: subtitle.isEmpty
+              ? null
+              : Text(
+                  subtitle.join(' · '),
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary),
+                ),
+          trailing: Switch(
+            value: a.isActive,
+            activeThumbColor: AppColors.primary,
+            onChanged: (v) => _toggleActive(a, v),
+          ),
         ),
       ),
     );
