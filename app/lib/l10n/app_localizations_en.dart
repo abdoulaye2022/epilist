@@ -5953,4 +5953,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Invalid number';
+
+  @override
+  String get receiptPhotoAdd => 'Add a photo of the receipt';
+
+  @override
+  String get receiptPhotoAttached => 'Receipt photo attached';
+
+  @override
+  String get receiptPhotoTitle => 'Receipt photo';
 }

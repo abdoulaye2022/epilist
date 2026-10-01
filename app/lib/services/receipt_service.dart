@@ -1,5 +1,6 @@
 // services/receipt_service.dart - MÉTHODE UPDATE CORRIGÉE
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/services/auth_service.dart';
@@ -129,12 +130,44 @@ class ReceiptService {
   }
 
   /// Créer une nouvelle facture
+  /// Crée la facture, puis téléverse la photo du reçu si elle est
+  /// fournie. L'ordre importe : le serveur a besoin de l'identifiant de
+  /// la facture pour y rattacher l'image. Un échec du téléversement ne
+  /// perd PAS la facture : elle est déjà enregistrée.
+  /// Attache (ou remplace) la photo du reçu papier.
+  Future<Receipt> uploadReceiptImage(int listId, int receiptId, File file) async {
+    final token = await _authService.getToken();
+    final form = FormData.fromMap({
+      'image': await MultipartFile.fromFile(file.path,
+          filename: file.path.split('/').last),
+    });
+    final response = await _dio.post(
+      '/shopping-lists/$listId/receipts/$receiptId/image',
+      data: form,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    final data = _parseApiResponse(response.data);
+    return Receipt.fromJson(data['data'] as Map<String, dynamic>);
+  }
+
+  /// Retire la photo du reçu.
+  Future<Receipt> deleteReceiptImage(int listId, int receiptId) async {
+    final token = await _authService.getToken();
+    final response = await _dio.delete(
+      '/shopping-lists/$listId/receipts/$receiptId/image',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    final data = _parseApiResponse(response.data);
+    return Receipt.fromJson(data['data'] as Map<String, dynamic>);
+  }
+
   Future<Receipt> createReceipt({
     required int listId,
     required String storeName,
     required double totalAmount,
     required DateTime purchaseDate,
     String? notes,
+    File? image,
   }) async {
     try {
       final token = await _authService.getToken();
@@ -159,7 +192,16 @@ class ReceiptService {
       if (responseData['success'] == true) {
         final receiptData = responseData['data'];
         if (receiptData is Map<String, dynamic>) {
-          return Receipt.fromJson(receiptData);
+          final receipt = Receipt.fromJson(receiptData);
+          if (image == null) return receipt;
+          // La facture existe : son identifiant permet d'y rattacher la
+          // photo. Un échec ici ne doit PAS faire perdre la facture.
+          try {
+            return await uploadReceiptImage(listId, receipt.id, image);
+          } catch (e) {
+            debugPrint('⚠️ Photo du reçu non envoyée: $e');
+            return receipt;
+          }
         } else {
           throw Exception('Données de facture invalides dans la réponse');
         }

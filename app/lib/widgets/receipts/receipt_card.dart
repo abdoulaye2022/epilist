@@ -44,8 +44,75 @@ class ReceiptCard extends StatelessWidget {
             ],
             const SizedBox(height: 8),
             _buildDateInfo(context),
+            if (receipt.imageUrl != null && receipt.imageUrl!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              _buildPhoto(context),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  /// Aperçu de la photo du reçu papier. Un appui l'ouvre en grand :
+  /// c'est le seul moyen de relire un montant douteux.
+  Widget _buildPhoto(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return GestureDetector(
+      onTap: () => showDialog<void>(
+        context: context,
+        builder: (dialogContext) => Dialog(
+          insetPadding: const EdgeInsets.all(12),
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: [
+              InteractiveViewer(
+                maxScale: 5,
+                child: Center(
+                  child: Image.network(receipt.imageUrl!,
+                      fit: BoxFit.contain),
+                ),
+              ),
+              Positioned(
+                top: 4,
+                right: 4,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              receipt.imageUrl!,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) => Container(
+                width: 48,
+                height: 48,
+                color: AppColors.background,
+                child: const Icon(Icons.broken_image_outlined,
+                    size: 20, color: AppColors.textDisabled),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            l10n.receiptPhotoTitle,
+            style: const TextStyle(
+                fontSize: 12.5, color: AppColors.textSecondary),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.open_in_full_rounded,
+              size: 14, color: AppColors.textDisabled),
+        ],
       ),
     );
   }

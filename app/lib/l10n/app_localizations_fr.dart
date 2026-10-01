@@ -6047,4 +6047,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get invalidNumber => 'Nombre invalide';
+
+  @override
+  String get receiptPhotoAdd => 'Ajouter une photo du reçu';
+
+  @override
+  String get receiptPhotoAttached => 'Photo du reçu jointe';
+
+  @override
+  String get receiptPhotoTitle => 'Photo du reçu';
 }

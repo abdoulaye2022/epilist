@@ -11130,6 +11130,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Nombre invalide'**
   String get invalidNumber;
+
+  /// No description provided for @receiptPhotoAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo du reçu'**
+  String get receiptPhotoAdd;
+
+  /// No description provided for @receiptPhotoAttached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du reçu jointe'**
+  String get receiptPhotoAttached;
+
+  /// No description provided for @receiptPhotoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du reçu'**
+  String get receiptPhotoTitle;
 }
 
 class _AppLocalizationsDelegate

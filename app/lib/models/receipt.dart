@@ -14,6 +14,9 @@ class Receipt extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// Photo du reçu papier (stockage GCS), null si absente.
+  final String? imageUrl;
+
   const Receipt({
     required this.id,
     required this.listId,
@@ -25,6 +28,7 @@ class Receipt extends Equatable {
     this.currency,
     required this.createdAt,
     required this.updatedAt,
+    this.imageUrl,
   });
 
   factory Receipt.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,7 @@ class Receipt extends Equatable {
               : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      imageUrl: json['image_url'] as String?,
     );
   }
 
@@ -57,6 +62,7 @@ class Receipt extends Equatable {
       'currency': currency,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'image_url': imageUrl,
     };
   }
 
@@ -71,6 +77,7 @@ class Receipt extends Equatable {
     Map<String, String>? currency,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? imageUrl,
   }) {
     return Receipt(
       id: id ?? this.id,
@@ -83,6 +90,7 @@ class Receipt extends Equatable {
       currency: currency ?? this.currency,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -98,6 +106,7 @@ class Receipt extends Equatable {
     currency,
     createdAt,
     updatedAt,
+    imageUrl,
   ];
 
   @override

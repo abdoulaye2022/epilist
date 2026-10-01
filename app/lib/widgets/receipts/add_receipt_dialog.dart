@@ -1,10 +1,13 @@
 // widgets/receipts/add_receipt_dialog.dart
+import 'dart:io';
+
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddReceiptDialog extends StatefulWidget {
   final int listId;
@@ -23,6 +26,11 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
 
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
+
+  /// Photo du reçu papier, choisie avant l'enregistrement. Elle part
+  /// APRÈS la création de la facture (le serveur a besoin de son
+  /// identifiant) — c'est le service qui enchaîne les deux.
+  File? _photo;
 
   @override
   void dispose() {
@@ -74,6 +82,8 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
                       _buildDateField(l10n),
                       const SizedBox(height: 16),
                       _buildNotesField(l10n),
+                      const SizedBox(height: 16),
+                      _buildPhotoField(l10n),
                       const SizedBox(height: 24),
                       _buildButtons(l10n),
                     ],
@@ -270,6 +280,95 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     );
   }
 
+  /// Photo facultative du reçu papier : aperçu si choisie, invitation
+  /// sinon. Rien n'est envoyé tant que la facture n'est pas enregistrée.
+  Widget _buildPhotoField(AppLocalizations l10n) {
+    if (_photo != null) {
+      return Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(_photo!,
+                width: 64, height: 64, fit: BoxFit.cover),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              l10n.receiptPhotoAttached,
+              style: const TextStyle(
+                  fontSize: 13.5, color: AppColors.textSecondary),
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.removePhoto,
+            icon: const Icon(Icons.delete_outline, color: AppColors.error),
+            onPressed: _isLoading ? null : () => setState(() => _photo = null),
+          ),
+        ],
+      );
+    }
+
+    return OutlinedButton.icon(
+      onPressed: _isLoading ? null : _showPhotoOptions,
+      icon: const Icon(Icons.photo_camera_outlined, size: 20),
+      label: Text(l10n.receiptPhotoAdd),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        foregroundColor: AppColors.textSecondary,
+        side: BorderSide(color: AppColors.border),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
+  void _showPhotoOptions() {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(l10n.takePhoto),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickPhoto(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.chooseFromGallery),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _pickPhoto(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    try {
+      // 2000 px / qualité 88 : un reçu doit rester lisible, le serveur
+      // le redimensionne ensuite à 1600 px.
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        maxWidth: 2000,
+        imageQuality: 88,
+      );
+      if (picked == null || !mounted) return;
+      setState(() => _photo = File(picked.path));
+    } catch (_) {
+      // Permission refusée ou sélection annulée : rien à signaler.
+    }
+  }
+
   Widget _buildButtons(AppLocalizations l10n) {
     return Row(
       children: [
@@ -373,6 +472,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         totalAmount: amount,
         purchaseDate: _selectedDate,
         notes: notes,
+        image: _photo,
       ),
     );
 

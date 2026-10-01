@@ -300,6 +300,9 @@ class ListReceipt extends Model
             'notes' => $this->notes,
             'purchase_date' => $this->purchase_date->toDateString(),
             'formatted_amount' => $this->getFormattedAmountInCurrency(),
+            // Photo du reçu papier : sans elle dans la charge utile,
+            // l'application ne peut pas l'afficher.
+            'image_url' => $this->image_url,
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

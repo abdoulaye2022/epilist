@@ -24,12 +24,16 @@ class CreateReceipt extends ReceiptEvent {
   final DateTime purchaseDate;
   final String? notes;
 
+  /// Photo du reçu papier, facultative.
+  final File? image;
+
   const CreateReceipt({
     required this.listId,
     required this.storeName,
     required this.totalAmount,
     required this.purchaseDate,
     this.notes,
+    this.image,
   });
 
   @override
@@ -39,6 +43,7 @@ class CreateReceipt extends ReceiptEvent {
     totalAmount,
     purchaseDate,
     notes,
+    image?.path,
   ];
 }
 

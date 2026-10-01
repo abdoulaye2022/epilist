@@ -2808,5 +2808,8 @@
   "inventoryMinQuantityHint": "Below this, the product is flagged",
   "inventoryReorderQuantityHint": "Suggested quantity when reordering",
   "fieldRequired": "Required field",
-  "invalidNumber": "Invalid number"
+  "invalidNumber": "Invalid number",
+  "receiptPhotoAdd": "Add a photo of the receipt",
+  "receiptPhotoAttached": "Receipt photo attached",
+  "receiptPhotoTitle": "Receipt photo"
 }

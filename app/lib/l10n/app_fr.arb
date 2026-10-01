@@ -2808,5 +2808,8 @@
   "inventoryMinQuantityHint": "En dessous, le produit est signalé",
   "inventoryReorderQuantityHint": "Quantité suggérée à la commande",
   "fieldRequired": "Champ obligatoire",
-  "invalidNumber": "Nombre invalide"
+  "invalidNumber": "Nombre invalide",
+  "receiptPhotoAdd": "Ajouter une photo du reçu",
+  "receiptPhotoAttached": "Photo du reçu jointe",
+  "receiptPhotoTitle": "Photo du reçu"
 }

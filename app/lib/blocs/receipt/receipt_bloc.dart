@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 // blocs/receipt/receipt_bloc.dart
 import 'package:bloc/bloc.dart';
@@ -150,6 +151,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         totalAmount: event.totalAmount,
         purchaseDate: event.purchaseDate,
         notes: event.notes,
+        image: event.image,
       );
 
       final successMessage = _getTranslatedSuccessMessage('create');

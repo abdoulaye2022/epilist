@@ -454,6 +454,9 @@ $app->group('', function ($group) {
     $group->post('/user/avatar', [ImageController::class, 'uploadAvatar']);
     $group->delete('/user/avatar', [ImageController::class, 'deleteAvatar']);
     $group->post('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'uploadItemImage']);
+    // Photo du reçu papier
+    $group->post('/shopping-lists/{listId}/receipts/{receiptId}/image', [ImageController::class, 'uploadReceiptImage']);
+    $group->delete('/shopping-lists/{listId}/receipts/{receiptId}/image', [ImageController::class, 'deleteReceiptImage']);
     $group->delete('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'deleteItemImage']);
 
 

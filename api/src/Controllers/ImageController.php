@@ -33,18 +33,15 @@ class ImageController
     }
 
     /** L'utilisateur peut-il modifier les articles de cette liste ? */
+    /**
+     * Droit d'écriture sur la liste. Passe par le service unifié : sans
+     * lui, un membre d'un espace partagé (foyer, restaurant) ne pouvait
+     * PAS ajouter de photo, seuls le propriétaire et les partages
+     * historiques étant reconnus.
+     */
     private function canEditList(int $userId, int $listId): bool
     {
-        $isOwner = ShoppingList::where('id', $listId)->where('user_id', $userId)->exists();
-        if ($isOwner) {
-            return true;
-        }
-        $share = SharedList::where('list_id', $listId)
-            ->where('shared_with_user_id', $userId)
-            ->where('status', SharedList::STATUS_ACCEPTED)
-            ->where('is_active', true)
-            ->first();
-        return $share !== null && $share->canEdit();
+        return \App\Services\ListAccessService::check($userId, $listId, 'edit') !== null;
     }
 
     /** POST /user/avatar — multipart champ 'image' */
@@ -151,6 +148,95 @@ class ImageController
     }
 
     /** DELETE /shopping-lists/{listId}/items/{itemId}/image */
+    /**
+     * POST /shopping-lists/{listId}/receipts/{receiptId}/image
+     * Photo du reçu papier (champ multipart « image »). Remplace la
+     * précédente s'il y en avait une.
+     */
+    public function uploadReceiptImage(Request $request, Response $response, array $args): Response
+    {
+        $userId = $request->getAttribute('auth_id');
+        $listId = (int) $args['listId'];
+        $receiptId = (int) $args['receiptId'];
+
+        if (!$this->canEditList($userId, $listId)) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => "Vous n'avez pas la permission de modifier cette liste",
+            ], 403);
+        }
+
+        $receipt = \App\Models\ListReceipt::where('list_id', $listId)->find($receiptId);
+        if (!$receipt) {
+            return $this->json($response, ['success' => false, 'message' => 'Facture introuvable'], 404);
+        }
+
+        $bytes = $this->readUploadedImage($request);
+        if ($bytes === null) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => "Fichier manquant (champ multipart 'image')",
+            ], 422);
+        }
+
+        try {
+            $storage = new ImageStorageService();
+            // 1600 px : un reçu doit rester lisible une fois rangé.
+            $url = $storage->uploadSanitized($bytes, 'receipts', 1600);
+            $storage->deleteByUrl($receipt->image_url);
+            $receipt->image_url = $url;
+            $receipt->save();
+
+            return $this->json($response, [
+                'success' => true,
+                'data' => $receipt->fresh(),
+                'message' => 'Photo ajoutée',
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->json($response, ['success' => false, 'message' => $e->getMessage()], 422);
+        } catch (\Throwable $e) {
+            error_log('uploadReceiptImage: ' . $e->getMessage());
+            return $this->json($response, [
+                'success' => false,
+                'message' => "Impossible d'enregistrer la photo",
+            ], 500);
+        }
+    }
+
+    /** DELETE /shopping-lists/{listId}/receipts/{receiptId}/image */
+    public function deleteReceiptImage(Request $request, Response $response, array $args): Response
+    {
+        $userId = $request->getAttribute('auth_id');
+        $listId = (int) $args['listId'];
+        $receiptId = (int) $args['receiptId'];
+
+        if (!$this->canEditList($userId, $listId)) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => "Vous n'avez pas la permission de modifier cette liste",
+            ], 403);
+        }
+
+        $receipt = \App\Models\ListReceipt::where('list_id', $listId)->find($receiptId);
+        if (!$receipt) {
+            return $this->json($response, ['success' => false, 'message' => 'Facture introuvable'], 404);
+        }
+
+        try {
+            (new ImageStorageService())->deleteByUrl($receipt->image_url);
+        } catch (\Throwable $e) {
+            error_log('deleteReceiptImage: ' . $e->getMessage());
+        }
+        $receipt->image_url = null;
+        $receipt->save();
+
+        return $this->json($response, [
+            'success' => true,
+            'data' => $receipt->fresh(),
+            'message' => 'Photo retirée',
+        ]);
+    }
+
     public function deleteItemImage(Request $request, Response $response, array $args): Response
     {
         $userId = $request->getAttribute('auth_id');
