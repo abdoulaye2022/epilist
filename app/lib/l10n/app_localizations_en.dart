@@ -5947,4 +5947,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get inventoryReorderQuantityHint =>
       'Suggested quantity when reordering';
+
+  @override
+  String get fieldRequired => 'Required field';
+
+  @override
+  String get invalidNumber => 'Invalid number';
 }

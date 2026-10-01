@@ -2806,5 +2806,7 @@
   "npEmailsBody": "Nous ne vous écrivons que lorsque c'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.",
   "inventoryThresholdsTitle": "Quantité et seuils",
   "inventoryMinQuantityHint": "En dessous, le produit est signalé",
-  "inventoryReorderQuantityHint": "Quantité suggérée à la commande"
+  "inventoryReorderQuantityHint": "Quantité suggérée à la commande",
+  "fieldRequired": "Champ obligatoire",
+  "invalidNumber": "Nombre invalide"
 }

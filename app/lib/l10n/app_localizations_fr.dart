@@ -6041,4 +6041,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inventoryReorderQuantityHint => 'Quantité suggérée à la commande';
+
+  @override
+  String get fieldRequired => 'Champ obligatoire';
+
+  @override
+  String get invalidNumber => 'Nombre invalide';
 }

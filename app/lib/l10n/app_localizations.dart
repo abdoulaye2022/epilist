@@ -11118,6 +11118,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Quantité suggérée à la commande'**
   String get inventoryReorderQuantityHint;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champ obligatoire'**
+  String get fieldRequired;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre invalide'**
+  String get invalidNumber;
 }
 
 class _AppLocalizationsDelegate

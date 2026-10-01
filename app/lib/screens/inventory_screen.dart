@@ -158,97 +158,152 @@ class _InventoryScreenState extends State<InventoryScreen> {
     double? parse(TextEditingController c) =>
         double.tryParse(c.text.trim().replaceAll(',', '.'));
 
+    // Erreurs de saisie, affichées sous les champs concernés.
+    String? quantityError;
+    String? minError;
+    String? reorderError;
+
+    /// Valide un champ numérique facultatif : vide = accepté, sinon il
+    /// doit être un nombre positif.
+    String? optionalNumber(TextEditingController c) {
+      final raw = c.text.trim();
+      if (raw.isEmpty) return null;
+      final value = parse(c);
+      if (value == null) return l10n.invalidNumber;
+      if (value < 0) return l10n.invalidNumber;
+      return null;
+    }
+
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => Dialog(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.inventory_2_outlined,
-                title: l10n.inventoryThresholdsTitle,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              // Le produit concerné, en sous-titre : l'en-tête porte
-              // l'intention, pas le nom.
-              Padding(
-                padding: const EdgeInsets.only(left: 48),
-                child: Text(
-                  item.productName,
-                  style: const TextStyle(
-                      fontSize: 13, color: AppColors.textSecondary),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => Dialog(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppDialogHeader(
+                  icon: Icons.inventory_2_outlined,
+                  title: l10n.inventoryThresholdsTitle,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: quantity,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        labelText: l10n.inventoryQuantity,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        isDense: true,
+                const SizedBox(height: AppSpacing.xs),
+                // Le produit concerné, en sous-titre : l'en-tête porte
+                // l'intention, pas le nom.
+                Padding(
+                  padding: const EdgeInsets.only(left: 48),
+                  child: Text(
+                    item.productName,
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.textSecondary),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: quantity,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: InputDecoration(
+                          // Seul champ obligatoire : sans quantité, un
+                          // seuil d'alerte ne veut rien dire.
+                          labelText: '${l10n.inventoryQuantity} *',
+                          errorText: quantityError,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          isDense: true,
+                        ),
+                        onChanged: (_) {
+                          if (quantityError != null) {
+                            setLocal(() => quantityError = null);
+                          }
+                        },
                       ),
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: TextField(
-                      controller: unit,
-                      decoration: InputDecoration(
-                        labelText: l10n.inventoryUnit,
-                        hintText: 'kg',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        isDense: true,
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: TextField(
+                        controller: unit,
+                        decoration: InputDecoration(
+                          labelText: l10n.inventoryUnit,
+                          hintText: 'kg',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          isDense: true,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: minQty,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    labelText: l10n.inventoryMinQuantity,
+                    helperText: l10n.inventoryMinQuantityHint,
+                    errorText: minError,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    isDense: true,
                   ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: minQty,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: l10n.inventoryMinQuantity,
-                  helperText: l10n.inventoryMinQuantityHint,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  isDense: true,
+                  onChanged: (_) {
+                    if (minError != null) setLocal(() => minError = null);
+                  },
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: reorder,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: l10n.inventoryReorderQuantity,
-                  helperText: l10n.inventoryReorderQuantityHint,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  isDense: true,
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: reorder,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    labelText: l10n.inventoryReorderQuantity,
+                    helperText: l10n.inventoryReorderQuantityHint,
+                    errorText: reorderError,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    isDense: true,
+                  ),
+                  onChanged: (_) {
+                    if (reorderError != null) {
+                      setLocal(() => reorderError = null);
+                    }
+                  },
                 ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppDialogActions(
-                cancelLabel: l10n.cancel,
-                submitLabel: l10n.save,
-                onCancel: () => Navigator.of(ctx).pop(false),
-                onSubmit: () => Navigator.of(ctx).pop(true),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.lg),
+                AppDialogActions(
+                  cancelLabel: l10n.cancel,
+                  submitLabel: l10n.save,
+                  onCancel: () => Navigator.of(ctx).pop(false),
+                  onSubmit: () {
+                    // Validation à l'enregistrement : le formulaire ne
+                    // se ferme pas tant qu'il reste une erreur.
+                    final qRaw = quantity.text.trim();
+                    final qError = qRaw.isEmpty
+                        ? l10n.fieldRequired
+                        : optionalNumber(quantity);
+                    final mError = optionalNumber(minQty);
+                    final rError = optionalNumber(reorder);
+
+                    if (qError != null || mError != null || rError != null) {
+                      setLocal(() {
+                        quantityError = qError;
+                        minError = mError;
+                        reorderError = rError;
+                      });
+                      return;
+                    }
+                    Navigator.of(ctx).pop(true);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
