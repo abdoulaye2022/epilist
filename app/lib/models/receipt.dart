@@ -31,21 +31,36 @@ class Receipt extends Equatable {
     this.imageUrl,
   });
 
+  /// Décodage TOLÉRANT. Chaque champ était auparavant casté durement
+  /// (`as int`, `as num`, `DateTime.parse`) : une seule facture au format
+  /// inattendu — un montant renvoyé en chaîne par la base, une date
+  /// absente — faisait échouer le décodage de TOUTE la liste, et la page
+  /// Factures restait vide sans message. On préfère une facture affichée
+  /// avec une valeur de repli qu'un écran mort.
   factory Receipt.fromJson(Map<String, dynamic> json) {
+    int asInt(Object? v) => v is int ? v : int.tryParse('${v ?? ''}') ?? 0;
+    double asDouble(Object? v) =>
+        v is num ? v.toDouble() : double.tryParse('${v ?? ''}') ?? 0.0;
+    DateTime asDate(Object? v) =>
+        DateTime.tryParse('${v ?? ''}') ?? DateTime.now();
+
+    final total = asDouble(json['total_amount']);
+
     return Receipt(
-      id: json['id'] as int,
-      listId: json['list_id'] as int,
-      storeName: json['store_name'] as String,
-      totalAmount: (json['total_amount'] as num).toDouble(),
+      id: asInt(json['id']),
+      listId: asInt(json['list_id']),
+      storeName: json['store_name'] as String? ?? '',
+      totalAmount: total,
       notes: json['notes'] as String?,
-      purchaseDate: DateTime.parse(json['purchase_date'] as String),
-      formattedAmount: json['formatted_amount'] as String,
-      currency:
-          json['currency'] != null
-              ? Map<String, String>.from(json['currency'] as Map)
-              : null,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      purchaseDate: asDate(json['purchase_date']),
+      formattedAmount:
+          json['formatted_amount'] as String? ?? total.toStringAsFixed(2),
+      currency: json['currency'] is Map
+          ? (json['currency'] as Map).map(
+              (k, v) => MapEntry(k.toString(), v?.toString() ?? ''))
+          : null,
+      createdAt: asDate(json['created_at']),
+      updatedAt: asDate(json['updated_at']),
       imageUrl: json['image_url'] as String?,
     );
   }

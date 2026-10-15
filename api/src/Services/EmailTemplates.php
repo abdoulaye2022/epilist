@@ -414,6 +414,73 @@ class EmailTemplates
     /**
      * Générer le template de confirmation de changement de mot de passe
      */
+    /**
+     * Invitation à rejoindre un espace, envoyée UNIQUEMENT à quelqu'un
+     * qui n'a pas encore de compte : c'est le seul moyen de le joindre.
+     * Un invité déjà inscrit reçoit une notification push (voir
+     * SpaceController::notifyInvitee).
+     */
+    public static function spaceInvitationEmail(
+        string $inviterName,
+        string $spaceName,
+        string $spaceType,
+        int $expiresInDays,
+        string $lang = 'fr'
+    ): string {
+        $kind = match ($spaceType) {
+            'household' => $lang === 'en' ? 'household' : 'foyer',
+            'restaurant' => 'restaurant',
+            'organization' => $lang === 'en' ? 'organization' : 'organisation',
+            default => $lang === 'en' ? 'space' : 'espace',
+        };
+
+        $inviter = htmlspecialchars($inviterName, ENT_QUOTES, 'UTF-8');
+        $space = htmlspecialchars($spaceName, ENT_QUOTES, 'UTF-8');
+
+        if ($lang === 'en') {
+            $title = 'You have been invited to EpiList';
+            $body = "
+                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Hello,</p>
+                <p style='margin:0 0 20px; font-size:15px; color:#374151; line-height:1.6;'>
+                    <strong>{$inviter}</strong> invites you to join the {$kind}
+                    <strong>{$space}</strong> on EpiList — to share shopping
+                    lists, budgets and what's left at home.</p>
+                <p style='margin:0 0 20px; font-size:14px; color:#4a5568; line-height:1.6;'>
+                    Install EpiList and create your account with THIS email
+                    address: the invitation will be waiting for you in the app.</p>
+                <p style='margin:0; font-size:13px; color:#718096;'>
+                    This invitation expires in {$expiresInDays} days.</p>";
+        } else {
+            $title = 'Vous êtes invité sur EpiList';
+            $body = "
+                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Bonjour,</p>
+                <p style='margin:0 0 20px; font-size:15px; color:#374151; line-height:1.6;'>
+                    <strong>{$inviter}</strong> vous invite à rejoindre le {$kind}
+                    <strong>{$space}</strong> sur EpiList — pour partager listes
+                    de courses, budgets et stock à la maison.</p>
+                <p style='margin:0 0 20px; font-size:14px; color:#4a5568; line-height:1.6;'>
+                    Installez EpiList et créez votre compte avec CETTE adresse
+                    courriel : l'invitation vous attendra dans l'application.</p>
+                <p style='margin:0; font-size:13px; color:#718096;'>
+                    Cette invitation expire dans {$expiresInDays} jours.</p>";
+        }
+
+        $header = self::headerContent($title, $lang);
+        $footer = self::footerContent($lang);
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 22px; font-weight: 600; color: #047857;'>
+                        {$title}
+                    </h2>
+                    {$body}
+                </td>
+            </tr>";
+
+        return $header . $content . $footer;
+    }
+
     public static function passwordChangedEmail(string $firstName, string $changeDateTime, string $lang = 'fr'): string
     {
         $t = self::getTranslations('password_changed')[$lang] ?? self::getTranslations('password_changed')['fr'];

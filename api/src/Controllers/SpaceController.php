@@ -435,10 +435,72 @@ class SpaceController
             'expires_at' => Carbon::now()->addDays(SpaceInvitation::TTL_DAYS),
         ]);
 
+        // Prévenir l'invité : sans cela, l'invitation n'existait que dans
+        // la base et dans l'écran « Mes invitations » — personne ne
+        // pouvait deviner qu'il avait été invité.
+        $this->notifyInvitee($invitation, $me->space, $userId, $existingUser);
+
         return $this->json($response, [
             'success' => true,
             'data' => ['invitation' => $this->formatInvitation($invitation)],
         ], 201);
+    }
+
+    /**
+     * Annonce l'invitation à son destinataire. Deux canaux selon le cas :
+     *
+     *  - l'invité a déjà un compte : notification push. L'invitation
+     *    apparaît de toute façon dans l'application, l'email serait du
+     *    courrier en trop (politique courrier, voir MailSender) ;
+     *  - l'invité n'a PAS de compte : email. C'est le seul moyen de le
+     *    joindre, et sans lui l'invitation reste invisible — c'est
+     *    précisément ce qui ne fonctionnait pas.
+     *
+     * Best-effort : un échec d'envoi ne doit pas faire échouer la
+     * création de l'invitation, qui est déjà enregistrée.
+     */
+    private function notifyInvitee(
+        SpaceInvitation $invitation,
+        Space $space,
+        int $inviterId,
+        ?User $existingUser
+    ): void {
+        try {
+            $inviter = User::find($inviterId);
+            $inviterName = $inviter
+                ? trim($inviter->first_name . ' ' . $inviter->last_name)
+                : 'EpiList';
+            $spaceName = $space->name;
+
+            if ($existingUser !== null) {
+                (new \App\Services\NotificationService())->sendToUser(
+                    (int) $existingUser->id,
+                    'space_invitation',
+                    'Invitation à rejoindre ' . $spaceName,
+                    $inviterName . ' vous invite à rejoindre « ' . $spaceName . ' ».',
+                    [
+                        'action' => 'open_invitations',
+                        'space_id' => (string) $space->id,
+                        'space_name' => $spaceName,
+                        'inviter_name' => $inviterName,
+                    ]
+                );
+                return;
+            }
+
+            \App\Services\MailSender::sendMail(
+                $inviterName . ' vous invite sur EpiList',
+                [['email' => $invitation->email]],
+                \App\Services\EmailTemplates::spaceInvitationEmail(
+                    $inviterName,
+                    $spaceName,
+                    $space->type,
+                    SpaceInvitation::TTL_DAYS
+                )
+            );
+        } catch (\Throwable $e) {
+            error_log('Invitation : notification non envoyee: ' . $e->getMessage());
+        }
     }
 
     private function formatInvitation(SpaceInvitation $inv, bool $withToken = false): array
