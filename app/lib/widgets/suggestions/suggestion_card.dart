@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:epilist/models/smart_suggestion.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 class SuggestionCard extends StatelessWidget {
   final SmartSuggestion suggestion;
@@ -27,9 +28,7 @@ class SuggestionCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onAccept,
@@ -240,20 +239,20 @@ class SuggestionCard extends StatelessWidget {
 
     switch (level) {
       case ConfidenceLevel.high:
-        backgroundColor = Colors.green.shade100;
-        textColor = Colors.green.shade800;
+        backgroundColor = AppColors.successTint;
+        textColor = AppColors.successInk;
         label = 'High';
         icon = Icons.verified;
         break;
       case ConfidenceLevel.medium:
-        backgroundColor = Colors.orange.shade100;
-        textColor = Colors.orange.shade800;
+        backgroundColor = AppColors.warningTint;
+        textColor = AppColors.warningInk;
         label = 'Medium';
         icon = Icons.thumb_up_outlined;
         break;
       case ConfidenceLevel.low:
-        backgroundColor = Colors.grey.shade200;
-        textColor = Colors.grey.shade700;
+        backgroundColor = AppColors.border;
+        textColor = AppColors.textSecondary;
         label = 'Low';
         icon = Icons.info_outline;
         break;
@@ -321,8 +320,8 @@ class CompactSuggestionCard extends StatelessWidget {
           backgroundColor: _getColorForConfidence(suggestion.confidenceLevel),
           child: Text(
             '${suggestion.suggestedQuantity}',
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -353,11 +352,11 @@ class CompactSuggestionCard extends StatelessWidget {
   Color _getColorForConfidence(ConfidenceLevel level) {
     switch (level) {
       case ConfidenceLevel.high:
-        return Colors.green;
+        return AppColors.success;
       case ConfidenceLevel.medium:
-        return Colors.orange;
+        return AppColors.warning;
       case ConfidenceLevel.low:
-        return Colors.grey;
+        return AppColors.textSecondary;
     }
   }
 }

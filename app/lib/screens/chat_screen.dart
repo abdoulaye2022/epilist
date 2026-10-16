@@ -16,11 +16,7 @@ class ChatScreen extends StatefulWidget {
   final int listId;
   final String listName;
 
-  const ChatScreen({
-    super.key,
-    required this.listId,
-    required this.listName,
-  });
+  const ChatScreen({super.key, required this.listId, required this.listName});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -83,7 +79,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         if (authState is AuthSuccess) {
@@ -99,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Text(
                   widget.listName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -107,14 +102,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Text(
                   l10n.chatTitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 12.5,
                   ),
                 ),
               ],
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             foregroundColor: AppColors.textPrimary,
             elevation: 0,
           ),
@@ -133,9 +128,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     }
 
                     if (state is ChatLoaded || state is ChatSending) {
-                      final messages = state is ChatLoaded
-                          ? state.messages
-                          : (state as ChatSending).messages;
+                      final messages =
+                          state is ChatLoaded
+                              ? state.messages
+                              : (state as ChatSending).messages;
 
                       if (messages.isEmpty) {
                         return _buildEmptyView(l10n);
@@ -143,15 +139,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
                       return RefreshIndicator(
                         onRefresh: () async {
-                          context
-                              .read<ChatBloc>()
-                              .add(LoadMessages(widget.listId, refresh: true));
+                          context.read<ChatBloc>().add(
+                            LoadMessages(widget.listId, refresh: true),
+                          );
                         },
                         child: ListView.builder(
                           controller: _scrollController,
                           reverse: true,
                           padding: const EdgeInsets.all(16),
-                          itemCount: messages.length +
+                          itemCount:
+                              messages.length +
                               (state is ChatLoaded && state.hasMore ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index == messages.length) {
@@ -165,7 +162,8 @@ class _ChatScreenState extends State<ChatScreen> {
                             }
 
                             final message = messages[index];
-                            final isCurrentUser = message.userId == _currentUserId;
+                            final isCurrentUser =
+                                message.userId == _currentUserId;
 
                             return _MessageBubble(
                               message: message,
@@ -186,8 +184,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
               // Message input
               Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
                   border: Border(top: BorderSide(color: AppColors.border)),
                 ),
                 padding: EdgeInsets.only(
@@ -213,7 +211,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: const BorderSide(color: AppColors.primary),
+                            borderSide: BorderSide(color: AppColors.primary),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -234,7 +232,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.send, color: Colors.white),
+                        icon:  Icon(
+                          Icons.send,
+                          color: AppColors.onPrimary,
+                        ),
                         onPressed: _sendMessage,
                       ),
                     ),
@@ -260,7 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(22),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.chat_bubble_outline_rounded,
               size: 36,
               color: AppColors.primaryDark,
@@ -269,7 +270,7 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.noMessagesYet,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
@@ -278,10 +279,7 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.startConversation,
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -302,15 +300,12 @@ class _ChatScreenState extends State<ChatScreen> {
             Icon(
               offline ? Icons.cloud_off_rounded : Icons.error_outline,
               size: 64,
-              color: offline ? Colors.grey[400] : Colors.red[300],
+              color: offline ? AppColors.textDisabled : AppColors.errorBorder,
             ),
             const SizedBox(height: 16),
             Text(
               offline ? l10n.offlineMode : l10n.errorLoadingMessages,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             if (offline) ...[
               const SizedBox(height: 8),
@@ -338,42 +333,43 @@ class _ChatScreenState extends State<ChatScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.delete_outline,
-                title: l10n.deleteMessage,
-                color: AppColors.error,
+      builder:
+          (dialogContext) => Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppDialogHeader(
+                    icon: Icons.delete_outline,
+                    title: l10n.deleteMessage,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l10n.deleteMessageConfirmation,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppDialogActions(
+                    cancelLabel: l10n.cancel,
+                    submitLabel: l10n.delete,
+                    destructive: true,
+                    onCancel: () => Navigator.pop(dialogContext),
+                    onSubmit: () {
+                      Navigator.pop(dialogContext);
+                      chatBloc.add(DeleteMessage(message.id));
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                l10n.deleteMessageConfirmation,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppDialogActions(
-                cancelLabel: l10n.cancel,
-                submitLabel: l10n.delete,
-                destructive: true,
-                onCancel: () => Navigator.pop(dialogContext),
-                onSubmit: () {
-                  Navigator.pop(dialogContext);
-                  chatBloc.add(DeleteMessage(message.id));
-                },
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }
@@ -414,10 +410,12 @@ class _MessageBubble extends StatelessWidget {
                 // Ma bulle : vert plein. Les autres : carte blanche
                 // bordée, comme les cartes du reste de l'app.
                 decoration: BoxDecoration(
-                  color: isCurrentUser ? AppColors.primary : Colors.white,
-                  border: isCurrentUser
-                      ? null
-                      : Border.all(color: AppColors.border),
+                  color:
+                      isCurrentUser ? AppColors.primary : AppColors.surface,
+                  border:
+                      isCurrentUser
+                          ? null
+                          : Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(16),
                     topRight: const Radius.circular(16),
@@ -433,7 +431,7 @@ class _MessageBubble extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 3),
                         child: Text(
                           message.user!.displayName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: AppColors.primaryDark,
@@ -443,9 +441,10 @@ class _MessageBubble extends StatelessWidget {
                     Text(
                       message.message,
                       style: TextStyle(
-                        color: isCurrentUser
-                            ? Colors.white
-                            : AppColors.textPrimary,
+                        color:
+                            isCurrentUser
+                                ? AppColors.onPrimary
+                                : AppColors.textPrimary,
                         fontSize: 15,
                         height: 1.35,
                       ),
@@ -455,9 +454,10 @@ class _MessageBubble extends StatelessWidget {
                       _formatTime(message.createdAt, context),
                       style: TextStyle(
                         fontSize: 10.5,
-                        color: isCurrentUser
-                            ? Colors.white.withValues(alpha: 0.7)
-                            : AppColors.textDisabled,
+                        color:
+                            isCurrentUser
+                                ? AppColors.onPrimary.withValues(alpha: 0.7)
+                                : AppColors.textDisabled,
                       ),
                     ),
                   ],
@@ -483,7 +483,7 @@ class _MessageBubble extends StatelessWidget {
       backgroundColor: AppColors.primaryLight,
       child: Text(
         initials,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.primaryDark,
           fontSize: 11.5,
           fontWeight: FontWeight.w700,

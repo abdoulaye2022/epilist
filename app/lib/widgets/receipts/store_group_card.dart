@@ -5,6 +5,7 @@ import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/receipts/receipt_card.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:flutter/material.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class StoreGroupCard extends StatefulWidget {
   final StoreReceiptGroup storeGroup;
@@ -31,13 +32,9 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
+    return AppCard.tight(
+      radius: 14,
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         children: [
           InkWell(
@@ -69,7 +66,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
             color: AppColors.accentLight,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.store, color: AppColors.accent, size: 24),
+          child: Icon(Icons.store, color: AppColors.infoInk, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -78,7 +75,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
             children: [
               Text(
                 widget.storeGroup.storeName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -112,14 +109,14 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
         _buildStatChip(
           icon: Icons.receipt,
           label: '${widget.storeGroup.receiptsCount} ${l10n.receipts}',
-          color: Colors.purple,
+          color: AppColors.violet,
         ),
         const SizedBox(width: 8),
         _buildStatChip(
           icon: Icons.schedule,
           label:
               '${l10n.lastVisit}: ${_formatDate(widget.storeGroup.latestPurchase)}',
-          color: Colors.orange,
+          color: AppColors.warning,
         ),
       ],
     );
@@ -128,26 +125,26 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
   Widget _buildStatChip({
     required IconData icon,
     required String label,
-    required MaterialColor color,
+    required Color color,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color[50],
+        color: AppTint.fill(color),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color[200]!),
+        border: Border.all(color: AppTint.line(color)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color[600]),
+          Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: color[600],
+                color: AppTint.ink(color),
                 fontWeight: FontWeight.w500,
               ),
               overflow: TextOverflow.ellipsis,

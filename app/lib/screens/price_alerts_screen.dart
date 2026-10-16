@@ -13,6 +13,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class PriceAlertsScreen extends StatefulWidget {
   const PriceAlertsScreen({super.key});
@@ -58,145 +59,180 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final product = TextEditingController(text: existing?.productName ?? '');
     final target = TextEditingController(
-        text: existing != null ? _money(existing.targetPrice) : '');
+      text: existing != null ? _money(existing.targetPrice) : '',
+    );
     String? suggestion;
     bool suggesting = false;
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setLocal) => Dialog(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppDialogHeader(
-                  icon: Icons.notifications_active_outlined,
-                  title: existing == null
-                      ? l10n.priceAlertNew
-                      : existing.productName,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                if (existing == null) ...[
-                  TextField(
-                    controller: product,
-                    autofocus: true,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText: l10n.priceAlertProduct,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
-                TextField(
-                  controller: target,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: l10n.priceAlertTarget,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                // §26 : seuil suggéré depuis l'historique de l'espace
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: suggesting
-                        ? null
-                        : () async {
-                            final name = existing?.productName ??
-                                product.text.trim();
-                            if (name.isEmpty) return;
-                            setLocal(() => suggesting = true);
+      builder:
+          (dialogContext) => StatefulBuilder(
+            builder:
+                (dialogContext, setLocal) => Dialog(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AppDialogHeader(
+                          icon: Icons.notifications_active_outlined,
+                          title:
+                              existing == null
+                                  ? l10n.priceAlertNew
+                                  : existing.productName,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        if (existing == null) ...[
+                          TextField(
+                            controller: product,
+                            autofocus: true,
+                            textCapitalization: TextCapitalization.sentences,
+                            decoration: InputDecoration(
+                              labelText: l10n.priceAlertProduct,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                        ],
+                        TextField(
+                          controller: target,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: l10n.priceAlertTarget,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        // §26 : seuil suggéré depuis l'historique de l'espace
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed:
+                                suggesting
+                                    ? null
+                                    : () async {
+                                      final name =
+                                          existing?.productName ??
+                                          product.text.trim();
+                                      if (name.isEmpty) return;
+                                      setLocal(() => suggesting = true);
+                                      try {
+                                        final s = await _service
+                                            .suggestPriceTarget(name);
+                                        if (!dialogContext.mounted) return;
+                                        setLocal(() {
+                                          suggesting = false;
+                                          if (s.suggestedTarget != null) {
+                                            target.text = _money(
+                                              s.suggestedTarget!,
+                                            );
+                                            suggestion = l10n
+                                                .priceAlertSuggestion(
+                                                  _money(s.usualPrice ?? 0),
+                                                  _money(s.goodPrice ?? 0),
+                                                  s.observations,
+                                                );
+                                          } else {
+                                            suggestion =
+                                                l10n.priceAlertNoHistory;
+                                          }
+                                        });
+                                      } catch (_) {
+                                        if (!dialogContext.mounted) return;
+                                        setLocal(() {
+                                          suggesting = false;
+                                          suggestion = l10n.priceAlertNoHistory;
+                                        });
+                                      }
+                                    },
+                            icon:
+                                suggesting
+                                    ? const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                    : const Icon(
+                                      Icons.auto_awesome_outlined,
+                                      size: 18,
+                                    ),
+                            label: Text(l10n.priceAlertSuggest),
+                          ),
+                        ),
+                        if (suggestion != null)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: Text(
+                              suggestion!,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: AppSpacing.sm),
+                        AppDialogActions(
+                          cancelLabel: l10n.cancel,
+                          submitLabel: l10n.save,
+                          onCancel: () => Navigator.pop(dialogContext, false),
+                          onSubmit: () async {
+                            final name =
+                                existing?.productName ?? product.text.trim();
+                            final price = double.tryParse(
+                              target.text.trim().replaceAll(',', '.'),
+                            );
+                            if (name.isEmpty ||
+                                price == null ||
+                                price <= 0) {
+                              return;
+                            }
                             try {
-                              final s =
-                                  await _service.suggestPriceTarget(name);
-                              if (!dialogContext.mounted) return;
-                              setLocal(() {
-                                suggesting = false;
-                                if (s.suggestedTarget != null) {
-                                  target.text = _money(s.suggestedTarget!);
-                                  suggestion = l10n.priceAlertSuggestion(
-                                      _money(s.usualPrice ?? 0),
-                                      _money(s.goodPrice ?? 0),
-                                      s.observations);
-                                } else {
-                                  suggestion = l10n.priceAlertNoHistory;
-                                }
-                              });
+                              if (existing == null) {
+                                await _service.createPriceAlert(
+                                  productName: name,
+                                  targetPrice: price,
+                                );
+                              } else {
+                                await _service.updatePriceAlert(
+                                  existing.id,
+                                  targetPrice: price,
+                                );
+                              }
+                              if (dialogContext.mounted) {
+                                Navigator.pop(dialogContext, true);
+                              }
                             } catch (_) {
-                              if (!dialogContext.mounted) return;
-                              setLocal(() {
-                                suggesting = false;
-                                suggestion = l10n.priceAlertNoHistory;
-                              });
+                              if (dialogContext.mounted) {
+                                Navigator.pop(dialogContext, false);
+                              }
                             }
                           },
-                    icon: suggesting
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.auto_awesome_outlined, size: 18),
-                    label: Text(l10n.priceAlertSuggest),
-                  ),
-                ),
-                if (suggestion != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: Text(
-                      suggestion!,
-                      style: const TextStyle(
-                          fontSize: 12.5, color: AppColors.textSecondary),
+                        ),
+                      ],
                     ),
                   ),
-                const SizedBox(height: AppSpacing.sm),
-                AppDialogActions(
-                  cancelLabel: l10n.cancel,
-                  submitLabel: l10n.save,
-                  onCancel: () => Navigator.pop(dialogContext, false),
-                  onSubmit: () async {
-                    final name =
-                        existing?.productName ?? product.text.trim();
-                    final price = double.tryParse(
-                        target.text.trim().replaceAll(',', '.'));
-                    if (name.isEmpty || price == null || price <= 0) return;
-                    try {
-                      if (existing == null) {
-                        await _service.createPriceAlert(
-                            productName: name, targetPrice: price);
-                      } else {
-                        await _service.updatePriceAlert(existing.id,
-                            targetPrice: price);
-                      }
-                      if (dialogContext.mounted) {
-                        Navigator.pop(dialogContext, true);
-                      }
-                    } catch (_) {
-                      if (dialogContext.mounted) {
-                        Navigator.pop(dialogContext, false);
-                      }
-                    }
-                  },
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
 
     if (!mounted) return;
     if (saved == true) {
       SmartSnackBarManager.showSuccessSnackBar(
-          context,
-          existing == null ? l10n.priceAlertCreated : l10n.priceAlertUpdated);
+        context,
+        existing == null ? l10n.priceAlertCreated : l10n.priceAlertUpdated,
+      );
       _load();
     }
   }
@@ -216,35 +252,36 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.delete_outline_rounded,
-                title: l10n.priceAlertDelete,
-                color: AppColors.error,
+      builder:
+          (dialogContext) => Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppDialogHeader(
+                    icon: Icons.delete_outline_rounded,
+                    title: l10n.priceAlertDelete,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    a.productName,
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppDialogActions(
+                    cancelLabel: l10n.cancel,
+                    submitLabel: l10n.delete,
+                    destructive: true,
+                    onCancel: () => Navigator.pop(dialogContext, false),
+                    onSubmit: () => Navigator.pop(dialogContext, true),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                a.productName,
-                style: const TextStyle(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppDialogActions(
-                cancelLabel: l10n.cancel,
-                submitLabel: l10n.delete,
-                destructive: true,
-                onCancel: () => Navigator.pop(dialogContext, false),
-                onSubmit: () => Navigator.pop(dialogContext, true),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
     if (ok != true || !mounted) return;
     try {
@@ -268,57 +305,60 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _edit(),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
         icon: const Icon(Icons.add),
         label: Text(l10n.priceAlertNew),
       ),
-      body: _alerts == null && !_error
-          ? const Center(child: CircularProgressIndicator())
-          : _error
+      body:
+          _alerts == null && !_error
+              ? const Center(child: CircularProgressIndicator())
+              : _error
               ? Center(
-                  child: Text(l10n.anErrorOccurred,
-                      style: const TextStyle(color: AppColors.textSecondary)))
+                child: Text(
+                  l10n.anErrorOccurred,
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              )
               : _alerts!.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.xl),
-                        child: Text(
-                          l10n.priceAlertEmpty,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: AppColors.textSecondary),
-                        ),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.md,
-                            AppSpacing.md, AppSpacing.md, 96),
-                        itemCount: _alerts!.length,
-                        itemBuilder: (context, i) =>
-                            _alertCard(_alerts![i], l10n),
-                      ),
-                    ),
+              ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: Text(
+                    l10n.priceAlertEmpty,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                ),
+              )
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    96,
+                  ),
+                  itemCount: _alerts!.length,
+                  itemBuilder: (context, i) => _alertCard(_alerts![i], l10n),
+                ),
+              ),
     );
   }
 
   Widget _alertCard(PriceAlertInfo a, AppLocalizations l10n) {
     final subtitle = <String>[
       if (a.lastObservedPrice != null)
-        l10n.priceAlertLastSeen(_money(a.lastObservedPrice!),
-            a.lastObservedStore ?? '—'),
+        l10n.priceAlertLastSeen(
+          _money(a.lastObservedPrice!),
+          a.lastObservedStore ?? '—',
+        ),
       if (a.createdByName != null && a.createdByName!.isNotEmpty)
         l10n.priceAlertBy(a.createdByName!),
     ];
 
-    return Container(
+    return AppCard.tight(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Material(
         // Material propre au ListTile : le fond du conteneur parent
         // masquerait sinon son fond et ses effets de pression
@@ -331,9 +371,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: a.isActive
-                  ? AppColors.primaryLight
-                  : AppColors.background,
+              color: a.isActive ? AppColors.primaryLight : AppColors.background,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -341,9 +379,8 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                   ? Icons.notifications_active_outlined
                   : Icons.notifications_paused_outlined,
               size: 20,
-              color: a.isActive
-                  ? AppColors.primaryDark
-                  : AppColors.textDisabled,
+              color:
+                  a.isActive ? AppColors.primaryDark : AppColors.textDisabled,
             ),
           ),
           title: Row(
@@ -354,23 +391,23 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: a.isActive
-                        ? AppColors.textPrimary
-                        : AppColors.textDisabled,
+                    color:
+                        a.isActive
+                            ? AppColors.textPrimary
+                            : AppColors.textDisabled,
                   ),
                 ),
               ),
               const SizedBox(width: 6),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   l10n.priceAlertTargetChip(_money(a.targetPrice)),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryDark,
@@ -379,13 +416,16 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
               ),
             ],
           ),
-          subtitle: subtitle.isEmpty
-              ? null
-              : Text(
-                  subtitle.join(' · '),
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
-                ),
+          subtitle:
+              subtitle.isEmpty
+                  ? null
+                  : Text(
+                    subtitle.join(' · '),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
           trailing: Switch(
             value: a.isActive,
             activeThumbColor: AppColors.primary,

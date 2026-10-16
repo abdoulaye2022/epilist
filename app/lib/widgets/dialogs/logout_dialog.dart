@@ -22,7 +22,7 @@ class LogoutDialog extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -48,17 +48,17 @@ class LogoutDialog extends StatelessWidget {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: Colors.red[50],
+        color: AppColors.errorTint,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.logout_rounded, size: 22, color: AppColors.error),
+      child: Icon(Icons.logout_rounded, size: 22, color: AppColors.errorInk),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.logout,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -140,13 +140,13 @@ class LogoutDialog extends StatelessWidget {
                 onPressed: isLoading ? null : () => _logout(context),
                 icon:
                     isLoading
-                        ? const SizedBox(
+                        ?  SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                              AppColors.onPrimary,
                             ),
                           ),
                         )
@@ -160,8 +160,8 @@ class LogoutDialog extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.red[300],
+                  foregroundColor: AppColors.onPrimary,
+                  disabledBackgroundColor: AppColors.border,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

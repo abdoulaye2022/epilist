@@ -21,76 +21,77 @@ class WelcomeScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.md,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: _buildLanguageToggle(context),
+          builder:
+              (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.md,
                       ),
-                      const Spacer(flex: 2),
-                      _buildLogo(),
-                      const SizedBox(height: AppSpacing.lg),
-                      Text(
-                        l10n.welcomeToEpiList,
-                        style: const TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                          height: 1.2,
-                        ),
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: _buildLanguageToggle(context),
+                          ),
+                          const Spacer(flex: 2),
+                          _buildLogo(),
+                          const SizedBox(height: AppSpacing.lg),
+                          Text(
+                            l10n.welcomeToEpiList,
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                              height: 1.2,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            l10n.groceryListApp,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: AppColors.textSecondary,
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          _buildFeatureRow(
+                            Icons.group_outlined,
+                            l10n.shareAndCollaborate,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildFeatureRow(
+                            Icons.route_outlined,
+                            l10n.sortByAisle,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildFeatureRow(
+                            Icons.savings_outlined,
+                            l10n.trackYourBudget,
+                          ),
+                          const Spacer(flex: 3),
+                          SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: () => _navigateToLogin(context),
+                              child: Text(l10n.getStarted),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildFooterLinks(context, l10n),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        l10n.groceryListApp,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: AppColors.textSecondary,
-                          height: 1.4,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                      _buildFeatureRow(
-                        Icons.group_outlined,
-                        l10n.shareAndCollaborate,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      _buildFeatureRow(
-                        Icons.route_outlined,
-                        l10n.sortByAisle,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      _buildFeatureRow(
-                        Icons.savings_outlined,
-                        l10n.trackYourBudget,
-                      ),
-                      const Spacer(flex: 3),
-                      SizedBox(
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: () => _navigateToLogin(context),
-                          child: Text(l10n.getStarted),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      _buildFooterLinks(context, l10n),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
         ),
       ),
     );
@@ -110,11 +111,12 @@ class WelcomeScreen extends StatelessWidget {
         child: Image.asset(
           'assets/images/app_logo.png',
           fit: BoxFit.contain,
-          errorBuilder: (_, _, _) => const Icon(
-            Icons.shopping_cart_rounded,
-            size: 48,
-            color: AppColors.primary,
-          ),
+          errorBuilder:
+              (_, _, _) => Icon(
+                Icons.shopping_cart_rounded,
+                size: 48,
+                color: AppColors.primary,
+              ),
         ),
       ),
     );
@@ -130,14 +132,12 @@ class WelcomeScreen extends StatelessWidget {
         Widget segment(String code, String label) {
           final selected = current == code;
           return GestureDetector(
-            onTap: () =>
-                context.read<LocalizationBloc>().add(ChangeLanguage(code)),
+            onTap:
+                () =>
+                    context.read<LocalizationBloc>().add(ChangeLanguage(code)),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 7,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
                 color: selected ? AppColors.surface : Colors.transparent,
                 borderRadius: BorderRadius.circular(999),
@@ -150,9 +150,10 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected
-                      ? AppColors.textPrimary
-                      : AppColors.textSecondary,
+                  color:
+                      selected
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                 ),
               ),
             ),
@@ -191,7 +192,7 @@ class WelcomeScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,
@@ -204,23 +205,20 @@ class WelcomeScreen extends StatelessWidget {
 
   Widget _buildFooterLinks(BuildContext context, AppLocalizations l10n) {
     Widget link(String label, VoidCallback onTap) => TextButton(
-          onPressed: onTap,
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.textSecondary,
-            minimumSize: Size.zero,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            textStyle: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          child: Text(label),
-        );
+      onPressed: onTap,
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.textSecondary,
+        minimumSize: Size.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        textStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+      ),
+      child: Text(label),
+    );
 
-    Widget dot() => const Text(
-          '·',
-          style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
-        );
+    Widget dot() => Text(
+      '·',
+      style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+    );
 
     // Wrap et non Row : les libellés français (« Politique de
     // confidentialité »...) dépassent la largeur d'un petit écran.
@@ -261,16 +259,17 @@ class WelcomeScreen extends StatelessWidget {
   void _showTerms(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.termsOfService),
-        content: Text(AppLocalizations.of(context)!.termsAcceptanceText),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.understood),
+      builder:
+          (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context)!.termsOfService),
+            content: Text(AppLocalizations.of(context)!.termsAcceptanceText),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.understood),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

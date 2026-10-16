@@ -6,10 +6,7 @@ import '../../l10n/app_localizations.dart';
 class ColorPickerDialog extends StatefulWidget {
   final Color selectedColor;
 
-  const ColorPickerDialog({
-    super.key,
-    required this.selectedColor,
-  });
+  const ColorPickerDialog({super.key, required this.selectedColor});
 
   @override
   State<ColorPickerDialog> createState() => _ColorPickerDialogState();
@@ -99,9 +96,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
         child: Column(
@@ -118,10 +113,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.palette,
-                    color: theme.primaryColor,
-                  ),
+                  Icon(Icons.palette, color: theme.primaryColor),
                   const SizedBox(width: 12),
                   Text(
                     l10n.selectColor,
@@ -138,10 +130,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                     decoration: BoxDecoration(
                       color: _selectedColor,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.border,
-                        width: 2,
-                      ),
+                      border: Border.all(color: AppColors.border, width: 2),
                     ),
                   ),
                 ],
@@ -162,7 +151,8 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                   itemCount: _predefinedColors.length,
                   itemBuilder: (context, index) {
                     final color = _predefinedColors[index];
-                    final isSelected = _selectedColor.toARGB32() == color.toARGB32();
+                    final isSelected =
+                        _selectedColor.toARGB32() == color.toARGB32();
 
                     return InkWell(
                       onTap: () {
@@ -176,17 +166,21 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                           color: color,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: isSelected ? Colors.black : AppColors.border,
+                            color:
+                                isSelected
+                                    ? AppColors.textPrimary
+                                    : AppColors.border,
                             width: isSelected ? 3 : 1,
                           ),
                         ),
-                        child: isSelected
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 20,
-                              )
-                            : null,
+                        child:
+                            isSelected
+                                ?  Icon(
+                                  Icons.check,
+                                  color: AppColors.onPrimary,
+                                  size: 20,
+                                )
+                                : null,
                       ),
                     );
                   },
@@ -211,7 +205,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                     ),
                     child: Text(l10n.select),
                   ),

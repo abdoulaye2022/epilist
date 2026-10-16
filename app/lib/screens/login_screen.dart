@@ -50,7 +50,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -87,18 +91,19 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Image.asset(
             'assets/images/app_logo.png',
             fit: BoxFit.contain,
-            errorBuilder: (_, _, _) => const Icon(
-              Icons.shopping_cart_rounded,
-              size: 32,
-              color: AppColors.primary,
-            ),
+            errorBuilder:
+                (_, _, _) => Icon(
+                  Icons.shopping_cart_rounded,
+                  size: 32,
+                  color: AppColors.primary,
+                ),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           l10n.login,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -108,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           l10n.manageGroceryListsEasily,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             color: AppColors.textSecondary,
             height: 1.4,
@@ -136,8 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
             validator: (value) {
               if (value?.trim().isEmpty ?? true) return l10n.pleaseEnterEmail;
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                  .hasMatch(value!.trim())) {
+              if (!RegExp(
+                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+              ).hasMatch(value!.trim())) {
                 return l10n.invalidEmail;
               }
               return null;
@@ -181,16 +187,17 @@ class _LoginScreenState extends State<LoginScreen> {
             height: 52,
             child: ElevatedButton(
               onPressed: _anyLoading ? null : _login,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(l10n.login),
+              child:
+                  _isLoading
+                      ?  SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.onPrimary,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : Text(l10n.login),
             ),
           ),
         ],
@@ -206,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
             l10n.or,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textDisabled,
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -227,23 +234,24 @@ class _LoginScreenState extends State<LoginScreen> {
           child: OutlinedButton.icon(
             onPressed: _anyLoading ? null : _signInWithGoogle,
             style: OutlinedButton.styleFrom(backgroundColor: AppColors.surface),
-            icon: _isGoogleLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.textSecondary,
+            icon:
+                _isGoogleLoading
+                    ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.textSecondary,
+                      ),
+                    )
+                    : const Icon(
+                      Icons.g_mobiledata,
+                      size: 26,
+                      color: Color(0xFF4285F4),
                     ),
-                  )
-                : const Icon(
-                    Icons.g_mobiledata,
-                    size: 26,
-                    color: Color(0xFF4285F4),
-                  ),
             label: Text(
               _isGoogleLoading ? '…' : l10n.continueWithGoogle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -258,19 +266,20 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ElevatedButton.icon(
               onPressed: _anyLoading ? null : _signInWithApple,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.textPrimary,
+                foregroundColor: AppColors.surface,
               ),
-              icon: _isAppleLoading
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.apple, size: 20),
+              icon:
+                  _isAppleLoading
+                      ?  SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.onPrimary,
+                        ),
+                      )
+                      : const Icon(Icons.apple, size: 20),
               label: Text(
                 _isAppleLoading ? '…' : l10n.continueWithApple,
                 style: const TextStyle(
@@ -294,16 +303,14 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             l10n.dontHaveAccount,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
           ),
         ),
         TextButton(
-          onPressed: _isLoading
-              ? null
-              : () => Navigator.push(
+          onPressed:
+              _isLoading
+                  ? null
+                  : () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SignUpPage()),
                   ),
@@ -372,7 +379,9 @@ class _LoginScreenState extends State<LoginScreen> {
         final ssoError = state as SSOError;
         String errorMessage = ssoError.error;
 
-        if (errorMessage.contains(AppLocalizations.of(context)!.noAccountFound)) {
+        if (errorMessage.contains(
+          AppLocalizations.of(context)!.noAccountFound,
+        )) {
           errorMessage =
               'Aucun compte trouvé avec cet email Google. Création automatique en cours...';
           Future.delayed(const Duration(seconds: 2), () {
@@ -380,7 +389,9 @@ class _LoginScreenState extends State<LoginScreen> {
               _signInWithGoogle();
             }
           });
-        } else if (errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
+        } else if (errorMessage.contains(
+          AppLocalizations.of(context)!.accountAlreadyExists,
+        )) {
           errorMessage = AppLocalizations.of(context)!.linkGoogleWithPassword;
           if (ssoError.details?.isNotEmpty == true) {
             try {
@@ -394,8 +405,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         } else if (errorMessage.contains('network') ||
             errorMessage.contains('réseau')) {
-          errorMessage =
-              AppLocalizations.of(context)!.connectionProblem;
+          errorMessage = AppLocalizations.of(context)!.connectionProblem;
         }
 
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
@@ -416,10 +426,11 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => TwoFactorScreen(
-              email: twoFactorState.email,
-              password: _passwordController.text,
-            ),
+            builder:
+                (_) => TwoFactorScreen(
+                  email: twoFactorState.email,
+                  password: _passwordController.text,
+                ),
           ),
         );
         break;
@@ -455,9 +466,10 @@ class _LoginScreenState extends State<LoginScreen> {
       final isAvailable = await SSOService.isAppleSignInAvailable();
       if (!mounted) return;
       if (!isAvailable) {
-        String errorMessage = Platform.isIOS
-            ? AppLocalizations.of(context)!.appleUnavailableDevice
-            : AppLocalizations.of(context)!.appleOnlyIos;
+        String errorMessage =
+            Platform.isIOS
+                ? AppLocalizations.of(context)!.appleUnavailableDevice
+                : AppLocalizations.of(context)!.appleOnlyIos;
         SmartSnackBarManager.showErrorSnackBar(context, errorMessage);
         return;
       }
@@ -475,11 +487,11 @@ class _LoginScreenState extends State<LoginScreen> {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            LoginButtonPressed(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        LoginButtonPressed(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -488,54 +500,57 @@ class _LoginScreenState extends State<LoginScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: const Icon(
-                Icons.lock_reset_rounded,
-                size: 22,
-                color: AppColors.primaryDark,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm + 4),
-            Expanded(child: Text(l10n.forgotPassword)),
-          ],
-        ),
-        content: Text(l10n.resetPasswordSecurely),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
-            ),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PasswordChangeScreen(
-                    initialEmail: _emailController.text.trim().isNotEmpty
-                        ? _emailController.text.trim()
-                        : null,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(
+                    Icons.lock_reset_rounded,
+                    size: 22,
+                    color: AppColors.primaryDark,
                   ),
                 ),
-              );
-            },
-            child: Text(l10n.reset),
+                const SizedBox(width: AppSpacing.sm + 4),
+                Expanded(child: Text(l10n.forgotPassword)),
+              ],
+            ),
+            content: Text(l10n.resetPasswordSecurely),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.textSecondary,
+                ),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => PasswordChangeScreen(
+                            initialEmail:
+                                _emailController.text.trim().isNotEmpty
+                                    ? _emailController.text.trim()
+                                    : null,
+                          ),
+                    ),
+                  );
+                },
+                child: Text(l10n.reset),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -556,10 +571,11 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => EmailVerificationScreen(
-              email: email,
-              fromRegistration: false,
-            ),
+            builder:
+                (_) => EmailVerificationScreen(
+                  email: email,
+                  fromRegistration: false,
+                ),
           ),
         );
       }

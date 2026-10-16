@@ -80,14 +80,16 @@ class OfflineSyncService {
     await OfflineQueueService.initialize();
 
     // Écouter les changements de connectivité
-    _connectivitySubscription = _connectivityService.connectivityStream.listen(
-      (isConnected) async {
-        if (isConnected && !_isSyncing) {
-          debugPrint('📡 [OfflineSync] Connexion rétablie, démarrage de la synchronisation...');
-          await syncPendingActions();
-        }
-      },
-    );
+    _connectivitySubscription = _connectivityService.connectivityStream.listen((
+      isConnected,
+    ) async {
+      if (isConnected && !_isSyncing) {
+        debugPrint(
+          '📡 [OfflineSync] Connexion rétablie, démarrage de la synchronisation...',
+        );
+        await syncPendingActions();
+      }
+    });
 
     _isInitialized = true;
     debugPrint('✅ [OfflineSync] Service de synchronisation initialisé');
@@ -131,7 +133,9 @@ class OfflineSyncService {
         return;
       }
 
-      debugPrint('🔄 [OfflineSync] ${pendingActions.length} actions à synchroniser');
+      debugPrint(
+        '🔄 [OfflineSync] ${pendingActions.length} actions à synchroniser',
+      );
 
       int successCount = 0;
       int failureCount = 0;
@@ -149,7 +153,8 @@ class OfflineSyncService {
           await OfflineQueueService.markAsProcessing(action['id'] as String);
 
           // Rejouer DANS l'espace capturé à l'enqueue (0 = personnel).
-          SpaceHeaderInterceptor.syncOverride = (action['space_id'] as int?) ?? 0;
+          SpaceHeaderInterceptor.syncOverride =
+              (action['space_id'] as int?) ?? 0;
 
           // Exécuter l'action
           final success = await _syncAction(action);
@@ -167,7 +172,9 @@ class OfflineSyncService {
             failureCount++;
           }
         } catch (e) {
-          debugPrint('❌ [OfflineSync] Erreur sync action ${action['action_type']}: $e');
+          debugPrint(
+            '❌ [OfflineSync] Erreur sync action ${action['action_type']}: $e',
+          );
           await OfflineQueueService.markAsFailed(
             action['id'] as String,
             e.toString(),
@@ -181,7 +188,9 @@ class OfflineSyncService {
         await Future.delayed(const Duration(milliseconds: 500));
       }
 
-      debugPrint('✅ [OfflineSync] Synchronisation terminée: $successCount succès, $failureCount échecs');
+      debugPrint(
+        '✅ [OfflineSync] Synchronisation terminée: $successCount succès, $failureCount échecs',
+      );
 
       // Rafraîchir le cache des listes après une synchro qui a modifié des
       // données : sinon le prochain démarrage hors ligne montre des
@@ -209,7 +218,9 @@ class OfflineSyncService {
   /// (perte silencieuse).
   bool _missing(Object? service, String name) {
     if (service != null) return false;
-    debugPrint('❌ [OfflineSync] Service $name non injecté, action conservée en file');
+    debugPrint(
+      '❌ [OfflineSync] Service $name non injecté, action conservée en file',
+    );
     return true;
   }
 
@@ -222,7 +233,9 @@ class OfflineSyncService {
         debugPrint('💾 [OfflineSync] Cache des listes rafraîchi après synchro');
       }
     } catch (e) {
-      debugPrint('⚠️ [OfflineSync] Rafraîchissement du cache listes impossible: $e');
+      debugPrint(
+        '⚠️ [OfflineSync] Rafraîchissement du cache listes impossible: $e',
+      );
     }
   }
 
@@ -358,9 +371,10 @@ class OfflineSyncService {
             receiptId: payload['receipt_id'] as int,
             storeName: payload['store_name'] as String?,
             totalAmount: (payload['total_amount'] as num?)?.toDouble(),
-            purchaseDate: payload['purchase_date'] != null
-                ? DateTime.parse(payload['purchase_date'] as String)
-                : null,
+            purchaseDate:
+                payload['purchase_date'] != null
+                    ? DateTime.parse(payload['purchase_date'] as String)
+                    : null,
             notes: payload['notes'] as String?,
           );
           return true;
@@ -381,14 +395,16 @@ class OfflineSyncService {
             CreateBudgetRequest(
               name: payload['name'] as String,
               budgetAmount: (payload['budget_amount'] as num).toDouble(),
-              periodType:
-                  BudgetPeriodType.values.byName(payload['period_type'] as String),
+              periodType: BudgetPeriodType.values.byName(
+                payload['period_type'] as String,
+              ),
               startDate: DateTime.parse(payload['start_date'] as String),
               endDate: DateTime.parse(payload['end_date'] as String),
               alertThreshold: payload['alert_threshold'] as int? ?? 80,
-              listId: payload['list_id'] != null
-                  ? _mapId(payload['list_id'] as int)
-                  : null,
+              listId:
+                  payload['list_id'] != null
+                      ? _mapId(payload['list_id'] as int)
+                      : null,
             ),
           );
           return true;
@@ -402,15 +418,20 @@ class OfflineSyncService {
             UpdateBudgetRequest(
               name: payload['name'] as String?,
               budgetAmount: (payload['budget_amount'] as num?)?.toDouble(),
-              periodType: payload['period_type'] != null
-                  ? BudgetPeriodType.values.byName(payload['period_type'] as String)
-                  : null,
-              startDate: payload['start_date'] != null
-                  ? DateTime.parse(payload['start_date'] as String)
-                  : null,
-              endDate: payload['end_date'] != null
-                  ? DateTime.parse(payload['end_date'] as String)
-                  : null,
+              periodType:
+                  payload['period_type'] != null
+                      ? BudgetPeriodType.values.byName(
+                        payload['period_type'] as String,
+                      )
+                      : null,
+              startDate:
+                  payload['start_date'] != null
+                      ? DateTime.parse(payload['start_date'] as String)
+                      : null,
+              endDate:
+                  payload['end_date'] != null
+                      ? DateTime.parse(payload['end_date'] as String)
+                      : null,
               alertThreshold: payload['alert_threshold'] as int?,
               isActive: payload['is_active'] as bool?,
             ),
@@ -453,17 +474,20 @@ class OfflineSyncService {
         case OfflineQueueService.actionDeleteCategory:
           if (_missing(_categoryService, 'catégories')) return false;
           final categoryId = _mapId(payload['category_id'] as int);
-          if (categoryId < 0) return true; // catégorie jamais créée côté serveur
+          if (categoryId < 0) {
+            return true; // catégorie jamais créée côté serveur
+          }
           await _categoryService!.deleteCategory(categoryId);
           return true;
 
         case OfflineQueueService.actionReorderCategories:
           if (_missing(_categoryService, 'catégories')) return false;
-          final ids = (payload['category_ids'] as List)
-              .cast<int>()
-              .map(_mapId)
-              .where((id) => id > 0)
-              .toList();
+          final ids =
+              (payload['category_ids'] as List)
+                  .cast<int>()
+                  .map(_mapId)
+                  .where((id) => id > 0)
+                  .toList();
           if (ids.isNotEmpty) {
             await _categoryService!.reorderCategories(ids);
           }
@@ -499,7 +523,9 @@ class OfflineSyncService {
 
         // User Profile - TODO: Implémenter quand UserService sera disponible
         case OfflineQueueService.actionUpdateProfile:
-          debugPrint('⚠️ [OfflineSync] actionUpdateProfile not yet implemented');
+          debugPrint(
+            '⚠️ [OfflineSync] actionUpdateProfile not yet implemented',
+          );
           return true; // Ignorer pour l'instant
 
         // Email Preferences
@@ -526,9 +552,10 @@ class OfflineSyncService {
         case OfflineQueueService.actionSendFeedback:
           final token = await _getToken();
           // Déterminer l'endpoint selon si l'utilisateur est connecté
-          final endpoint = token != null
-              ? '${AppConfig.baseUrl}/contact/feedback'
-              : '${AppConfig.baseUrl}/contact/feedback-anonymous';
+          final endpoint =
+              token != null
+                  ? '${AppConfig.baseUrl}/contact/feedback'
+                  : '${AppConfig.baseUrl}/contact/feedback-anonymous';
 
           final headers = {
             'Content-Type': 'application/json',
@@ -646,10 +673,4 @@ class OfflineSyncService {
 }
 
 /// Statut de synchronisation
-enum SyncStatus {
-  idle,
-  syncing,
-  success,
-  partiallyFailed,
-  failed,
-}
+enum SyncStatus { idle, syncing, success, partiallyFailed, failed }

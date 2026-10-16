@@ -36,11 +36,13 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
   bool _showCompleted = false;
 
   void _toggle(ListItem item) {
-    context.read<ListItemBloc>().add(TogglePurchasedStatus(
-          listId: widget.shoppingList.id,
-          itemId: item.id,
-          isPurchased: !item.isPurchased,
-        ));
+    context.read<ListItemBloc>().add(
+      TogglePurchasedStatus(
+        listId: widget.shoppingList.id,
+        itemId: item.id,
+        isPurchased: !item.isPurchased,
+      ),
+    );
   }
 
   @override
@@ -53,22 +55,27 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
         title: Text(widget.store?.name ?? widget.shoppingList.name),
         actions: [
           IconButton(
-            tooltip: _showCompleted
-                ? l10n.hideCompletedItems
-                : l10n.showCompletedItems,
-            icon: Icon(_showCompleted
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined),
-            onPressed: () =>
-                setState(() => _showCompleted = !_showCompleted),
+            tooltip:
+                _showCompleted
+                    ? l10n.hideCompletedItems
+                    : l10n.showCompletedItems,
+            icon: Icon(
+              _showCompleted
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+            ),
+            onPressed: () => setState(() => _showCompleted = !_showCompleted),
           ),
         ],
       ),
       body: BlocBuilder<ListItemBloc, ListItemState>(
         builder: (context, state) {
-          final items = state is ListItemLoaded
-              ? state.items.where((i) => i.listId == widget.shoppingList.id).toList()
-              : <ListItem>[];
+          final items =
+              state is ListItemLoaded
+                  ? state.items
+                      .where((i) => i.listId == widget.shoppingList.id)
+                      .toList()
+                  : <ListItem>[];
           if (items.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -79,19 +86,19 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
 
           // Tri par rayon (ordre du magasin), non classés à la fin
           final sorted = [...items]..sort((a, b) {
-              int rank(ListItem i) => i.categoryId != null
-                  ? (widget.aisleRank[i.categoryId!] ?? 1 << 20)
-                  : 1 << 20;
-              final r = rank(a).compareTo(rank(b));
-              return r != 0
-                  ? r
-                  : a.productName
-                      .toLowerCase()
-                      .compareTo(b.productName.toLowerCase());
-            });
+            int rank(ListItem i) =>
+                i.categoryId != null
+                    ? (widget.aisleRank[i.categoryId!] ?? 1 << 20)
+                    : 1 << 20;
+            final r = rank(a).compareTo(rank(b));
+            return r != 0
+                ? r
+                : a.productName.toLowerCase().compareTo(
+                  b.productName.toLowerCase(),
+                );
+          });
 
-          final remaining =
-              sorted.where((i) => !i.isPurchased).toList();
+          final remaining = sorted.where((i) => !i.isPurchased).toList();
           final completed = sorted.where((i) => i.isPurchased).toList();
 
           return Column(
@@ -99,7 +106,11 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
               // Progression bien visible (§29)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                  0,
+                ),
                 child: Column(
                   children: [
                     Row(
@@ -109,13 +120,17 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                               ? l10n.shoppingDone
                               : l10n.itemsRemaining(total - done),
                           style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w800),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                         const Spacer(),
                         Text(
                           '${l10n.itemsProgress(done, total)} · ${(progress * 100).round()} %',
-                          style: const TextStyle(
-                              fontSize: 13, color: AppColors.textSecondary),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -134,7 +149,11 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md, AppSpacing.sm, AppSpacing.md, 32),
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
+                    32,
+                  ),
                   children: [
                     ..._grouped(remaining, l10n),
                     if (_showCompleted && completed.isNotEmpty) ...[
@@ -176,21 +195,30 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
         current = header;
         final cat =
             item.categoryId != null ? categoriesById[item.categoryId!] : null;
-        rows.add(Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 6),
-          child: Row(
-            children: [
-              Icon(cat?.icon ?? Icons.help_outline,
-                  size: 18, color: cat?.color ?? AppColors.textDisabled),
-              const SizedBox(width: 8),
-              Text(header,
+        rows.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 12, bottom: 6),
+            child: Row(
+              children: [
+                Icon(
+                  cat?.icon ?? Icons.help_outline,
+                  size: 18,
+                  color: cat?.color ?? AppColors.textDisabled,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  header,
                   style: const TextStyle(
-                      fontSize: 13.5, fontWeight: FontWeight.w700)),
-              const SizedBox(width: 12),
-              const Expanded(child: Divider(color: AppColors.border)),
-            ],
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Divider(color: AppColors.border)),
+              ],
+            ),
           ),
-        ));
+        );
       }
       rows.add(_bigTile(item, l10n));
     }
@@ -206,7 +234,9 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
         onTap: () => _toggle(item),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md, vertical: AppSpacing.md),
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
           child: Row(
             children: [
               Icon(
@@ -214,9 +244,10 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                     ? Icons.check_circle
                     : Icons.radio_button_unchecked,
                 size: 28,
-                color: item.isPurchased
-                    ? AppColors.primary
-                    : AppColors.textDisabled,
+                color:
+                    item.isPurchased
+                        ? AppColors.primary
+                        : AppColors.textDisabled,
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -227,12 +258,12 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                   style: TextStyle(
                     fontSize: 16.5,
                     fontWeight: FontWeight.w600,
-                    decoration: item.isPurchased
-                        ? TextDecoration.lineThrough
-                        : null,
-                    color: item.isPurchased
-                        ? AppColors.textDisabled
-                        : AppColors.textPrimary,
+                    decoration:
+                        item.isPurchased ? TextDecoration.lineThrough : null,
+                    color:
+                        item.isPurchased
+                            ? AppColors.textDisabled
+                            : AppColors.textPrimary,
                   ),
                 ),
               ),

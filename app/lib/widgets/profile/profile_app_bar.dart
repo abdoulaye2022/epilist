@@ -13,19 +13,19 @@ class ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         l10n.myProfile,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
       // ✅ FOND BLANC UNIFORME (comme les autres AppBars)
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
 
       // ✅ SUPPRESSION DE L'OMBRE (comme HomeAppBar et ListDetailAppBar)
       elevation: 0,
 
       // ✅ COULEUR DES ICÔNES NOIRE POUR FOND BLANC
-      iconTheme: const IconThemeData(color: AppColors.textPrimary),
+      iconTheme: IconThemeData(color: AppColors.textPrimary),
 
       // ✅ COULEUR DU TEXTE DE L'APPBAR
       foregroundColor: AppColors.textPrimary,

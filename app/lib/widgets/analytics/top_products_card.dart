@@ -28,12 +28,12 @@ class TopProductsCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.star, color: Colors.amber[600], size: 28),
+                Icon(Icons.star, color: AppColors.gold, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     l10n.topProducts,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -52,9 +52,9 @@ class TopProductsCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.amber[50],
+                color: AppColors.goldTint,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber[100]!),
+                border: Border.all(color: AppColors.goldTint),
               ),
               child: Row(
                 children: [
@@ -76,7 +76,7 @@ class TopProductsCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.amber[600],
+                            color: AppColors.gold,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -101,7 +101,7 @@ class TopProductsCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.amber[600],
+                            color: AppColors.gold,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -175,7 +175,7 @@ class TopProductsCard extends StatelessWidget {
           );
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        color: Colors.white,
+        color: AppColors.surface,
         elevation: 8,
         itemBuilder:
             (context) => [
@@ -325,12 +325,12 @@ class TopProductsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Colors.purple[600],
+            color: AppColors.violet,
           ),
         );
         subValue = l10n.timesPlural;
         icon = Icons.repeat;
-        color = Colors.purple[600]!;
+        color = AppColors.violet;
         break;
       default: // total_spent
         mainValue = FormattedAmount(
@@ -353,7 +353,7 @@ class TopProductsCard extends StatelessWidget {
     if (rank <= 3) {
       rankColor =
           [
-            Colors.amber[600]!, // 1er - Or
+            AppColors.gold, // 1er - Or
             AppColors.textDisabled, // 2ème - Argent
             AppColors.warning, // 3ème - Bronze
           ][rank - 1];
@@ -377,8 +377,8 @@ class TopProductsCard extends StatelessWidget {
             child: Center(
               child: Text(
                 '$rank',
-                style: const TextStyle(
-                  color: Colors.white,
+                style:  TextStyle(
+                  color: AppColors.onPrimary,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -394,7 +394,7 @@ class TopProductsCard extends StatelessWidget {
               children: [
                 Text(
                   productName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -406,7 +406,10 @@ class TopProductsCard extends StatelessWidget {
                 if (stores.isNotEmpty)
                   Text(
                     '${l10n.storesLabel}: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 // ✅ REMPLACEMENT: FormattedAmount pour le prix moyen
@@ -414,12 +417,18 @@ class TopProductsCard extends StatelessWidget {
                   children: [
                     Text(
                       '${l10n.averagePriceLabel}: ',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     Flexible(
                       child: FormattedAmount(
                         amount: averagePrice,
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
                         showCode: false,
                       ),
                     ),
@@ -444,7 +453,10 @@ class TopProductsCard extends StatelessWidget {
               if (subValue.isNotEmpty)
                 Text(
                   subValue,
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
             ],
           ),

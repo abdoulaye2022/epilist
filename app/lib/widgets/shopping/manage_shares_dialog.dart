@@ -81,7 +81,7 @@ class ManageSharesDialog extends StatelessWidget {
           margin: EdgeInsets.only(bottom: 8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.blue[100],
+              backgroundColor: AppColors.infoTint,
               child: Icon(Icons.person, color: AppColors.accent),
             ),
             title: Text(share.sharedWithUser?.name ?? l10n.user),
@@ -98,7 +98,7 @@ class ManageSharesDialog extends StatelessWidget {
                       value: 'revoke',
                       child: Text(
                         l10n.revoke,
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(color: AppColors.error),
                       ),
                     ),
                   ],
@@ -126,7 +126,10 @@ class ManageSharesDialog extends StatelessWidget {
           _showShareDialog(context);
         },
         style: ElevatedButton.styleFrom(backgroundColor: AppColors.accent),
-        child: Text(l10n.createNewShare, style: TextStyle(color: Colors.white)),
+        child: Text(
+          l10n.createNewShare,
+          style: TextStyle(color: AppColors.onPrimary),
+        ),
       ),
     );
   }

@@ -75,10 +75,10 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
+                    color: AppColors.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: AppColors.shadow,
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -123,14 +123,14 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: Colors.red[50],
+        color: AppColors.errorTint,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade100, width: 2),
+        border: Border.all(color: AppColors.errorTint, width: 2),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(Icons.wifi, size: 22, color: Colors.red[300]),
+          Icon(Icons.wifi, size: 22, color: AppColors.errorInk),
           Positioned(
             right: 15,
             top: 15,
@@ -141,7 +141,11 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                 color: AppColors.error,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.close, size: 14, color: Colors.white),
+              child:  Icon(
+                Icons.close,
+                size: 14,
+                color: AppColors.onPrimary,
+              ),
             ),
           ),
         ],
@@ -152,7 +156,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.noInternetConnection,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -180,31 +184,27 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(color: AppColors.infoBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_outline, color: AppColors.accent, size: 20),
+              Icon(Icons.lightbulb_outline, color: AppColors.infoInk, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.connectionTips,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue[800],
+                  color: AppColors.infoInk,
                   fontSize: 16,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _buildTipItem(
-            Icons.wifi,
-            l10n.checkWifiConnection,
-            AppColors.accent,
-          ),
+          _buildTipItem(Icons.wifi, l10n.checkWifiConnection, AppColors.accent),
           const SizedBox(height: 8),
           _buildTipItem(
             Icons.signal_cellular_alt,
@@ -212,11 +212,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
             AppColors.primaryDark,
           ),
           const SizedBox(height: 8),
-          _buildTipItem(
-            Icons.router,
-            l10n.restartRouter,
-            AppColors.warning,
-          ),
+          _buildTipItem(Icons.router, l10n.restartRouter, AppColors.warning),
         ],
       ),
     );
@@ -248,8 +244,8 @@ class _NoInternetDialogState extends State<NoInternetDialog>
         onPressed: _isChecking ? null : () => _checkConnection(),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.error,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.red[300],
+          foregroundColor: AppColors.onPrimary,
+          disabledBackgroundColor: AppColors.border,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -258,12 +254,14 @@ class _NoInternetDialogState extends State<NoInternetDialog>
         ),
         child:
             _isChecking
-                ? const SizedBox(
+                ?  SizedBox(
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.onPrimary,
+                    ),
                   ),
                 )
                 : Row(

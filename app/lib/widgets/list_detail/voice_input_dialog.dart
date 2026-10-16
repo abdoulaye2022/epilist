@@ -8,10 +8,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 class VoiceInputDialog extends StatefulWidget {
   final Function(String itemName, double quantity) onItemConfirmed;
 
-  const VoiceInputDialog({
-    super.key,
-    required this.onItemConfirmed,
-  });
+  const VoiceInputDialog({super.key, required this.onItemConfirmed});
 
   @override
   State<VoiceInputDialog> createState() => _VoiceInputDialogState();
@@ -66,9 +63,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -78,7 +73,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
             end: Alignment.bottomRight,
             colors: [
               theme.primaryColor.withValues(alpha: 0.05),
-              Colors.white,
+              AppColors.surface,
             ],
           ),
         ),
@@ -94,11 +89,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                     color: theme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.mic,
-                    color: theme.primaryColor,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.mic, color: theme.primaryColor, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -166,7 +157,9 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                   ),
                   prefixIcon: const Icon(Icons.numbers),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
 
               const SizedBox(height: 24),
@@ -217,31 +210,24 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 decoration: BoxDecoration(
                   color: AppColors.accentLight,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.blue[200]!,
-                    width: 1,
-                  ),
+                  border: Border.all(color: AppColors.infoBorder, width: 1),
                 ),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: AppColors.accent,
-                      size: 32,
-                    ),
+                    Icon(Icons.info_outline, color: AppColors.infoInk, size: 32),
                     const SizedBox(height: 8),
                     Text(
                       l10n.voiceExamplesTitle,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue[900],
+                        color: AppColors.infoInk,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.voiceExamples,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.blue[800],
+                        color: AppColors.infoInk,
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -263,8 +249,6 @@ Future<void> showVoiceInputDialog(
 }) {
   return showDialog(
     context: context,
-    builder: (context) => VoiceInputDialog(
-      onItemConfirmed: onItemConfirmed,
-    ),
+    builder: (context) => VoiceInputDialog(onItemConfirmed: onItemConfirmed),
   );
 }

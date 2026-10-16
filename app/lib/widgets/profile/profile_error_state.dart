@@ -23,7 +23,7 @@ class ProfileErrorState extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.myProfile),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
       ),
       body: Center(
@@ -35,14 +35,15 @@ class ProfileErrorState extends StatelessWidget {
               Icon(
                 isConnected ? Icons.person_off : Icons.wifi_off,
                 size: 64,
-                color: Colors.grey,
+                color: AppColors.textSecondary,
               ),
               const SizedBox(height: 16),
               Text(
-                isConnected
-                    ? l10n.cannotLoadProfile
-                    : l10n.offlineMode,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                isConnected ? l10n.cannotLoadProfile : l10n.offlineMode,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -51,7 +52,10 @@ class ProfileErrorState extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     AppLocalizations.of(context)!.connectToLoadProfile,
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -62,7 +66,7 @@ class ProfileErrorState extends StatelessWidget {
                 label: Text(l10n.retry),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                 ),
               ),
               const SizedBox(height: 8),

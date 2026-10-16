@@ -99,12 +99,11 @@ class ConnectedFloatingActionButton extends StatelessWidget {
           isConnected
               ? (backgroundColor ?? AppColors.primary)
               : AppColors.textDisabled,
-      tooltip:
-          isConnected
-              ? tooltip
-              : (l10n.connectionRequired),
+      tooltip: isConnected ? tooltip : (l10n.connectionRequired),
       child:
-          isConnected ? child : const Icon(Icons.wifi_off, color: Colors.white),
+          isConnected
+              ? child
+              :  Icon(Icons.wifi_off, color: AppColors.onPrimary),
     );
   }
 
@@ -157,13 +156,13 @@ class ConnectedListTile extends StatelessWidget {
       leading:
           isConnected
               ? leading
-              : const Icon(Icons.wifi_off, color: Colors.grey),
+              : Icon(Icons.wifi_off, color: AppColors.textSecondary),
       title: title,
       subtitle: subtitle,
       trailing:
           isConnected
               ? trailing
-              : const Icon(Icons.warning, color: Colors.orange),
+              : Icon(Icons.warning, color: AppColors.warning),
       enabled: isConnected,
     );
   }
@@ -251,11 +250,8 @@ class ConnectedIconButton extends StatelessWidget {
                 }
               },
       icon: isConnected ? icon : const Icon(Icons.wifi_off),
-      tooltip:
-          isConnected
-              ? tooltip
-              : (l10n.connectionRequired),
-      color: isConnected ? null : Colors.grey,
+      tooltip: isConnected ? tooltip : (l10n.connectionRequired),
+      color: isConnected ? null : AppColors.textSecondary,
     );
   }
 
@@ -305,10 +301,10 @@ class ConnectedTextButton extends StatelessWidget {
             foregroundColor:
                 isConnected
                     ? style?.foregroundColor
-                    : WidgetStateProperty.all(Colors.grey),
+                    : WidgetStateProperty.all(AppColors.textSecondary),
           ) ??
           TextButton.styleFrom(
-            foregroundColor: isConnected ? null : Colors.grey,
+            foregroundColor: isConnected ? null : AppColors.textSecondary,
           ),
       child: child,
     );

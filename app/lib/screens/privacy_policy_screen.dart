@@ -15,7 +15,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.privacyPolicy),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 1,
         foregroundColor: AppColors.textPrimary,
       ),
@@ -44,10 +44,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               l10n.privacyCollectionText,
             ),
 
-            _buildPolicySection(
-              l10n.privacyUsageTitle,
-              l10n.privacyUsageText,
-            ),
+            _buildPolicySection(l10n.privacyUsageTitle, l10n.privacyUsageText),
 
             _buildPolicySection(
               l10n.privacyStorageTitle,
@@ -110,7 +107,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
       ),
@@ -160,7 +157,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -178,7 +175,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
       ),

@@ -132,7 +132,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -244,14 +244,14 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.feedback_outlined, size: 22, color: AppColors.primary),
+      child: Icon(Icons.feedback_outlined, size: 22, color: AppColors.primaryDark),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.sendFeedback,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -339,7 +339,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       children: [
         Text(
           l10n.feedbackType,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -412,7 +412,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       children: [
         Text(
           l10n.priority,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -530,11 +530,11 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue[200]!),
+        border: Border.all(color: AppColors.infoBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.privacy_tip_outlined, color: AppColors.accent, size: 16),
+          Icon(Icons.privacy_tip_outlined, color: AppColors.infoInk, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -576,8 +576,8 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
             onPressed: _isLoading ? null : _sendFeedback,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.green[300],
+              foregroundColor: AppColors.onPrimary,
+              disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -586,12 +586,14 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
             ),
             child:
                 _isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.onPrimary,
+                        ),
                       ),
                     )
                     : Row(

@@ -11,6 +11,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class PreShoppingScreen extends StatefulWidget {
   const PreShoppingScreen({super.key});
@@ -36,8 +37,10 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
 
   Future<void> _load() async {
     try {
-      final results = await Future.wait(
-          [_service.getPreShopping(), _service.getSavings()]);
+      final results = await Future.wait([
+        _service.getPreShopping(),
+        _service.getSavings(),
+      ]);
       if (!mounted) return;
       ScreenCache.write('pre_shopping_brief', results[0]);
       ScreenCache.write('pre_shopping_savings', results[1]);
@@ -65,135 +68,155 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
 
     await showDialog<void>(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setLocal) {
-          final verdict = result?['verdict'] as String?;
-          final (verdictLabel, verdictColor) = switch (verdict) {
-            'good' => (l10n.priceCheckGood, AppColors.primaryDark),
-            'fair' => (l10n.priceCheckFair, const Color(0xFFB45309)),
-            'high' => (l10n.priceCheckHigh, AppColors.error),
-            'unknown' => (l10n.priceCheckUnknown, AppColors.textSecondary),
-            _ => ('', AppColors.textSecondary),
-          };
-          return Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AppDialogHeader(
-                    icon: Icons.price_check_rounded,
-                    title: l10n.priceCheckTitle,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  TextField(
-                    controller: product,
-                    autofocus: true,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText: l10n.priceAlertProduct,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  TextField(
-                    controller: price,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(
-                      labelText: l10n.priceCheckPrice,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  if (verdict != null) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.sm + 4),
-                      decoration: BoxDecoration(
-                        color: verdictColor.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(12),
+      builder:
+          (dialogContext) => StatefulBuilder(
+            builder: (dialogContext, setLocal) {
+              final verdict = result?['verdict'] as String?;
+              final (verdictLabel, verdictColor) = switch (verdict) {
+                'good' => (l10n.priceCheckGood, AppColors.primaryDark),
+                'fair' => (l10n.priceCheckFair, const Color(0xFFB45309)),
+                'high' => (l10n.priceCheckHigh, AppColors.error),
+                'unknown' => (l10n.priceCheckUnknown, AppColors.textSecondary),
+                _ => ('', AppColors.textSecondary),
+              };
+              return Dialog(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AppDialogHeader(
+                        icon: Icons.price_check_rounded,
+                        title: l10n.priceCheckTitle,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            verdictLabel,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: verdictColor,
-                            ),
+                      const SizedBox(height: AppSpacing.md),
+                      TextField(
+                        controller: product,
+                        autofocus: true,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: l10n.priceAlertProduct,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          if (verdict != 'unknown' &&
-                              result?['usual_price'] != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text(
-                                l10n.priceCheckUsual(
-                                    _money(result!['usual_price'] as num),
-                                    _money(result!['good_price'] as num)),
-                                style: const TextStyle(
-                                    fontSize: 12.5,
-                                    color: AppColors.textSecondary),
-                              ),
-                            ),
-                          // Repère communautaire anonymisé (§33)
-                          if (result?['community'] != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text(
-                                l10n.communityLine(
-                                    _money((result!['community']
-                                        as Map)['median_price'] as num),
-                                    ((result!['community'] as Map)['store_label']
-                                            as String?) ??
-                                        '—',
-                                    (result!['community']
-                                            as Map)['contributors'] as int? ??
-                                        0),
-                                style: const TextStyle(
-                                    fontSize: 12.5,
-                                    color: AppColors.textSecondary),
-                              ),
-                            ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.lg),
-                  AppDialogActions(
-                    cancelLabel: l10n.close,
-                    submitLabel: l10n.priceCheckAction,
-                    onCancel: () => Navigator.pop(dialogContext),
-                    onSubmit: checking
-                        ? () {}
-                        : () async {
-                            final name = product.text.trim();
-                            final p = double.tryParse(
-                                price.text.trim().replaceAll(',', '.'));
-                            if (name.isEmpty || p == null || p <= 0) return;
-                            setLocal(() => checking = true);
-                            try {
-                              final r = await _service.checkPrice(name, p);
-                              if (!dialogContext.mounted) return;
-                              setLocal(() {
-                                checking = false;
-                                result = r;
-                              });
-                            } catch (_) {
-                              if (!dialogContext.mounted) return;
-                              setLocal(() => checking = false);
-                            }
-                          },
+                      const SizedBox(height: AppSpacing.sm),
+                      TextField(
+                        controller: price,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: l10n.priceCheckPrice,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      if (verdict != null) ...[
+                        const SizedBox(height: AppSpacing.md),
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.sm + 4),
+                          decoration: BoxDecoration(
+                            color: verdictColor.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                verdictLabel,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: verdictColor,
+                                ),
+                              ),
+                              if (verdict != 'unknown' &&
+                                  result?['usual_price'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    l10n.priceCheckUsual(
+                                      _money(result!['usual_price'] as num),
+                                      _money(result!['good_price'] as num),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              // Repère communautaire anonymisé (§33)
+                              if (result?['community'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    l10n.communityLine(
+                                      _money(
+                                        (result!['community']
+                                                as Map)['median_price']
+                                            as num,
+                                      ),
+                                      ((result!['community']
+                                                  as Map)['store_label']
+                                              as String?) ??
+                                          '—',
+                                      (result!['community']
+                                                  as Map)['contributors']
+                                              as int? ??
+                                          0,
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      AppDialogActions(
+                        cancelLabel: l10n.close,
+                        submitLabel: l10n.priceCheckAction,
+                        onCancel: () => Navigator.pop(dialogContext),
+                        onSubmit:
+                            checking
+                                ? () {}
+                                : () async {
+                                  final name = product.text.trim();
+                                  final p = double.tryParse(
+                                    price.text.trim().replaceAll(',', '.'),
+                                  );
+                                  if (name.isEmpty || p == null || p <= 0) {
+                                    return;
+                                  }
+                                  setLocal(() => checking = true);
+                                  try {
+                                    final r = await _service.checkPrice(
+                                      name,
+                                      p,
+                                    );
+                                    if (!dialogContext.mounted) return;
+                                    setLocal(() {
+                                      checking = false;
+                                      result = r;
+                                    });
+                                  } catch (_) {
+                                    if (!dialogContext.mounted) return;
+                                    setLocal(() => checking = false);
+                                  }
+                                },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
     );
   }
 
@@ -215,19 +238,23 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
           ),
         ],
       ),
-      body: _brief == null && !_error
-          ? const Center(child: CircularProgressIndicator())
-          : _error
+      body:
+          _brief == null && !_error
+              ? const Center(child: CircularProgressIndicator())
+              : _error
               ? Center(
-                  child: Text(l10n.anErrorOccurred,
-                      style: const TextStyle(color: AppColors.textSecondary)))
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: _sections(l10n),
-                  ),
+                child: Text(
+                  l10n.anErrorOccurred,
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
+              )
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  children: _sections(l10n),
+                ),
+              ),
     );
   }
 
@@ -249,10 +276,14 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
           title: l10n.preShoppingBudget,
           child: Text(
             l10n.preShoppingBudgetRemaining(
-                _money(budget['remaining'] as num? ?? 0),
-                budget['days_left'] as int? ?? 0),
-            style: const TextStyle(
-                fontSize: 14, color: AppColors.textPrimary, height: 1.4),
+              _money(budget['remaining'] as num? ?? 0),
+              budget['days_left'] as int? ?? 0,
+            ),
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textPrimary,
+              height: 1.4,
+            ),
           ),
         ),
 
@@ -263,7 +294,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
           title: l10n.purchaseRequests,
           child: Text(
             l10n.preShoppingRequests(pending),
-            style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
           ),
         ),
 
@@ -271,21 +302,29 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       _card(
         icon: Icons.replay_rounded,
         title: l10n.preShoppingRestock,
-        child: restock.isEmpty
-            ? Text(l10n.preShoppingRestockEmpty,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textSecondary))
-            : Column(
-                children: [
-                  for (final r in restock.cast<Map<String, dynamic>>())
-                    _line(
-                      (r['product_name'] as String?) ?? '',
-                      trailing: _statusChip(r['status'] as String? ?? '',
-                          (r['below_min'] as bool?) ?? false, l10n),
-                      sub: r['usual_store'] as String?,
-                    ),
-                ],
-              ),
+        child:
+            restock.isEmpty
+                ? Text(
+                  l10n.preShoppingRestockEmpty,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                )
+                : Column(
+                  children: [
+                    for (final r in restock.cast<Map<String, dynamic>>())
+                      _line(
+                        (r['product_name'] as String?) ?? '',
+                        trailing: _statusChip(
+                          r['status'] as String? ?? '',
+                          (r['below_min'] as bool?) ?? false,
+                          l10n,
+                        ),
+                        sub: r['usual_store'] as String?,
+                      ),
+                  ],
+                ),
       ),
 
       // Ruptures / sous le seuil
@@ -298,11 +337,15 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               for (final i in inventory.cast<Map<String, dynamic>>())
                 _line(
                   (i['product_name'] as String?) ?? '',
-                  sub: i['quantity'] != null && i['min_quantity'] != null
-                      ? '${_money(i['quantity'] as num)}${i['unit'] ?? ''} / ${_money(i['min_quantity'] as num)}${i['unit'] ?? ''}'
-                      : null,
-                  trailing: const Icon(Icons.warning_amber_rounded,
-                      size: 18, color: AppColors.error),
+                  sub:
+                      i['quantity'] != null && i['min_quantity'] != null
+                          ? '${_money(i['quantity'] as num)}${i['unit'] ?? ''} / ${_money(i['min_quantity'] as num)}${i['unit'] ?? ''}'
+                          : null,
+                  trailing: Icon(
+                    Icons.warning_amber_rounded,
+                    size: 18,
+                    color: AppColors.error,
+                  ),
                 ),
             ],
           ),
@@ -318,17 +361,22 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               for (final a in priceWatch.cast<Map<String, dynamic>>())
                 _line(
                   (a['product_name'] as String?) ?? '',
-                  sub: a['last_notified_price'] != null
-                      ? l10n.priceAlertLastSeen(
-                          _money(a['last_notified_price'] as num), '')
-                      : null,
+                  sub:
+                      a['last_notified_price'] != null
+                          ? l10n.priceAlertLastSeen(
+                            _money(a['last_notified_price'] as num),
+                            '',
+                          )
+                          : null,
                   trailing: Text(
                     l10n.priceAlertTargetChip(
-                        _money(a['target_price'] as num? ?? 0)),
-                    style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDark),
+                      _money(a['target_price'] as num? ?? 0),
+                    ),
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryDark,
+                    ),
                   ),
                 ),
             ],
@@ -339,37 +387,46 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       _card(
         icon: Icons.celebration_outlined,
         title: l10n.savingsTitle,
-        child: savingsTotal <= 0
-            ? Text(l10n.savingsEmpty,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textSecondary))
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.savingsTotal(_money(savingsTotal)),
-                    style: const TextStyle(
+        child:
+            savingsTotal <= 0
+                ? Text(
+                  l10n.savingsEmpty,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                )
+                : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.savingsTotal(_money(savingsTotal)),
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDark),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  for (final s
-                      in savingsItems.take(5).cast<Map<String, dynamic>>())
-                    _line(
-                      (s['product_name'] as String?) ?? '',
-                      sub: l10n.savingsLine(_money(s['paid'] as num? ?? 0),
-                          _money(s['usual_price'] as num? ?? 0)),
-                      trailing: Text(
-                        '+${_money(s['saving'] as num? ?? 0)} \$',
-                        style: const TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primaryDark),
+                        color: AppColors.primaryDark,
                       ),
                     ),
-                ],
-              ),
+                    const SizedBox(height: AppSpacing.xs),
+                    for (final s
+                        in savingsItems.take(5).cast<Map<String, dynamic>>())
+                      _line(
+                        (s['product_name'] as String?) ?? '',
+                        sub: l10n.savingsLine(
+                          _money(s['paid'] as num? ?? 0),
+                          _money(s['usual_price'] as num? ?? 0),
+                        ),
+                        trailing: Text(
+                          '+${_money(s['saving'] as num? ?? 0)} \$',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
       ),
     ];
   }
@@ -389,7 +446,10 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       child: Text(
         belowMin ? '$label ↓' : label,
         style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w700, color: color),
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
       ),
     );
   }
@@ -403,17 +463,24 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary)),
+                Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
                 if (sub != null && sub.isNotEmpty)
-                  Text(sub,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 11.5, color: AppColors.textSecondary)),
+                  Text(
+                    sub,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -423,16 +490,15 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
     );
   }
 
-  Widget _card(
-      {required IconData icon, required String title, required Widget child}) {
-    return Container(
+  Widget _card({
+    required IconData icon,
+    required String title,
+    required Widget child,
+  }) {
+    return AppCard(
+      radius: 14,
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -442,10 +508,11 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               const SizedBox(width: AppSpacing.sm),
               Text(
                 title,
-                style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),

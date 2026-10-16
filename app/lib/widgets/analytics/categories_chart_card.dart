@@ -24,12 +24,12 @@ class CategoriesChartCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.pie_chart, color: Colors.purple[600], size: 28),
+                Icon(Icons.pie_chart, color: AppColors.violet, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     l10n.spendingByCategory,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -46,9 +46,9 @@ class CategoriesChartCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.purple[50],
+                color: AppColors.violetTint,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.purple[100]!),
+                border: Border.all(color: AppColors.violetTint),
               ),
               child: Row(
                 children: [
@@ -71,7 +71,7 @@ class CategoriesChartCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple[600],
+                            color: AppColors.violet,
                           ),
                           showCode: false,
                         ),
@@ -96,7 +96,7 @@ class CategoriesChartCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple[600],
+                            color: AppColors.violet,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -116,7 +116,11 @@ class CategoriesChartCard extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Icon(Icons.category, size: 48, color: AppColors.textDisabled),
+                      Icon(
+                        Icons.category,
+                        size: 48,
+                        color: AppColors.textDisabled,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         l10n.noCategoriesData,
@@ -217,11 +221,11 @@ class CategoriesChartCard extends StatelessWidget {
       AppColors.primary,
       AppColors.accent,
       AppColors.warning,
-      Colors.purple[600]!,
+      AppColors.violet,
       AppColors.error,
-      Colors.teal[600]!,
-      Colors.indigo[600]!,
-      Colors.brown[600]!,
+      AppColors.teal,
+      AppColors.indigo,
+      AppColors.brown,
     ];
 
     final colorIndex = categoryName.hashCode.abs() % colors.length;
@@ -251,7 +255,7 @@ class CategoriesChartCard extends StatelessWidget {
                   children: [
                     Text(
                       categoryName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -260,7 +264,10 @@ class CategoriesChartCard extends StatelessWidget {
                     ),
                     Text(
                       '$totalItems ${l10n.articles}',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -281,7 +288,10 @@ class CategoriesChartCard extends StatelessWidget {
                   ),
                   Text(
                     '${percentage.toStringAsFixed(1)}%',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),

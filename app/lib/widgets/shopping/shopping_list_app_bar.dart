@@ -13,15 +13,18 @@ class ShoppingListAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return AppBar(
       // Onglet de la coquille : bouton menu ; ecran pousse : fleche retour.
       leading: DrawerMenuButton.leadingOrNull(context),
       title: Text(
         l10n.myShoppingLists,
-        style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       elevation: 0,
       actions: [
         IconButton(

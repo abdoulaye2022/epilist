@@ -26,7 +26,9 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
   void initState() {
     super.initState();
     // Derniere version connue d'abord, rafraichissement en silence.
-    final cached = ScreenCache.read<List<RecurringListModel>>('recurring_lists');
+    final cached = ScreenCache.read<List<RecurringListModel>>(
+      'recurring_lists',
+    );
     if (cached != null) {
       _lists = cached;
       _loading = false;
@@ -50,12 +52,11 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
     }
   }
 
-  String _recurrenceLabel(AppLocalizations l10n, String type) =>
-      switch (type) {
-        'biweekly' => l10n.recurrenceBiweekly,
-        'monthly' => l10n.recurrenceMonthly,
-        _ => l10n.recurrenceWeekly,
-      };
+  String _recurrenceLabel(AppLocalizations l10n, String type) => switch (type) {
+    'biweekly' => l10n.recurrenceBiweekly,
+    'monthly' => l10n.recurrenceMonthly,
+    _ => l10n.recurrenceWeekly,
+  };
 
   // --- Génération : aperçu pré-coché puis création --------------------
 
@@ -95,10 +96,11 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _EditSheet(
-        existing: existing,
-        service: context.read<IntelligenceService>(),
-      ),
+      builder:
+          (_) => _EditSheet(
+            existing: existing,
+            service: context.read<IntelligenceService>(),
+          ),
     );
     if (saved == true) _load();
   }
@@ -107,18 +109,21 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(list.name),
-        content: Text(l10n.deleteRecurringConfirm),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l10n.cancel)),
-          FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(l10n.delete)),
-        ],
-      ),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(list.name),
+            content: Text(l10n.deleteRecurringConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(l10n.delete),
+              ),
+            ],
+          ),
     );
     if (ok != true || !mounted) return;
     await context.read<IntelligenceService>().deleteRecurringList(list.id);
@@ -137,99 +142,124 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
         onPressed: () => _edit(),
         backgroundColor: AppColors.primary,
         tooltip: l10n.newRecurringList,
-        child: const Icon(Icons.add, color: Colors.white),
+        child:  Icon(Icons.add, color: AppColors.onPrimary),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: _lists.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        const SizedBox(height: 120),
-                        Icon(Icons.event_repeat_outlined,
-                            size: 56, color: Colors.grey[400]),
-                        const SizedBox(height: AppSpacing.md),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.xl),
-                          child: Text(
-                            l10n.recurringEmpty,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 13.5,
-                                color: AppColors.textSecondary),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                onRefresh: _load,
+                child:
+                    _lists.isEmpty
+                        ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            const SizedBox(height: 120),
+                            Icon(
+                              Icons.event_repeat_outlined,
+                              size: 56,
+                              color: AppColors.textDisabled,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.xl,
+                              ),
+                              child: Text(
+                                l10n.recurringEmpty,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                        : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.md,
+                            AppSpacing.sm,
+                            AppSpacing.md,
+                            96,
                           ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.md, AppSpacing.sm, AppSpacing.md, 96),
-                      itemCount: _lists.length,
-                      itemBuilder: (context, index) {
-                        final list = _lists[index];
-                        return Card(
-                          margin:
-                              const EdgeInsets.only(bottom: AppSpacing.sm),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                          itemCount: _lists.length,
+                          itemBuilder: (context, index) {
+                            final list = _lists[index];
+                            return Card(
+                              margin: const EdgeInsets.only(
+                                bottom: AppSpacing.sm,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: Text(list.name,
-                                          style: const TextStyle(
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            list.name,
+                                            style: const TextStyle(
                                               fontSize: 15,
-                                              fontWeight: FontWeight.w700)),
-                                    ),
-                                    PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert,
-                                          size: 20,
-                                          color: AppColors.textDisabled),
-                                      onSelected: (v) => v == 'edit'
-                                          ? _edit(list)
-                                          : _delete(list),
-                                      itemBuilder: (_) => [
-                                        PopupMenuItem(
-                                            value: 'edit',
-                                            child: Text(l10n.edit)),
-                                        PopupMenuItem(
-                                            value: 'delete',
-                                            child: Text(l10n.delete)),
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuButton<String>(
+                                          icon: Icon(
+                                            Icons.more_vert,
+                                            size: 20,
+                                            color: AppColors.textDisabled,
+                                          ),
+                                          onSelected:
+                                              (v) =>
+                                                  v == 'edit'
+                                                      ? _edit(list)
+                                                      : _delete(list),
+                                          itemBuilder:
+                                              (_) => [
+                                                PopupMenuItem(
+                                                  value: 'edit',
+                                                  child: Text(l10n.edit),
+                                                ),
+                                                PopupMenuItem(
+                                                  value: 'delete',
+                                                  child: Text(l10n.delete),
+                                                ),
+                                              ],
+                                        ),
                                       ],
+                                    ),
+                                    Text(
+                                      '${_recurrenceLabel(l10n, list.recurrenceType)}'
+                                      '${list.nextRunAt != null ? ' · ${l10n.nextRunOn(DateFormat('d MMM', locale).format(list.nextRunAt!))}' : ''}'
+                                      ' · ${list.items.length} ${l10n.items}',
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.sm),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: FilledButton.tonalIcon(
+                                        onPressed: () => _prepare(list),
+                                        icon: const Icon(
+                                          Icons.playlist_add_check,
+                                          size: 18,
+                                        ),
+                                        label: Text(l10n.prepareMyList),
+                                      ),
                                     ),
                                   ],
                                 ),
-                                Text(
-                                  '${_recurrenceLabel(l10n, list.recurrenceType)}'
-                                  '${list.nextRunAt != null ? ' · ${l10n.nextRunOn(DateFormat('d MMM', locale).format(list.nextRunAt!))}' : ''}'
-                                  ' · ${list.items.length} ${l10n.items}',
-                                  style: const TextStyle(
-                                      fontSize: 12.5,
-                                      color: AppColors.textSecondary),
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: FilledButton.tonalIcon(
-                                    onPressed: () => _prepare(list),
-                                    icon: const Icon(Icons.playlist_add_check,
-                                        size: 18),
-                                    label: Text(l10n.prepareMyList),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
+                              ),
+                            );
+                          },
+                        ),
+              ),
     );
   }
 }
@@ -252,68 +282,89 @@ class _PreviewSheetState extends State<_PreviewSheet> {
     final l10n = AppLocalizations.of(context)!;
 
     String reasonLabel(String reason) => switch (reason) {
-          'inventory_out' => l10n.reasonInventoryOut,
-          'inventory_at_home' => l10n.reasonInventoryAtHome,
-          'bought_recently' => l10n.reasonBoughtRecently,
-          'prediction_due' => l10n.reasonPredictionDue,
-          _ => l10n.reasonNormalCycle,
-        };
+      'inventory_out' => l10n.reasonInventoryOut,
+      'inventory_at_home' => l10n.reasonInventoryAtHome,
+      'bought_recently' => l10n.reasonBoughtRecently,
+      'prediction_due' => l10n.reasonPredictionDue,
+      _ => l10n.reasonNormalCycle,
+    };
 
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.7,
       maxChildSize: 0.92,
-      builder: (context, scrollController) => Padding(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
-        child: Column(
-          children: [
-            Text(l10n.recurringListReady,
-                style: const TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800)),
-            Text(widget.listName,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textSecondary)),
-            const SizedBox(height: AppSpacing.sm),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: widget.items.length,
-                itemBuilder: (context, index) {
-                  final item = widget.items[index];
-                  return CheckboxListTile(
-                    dense: true,
-                    controlAffinity: ListTileControlAffinity.leading,
-                    value: item.suggested,
-                    onChanged: (v) =>
-                        setState(() => item.suggested = v ?? false),
-                    title: Text(item.productName,
-                        style: const TextStyle(fontSize: 14)),
-                    subtitle: Text(reasonLabel(item.reason),
-                        style: const TextStyle(
-                            fontSize: 11.5,
-                            color: AppColors.textSecondary)),
-                  );
-                },
-              ),
+      builder:
+          (context, scrollController) => Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              0,
             ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => Navigator.of(context).pop(
-                      widget.items.where((i) => i.suggested).toList(),
-                    ),
-                    child: Text(l10n.createTheList),
+            child: Column(
+              children: [
+                Text(
+                  l10n.recurringListReady,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-              ),
+                Text(
+                  widget.listName,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Expanded(
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: widget.items.length,
+                    itemBuilder: (context, index) {
+                      final item = widget.items[index];
+                      return CheckboxListTile(
+                        dense: true,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        value: item.suggested,
+                        onChanged:
+                            (v) => setState(() => item.suggested = v ?? false),
+                        title: Text(
+                          item.productName,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        subtitle: Text(
+                          reasonLabel(item.reason),
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed:
+                            () => Navigator.of(context).pop(
+                              widget.items.where((i) => i.suggested).toList(),
+                            ),
+                        child: Text(l10n.createTheList),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -393,130 +444,144 @@ class _EditSheetState extends State<_EditSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final weekdays = DateFormat.EEEE(Localizations.localeOf(context).languageCode);
+    final weekdays = DateFormat.EEEE(
+      Localizations.localeOf(context).languageCode,
+    );
 
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.85,
         maxChildSize: 0.95,
-        builder: (context, scrollController) => ListView(
-          controller: scrollController,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            Text(
-              widget.existing == null
-                  ? l10n.newRecurringList
-                  : l10n.edit,
-              style:
-                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextField(
-              controller: _name,
-              decoration: InputDecoration(
-                labelText: l10n.listName,
-                hintText: l10n.recurringNameHint,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Wrap(
-              spacing: AppSpacing.sm,
+        builder:
+            (context, scrollController) => ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                for (final (value, label) in [
-                  ('weekly', l10n.recurrenceWeekly),
-                  ('biweekly', l10n.recurrenceBiweekly),
-                  ('monthly', l10n.recurrenceMonthly),
-                ])
-                  ChoiceChip(
-                    label: Text(label),
-                    selected: _type == value,
-                    showCheckmark: false,
-                    onSelected: (_) => setState(() => _type = value),
+                Text(
+                  widget.existing == null ? l10n.newRecurringList : l10n.edit,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
                   ),
-              ],
-            ),
-            if (_type != 'monthly') ...[
-              const SizedBox(height: AppSpacing.sm),
-              Wrap(
-                spacing: AppSpacing.xs,
-                children: [
-                  for (var d = 1; d <= 7; d++)
-                    ChoiceChip(
-                      label: Text(
-                        weekdays
-                            .format(DateTime(2024, 1, d))
-                            .substring(0, 3),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                TextField(
+                  controller: _name,
+                  decoration: InputDecoration(
+                    labelText: l10n.listName,
+                    hintText: l10n.recurringNameHint,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  children: [
+                    for (final (value, label) in [
+                      ('weekly', l10n.recurrenceWeekly),
+                      ('biweekly', l10n.recurrenceBiweekly),
+                      ('monthly', l10n.recurrenceMonthly),
+                    ])
+                      ChoiceChip(
+                        label: Text(label),
+                        selected: _type == value,
+                        showCheckmark: false,
+                        onSelected: (_) => setState(() => _type = value),
                       ),
-                      selected: _weekday == d,
-                      showCheckmark: false,
-                      onSelected: (_) => setState(() => _weekday = d),
-                    ),
-                ],
-              ),
-            ],
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.autoGenerateLabel,
-                  style: const TextStyle(fontSize: 14)),
-              subtitle: Text(l10n.autoGenerateHint,
-                  style: const TextStyle(fontSize: 12)),
-              value: _autoGenerate,
-              onChanged: (v) => setState(() => _autoGenerate = v),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(l10n.recurringProducts,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w700)),
-            const SizedBox(height: AppSpacing.xs),
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
-              children: [
-                for (final p in _products)
-                  Chip(
-                    label: Text(p, style: const TextStyle(fontSize: 12.5)),
-                    onDeleted: () => setState(() => _products.remove(p)),
+                  ],
+                ),
+                if (_type != 'monthly') ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.xs,
+                    children: [
+                      for (var d = 1; d <= 7; d++)
+                        ChoiceChip(
+                          label: Text(
+                            weekdays
+                                .format(DateTime(2024, 1, d))
+                                .substring(0, 3),
+                          ),
+                          selected: _weekday == d,
+                          showCheckmark: false,
+                          onSelected: (_) => setState(() => _weekday = d),
+                        ),
+                    ],
                   ),
-              ],
-            ),
-            TextField(
-              controller: _product,
-              decoration: InputDecoration(
-                labelText: l10n.inventoryProductName,
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    final v = _product.text.trim();
-                    if (v.isNotEmpty && !_products.contains(v)) {
-                      setState(() => _products.add(v));
+                ],
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    l10n.autoGenerateLabel,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  subtitle: Text(
+                    l10n.autoGenerateHint,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  value: _autoGenerate,
+                  onChanged: (v) => setState(() => _autoGenerate = v),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  l10n.recurringProducts,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Wrap(
+                  spacing: AppSpacing.xs,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    for (final p in _products)
+                      Chip(
+                        label: Text(p, style: const TextStyle(fontSize: 12.5)),
+                        onDeleted: () => setState(() => _products.remove(p)),
+                      ),
+                  ],
+                ),
+                TextField(
+                  controller: _product,
+                  decoration: InputDecoration(
+                    labelText: l10n.inventoryProductName,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        final v = _product.text.trim();
+                        if (v.isNotEmpty && !_products.contains(v)) {
+                          setState(() => _products.add(v));
+                        }
+                        _product.clear();
+                      },
+                    ),
+                  ),
+                  onSubmitted: (v) {
+                    if (v.trim().isNotEmpty && !_products.contains(v.trim())) {
+                      setState(() => _products.add(v.trim()));
                     }
                     _product.clear();
                   },
                 ),
-              ),
-              onSubmitted: (v) {
-                if (v.trim().isNotEmpty && !_products.contains(v.trim())) {
-                  setState(() => _products.add(v.trim()));
-                }
-                _product.clear();
-              },
+                const SizedBox(height: AppSpacing.lg),
+                FilledButton(
+                  onPressed: _saving ? null : _save,
+                  child:
+                      _saving
+                          ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : Text(l10n.save),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+              ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(
-              onPressed: _saving ? null : _save,
-              child: _saving
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.save),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-          ],
-        ),
       ),
     );
   }

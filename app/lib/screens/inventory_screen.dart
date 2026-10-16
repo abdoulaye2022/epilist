@@ -56,9 +56,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Future<void> _setStatus(InventoryItem item, String status) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      await context
-          .read<IntelligenceService>()
-          .setInventoryStatus(item.productName, status);
+      await context.read<IntelligenceService>().setInventoryStatus(
+        item.productName,
+        status,
+      );
       await _load();
       if (status == 'out' && mounted) {
         await _offerAddToList(item.productName);
@@ -81,17 +82,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
     Future<void> add() async {
       try {
         await context.read<ListItemService>().forceAddListItem(
-              listId: listId,
-              productName: productName,
-            );
+          listId: listId,
+          productName: productName,
+        );
         if (!mounted) return;
         SmartSnackBarManager.showSuccessSnackBar(
-            context, l10n.addedToList(productName));
+          context,
+          l10n.addedToList(productName),
+        );
       } catch (_) {}
     }
 
-    if (await IntelligenceSettings.get(IntelligenceSettings.keyAutoAddOut,
-        defaultValue: false)) {
+    if (await IntelligenceSettings.get(
+      IntelligenceSettings.keyAutoAddOut,
+      defaultValue: false,
+    )) {
       await add();
       return;
     }
@@ -110,37 +115,38 @@ class _InventoryScreenState extends State<InventoryScreen> {
     final controller = TextEditingController();
     final name = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.inventoryAddProduct),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(labelText: l10n.inventoryProductName),
-          onSubmitted: (v) => Navigator.of(ctx).pop(v),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.inventoryAddProduct),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: InputDecoration(labelText: l10n.inventoryProductName),
+              onSubmitted: (v) => Navigator.of(ctx).pop(v),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(controller.text),
+                child: Text(l10n.add),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: Text(l10n.add),
-          ),
-        ],
-      ),
     );
     if (name == null || name.trim().isEmpty || !mounted) return;
     try {
-      await context
-          .read<IntelligenceService>()
-          .setInventoryStatus(name.trim(), 'at_home');
+      await context.read<IntelligenceService>().setInventoryStatus(
+        name.trim(),
+        'at_home',
+      );
       await _load();
     } catch (_) {}
   }
 
-  String _qty(double v) =>
-      v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
+  String _qty(double v) => v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
 
   /// Quantité et seuils (§21, §45) : min = alerte « stock critique »,
   /// réappro = quantité suggérée à la commande. Le serveur ne modifie
@@ -148,12 +154,15 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Future<void> _editThresholds(InventoryItem item) async {
     final l10n = AppLocalizations.of(context)!;
     final quantity = TextEditingController(
-        text: item.quantity != null ? _qty(item.quantity!) : '');
+      text: item.quantity != null ? _qty(item.quantity!) : '',
+    );
     final unit = TextEditingController(text: item.unit ?? '');
     final minQty = TextEditingController(
-        text: item.minQuantity != null ? _qty(item.minQuantity!) : '');
+      text: item.minQuantity != null ? _qty(item.minQuantity!) : '',
+    );
     final reorder = TextEditingController(
-        text: item.reorderQuantity != null ? _qty(item.reorderQuantity!) : '');
+      text: item.reorderQuantity != null ? _qty(item.reorderQuantity!) : '',
+    );
 
     double? parse(TextEditingController c) =>
         double.tryParse(c.text.trim().replaceAll(',', '.'));
@@ -176,148 +185,165 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setLocal) => Dialog(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppDialogHeader(
-                  icon: Icons.inventory_2_outlined,
-                  title: l10n.inventoryThresholdsTitle,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                // Le produit concerné, en sous-titre : l'en-tête porte
-                // l'intention, pas le nom.
-                Padding(
-                  padding: const EdgeInsets.only(left: 48),
-                  child: Text(
-                    item.productName,
-                    style: const TextStyle(
-                        fontSize: 13, color: AppColors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: quantity,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        decoration: InputDecoration(
-                          // Seul champ obligatoire : sans quantité, un
-                          // seuil d'alerte ne veut rien dire.
-                          labelText: '${l10n.inventoryQuantity} *',
-                          errorText: quantityError,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          isDense: true,
+      builder:
+          (ctx) => StatefulBuilder(
+            builder:
+                (ctx, setLocal) => Dialog(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AppDialogHeader(
+                          icon: Icons.inventory_2_outlined,
+                          title: l10n.inventoryThresholdsTitle,
                         ),
-                        onChanged: (_) {
-                          if (quantityError != null) {
-                            setLocal(() => quantityError = null);
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: TextField(
-                        controller: unit,
-                        decoration: InputDecoration(
-                          labelText: l10n.inventoryUnit,
-                          hintText: 'kg',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          isDense: true,
+                        const SizedBox(height: AppSpacing.xs),
+                        // Le produit concerné, en sous-titre : l'en-tête porte
+                        // l'intention, pas le nom.
+                        Padding(
+                          padding: const EdgeInsets.only(left: 48),
+                          child: Text(
+                            item.productName,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: minQty,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: l10n.inventoryMinQuantity,
-                    helperText: l10n.inventoryMinQuantityHint,
-                    errorText: minError,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    isDense: true,
-                  ),
-                  onChanged: (_) {
-                    if (minError != null) setLocal(() => minError = null);
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: reorder,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    labelText: l10n.inventoryReorderQuantity,
-                    helperText: l10n.inventoryReorderQuantityHint,
-                    errorText: reorderError,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    isDense: true,
-                  ),
-                  onChanged: (_) {
-                    if (reorderError != null) {
-                      setLocal(() => reorderError = null);
-                    }
-                  },
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                AppDialogActions(
-                  cancelLabel: l10n.cancel,
-                  submitLabel: l10n.save,
-                  onCancel: () => Navigator.of(ctx).pop(false),
-                  onSubmit: () {
-                    // Validation à l'enregistrement : le formulaire ne
-                    // se ferme pas tant qu'il reste une erreur.
-                    final qRaw = quantity.text.trim();
-                    final qError = qRaw.isEmpty
-                        ? l10n.fieldRequired
-                        : optionalNumber(quantity);
-                    final mError = optionalNumber(minQty);
-                    final rError = optionalNumber(reorder);
+                        const SizedBox(height: AppSpacing.lg),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: TextField(
+                                controller: quantity,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
+                                decoration: InputDecoration(
+                                  // Seul champ obligatoire : sans quantité, un
+                                  // seuil d'alerte ne veut rien dire.
+                                  labelText: '${l10n.inventoryQuantity} *',
+                                  errorText: quantityError,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  isDense: true,
+                                ),
+                                onChanged: (_) {
+                                  if (quantityError != null) {
+                                    setLocal(() => quantityError = null);
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: TextField(
+                                controller: unit,
+                                decoration: InputDecoration(
+                                  labelText: l10n.inventoryUnit,
+                                  hintText: 'kg',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        TextField(
+                          controller: minQty,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: l10n.inventoryMinQuantity,
+                            helperText: l10n.inventoryMinQuantityHint,
+                            errorText: minError,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            isDense: true,
+                          ),
+                          onChanged: (_) {
+                            if (minError != null) {
+                              setLocal(() => minError = null);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        TextField(
+                          controller: reorder,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: l10n.inventoryReorderQuantity,
+                            helperText: l10n.inventoryReorderQuantityHint,
+                            errorText: reorderError,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            isDense: true,
+                          ),
+                          onChanged: (_) {
+                            if (reorderError != null) {
+                              setLocal(() => reorderError = null);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppDialogActions(
+                          cancelLabel: l10n.cancel,
+                          submitLabel: l10n.save,
+                          onCancel: () => Navigator.of(ctx).pop(false),
+                          onSubmit: () {
+                            // Validation à l'enregistrement : le formulaire ne
+                            // se ferme pas tant qu'il reste une erreur.
+                            final qRaw = quantity.text.trim();
+                            final qError =
+                                qRaw.isEmpty
+                                    ? l10n.fieldRequired
+                                    : optionalNumber(quantity);
+                            final mError = optionalNumber(minQty);
+                            final rError = optionalNumber(reorder);
 
-                    if (qError != null || mError != null || rError != null) {
-                      setLocal(() {
-                        quantityError = qError;
-                        minError = mError;
-                        reorderError = rError;
-                      });
-                      return;
-                    }
-                    Navigator.of(ctx).pop(true);
-                  },
+                            if (qError != null ||
+                                mError != null ||
+                                rError != null) {
+                              setLocal(() {
+                                quantityError = qError;
+                                minError = mError;
+                                reorderError = rError;
+                              });
+                              return;
+                            }
+                            Navigator.of(ctx).pop(true);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
-            ),
           ),
-        ),
-      ),
     );
     if (saved != true || !mounted) return;
     try {
       await context.read<IntelligenceService>().setInventoryStatus(
-            item.productName,
-            item.status,
-            quantity: parse(quantity),
-            unit: unit.text.trim().isEmpty ? null : unit.text.trim(),
-            minQuantity: parse(minQty),
-            reorderQuantity: parse(reorder),
-          );
+        item.productName,
+        item.status,
+        quantity: parse(quantity),
+        unit: unit.text.trim().isEmpty ? null : unit.text.trim(),
+        minQuantity: parse(minQty),
+        reorderQuantity: parse(reorder),
+      );
       await _load();
     } catch (_) {
       if (!mounted) return;
@@ -329,20 +355,33 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final filtered = _search.isEmpty
-        ? _items
-        : _items
-            .where((i) =>
-                i.productName.toLowerCase().contains(_search.toLowerCase()))
-            .toList();
+    final filtered =
+        _search.isEmpty
+            ? _items
+            : _items
+                .where(
+                  (i) => i.productName.toLowerCase().contains(
+                    _search.toLowerCase(),
+                  ),
+                )
+                .toList();
 
     final sections = <(String, String, List<InventoryItem>)>[
-      ('running_low', l10n.inventoryRunningLow,
-          filtered.where((i) => i.status == 'running_low').toList()),
-      ('at_home', l10n.inventoryAtHome,
-          filtered.where((i) => i.status == 'at_home').toList()),
-      ('out', l10n.inventoryOut,
-          filtered.where((i) => i.status == 'out').toList()),
+      (
+        'running_low',
+        l10n.inventoryRunningLow,
+        filtered.where((i) => i.status == 'running_low').toList(),
+      ),
+      (
+        'at_home',
+        l10n.inventoryAtHome,
+        filtered.where((i) => i.status == 'at_home').toList(),
+      ),
+      (
+        'out',
+        l10n.inventoryOut,
+        filtered.where((i) => i.status == 'out').toList(),
+      ),
     ];
 
     return Scaffold(
@@ -352,81 +391,95 @@ class _InventoryScreenState extends State<InventoryScreen> {
         onPressed: _addProduct,
         backgroundColor: AppColors.primary,
         tooltip: l10n.inventoryAddProduct,
-        child: const Icon(Icons.add, color: Colors.white),
+        child:  Icon(Icons.add, color: AppColors.onPrimary),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md, AppSpacing.sm, AppSpacing.md, 96),
-                children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: l10n.search,
-                      prefixIcon: const Icon(Icons.search, size: 20),
-                      isDense: true,
-                    ),
-                    onChanged: (v) => setState(() => _search = v),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
+                    96,
                   ),
-                  if (_items.isEmpty) ...[
-                    const SizedBox(height: AppSpacing.xl),
-                    Icon(Icons.kitchen_outlined,
-                        size: 56, color: Colors.grey[400]),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      l10n.inventoryEmpty,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 13.5, color: AppColors.textSecondary),
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: l10n.search,
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        isDense: true,
+                      ),
+                      onChanged: (v) => setState(() => _search = v),
                     ),
-                  ] else
-                    for (final (status, title, items) in sections)
-                      if (items.isNotEmpty) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: AppSpacing.md, bottom: AppSpacing.sm),
-                          child: Row(
-                            children: [
-                              _statusDot(status),
-                              const SizedBox(width: AppSpacing.sm),
-                              Text(
-                                '$title (${items.length})',
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
+                    if (_items.isEmpty) ...[
+                      const SizedBox(height: AppSpacing.xl),
+                      Icon(
+                        Icons.kitchen_outlined,
+                        size: 56,
+                        color: AppColors.textDisabled,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        l10n.inventoryEmpty,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          color: AppColors.textSecondary,
                         ),
-                        ...items.map((i) => _itemCard(i, l10n)),
-                      ],
-                ],
+                      ),
+                    ] else
+                      for (final (status, title, items) in sections)
+                        if (items.isNotEmpty) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: AppSpacing.md,
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: Row(
+                              children: [
+                                _statusDot(status),
+                                const SizedBox(width: AppSpacing.sm),
+                                Text(
+                                  '$title (${items.length})',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ...items.map((i) => _itemCard(i, l10n)),
+                        ],
+                  ],
+                ),
               ),
-            ),
     );
   }
 
   Color _statusColor(String status) => switch (status) {
-        'out' => AppColors.error,
-        'running_low' => AppColors.warning,
-        _ => AppColors.primary,
-      };
+    'out' => AppColors.error,
+    'running_low' => AppColors.warning,
+    _ => AppColors.primary,
+  };
 
   Widget _statusDot(String status) => Container(
-        width: 10,
-        height: 10,
-        decoration: BoxDecoration(
-          color: _statusColor(status),
-          shape: BoxShape.circle,
-        ),
-      );
+    width: 10,
+    height: 10,
+    decoration: BoxDecoration(
+      color: _statusColor(status),
+      shape: BoxShape.circle,
+    ),
+  );
 
   Widget _itemCard(InventoryItem item, AppLocalizations l10n) {
     // L'estimation n'est montrée que si elle diffère de l'état manuel
-    final showEstimate = item.status == 'at_home' &&
+    final showEstimate =
+        item.status == 'at_home' &&
         (item.estimatedStatus == 'running_low' ||
             item.estimatedStatus == 'out');
 
@@ -434,21 +487,29 @@ class _InventoryScreenState extends State<InventoryScreen> {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.productName,
-                      style: const TextStyle(
-                          fontSize: 14.5, fontWeight: FontWeight.w600)),
+                  Text(
+                    item.productName,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   if (showEstimate)
                     Text(
                       l10n.inventoryProbablyLow,
-                      style: const TextStyle(
-                          fontSize: 11.5, color: AppColors.warning),
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.warning,
+                      ),
                     ),
                   // Quantitatif (§21) : quantité / seuil + alerte
                   if (item.quantity != null && item.minQuantity != null)
@@ -460,9 +521,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         fontSize: 11.5,
                         fontWeight:
                             item.belowMin ? FontWeight.w700 : FontWeight.w500,
-                        color: item.belowMin
-                            ? AppColors.error
-                            : AppColors.textSecondary,
+                        color:
+                            item.belowMin
+                                ? AppColors.error
+                                : AppColors.textSecondary,
                       ),
                     ),
                 ],
@@ -474,21 +536,26 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 padding: const EdgeInsets.only(left: AppSpacing.xs),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(AppRadius.sm),
-                  onTap: item.status == status
-                      ? null
-                      : () => _setStatus(item, status),
+                  onTap:
+                      item.status == status
+                          ? null
+                          : () => _setStatus(item, status),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 5),
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
-                      color: item.status == status
-                          ? _statusColor(status).withValues(alpha: 0.12)
-                          : Colors.transparent,
+                      color:
+                          item.status == status
+                              ? _statusColor(status).withValues(alpha: 0.12)
+                              : Colors.transparent,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(
-                        color: item.status == status
-                            ? _statusColor(status)
-                            : AppColors.border,
+                        color:
+                            item.status == status
+                                ? _statusColor(status)
+                                : AppColors.border,
                       ),
                     ),
                     child: Icon(
@@ -498,36 +565,41 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         _ => Icons.home_outlined,
                       },
                       size: 17,
-                      color: item.status == status
-                          ? _statusColor(status)
-                          : AppColors.textDisabled,
+                      color:
+                          item.status == status
+                              ? _statusColor(status)
+                              : AppColors.textDisabled,
                     ),
                   ),
                 ),
               ),
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert,
-                  size: 18, color: AppColors.textDisabled),
+              icon: Icon(
+                Icons.more_vert,
+                size: 18,
+                color: AppColors.textDisabled,
+              ),
               onSelected: (action) async {
                 if (action == 'thresholds') {
                   await _editThresholds(item);
                   return;
                 }
-                await context
-                    .read<IntelligenceService>()
-                    .deleteInventoryItem(item.id);
+                await context.read<IntelligenceService>().deleteInventoryItem(
+                  item.id,
+                );
                 _load();
               },
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 'thresholds',
-                  child: Text(l10n.inventoryThresholds),
-                ),
-                PopupMenuItem(
-                  value: 'remove',
-                  child: Text(l10n.removeFromInventory),
-                ),
-              ],
+              itemBuilder:
+                  (_) => [
+                    PopupMenuItem(
+                      value: 'thresholds',
+                      child: Text(l10n.inventoryThresholds),
+                    ),
+                    PopupMenuItem(
+                      value: 'remove',
+                      child: Text(l10n.removeFromInventory),
+                    ),
+                  ],
             ),
           ],
         ),

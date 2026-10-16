@@ -230,13 +230,13 @@ class SmartSnackBarManager {
           SnackBar(
             content: Row(
               children: [
-                Icon(config.icon, color: Colors.white, size: 20),
+                Icon(config.icon, color: AppColors.onPrimary, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style:  TextStyle(
+                      color: AppColors.onPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -256,7 +256,7 @@ class SmartSnackBarManager {
                 shouldShowCloseAction // ✅ CORRIGÉ: Utiliser la variable
                     ? SnackBarAction(
                       label: 'Fermer',
-                      textColor: Colors.white70,
+                      textColor: AppColors.onPrimary.withValues(alpha: 0.7),
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
                       },

@@ -31,7 +31,7 @@ class ProductConfirmationDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
+                color: AppColors.successTint,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -193,7 +193,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                     label: Text(AppLocalizations.of(context)!.addToList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 12,

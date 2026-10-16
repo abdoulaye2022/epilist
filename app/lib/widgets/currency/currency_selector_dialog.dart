@@ -57,7 +57,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -142,7 +142,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.currency_exchange, size: 40, color: AppColors.primary),
+      child: Icon(Icons.currency_exchange, size: 40, color: AppColors.primaryDark),
     );
   }
 
@@ -150,7 +150,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       AppLocalizations.of(context)!.selectCurrencyTitle,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -163,7 +163,11 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     return Text(
       'Choisissez votre devise d\'affichage préférée',
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -191,7 +195,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.orange[400]),
+            Icon(Icons.error_outline, size: 48, color: AppColors.warning),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.noCurrencyAvailable,
@@ -231,7 +235,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.green[300]!),
+            border: Border.all(color: AppColors.successBorder),
             borderRadius: BorderRadius.circular(12),
             color: AppColors.primaryLight,
           ),
@@ -312,14 +316,14 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.orange[100],
+                                color: AppColors.warningTint,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 'Populaire',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: AppColors.warning,
+                                  color: AppColors.warningInk,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -347,11 +351,11 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
           decoration: BoxDecoration(
             color: AppColors.accentLight,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.blue[200]!),
+            border: Border.all(color: AppColors.infoBorder),
           ),
           child: Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: AppColors.accent),
+              Icon(Icons.info_outline, size: 16, color: AppColors.infoInk),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -403,8 +407,8 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                 onPressed: (canSave && !isLoading) ? _saveCurrency : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.green[300],
+                  foregroundColor: AppColors.onPrimary,
+                  disabledBackgroundColor: AppColors.border,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -413,13 +417,13 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                 ),
                 child:
                     isLoading
-                        ? const SizedBox(
+                        ?  SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                              AppColors.onPrimary,
                             ),
                           ),
                         )

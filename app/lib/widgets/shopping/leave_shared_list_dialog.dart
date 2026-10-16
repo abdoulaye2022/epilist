@@ -34,13 +34,13 @@ class LeaveSharedListDialog extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.orange[50],
+              color: AppColors.warningTint,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange[200]!),
+              border: Border.all(color: AppColors.warningBorder),
             ),
             child: Row(
               children: [
-                Icon(Icons.info, color: AppColors.warning, size: 16),
+                Icon(Icons.info, color: AppColors.warningInk, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -66,7 +66,7 @@ class LeaveSharedListDialog extends StatelessWidget {
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
-          child: Text(l10n.leave, style: TextStyle(color: Colors.white)),
+          child: Text(l10n.leave, style: TextStyle(color: AppColors.onWarning)),
         ),
       ],
     );

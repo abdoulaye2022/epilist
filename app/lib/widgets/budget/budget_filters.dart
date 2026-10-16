@@ -44,7 +44,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
     final themeColor = Theme.of(context).primaryColor;
 
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       margin: const EdgeInsets.all(16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -64,7 +64,8 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                 children: [
                   Icon(
                     Icons.filter_list,
-                    color: hasActiveFilters ? themeColor : AppColors.textSecondary,
+                    color:
+                        hasActiveFilters ? themeColor : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -73,7 +74,10 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: hasActiveFilters ? themeColor : AppColors.textPrimary,
+                        color:
+                            hasActiveFilters
+                                ? themeColor
+                                : AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -124,7 +128,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           ),
 
           if (_isExpanded) ...[
-            const Divider(height: 1, color: Colors.grey),
+            Divider(height: 1, color: AppColors.border),
             // ✅ CORRECTION OVERFLOW: Contraindre la hauteur max
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 400),
@@ -167,7 +171,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: AppColors.textPrimary,
@@ -371,10 +375,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       borderRadius: BorderRadius.circular(8),
                       border:
                           isActive
-                              ? Border.all(
-                                color: themeColor,
-                                width: 2,
-                              )
+                              ? Border.all(color: themeColor, width: 2)
                               : Border.all(color: AppColors.border),
                     ),
                     child: Row(
@@ -382,14 +383,16 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         Icon(
                           option['icon'] as IconData,
                           size: 20,
-                          color: isActive ? themeColor : AppColors.textSecondary,
+                          color:
+                              isActive ? themeColor : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             option['label'] as String,
                             style: TextStyle(
-                              color: isActive ? themeColor : AppColors.textPrimary,
+                              color:
+                                  isActive ? themeColor : AppColors.textPrimary,
                               fontWeight:
                                   isActive
                                       ? FontWeight.w600
@@ -479,7 +482,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                     Icon(
                       icon,
                       size: 14,
-                      color: isActive ? Colors.white : chipColor,
+                      color: isActive ? AppColors.onPrimary : chipColor,
                     ),
                     const SizedBox(width: 6),
                   ],
@@ -488,8 +491,12 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: isActive ? Colors.white : AppColors.textPrimary,
-                        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isActive
+                                ? AppColors.onPrimary
+                                : AppColors.textPrimary,
+                        fontWeight:
+                            isActive ? FontWeight.w600 : FontWeight.normal,
                         fontSize: 12,
                       ),
                       overflow: TextOverflow.ellipsis,

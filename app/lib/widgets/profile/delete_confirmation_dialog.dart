@@ -2,6 +2,7 @@
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class DeleteConfirmationDialog extends StatelessWidget {
   final String title;
@@ -102,12 +103,10 @@ class DeleteConfirmationDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
-      child: Container(
+      child: AppCard(
+        radius: 20,
+        bordered: false,
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -143,7 +142,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
   Widget _buildTitle() {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -176,7 +175,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
           TextSpan(text: '$description '),
           TextSpan(
             text: '"$itemName"',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -238,7 +237,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                     },
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               disabledBackgroundColor: color.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
@@ -248,12 +247,12 @@ class DeleteConfirmationDialog extends StatelessWidget {
             ),
             child:
                 isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     )
                     : Text(

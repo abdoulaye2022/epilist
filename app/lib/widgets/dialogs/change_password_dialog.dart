@@ -101,11 +101,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         decoration: BoxDecoration(
           color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue[200]!),
+          border: Border.all(color: AppColors.infoBorder),
         ),
         child: Column(
           children: [
-            Icon(Icons.info_outline, color: AppColors.accent, size: 24),
+            Icon(Icons.info_outline, color: AppColors.infoInk, size: 24),
             const SizedBox(height: 8),
             Text(
               l10n.verificationCodeWillBeSent,
@@ -145,11 +145,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         decoration: BoxDecoration(
           color: AppColors.primaryLight,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.green[200]!),
+          border: Border.all(color: AppColors.successBorder),
         ),
         child: Column(
           children: [
-            Icon(Icons.mail_outline, color: AppColors.primary, size: 24),
+            Icon(Icons.mail_outline, color: AppColors.primaryDark, size: 24),
             const SizedBox(height: 8),
             Text(
               l10n.verificationCodeSent,

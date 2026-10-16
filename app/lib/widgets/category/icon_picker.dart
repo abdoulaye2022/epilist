@@ -7,10 +7,7 @@ import '../../l10n/app_localizations.dart';
 class IconPickerDialog extends StatefulWidget {
   final String selectedIconCode;
 
-  const IconPickerDialog({
-    super.key,
-    required this.selectedIconCode,
-  });
+  const IconPickerDialog({super.key, required this.selectedIconCode});
 
   @override
   State<IconPickerDialog> createState() => _IconPickerDialogState();
@@ -28,7 +25,11 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       {'code': 'fastfood', 'label': 'Fast Food', 'labelEn': 'Fast food'},
       {'code': 'lunch_dining', 'label': 'Déjeuner', 'labelEn': 'Lunch'},
       {'code': 'dinner_dining', 'label': 'Dîner', 'labelEn': 'Dinner'},
-      {'code': 'breakfast_dining', 'label': 'Petit-déjeuner', 'labelEn': 'Breakfast'},
+      {
+        'code': 'breakfast_dining',
+        'label': 'Petit-déjeuner',
+        'labelEn': 'Breakfast',
+      },
       {'code': 'local_pizza', 'label': 'Pizza', 'labelEn': 'Pizza'},
       {'code': 'local_cafe', 'label': 'Café', 'labelEn': 'Coffee'},
       {'code': 'local_bar', 'label': 'Bar', 'labelEn': 'Bar'},
@@ -43,7 +44,11 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     'Shopping': [
       {'code': 'shopping_cart', 'label': 'Panier', 'labelEn': 'Cart'},
       {'code': 'shopping_bag', 'label': 'Sac', 'labelEn': 'Bag'},
-      {'code': 'local_grocery_store', 'label': 'Épicerie', 'labelEn': 'Grocery'},
+      {
+        'code': 'local_grocery_store',
+        'label': 'Épicerie',
+        'labelEn': 'Grocery',
+      },
       {'code': 'store', 'label': 'Magasin', 'labelEn': 'Store'},
       {'code': 'storefront', 'label': 'Devanture', 'labelEn': 'Storefront'},
       {'code': 'local_mall', 'label': 'Centre commercial', 'labelEn': 'Mall'},
@@ -62,8 +67,16 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       {'code': 'shower', 'label': 'Douche', 'labelEn': 'Shower'},
     ],
     'Hygiène': [
-      {'code': 'cleaning_services', 'label': 'Nettoyage', 'labelEn': 'Cleaning'},
-      {'code': 'clean_hands', 'label': 'Mains propres', 'labelEn': 'Clean hands'},
+      {
+        'code': 'cleaning_services',
+        'label': 'Nettoyage',
+        'labelEn': 'Cleaning',
+      },
+      {
+        'code': 'clean_hands',
+        'label': 'Mains propres',
+        'labelEn': 'Clean hands',
+      },
       {'code': 'soap', 'label': 'Savon', 'labelEn': 'Soap'},
       {'code': 'face', 'label': 'Visage', 'labelEn': 'Face'},
       {'code': 'spa', 'label': 'Spa', 'labelEn': 'Spa'},
@@ -83,7 +96,11 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     ],
     'Bébé': [
       {'code': 'child_care', 'label': 'Garde d\'enfant'},
-      {'code': 'baby_changing_station', 'label': 'Change bébé', 'labelEn': 'Diaper change'},
+      {
+        'code': 'baby_changing_station',
+        'label': 'Change bébé',
+        'labelEn': 'Diaper change',
+      },
       {'code': 'toys', 'label': 'Jouets', 'labelEn': 'Toys'},
       {'code': 'stroller', 'label': 'Poussette', 'labelEn': 'Stroller'},
     ],
@@ -109,9 +126,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
         child: Column(
@@ -128,10 +143,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.category,
-                    color: theme.primaryColor,
-                  ),
+                  Icon(Icons.category, color: theme.primaryColor),
                   const SizedBox(width: 12),
                   Text(
                     l10n.selectIcon,
@@ -165,9 +177,10 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
 
             // Grille d'icônes
             Expanded(
-              child: _searchQuery.isEmpty
-                  ? _buildCategorizedIcons(theme)
-                  : _buildSearchResults(theme, l10n),
+              child:
+                  _searchQuery.isEmpty
+                      ? _buildCategorizedIcons(theme)
+                      : _buildSearchResults(theme, l10n),
             ),
 
             // Boutons d'action
@@ -187,7 +200,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                     ),
                     child: Text(l10n.select),
                   ),
@@ -203,39 +216,40 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
   Widget _buildCategorizedIcons(ThemeData theme) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      children: _iconCategories.entries.map((entry) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                _groupLabel(context, entry.key),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.primaryColor,
+      children:
+          _iconCategories.entries.map((entry) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    _groupLabel(context, entry.key),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.primaryColor,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 6,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 1,
-              ),
-              itemCount: entry.value.length,
-              itemBuilder: (context, index) {
-                final icon = entry.value[index];
-                return _buildIconTile(icon, theme);
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
-        );
-      }).toList(),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: entry.value.length,
+                  itemBuilder: (context, index) {
+                    final icon = entry.value[index];
+                    return _buildIconTile(icon, theme);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            );
+          }).toList(),
     );
   }
 
@@ -245,16 +259,15 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       allIcons.addAll(category);
     }
 
-    final filteredIcons = allIcons.where((icon) {
-      return icon['label']!.toLowerCase().contains(_searchQuery) ||
-          (icon['labelEn'] ?? '').toLowerCase().contains(_searchQuery) ||
-          icon['code']!.toLowerCase().contains(_searchQuery);
-    }).toList();
+    final filteredIcons =
+        allIcons.where((icon) {
+          return icon['label']!.toLowerCase().contains(_searchQuery) ||
+              (icon['labelEn'] ?? '').toLowerCase().contains(_searchQuery) ||
+              icon['code']!.toLowerCase().contains(_searchQuery);
+        }).toList();
 
     if (filteredIcons.isEmpty) {
-      return Center(
-        child: Text(l10n.noIconFound),
-      );
+      return Center(child: Text(l10n.noIconFound));
     }
 
     return GridView.builder(
@@ -284,9 +297,10 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected
-              ? theme.primaryColor.withValues(alpha: 0.2)
-              : AppColors.background,
+          color:
+              isSelected
+                  ? theme.primaryColor.withValues(alpha: 0.2)
+                  : AppColors.background,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? theme.primaryColor : AppColors.border,
@@ -301,6 +315,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
       ),
     );
   }
+
   /// Libellé de l'icône dans la langue de l'appareil.
 
   static const Map<String, String> _groupEn = {
@@ -320,5 +335,4 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     final isEn = Localizations.localeOf(context).languageCode == 'en';
     return isEn ? (_groupEn[key] ?? key) : key;
   }
-
 }

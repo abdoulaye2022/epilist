@@ -14,6 +14,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SpaceSelectorSheet extends StatefulWidget {
   final SpaceService service;
@@ -25,7 +26,7 @@ class SpaceSelectorSheet extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -65,11 +66,11 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
   }
 
   IconData _iconFor(String type) => switch (type) {
-        'household' => Icons.family_restroom_rounded,
-        'restaurant' => Icons.restaurant_rounded,
-        'organization' => Icons.apartment_rounded,
-        _ => Icons.person_rounded,
-      };
+    'household' => Icons.family_restroom_rounded,
+    'restaurant' => Icons.restaurant_rounded,
+    'organization' => Icons.apartment_rounded,
+    _ => Icons.person_rounded,
+  };
 
   Future<void> _select(Space space) async {
     final l10n = AppLocalizations.of(context)!;
@@ -109,14 +110,18 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.md),
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               l10n.spaces,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
@@ -134,7 +139,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                 child: Text(
                   l10n.anErrorOccurred,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               )
             else ...[
@@ -143,22 +148,27 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                   shrinkWrap: true,
                   children: [
                     for (final space in _spaces!)
-                      _spaceTile(space, l10n,
-                          selected: space.isPersonal
-                              ? activeId == null
-                              : activeId == space.id),
+                      _spaceTile(
+                        space,
+                        l10n,
+                        selected:
+                            space.isPersonal
+                                ? activeId == null
+                                : activeId == space.id,
+                      ),
                     if (_invitations.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.sm),
                       Text(
                         l10n.spaceMyInvitations,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
-                      for (final inv in _invitations) _invitationTile(inv, l10n),
+                      for (final inv in _invitations)
+                        _invitationTile(inv, l10n),
                     ],
                   ],
                 ),
@@ -168,7 +178,9 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const CreateSpaceScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const CreateSpaceScreen(),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.add, size: 18),
@@ -181,16 +193,20 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
     );
   }
 
-  Widget _spaceTile(Space space, AppLocalizations l10n,
-      {required bool selected}) {
+  Widget _spaceTile(
+    Space space,
+    AppLocalizations l10n, {
+    required bool selected,
+  }) {
     final label = space.isPersonal ? l10n.spacePersonal : space.name;
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       decoration: BoxDecoration(
-        color: selected ? AppColors.primaryLight : Colors.white,
+        color: selected ? AppColors.primaryLight : AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border),
+          color: selected ? AppColors.primary : AppColors.border,
+        ),
       ),
       child: Material(
         // Material propre au ListTile : le fond du conteneur parent
@@ -199,27 +215,38 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
         type: MaterialType.transparency,
         child: ListTile(
           dense: true,
-          leading: Icon(_iconFor(space.type),
-              color: AppColors.primaryDark, size: 22),
+          leading: Icon(
+            _iconFor(space.type),
+            color: AppColors.primaryDark,
+            size: 22,
+          ),
           title: Text(
             label,
-            style: const TextStyle(
-                fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
-          subtitle: space.isPersonal
-              ? null
-              : Text(
-                  '${space.membersCount} · ${_roleLabel(space.myRole, l10n)}',
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
-                ),
+          subtitle:
+              space.isPersonal
+                  ? null
+                  : Text(
+                    '${space.membersCount} · ${_roleLabel(space.myRole, l10n)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!space.isPersonal) ...[
                 IconButton(
-                  icon: const Icon(Icons.history_rounded,
-                      size: 20, color: AppColors.textSecondary),
+                  icon: Icon(
+                    Icons.history_rounded,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
                   tooltip: l10n.spaceActivity,
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -231,8 +258,11 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.group_outlined,
-                      size: 20, color: AppColors.textSecondary),
+                  icon: Icon(
+                    Icons.group_outlined,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
                   tooltip: l10n.spaceMembers,
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -245,8 +275,11 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                 ),
               ],
               if (selected)
-                const Icon(Icons.check_circle_rounded,
-                    color: AppColors.primary, size: 20),
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
             ],
           ),
           onTap: () => _select(space),
@@ -256,26 +289,20 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
   }
 
   String _roleLabel(String? role, AppLocalizations l10n) => switch (role) {
-        'owner' => l10n.spaceRoleOwner,
-        'admin' => l10n.spaceRoleAdmin,
-        'manager' => l10n.spaceRoleManager,
-        'viewer' => l10n.spaceRoleViewer,
-        _ => l10n.spaceRoleMember,
-      };
+    'owner' => l10n.spaceRoleOwner,
+    'admin' => l10n.spaceRoleAdmin,
+    'manager' => l10n.spaceRoleManager,
+    'viewer' => l10n.spaceRoleViewer,
+    _ => l10n.spaceRoleMember,
+  };
 
   Widget _invitationTile(SpaceInvitationInfo inv, AppLocalizations l10n) {
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       padding: const EdgeInsets.all(AppSpacing.sm + 2),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Row(
         children: [
-          Icon(_iconFor(inv.spaceType),
-              color: AppColors.primaryDark, size: 20),
+          Icon(_iconFor(inv.spaceType), color: AppColors.primaryDark, size: 20),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
@@ -283,28 +310,33 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
               children: [
                 Text(
                   inv.spaceName,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 Text(
                   l10n.spaceInvitedBy(inv.invitedByName),
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
           ),
           TextButton(
             onPressed: () => _answer(inv, false),
-            child: Text(l10n.spaceDecline,
-                style: const TextStyle(color: AppColors.textSecondary)),
+            child: Text(
+              l10n.spaceDecline,
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () => _answer(inv, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 14),
             ),
             child: Text(l10n.spaceAccept),

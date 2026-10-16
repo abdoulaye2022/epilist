@@ -5970,6 +5970,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptPhotoTitle => 'Receipt photo';
 
   @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get appearanceHint => 'Light, dark, or follow your phone';
+
+  @override
+  String get appearanceSystem => 'Match the system';
+
+  @override
+  String get appearanceSystemHint => 'Follows your phone\'s setting';
+
+  @override
+  String get appearanceLight => 'Light';
+
+  @override
+  String get appearanceDark => 'Dark';
+
+  @override
+  String get appearancePreview => 'Preview';
+
+  @override
+  String get appearancePreviewLine =>
+      'A title, a secondary line, and a button.';
+
+  @override
   String get tabMore => 'More';
 
   @override

@@ -54,8 +54,9 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
       final cat = byKind.remove(kind);
       if (cat != null) ordered.add(MapEntry(kind, cat));
     }
-    final remaining = byKind.entries.toList()
-      ..sort((a, b) => a.value.orderIndex.compareTo(b.value.orderIndex));
+    final remaining =
+        byKind.entries.toList()
+          ..sort((a, b) => a.value.orderIndex.compareTo(b.value.orderIndex));
     ordered.addAll(remaining.map((e) => MapEntry(e.key, e.value)));
 
     _aisles = ordered;
@@ -64,11 +65,8 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
 
   void _save() {
     context.read<StoreBloc>().add(
-          SaveCategoryOrder(
-            widget.storeId,
-            _aisles.map((e) => e.key).toList(),
-          ),
-        );
+      SaveCategoryOrder(widget.storeId, _aisles.map((e) => e.key).toList()),
+    );
   }
 
   @override
@@ -82,15 +80,15 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
-            iconTheme: const IconThemeData(color: AppColors.textPrimary),
+            iconTheme: IconThemeData(color: AppColors.textPrimary),
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   store?.name ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -98,7 +96,10 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                 ),
                 Text(
                   l10n.aisleOrder,
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -125,19 +126,22 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.accentLight,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue[100]!),
+                      border: Border.all(color: AppColors.infoTint),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.swipe_vertical,
-                            color: AppColors.accent, size: 22),
+                        Icon(
+                          Icons.swipe_vertical,
+                          color: AppColors.infoInk,
+                          size: 22,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             l10n.aisleOrderHint,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.blue[900],
+                              color: AppColors.infoInk,
                               height: 1.3,
                             ),
                           ),
@@ -161,7 +165,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                         final cat = aisle.value;
                         return Card(
                           key: ValueKey(aisle.key),
-                          color: Colors.white,
+                          color: AppColors.surface,
                           elevation: 1,
                           margin: const EdgeInsets.only(bottom: 10),
                           shape: RoundedRectangleBorder(
@@ -191,7 +195,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                                 Expanded(
                                   child: Text(
                                     cat.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.textPrimary,
                                     ),
@@ -201,8 +205,10 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                             ),
                             trailing: ReorderableDragStartListener(
                               index: index,
-                              child: Icon(Icons.drag_handle,
-                                  color: AppColors.textDisabled),
+                              child: Icon(
+                                Icons.drag_handle,
+                                color: AppColors.textDisabled,
+                              ),
                             ),
                           ),
                         );

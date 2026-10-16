@@ -29,7 +29,9 @@ class SharedListsFilter extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         children: [
@@ -38,7 +40,7 @@ class SharedListsFilter extends StatelessWidget {
             children: [
               Icon(
                 includeShared ? Icons.group : Icons.person,
-                color: includeShared ? Colors.blue : Colors.grey,
+                color: includeShared ? AppColors.info : AppColors.textSecondary,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -64,7 +66,7 @@ class SharedListsFilter extends StatelessWidget {
                     );
                   }
                 },
-                activeThumbColor: Colors.blue,
+                activeThumbColor: AppColors.info,
               ),
             ],
           ),
@@ -86,7 +88,9 @@ class SharedListsFilter extends StatelessWidget {
                       l10n.showingOnlyOwnLists,
                       style: TextStyle(
                         fontSize: 12,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                   ),
@@ -151,8 +155,8 @@ class SharedListsFilter extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: ownPercentage / 100,
-                backgroundColor: Colors.blue.withValues(alpha: 0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                backgroundColor: AppColors.info.withValues(alpha: 0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
                 minHeight: 6,
               ),
             ),
@@ -169,8 +173,8 @@ class SharedListsFilter extends StatelessWidget {
                     Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
+                      decoration: BoxDecoration(
+                        color: AppColors.success,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -196,7 +200,7 @@ class SharedListsFilter extends StatelessWidget {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.7),
+                        color: AppColors.info.withValues(alpha: 0.7),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -232,20 +236,19 @@ class QuickSharedListsToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           includeShared ? Icons.group : Icons.person,
           size: 18,
-          color: includeShared ? Colors.blue : Colors.grey,
+          color: includeShared ? AppColors.info : AppColors.textSecondary,
         ),
         const SizedBox(width: 4),
         Switch.adaptive(
           value: includeShared,
           onChanged: onChanged,
-          activeThumbColor: Colors.blue,
+          activeThumbColor: AppColors.info,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ],
@@ -270,14 +273,14 @@ class FilterStatusIndicator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orange.withValues(alpha: 0.1),
+        color: AppColors.warningTint,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.filter_alt, size: 14, color: AppColors.warning),
+          Icon(Icons.filter_alt, size: 14, color: AppColors.warningInk),
           const SizedBox(width: 4),
           Text(
             l10n.ownListsOnly,

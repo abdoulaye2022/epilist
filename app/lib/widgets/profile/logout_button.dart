@@ -18,13 +18,13 @@ class LogoutButton extends StatelessWidget {
         icon: const Icon(Icons.logout),
         label: Text(l10n.logoutButton),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red[50],
+          backgroundColor: AppColors.errorTint,
           foregroundColor: AppColors.error,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.red[200]!),
+            side: BorderSide(color: AppColors.errorBorder),
           ),
         ),
       ),

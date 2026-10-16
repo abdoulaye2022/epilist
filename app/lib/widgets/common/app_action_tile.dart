@@ -37,18 +37,23 @@ class AppActionTile extends StatelessWidget {
         child: Icon(icon, size: 21, color: AppColors.primaryDark),
       ),
       title: Text(title, style: theme.textTheme.titleSmall),
-      subtitle: subtitle == null
-          ? null
-          : Text(
-              subtitle!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall,
-            ),
-      trailing: badge == null
-          ? const Icon(Icons.chevron_right_rounded,
-              size: 20, color: AppColors.textDisabled)
-          : Text(badge!, style: theme.textTheme.bodySmall),
+      subtitle:
+          subtitle == null
+              ? null
+              : Text(
+                subtitle!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall,
+              ),
+      trailing:
+          badge == null
+              ? Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: AppColors.textDisabled,
+              )
+              : Text(badge!, style: theme.textTheme.bodySmall),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),

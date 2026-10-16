@@ -36,26 +36,33 @@ class BudgetMonthCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.14),
+          color: AppColors.onBrandBand.withValues(alpha: 0.14),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.calendar_today_outlined,
-                size: 11, color: Colors.white),
+             Icon(
+              Icons.calendar_today_outlined,
+              size: 11,
+              color: AppColors.onBrandBand,
+            ),
             const SizedBox(width: 5),
             Text(
               month,
-              style: const TextStyle(
-                color: Colors.white,
+              style:  TextStyle(
+                color: AppColors.onBrandBand,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
               ),
             ),
             if (onPickMonth != null) ...[
               const SizedBox(width: 2),
-              const Icon(Icons.expand_more, size: 13, color: Colors.white),
+               Icon(
+                Icons.expand_more,
+                size: 13,
+                color: AppColors.onBrandBand,
+              ),
             ],
           ],
         ),
@@ -66,15 +73,16 @@ class BudgetMonthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final ratio = budget.budgetAmount > 0
-        ? (budget.spentAmount / budget.budgetAmount).clamp(0.0, 1.0)
-        : 0.0;
+    final ratio =
+        budget.budgetAmount > 0
+            ? (budget.spentAmount / budget.budgetAmount).clamp(0.0, 1.0)
+            : 0.0;
     final over = budget.spentAmount > budget.budgetAmount;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md + 2),
       decoration: BoxDecoration(
-        color: AppColors.primaryDark,
+        color: AppColors.brandBand,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Column(
@@ -85,11 +93,14 @@ class BudgetMonthCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.14),
+                  color: AppColors.onBrandBand.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.account_balance_wallet_outlined,
-                    color: Colors.white, size: 20),
+                child:  Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: AppColors.onBrandBand,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: AppSpacing.sm + 4),
               Expanded(
@@ -98,8 +109,8 @@ class BudgetMonthCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         l10n.budgetOfMonth,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style:  TextStyle(
+                          color: AppColors.onBrandBand,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -114,16 +125,20 @@ class BudgetMonthCard extends StatelessWidget {
               TextButton(
                 onPressed: onSeeDetail,
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.white.withValues(alpha: 0.14),
+                  foregroundColor: AppColors.onBrandBand,
+                  backgroundColor: AppColors.onBrandBand.withValues(alpha: 0.14),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   minimumSize: Size.zero,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(999),
                   ),
                   textStyle: const TextStyle(
-                      fontSize: 12.5, fontWeight: FontWeight.w600),
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 child: Text('${l10n.seeDetail} →'),
               ),
@@ -136,8 +151,8 @@ class BudgetMonthCard extends StatelessWidget {
             children: [
               Text(
                 budget.formattedSpentAmount,
-                style: const TextStyle(
-                  color: Colors.white,
+                style:  TextStyle(
+                  color: AppColors.onBrandBand,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                 ),
@@ -146,7 +161,7 @@ class BudgetMonthCard extends StatelessWidget {
               Text(
                 '/ ${budget.formattedBudgetAmount}',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: AppColors.onBrandBand.withValues(alpha: 0.7),
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
@@ -162,7 +177,9 @@ class BudgetMonthCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: ratio,
                     minHeight: 8,
-                    backgroundColor: Colors.white.withValues(alpha: 0.18),
+                    backgroundColor: AppColors.onBrandBand.withValues(
+                      alpha: 0.18,
+                    ),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       over ? const Color(0xFFFFB4A9) : const Color(0xFF9BE7A0),
                     ),
@@ -172,8 +189,8 @@ class BudgetMonthCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm + 4),
               Text(
                 '${(ratio * 100).round()} %',
-                style: const TextStyle(
-                  color: Colors.white,
+                style:  TextStyle(
+                  color: AppColors.onBrandBand,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                 ),
@@ -186,14 +203,14 @@ class BudgetMonthCard extends StatelessWidget {
               Icon(
                 over ? Icons.error_outline : Icons.eco_outlined,
                 size: 14,
-                color: Colors.white.withValues(alpha: 0.85),
+                color: AppColors.onBrandBand.withValues(alpha: 0.85),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   over ? l10n.budgetExceededShort : l10n.withinBudget,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: AppColors.onBrandBand.withValues(alpha: 0.85),
                     fontSize: 12.5,
                   ),
                 ),
@@ -201,7 +218,7 @@ class BudgetMonthCard extends StatelessWidget {
               Text(
                 l10n.remainingThisMonth(budget.formattedRemainingAmount),
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.85),
+                  color: AppColors.onBrandBand.withValues(alpha: 0.85),
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -243,7 +260,7 @@ class BudgetCtaCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.primaryDark,
+        color: AppColors.brandBand,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Row(
@@ -251,11 +268,14 @@ class BudgetCtaCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.14),
+              color: AppColors.onBrandBand.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: const Icon(Icons.account_balance_wallet_outlined,
-                color: Colors.white, size: 20),
+            child:  Icon(
+              Icons.account_balance_wallet_outlined,
+              color: AppColors.onBrandBand,
+              size: 20,
+            ),
           ),
           const SizedBox(width: AppSpacing.sm + 4),
           Expanded(
@@ -264,8 +284,8 @@ class BudgetCtaCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.budgetOfMonth,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style:  TextStyle(
+                    color: AppColors.onBrandBand,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -276,7 +296,7 @@ class BudgetCtaCard extends StatelessWidget {
                       ? l10n.createBudgetCta
                       : l10n.noBudgetForMonth(_monthLabel(context)),
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: AppColors.onBrandBand.withValues(alpha: 0.8),
                     fontSize: 12.5,
                   ),
                 ),
@@ -288,14 +308,16 @@ class BudgetCtaCard extends StatelessWidget {
             GestureDetector(
               onTap: onPickMonth,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.14),
+                  color: AppColors.onBrandBand.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Icon(Icons.expand_more,
-                    size: 15, color: Colors.white),
+                child:  Icon(
+                  Icons.expand_more,
+                  size: 15,
+                  color: AppColors.onBrandBand,
+                ),
               ),
             ),
           ],
@@ -304,15 +326,16 @@ class BudgetCtaCard extends StatelessWidget {
             onPressed: onCreate,
             style: TextButton.styleFrom(
               foregroundColor: AppColors.primaryDark,
-              backgroundColor: Colors.white,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              backgroundColor: AppColors.surface,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               minimumSize: Size.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(999),
               ),
               textStyle: const TextStyle(
-                  fontSize: 12.5, fontWeight: FontWeight.w700),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             child: const Text('+'),
           ),
@@ -363,14 +386,17 @@ class DashboardListCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    const Icon(Icons.chevron_right,
-                        size: 18, color: AppColors.textDisabled),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: AppColors.textDisabled,
+                    ),
                   ],
                 ),
                 const Spacer(),
                 Text(
                   list.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -381,7 +407,7 @@ class DashboardListCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   '$done / $total ${l10n.articles.toLowerCase()}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -393,8 +419,9 @@ class DashboardListCard extends StatelessWidget {
                     value: list.progress,
                     minHeight: 5,
                     backgroundColor: AppColors.background,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                   ),
                 ),
               ],
@@ -433,7 +460,7 @@ class QuickActionButton extends StatelessWidget {
               width: 58,
               height: 58,
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.primaryLight,
                 shape: BoxShape.circle,
               ),
@@ -443,7 +470,7 @@ class QuickActionButton extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -453,10 +480,7 @@ class QuickActionButton extends StatelessWidget {
             Text(
               sublabel,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 10.5,
-                color: AppColors.textDisabled,
-              ),
+              style: TextStyle(fontSize: 10.5, color: AppColors.textDisabled),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -508,7 +532,7 @@ class DashboardTile extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -519,7 +543,7 @@ class DashboardTile extends StatelessWidget {
                       if (subtitle != null)
                         Text(
                           subtitle!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -529,8 +553,11 @@ class DashboardTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right,
-                    size: 18, color: AppColors.textDisabled),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: AppColors.textDisabled,
+                ),
               ],
             ),
           ),

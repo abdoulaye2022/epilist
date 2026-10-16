@@ -19,9 +19,7 @@ class ProductInfoDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Column(
@@ -47,10 +45,11 @@ class ProductInfoDialog extends StatelessWidget {
                       height: 200,
                       child: Center(
                         child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
                         ),
                       ),
                     );
@@ -170,7 +169,7 @@ class ProductInfoDialog extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -193,15 +192,13 @@ class ProductInfoDialog extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         color: AppColors.border,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Center(
         child: Icon(
           Icons.shopping_basket,
           size: 64,
-          color: AppColors.textDisabled,
+          color: AppColors.textSecondary,
         ),
       ),
     );

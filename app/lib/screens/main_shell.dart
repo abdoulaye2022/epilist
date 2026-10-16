@@ -87,7 +87,7 @@ class _MainShellState extends State<MainShell> {
 
   Widget _buildBottomBar(AppLocalizations l10n) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
@@ -97,15 +97,31 @@ class _MainShellState extends State<MainShell> {
           height: 64,
           child: Row(
             children: [
-              _tabItem(MainTab.home, Icons.home_outlined, Icons.home_rounded,
-                  l10n.tabHome),
-              _tabItem(MainTab.lists, Icons.list_alt_outlined,
-                  Icons.list_alt_rounded, l10n.tabLists),
+              _tabItem(
+                MainTab.home,
+                Icons.home_outlined,
+                Icons.home_rounded,
+                l10n.tabHome,
+              ),
+              _tabItem(
+                MainTab.lists,
+                Icons.list_alt_outlined,
+                Icons.list_alt_rounded,
+                l10n.tabLists,
+              ),
               _centerButton(l10n),
-              _tabItem(MainTab.receipts, Icons.receipt_long_outlined,
-                  Icons.receipt_long_rounded, l10n.receipts),
-              _tabItem(MainTab.more, Icons.widgets_outlined,
-                  Icons.widgets_rounded, l10n.tabMore),
+              _tabItem(
+                MainTab.receipts,
+                Icons.receipt_long_outlined,
+                Icons.receipt_long_rounded,
+                l10n.receipts,
+              ),
+              _tabItem(
+                MainTab.more,
+                Icons.widgets_outlined,
+                Icons.widgets_rounded,
+                l10n.tabMore,
+              ),
             ],
           ),
         ),
@@ -114,7 +130,11 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget _tabItem(
-      MainTab tab, IconData icon, IconData activeIcon, String label) {
+    MainTab tab,
+    IconData icon,
+    IconData activeIcon,
+    String label,
+  ) {
     final selected = _tab == tab;
     final color = selected ? AppColors.primary : AppColors.textSecondary;
 
@@ -160,7 +180,7 @@ class _MainShellState extends State<MainShell> {
             child: InkWell(
               customBorder: const CircleBorder(),
               onTap: () => QuickActionsSheet.show(context),
-              child: const SizedBox(
+              child:  SizedBox(
                 width: 52,
                 height: 52,
                 child: Icon(Icons.add, color: AppColors.onPrimary, size: 28),

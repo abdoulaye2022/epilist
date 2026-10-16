@@ -118,7 +118,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
         itemCount: options.length,
         separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
         itemBuilder: (context, index) {
@@ -147,7 +149,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md, AppSpacing.xs, AppSpacing.md, AppSpacing.lg),
+        AppSpacing.md,
+        AppSpacing.xs,
+        AppSpacing.md,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: content,
@@ -166,9 +172,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           return [
             card(DashboardCard(data: state.dashboardData)),
             const SizedBox(height: AppSpacing.md),
-            card(ComparisonCard(
-              data: state.dashboardData['comparison_with_last_month'] ?? {},
-            )),
+            card(
+              ComparisonCard(
+                data: state.dashboardData['comparison_with_last_month'] ?? {},
+              ),
+            ),
           ];
         }
         return null;
@@ -253,13 +261,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         Icon(
           offline ? Icons.cloud_off_rounded : Icons.insights_outlined,
           size: 64,
-          color: Colors.grey[400],
+          color: AppColors.textDisabled,
         ),
         const SizedBox(height: AppSpacing.md),
         Text(
           offline ? l10n.offlineMode : l10n.noAnalyticsData,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,

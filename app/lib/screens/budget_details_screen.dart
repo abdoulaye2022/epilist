@@ -12,10 +12,7 @@ import 'package:intl/intl.dart';
 class BudgetDetailsScreen extends StatelessWidget {
   final Budget budget;
 
-  const BudgetDetailsScreen({
-    super.key,
-    required this.budget,
-  });
+  const BudgetDetailsScreen({super.key, required this.budget});
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +23,12 @@ class BudgetDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           budget.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -42,35 +36,39 @@ class BudgetDetailsScreen extends StatelessWidget {
             onPressed: () => _editBudget(context),
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
+            icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
             onSelected: (value) => _handleMenuAction(value, context),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'toggle_status',
-                child: Row(
-                  children: [
-                    Icon(
-                      budget.isActive ? Icons.pause : Icons.play_arrow,
-                      size: 20,
-                      color: budget.isActive ? AppColors.warning : AppColors.primary,
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'toggle_status',
+                    child: Row(
+                      children: [
+                        Icon(
+                          budget.isActive ? Icons.pause : Icons.play_arrow,
+                          size: 20,
+                          color:
+                              budget.isActive
+                                  ? AppColors.warning
+                                  : AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(budget.isActive ? l10n.pause : l10n.activate),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(budget.isActive ? l10n.pause : l10n.activate),
-                  ],
-                ),
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, size: 20, color: AppColors.error),
-                    const SizedBox(width: 8),
-                    Text(l10n.delete),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, size: 20, color: AppColors.error),
+                        const SizedBox(width: 8),
+                        Text(l10n.delete),
+                      ],
+                    ),
+                  ),
+                ],
           ),
           const SizedBox(width: 8),
         ],
@@ -110,7 +108,7 @@ class BudgetDetailsScreen extends StatelessWidget {
 
   Widget _buildHeaderCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -122,7 +120,9 @@ class BudgetDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.budgetAllocated, // TODO: Add to l10n
+                  AppLocalizations.of(
+                    context,
+                  )!.budgetAllocated, // TODO: Add to l10n
                   style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
@@ -131,7 +131,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                 ),
                 FormattedAmount(
                   amount: budget.budgetAmount,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -152,11 +152,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                     _getSpentColor(),
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 40,
-                  color: AppColors.border,
-                ),
+                Container(width: 1, height: 40, color: AppColors.border),
                 Expanded(
                   child: _buildAmountColumn(
                     l10n.remaining,
@@ -177,10 +173,7 @@ class BudgetDetailsScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
         FormattedAmount(
@@ -197,7 +190,7 @@ class BudgetDetailsScreen extends StatelessWidget {
 
   Widget _buildProgressCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -210,7 +203,7 @@ class BudgetDetailsScreen extends StatelessWidget {
               children: [
                 Text(
                   l10n.progress,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -261,11 +254,14 @@ class BudgetDetailsScreen extends StatelessWidget {
   Widget _buildPeriodCard(BuildContext context, AppLocalizations l10n) {
     final dateFormat = DateFormat.yMMMd();
     final daysTotal = budget.endDate.difference(budget.startDate).inDays;
-    final daysElapsed = DateTime.now().difference(budget.startDate).inDays.clamp(0, daysTotal);
+    final daysElapsed = DateTime.now()
+        .difference(budget.startDate)
+        .inDays
+        .clamp(0, daysTotal);
     final progressDays = daysTotal > 0 ? (daysElapsed / daysTotal) : 0.0;
 
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -275,7 +271,7 @@ class BudgetDetailsScreen extends StatelessWidget {
           children: [
             Text(
               l10n.period,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -336,7 +332,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                     value: progressDays.clamp(0.0, 1.0),
                     minHeight: 8,
                     backgroundColor: AppColors.border,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[400]!),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.info),
                   ),
                 ),
               ],
@@ -353,10 +349,7 @@ class BudgetDetailsScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
         Row(
@@ -366,7 +359,7 @@ class BudgetDetailsScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 date,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
@@ -382,7 +375,7 @@ class BudgetDetailsScreen extends StatelessWidget {
 
   Widget _buildAlertCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      color: budget.isExceeded ? Colors.red[50] : Colors.orange[50],
+      color: budget.isExceeded ? AppColors.errorTint : AppColors.warningTint,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -400,11 +393,16 @@ class BudgetDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    budget.isExceeded ? l10n.budgetExceeded : 'Budget Near Limit', // TODO: Add to l10n
+                    budget.isExceeded
+                        ? l10n.budgetExceeded
+                        : 'Budget Near Limit', // TODO: Add to l10n
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: budget.isExceeded ? Colors.red[800] : Colors.orange[800],
+                      color:
+                          budget.isExceeded
+                              ? AppColors.errorInk
+                              : AppColors.warningInk,
                     ),
                   ),
                   if (budget.alertMessage != null) ...[
@@ -413,7 +411,10 @@ class BudgetDetailsScreen extends StatelessWidget {
                       budget.alertMessage!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: budget.isExceeded ? AppColors.error : AppColors.warning,
+                        color:
+                            budget.isExceeded
+                                ? AppColors.error
+                                : AppColors.warning,
                       ),
                     ),
                   ],
@@ -428,7 +429,7 @@ class BudgetDetailsScreen extends StatelessWidget {
 
   Widget _buildAdditionalInfoCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -438,7 +439,7 @@ class BudgetDetailsScreen extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.details, // TODO: Add to l10n
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -447,16 +448,12 @@ class BudgetDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            _buildInfoRow(
-              l10n.type,
-              switch (budget.periodType) {
-                BudgetPeriodType.weekly => l10n.weekly,
-                BudgetPeriodType.monthly => l10n.monthly,
-                BudgetPeriodType.yearly => l10n.yearly,
-                BudgetPeriodType.custom => l10n.custom,
-              },
-              Icons.event_repeat,
-            ),
+            _buildInfoRow(l10n.type, switch (budget.periodType) {
+              BudgetPeriodType.weekly => l10n.weekly,
+              BudgetPeriodType.monthly => l10n.monthly,
+              BudgetPeriodType.yearly => l10n.yearly,
+              BudgetPeriodType.custom => l10n.custom,
+            }, Icons.event_repeat),
             const Divider(height: 24),
             _buildInfoRow(
               l10n.scope,
@@ -474,9 +471,12 @@ class BudgetDetailsScreen extends StatelessWidget {
             const Divider(height: 24),
             _buildInfoRow(
               l10n.status,
-              budget.isActive ? l10n.active : AppLocalizations.of(context)!.inactive, // TODO: Add to l10n
+              budget.isActive
+                  ? l10n.active
+                  : AppLocalizations.of(context)!.inactive, // TODO: Add to l10n
               budget.isActive ? Icons.check_circle : Icons.pause_circle,
-              valueColor: budget.isActive ? AppColors.primary : AppColors.textSecondary,
+              valueColor:
+                  budget.isActive ? AppColors.primary : AppColors.textSecondary,
             ),
           ],
         ),
@@ -484,7 +484,12 @@ class BudgetDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, IconData icon, {Color? valueColor}) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    IconData icon, {
+    Color? valueColor,
+  }) {
     return Row(
       children: [
         Icon(icon, size: 20, color: AppColors.accent),
@@ -492,10 +497,7 @@ class BudgetDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
         ),
         Text(
@@ -522,18 +524,19 @@ class BudgetDetailsScreen extends StatelessWidget {
   void _editBudget(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<BudgetBloc>(),
-        child: BlocListener<BudgetBloc, BudgetState>(
-          listener: (context, state) {
-            if (state is BudgetOperationSuccess) {
-              Navigator.pop(dialogContext);
-              Navigator.pop(context); // Retour à l'écran précédent
-            }
-          },
-          child: CreateBudgetDialog(budgetToEdit: budget),
-        ),
-      ),
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<BudgetBloc>(),
+            child: BlocListener<BudgetBloc, BudgetState>(
+              listener: (context, state) {
+                if (state is BudgetOperationSuccess) {
+                  Navigator.pop(dialogContext);
+                  Navigator.pop(context); // Retour à l'écran précédent
+                }
+              },
+              child: CreateBudgetDialog(budgetToEdit: budget),
+            ),
+          ),
     );
   }
 
@@ -551,29 +554,30 @@ class BudgetDetailsScreen extends StatelessWidget {
       case 'delete':
         showDialog(
           context: context,
-          builder: (dialogContext) => AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text(l10n.deleteBudget),
-            content: Text(l10n.deleteBudgetConfirmation(budget.name)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
+          builder:
+              (dialogContext) => AlertDialog(
+                backgroundColor: AppColors.surface,
+                title: Text(l10n.deleteBudget),
+                content: Text(l10n.deleteBudgetConfirmation(budget.name)),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: Text(l10n.cancel),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      context.read<BudgetBloc>().add(DeleteBudget(budget.id));
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      foregroundColor: AppColors.onPrimary,
+                    ),
+                    child: Text(l10n.delete),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                  context.read<BudgetBloc>().add(DeleteBudget(budget.id));
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(l10n.delete),
-              ),
-            ],
-          ),
         );
         break;
     }

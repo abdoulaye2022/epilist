@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
+import 'package:epilist/theme/app_theme.dart';
 
 class SimpleDeepLinkTest {
   static StreamSubscription<Uri>? _linkSubscription;
@@ -53,7 +54,7 @@ class SimpleDeepLinkTest {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.purple,
+        backgroundColor: AppColors.violet,
         duration: const Duration(seconds: 5),
       ),
     );

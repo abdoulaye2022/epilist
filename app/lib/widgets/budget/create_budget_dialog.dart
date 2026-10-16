@@ -115,7 +115,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -248,14 +248,14 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[200]!),
+        border: Border.all(color: AppColors.infoBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.preview, color: AppColors.accent, size: 20),
+              Icon(Icons.preview, color: AppColors.infoInk, size: 20),
               const SizedBox(width: 8),
               Text(
                 l10n.preview,
@@ -402,7 +402,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
             const SizedBox(width: 8),
             Text(
               '${l10n.alertThreshold}: $_alertThreshold%',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -414,9 +414,9 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.orange[50],
+            color: AppColors.warningTint,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.orange[200]!),
+            border: Border.all(color: AppColors.warningBorder),
           ),
           child: Column(
             children: [
@@ -426,7 +426,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                 max: 95,
                 divisions: 9,
                 activeColor: AppColors.warning,
-                inactiveColor: Colors.orange[200],
+                inactiveColor: AppColors.warningBorder,
                 onChanged: (double value) {
                   setState(() {
                     _alertThreshold = value.round();

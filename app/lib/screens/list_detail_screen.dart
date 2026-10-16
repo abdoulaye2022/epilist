@@ -130,9 +130,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
       if (!mounted) return;
       setState(() {
         _myStores = stores;
-        _activeStore = savedId == null
-            ? null
-            : stores.where((s) => s.id == savedId).firstOrNull;
+        _activeStore =
+            savedId == null
+                ? null
+                : stores.where((s) => s.id == savedId).firstOrNull;
         _rebuildAisleRank();
       });
     } catch (_) {
@@ -200,9 +201,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Row(
         children: [
-          Icon(Icons.storefront,
-              size: 20,
-              color: active != null ? AppColors.primary : AppColors.textDisabled),
+          Icon(
+            Icons.storefront,
+            size: 20,
+            color: active != null ? AppColors.primary : AppColors.textDisabled,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -211,7 +214,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 fontSize: 14,
                 fontWeight:
                     active != null ? FontWeight.w600 : FontWeight.normal,
-                color: active != null ? AppColors.textPrimary : AppColors.textSecondary,
+                color:
+                    active != null
+                        ? AppColors.textPrimary
+                        : AppColors.textSecondary,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -220,8 +226,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           // regroupé par rayon dans l'ordre du magasin actif.
           IconButton(
             tooltip: l10n.startShopping,
-            icon: const Icon(Icons.shopping_cart_checkout,
-                color: AppColors.primary),
+            icon: Icon(Icons.shopping_cart_checkout, color: AppColors.primary),
             onPressed: () {
               // Le ListItemBloc est fourni par cet écran : on le passe
               // explicitement à la route (sinon Provider introuvable).
@@ -229,54 +234,64 @@ class _ListDetailViewState extends State<_ListDetailView> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: bloc,
-                    child: ShoppingModeScreen(
-                      shoppingList: currentList,
-                      store: _activeStore,
-                      aisleRank: _aisleRank,
-                    ),
-                  ),
+                  builder:
+                      (_) => BlocProvider.value(
+                        value: bloc,
+                        child: ShoppingModeScreen(
+                          shoppingList: currentList,
+                          store: _activeStore,
+                          aisleRank: _aisleRank,
+                        ),
+                      ),
                 ),
               );
             },
           ),
           PopupMenuButton<int>(
-            color: Colors.white,
+            color: AppColors.surface,
             icon: Icon(Icons.expand_more, color: AppColors.textSecondary),
             onSelected: (id) {
               _selectActiveStore(
-                  id == -1 ? null : _myStores.where((s) => s.id == id).firstOrNull);
+                id == -1
+                    ? null
+                    : _myStores.where((s) => s.id == id).firstOrNull,
+              );
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: -1,
-                child: Text(l10n.noActiveStore,
-                    style: const TextStyle(color: AppColors.textPrimary)),
-              ),
-              ..._myStores.map(
-                (s) => PopupMenuItem(
-                  value: s.id,
-                  child: Row(
-                    children: [
-                      Icon(
-                        s.hasAisleOrder ? Icons.route : Icons.storefront,
-                        size: 18,
-                        color: s.hasAisleOrder
-                            ? AppColors.primary
-                            : AppColors.textDisabled,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(s.name,
-                            style: const TextStyle(color: AppColors.textPrimary),
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                    ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: -1,
+                    child: Text(
+                      l10n.noActiveStore,
+                      style: TextStyle(color: AppColors.textPrimary),
+                    ),
                   ),
-                ),
-              ),
-            ],
+                  ..._myStores.map(
+                    (s) => PopupMenuItem(
+                      value: s.id,
+                      child: Row(
+                        children: [
+                          Icon(
+                            s.hasAisleOrder ? Icons.route : Icons.storefront,
+                            size: 18,
+                            color:
+                                s.hasAisleOrder
+                                    ? AppColors.primary
+                                    : AppColors.textDisabled,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              s.name,
+                              style: TextStyle(color: AppColors.textPrimary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
@@ -391,7 +406,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           heroTag: "receipts_fab",
           backgroundColor: AppColors.accent,
           tooltip: l10n.receipts,
-          child: const Icon(Icons.receipt_long, color: Colors.white),
+          child:  Icon(Icons.receipt_long, color: AppColors.onPrimary),
         ),
         const SizedBox(height: 12),
         // Bouton d'ajout vocal
@@ -399,9 +414,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
           onPressed: currentList.canEdit ? _addItemByVoice : null,
           heroTag: "voice_fab",
           backgroundColor:
-              currentList.canEdit ? Colors.purple[600] : AppColors.textDisabled,
+              currentList.canEdit ? AppColors.violet : AppColors.textDisabled,
           tooltip: AppLocalizations.of(context)!.quickVoice,
-          child: const Icon(Icons.mic, color: Colors.white),
+          child:  Icon(Icons.mic, color: AppColors.onPrimary),
         ),
         const SizedBox(height: 12),
         // Bouton d'ajout d'article
@@ -411,7 +426,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           backgroundColor:
               currentList.canEdit ? AppColors.primary : AppColors.textDisabled,
           tooltip: l10n.addItem,
-          child: const Icon(Icons.add, color: Colors.white),
+          child:  Icon(Icons.add, color: AppColors.onPrimary),
         ),
       ],
     );
@@ -451,12 +466,15 @@ class _ListDetailViewState extends State<_ListDetailView> {
     }
 
     // Extraire les magasins uniques pour le filtre
-    final availableStores = items
-        .where((item) => item.storeName != null && item.storeName!.isNotEmpty)
-        .map((item) => item.storeName!)
-        .toSet()
-        .toList()
-      ..sort();
+    final availableStores =
+        items
+            .where(
+              (item) => item.storeName != null && item.storeName!.isNotEmpty,
+            )
+            .map((item) => item.storeName!)
+            .toSet()
+            .toList()
+          ..sort();
 
     return Column(
       children: [
@@ -474,15 +492,13 @@ class _ListDetailViewState extends State<_ListDetailView> {
         // Widget de filtres
         BlocBuilder<CategoryBloc, CategoryState>(
           builder: (context, categoryState) {
-            final categories = categoryState is CategoryLoaded
-                ? categoryState.categories
-                    .where((cat) => cat.deletedAt == null)
-                    .map((cat) => {
-                          'id': cat.id,
-                          'name': cat.name,
-                        })
-                    .toList()
-                : <Map<String, dynamic>>[];
+            final categories =
+                categoryState is CategoryLoaded
+                    ? categoryState.categories
+                        .where((cat) => cat.deletedAt == null)
+                        .map((cat) => {'id': cat.id, 'name': cat.name})
+                        .toList()
+                    : <Map<String, dynamic>>[];
 
             return ItemFiltersBar(
               criteria: _filterCriteria,
@@ -509,15 +525,15 @@ class _ListDetailViewState extends State<_ListDetailView> {
     IconData bannerIcon;
 
     if (currentList.isReadOnly) {
-      bannerColor = Colors.blue;
+      bannerColor = AppColors.info;
       bannerText = l10n.readOnlyAccessMode;
       bannerIcon = Icons.visibility;
     } else if (currentList.canEdit) {
-      bannerColor = Colors.green;
+      bannerColor = AppColors.success;
       bannerText = l10n.sharedListCanEdit;
       bannerIcon = Icons.edit;
     } else {
-      bannerColor = Colors.orange;
+      bannerColor = AppColors.warning;
       bannerText = l10n.limitedAccess;
       bannerIcon = Icons.lock;
     }
@@ -579,22 +595,24 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
     // En tri par rayon : liste groupée avec un en-tête par rayon,
     // dans l'ordre du magasin actif. Sinon : liste plate habituelle.
-    final grouped = _filterCriteria.sortBy == ItemSortBy.aisle &&
+    final grouped =
+        _filterCriteria.sortBy == ItemSortBy.aisle &&
         _activeStore?.hasAisleOrder == true;
 
     return RefreshIndicator(
       onRefresh: () async {
         context.read<ListItemBloc>().add(LoadListItems(currentList.id));
       },
-      child: grouped
-          ? _buildGroupedByAisle(items)
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return _buildItemCard(items[index]);
-              },
-            ),
+      child:
+          grouped
+              ? _buildGroupedByAisle(items)
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return _buildItemCard(items[index]);
+                },
+              ),
     );
   }
 
@@ -623,9 +641,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
       final header = headerFor(item);
       if (header != currentHeader) {
         currentHeader = header;
-        final cat = item.categoryId != null ? categoriesById[item.categoryId!] : null;
-        final inAisle = item.categoryId != null &&
-            _aisleRank.containsKey(item.categoryId!);
+        final cat =
+            item.categoryId != null ? categoriesById[item.categoryId!] : null;
+        final inAisle =
+            item.categoryId != null && _aisleRank.containsKey(item.categoryId!);
         rows.add(
           Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 8),
@@ -634,9 +653,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 Icon(
                   inAisle ? (cat?.icon ?? Icons.category) : Icons.help_outline,
                   size: 18,
-                  color: inAisle
-                      ? (cat?.color ?? AppColors.textSecondary)
-                      : AppColors.textDisabled,
+                  color:
+                      inAisle
+                          ? (cat?.color ?? AppColors.textSecondary)
+                          : AppColors.textDisabled,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -644,7 +664,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: inAisle ? AppColors.textPrimary : AppColors.textSecondary,
+                    color:
+                        inAisle
+                            ? AppColors.textPrimary
+                            : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -687,12 +710,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 8),
-        color: Colors.white,
+        color: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side:
               currentList.isReadOnly
-                  ? BorderSide(color: Colors.blue[200]!, width: 1)
+                  ? BorderSide(color: AppColors.infoBorder, width: 1)
                   : BorderSide.none,
         ),
         child: ListTile(
@@ -703,8 +726,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
               decoration: item.isPurchased ? TextDecoration.lineThrough : null,
               color:
                   currentList.isReadOnly
-                      ? (item.isPurchased ? AppColors.textDisabled : AppColors.textSecondary)
-                      : (item.isPurchased ? Colors.grey : AppColors.textPrimary),
+                      ? (item.isPurchased
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary)
+                      : (item.isPurchased
+                          ? AppColors.textSecondary
+                          : AppColors.textPrimary),
               fontWeight:
                   currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
             ),
@@ -731,12 +758,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.delete_rounded, color: Colors.white, size: 32),
+          Icon(Icons.delete_rounded, color: AppColors.onPrimary, size: 32),
           const SizedBox(height: 4),
           Text(
             l10n.delete,
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -767,9 +794,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: item.isPurchased ? AppColors.primaryLight : AppColors.background,
+          color:
+              item.isPurchased ? AppColors.primaryLight : AppColors.background,
           border: Border.all(
-            color: item.isPurchased ? Colors.green[300]! : AppColors.border,
+            color:
+                item.isPurchased ? AppColors.successBorder : AppColors.border,
             width: 2,
           ),
         ),
@@ -793,8 +822,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   ),
                 );
               }
-              : (value) =>
-                  _showPermissionDenied(AppLocalizations.of(context)!.permActionEditStatus),
+              : (value) => _showPermissionDenied(
+                AppLocalizations.of(context)!.permActionEditStatus,
+              ),
       activeColor: AppColors.primary,
       fillColor:
           currentList.canManageItems
@@ -882,12 +912,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
         decoration: BoxDecoration(
           color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue[200]!),
+          border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.visibility, size: 14, color: AppColors.accent),
+            Icon(Icons.visibility, size: 14, color: AppColors.infoInk),
             const SizedBox(width: 4),
             Text(
               AppLocalizations.of(context)!.readOnly,
@@ -907,7 +937,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
       onPressed:
           currentList.canEdit
               ? () => _editItem(item)
-              : () => _showPermissionDenied(AppLocalizations.of(context)!.permActionEditItems),
+              : () => _showPermissionDenied(
+                AppLocalizations.of(context)!.permActionEditItems,
+              ),
       tooltip:
           currentList.canEdit
               ? AppLocalizations.of(context)!.editItem
@@ -970,7 +1002,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
   void _showManageSharesDialog() {
     if (!currentList.isOwner || !currentList.isShared) {
-      _showPermissionDenied(AppLocalizations.of(context)!.permActionManageShares);
+      _showPermissionDenied(
+        AppLocalizations.of(context)!.permActionManageShares,
+      );
       return;
     }
 
@@ -1077,108 +1111,118 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 28),
-            const SizedBox(width: 12),
-            Expanded(child: Text(AppLocalizations.of(context)!.itemAlreadyPresent)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              duplicate.suggestionType == DuplicateType.exactMatch
-                  ? AppLocalizations.of(context)!.itemExistsInList
-                  : AppLocalizations.of(context)!.similarItemExists,
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.accentLight,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue[200]!),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    duplicate.productName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Quantité actuelle: ${duplicate.quantity}',
-                    style: TextStyle(color: AppColors.textSecondary),
-                  ),
-                  if (duplicate.storeName != null)
-                    Text(
-                      'Magasin: ${duplicate.storeName}',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppLocalizations.of(context)!.whatToDo,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              // Fusionner avec l'item existant (augmenter la quantité)
-              context.read<ListItemBloc>().add(
-                MergeWithExistingItem(
-                  listId: state.listId,
-                  existingItemId: duplicate.id,
-                  additionalQuantity: state.quantity,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: AppColors.warning,
+                  size: 28,
                 ),
-              );
-              SmartSnackBarManager.showMessage(
-                context,
-                '✅ Quantité mise à jour: ${duplicate.quantity + state.quantity}',
-                type: SnackBarType.success,
-              );
-            },
-            child: Text('Augmenter la quantité (+${state.quantity})'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              // Forcer l'ajout malgré le doublon
-              context.read<ListItemBloc>().add(
-                ForceAddListItem(
-                  listId: state.listId,
-                  productName: state.productName,
-                  quantity: state.quantity,
-                  storeName: state.storeName,
-                  price: state.price,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(AppLocalizations.of(context)!.itemAlreadyPresent),
                 ),
-              );
-            },
-            child: Text(AppLocalizations.of(context)!.addAnyway),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  duplicate.suggestionType == DuplicateType.exactMatch
+                      ? AppLocalizations.of(context)!.itemExistsInList
+                      : AppLocalizations.of(context)!.similarItemExists,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentLight,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.infoBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        duplicate.productName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Quantité actuelle: ${duplicate.quantity}',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                      if (duplicate.storeName != null)
+                        Text(
+                          'Magasin: ${duplicate.storeName}',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)!.whatToDo,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  // Fusionner avec l'item existant (augmenter la quantité)
+                  context.read<ListItemBloc>().add(
+                    MergeWithExistingItem(
+                      listId: state.listId,
+                      existingItemId: duplicate.id,
+                      additionalQuantity: state.quantity,
+                    ),
+                  );
+                  SmartSnackBarManager.showMessage(
+                    context,
+                    '✅ Quantité mise à jour: ${duplicate.quantity + state.quantity}',
+                    type: SnackBarType.success,
+                  );
+                },
+                child: Text('Augmenter la quantité (+${state.quantity})'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  // Forcer l'ajout malgré le doublon
+                  context.read<ListItemBloc>().add(
+                    ForceAddListItem(
+                      listId: state.listId,
+                      productName: state.productName,
+                      quantity: state.quantity,
+                      storeName: state.storeName,
+                      price: state.price,
+                    ),
+                  );
+                },
+                child: Text(AppLocalizations.of(context)!.addAnyway),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -1189,13 +1233,17 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
     if (currentList.isReadOnly) {
       title = AppLocalizations.of(context)!.readOnlyAccess;
-      permission = currentList.permissionDisplayName ?? AppLocalizations.of(context)!.readOnly;
+      permission =
+          currentList.permissionDisplayName ??
+          AppLocalizations.of(context)!.readOnly;
       message =
           '${AppLocalizations.of(context)!.permReadOnlyMessage(action)}\n\n'
           '${AppLocalizations.of(context)!.yourCurrentPermission(permission)}';
     } else {
       title = AppLocalizations.of(context)!.insufficientPermission;
-      permission = currentList.permissionDisplayName ?? AppLocalizations.of(context)!.limitedPermission;
+      permission =
+          currentList.permissionDisplayName ??
+          AppLocalizations.of(context)!.limitedPermission;
       message =
           '${AppLocalizations.of(context)!.permNoPermissionMessage(action)}\n\n'
           '${AppLocalizations.of(context)!.yourCurrentPermission(permission)}';

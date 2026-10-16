@@ -60,32 +60,38 @@ class ItemFilterCriteria {
 
     // Filtrer par magasin
     if (storeName != null && storeName!.isNotEmpty) {
-      filtered = filtered
-          .where((item) =>
-              item.storeName != null &&
-              item.storeName!.toLowerCase().contains(storeName!.toLowerCase()))
-          .toList();
+      filtered =
+          filtered
+              .where(
+                (item) =>
+                    item.storeName != null &&
+                    item.storeName!.toLowerCase().contains(
+                      storeName!.toLowerCase(),
+                    ),
+              )
+              .toList();
     }
 
     // Filtrer par prix minimum
     if (minPrice != null) {
-      filtered = filtered
-          .where((item) => item.price != null && item.price! >= minPrice!)
-          .toList();
+      filtered =
+          filtered
+              .where((item) => item.price != null && item.price! >= minPrice!)
+              .toList();
     }
 
     // Filtrer par prix maximum
     if (maxPrice != null) {
-      filtered = filtered
-          .where((item) => item.price != null && item.price! <= maxPrice!)
-          .toList();
+      filtered =
+          filtered
+              .where((item) => item.price != null && item.price! <= maxPrice!)
+              .toList();
     }
 
     // Filtrer par catégorie
     if (categoryId != null) {
-      filtered = filtered
-          .where((item) => item.categoryId == categoryId)
-          .toList();
+      filtered =
+          filtered.where((item) => item.categoryId == categoryId).toList();
     }
 
     // Filtrer par statut d'achat
@@ -126,9 +132,9 @@ class ItemFilterCriteria {
           }
           comparison = rankOf(a).compareTo(rankOf(b));
           if (comparison == 0) {
-            comparison = a.productName
-                .toLowerCase()
-                .compareTo(b.productName.toLowerCase());
+            comparison = a.productName.toLowerCase().compareTo(
+              b.productName.toLowerCase(),
+            );
           }
           break;
       }
@@ -173,7 +179,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     final themeColor = Theme.of(context).primaryColor;
 
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       margin: const EdgeInsets.all(16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -193,7 +199,8 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 children: [
                   Icon(
                     Icons.filter_list,
-                    color: hasActiveFilters ? themeColor : AppColors.textSecondary,
+                    color:
+                        hasActiveFilters ? themeColor : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -202,7 +209,10 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: hasActiveFilters ? themeColor : AppColors.textPrimary,
+                        color:
+                            hasActiveFilters
+                                ? themeColor
+                                : AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -253,7 +263,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
           ),
 
           if (_isExpanded) ...[
-            const Divider(height: 1, color: Colors.grey),
+            Divider(height: 1, color: AppColors.border),
             // ConstrainedBox pour éviter l'overflow (identique à budget_filters)
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 400),
@@ -269,12 +279,17 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
 
                     // Filtre par magasin
                     _buildFilterSection(
-                        l10n.filterByStore, _buildStoreFilter()),
+                      l10n.filterByStore,
+                      _buildStoreFilter(),
+                    ),
                     const SizedBox(height: 16),
 
                     // Filtre par catégorie
                     if (widget.availableCategories.isNotEmpty)
-                      _buildFilterSection(AppLocalizations.of(context)!.categoryLabel, _buildCategoryFilter()),
+                      _buildFilterSection(
+                        AppLocalizations.of(context)!.categoryLabel,
+                        _buildCategoryFilter(),
+                      ),
                     if (widget.availableCategories.isNotEmpty)
                       const SizedBox(height: 16),
 
@@ -299,7 +314,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
             color: AppColors.textPrimary,
@@ -318,14 +333,26 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     final l10n = AppLocalizations.of(context)!;
     final sortOptions = [
       if (widget.aisleSortAvailable)
-        {'key': ItemSortBy.aisle, 'label': l10n.sortByAisle, 'icon': Icons.route},
-      {'key': ItemSortBy.name, 'label': l10n.sortByName, 'icon': Icons.sort_by_alpha},
-      {'key': ItemSortBy.price, 'label': l10n.sortByPrice, 'icon': Icons.attach_money},
+        {
+          'key': ItemSortBy.aisle,
+          'label': l10n.sortByAisle,
+          'icon': Icons.route,
+        },
+      {
+        'key': ItemSortBy.name,
+        'label': l10n.sortByName,
+        'icon': Icons.sort_by_alpha,
+      },
+      {
+        'key': ItemSortBy.price,
+        'label': l10n.sortByPrice,
+        'icon': Icons.attach_money,
+      },
       {'key': ItemSortBy.store, 'label': l10n.sortByStore, 'icon': Icons.store},
       {
         'key': ItemSortBy.dateAdded,
         'label': l10n.sortByDateAdded,
-        'icon': Icons.calendar_today
+        'icon': Icons.calendar_today,
       },
     ];
 
@@ -333,107 +360,113 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: sortOptions.map((option) {
-        final isActive = widget.criteria.sortBy == option['key'];
-        final isAscending = widget.criteria.ascending;
+      children:
+          sortOptions.map((option) {
+            final isActive = widget.criteria.sortBy == option['key'];
+            final isAscending = widget.criteria.ascending;
 
-        return Container(
-          margin: const EdgeInsets.only(bottom: 4),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                if (isActive) {
-                  // Inverser l'ordre
-                  widget.onCriteriaChanged(
-                    ItemFilterCriteria(
-                      storeName: widget.criteria.storeName,
-                      minPrice: widget.criteria.minPrice,
-                      maxPrice: widget.criteria.maxPrice,
-                      categoryId: widget.criteria.categoryId,
-                      sortBy: option['key'] as ItemSortBy,
-                      ascending: !isAscending,
-                      showOnlyPurchased: widget.criteria.showOnlyPurchased,
-                      showOnlyUnpurchased: widget.criteria.showOnlyUnpurchased,
-                    ),
-                  );
-                } else {
-                  // Activer ce tri
-                  widget.onCriteriaChanged(
-                    ItemFilterCriteria(
-                      storeName: widget.criteria.storeName,
-                      minPrice: widget.criteria.minPrice,
-                      maxPrice: widget.criteria.maxPrice,
-                      categoryId: widget.criteria.categoryId,
-                      sortBy: option['key'] as ItemSortBy,
-                      ascending: true,
-                      showOnlyPurchased: widget.criteria.showOnlyPurchased,
-                      showOnlyUnpurchased: widget.criteria.showOnlyUnpurchased,
-                    ),
-                  );
-                }
-              },
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? themeColor.withValues(alpha: 0.1)
-                      : AppColors.background,
+            return Container(
+              margin: const EdgeInsets.only(bottom: 4),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (isActive) {
+                      // Inverser l'ordre
+                      widget.onCriteriaChanged(
+                        ItemFilterCriteria(
+                          storeName: widget.criteria.storeName,
+                          minPrice: widget.criteria.minPrice,
+                          maxPrice: widget.criteria.maxPrice,
+                          categoryId: widget.criteria.categoryId,
+                          sortBy: option['key'] as ItemSortBy,
+                          ascending: !isAscending,
+                          showOnlyPurchased: widget.criteria.showOnlyPurchased,
+                          showOnlyUnpurchased:
+                              widget.criteria.showOnlyUnpurchased,
+                        ),
+                      );
+                    } else {
+                      // Activer ce tri
+                      widget.onCriteriaChanged(
+                        ItemFilterCriteria(
+                          storeName: widget.criteria.storeName,
+                          minPrice: widget.criteria.minPrice,
+                          maxPrice: widget.criteria.maxPrice,
+                          categoryId: widget.criteria.categoryId,
+                          sortBy: option['key'] as ItemSortBy,
+                          ascending: true,
+                          showOnlyPurchased: widget.criteria.showOnlyPurchased,
+                          showOnlyUnpurchased:
+                              widget.criteria.showOnlyUnpurchased,
+                        ),
+                      );
+                    }
+                  },
                   borderRadius: BorderRadius.circular(8),
-                  border: isActive
-                      ? Border.all(
-                          color: themeColor,
-                          width: 2,
-                        )
-                      : Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      option['icon'] as IconData,
-                      size: 20,
-                      color: isActive ? themeColor : AppColors.textSecondary,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 12,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        option['label'] as String,
-                        style: TextStyle(
-                          color: isActive ? themeColor : AppColors.textPrimary,
-                          fontWeight:
-                              isActive ? FontWeight.w600 : FontWeight.normal,
-                          fontSize: 14,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
+                    decoration: BoxDecoration(
+                      color:
+                          isActive
+                              ? themeColor.withValues(alpha: 0.1)
+                              : AppColors.background,
+                      borderRadius: BorderRadius.circular(8),
+                      border:
+                          isActive
+                              ? Border.all(color: themeColor, width: 2)
+                              : Border.all(color: AppColors.border),
                     ),
-                    if (isActive)
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: themeColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
+                    child: Row(
+                      children: [
+                        Icon(
+                          option['icon'] as IconData,
+                          size: 20,
+                          color:
+                              isActive ? themeColor : AppColors.textSecondary,
                         ),
-                        child: Icon(
-                          isAscending
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward,
-                          size: 16,
-                          color: themeColor,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            option['label'] as String,
+                            style: TextStyle(
+                              color:
+                                  isActive ? themeColor : AppColors.textPrimary,
+                              fontWeight:
+                                  isActive
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
-                      ),
-                  ],
+                        if (isActive)
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: themeColor.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              isAscending
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              size: 16,
+                              color: themeColor,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
@@ -503,8 +536,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
         _buildFilterChip(
           label: l10n.purchased,
           value: 'purchased',
-          activeValue:
-              widget.criteria.showOnlyPurchased ? 'purchased' : null,
+          activeValue: widget.criteria.showOnlyPurchased ? 'purchased' : null,
           onChanged: (value) {
             widget.onCriteriaChanged(
               ItemFilterCriteria(
@@ -557,7 +589,8 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     IconData? icon,
     Color? color,
   }) {
-    final isActive = (value == null && activeValue == null) ||
+    final isActive =
+        (value == null && activeValue == null) ||
         (value != null && value == activeValue);
 
     final themeColor = Theme.of(context).primaryColor;
@@ -591,7 +624,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 Icon(
                   icon,
                   size: 14,
-                  color: isActive ? Colors.white : chipColor,
+                  color: isActive ? AppColors.onPrimary : chipColor,
                 ),
                 const SizedBox(width: 6),
               ],
@@ -600,9 +633,9 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: isActive ? Colors.white : AppColors.textPrimary,
-                    fontWeight:
-                        isActive ? FontWeight.w600 : FontWeight.normal,
+                    color:
+                        isActive ? AppColors.onPrimary : AppColors.textPrimary,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 12,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -668,8 +701,6 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
       ],
     );
   }
-
-
 
   void _clearAllFilters() {
     widget.onCriteriaChanged(ItemFilterCriteria());

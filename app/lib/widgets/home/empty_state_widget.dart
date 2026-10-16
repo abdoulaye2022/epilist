@@ -59,7 +59,7 @@ class EmptyStateWidget extends StatelessWidget {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20, // ✅ RÉDUIT: 24 -> 20
                   vertical: 10, // ✅ RÉDUIT: 12 -> 10

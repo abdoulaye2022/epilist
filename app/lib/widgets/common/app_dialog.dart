@@ -38,7 +38,7 @@ class AppDialogHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -81,26 +81,29 @@ class AppDialogActions extends StatelessWidget {
       runSpacing: AppSpacing.xs,
       children: [
         TextButton(
-          onPressed: loading
-              ? null
-              : (onCancel ?? () => Navigator.of(context).pop()),
+          onPressed:
+              loading ? null : (onCancel ?? () => Navigator.of(context).pop()),
           child: Text(cancelLabel),
         ),
         FilledButton(
           onPressed: loading ? null : onSubmit,
-          style: destructive
-              ? FilledButton.styleFrom(backgroundColor: AppColors.error)
-              : null,
-          child: loading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Text(submitLabel),
+          style:
+              destructive
+                  ? FilledButton.styleFrom(backgroundColor: AppColors.error)
+                  : null,
+          child:
+              loading
+                  ?  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.onPrimary,
+                      ),
+                    ),
+                  )
+                  : Text(submitLabel),
         ),
       ],
     );

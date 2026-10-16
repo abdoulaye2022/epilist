@@ -12,6 +12,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class PurchaseRequestsScreen extends StatefulWidget {
   const PurchaseRequestsScreen({super.key});
@@ -34,7 +35,9 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
     super.initState();
     // Afficher d'abord la derniere version connue (pas de spinner
     // si on est deja venu), puis rafraichir en silence.
-    _requests = ScreenCache.read<List<PurchaseRequestInfo>>('purchase_requests');
+    _requests = ScreenCache.read<List<PurchaseRequestInfo>>(
+      'purchase_requests',
+    );
     _load();
   }
 
@@ -63,102 +66,111 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
 
     final sent = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.assignment_add,
-                title: l10n.purchaseRequestNew,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: product,
-                autofocus: true,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: l10n.purchaseRequestProduct,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Row(
+      builder:
+          (dialogContext) => Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: qty,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
-                      decoration: InputDecoration(
-                        labelText: l10n.purchaseRequestQuantity,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                  AppDialogHeader(
+                    icon: Icons.assignment_add,
+                    title: l10n.purchaseRequestNew,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: product,
+                    autofocus: true,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: l10n.purchaseRequestProduct,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: TextField(
-                      controller: unit,
-                      decoration: InputDecoration(
-                        labelText: l10n.purchaseRequestUnit,
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: qty,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: l10n.purchaseRequestQuantity,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: TextField(
+                          controller: unit,
+                          decoration: InputDecoration(
+                            labelText: l10n.purchaseRequestUnit,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  TextField(
+                    controller: note,
+                    decoration: InputDecoration(
+                      labelText: l10n.purchaseRequestNote,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppDialogActions(
+                    cancelLabel: l10n.cancel,
+                    submitLabel: l10n.purchaseRequestNew,
+                    onCancel: () => Navigator.pop(dialogContext, false),
+                    onSubmit: () async {
+                      final name = product.text.trim();
+                      if (name.isEmpty) return;
+                      try {
+                        await _service.createPurchaseRequest(
+                          productName: name,
+                          quantity: double.tryParse(
+                            qty.text.trim().replaceAll(',', '.'),
+                          ),
+                          unit: unit.text.trim(),
+                          note: note.text.trim(),
+                        );
+                        if (dialogContext.mounted) {
+                          Navigator.pop(dialogContext, true);
+                        }
+                      } catch (_) {
+                        if (dialogContext.mounted) {
+                          Navigator.pop(dialogContext, false);
+                        }
+                      }
+                    },
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.sm),
-              TextField(
-                controller: note,
-                decoration: InputDecoration(
-                  labelText: l10n.purchaseRequestNote,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppDialogActions(
-                cancelLabel: l10n.cancel,
-                submitLabel: l10n.purchaseRequestNew,
-                onCancel: () => Navigator.pop(dialogContext, false),
-                onSubmit: () async {
-                  final name = product.text.trim();
-                  if (name.isEmpty) return;
-                  try {
-                    await _service.createPurchaseRequest(
-                      productName: name,
-                      quantity: double.tryParse(
-                          qty.text.trim().replaceAll(',', '.')),
-                      unit: unit.text.trim(),
-                      note: note.text.trim(),
-                    );
-                    if (dialogContext.mounted) {
-                      Navigator.pop(dialogContext, true);
-                    }
-                  } catch (_) {
-                    if (dialogContext.mounted) {
-                      Navigator.pop(dialogContext, false);
-                    }
-                  }
-                },
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
 
     if (!mounted) return;
     if (sent == true) {
       SmartSnackBarManager.showSuccessSnackBar(
-          context, l10n.purchaseRequestCreated);
+        context,
+        l10n.purchaseRequestCreated,
+      );
       _load();
     }
   }
@@ -171,43 +183,45 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
       final controller = TextEditingController();
       final ok = await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppDialogHeader(
-                  icon: Icons.block_rounded,
-                  title: l10n.prReject,
-                  color: AppColors.error,
+        builder:
+            (dialogContext) => Dialog(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppDialogHeader(
+                      icon: Icons.block_rounded,
+                      title: l10n.prReject,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.prRejectReason,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppDialogActions(
+                      cancelLabel: l10n.cancel,
+                      submitLabel: l10n.prReject,
+                      destructive: true,
+                      onCancel: () => Navigator.pop(dialogContext, false),
+                      onSubmit: () {
+                        if (controller.text.trim().isEmpty) return;
+                        Navigator.pop(dialogContext, true);
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.prRejectReason,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                AppDialogActions(
-                  cancelLabel: l10n.cancel,
-                  submitLabel: l10n.prReject,
-                  destructive: true,
-                  onCancel: () => Navigator.pop(dialogContext, false),
-                  onSubmit: () {
-                    if (controller.text.trim().isEmpty) return;
-                    Navigator.pop(dialogContext, true);
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
       );
       if (ok != true) return;
       comment = controller.text.trim();
@@ -242,48 +256,55 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _create,
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
         icon: const Icon(Icons.add),
         label: Text(l10n.purchaseRequestNew),
       ),
-      body: _requests == null && !_error
-          ? const Center(child: CircularProgressIndicator())
-          : _error
+      body:
+          _requests == null && !_error
+              ? const Center(child: CircularProgressIndicator())
+              : _error
               ? Center(
-                  child: Text(l10n.anErrorOccurred,
-                      style: const TextStyle(color: AppColors.textSecondary)))
+                child: Text(
+                  l10n.anErrorOccurred,
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              )
               : _requests!.isEmpty
-                  ? Center(
-                      child: Text(l10n.purchaseRequestEmpty,
-                          style: const TextStyle(
-                              color: AppColors.textSecondary)))
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.md,
-                            AppSpacing.md, AppSpacing.md, 96),
-                        itemCount: _requests!.length,
-                        itemBuilder: (context, i) =>
-                            _requestCard(_requests![i], l10n),
-                      ),
-                    ),
+              ? Center(
+                child: Text(
+                  l10n.purchaseRequestEmpty,
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              )
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    96,
+                  ),
+                  itemCount: _requests!.length,
+                  itemBuilder:
+                      (context, i) => _requestCard(_requests![i], l10n),
+                ),
+              ),
     );
   }
 
   Widget _requestCard(PurchaseRequestInfo r, AppLocalizations l10n) {
     final (color, label) = _statusStyle(r.status, l10n);
-    final qty = r.quantity == null
-        ? ''
-        : ' · ${r.quantity!.toStringAsFixed(r.quantity! % 1 == 0 ? 0 : 1)}${r.unit ?? ''}';
+    final qty =
+        r.quantity == null
+            ? ''
+            : ' · ${r.quantity!.toStringAsFixed(r.quantity! % 1 == 0 ? 0 : 1)}${r.unit ?? ''}';
 
-    return Container(
+    return AppCard(
+      radius: 14,
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -292,7 +313,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
               Expanded(
                 child: Text(
                   '${r.productName}$qty',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -300,8 +321,10 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
@@ -309,7 +332,10 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                 child: Text(
                   label,
                   style: TextStyle(
-                      fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
                 ),
               ),
             ],
@@ -317,24 +343,23 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
           const SizedBox(height: 4),
           Text(
             l10n.prRequestedBy(r.requesterName),
-            style: const TextStyle(
-                fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
           if (r.approverName != null)
             Text(
               l10n.prDecidedBy(r.approverName!),
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           if (r.decisionComment != null && r.decisionComment!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Text(
                 '« ${r.decisionComment} »',
-                style: const TextStyle(
-                    fontSize: 12.5,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.textSecondary),
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
           if (r.status == 'pending' || r.status == 'approved') ...[
@@ -347,7 +372,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                       onPressed: () => _act(r, 'approve'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       child: Text(l10n.prApprove),
@@ -359,7 +384,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                       onPressed: () => _act(r, 'reject'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: const BorderSide(color: AppColors.error),
+                        side: BorderSide(color: AppColors.error),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       child: Text(l10n.prReject),
@@ -377,9 +402,10 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                 if (r.status == 'pending' && !_canApprove)
                   TextButton(
                     onPressed: () => _act(r, 'cancel'),
-                    child: Text(l10n.prCancel,
-                        style: const TextStyle(
-                            color: AppColors.textSecondary)),
+                    child: Text(
+                      l10n.prCancel,
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
                   ),
               ],
             ),

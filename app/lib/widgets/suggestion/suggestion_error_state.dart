@@ -2,6 +2,7 @@
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SuggestionErrorState extends StatelessWidget {
   final String message;
@@ -25,12 +26,10 @@ class SuggestionErrorState extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Container(
+          child: AppCard(
+            radius: 20,
+            bordered: false,
             padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -57,7 +56,7 @@ class SuggestionErrorState extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.red[100]!, Colors.red[200]!],
+          colors: [AppColors.errorTint, AppColors.errorBorder],
         ),
         borderRadius: BorderRadius.circular(40),
       ),
@@ -80,7 +79,11 @@ class SuggestionErrorState extends StatelessWidget {
   Widget _buildMessage() {
     return Text(
       message,
-      style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.4),
+      style: TextStyle(
+        color: AppColors.textSecondary,
+        fontSize: 14,
+        height: 1.4,
+      ),
       textAlign: TextAlign.center,
     );
   }
@@ -95,7 +98,7 @@ class SuggestionErrorState extends StatelessWidget {
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,

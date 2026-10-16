@@ -34,12 +34,16 @@ class MonthlyChartCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.show_chart, color: AppColors.accent, size: 28),
+                        Icon(
+                          Icons.show_chart,
+                          color: AppColors.accent,
+                          size: 28,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             l10n.monthlyTrends,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
@@ -60,37 +64,37 @@ class MonthlyChartCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.accentLight,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[100]!),
+                        border: Border.all(color: AppColors.infoTint),
                       ),
                       child: _buildSimpleChart(monthlyData, l10n, currencyCode),
                     ),
 
-            const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-            // Résumé
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryItem(
-                    l10n.totalSpent,
-                    _calculateTotalFromMonthlyData(monthlyData),
-                    Colors.green,
-                    isAmount: true,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSummaryItem(
-                    l10n.monthlyAverage,
-                    _calculateAverageFromMonthlyData(monthlyData),
-                    Colors.blue,
-                    isAmount: true,
-                  ),
-                ),
-              ],
-            ),
+                    // Résumé
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryItem(
+                            l10n.totalSpent,
+                            _calculateTotalFromMonthlyData(monthlyData),
+                            AppColors.success,
+                            isAmount: true,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildSummaryItem(
+                            l10n.monthlyAverage,
+                            _calculateAverageFromMonthlyData(monthlyData),
+                            AppColors.info,
+                            isAmount: true,
+                          ),
+                        ),
+                      ],
+                    ),
 
-            const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Informations sur les données
                     _buildDataInfo(monthlyData, l10n),
@@ -213,7 +217,9 @@ class MonthlyChartCard extends StatelessWidget {
     final cleanShort = lowerShort.replaceAll('.', '').replaceAll(',', '');
 
     // 🐛 DEBUG: Log pour voir la chaîne nettoyée
-    debugPrint('🔍 Translating month: "$originalShort" → cleaned: "$cleanShort"');
+    debugPrint(
+      '🔍 Translating month: "$originalShort" → cleaned: "$cleanShort"',
+    );
 
     // Mapping complet avec TOUTES les variantes (français ET anglais)
     String result;
@@ -419,7 +425,11 @@ class MonthlyChartCard extends StatelessWidget {
     return total / (monthlyData.isNotEmpty ? monthlyData.length : 12);
   }
 
-  Widget _buildSimpleChart(List<dynamic> monthlyData, AppLocalizations l10n, String currencyCode) {
+  Widget _buildSimpleChart(
+    List<dynamic> monthlyData,
+    AppLocalizations l10n,
+    String currencyCode,
+  ) {
     if (monthlyData.isEmpty) {
       return Center(
         child: Text(
@@ -442,7 +452,11 @@ class MonthlyChartCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
+            Icon(
+              Icons.analytics_outlined,
+              size: 48,
+              color: AppColors.textDisabled,
+            ),
             const SizedBox(height: 12),
             Text(
               l10n.noSpendingRecorded,
@@ -495,7 +509,11 @@ class MonthlyChartCard extends StatelessWidget {
                     children: [
                       // Barre du graphique
                       Tooltip(
-                        message: _buildTooltipMessage(month, l10n, currencyCode),
+                        message: _buildTooltipMessage(
+                          month,
+                          l10n,
+                          currencyCode,
+                        ),
                         child: Container(
                           width: 24,
                           height: height < 5 ? 5 : height,
@@ -547,7 +565,11 @@ class MonthlyChartCard extends StatelessWidget {
   }
 
   /// ✅ MODIFIÉ: Tooltip avec traduction du nom de mois et devise dynamique
-  String _buildTooltipMessage(dynamic month, AppLocalizations l10n, String currencyCode) {
+  String _buildTooltipMessage(
+    dynamic month,
+    AppLocalizations l10n,
+    String currencyCode,
+  ) {
     if (month is! Map<String, dynamic>) return l10n.invalidData;
 
     final monthName =
@@ -566,7 +588,8 @@ class MonthlyChartCard extends StatelessWidget {
     message += 'Total: ${totalSpent.toStringAsFixed(2)} $currencyCode\n';
 
     if (receiptsTotal > 0) {
-      message += 'Factures: ${receiptsTotal.toStringAsFixed(2)} $currencyCode\n';
+      message +=
+          'Factures: ${receiptsTotal.toStringAsFixed(2)} $currencyCode\n';
     }
     if (itemsTotal > 0) {
       message += 'Items: ${itemsTotal.toStringAsFixed(2)} $currencyCode\n';
@@ -583,12 +606,12 @@ class MonthlyChartCard extends StatelessWidget {
       case 'high':
         return AppColors.accent;
       case 'medium':
-        return Colors.blue[400]!;
+        return AppColors.info;
       case 'low':
-        return Colors.blue[300]!;
+        return AppColors.infoBorder;
       case 'none':
       default:
-        return Colors.blue[200]!;
+        return AppColors.infoBorder;
     }
   }
 
@@ -644,7 +667,7 @@ class MonthlyChartCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: AppColors.accent),
+              Icon(Icons.info_outline, size: 16, color: AppColors.infoInk),
               const SizedBox(width: 6),
               Text(
                 l10n.periodInfo,
@@ -661,7 +684,11 @@ class MonthlyChartCard extends StatelessWidget {
           if (period.isNotEmpty) ...[
             Row(
               children: [
-                Icon(Icons.calendar_month, size: 14, color: AppColors.textSecondary),
+                Icon(
+                  Icons.calendar_month,
+                  size: 14,
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Text('Période: $period', style: const TextStyle(fontSize: 11)),
               ],

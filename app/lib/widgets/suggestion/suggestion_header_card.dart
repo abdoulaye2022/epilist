@@ -24,7 +24,7 @@ class SuggestionHeaderCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.accentLight, Colors.indigo[50]!],
+            colors: [AppColors.accentLight, AppColors.indigoTint],
           ),
         ),
         child: Column(
@@ -35,12 +35,12 @@ class SuggestionHeaderCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue[100],
+                    color: AppColors.infoTint,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.auto_awesome,
-                    color: AppColors.accent,
+                    color: AppColors.infoInk,
                     size: 24,
                   ),
                 ),
@@ -54,7 +54,7 @@ class SuggestionHeaderCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[800],
+                          color: AppColors.infoInk,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -75,12 +75,12 @@ class SuggestionHeaderCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue[100]?.withValues(alpha: 0.5),
+                color: AppColors.infoTint,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.accent, size: 16),
+                  Icon(Icons.info_outline, color: AppColors.infoInk, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

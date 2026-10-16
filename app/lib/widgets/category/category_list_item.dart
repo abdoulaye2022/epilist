@@ -4,6 +4,7 @@
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class CategoryListItem extends StatelessWidget {
   final Category category;
@@ -19,15 +20,11 @@ class CategoryListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard.tight(
+      radius: 14,
       margin: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
       ),
       child: Material(
         // Material propre au ListTile : le fond du conteneur parent
@@ -50,7 +47,7 @@ class CategoryListItem extends StatelessWidget {
           ),
           title: Text(
             category.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,

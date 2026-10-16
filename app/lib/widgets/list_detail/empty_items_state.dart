@@ -18,7 +18,7 @@ class EmptyItemsState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // ✅ AJOUT: Fond blanc pour le conteneur principal
-      color: Colors.white,
+      color: AppColors.surface,
       child: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -101,7 +101,11 @@ class EmptyItemsState extends StatelessWidget {
 
     return Text(
       description,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.5),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.5,
+      ),
       textAlign: TextAlign.center,
     );
   }
@@ -122,13 +126,13 @@ class EmptyItemsState extends StatelessWidget {
     // Bouton normal d'ajout
     return ElevatedButton.icon(
       onPressed: onAddItem,
-      icon: const Icon(Icons.add, color: Colors.white),
+      icon:  Icon(Icons.add, color: AppColors.onPrimary),
       label: Text(
         l10n.addItem,
-        style: const TextStyle(
+        style:  TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: AppColors.onPrimary,
         ),
       ),
       style: ElevatedButton.styleFrom(

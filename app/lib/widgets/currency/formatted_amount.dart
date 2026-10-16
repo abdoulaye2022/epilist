@@ -6,6 +6,7 @@ import 'package:epilist/blocs/currency/currency_bloc.dart';
 import 'package:epilist/blocs/currency/currency_state.dart';
 import 'package:epilist/blocs/currency/currency_event.dart';
 import 'package:epilist/models/currency.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 /// Widget pour afficher un montant avec la devise d'affichage de l'utilisateur
 class FormattedAmount extends StatelessWidget {
@@ -316,9 +317,9 @@ class CurrencyIndicator extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.amber[50],
+                color: AppColors.goldTint,
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.amber[200]!),
+                border: Border.all(color: AppColors.goldBorder),
               ),
               child: Text(
                 currencyCode.toUpperCase(),
@@ -326,7 +327,7 @@ class CurrencyIndicator extends StatelessWidget {
                     style ??
                     TextStyle(
                       fontSize: 12,
-                      color: Colors.amber[700],
+                      color: AppColors.gold,
                       fontWeight: FontWeight.w500,
                     ),
               ),

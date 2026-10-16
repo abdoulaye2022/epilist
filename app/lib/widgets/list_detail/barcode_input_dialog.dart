@@ -62,10 +62,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
               const SizedBox(height: 8),
               Text(
                 AppLocalizations.of(context)!.enterBarcodeHint,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 20),
 
@@ -114,7 +111,8 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: _exampleBarcodes.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1),
+                  separatorBuilder:
+                      (context, index) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final example = _exampleBarcodes[index];
                     return ListTile(
@@ -173,7 +171,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
           label: const Text('Valider'),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.accent,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.onPrimary,
           ),
         ),
       ],

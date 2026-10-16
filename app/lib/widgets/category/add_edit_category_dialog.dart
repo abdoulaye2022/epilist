@@ -12,10 +12,7 @@ import '../../l10n/app_localizations.dart';
 class AddEditCategoryDialog extends StatefulWidget {
   final Category? category;
 
-  const AddEditCategoryDialog({
-    super.key,
-    this.category,
-  });
+  const AddEditCategoryDialog({super.key, this.category});
 
   @override
   State<AddEditCategoryDialog> createState() => _AddEditCategoryDialogState();
@@ -33,7 +30,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
     super.initState();
     _nameController.text = widget.category?.name ?? '';
     _selectedIconCode = widget.category?.iconCode ?? 'category';
-    _selectedColor = widget.category?.color ?? Colors.green;
+    _selectedColor = widget.category?.color ?? AppColors.success;
   }
 
   @override
@@ -54,7 +51,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         constraints: const BoxConstraints(maxWidth: 500),
         child: Column(
@@ -80,7 +77,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
             // Titre
             Text(
               isEditing ? l10n.editCategory : l10n.addCategory,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -91,9 +88,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
 
             // Message
             Text(
-              isEditing
-                  ? l10n.modifyCategoryInfo
-                  : l10n.createNewCategory,
+              isEditing ? l10n.modifyCategoryInfo : l10n.createNewCategory,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -141,9 +136,10 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                     onTap: () async {
                       final iconCode = await showDialog<String>(
                         context: context,
-                        builder: (context) => IconPickerDialog(
-                          selectedIconCode: _selectedIconCode,
-                        ),
+                        builder:
+                            (context) => IconPickerDialog(
+                              selectedIconCode: _selectedIconCode,
+                            ),
                       );
                       if (iconCode != null) {
                         setState(() {
@@ -201,9 +197,10 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                     onTap: () async {
                       final color = await showDialog<Color>(
                         context: context,
-                        builder: (context) => ColorPickerDialog(
-                          selectedColor: _selectedColor,
-                        ),
+                        builder:
+                            (context) => ColorPickerDialog(
+                              selectedColor: _selectedColor,
+                            ),
                       );
                       if (color != null) {
                         setState(() {
@@ -297,52 +294,54 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                     builder: (context, state) {
                       final isLoading = state is CategoryOperationInProgress;
                       return ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                if (_nameController.text.trim().isEmpty) {
-                                  SmartSnackBarManager.showErrorSnackBar(
-                                    context,
-                                    l10n.categoryNameRequired,
-                                  );
-                                  return;
-                                }
-                                if (_nameController.text.trim().length < 2) {
-                                  SmartSnackBarManager.showErrorSnackBar(
-                                    context,
-                                    l10n.categoryNameTooShort,
-                                  );
-                                  return;
-                                }
-                                _saveCategory();
-                              },
+                        onPressed:
+                            isLoading
+                                ? null
+                                : () {
+                                  if (_nameController.text.trim().isEmpty) {
+                                    SmartSnackBarManager.showErrorSnackBar(
+                                      context,
+                                      l10n.categoryNameRequired,
+                                    );
+                                    return;
+                                  }
+                                  if (_nameController.text.trim().length < 2) {
+                                    SmartSnackBarManager.showErrorSnackBar(
+                                      context,
+                                      l10n.categoryNameTooShort,
+                                    );
+                                    return;
+                                  }
+                                  _saveCategory();
+                                },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.primaryColor,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor:
-                              theme.primaryColor.withValues(alpha: 0.5),
+                          foregroundColor: AppColors.onPrimary,
+                          disabledBackgroundColor: theme.primaryColor
+                              .withValues(alpha: 0.5),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 2,
                         ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                        child:
+                            isLoading
+                                ?  SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.onPrimary,
+                                  ),
+                                )
+                                : Text(
+                                  isEditing ? l10n.save : l10n.add,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              )
-                            : Text(
-                                isEditing ? l10n.save : l10n.add,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
                       );
                     },
                   ),
@@ -361,21 +360,21 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
 
     if (isEditing) {
       context.read<CategoryBloc>().add(
-            UpdateCategory(
-              categoryId: widget.category!.id,
-              name: name,
-              iconCode: _selectedIconCode,
-              colorHex: colorHex,
-            ),
-          );
+        UpdateCategory(
+          categoryId: widget.category!.id,
+          name: name,
+          iconCode: _selectedIconCode,
+          colorHex: colorHex,
+        ),
+      );
     } else {
       context.read<CategoryBloc>().add(
-            CreateCategory(
-              name: name,
-              iconCode: _selectedIconCode,
-              colorHex: colorHex,
-            ),
-          );
+        CreateCategory(
+          name: name,
+          iconCode: _selectedIconCode,
+          colorHex: colorHex,
+        ),
+      );
     }
 
     Navigator.of(context).pop();

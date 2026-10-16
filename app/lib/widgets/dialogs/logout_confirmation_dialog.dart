@@ -71,7 +71,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -110,7 +110,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
                 const SizedBox(height: 12),
                 Text(
                   l10n.confirmLogoutMessage,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                     height: 1.4,

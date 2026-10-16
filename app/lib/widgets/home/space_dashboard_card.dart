@@ -16,6 +16,7 @@ import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SpaceDashboardCard extends StatefulWidget {
   final Space space;
@@ -58,8 +59,10 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
   }
 
   void _push(Widget screen) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen))
-        .then((_) => _load());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    ).then((_) => _load());
   }
 
   @override
@@ -76,14 +79,10 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
       _ => Icons.person_rounded,
     };
 
-    return Container(
+    return AppCard(
+      radius: 14,
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -95,20 +94,24 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
                 child: Text(
                   widget.space.name,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary),
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
               // Activité de l'espace, toujours à portée (§12)
               IconButton(
                 visualDensity: VisualDensity.compact,
                 tooltip: l10n.spaceActivity,
-                icon: const Icon(Icons.history_rounded,
-                    size: 20, color: AppColors.textSecondary),
-                onPressed: () =>
-                    _push(SpaceActivityScreen(space: widget.space)),
+                icon: Icon(
+                  Icons.history_rounded,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+                onPressed:
+                    () => _push(SpaceActivityScreen(space: widget.space)),
               ),
             ],
           ),
@@ -131,17 +134,20 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
             if (inventoryAlerts.isNotEmpty)
               _row(
                 icon: Icons.warning_amber_rounded,
-                label: l10n.spaceDashCritical(inventoryAlerts.length,
-                    _names(inventoryAlerts)),
+                label: l10n.spaceDashCritical(
+                  inventoryAlerts.length,
+                  _names(inventoryAlerts),
+                ),
                 highlight: true,
                 onTap: () => _push(const InventoryScreen()),
               ),
             // À racheter probablement (§17)
             _row(
               icon: Icons.replay_rounded,
-              label: restock.isEmpty
-                  ? l10n.preShoppingRestockEmpty
-                  : l10n.spaceDashRestock(restock.length, _names(restock)),
+              label:
+                  restock.isEmpty
+                      ? l10n.preShoppingRestockEmpty
+                      : l10n.spaceDashRestock(restock.length, _names(restock)),
               onTap: () => _push(const PreShoppingScreen()),
             ),
             if (_isPro)
@@ -185,16 +191,20 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
-                  color: highlight
-                      ? AppColors.textPrimary
-                      : AppColors.textSecondary,
+                  color:
+                      highlight
+                          ? AppColors.textPrimary
+                          : AppColors.textSecondary,
                   fontWeight: highlight ? FontWeight.w600 : FontWeight.w500,
                   height: 1.3,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                size: 18, color: AppColors.textDisabled),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: AppColors.textDisabled,
+            ),
           ],
         ),
       ),

@@ -54,8 +54,11 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
     try {
       final results = await Future.wait([
         service.getStoreComparison(widget.listId, days: _windowDays),
-        service.getOptimization(widget.listId,
-            maxStores: _maxStores, days: _windowDays),
+        service.getOptimization(
+          widget.listId,
+          maxStores: _maxStores,
+          days: _windowDays,
+        ),
       ]);
       if (!mounted) return;
       setState(() {
@@ -92,12 +95,13 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
         children: [
           _buildChips(l10n),
           Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _load,
-                    child: _buildBody(l10n),
-                  ),
+            child:
+                _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : RefreshIndicator(
+                      onRefresh: _load,
+                      child: _buildBody(l10n),
+                    ),
           ),
         ],
       ),
@@ -110,22 +114,22 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
         children: [
           ChoiceChip(
             label: Text(l10n.compareStores),
             selected: _section == _Section.comparison,
             showCheckmark: false,
-            onSelected: (_) =>
-                setState(() => _section = _Section.comparison),
+            onSelected: (_) => setState(() => _section = _Section.comparison),
           ),
           const SizedBox(width: AppSpacing.sm),
           ChoiceChip(
             label: Text(l10n.optimizePlan),
             selected: _section == _Section.optimization,
             showCheckmark: false,
-            onSelected: (_) =>
-                setState(() => _section = _Section.optimization),
+            onSelected: (_) => setState(() => _section = _Section.optimization),
           ),
           const SizedBox(width: AppSpacing.md),
           // Fenêtre de temps configurable (30/90/180/365 jours)
@@ -152,21 +156,24 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          Text(_error!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary)),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textSecondary),
+          ),
         ],
       );
     }
 
     final children = <Widget>[
-      Text(widget.listName,
-          style:
-              const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+      Text(
+        widget.listName,
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+      ),
       const SizedBox(height: 2),
       Text(
         l10n.comparisonBasedOn(_windowDays),
-        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       const SizedBox(height: AppSpacing.md),
       if (_section == _Section.comparison)
@@ -179,7 +186,11 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md, AppSpacing.xs, AppSpacing.md, 0),
+        AppSpacing.md,
+        AppSpacing.xs,
+        AppSpacing.md,
+        0,
+      ),
       children: children,
     );
   }
@@ -200,56 +211,68 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       child: ExpansionTile(
         shape: const Border(),
         collapsedShape: const Border(),
-        tilePadding:
-            const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        title: Text(s.storeName ?? '—',
-            style:
-                const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        tilePadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        title: Text(
+          s.storeName ?? '—',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
         subtitle: Text(
           l10n.knownPricesOn(s.knownItems, s.itemsCount),
-          style:
-              const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         trailing: FormattedAmount(
           amount: s.estimatedTotal,
-          style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
         ),
-        children: s.items
-            .map((it) => Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          it.quantity > 1
-                              ? '${it.name} ×${it.quantity}'
-                              : it.name,
-                          style: const TextStyle(fontSize: 13),
+        children:
+            s.items
+                .map(
+                  (it) => Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      0,
+                      AppSpacing.md,
+                      AppSpacing.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            it.quantity > 1
+                                ? '${it.name} ×${it.quantity}'
+                                : it.name,
+                            style: const TextStyle(fontSize: 13),
+                          ),
                         ),
-                      ),
-                      if (it.price == null)
-                        Text(l10n.unknownPrice,
+                        if (it.price == null)
+                          Text(
+                            l10n.unknownPrice,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textDisabled,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          )
+                        else ...[
+                          _freshnessChip(l10n, it.freshness),
+                          const SizedBox(width: AppSpacing.sm),
+                          FormattedAmount(
+                            amount: it.price! * it.quantity,
                             style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textDisabled,
-                                fontStyle: FontStyle.italic))
-                      else ...[
-                        _freshnessChip(l10n, it.freshness),
-                        const SizedBox(width: AppSpacing.sm),
-                        FormattedAmount(
-                          amount: it.price! * it.quantity,
-                          style: const TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w600),
-                        ),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ))
-            .toList(),
+                )
+                .toList(),
       ),
     );
   }
@@ -284,9 +307,10 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       // Nombre maximal de magasins (1 à 3)
       Row(
         children: [
-          Text('${l10n.maxStoresLabel} : ',
-              style: const TextStyle(
-                  fontSize: 13, color: AppColors.textSecondary)),
+          Text(
+            '${l10n.maxStoresLabel} : ',
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          ),
           for (final n in const [1, 2, 3]) ...[
             const SizedBox(width: AppSpacing.xs),
             ChoiceChip(
@@ -312,8 +336,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
               o.singleStoreName!,
               '${o.singleStoreTotal!.toStringAsFixed(2)} \$',
             ),
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ),
 
@@ -322,8 +345,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
           child: Text(
             l10n.notWorthSplitting,
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ),
 
@@ -337,69 +359,85 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.savings_outlined,
-                  size: 18, color: AppColors.primaryDark),
+              Icon(
+                Icons.savings_outlined,
+                size: 18,
+                color: AppColors.primaryDark,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 l10n.estimatedSaving('${o.saving.toStringAsFixed(2)} \$'),
-                style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryDark),
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryDark,
+                ),
               ),
             ],
           ),
         ),
 
-      ...o.planStores.map((store) => Card(
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.storefront_outlined,
-                          size: 18, color: AppColors.primary),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Text(store.storeName ?? '—',
-                            style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700)),
-                      ),
-                      FormattedAmount(
-                        amount: store.subtotal,
+      ...o.planStores.map(
+        (store) => Card(
+          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.storefront_outlined,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        store.storeName ?? '—',
                         style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w800),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  ...store.items.map((it) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                it.quantity > 1
-                                    ? '${it.name} ×${it.quantity}'
-                                    : it.name,
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                            ),
-                            FormattedAmount(
-                              amount: it.price * it.quantity,
-                              style: const TextStyle(fontSize: 13),
-                            ),
-                          ],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
                         ),
-                      )),
-                ],
-              ),
+                      ),
+                    ),
+                    FormattedAmount(
+                      amount: store.subtotal,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                ...store.items.map(
+                  (it) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            it.quantity > 1
+                                ? '${it.name} ×${it.quantity}'
+                                : it.name,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                        FormattedAmount(
+                          amount: it.price * it.quantity,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
 
       if (o.estimatedElsewhere.isNotEmpty)
         Padding(
@@ -408,8 +446,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
             l10n.estimatedElsewhereNote(
               o.estimatedElsewhere.map((e) => e.name).join(', '),
             ),
-            style: const TextStyle(
-                fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
         ),
     ];
@@ -420,14 +457,16 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
       child: Column(
         children: [
-          Icon(Icons.storefront_outlined,
-              size: 56, color: Colors.grey[400]),
+          Icon(
+            Icons.storefront_outlined,
+            size: 56,
+            color: AppColors.textDisabled,
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontSize: 13.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
           ),
         ],
       ),

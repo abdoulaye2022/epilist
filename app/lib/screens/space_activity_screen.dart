@@ -9,6 +9,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SpaceActivityScreen extends StatefulWidget {
   final Space space;
@@ -35,13 +36,13 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
 
   Future<void> _load() async {
     try {
-      final res = await context
-          .read<SpaceService>()
-          .dio
-          .get('/spaces/${widget.space.id}/activity?limit=50');
+      final res = await context.read<SpaceService>().dio.get(
+        '/spaces/${widget.space.id}/activity?limit=50',
+      );
       if (!mounted) return;
-      final activities = ((res.data['data']['activities'] as List? ?? []))
-          .cast<Map<String, dynamic>>();
+      final activities =
+          ((res.data['data']['activities'] as List? ?? []))
+              .cast<Map<String, dynamic>>();
       ScreenCache.write(_cacheKey, activities);
       setState(() {
         _activities = activities;
@@ -64,22 +65,54 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
     final storeName = payload['store_name'] as String? ?? '';
 
     return switch (a['type'] as String? ?? '') {
-      'list_created' => (Icons.playlist_add_rounded, l10n.actListCreated(who, listName)),
-      'item_added' => (Icons.add_shopping_cart_rounded, l10n.actItemAdded(who, product)),
-      'item_purchased' => (Icons.check_circle_outline_rounded, l10n.actItemPurchased(who, product)),
-      'receipt_added' => (Icons.receipt_long_rounded, l10n.actReceiptAdded(who, storeName)),
-      'budget_created' => (Icons.savings_outlined, l10n.actBudgetCreated(who, budgetName)),
-      'member_joined' => (Icons.person_add_alt_1_rounded, l10n.actMemberJoined(who)),
+      'list_created' => (
+        Icons.playlist_add_rounded,
+        l10n.actListCreated(who, listName),
+      ),
+      'item_added' => (
+        Icons.add_shopping_cart_rounded,
+        l10n.actItemAdded(who, product),
+      ),
+      'item_purchased' => (
+        Icons.check_circle_outline_rounded,
+        l10n.actItemPurchased(who, product),
+      ),
+      'receipt_added' => (
+        Icons.receipt_long_rounded,
+        l10n.actReceiptAdded(who, storeName),
+      ),
+      'budget_created' => (
+        Icons.savings_outlined,
+        l10n.actBudgetCreated(who, budgetName),
+      ),
+      'member_joined' => (
+        Icons.person_add_alt_1_rounded,
+        l10n.actMemberJoined(who),
+      ),
       'member_left' => (Icons.logout_rounded, l10n.actMemberLeft(who)),
-      'inventory_out' => (Icons.remove_shopping_cart_outlined, l10n.actInventoryOut(product)),
-      'purchase_request_created' => (Icons.assignment_outlined, l10n.actPurchaseRequestCreated(who, product)),
-      'purchase_request_approved' => (Icons.assignment_turned_in_outlined, l10n.actPurchaseRequestApproved(who, product)),
-      'purchase_request_rejected' => (Icons.assignment_late_outlined, l10n.actPurchaseRequestRejected(who, product)),
+      'inventory_out' => (
+        Icons.remove_shopping_cart_outlined,
+        l10n.actInventoryOut(product),
+      ),
+      'purchase_request_created' => (
+        Icons.assignment_outlined,
+        l10n.actPurchaseRequestCreated(who, product),
+      ),
+      'purchase_request_approved' => (
+        Icons.assignment_turned_in_outlined,
+        l10n.actPurchaseRequestApproved(who, product),
+      ),
+      'purchase_request_rejected' => (
+        Icons.assignment_late_outlined,
+        l10n.actPurchaseRequestRejected(who, product),
+      ),
       'price_alert_triggered' => (
-          Icons.trending_down_rounded,
-          l10n.actPriceAlertTriggered(
-              product, ((payload['price'] as num?) ?? 0).toStringAsFixed(2))
+        Icons.trending_down_rounded,
+        l10n.actPriceAlertTriggered(
+          product,
+          ((payload['price'] as num?) ?? 0).toStringAsFixed(2),
         ),
+      ),
       _ => (Icons.bolt_rounded, who),
     };
   }
@@ -89,7 +122,9 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
     final date = DateTime.tryParse(raw)?.toLocal();
     if (date == null) return '';
     final now = DateTime.now();
-    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
       return DateFormat('HH:mm').format(date);
     }
     return DateFormat('d MMM HH:mm').format(date);
@@ -107,7 +142,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
           children: [
             Text(
               widget.space.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
@@ -115,82 +150,82 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
             ),
             Text(
               l10n.spaceActivity,
-              style: const TextStyle(
-                  fontSize: 12.5, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
             ),
           ],
         ),
       ),
-      body: _activities == null && !_error
-          ? const Center(child: CircularProgressIndicator())
-          : _error
+      body:
+          _activities == null && !_error
+              ? const Center(child: CircularProgressIndicator())
+              : _error
               ? Center(
-                  child: Text(l10n.anErrorOccurred,
-                      style: const TextStyle(color: AppColors.textSecondary)))
+                child: Text(
+                  l10n.anErrorOccurred,
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              )
               : _activities!.isEmpty
-                  ? Center(
-                      child: Text(
-                        l10n.spaceActivityEmpty,
-                        style:
-                            const TextStyle(color: AppColors.textSecondary),
+              ? Center(
+                child: Text(
+                  l10n.spaceActivityEmpty,
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              )
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  itemCount: _activities!.length,
+                  itemBuilder: (context, i) {
+                    final a = _activities![i];
+                    final (icon, text) = _render(a, l10n);
+                    return AppCard(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm + 2,
                       ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        itemCount: _activities!.length,
-                        itemBuilder: (context, i) {
-                          final a = _activities![i];
-                          final (icon, text) = _render(a, l10n);
-                          return Container(
-                            margin:
-                                const EdgeInsets.only(bottom: AppSpacing.xs),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.md,
-                                vertical: AppSpacing.sm + 2),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.border),
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 34,
-                                  height: 34,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryLight,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Icon(icon,
-                                      size: 18,
-                                      color: AppColors.primaryDark),
-                                ),
-                                const SizedBox(width: AppSpacing.sm + 4),
-                                Expanded(
-                                  child: Text(
-                                    text,
-                                    style: const TextStyle(
-                                      fontSize: 13.5,
-                                      color: AppColors.textPrimary,
-                                      height: 1.35,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Text(
-                                  _when(a['created_at'] as String?),
-                                  style: const TextStyle(
-                                      fontSize: 11.5,
-                                      color: AppColors.textDisabled),
-                                ),
-                              ],
+                            child: Icon(
+                              icon,
+                              size: 18,
+                              color: AppColors.primaryDark,
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(width: AppSpacing.sm + 4),
+                          Expanded(
+                            child: Text(
+                              text,
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                color: AppColors.textPrimary,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Text(
+                            _when(a['created_at'] as String?),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: AppColors.textDisabled,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    );
+                  },
+                ),
+              ),
     );
   }
 }

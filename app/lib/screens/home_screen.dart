@@ -83,12 +83,14 @@ class _HomeScreenState extends State<HomeScreen>
     final monthEnd = DateTime(monthStart.year, monthStart.month + 1, 0);
     bool covers(Budget b) =>
         !b.startDate.isAfter(monthEnd) && !b.endDate.isBefore(monthStart);
-    final candidates = _allBudgets.where((b) => b.isActive && covers(b)).toList()
-      ..sort((a, b) {
-        int rank(Budget x) => x.periodType == BudgetPeriodType.monthly ? 0 : 1;
-        final r = rank(a).compareTo(rank(b));
-        return r != 0 ? r : b.startDate.compareTo(a.startDate);
-      });
+    final candidates =
+        _allBudgets.where((b) => b.isActive && covers(b)).toList()
+          ..sort((a, b) {
+            int rank(Budget x) =>
+                x.periodType == BudgetPeriodType.monthly ? 0 : 1;
+            final r = rank(a).compareTo(rank(b));
+            return r != 0 ? r : b.startDate.compareTo(a.startDate);
+          });
     return candidates.isEmpty ? null : candidates.first;
   }
   // ✅ SUPPRIMÉ : bool _showNotificationTest = false;
@@ -155,10 +157,12 @@ class _HomeScreenState extends State<HomeScreen>
   /// Suggestions prédictives + projection budget (selon les réglages
   /// Intelligence EpiList). Échec silencieux : jamais bloquant.
   Future<void> _loadIntelligence() async {
-    _predictionsEnabled =
-        await IntelligenceSettings.get(IntelligenceSettings.keyPredictions);
-    _forecastEnabled =
-        await IntelligenceSettings.get(IntelligenceSettings.keyBudgetForecast);
+    _predictionsEnabled = await IntelligenceSettings.get(
+      IntelligenceSettings.keyPredictions,
+    );
+    _forecastEnabled = await IntelligenceSettings.get(
+      IntelligenceSettings.keyBudgetForecast,
+    );
     if (!mounted) return;
     final service = context.read<IntelligenceService>();
 
@@ -191,20 +195,23 @@ class _HomeScreenState extends State<HomeScreen>
             state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
         if (lists.isNotEmpty) {
           await context.read<ListItemService>().forceAddListItem(
-                listId: lists.first.id,
-                productName: p.productName,
-                quantity: p.avgQuantity.round().clamp(1, 99),
-              );
+            listId: lists.first.id,
+            productName: p.productName,
+            quantity: p.avgQuantity.round().clamp(1, 99),
+          );
           if (mounted) {
             SmartSnackBarManager.showSuccessSnackBar(
-                context, l10n.predictionAdded(p.productName));
+              context,
+              l10n.predictionAdded(p.productName),
+            );
           }
         }
       }
       if (!mounted) return;
-      await context
-          .read<IntelligenceService>()
-          .sendPredictionFeedback(p.productName, action);
+      await context.read<IntelligenceService>().sendPredictionFeedback(
+        p.productName,
+        action,
+      );
       if (mounted) setState(() => _predictions.remove(p));
     } catch (_) {}
   }
@@ -220,67 +227,73 @@ class _HomeScreenState extends State<HomeScreen>
 
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  l10n.pickMonth,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            ),
-            Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                children: months.map((m) {
-                  var label = DateFormat('MMMM yyyy', locale).format(m);
-                  label = label[0].toUpperCase() + label.substring(1);
-                  final selected = m.year == _selectedMonth.year &&
-                      m.month == _selectedMonth.month;
-                  return ListTile(
-                    leading: Icon(
-                      selected
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_off,
-                      size: 20,
-                      color: selected
-                          ? AppColors.primary
-                          : AppColors.textDisabled,
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      l10n.pickMonth,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    title: Text(label),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      setState(() => _selectedMonth = m);
-                    },
-                  );
-                }).toList(),
-              ),
+                  ),
+                ),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children:
+                        months.map((m) {
+                          var label = DateFormat('MMMM yyyy', locale).format(m);
+                          label = label[0].toUpperCase() + label.substring(1);
+                          final selected =
+                              m.year == _selectedMonth.year &&
+                              m.month == _selectedMonth.month;
+                          return ListTile(
+                            leading: Icon(
+                              selected
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              size: 20,
+                              color:
+                                  selected
+                                      ? AppColors.primary
+                                      : AppColors.textDisabled,
+                            ),
+                            title: Text(label),
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              setState(() => _selectedMonth = m);
+                            },
+                          );
+                        }).toList(),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
-
 
   Widget _buildGreeting(AppLocalizations l10n) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        final user = state is AuthSuccess
-            ? state.user
-            : (state is ProfileUpdated ? state.user : null);
+        final user =
+            state is AuthSuccess
+                ? state.user
+                : (state is ProfileUpdated ? state.user : null);
         final name = user?.firstName ?? '';
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              name.isEmpty ? l10n.helloGreeting : '${l10n.helloGreeting.replaceAll(' 👋', '')} $name 👋',
-              style: const TextStyle(
+              name.isEmpty
+                  ? l10n.helloGreeting
+                  : '${l10n.helloGreeting.replaceAll(' 👋', '')} $name 👋',
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
@@ -289,10 +302,7 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(height: 2),
             Text(
               l10n.readyToShop,
-              style: const TextStyle(
-                fontSize: 14.5,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14.5, color: AppColors.textSecondary),
             ),
           ],
         );
@@ -312,12 +322,13 @@ class _HomeScreenState extends State<HomeScreen>
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: lists.length,
-              separatorBuilder: (_, _) =>
-                  const SizedBox(width: AppSpacing.sm + 4),
-              itemBuilder: (context, index) => DashboardListCard(
-                list: lists[index],
-                onTap: () => _openListDetails(context, lists[index]),
-              ),
+              separatorBuilder:
+                  (_, _) => const SizedBox(width: AppSpacing.sm + 4),
+              itemBuilder:
+                  (context, index) => DashboardListCard(
+                    list: lists[index],
+                    onTap: () => _openListDetails(context, lists[index]),
+                  ),
             ),
           );
         }
@@ -337,10 +348,8 @@ class _HomeScreenState extends State<HomeScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ListDetailScreen(
-          shoppingList: list,
-          initialAction: action,
-        ),
+        builder:
+            (_) => ListDetailScreen(shoppingList: list, initialAction: action),
       ),
     ).then((_) => _loadShoppingLists());
   }
@@ -349,8 +358,10 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _scanReceipt() async {
     final list = await pickShoppingList(context, where: (l) => l.canEdit);
     if (list == null || !mounted) return;
-    startReceiptScan(context, listId: list.id)
-        .then((_) => _loadDashboardData());
+    startReceiptScan(
+      context,
+      listId: list.id,
+    ).then((_) => _loadDashboardData());
   }
 
   /// Ouvre l'ecran Budgets et rafraichit la carte au retour
@@ -450,14 +461,18 @@ class _HomeScreenState extends State<HomeScreen>
             padding: const EdgeInsets.only(right: AppSpacing.md),
             child: BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
-                final user = state is AuthSuccess
-                    ? state.user
-                    : (state is ProfileUpdated ? state.user : null);
+                final user =
+                    state is AuthSuccess
+                        ? state.user
+                        : (state is ProfileUpdated ? state.user : null);
                 return GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  ),
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileScreen(),
+                        ),
+                      ),
                   child: UserAvatar(user: user, radius: 17),
                 );
               },
@@ -520,12 +535,14 @@ class _HomeScreenState extends State<HomeScreen>
                       // changement d'espace.
                       ValueListenableBuilder<Space?>(
                         valueListenable: ActiveSpaceStore.current,
-                        builder: (context, space, _) => space == null
-                            ? const SizedBox.shrink()
-                            : SpaceDashboardCard(
-                                key: ValueKey('space-dash-${space.id}'),
-                                space: space,
-                              ),
+                        builder:
+                            (context, space, _) =>
+                                space == null
+                                    ? const SizedBox.shrink()
+                                    : SpaceDashboardCard(
+                                      key: ValueKey('space-dash-${space.id}'),
+                                      space: space,
+                                    ),
                       ),
                       if (_monthBudget != null)
                         BudgetMonthCard(
@@ -560,15 +577,19 @@ class _HomeScreenState extends State<HomeScreen>
                             icon: Icons.add,
                             label: l10n.quickAddItem,
                             sublabel: l10n.toChosenList,
-                            onTap: () => _openRecentListWith(
-                                ListDetailAction.addItem),
+                            onTap:
+                                () => _openRecentListWith(
+                                  ListDetailAction.addItem,
+                                ),
                           ),
                           QuickActionButton(
                             icon: Icons.mic_none_rounded,
                             label: l10n.quickVoice,
                             sublabel: l10n.toChosenList,
-                            onTap: () => _openRecentListWith(
-                                ListDetailAction.voiceItem),
+                            onTap:
+                                () => _openRecentListWith(
+                                  ListDetailAction.voiceItem,
+                                ),
                           ),
                           QuickActionButton(
                             icon: Icons.receipt_long_outlined,
@@ -587,23 +608,26 @@ class _HomeScreenState extends State<HomeScreen>
                             icon: Icons.restaurant_menu_outlined,
                             title: l10n.mealPlannerTitle,
                             subtitle: l10n.mealPlannerSubtitle,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      const MealPlannerScreen()),
-                            ),
+                            onTap:
+                                () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const MealPlannerScreen(),
+                                  ),
+                                ),
                           ),
                           const SizedBox(width: AppSpacing.sm + 4),
                           DashboardTile(
                             icon: Icons.storefront_outlined,
                             title: l10n.myStores,
                             subtitle: l10n.aisleOrder,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const StoresScreen()),
-                            ),
+                            onTap:
+                                () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const StoresScreen(),
+                                  ),
+                                ),
                           ),
                         ],
                       ),
@@ -628,9 +652,11 @@ class _HomeScreenState extends State<HomeScreen>
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm + 2,
+        ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: AppColors.border),
         ),
@@ -640,20 +666,21 @@ class _HomeScreenState extends State<HomeScreen>
             Row(
               children: [
                 Icon(
-                  f.projectionGap > 0
-                      ? Icons.trending_up
-                      : Icons.trending_flat,
+                  f.projectionGap > 0 ? Icons.trending_up : Icons.trending_flat,
                   size: 16,
-                  color: f.projectionGap > 0
-                      ? AppColors.warning
-                      : AppColors.primary,
+                  color:
+                      f.projectionGap > 0
+                          ? AppColors.warning
+                          : AppColors.primary,
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     '${l10n.atYourCurrentPace('${f.projection.toStringAsFixed(0)} \$')} · ${l10n.daysLeftShort(f.daysLeft)}',
-                    style: const TextStyle(
-                        fontSize: 12.5, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ],
@@ -663,9 +690,12 @@ class _HomeScreenState extends State<HomeScreen>
                 padding: const EdgeInsets.only(top: 2, left: 24),
                 child: Text(
                   l10n.perDayToStayOnBudget(
-                      '${f.perDayRemaining.toStringAsFixed(2)} \$'),
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
+                    '${f.perDayRemaining.toStringAsFixed(2)} \$',
+                  ),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
           ],
@@ -683,27 +713,35 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Text(
               l10n.predictionsTitle,
-              style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w800),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const Spacer(),
             TextButton(
               style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PredictionsScreen()),
-              ).then((_) => _loadIntelligence()),
-              child: Text(l10n.seeAllSuggestions,
-                  style: const TextStyle(fontSize: 12.5)),
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PredictionsScreen(),
+                    ),
+                  ).then((_) => _loadIntelligence()),
+              child: Text(
+                l10n.seeAllSuggestions,
+                style: const TextStyle(fontSize: 12.5),
+              ),
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.xs),
-        ..._predictions.take(3).map((p) => PredictionCard(
-              prediction: p,
-              compact: true,
-              onAction: (action) => _predictionAction(p, action),
-            )),
+        ..._predictions
+            .take(3)
+            .map(
+              (p) => PredictionCard(
+                prediction: p,
+                compact: true,
+                onAction: (action) => _predictionAction(p, action),
+              ),
+            ),
       ],
     );
   }
@@ -720,7 +758,7 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               // Header avec informations sur les listes récentes
               Card(
-                color: Colors.white,
+                color: AppColors.surface,
                 elevation: 1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -787,7 +825,7 @@ class _HomeScreenState extends State<HomeScreen>
         return Column(
           children: [
             Card(
-              color: Colors.white,
+              color: AppColors.surface,
               elevation: 1,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -879,9 +917,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       case 'duplicate':
         // ✅ Mode offline: La duplication sera mise en queue
-        context.read<ShoppingListBloc>().add(
-          DuplicateShoppingList(list.id),
-        );
+        context.read<ShoppingListBloc>().add(DuplicateShoppingList(list.id));
         break;
 
       case 'share':

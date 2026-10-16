@@ -17,7 +17,7 @@ class ComparisonCard extends StatelessWidget {
     final trend = data['spending_trend'] ?? 'stable';
     final absoluteChange = data['absolute_change']?.toDouble() ?? 0.0;
 
-    Color trendColor = Colors.grey;
+    Color trendColor = AppColors.textSecondary;
     IconData trendIcon = Icons.remove;
 
     switch (trend) {
@@ -48,7 +48,7 @@ class ComparisonCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.comparisonWithLastMonth,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -143,7 +143,7 @@ class ComparisonCard extends StatelessWidget {
                     child: _buildPeriodComparison(
                       l10n.currentPeriod,
                       data['current_period']?.toDouble(),
-                      Colors.blue,
+                      AppColors.info,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -151,7 +151,7 @@ class ComparisonCard extends StatelessWidget {
                     child: _buildPeriodComparison(
                       l10n.previousPeriod,
                       data['previous_period']?.toDouble(),
-                      Colors.grey,
+                      AppColors.textSecondary,
                     ),
                   ),
                 ],

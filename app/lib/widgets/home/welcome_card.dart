@@ -87,10 +87,10 @@ class _WelcomeCardState extends State<WelcomeCard> {
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue[100]!),
+        border: Border.all(color: AppColors.infoTint),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withValues(alpha: 0.1),
+            color: AppColors.shadow,
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -111,7 +111,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue[800],
+                    color: AppColors.infoInk,
                   ),
                 ),
               ),

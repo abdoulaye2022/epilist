@@ -9,6 +9,7 @@ import 'package:epilist/blocs/currency/currency_state.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/models/currency.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class CurrencySettingTile extends StatefulWidget {
   const CurrencySettingTile({super.key});
@@ -72,20 +73,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
   Widget _buildTile(AppLocalizations l10n) {
     return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, state) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withValues(alpha: 0.1),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: const Offset(0, 1),
-              ),
-            ],
-          ),
+        return AppCard.tight(
           child: Material(
             color: Colors.transparent,
             child: InkWell(
@@ -109,10 +97,10 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                       child: Center(
                         child: Text(
                           _currentCurrency?.symbol ?? '\$',
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.onPrimary,
                           ),
                         ),
                       ),
@@ -125,7 +113,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                         children: [
                           Text(
                             l10n.currency,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,

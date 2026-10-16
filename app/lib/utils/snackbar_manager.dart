@@ -32,13 +32,13 @@ class SnackBarManager {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.error_outline, color: Colors.white, size: 20),
+                Icon(Icons.error_outline, color: AppColors.onPrimary, size: 20),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.onPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -56,7 +56,7 @@ class SnackBarManager {
             elevation: 6,
             action: SnackBarAction(
               label: 'Fermer',
-              textColor: Colors.white70,
+              textColor: AppColors.onPrimary.withValues(alpha: 0.7),
               onPressed: () {
                 messenger.hideCurrentSnackBar();
               },
@@ -88,13 +88,17 @@ class SnackBarManager {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+                Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.onPrimary,
+                  size: 20,
+                ),
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     message,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.onPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),

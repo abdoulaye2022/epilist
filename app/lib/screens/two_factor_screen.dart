@@ -58,7 +58,9 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
       if (!mounted) return;
       setState(() => _loading = false);
       SmartSnackBarManager.showErrorSnackBar(
-          context, e.code == 'INVALID_CODE' ? l10n.twoFactorInvalidCode : e.message);
+        context,
+        e.code == 'INVALID_CODE' ? l10n.twoFactorInvalidCode : e.message,
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() => _loading = false);
@@ -121,16 +123,22 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                     color: AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: const Icon(Icons.mark_email_unread_outlined,
-                      size: 30, color: AppColors.primaryDark),
+                  child: Icon(
+                    Icons.mark_email_unread_outlined,
+                    size: 30,
+                    color: AppColors.primaryDark,
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
                 l10n.twoFactorSentTo(widget.email),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 14, color: AppColors.textSecondary, height: 1.4),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
               TextField(
@@ -142,12 +150,16 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 enabled: !_loading,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 style: const TextStyle(
-                    fontSize: 26, fontWeight: FontWeight.w700, letterSpacing: 10),
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 10,
+                ),
                 decoration: InputDecoration(
                   counterText: '',
                   hintText: '······',
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onChanged: (v) {
                   if (v.length == 6 && !_loading) _submit();
@@ -157,33 +169,37 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
               Text(
                 l10n.twoFactorExpires,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textDisabled),
+                style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
                 onPressed: _loading ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: _loading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
-                    : Text(l10n.login),
+                child:
+                    _loading
+                        ?  SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.onPrimary,
+                          ),
+                        )
+                        : Text(l10n.login),
               ),
               const SizedBox(height: AppSpacing.sm),
               TextButton(
                 onPressed: _resending ? null : _resend,
                 child: Text(
                   _resending ? l10n.twoFactorResending : l10n.twoFactorResend,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               ),
             ],

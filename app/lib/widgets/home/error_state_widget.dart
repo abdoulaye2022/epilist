@@ -23,7 +23,7 @@ class ErrorStateWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+            Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 12),
             Text(
               l10n.loadingError,
@@ -51,8 +51,11 @@ class ErrorStateWidget extends StatelessWidget {
               label: Text(l10n.retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                foregroundColor: AppColors.onPrimary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
               ),
             ),
           ],

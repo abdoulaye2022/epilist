@@ -62,7 +62,7 @@ class SuggestionEmptyState extends StatelessWidget {
               onPressed: () => _navigateToShoppingLists(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 12,
@@ -80,13 +80,13 @@ class SuggestionEmptyState extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.accentLight,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.blue[200]!),
+                border: Border.all(color: AppColors.infoBorder),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.tips_and_updates,
-                    color: AppColors.accent,
+                    color: AppColors.infoInk,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -110,16 +110,19 @@ class SuggestionEmptyState extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green[200]!),
+                border: Border.all(color: AppColors.successBorder),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: AppColors.primary, size: 20),
+                  Icon(Icons.auto_awesome, color: AppColors.primaryDark, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l10n.suggestionsBasedOnUsage, // "Les suggestions se basent sur vos habitudes d'achat"
-                      style: TextStyle(color: AppColors.primaryDark, fontSize: 14),
+                      style: TextStyle(
+                        color: AppColors.primaryDark,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],

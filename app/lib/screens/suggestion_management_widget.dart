@@ -119,7 +119,7 @@ class _SuggestionManagementWidgetState
       builder:
           (context) => AlertDialog(
             // ✅ FOND BLANC POUR LES DIALOGUES
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -131,7 +131,7 @@ class _SuggestionManagementWidgetState
                 Expanded(
                   child: Text(
                     l10n.deleteSuggestion,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: TextStyle(color: AppColors.textPrimary),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -140,7 +140,7 @@ class _SuggestionManagementWidgetState
             ),
             content: Text(
               l10n.deleteSuggestionConfirm,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style: TextStyle(color: AppColors.textPrimary),
             ),
             actions: [
               TextButton(
@@ -161,7 +161,7 @@ class _SuggestionManagementWidgetState
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -179,7 +179,7 @@ class _SuggestionManagementWidgetState
       builder:
           (context) => AlertDialog(
             // ✅ FOND BLANC POUR LES DIALOGUES
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -191,7 +191,7 @@ class _SuggestionManagementWidgetState
                 Expanded(
                   child: Text(
                     l10n.clearAllSuggestions,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: TextStyle(color: AppColors.textPrimary),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -204,22 +204,22 @@ class _SuggestionManagementWidgetState
               children: [
                 Text(
                   l10n.clearAllSuggestionsConfirm,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: TextStyle(color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange[50],
+                    color: AppColors.warningTint,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.orange[200]!),
+                    border: Border.all(color: AppColors.warningBorder),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
                         Icons.warning_amber,
-                        color: AppColors.warning,
+                        color: AppColors.warningInk,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -259,7 +259,7 @@ class _SuggestionManagementWidgetState
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.warning,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onWarning,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

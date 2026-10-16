@@ -72,11 +72,15 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, size: 56, color: Colors.red[300]),
+                    Icon(
+                      Icons.error_outline,
+                      size: 56,
+                      color: AppColors.errorBorder,
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       state.message,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,
                       ),
@@ -85,7 +89,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     const SizedBox(height: AppSpacing.md),
                     OutlinedButton.icon(
                       onPressed: () {
-                        context.read<CategoryBloc>().add(const LoadCategories());
+                        context.read<CategoryBloc>().add(
+                          const LoadCategories(),
+                        );
                       },
                       icon: const Icon(Icons.refresh, size: 18),
                       label: Text(l10n.refreshTooltip),
@@ -121,7 +127,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                         color: AppColors.primaryLight,
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.category_outlined,
                         size: 36,
                         color: AppColors.primaryDark,
@@ -130,7 +136,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       l10n.noCategoriesYet,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -139,7 +145,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.createFirstCategoryDescription,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         color: AppColors.textSecondary,
                       ),
@@ -148,9 +154,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     const SizedBox(height: AppSpacing.lg),
                     ElevatedButton.icon(
                       onPressed: () {
-                        context
-                            .read<CategoryBloc>()
-                            .add(const InitializeDefaultCategories());
+                        context.read<CategoryBloc>().add(
+                          const InitializeDefaultCategories(),
+                        );
                       },
                       icon: const Icon(Icons.auto_awesome, size: 18),
                       label: Text(l10n.categories),
@@ -167,10 +173,14 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
               // Compteur discret, sans bandeau coloré.
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm),
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
                 child: Text(
                   '${categories.length} ${l10n.categories.toLowerCase()}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,
@@ -180,19 +190,20 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
               // Liste des catégories
               Expanded(
-                child: state is CategoryOperationInProgress
-                    ? Stack(
-                        children: [
-                          _buildCategoryList(categories),
-                          Container(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
+                child:
+                    state is CategoryOperationInProgress
+                        ? Stack(
+                          children: [
+                            _buildCategoryList(categories),
+                            Container(
+                              color: AppColors.overlay,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    : _buildCategoryList(categories),
+                          ],
+                        )
+                        : _buildCategoryList(categories),
               ),
             ],
           );
@@ -203,7 +214,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
         icon: const Icon(Icons.add),
         label: Text(l10n.addCategory),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
       ),
     );
   }
@@ -212,9 +223,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
     return ReorderableListView.builder(
       itemCount: categories.length,
       onReorderItem: (oldIndex, newIndex) {
-        final reorderedIds = List<int>.from(
-          categories.map((c) => c.id),
-        );
+        final reorderedIds = List<int>.from(categories.map((c) => c.id));
         final item = reorderedIds.removeAt(oldIndex);
         reorderedIds.insert(newIndex, item);
 
@@ -235,20 +244,22 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
   void _showAddCategoryDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<CategoryBloc>(),
-        child: const AddEditCategoryDialog(),
-      ),
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<CategoryBloc>(),
+            child: const AddEditCategoryDialog(),
+          ),
     );
   }
 
   void _showEditCategoryDialog(BuildContext context, Category category) {
     showDialog(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<CategoryBloc>(),
-        child: AddEditCategoryDialog(category: category),
-      ),
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<CategoryBloc>(),
+            child: AddEditCategoryDialog(category: category),
+          ),
     );
   }
 
@@ -258,63 +269,65 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.delete_outline,
-                title: l10n.deleteCategory,
-                color: AppColors.error,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.4,
+      builder:
+          (dialogContext) => Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppDialogHeader(
+                    icon: Icons.delete_outline,
+                    title: l10n.deleteCategory,
+                    color: AppColors.error,
                   ),
-                  children: [
-                    TextSpan(text: l10n.deleteCategoryConfirm),
-                    TextSpan(
-                      text: ' « ${category.name} »',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                  const SizedBox(height: AppSpacing.md),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
                       ),
+                      children: [
+                        TextSpan(text: l10n.deleteCategoryConfirm),
+                        TextSpan(
+                          text: ' « ${category.name} »',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const TextSpan(text: ' ?'),
+                      ],
                     ),
-                    const TextSpan(text: ' ?'),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    l10n.actionIrreversible,
+                    style: TextStyle(fontSize: 12.5, color: AppColors.error),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  BlocBuilder<CategoryBloc, CategoryState>(
+                    bloc: categoryBloc,
+                    builder:
+                        (context, state) => AppDialogActions(
+                          cancelLabel: l10n.cancel,
+                          submitLabel: l10n.delete,
+                          destructive: true,
+                          loading: state is CategoryOperationInProgress,
+                          onCancel: () => Navigator.of(dialogContext).pop(),
+                          onSubmit: () {
+                            categoryBloc.add(DeleteCategory(category.id));
+                            Navigator.of(dialogContext).pop();
+                          },
+                        ),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                l10n.actionIrreversible,
-                style: const TextStyle(fontSize: 12.5, color: AppColors.error),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              BlocBuilder<CategoryBloc, CategoryState>(
-                bloc: categoryBloc,
-                builder: (context, state) => AppDialogActions(
-                  cancelLabel: l10n.cancel,
-                  submitLabel: l10n.delete,
-                  destructive: true,
-                  loading: state is CategoryOperationInProgress,
-                  onCancel: () => Navigator.of(dialogContext).pop(),
-                  onSubmit: () {
-                    categoryBloc.add(DeleteCategory(category.id));
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }

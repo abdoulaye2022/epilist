@@ -56,9 +56,9 @@ class BudgetSummaryCard extends StatelessWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child:  Icon(
                     Icons.account_balance_wallet,
-                    color: Colors.white,
+                    color: AppColors.onPrimary,
                     size: 24,
                   ),
                 ),
@@ -69,7 +69,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     children: [
                       Text(
                         l10n.budgetSummary,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -77,7 +77,10 @@ class BudgetSummaryCard extends StatelessWidget {
                       ),
                       Text(
                         l10n.overviewOfYourBudgets,
-                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -140,7 +143,7 @@ class BudgetSummaryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: AppColors.onPrimary.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -158,7 +161,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         FormattedAmount(
                           // ✅ UTILISATION DE FormattedAmount
                           amount: totalBudgeted!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -240,7 +243,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.primaryLight,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.green[200]!),
+                          border: Border.all(color: AppColors.successBorder),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -281,9 +284,9 @@ class BudgetSummaryCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red[50],
+                          color: AppColors.errorTint,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red[200]!),
+                          border: Border.all(color: AppColors.errorBorder),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -338,7 +341,7 @@ class BudgetSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.7),
+        color: AppColors.onPrimary.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
@@ -356,7 +359,7 @@ class BudgetSummaryCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

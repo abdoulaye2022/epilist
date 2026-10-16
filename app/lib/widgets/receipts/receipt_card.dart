@@ -4,6 +4,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:flutter/material.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class ReceiptCard extends StatelessWidget {
   final Receipt receipt;
@@ -26,15 +27,10 @@ class ReceiptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Carte plate bordée, sans ombre : le gabarit commun de l'app.
-    return Container(
+    return AppCard.tight(
+      radius: 14,
       margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -53,8 +49,7 @@ class ReceiptCard extends StatelessWidget {
               const SizedBox(height: 10),
               _buildPhoto(context),
             ],
-            if (receipt.listName != null &&
-                receipt.listName!.isNotEmpty) ...[
+            if (receipt.listName != null && receipt.listName!.isNotEmpty) ...[
               const SizedBox(height: 10),
               _buildListChip(context),
             ],
@@ -75,25 +70,31 @@ class ReceiptCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Row(
           children: [
-            const Icon(Icons.checklist_rounded,
-                size: 15, color: AppColors.textDisabled),
+            Icon(
+              Icons.checklist_rounded,
+              size: 15,
+              color: AppColors.textDisabled,
+            ),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
                 receipt.listName!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 12.5, color: AppColors.textSecondary),
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
             if (onOpenList != null)
               Text(
                 l10n.openList,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryDark),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryDark,
+                ),
               ),
           ],
         ),
@@ -106,32 +107,39 @@ class ReceiptCard extends StatelessWidget {
   Widget _buildPhoto(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
-      onTap: () => showDialog<void>(
-        context: context,
-        builder: (dialogContext) => Dialog(
-          insetPadding: const EdgeInsets.all(12),
-          backgroundColor: Colors.black,
-          child: Stack(
-            children: [
-              InteractiveViewer(
-                maxScale: 5,
-                child: Center(
-                  child: Image.network(receipt.imageUrl!,
-                      fit: BoxFit.contain),
+      onTap:
+          () => showDialog<void>(
+            context: context,
+            builder:
+                (dialogContext) => Dialog(
+                  insetPadding: const EdgeInsets.all(12),
+                  backgroundColor: AppColors.backdrop,
+                  child: Stack(
+                    children: [
+                      InteractiveViewer(
+                        maxScale: 5,
+                        child: Center(
+                          child: Image.network(
+                            receipt.imageUrl!,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: IconButton(
+                          icon:  Icon(
+                            Icons.close,
+                            color: AppColors.onPrimary,
+                          ),
+                          onPressed: () => Navigator.pop(dialogContext),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.pop(dialogContext),
-                ),
-              ),
-            ],
           ),
-        ),
-      ),
       child: Row(
         children: [
           ClipRRect(
@@ -141,24 +149,30 @@ class ReceiptCard extends StatelessWidget {
               width: 48,
               height: 48,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                width: 48,
-                height: 48,
-                color: AppColors.background,
-                child: const Icon(Icons.broken_image_outlined,
-                    size: 20, color: AppColors.textDisabled),
-              ),
+              errorBuilder:
+                  (context, error, stack) => Container(
+                    width: 48,
+                    height: 48,
+                    color: AppColors.background,
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      size: 20,
+                      color: AppColors.textDisabled,
+                    ),
+                  ),
             ),
           ),
           const SizedBox(width: 10),
           Text(
             l10n.receiptPhotoTitle,
-            style: const TextStyle(
-                fontSize: 12.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
           ),
           const SizedBox(width: 4),
-          const Icon(Icons.open_in_full_rounded,
-              size: 14, color: AppColors.textDisabled),
+          Icon(
+            Icons.open_in_full_rounded,
+            size: 14,
+            color: AppColors.textDisabled,
+          ),
         ],
       ),
     );
@@ -177,13 +191,13 @@ class ReceiptCard extends StatelessWidget {
                   color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.store, color: AppColors.primary, size: 20),
+                child: Icon(Icons.store, color: AppColors.primaryDark, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   receipt.storeName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -206,7 +220,7 @@ class ReceiptCard extends StatelessWidget {
         // CORRECTION : Utilisation de FormattedAmount au lieu de receipt.formattedAmount
         FormattedAmount(
           amount: receipt.totalAmount,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
@@ -224,7 +238,7 @@ class ReceiptCard extends StatelessWidget {
           ),
           child: Text(
             _formatPurchaseDate(context, receipt.purchaseDate),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
@@ -260,7 +274,7 @@ class ReceiptCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             receipt.notes!,
-            style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -293,8 +307,11 @@ class ReceiptCard extends StatelessWidget {
               value: 'edit',
               child: Row(
                 children: [
-                  const Icon(Icons.edit_outlined,
-                      size: 20, color: AppColors.textSecondary),
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(width: 12),
                   Text(l10n.edit),
                 ],
@@ -304,11 +321,9 @@ class ReceiptCard extends StatelessWidget {
               value: 'delete',
               child: Row(
                 children: [
-                  const Icon(Icons.delete_outline,
-                      size: 20, color: AppColors.error),
+                  Icon(Icons.delete_outline, size: 20, color: AppColors.error),
                   const SizedBox(width: 12),
-                  Text(l10n.delete,
-                      style: const TextStyle(color: AppColors.error)),
+                  Text(l10n.delete, style: TextStyle(color: AppColors.error)),
                 ],
               ),
             ),

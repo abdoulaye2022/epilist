@@ -103,13 +103,13 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
           return AppBar(
             // ✅ Background blanc pour l'AppBar
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
 
             // ✅ Enlève l'ombre sous l'AppBar
             elevation: 0,
 
             // ✅ Couleur des icônes (noir sur fond blanc)
-            iconTheme: const IconThemeData(color: Colors.black),
+            iconTheme: IconThemeData(color: AppColors.textPrimary),
 
             // ✅ Logo à gauche
             leading: Container(
@@ -124,10 +124,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
                       decoration: const BoxDecoration(
                         color: Colors.transparent,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.shopping_cart_rounded,
                         size: 28,
-                        color: Colors.green,
+                        color: AppColors.success,
                       ),
                     );
                   },
@@ -154,7 +154,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
               // Bouton refresh (optionnel)
               if (widget.onRefresh != null)
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.black),
+                  icon: Icon(Icons.refresh, color: AppColors.textPrimary),
                   onPressed: widget.onRefresh,
                   tooltip: l10n.refreshTooltip, // Au lieu de 'Actualiser'
                 ),
@@ -243,7 +243,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           value: 'view_all',
                           child: Row(
                             children: [
-                              const Icon(Icons.list_alt, color: AppColors.textPrimary),
+                              Icon(
+                                Icons.list_alt,
+                                color: AppColors.textPrimary,
+                              ),
                               const SizedBox(width: 12),
                               Text(l10n.allLists),
                             ],
@@ -251,7 +254,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
                         ),
 
                       // Divider
-                      if (widget.onViewAllLists != null && widget.onManageCategories != null)
+                      if (widget.onViewAllLists != null &&
+                          widget.onManageCategories != null)
                         const PopupMenuDivider(),
 
                       // Menu Gérer les catégories
@@ -260,7 +264,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           value: 'manage_categories',
                           child: Row(
                             children: [
-                              Icon(Icons.category, color: AppColors.primaryDark),
+                              Icon(
+                                Icons.category,
+                                color: AppColors.primaryDark,
+                              ),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.manageCategories,
@@ -281,11 +288,11 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           value: 'logout',
                           child: Row(
                             children: [
-                              const Icon(Icons.logout, color: Colors.red),
+                              Icon(Icons.logout, color: AppColors.error),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.logout,
-                                style: const TextStyle(color: Colors.red),
+                                style: TextStyle(color: AppColors.error),
                               ),
                             ],
                           ),
@@ -314,7 +321,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.green[300]!, width: 2),
+        border: Border.all(color: AppColors.successBorder, width: 2),
       ),
       child: Center(
         child: Text(
@@ -446,9 +453,9 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
           }
 
           return AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black),
+            iconTheme: IconThemeData(color: AppColors.textPrimary),
 
             // Logo à gauche
             leading: Container(
@@ -459,10 +466,10 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                   'assets/images/app_logo.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
+                    return Icon(
                       Icons.shopping_cart_rounded,
                       size: 28,
-                      color: Colors.green,
+                      color: AppColors.success,
                     );
                   },
                 ),
@@ -485,7 +492,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
             actions: [
               if (widget.onRefresh != null)
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.black),
+                  icon: Icon(Icons.refresh, color: AppColors.textPrimary),
                   onPressed: widget.onRefresh,
                   tooltip: 'Actualiser',
                 ),
@@ -498,7 +505,10 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                   height: 36,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.green[300]!, width: 2),
+                    border: Border.all(
+                      color: AppColors.successBorder,
+                      width: 2,
+                    ),
                   ),
                   child: ClipOval(
                     child:
@@ -592,7 +602,10 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                           value: 'view_all',
                           child: Row(
                             children: [
-                              const Icon(Icons.list_alt, color: AppColors.textPrimary),
+                              Icon(
+                                Icons.list_alt,
+                                color: AppColors.textPrimary,
+                              ),
                               const SizedBox(width: 12),
                               Text(l10n.allLists),
                             ],
@@ -607,11 +620,11 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                           value: 'logout',
                           child: Row(
                             children: [
-                              const Icon(Icons.logout, color: Colors.red),
+                              Icon(Icons.logout, color: AppColors.error),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.logout,
-                                style: const TextStyle(color: Colors.red),
+                                style: TextStyle(color: AppColors.error),
                               ),
                             ],
                           ),

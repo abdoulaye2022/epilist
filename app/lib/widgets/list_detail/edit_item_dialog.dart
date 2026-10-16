@@ -121,7 +121,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
+            color: AppColors.surface,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -233,11 +233,11 @@ class _EditItemDialogState extends State<EditItemDialog> {
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue[200]!),
+        border: Border.all(color: AppColors.infoBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, color: AppColors.accent, size: 16),
+          Icon(Icons.auto_awesome, color: AppColors.infoInk, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -260,7 +260,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     // proche ; sous une simple boite decoree blanche, ils etaient
     // invisibles (assertion Flutter, appui sans retour visuel).
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: AppColors.border),
@@ -602,7 +602,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     constraints: const BoxConstraints(),
                   ),
                 ] else
-                  const Icon(Icons.chevron_right, color: Colors.grey),
+                  Icon(Icons.chevron_right, color: AppColors.textSecondary),
               ],
             ),
           ),
@@ -753,12 +753,12 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       imageUrl: _photoUrl!,
                       fit: BoxFit.cover,
                       errorWidget:
-                          (_, _, _) => const Icon(
+                          (_, _, _) => Icon(
                             Icons.broken_image_outlined,
                             color: AppColors.textDisabled,
                           ),
                     )
-                    : const Icon(
+                    : Icon(
                       Icons.add_a_photo_outlined,
                       color: AppColors.textSecondary,
                     ),
@@ -768,10 +768,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
         Expanded(
           child: Text(
             hasPhoto ? l10n.productPhoto : l10n.addPhoto,
-            style: const TextStyle(
-              fontSize: 13.5,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
           ),
         ),
       ],
@@ -806,13 +803,10 @@ class _EditItemDialogState extends State<EditItemDialog> {
                 ),
                 if (hasPhoto)
                   ListTile(
-                    leading: const Icon(
-                      Icons.delete_outline,
-                      color: AppColors.error,
-                    ),
+                    leading: Icon(Icons.delete_outline, color: AppColors.error),
                     title: Text(
                       l10n.removePhoto,
-                      style: const TextStyle(color: AppColors.error),
+                      style: TextStyle(color: AppColors.error),
                     ),
                     onTap: () {
                       Navigator.pop(sheetContext);

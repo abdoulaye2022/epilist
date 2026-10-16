@@ -77,7 +77,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: AppColors.surface,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -119,14 +119,14 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.person_rounded, size: 22, color: AppColors.primary),
+      child: Icon(Icons.person_rounded, size: 22, color: AppColors.primaryDark),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.editProfile,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -202,20 +202,20 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber[50],
+        color: AppColors.goldTint,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber[200]!),
+        border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.amber[700], size: 16),
+          Icon(Icons.info_outline, color: AppColors.goldInk, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               l10n.emailCannotBeModified,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.amber[700],
+                color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -254,8 +254,8 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             onPressed: isLoading ? null : () => _saveProfile(l10n),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.green[300],
+              foregroundColor: AppColors.onPrimary,
+              disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -264,12 +264,12 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             ),
             child:
                 isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     )
                     : Text(

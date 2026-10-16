@@ -68,7 +68,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       ),
                       Text(
                         budget.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -81,7 +81,11 @@ class BudgetAlertsWidget extends StatelessWidget {
                 ),
                 if (onDismiss != null)
                   IconButton(
-                    icon: Icon(Icons.close, size: 18, color: AppColors.textSecondary),
+                    icon: Icon(
+                      Icons.close,
+                      size: 18,
+                      color: AppColors.textSecondary,
+                    ),
                     onPressed: onDismiss,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -98,7 +102,7 @@ class BudgetAlertsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: AppColors.onPrimary.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -108,12 +112,15 @@ class BudgetAlertsWidget extends StatelessWidget {
                     children: [
                       Text(
                         l10n.budgeted,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       FormattedAmount(
                         // ✅ UTILISATION DE FormattedAmount
                         amount: budget.budgetAmount,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -127,7 +134,10 @@ class BudgetAlertsWidget extends StatelessWidget {
                     children: [
                       Text(
                         l10n.spent,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       FormattedAmount(
                         // ✅ UTILISATION DE FormattedAmount
@@ -182,7 +192,9 @@ class BudgetAlertsWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: _getAlertColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _getAlertColor().withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: _getAlertColor().withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -207,7 +219,11 @@ class BudgetAlertsWidget extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.list_alt, size: 16, color: AppColors.textSecondary),
+                  Icon(
+                    Icons.list_alt,
+                    size: 16,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     budget.listName!,
@@ -236,7 +252,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                   label: Text(l10n.suggestions),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _getAlertColor(),
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -256,10 +272,10 @@ class BudgetAlertsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isOverBudget ? Colors.red[50] : AppColors.primaryLight,
+        color: isOverBudget ? AppColors.errorTint : AppColors.primaryLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isOverBudget ? Colors.red[200]! : Colors.green[200]!,
+          color: isOverBudget ? AppColors.errorBorder : AppColors.successBorder,
         ),
       ),
       child: Row(
@@ -274,9 +290,7 @@ class BudgetAlertsWidget extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                isOverBudget
-                    ? (l10n.overBudget)
-                    : l10n.remaining,
+                isOverBudget ? (l10n.overBudget) : l10n.remaining,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -354,7 +368,7 @@ class BudgetAlertsWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.lightbulb_outline, color: Colors.amber[600]),
+                    Icon(Icons.lightbulb_outline, color: AppColors.gold),
                     const SizedBox(width: 8),
                     Text(
                       l10n.suggestions,
@@ -406,7 +420,7 @@ class BudgetAlertsWidget extends StatelessWidget {
               color: AppColors.accentLight,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, size: 20, color: AppColors.accent),
+            child: Icon(icon, size: 20, color: AppColors.infoInk),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -422,7 +436,10 @@ class BudgetAlertsWidget extends StatelessWidget {
                 ),
                 Text(
                   description,
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),

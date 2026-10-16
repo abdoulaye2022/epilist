@@ -106,7 +106,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
+            color: AppColors.surface,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -158,14 +158,14 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.edit, size: 40, color: AppColors.accent),
+      child: Icon(Icons.edit, size: 40, color: AppColors.infoInk),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.editReceipt,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -177,7 +177,11 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
     return Text(
       l10n.editReceiptDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -292,7 +296,10 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
                   const SizedBox(height: 2),
                   Text(
                     _formatDate(_selectedDate),
-                    style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -337,20 +344,20 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber[50],
+        color: AppColors.goldTint,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber[200]!),
+        border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.amber[700], size: 16),
+          Icon(Icons.info_outline, color: AppColors.goldInk, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               l10n.noChangeDetected,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.amber[700],
+                color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -389,8 +396,8 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             onPressed: _isLoading || !_hasChanges ? null : _submitForm,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.blue[300],
+              foregroundColor: AppColors.onPrimary,
+              disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -399,12 +406,12 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             ),
             child:
                 _isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     )
                     : Text(
@@ -467,7 +474,9 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
     debugPrint(
       "   Date: ${_selectedDate != widget.receipt.purchaseDate ? _selectedDate : 'unchanged'}",
     );
-    debugPrint("   Notes: ${notes != widget.receipt.notes ? notes : 'unchanged'}");
+    debugPrint(
+      "   Notes: ${notes != widget.receipt.notes ? notes : 'unchanged'}",
+    );
 
     context.read<ReceiptBloc>().add(
       UpdateReceipt(

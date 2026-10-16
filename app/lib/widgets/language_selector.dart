@@ -47,7 +47,7 @@ class LanguageSelector extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.language_rounded,
-                      color: AppColors.primary,
+                      color: AppColors.primaryDark,
                       size: 18,
                     ),
                   ),
@@ -83,7 +83,7 @@ class LanguageSelector extends StatelessWidget {
           if (showTitle && compact) ...[
             Text(
               l10n.language,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -195,7 +195,7 @@ class LanguageSelector extends StatelessWidget {
         width: isCompact ? double.infinity : null,
         padding: EdgeInsets.all(isCompact ? 16 : 14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? AppColors.primary : AppColors.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
@@ -203,10 +203,7 @@ class LanguageSelector extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color:
-                  isSelected
-                      ? Colors.green.withValues(alpha: 0.3)
-                      : Colors.grey.withValues(alpha: 0.1),
+              color: isSelected ? AppColors.shadow : AppColors.shadow,
               spreadRadius: isSelected ? 2 : 1,
               blurRadius: isSelected ? 8 : 4,
               offset: Offset(0, isSelected ? 4 : 2),
@@ -224,13 +221,13 @@ class LanguageSelector extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     isSelected
-                        ? Colors.white.withValues(alpha: 0.2)
+                        ? AppColors.onPrimary.withValues(alpha: 0.2)
                         : AppColors.background,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color:
                       isSelected
-                          ? Colors.white.withValues(alpha: 0.3)
+                          ? AppColors.onPrimary.withValues(alpha: 0.3)
                           : AppColors.border,
                 ),
               ),
@@ -253,7 +250,10 @@ class LanguageSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: isCompact ? 16 : 14,
                       fontWeight: FontWeight.w700,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color:
+                          isSelected
+                              ? AppColors.onPrimary
+                              : AppColors.textPrimary,
                     ),
                     textAlign: isCompact ? TextAlign.left : TextAlign.center,
                   ),
@@ -264,7 +264,7 @@ class LanguageSelector extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                       color:
                           isSelected
-                              ? Colors.white.withValues(alpha: 0.9)
+                              ? AppColors.onPrimary.withValues(alpha: 0.9)
                               : AppColors.textSecondary,
                     ),
                     textAlign: isCompact ? TextAlign.left : TextAlign.center,
@@ -280,7 +280,7 @@ class LanguageSelector extends StatelessWidget {
                 width: isCompact ? 24 : 20,
                 height: isCompact ? 24 : 20,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -316,7 +316,7 @@ class LanguageSelectorDialog {
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
+                color: AppColors.surface,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -328,7 +328,10 @@ class LanguageSelectorDialog {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [AppColors.primaryLight, AppColors.primaryLight],
+                        colors: [
+                          AppColors.primaryLight,
+                          AppColors.primaryLight,
+                        ],
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -345,23 +348,23 @@ class LanguageSelectorDialog {
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.green.withValues(alpha: 0.3),
+                                color: AppColors.shadow,
                                 spreadRadius: 2,
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child:  Icon(
                             Icons.language_rounded,
-                            color: Colors.white,
+                            color: AppColors.onPrimary,
                             size: 28,
                           ),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           l10n.selectLanguage,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,

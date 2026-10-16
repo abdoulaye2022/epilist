@@ -7,6 +7,7 @@ import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class ListItemCard extends StatelessWidget {
   final ListItem item;
@@ -30,62 +31,39 @@ class ListItemCard extends StatelessWidget {
     final isReadOnly = shoppingList.isReadOnly;
     final canToggle = !isReadOnly;
 
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: _getBorder(),
-      ),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap:
-              canToggle
-                  ? () => onTogglePurchased?.call(!item.isPurchased)
-                  : null,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+      onTap: canToggle
+          ? () => onTogglePurchased?.call(!item.isPurchased)
+          : null,
+      borderColor: _borderColor(),
+      borderWidth: shoppingList.isReadOnly && !item.isPurchased ? 1.5 : 1,
+      child: Row(
+        children: [
+          _buildCheckbox(canToggle),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCheckbox(canToggle),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader(context),
-                      const SizedBox(height: 8),
-                      _buildDetails(context),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                _buildTrailing(canToggle, canEdit, context),
+                _buildHeader(context),
+                const SizedBox(height: 8),
+                _buildDetails(context),
               ],
             ),
           ),
-        ),
+          const SizedBox(width: 12),
+          _buildTrailing(canToggle, canEdit, context),
+        ],
       ),
     );
   }
 
-  Border? _getBorder() {
-    if (item.isPurchased) {
-      return Border.all(color: Colors.green[200]!, width: 1);
-    } else if (shoppingList.isReadOnly) {
-      return Border.all(color: Colors.blue[200]!, width: 1.5);
-    }
+  /// La bordure dit l'état de la ligne : verte quand l'article est
+  /// coché, bleue quand la liste est en lecture seule, neutre sinon.
+  Color? _borderColor() {
+    if (item.isPurchased) return AppColors.successBorder;
+    if (shoppingList.isReadOnly) return AppColors.infoBorder;
     return null;
   }
 
@@ -100,7 +78,7 @@ class ListItemCard extends StatelessWidget {
       ),
       child:
           item.isPurchased
-              ? const Icon(Icons.check, size: 16, color: Colors.white)
+              ?  Icon(Icons.check, size: 16, color: AppColors.onPrimary)
               : null,
     );
   }
@@ -165,18 +143,21 @@ class ListItemCard extends StatelessWidget {
 
     // Attribution (§10, §45) — seulement dans les espaces partagés
     // (le serveur n'envoie les noms que là) : qui a ajouté, qui a acheté.
-    final attribution = item.isPurchased && item.purchasedByName != null
-        ? l10n.itemPurchasedBy(item.purchasedByName!)
-        : (item.addedByName != null
-            ? l10n.itemAddedBy(item.addedByName!)
-            : null);
+    final attribution =
+        item.isPurchased && item.purchasedByName != null
+            ? l10n.itemPurchasedBy(item.purchasedByName!)
+            : (item.addedByName != null
+                ? l10n.itemAddedBy(item.addedByName!)
+                : null);
     if (attribution != null) {
       details.add(const SizedBox(width: 8));
-      details.add(_buildDetailChip(
-        icon: Icons.person_outline_rounded,
-        text: attribution,
-        color: AppColors.textSecondary,
-      ));
+      details.add(
+        _buildDetailChip(
+          icon: Icons.person_outline_rounded,
+          text: attribution,
+          color: AppColors.textSecondary,
+        ),
+      );
     }
 
     return Wrap(spacing: 8, runSpacing: 4, children: details);
@@ -193,12 +174,12 @@ class ListItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.green[200]!),
+        border: Border.all(color: AppColors.successBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.attach_money, size: 12, color: AppColors.primary),
+          Icon(Icons.attach_money, size: 12, color: AppColors.primaryDark),
           const SizedBox(width: 4),
           FormattedAmount(
             amount: item.price!,
@@ -287,7 +268,7 @@ class ListItemCard extends StatelessWidget {
           color: AppColors.background,
           shape: BoxShape.circle,
         ),
-        child: Icon(Icons.lock, color: AppColors.textDisabled, size: 16),
+        child: Icon(Icons.lock, color: AppColors.textSecondary, size: 16),
       );
     }
 
@@ -300,7 +281,7 @@ class ListItemCard extends StatelessWidget {
         ),
         child: Icon(
           Icons.check_circle_outline,
-          color: AppColors.primary,
+          color: AppColors.primaryDark,
           size: 16,
         ),
       );
@@ -314,7 +295,11 @@ class ListItemCard extends StatelessWidget {
             color: AppColors.background,
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.more_vert, color: AppColors.textSecondary, size: 16),
+          child: Icon(
+            Icons.more_vert,
+            color: AppColors.textSecondary,
+            size: 16,
+          ),
         ),
         onSelected: (value) => _handleMenuAction(value, context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -360,9 +345,11 @@ class ListItemCard extends StatelessWidget {
                 color: AppColors.primaryDark,
               ),
               const SizedBox(width: 8),
-              Text(item.imageUrl?.isNotEmpty == true
-                  ? l10n.receiptPhotoTitle
-                  : l10n.addPhoto),
+              Text(
+                item.imageUrl?.isNotEmpty == true
+                    ? l10n.receiptPhotoTitle
+                    : l10n.addPhoto,
+              ),
             ],
           ),
         ),
@@ -436,17 +423,17 @@ class ListItemCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
             l10n.deleteItemTitle,
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: AppColors.textPrimary),
           ),
           content: Text(
             l10n.deleteQuickConfirm(item.productName),
-            style: const TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: AppColors.textPrimary),
           ),
           actions: [
             TextButton(
@@ -460,7 +447,7 @@ class ListItemCard extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onPrimary,
               ),
               child: Text(l10n.delete),
             ),

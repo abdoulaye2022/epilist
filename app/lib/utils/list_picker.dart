@@ -50,10 +50,9 @@ Future<ShoppingList?> pickShoppingList(
     final bloc = context.read<ShoppingListBloc>();
     await showDialog(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: bloc,
-        child: const CreateListDialog(),
-      ),
+      builder:
+          (dialogContext) =>
+              BlocProvider.value(value: bloc, child: const CreateListDialog()),
     );
     return null;
   }
@@ -62,7 +61,9 @@ Future<ShoppingList?> pickShoppingList(
   return showModalBottomSheet<ShoppingList>(
     context: context,
     isScrollControlled: true,
-    builder: (sheetContext) => _ListPickerSheet(lists: lists, title: l10n.pickListTitle),
+    builder:
+        (sheetContext) =>
+            _ListPickerSheet(lists: lists, title: l10n.pickListTitle),
   );
 }
 
@@ -90,16 +91,18 @@ class _ListPickerSheetState extends State<_ListPickerSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final q = _query.trim().toLowerCase();
-    final shown = q.isEmpty
-        ? widget.lists
-        : widget.lists
-            .where((l) => l.name.toLowerCase().contains(q))
-            .toList();
+    final shown =
+        q.isEmpty
+            ? widget.lists
+            : widget.lists
+                .where((l) => l.name.toLowerCase().contains(q))
+                .toList();
 
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -108,7 +111,11 @@ class _ListPickerSheetState extends State<_ListPickerSheet> {
             if (widget.lists.length > 6)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+                  AppSpacing.md,
+                  0,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
                 child: AppSearchField(
                   controller: _search,
                   hintText: l10n.search,
@@ -116,39 +123,49 @@ class _ListPickerSheetState extends State<_ListPickerSheet> {
                 ),
               ),
             Flexible(
-              child: shown.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Text(l10n.noResultsFound,
-                          style: Theme.of(context).textTheme.bodySmall),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: shown.length,
-                      itemBuilder: (_, i) {
-                        final list = shown[i];
-                        return ListTile(
-                          leading: Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryLight,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.sm + 2),
+              child:
+                  shown.isEmpty
+                      ? Padding(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Text(
+                          l10n.noResultsFound,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      )
+                      : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: shown.length,
+                        itemBuilder: (_, i) {
+                          final list = shown[i];
+                          return ListTile(
+                            leading: Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryLight,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm + 2,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.shopping_basket_outlined,
+                                size: 20,
+                                color: AppColors.primaryDark,
+                              ),
                             ),
-                            child: const Icon(Icons.shopping_basket_outlined,
-                                size: 20, color: AppColors.primaryDark),
-                          ),
-                          title: Text(list.name,
-                              maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text(
-                            '${list.items.length} ${l10n.itemsCount}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          onTap: () => Navigator.of(context).pop(list),
-                        );
-                      },
-                    ),
+                            title: Text(
+                              list.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              '${list.items.length} ${l10n.itemsCount}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            onTap: () => Navigator.of(context).pop(list),
+                          );
+                        },
+                      ),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],
@@ -167,10 +184,11 @@ Future<ListItem?> pickListItem(
   return showModalBottomSheet<ListItem>(
     context: context,
     isScrollControlled: true,
-    builder: (sheetContext) => _ItemPickerSheet(
-      title: title,
-      load: context.read<ListItemService>().getListItems(listId),
-    ),
+    builder:
+        (sheetContext) => _ItemPickerSheet(
+          title: title,
+          load: context.read<ListItemService>().getListItems(listId),
+        ),
   );
 }
 
@@ -200,7 +218,8 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.7,
@@ -211,7 +230,11 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
               _SheetHandle(title: widget.title),
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+                  AppSpacing.md,
+                  0,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
                 child: AppSearchField(
                   controller: _search,
                   hintText: l10n.search,
@@ -232,17 +255,21 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                       );
                     }
                     final q = _query.trim().toLowerCase();
-                    final items = (snap.data ?? const <ListItem>[])
-                        .where((it) =>
-                            q.isEmpty ||
-                            it.productName.toLowerCase().contains(q))
-                        .toList();
+                    final items =
+                        (snap.data ?? const <ListItem>[])
+                            .where(
+                              (it) =>
+                                  q.isEmpty ||
+                                  it.productName.toLowerCase().contains(q),
+                            )
+                            .toList();
                     if (items.isEmpty) {
                       return AppEmptyState(
                         icon: Icons.inbox_outlined,
-                        title: q.isEmpty
-                            ? l10n.noItemsInList
-                            : l10n.noResultsFound,
+                        title:
+                            q.isEmpty
+                                ? l10n.noItemsInList
+                                : l10n.noResultsFound,
                       );
                     }
                     return ListView.builder(
@@ -256,8 +283,11 @@ class _ItemPickerSheetState extends State<_ItemPickerSheet> {
                                 : Icons.add_a_photo_outlined,
                             color: AppColors.textSecondary,
                           ),
-                          title: Text(item.productName,
-                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          title: Text(
+                            item.productName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           onTap: () => Navigator.of(context).pop(item),
                         );
                       },
@@ -294,7 +324,11 @@ class _SheetHandle extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs),
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.xs,
+          ),
           child: Text(title, style: Theme.of(context).textTheme.titleMedium),
         ),
       ],

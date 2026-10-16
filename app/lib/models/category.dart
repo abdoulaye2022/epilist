@@ -1,5 +1,6 @@
 // models/category.dart - Modèle pour les catégories de produits
 import 'package:flutter/material.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 class Category {
   final int id;
@@ -37,7 +38,7 @@ class Category {
       final hex = colorHex.replaceAll('#', '');
       return Color(int.parse('FF$hex', radix: 16));
     } catch (e) {
-      return Colors.green; // Couleur par défaut
+      return AppColors.success; // Couleur par défaut
     }
   }
 
@@ -318,77 +319,77 @@ class Category {
 // Catégories prédéfinies pour faciliter la configuration initiale
 class PredefinedCategories {
   static List<Map<String, String>> get defaults => [
-        {
-          'name_fr': 'Fruits & Légumes',
-          'name_en': 'Fruits & Vegetables',
-          'icon': 'eco',
-          'color': '#4CAF50'
-        },
-        {
-          'name_fr': 'Viandes & Poissons',
-          'name_en': 'Meat & Fish',
-          'icon': 'set_meal',
-          'color': '#F44336'
-        },
-        {
-          'name_fr': 'Produits laitiers',
-          'name_en': 'Dairy Products',
-          'icon': 'egg',
-          'color': '#FFEB3B'
-        },
-        {
-          'name_fr': 'Boulangerie',
-          'name_en': 'Bakery',
-          'icon': 'bakery_dining',
-          'color': '#FF9800'
-        },
-        {
-          'name_fr': 'Boissons',
-          'name_en': 'Beverages',
-          'icon': 'local_bar',
-          'color': '#2196F3'
-        },
-        {
-          'name_fr': 'Snacks & Sucreries',
-          'name_en': 'Snacks & Sweets',
-          'icon': 'cake',
-          'color': '#E91E63'
-        },
-        {
-          'name_fr': 'Hygiène & Beauté',
-          'name_en': 'Hygiene & Beauty',
-          'icon': 'spa',
-          'color': '#9C27B0'
-        },
-        {
-          'name_fr': 'Entretien ménager',
-          'name_en': 'Household Cleaning',
-          'icon': 'cleaning_services',
-          'color': '#00BCD4'
-        },
-        {
-          'name_fr': 'Bébé & Enfants',
-          'name_en': 'Baby & Kids',
-          'icon': 'child_care',
-          'color': '#FF5722'
-        },
-        {
-          'name_fr': 'Animaux',
-          'name_en': 'Pets',
-          'icon': 'pets',
-          'color': '#795548'
-        },
-        {
-          'name_fr': 'Santé & Pharmacie',
-          'name_en': 'Health & Pharmacy',
-          'icon': 'medical_services',
-          'color': '#F44336'
-        },
-        {
-          'name_fr': 'Autre',
-          'name_en': 'Other',
-          'icon': 'category',
-          'color': '#9E9E9E'
-        },
-      ];
+    {
+      'name_fr': 'Fruits & Légumes',
+      'name_en': 'Fruits & Vegetables',
+      'icon': 'eco',
+      'color': '#4CAF50',
+    },
+    {
+      'name_fr': 'Viandes & Poissons',
+      'name_en': 'Meat & Fish',
+      'icon': 'set_meal',
+      'color': '#F44336',
+    },
+    {
+      'name_fr': 'Produits laitiers',
+      'name_en': 'Dairy Products',
+      'icon': 'egg',
+      'color': '#FFEB3B',
+    },
+    {
+      'name_fr': 'Boulangerie',
+      'name_en': 'Bakery',
+      'icon': 'bakery_dining',
+      'color': '#FF9800',
+    },
+    {
+      'name_fr': 'Boissons',
+      'name_en': 'Beverages',
+      'icon': 'local_bar',
+      'color': '#2196F3',
+    },
+    {
+      'name_fr': 'Snacks & Sucreries',
+      'name_en': 'Snacks & Sweets',
+      'icon': 'cake',
+      'color': '#E91E63',
+    },
+    {
+      'name_fr': 'Hygiène & Beauté',
+      'name_en': 'Hygiene & Beauty',
+      'icon': 'spa',
+      'color': '#9C27B0',
+    },
+    {
+      'name_fr': 'Entretien ménager',
+      'name_en': 'Household Cleaning',
+      'icon': 'cleaning_services',
+      'color': '#00BCD4',
+    },
+    {
+      'name_fr': 'Bébé & Enfants',
+      'name_en': 'Baby & Kids',
+      'icon': 'child_care',
+      'color': '#FF5722',
+    },
+    {
+      'name_fr': 'Animaux',
+      'name_en': 'Pets',
+      'icon': 'pets',
+      'color': '#795548',
+    },
+    {
+      'name_fr': 'Santé & Pharmacie',
+      'name_en': 'Health & Pharmacy',
+      'icon': 'medical_services',
+      'color': '#F44336',
+    },
+    {
+      'name_fr': 'Autre',
+      'name_en': 'Other',
+      'icon': 'category',
+      'color': '#9E9E9E',
+    },
+  ];
 }

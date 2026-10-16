@@ -27,7 +27,11 @@ class ListStatsHeader extends StatelessWidget {
     return Container(
       color: AppColors.surface,
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm + 4),
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm + 4,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -41,7 +45,7 @@ class ListStatsHeader extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 '$purchasedItems/$totalItems ${l10n.articles.toLowerCase()}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -50,7 +54,7 @@ class ListStatsHeader extends StatelessWidget {
               const Spacer(),
               FormattedAmount(
                 amount: totalPrice,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryDark,
@@ -66,7 +70,7 @@ class ListStatsHeader extends StatelessWidget {
               value: progress,
               minHeight: 5,
               backgroundColor: AppColors.background,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
         ],

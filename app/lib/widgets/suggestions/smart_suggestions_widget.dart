@@ -7,6 +7,7 @@ import 'package:epilist/blocs/suggestion/suggestion_event.dart';
 import 'package:epilist/blocs/suggestion/suggestion_state.dart';
 import 'package:epilist/widgets/suggestions/suggestion_card.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 /// Compact widget for showing smart suggestions in dialogs or small spaces
 class SmartSuggestionsWidget extends StatefulWidget {
@@ -39,16 +40,15 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
 
   void _loadSuggestions() {
     context.read<SuggestionBloc>().add(
-          LoadSuggestions(
-            includeAssociations: true,
-            currentListItems: widget.currentListItems,
-          ),
-        );
+      LoadSuggestions(
+        includeAssociations: true,
+        currentListItems: widget.currentListItems,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<SuggestionBloc, SuggestionState>(
       builder: (context, state) {
         if (state is SuggestionLoading) {
@@ -178,18 +178,16 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
           ),
 
           // Divider
-          Divider(
-            height: 1,
-            color: theme.colorScheme.outlineVariant,
-          ),
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
 
           // Suggestions list
           AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            child: _isExpanded
-                ? _buildExpandedSuggestions(topSuggestions)
-                : _buildCollapsedSuggestions(topSuggestions),
+            child:
+                _isExpanded
+                    ? _buildExpandedSuggestions(topSuggestions)
+                    : _buildCollapsedSuggestions(topSuggestions),
           ),
         ],
       ),
@@ -250,9 +248,10 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                           child: Text(
                             AppLocalizations.of(context)?.buySoon ?? 'Soon',
                             style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onErrorContainer,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onErrorContainer,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -264,9 +263,9 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                   Text(
                     firstSuggestion.reason,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontStyle: FontStyle.italic,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -297,12 +296,13 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
   Widget _buildExpandedSuggestions(List<SmartSuggestion> suggestions) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: suggestions.map((suggestion) {
-        return CompactSuggestionCard(
-          suggestion: suggestion,
-          onTap: () => _handleSuggestionTap(suggestion),
-        );
-      }).toList(),
+      children:
+          suggestions.map((suggestion) {
+            return CompactSuggestionCard(
+              suggestion: suggestion,
+              onTap: () => _handleSuggestionTap(suggestion),
+            );
+          }).toList(),
     );
   }
 
@@ -328,22 +328,19 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
 
     // Record acceptance
     context.read<SuggestionBloc>().add(
-          AcceptSuggestion(
-            suggestion.productName,
-            suggestion.suggestedQuantity,
-          ),
-        );
+      AcceptSuggestion(suggestion.productName, suggestion.suggestedQuantity),
+    );
   }
 
   /// Get color for confidence level
   Color _getColorForConfidence(ConfidenceLevel level) {
     switch (level) {
       case ConfidenceLevel.high:
-        return Colors.green;
+        return AppColors.success;
       case ConfidenceLevel.medium:
-        return Colors.orange;
+        return AppColors.warning;
       case ConfidenceLevel.low:
-        return Colors.grey;
+        return AppColors.textSecondary;
     }
   }
 }

@@ -6064,6 +6064,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get receiptPhotoTitle => 'Photo du reçu';
 
   @override
+  String get appearance => 'Apparence';
+
+  @override
+  String get appearanceHint => 'Clair, sombre, ou comme votre téléphone';
+
+  @override
+  String get appearanceSystem => 'Comme le système';
+
+  @override
+  String get appearanceSystemHint => 'Suit le réglage de votre téléphone';
+
+  @override
+  String get appearanceLight => 'Clair';
+
+  @override
+  String get appearanceDark => 'Sombre';
+
+  @override
+  String get appearancePreview => 'Aperçu';
+
+  @override
+  String get appearancePreviewLine =>
+      'Un titre, un texte secondaire, et un bouton.';
+
+  @override
   String get tabMore => 'Plus';
 
   @override

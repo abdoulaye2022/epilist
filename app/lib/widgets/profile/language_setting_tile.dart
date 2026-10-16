@@ -30,8 +30,8 @@ class LanguageSettingTile extends StatelessWidget {
             child: InkWell(
               onTap: () => _showLanguageDialog(context, l10n, currentLanguage),
               borderRadius: BorderRadius.circular(12),
-              splashColor: Colors.green.withValues(alpha: 0.1),
-              highlightColor: Colors.green.withValues(alpha: 0.05),
+              splashColor: AppColors.successTint,
+              highlightColor: AppColors.successTint,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -50,7 +50,7 @@ class LanguageSettingTile extends StatelessWidget {
                       ),
                       child: Icon(
                         Icons.language_rounded,
-                        color: AppColors.primary,
+                        color: AppColors.primaryDark,
                         size: 22,
                       ),
                     ),
@@ -63,7 +63,7 @@ class LanguageSettingTile extends StatelessWidget {
                         children: [
                           Text(
                             l10n.language,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
@@ -179,7 +179,7 @@ class LanguageSettingTile extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
+                color: AppColors.surface,
               ),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -253,7 +253,7 @@ class LanguageSettingTile extends StatelessWidget {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.language_rounded, size: 40, color: AppColors.primary),
+      child: Icon(Icons.language_rounded, size: 40, color: AppColors.primaryDark),
     );
   }
 
@@ -261,7 +261,7 @@ class LanguageSettingTile extends StatelessWidget {
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.selectLanguage,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -273,7 +273,11 @@ class LanguageSettingTile extends StatelessWidget {
   Widget _buildDescription(AppLocalizations l10n) {
     return Text(
       l10n.choosePreferredLanguage,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
       textAlign: TextAlign.center,
     );
   }
@@ -299,14 +303,14 @@ class LanguageSettingTile extends StatelessWidget {
           color: isSelected ? AppColors.primaryLight : AppColors.background,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.green[300]! : AppColors.border,
+            color: isSelected ? AppColors.successBorder : AppColors.border,
             width: isSelected ? 2 : 1,
           ),
           boxShadow:
               isSelected
                   ? [
                     BoxShadow(
-                      color: Colors.green.withValues(alpha: 0.1),
+                      color: AppColors.shadow,
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -340,7 +344,10 @@ class LanguageSettingTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppColors.primaryDark : AppColors.textPrimary,
+                      color:
+                          isSelected
+                              ? AppColors.primaryDark
+                              : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -348,7 +355,10 @@ class LanguageSettingTile extends StatelessWidget {
                     nativeName,
                     style: TextStyle(
                       fontSize: 13,
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      color:
+                          isSelected
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -365,9 +375,9 @@ class LanguageSettingTile extends StatelessWidget {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child:  Icon(
                   Icons.check_rounded,
-                  color: Colors.white,
+                  color: AppColors.onPrimary,
                   size: 16,
                 ),
               ),

@@ -11,6 +11,7 @@ import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/services/deep_link_handler.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class ShareListDialog extends StatefulWidget {
   final int listId;
@@ -72,7 +73,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
+            color: AppColors.surface,
           ),
           constraints: const BoxConstraints(maxWidth: 500),
           child: SingleChildScrollView(
@@ -113,7 +114,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.share_rounded, size: 40, color: AppColors.accent),
+      child: Icon(Icons.share_rounded, size: 40, color: AppColors.infoInk),
     );
   }
 
@@ -122,7 +123,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
 
     return Text(
       l10n.shareList,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -136,7 +137,11 @@ class _ShareListDialogState extends State<ShareListDialog> {
     return Text(
       l10n.createShareLinkFor(widget.listName),
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -168,52 +173,60 @@ class _ShareListDialogState extends State<ShareListDialog> {
               }
             },
             child: Column(
-            children:
-                SharePermission.values.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final permission = entry.value;
-                  final isSelected = _selectedPermission == permission;
+              children:
+                  SharePermission.values.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final permission = entry.value;
+                    final isSelected = _selectedPermission == permission;
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.accentLight : Colors.transparent,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(index == 0 ? 12 : 0),
-                        topRight: Radius.circular(index == 0 ? 12 : 0),
-                        bottomLeft: Radius.circular(
-                          index == SharePermission.values.length - 1 ? 12 : 0,
-                        ),
-                        bottomRight: Radius.circular(
-                          index == SharePermission.values.length - 1 ? 12 : 0,
-                        ),
-                      ),
-                    ),
-                    child: RadioListTile<SharePermission>(
-                      value: permission,
-                      title: Text(
-                        _getPermissionTitle(permission),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: isSelected ? AppColors.accent : AppColors.textPrimary,
+                    return Container(
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? AppColors.accentLight
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(index == 0 ? 12 : 0),
+                          topRight: Radius.circular(index == 0 ? 12 : 0),
+                          bottomLeft: Radius.circular(
+                            index == SharePermission.values.length - 1 ? 12 : 0,
+                          ),
+                          bottomRight: Radius.circular(
+                            index == SharePermission.values.length - 1 ? 12 : 0,
+                          ),
                         ),
                       ),
-                      subtitle: Text(
-                        _getPermissionDescription(permission),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color:
-                              isSelected ? AppColors.accent : AppColors.textSecondary,
+                      child: RadioListTile<SharePermission>(
+                        value: permission,
+                        title: Text(
+                          _getPermissionTitle(permission),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                isSelected
+                                    ? AppColors.accent
+                                    : AppColors.textPrimary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          _getPermissionDescription(permission),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color:
+                                isSelected
+                                    ? AppColors.accent
+                                    : AppColors.textSecondary,
+                          ),
+                        ),
+                        activeColor: AppColors.accent,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
                         ),
                       ),
-                      activeColor: AppColors.accent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
             ),
           ),
         ),
@@ -239,7 +252,10 @@ class _ShareListDialogState extends State<ShareListDialog> {
         DropdownButtonFormField<int>(
           initialValue: _expirationDays,
           decoration: InputDecoration(
-            prefixIcon: Icon(Icons.schedule_outlined, color: AppColors.textSecondary),
+            prefixIcon: Icon(
+              Icons.schedule_outlined,
+              color: AppColors.textSecondary,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.border),
@@ -287,8 +303,8 @@ class _ShareListDialogState extends State<ShareListDialog> {
             onPressed: _isGeneratingLink ? null : _generateShareLink,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.blue[300],
+              foregroundColor: AppColors.onPrimary,
+              disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -301,12 +317,12 @@ class _ShareListDialogState extends State<ShareListDialog> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const SizedBox(
+                         SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: AppColors.onPrimary,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -342,7 +358,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
           decoration: BoxDecoration(
             color: AppColors.primaryLight,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.green[200]!),
+            border: Border.all(color: AppColors.successBorder),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,7 +367,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 children: [
                   Icon(
                     Icons.check_circle_outline,
-                    color: AppColors.primary,
+                    color: AppColors.primaryDark,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -366,13 +382,9 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 ],
               ),
               const SizedBox(height: 12),
-              Container(
+              AppCard(
+                radius: 8,
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.border),
-                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -431,7 +443,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 label: Text(l10n.share),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -452,20 +464,20 @@ class _ShareListDialogState extends State<ShareListDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amber[50],
+        color: AppColors.goldTint,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber[200]!),
+        border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.amber[700], size: 16),
+          Icon(Icons.info_outline, color: AppColors.goldInk, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               l10n.linkExpirationInfo(_expirationDays),
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.amber[700],
+                color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -512,7 +524,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accent,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -594,9 +606,15 @@ class _ShareListDialogState extends State<ShareListDialog> {
           widget.listName,
           l10n.you,
         );
-        await SharePlus.instance.share(ShareParams(text: link, subject: shareData['subject']));
+        await SharePlus.instance.share(
+          ShareParams(text: link, subject: shareData['subject']),
+        );
       } else {
-        await SharePlus.instance.share(ShareParams(text: link, subject: l10n.epilistInvitation(widget.listName)),
+        await SharePlus.instance.share(
+          ShareParams(
+            text: link,
+            subject: l10n.epilistInvitation(widget.listName),
+          ),
         );
       }
     } catch (e) {

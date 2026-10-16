@@ -17,9 +17,10 @@ class StoresScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          StoreBloc(storeService: context.read<StoreService>())
-            ..add(const LoadStores()),
+      create:
+          (context) =>
+              StoreBloc(storeService: context.read<StoreService>())
+                ..add(const LoadStores()),
       child: const _StoresView(),
     );
   }
@@ -35,12 +36,12 @@ class _StoresView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
         title: Text(
           l10n.myStores,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
@@ -49,10 +50,10 @@ class _StoresView extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showStoreNameDialog(context),
         backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add_business, color: Colors.white),
+        icon:  Icon(Icons.add_business, color: AppColors.onPrimary),
         label: Text(
           l10n.addStore,
-          style: const TextStyle(color: Colors.white),
+          style:  TextStyle(color: AppColors.onPrimary),
         ),
       ),
       body: BlocConsumer<StoreBloc, StoreState>(
@@ -88,13 +89,14 @@ class _StoresView extends StatelessWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () async =>
-                context.read<StoreBloc>().add(const LoadStores()),
+            onRefresh:
+                () async => context.read<StoreBloc>().add(const LoadStores()),
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               itemCount: stores.length,
-              itemBuilder: (context, index) =>
-                  _buildStoreCard(context, l10n, stores[index]),
+              itemBuilder:
+                  (context, index) =>
+                      _buildStoreCard(context, l10n, stores[index]),
             ),
           );
         },
@@ -113,7 +115,7 @@ class _StoresView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               l10n.noStoresYet,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -142,13 +144,14 @@ class _StoresView extends StatelessWidget {
     final pendingSync = store.id < 0;
 
     return Card(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 1,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: configured ? AppColors.primaryLight : AppColors.background,
+          backgroundColor:
+              configured ? AppColors.primaryLight : AppColors.background,
           child: Icon(
             Icons.storefront,
             color: configured ? AppColors.primary : AppColors.textDisabled,
@@ -156,7 +159,7 @@ class _StoresView extends StatelessWidget {
         ),
         title: Text(
           store.name,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -165,83 +168,106 @@ class _StoresView extends StatelessWidget {
           pendingSync
               ? l10n.storePendingSync
               : configured
-                  ? '${l10n.aisleOrder} : ${store.categoryOrder.length}'
-                  : l10n.aisleOrder,
+              ? '${l10n.aisleOrder} : ${store.categoryOrder.length}'
+              : l10n.aisleOrder,
           style: TextStyle(
             fontSize: 13,
-            color: pendingSync
-                ? AppColors.warning
-                : configured
+            color:
+                pendingSync
+                    ? AppColors.warning
+                    : configured
                     ? AppColors.primaryDark
                     : AppColors.textDisabled,
           ),
         ),
-        trailing: pendingSync
-            ? Icon(Icons.cloud_upload, color: Colors.orange[400])
-            : PopupMenuButton<String>(
-          color: Colors.white,
-          onSelected: (value) {
-            switch (value) {
-              case 'rename':
-                _showStoreNameDialog(context, store: store);
-                break;
-              case 'merge':
-                _showMergeDialog(context, l10n, store);
-                break;
-              case 'delete':
-                _confirmDelete(context, l10n, store);
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'rename',
-              child: Row(
-                children: [
-                  Icon(Icons.edit, size: 20, color: AppColors.accent),
-                  const SizedBox(width: 8),
-                  Text(l10n.renameStore,
-                      style: const TextStyle(color: AppColors.textPrimary)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'merge',
-              child: Row(
-                children: [
-                  Icon(Icons.merge, size: 20, color: Colors.teal[600]),
-                  const SizedBox(width: 8),
-                  Text(l10n.mergeStore,
-                      style: const TextStyle(color: AppColors.textPrimary)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, size: 20, color: AppColors.error),
-                  const SizedBox(width: 8),
-                  Text(l10n.deleteStore,
-                      style: TextStyle(color: AppColors.error)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        onTap: pendingSync
-            ? null
-            : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: context.read<StoreBloc>(),
-                      child: StoreAisleOrderScreen(storeId: store.id),
+        trailing:
+            pendingSync
+                ? Icon(Icons.cloud_upload, color: AppColors.warning)
+                : PopupMenuButton<String>(
+                  color: AppColors.surface,
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'rename':
+                        _showStoreNameDialog(context, store: store);
+                        break;
+                      case 'merge':
+                        _showMergeDialog(context, l10n, store);
+                        break;
+                      case 'delete':
+                        _confirmDelete(context, l10n, store);
+                        break;
+                    }
+                  },
+                  itemBuilder:
+                      (context) => [
+                        PopupMenuItem(
+                          value: 'rename',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                size: 20,
+                                color: AppColors.accent,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.renameStore,
+                                style: TextStyle(color: AppColors.textPrimary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'merge',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.merge,
+                                size: 20,
+                                color: AppColors.teal,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.mergeStore,
+                                style: TextStyle(color: AppColors.textPrimary),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.delete,
+                                size: 20,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.deleteStore,
+                                style: TextStyle(color: AppColors.error),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                ),
+        onTap:
+            pendingSync
+                ? null
+                : () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => BlocProvider.value(
+                            value: context.read<StoreBloc>(),
+                            child: StoreAisleOrderScreen(storeId: store.id),
+                          ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
       ),
     );
   }
@@ -253,41 +279,52 @@ class _StoresView extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(
-          store == null ? l10n.addStore : l10n.renameStore,
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-          maxLength: 120,
-          decoration: InputDecoration(
-            labelText: l10n.storeName,
-            hintText: l10n.storeNameHint,
-            border: const OutlineInputBorder(),
-          ),
-          onSubmitted: (_) =>
-              _submitStoreName(dialogContext, bloc, controller.text, store),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              store == null ? l10n.addStore : l10n.renameStore,
+              style: TextStyle(color: AppColors.textPrimary),
             ),
-            onPressed: () =>
-                _submitStoreName(dialogContext, bloc, controller.text, store),
-            child: Text(store == null ? l10n.addStore : l10n.renameStore),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              maxLength: 120,
+              decoration: InputDecoration(
+                labelText: l10n.storeName,
+                hintText: l10n.storeNameHint,
+                border: const OutlineInputBorder(),
+              ),
+              onSubmitted:
+                  (_) => _submitStoreName(
+                    dialogContext,
+                    bloc,
+                    controller.text,
+                    store,
+                  ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.onPrimary,
+                ),
+                onPressed:
+                    () => _submitStoreName(
+                      dialogContext,
+                      bloc,
+                      controller.text,
+                      store,
+                    ),
+                child: Text(store == null ? l10n.addStore : l10n.renameStore),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -307,7 +344,11 @@ class _StoresView extends StatelessWidget {
     }
   }
 
-  void _showMergeDialog(BuildContext context, AppLocalizations l10n, Store source) {
+  void _showMergeDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    Store source,
+  ) {
     final bloc = context.read<StoreBloc>();
     final state = bloc.state;
     final all = switch (state) {
@@ -316,39 +357,46 @@ class _StoresView extends StatelessWidget {
       StoreError(:final stores) => stores,
       _ => const <Store>[],
     };
-    final targets =
-        all.where((s) => s.id != source.id && s.id > 0).toList();
+    final targets = all.where((s) => s.id != source.id && s.id > 0).toList();
     if (targets.isEmpty) return;
 
     showDialog(
       context: context,
-      builder: (dialogContext) => SimpleDialog(
-        backgroundColor: Colors.white,
-        title: Text(
-          '${l10n.mergeStore} ${source.name}',
-          style: const TextStyle(color: AppColors.textPrimary, fontSize: 18),
-        ),
-        children: targets
-            .map(
-              (target) => SimpleDialogOption(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();
-                  _confirmMerge(context, l10n, source, target);
-                },
-                child: Row(
-                  children: [
-                    Icon(Icons.storefront, size: 20, color: AppColors.textSecondary),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(target.name,
-                          style: const TextStyle(color: AppColors.textPrimary)),
-                    ),
-                  ],
-                ),
-              ),
-            )
-            .toList(),
-      ),
+      builder:
+          (dialogContext) => SimpleDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              '${l10n.mergeStore} ${source.name}',
+              style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
+            ),
+            children:
+                targets
+                    .map(
+                      (target) => SimpleDialogOption(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          _confirmMerge(context, l10n, source, target);
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.storefront,
+                              size: 20,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                target.name,
+                                style: TextStyle(color: AppColors.textPrimary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
+          ),
     );
   }
 
@@ -361,64 +409,72 @@ class _StoresView extends StatelessWidget {
     final bloc = context.read<StoreBloc>();
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(l10n.mergeStore,
-            style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(
-          l10n.mergeStoreConfirm(source.name, target.name),
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal[600],
-              foregroundColor: Colors.white,
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              l10n.mergeStore,
+              style: TextStyle(color: AppColors.textPrimary),
             ),
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              bloc.add(MergeStores(source.id, target.id));
-            },
-            child: Text(l10n.mergeStore),
+            content: Text(
+              l10n.mergeStoreConfirm(source.name, target.name),
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.teal,
+                  foregroundColor: AppColors.onPrimary,
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  bloc.add(MergeStores(source.id, target.id));
+                },
+                child: Text(l10n.mergeStore),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-  void _confirmDelete(BuildContext context, AppLocalizations l10n, Store store) {
+  void _confirmDelete(
+    BuildContext context,
+    AppLocalizations l10n,
+    Store store,
+  ) {
     final bloc = context.read<StoreBloc>();
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text(
-          l10n.deleteStore,
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        content: Text(
-          l10n.deleteStoreConfirm(store.name),
-          style: const TextStyle(color: AppColors.textPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
+      builder:
+          (dialogContext) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              l10n.deleteStore,
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            content: Text(
+              l10n.deleteStoreConfirm(store.name),
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  bloc.add(DeleteStore(store.id));
+                },
+                child: Text(l10n.delete),
+              ),
+            ],
           ),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              bloc.add(DeleteStore(store.id));
-            },
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
     );
   }
 }

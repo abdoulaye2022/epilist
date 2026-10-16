@@ -25,10 +25,10 @@ class BudgetCard extends StatelessWidget {
   });
 
   Color get _statusColor => switch (budget.status) {
-        BudgetStatus.exceeded => AppColors.error,
-        BudgetStatus.warning => AppColors.warning,
-        BudgetStatus.ok => AppColors.primary,
-      };
+    BudgetStatus.exceeded => AppColors.error,
+    BudgetStatus.warning => AppColors.warning,
+    BudgetStatus.ok => AppColors.primary,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,11 @@ class BudgetCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, AppSpacing.sm + 4, AppSpacing.xs, AppSpacing.sm + 4),
+            AppSpacing.md,
+            AppSpacing.sm + 4,
+            AppSpacing.xs,
+            AppSpacing.sm + 4,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,9 +88,10 @@ class BudgetCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: expired
-                                      ? AppColors.textSecondary
-                                      : AppColors.textPrimary,
+                                  color:
+                                      expired
+                                          ? AppColors.textSecondary
+                                          : AppColors.textPrimary,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -96,7 +101,7 @@ class BudgetCard extends StatelessWidget {
                               const SizedBox(width: 6),
                               Text(
                                 l10n.expired,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   color: AppColors.textDisabled,
                                   fontWeight: FontWeight.w600,
@@ -108,7 +113,7 @@ class BudgetCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           period,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,
                           ),
@@ -129,7 +134,7 @@ class BudgetCard extends StatelessWidget {
                       ),
                       Text(
                         '/ ${budget.formattedBudgetAmount}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11.5,
                           color: AppColors.textSecondary,
                         ),
@@ -161,8 +166,7 @@ class BudgetCard extends StatelessWidget {
 
   Widget _buildMenu(BuildContext context, AppLocalizations l10n) {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert,
-          size: 20, color: AppColors.textSecondary),
+      icon: Icon(Icons.more_vert, size: 20, color: AppColors.textSecondary),
       onSelected: (value) {
         switch (value) {
           case 'edit':
@@ -176,52 +180,58 @@ class BudgetCard extends StatelessWidget {
             break;
         }
       },
-      itemBuilder: (context) => [
-        if (onEdit != null)
-          PopupMenuItem(
-            value: 'edit',
-            child: Row(
-              children: [
-                const Icon(Icons.edit_outlined,
-                    size: 18, color: AppColors.accent),
-                const SizedBox(width: 8),
-                Text(l10n.edit),
-              ],
-            ),
-          ),
-        if (onToggleStatus != null)
-          PopupMenuItem(
-            value: 'toggle',
-            child: Row(
-              children: [
-                Icon(
-                  budget.isActive
-                      ? Icons.pause_circle_outline
-                      : Icons.play_circle_outline,
-                  size: 18,
-                  color: AppColors.textSecondary,
+      itemBuilder:
+          (context) => [
+            if (onEdit != null)
+              PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: AppColors.accent,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(l10n.edit),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Text(budget.isActive ? l10n.deactivate : l10n.activate),
-              ],
-            ),
-          ),
-        if (onDelete != null) ...[
-          const PopupMenuDivider(),
-          PopupMenuItem(
-            value: 'delete',
-            child: Row(
-              children: [
-                const Icon(Icons.delete_outline,
-                    size: 18, color: AppColors.error),
-                const SizedBox(width: 8),
-                Text(l10n.delete,
-                    style: const TextStyle(color: AppColors.error)),
-              ],
-            ),
-          ),
-        ],
-      ],
+              ),
+            if (onToggleStatus != null)
+              PopupMenuItem(
+                value: 'toggle',
+                child: Row(
+                  children: [
+                    Icon(
+                      budget.isActive
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outline,
+                      size: 18,
+                      color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(budget.isActive ? l10n.deactivate : l10n.activate),
+                  ],
+                ),
+              ),
+            if (onDelete != null) ...[
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.delete_outline,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(l10n.delete, style: TextStyle(color: AppColors.error)),
+                  ],
+                ),
+              ),
+            ],
+          ],
     );
   }
 }
@@ -238,12 +248,12 @@ class BudgetAlertsWidget extends StatelessWidget {
 
     return Card(
       elevation: 3,
-      color: Colors.white, // ✅ BACKGROUND BLANC
+      color: AppColors.surface, // ✅ BACKGROUND BLANC
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white, // ✅ BACKGROUND BLANC
+          color: AppColors.surface, // ✅ BACKGROUND BLANC
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _getAlertColor().withValues(alpha: 0.3),
@@ -283,7 +293,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       ),
                       Text(
                         budget.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
@@ -296,7 +306,11 @@ class BudgetAlertsWidget extends StatelessWidget {
                 ),
                 if (onDismiss != null)
                   IconButton(
-                    icon: Icon(Icons.close, size: 18, color: AppColors.textSecondary),
+                    icon: Icon(
+                      Icons.close,
+                      size: 18,
+                      color: AppColors.textSecondary,
+                    ),
                     onPressed: onDismiss,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -323,11 +337,14 @@ class BudgetAlertsWidget extends StatelessWidget {
                     children: [
                       Text(
                         l10n.budgeted,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       FormattedAmount(
                         amount: budget.budgetAmount,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -341,7 +358,10 @@ class BudgetAlertsWidget extends StatelessWidget {
                     children: [
                       Text(
                         l10n.spent,
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       FormattedAmount(
                         amount: budget.spentAmount,
@@ -395,7 +415,9 @@ class BudgetAlertsWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: _getAlertColor().withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _getAlertColor().withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: _getAlertColor().withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -420,7 +442,11 @@ class BudgetAlertsWidget extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.list_alt, size: 16, color: AppColors.textSecondary),
+                  Icon(
+                    Icons.list_alt,
+                    size: 16,
+                    color: AppColors.textSecondary,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     budget.listName!,
@@ -445,7 +471,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                   label: Text(l10n.suggestions),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _getAlertColor(),
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -525,12 +551,12 @@ class BudgetSummaryCard extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      color: Colors.white, // ✅ BACKGROUND BLANC
+      color: AppColors.surface, // ✅ BACKGROUND BLANC
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white, // ✅ BACKGROUND BLANC
+          color: AppColors.surface, // ✅ BACKGROUND BLANC
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -545,9 +571,9 @@ class BudgetSummaryCard extends StatelessWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child:  Icon(
                     Icons.account_balance_wallet,
-                    color: Colors.white,
+                    color: AppColors.onPrimary,
                     size: 24,
                   ),
                 ),
@@ -558,7 +584,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     children: [
                       Text(
                         l10n.budgetSummary,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -566,7 +592,10 @@ class BudgetSummaryCard extends StatelessWidget {
                       ),
                       Text(
                         l10n.overviewOfYourBudgets,
-                        style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -646,7 +675,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         ),
                         FormattedAmount(
                           amount: totalBudgeted!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -724,7 +753,7 @@ class BudgetSummaryCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

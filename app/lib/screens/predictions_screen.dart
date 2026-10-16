@@ -58,20 +58,23 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
         final lists = state is ShoppingListLoaded ? state.lists : [];
         if (lists.isNotEmpty) {
           await context.read<ListItemService>().forceAddListItem(
-                listId: lists.first.id,
-                productName: p.productName,
-                quantity: p.avgQuantity.round().clamp(1, 99),
-              );
+            listId: lists.first.id,
+            productName: p.productName,
+            quantity: p.avgQuantity.round().clamp(1, 99),
+          );
           if (mounted) {
             SmartSnackBarManager.showSuccessSnackBar(
-                context, l10n.predictionAdded(p.productName));
+              context,
+              l10n.predictionAdded(p.productName),
+            );
           }
         }
       }
       if (!mounted) return;
-      await context
-          .read<IntelligenceService>()
-          .sendPredictionFeedback(p.productName, action);
+      await context.read<IntelligenceService>().sendPredictionFeedback(
+        p.productName,
+        action,
+      );
       setState(() => _predictions.remove(p));
     } catch (_) {
       if (!mounted) return;
@@ -86,42 +89,51 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(l10n.allPredictions)),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: _predictions.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        const SizedBox(height: 120),
-                        Icon(Icons.auto_awesome_outlined,
-                            size: 56, color: Colors.grey[400]),
-                        const SizedBox(height: AppSpacing.md),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.xl),
-                          child: Text(
-                            l10n.noPredictionsYet,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 13.5,
-                                color: AppColors.textSecondary),
-                          ),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                onRefresh: _load,
+                child:
+                    _predictions.isEmpty
+                        ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            const SizedBox(height: 120),
+                            Icon(
+                              Icons.auto_awesome_outlined,
+                              size: 56,
+                              color: AppColors.textDisabled,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.xl,
+                              ),
+                              child: Text(
+                                l10n.noPredictionsYet,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                        : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          itemCount: _predictions.length,
+                          itemBuilder:
+                              (context, index) => PredictionCard(
+                                prediction: _predictions[index],
+                                onAction:
+                                    (action) =>
+                                        _feedback(_predictions[index], action),
+                              ),
                         ),
-                      ],
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      itemCount: _predictions.length,
-                      itemBuilder: (context, index) => PredictionCard(
-                        prediction: _predictions[index],
-                        onAction: (action) =>
-                            _feedback(_predictions[index], action),
-                      ),
-                    ),
-            ),
+              ),
     );
   }
 }
@@ -154,7 +166,11 @@ class PredictionCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.sm + 2, AppSpacing.sm, AppSpacing.sm),
+          AppSpacing.md,
+          AppSpacing.sm + 2,
+          AppSpacing.sm,
+          AppSpacing.sm,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -164,12 +180,16 @@ class PredictionCard extends StatelessWidget {
                   child: Text(
                     p.productName,
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w700),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -177,9 +197,10 @@ class PredictionCard extends StatelessWidget {
                   child: Text(
                     statusLabel,
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: statusColor),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: statusColor,
+                    ),
                   ),
                 ),
               ],
@@ -189,8 +210,7 @@ class PredictionCard extends StatelessWidget {
               '${l10n.usuallyEveryDays(p.frequencyDays)} · '
               '${l10n.lastBoughtDaysAgo(p.daysSinceLast)}'
               '${p.confidence == 'low' ? ' · ${l10n.confidenceLow}' : ''}',
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.xs),
             Row(
@@ -207,28 +227,39 @@ class PredictionCard extends StatelessWidget {
                 if (!compact) ...[
                   TextButton(
                     style: TextButton.styleFrom(
-                        visualDensity: VisualDensity.compact),
+                      visualDensity: VisualDensity.compact,
+                    ),
                     onPressed: () => onAction('still_have'),
-                    child: Text(l10n.predictionStillHave,
-                        style: const TextStyle(fontSize: 12.5)),
+                    child: Text(
+                      l10n.predictionStillHave,
+                      style: const TextStyle(fontSize: 12.5),
+                    ),
                   ),
                 ],
                 const Spacer(),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_horiz,
-                      size: 20, color: AppColors.textDisabled),
+                  icon: Icon(
+                    Icons.more_horiz,
+                    size: 20,
+                    color: AppColors.textDisabled,
+                  ),
                   onSelected: onAction,
-                  itemBuilder: (_) => [
-                    PopupMenuItem(
-                        value: 'not_now',
-                        child: Text(l10n.predictionNotNow)),
-                    if (compact)
-                      PopupMenuItem(
-                          value: 'still_have',
-                          child: Text(l10n.predictionStillHave)),
-                    PopupMenuItem(
-                        value: 'never', child: Text(l10n.predictionNever)),
-                  ],
+                  itemBuilder:
+                      (_) => [
+                        PopupMenuItem(
+                          value: 'not_now',
+                          child: Text(l10n.predictionNotNow),
+                        ),
+                        if (compact)
+                          PopupMenuItem(
+                            value: 'still_have',
+                            child: Text(l10n.predictionStillHave),
+                          ),
+                        PopupMenuItem(
+                          value: 'never',
+                          child: Text(l10n.predictionNever),
+                        ),
+                      ],
                 ),
               ],
             ),

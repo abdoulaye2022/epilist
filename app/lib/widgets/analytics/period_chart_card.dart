@@ -40,11 +40,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     'year': Icons.calendar_today,
   };
 
-  final Map<String, MaterialColor> _periodColors = {
-    'day': Colors.green,
-    'week': Colors.blue,
-    'month': Colors.purple,
-    'year': Colors.orange,
+  final Map<String, Color> _periodColors = {
+    'day': AppColors.success,
+    'week': AppColors.info,
+    'month': AppColors.violet,
+    'year': AppColors.warning,
   };
 
   // ==================== BUILD PRINCIPAL ====================
@@ -65,7 +65,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       });
     }
 
-    final currentColor = _periodColors[_selectedPeriod] ?? Colors.green;
+    final currentColor = _periodColors[_selectedPeriod] ?? AppColors.success;
 
     return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, currencyState) {
@@ -86,14 +86,14 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                       children: [
                         Icon(
                           _periodIcons[_selectedPeriod] ?? Icons.show_chart,
-                          color: currentColor[600],
+                          color: currentColor,
                           size: 28,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _getPeriodTitle(l10n),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
@@ -114,37 +114,42 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: currentColor[50],
+                        color: AppTint.fill(currentColor),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: currentColor[100]!),
+                        border: Border.all(color: AppTint.fill(currentColor)),
                       ),
-                      child: _buildChart(periodData, l10n, currentColor, currencyCode),
+                      child: _buildChart(
+                        periodData,
+                        l10n,
+                        currentColor,
+                        currencyCode,
+                      ),
                     ),
 
-            const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-            // Résumé statistiques
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryItem(
-                    l10n.totalSpent,
-                    _calculateTotalFromPeriodData(periodData),
-                    currentColor,
-                    isAmount: true,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSummaryItem(
-                    _getAverageLabel(l10n),
-                    _calculateAverageFromPeriodData(periodData),
-                    Colors.blue,
-                    isAmount: true,
-                  ),
-                ),
-              ],
-            ),
+                    // Résumé statistiques
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryItem(
+                            l10n.totalSpent,
+                            _calculateTotalFromPeriodData(periodData),
+                            currentColor,
+                            isAmount: true,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildSummaryItem(
+                            _getAverageLabel(l10n),
+                            _calculateAverageFromPeriodData(periodData),
+                            AppColors.info,
+                            isAmount: true,
+                          ),
+                        ),
+                      ],
+                    ),
 
                     const SizedBox(height: 16),
 
@@ -604,7 +609,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
           _loadDataForPeriod(period);
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        color: Colors.white,
+        color: AppColors.surface,
         elevation: 8,
         itemBuilder:
             (context) =>
@@ -612,7 +617,8 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                   final period = entry.key;
                   final label = entry.value;
                   final isSelected = period == _selectedPeriod;
-                  final color = _periodColors[period] ?? Colors.grey;
+                  final color =
+                      _periodColors[period] ?? AppColors.textSecondary;
 
                   return PopupMenuItem<String>(
                     value: period,
@@ -621,7 +627,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                         Icon(
                           _periodIcons[period]!,
                           size: 20,
-                          color: isSelected ? color[600] : AppColors.textSecondary,
+                          color: isSelected ? color : AppColors.textSecondary,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -632,13 +638,16 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                                   isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
-                              color: isSelected ? color[600] : AppColors.textPrimary,
+                              color:
+                                  isSelected
+                                      ? AppTint.ink(color)
+                                      : AppColors.textPrimary,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (isSelected)
-                          Icon(Icons.check, color: color[600], size: 18),
+                          Icon(Icons.check, color: color, size: 18),
                       ],
                     ),
                   );
@@ -651,7 +660,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   Widget _buildChart(
     List<dynamic> periodData,
     AppLocalizations l10n,
-    MaterialColor chartColor,
+    Color chartColor,
     String currencyCode,
   ) {
     if (periodData.isEmpty) {
@@ -676,7 +685,11 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.analytics_outlined, size: 48, color: AppColors.textDisabled),
+            Icon(
+              Icons.analytics_outlined,
+              size: 48,
+              color: AppColors.textDisabled,
+            ),
             const SizedBox(height: 12),
             Text(
               l10n.noSpendingRecorded,
@@ -714,8 +727,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                           width: 24,
                           height: height < 5 ? 5 : height,
                           decoration: BoxDecoration(
-                            color:
-                                value > 0 ? chartColor[600] : AppColors.border,
+                            color: value > 0 ? chartColor : AppColors.border,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -750,7 +762,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
   Widget _buildSummaryItem(
     String label,
     double value,
-    MaterialColor color, {
+    Color color, {
     bool isAmount = false,
   }) {
     return Container(
@@ -826,7 +838,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: AppColors.accent),
+              Icon(Icons.info_outline, size: 16, color: AppColors.infoInk),
               const SizedBox(width: 6),
               Text(
                 AppLocalizations.of(context)!.periodInfo,

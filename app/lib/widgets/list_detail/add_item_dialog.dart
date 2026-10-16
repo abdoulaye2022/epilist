@@ -99,7 +99,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -298,11 +298,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green[200]!),
+        border: Border.all(color: AppColors.successBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, color: AppColors.primary, size: 16),
+          Icon(Icons.auto_awesome, color: AppColors.primaryDark, size: 16),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -327,7 +327,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     // « ListTile background color or ink splashes may be invisible »
     // et un appui sans aucun retour visuel.
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: AppColors.border),
@@ -552,7 +552,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                     constraints: const BoxConstraints(),
                   ),
                 ] else
-                  const Icon(Icons.chevron_right, color: Colors.grey),
+                  Icon(Icons.chevron_right, color: AppColors.textSecondary),
               ],
             ),
           ),

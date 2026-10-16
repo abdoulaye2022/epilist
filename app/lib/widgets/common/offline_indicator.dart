@@ -106,8 +106,8 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                     children: [
                       Text(
                         _getStatusTitle(l10n),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style:  TextStyle(
+                          color: AppColors.onPrimary,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -117,7 +117,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                         Text(
                           _getStatusSubtitle(l10n)!,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: AppColors.onPrimary.withValues(alpha: 0.9),
                             fontSize: 12,
                           ),
                         ),
@@ -127,16 +127,18 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                 ),
                 if (_pendingCount > 0)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.3),
+                      color: AppColors.onPrimary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '$_pendingCount',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style:  TextStyle(
+                        color: AppColors.onPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -145,7 +147,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.info_outline,
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: AppColors.onPrimary.withValues(alpha: 0.8),
                   size: 20,
                 ),
               ],
@@ -158,37 +160,25 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
 
   Widget _buildIcon() {
     if (_isSyncing) {
-      return const SizedBox(
+      return  SizedBox(
         width: 20,
         height: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
         ),
       );
     }
 
     if (!_isOnline) {
-      return const Icon(
-        Icons.cloud_off,
-        color: Colors.white,
-        size: 20,
-      );
+      return  Icon(Icons.cloud_off, color: AppColors.onPrimary, size: 20);
     }
 
     if (_pendingCount > 0) {
-      return const Icon(
-        Icons.sync,
-        color: Colors.white,
-        size: 20,
-      );
+      return  Icon(Icons.sync, color: AppColors.onPrimary, size: 20);
     }
 
-    return const Icon(
-      Icons.check_circle,
-      color: Colors.white,
-      size: 20,
-    );
+    return  Icon(Icons.check_circle, color: AppColors.onPrimary, size: 20);
   }
 
   Color _getBackgroundColor() {
@@ -252,16 +242,17 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
 
     showDialog(
       context: context,
-      builder: (context) => _OfflineDetailsDialog(
-        isOnline: _isOnline,
-        pendingCount: _pendingCount,
-        isSyncing: _isSyncing,
-        l10n: l10n,
-        onForceSync: () async {
-          Navigator.pop(context);
-          await _syncService.forceSyncNow();
-        },
-      ),
+      builder:
+          (context) => _OfflineDetailsDialog(
+            isOnline: _isOnline,
+            pendingCount: _pendingCount,
+            isSyncing: _isSyncing,
+            l10n: l10n,
+            onForceSync: () async {
+              Navigator.pop(context);
+              await _syncService.forceSyncNow();
+            },
+          ),
     );
   }
 }
@@ -293,7 +284,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
         children: [
           Icon(
             isOnline ? Icons.cloud_done : Icons.cloud_off,
-            color: isOnline ? Colors.green : Colors.orange,
+            color: isOnline ? AppColors.success : AppColors.warning,
           ),
           const SizedBox(width: 12),
           Text(l10n.syncStatus),
@@ -306,39 +297,39 @@ class _OfflineDetailsDialog extends StatelessWidget {
           _buildStatusRow(
             l10n.connectionStatus,
             isOnline ? l10n.online : l10n.offline,
-            isOnline ? Colors.green : Colors.orange,
+            isOnline ? AppColors.success : AppColors.warning,
           ),
           const SizedBox(height: 12),
           _buildStatusRow(
             l10n.pendingActions,
             '$pendingCount',
-            pendingCount > 0 ? Colors.blue : Colors.grey,
+            pendingCount > 0 ? AppColors.info : AppColors.textSecondary,
           ),
           const SizedBox(height: 12),
           _buildStatusRow(
             l10n.syncState,
             isSyncing ? l10n.syncing : l10n.idle,
-            isSyncing ? Colors.blue : Colors.grey,
+            isSyncing ? AppColors.info : AppColors.textSecondary,
           ),
           if (!isOnline && pendingCount > 0) ...[
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange[50],
+                color: AppColors.warningTint,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange[200]!),
+                border: Border.all(color: AppColors.warningBorder),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.warning, size: 20),
+                  Icon(Icons.info_outline, color: AppColors.warningInk, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.offlineDataWillSync,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.orange[900],
+                        color: AppColors.warningInk,
                       ),
                     ),
                   ),
@@ -369,10 +360,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textPrimary,
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),

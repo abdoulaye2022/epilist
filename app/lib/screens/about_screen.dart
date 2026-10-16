@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -16,9 +17,9 @@ class AboutPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.aboutEpiList),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        iconTheme: IconThemeData(color: AppColors.textPrimary),
         foregroundColor: AppColors.textPrimary,
       ),
       body: SingleChildScrollView(
@@ -27,20 +28,10 @@ class AboutPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // App logo and name
-            Container(
+            AppCard(
+              radius: 20,
+              bordered: false,
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    spreadRadius: 1,
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
               child: Column(
                 children: [
                   // ✅ Logo sans background (comme WelcomeScreen)
@@ -66,10 +57,10 @@ class AboutPage extends StatelessWidget {
                               colors: [AppColors.primary, AppColors.primary],
                             ),
                           ),
-                          child: const Icon(
+                          child:  Icon(
                             Icons.shopping_cart_rounded,
                             size: 50,
-                            color: Colors.white,
+                            color: AppColors.onPrimary,
                           ),
                         );
                       },
@@ -103,7 +94,7 @@ class AboutPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green[200]!),
+                      border: Border.all(color: AppColors.successBorder),
                     ),
                     child: Text(
                       'Version 1.0.0',
@@ -138,28 +129,28 @@ class AboutPage extends StatelessWidget {
                   l10n.aboutContact,
                   Icons.email,
                   () => _launchContactPage(context, l10n),
-                  Colors.blue,
+                  AppColors.info,
                 ),
                 const SizedBox(height: 12),
                 _buildActionButton(
                   l10n.aboutRateApp,
                   Icons.star,
                   () => _rateApp(context, l10n),
-                  Colors.orange,
+                  AppColors.warning,
                 ),
                 const SizedBox(height: 12),
                 _buildActionButton(
                   l10n.aboutShareApp,
                   Icons.share,
                   () => _shareApp(context, l10n),
-                  Colors.green,
+                  AppColors.success,
                 ),
                 const SizedBox(height: 12),
                 _buildActionButton(
                   l10n.aboutWebsite,
                   Icons.language,
                   () => _launchWebsite(context, l10n),
-                  Colors.purple,
+                  AppColors.violet,
                 ),
               ],
             ),
@@ -196,11 +187,11 @@ class AboutPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: AppColors.shadow,
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -212,7 +203,7 @@ class AboutPage extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -246,7 +237,7 @@ class AboutPage extends StatelessWidget {
         label: Text(text),
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),

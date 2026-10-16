@@ -26,7 +26,7 @@ class ListsSectionHeader extends StatelessWidget {
             children: [
               Text(
                 l10n.myGroceryLists,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -51,7 +51,7 @@ class ListsSectionHeader extends StatelessWidget {
                     label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
@@ -70,7 +70,7 @@ class ListsSectionHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.myGroceryLists,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -95,7 +95,7 @@ class ListsSectionHeader extends StatelessWidget {
                     label: Text(l10n.newList),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,

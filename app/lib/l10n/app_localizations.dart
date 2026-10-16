@@ -11161,6 +11161,54 @@ abstract class AppLocalizations {
   /// **'Photo du reçu'**
   String get receiptPhotoTitle;
 
+  /// No description provided for @appearance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apparence'**
+  String get appearance;
+
+  /// No description provided for @appearanceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clair, sombre, ou comme votre téléphone'**
+  String get appearanceHint;
+
+  /// No description provided for @appearanceSystem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comme le système'**
+  String get appearanceSystem;
+
+  /// No description provided for @appearanceSystemHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suit le réglage de votre téléphone'**
+  String get appearanceSystemHint;
+
+  /// No description provided for @appearanceLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clair'**
+  String get appearanceLight;
+
+  /// No description provided for @appearanceDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sombre'**
+  String get appearanceDark;
+
+  /// No description provided for @appearancePreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get appearancePreview;
+
+  /// No description provided for @appearancePreviewLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un titre, un texte secondaire, et un bouton.'**
+  String get appearancePreviewLine;
+
   /// No description provided for @tabMore.
   ///
   /// In fr, this message translates to:

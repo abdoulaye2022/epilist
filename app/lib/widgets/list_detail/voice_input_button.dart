@@ -60,14 +60,14 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           SnackBar(
             content: Text(
               AppLocalizations.of(context)!.voiceRequiresInternet,
-              style: const TextStyle(color: Colors.white),
+              style:  TextStyle(color: AppColors.onWarning),
             ),
             backgroundColor: AppColors.warning,
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
               label: 'OK',
-              textColor: Colors.white,
+              textColor: AppColors.onWarning,
               onPressed: () {},
             ),
           ),
@@ -95,7 +95,9 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
         voiceLocaleId = 'fr_FR'; // Français par défaut
       }
 
-      debugPrint('🌐 Using voice locale: $voiceLocaleId for app language: $languageCode');
+      debugPrint(
+        '🌐 Using voice locale: $voiceLocaleId for app language: $languageCode',
+      );
 
       // Initialiser si nécessaire (cela demandera la permission automatiquement)
       if (!_voiceService.isInitialized) {
@@ -175,15 +177,18 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
             shape: const CircleBorder(),
             child: CircleAvatar(
               radius: 30,
-              backgroundColor: _isListening
-                  ? Theme.of(context).primaryColor
-                  : Colors.white,
+              backgroundColor:
+                  _isListening
+                      ? Theme.of(context).primaryColor
+                      : AppColors.onPrimary,
               child: IconButton(
                 icon: Icon(
                   _isListening ? Icons.mic : Icons.mic_none,
                   size: 30,
                   color:
-                      _isListening ? Colors.white : Theme.of(context).primaryColor,
+                      _isListening
+                          ? AppColors.onPrimary
+                          : Theme.of(context).primaryColor,
                 ),
                 onPressed: _toggleListening,
               ),
@@ -199,16 +204,15 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           duration: const Duration(milliseconds: 300),
           child: Text(
             _isListening
-                ? (_currentText.isEmpty
-                    ? l10n.voiceListening
-                    : _currentText)
+                ? (_currentText.isEmpty ? l10n.voiceListening : _currentText)
                 : l10n.voiceTapToSpeak,
             style: TextStyle(
               fontSize: 14,
               fontWeight: _isListening ? FontWeight.w600 : FontWeight.normal,
-              color: _isListening
-                  ? Theme.of(context).primaryColor
-                  : AppColors.textSecondary,
+              color:
+                  _isListening
+                      ? Theme.of(context).primaryColor
+                      : AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),

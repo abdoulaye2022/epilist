@@ -5,6 +5,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/widgets/dialogs/no_internet_dialog.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 class ConnectivityWrapper extends StatefulWidget {
   final Widget child;
@@ -17,7 +18,8 @@ class ConnectivityWrapper extends StatefulWidget {
     super.key,
     required this.child,
     this.showOfflineBanner = true,
-    this.blockActionsWhenOffline = false, // 🔓 Par défaut: permettre le fonctionnement hors ligne
+    this.blockActionsWhenOffline =
+        false, // 🔓 Par défaut: permettre le fonctionnement hors ligne
     this.onConnectivityRestored,
     this.onConnectivityLost,
   });
@@ -50,13 +52,19 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   /// Démarre une vérification périodique de la connectivité
   void _startPeriodicCheck() {
     // Vérifier toutes les 30 secondes si on est hors ligne
-    _periodicCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+    _periodicCheckTimer = Timer.periodic(const Duration(seconds: 30), (
+      timer,
+    ) async {
       if (!_isConnected && mounted) {
-        debugPrint('🔄 [ConnectivityWrapper] Vérification périodique de la connectivité');
+        debugPrint(
+          '🔄 [ConnectivityWrapper] Vérification périodique de la connectivité',
+        );
         final isConnected = await ConnectivityService().checkConnectivity();
 
         if (isConnected && mounted) {
-          debugPrint('✅ [ConnectivityWrapper] Connexion restaurée (vérification périodique)');
+          debugPrint(
+            '✅ [ConnectivityWrapper] Connexion restaurée (vérification périodique)',
+          );
           setState(() {
             _isConnected = true;
           });
@@ -84,7 +92,9 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     // Écouter les changements de connectivité
     _connectivitySubscription = ConnectivityService().connectivityStream.listen(
       (connected) {
-        debugPrint('🌐 [ConnectivityWrapper] Changement de connectivité: $connected');
+        debugPrint(
+          '🌐 [ConnectivityWrapper] Changement de connectivité: $connected',
+        );
 
         if (mounted) {
           final wasConnected = _isConnected;
@@ -177,10 +187,10 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.red.shade600,
+              color: AppColors.error,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withValues(alpha: 0.3),
+                  color: AppColors.shadow,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -188,13 +198,17 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                 Icon(
+                  Icons.wifi_off,
+                  color: AppColors.onPrimary,
+                  size: 20,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     l10n.offlineMode,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style:  TextStyle(
+                      color: AppColors.onPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -202,12 +216,16 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    debugPrint('🔄 [ConnectivityWrapper] Bouton réessayer cliqué');
+                    debugPrint(
+                      '🔄 [ConnectivityWrapper] Bouton réessayer cliqué',
+                    );
 
                     // Forcer une vérification de connectivité
                     final isConnected =
                         await ConnectivityService().checkConnectivity();
-                    debugPrint('🌐 [ConnectivityWrapper] Résultat de la vérification manuelle: $isConnected');
+                    debugPrint(
+                      '🌐 [ConnectivityWrapper] Résultat de la vérification manuelle: $isConnected',
+                    );
 
                     if (mounted) {
                       if (isConnected) {
@@ -233,13 +251,13 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: AppColors.onPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       l10n.retry,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style:  TextStyle(
+                        color: AppColors.onPrimary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

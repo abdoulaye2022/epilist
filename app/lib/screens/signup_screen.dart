@@ -43,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: _isLoading ? null : () => Navigator.pop(context),
         ),
       ),
@@ -144,9 +144,10 @@ class _SignUpPageState extends State<SignUpPage> {
         // ✅ ANDROID: Messages d'erreur spécifiques pour inscription
         String errorMessage = failure.error;
         if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
-            errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
-          errorMessage =
-              AppLocalizations.of(context)!.accountExistsTryLogin;
+            errorMessage.contains(
+              AppLocalizations.of(context)!.accountAlreadyExists,
+            )) {
+          errorMessage = AppLocalizations.of(context)!.accountExistsTryLogin;
 
           // Suggérer de passer à l'écran de connexion
           Future.delayed(const Duration(seconds: 2), () {
@@ -169,7 +170,9 @@ class _SignUpPageState extends State<SignUpPage> {
         String errorMessage = ssoError.error;
 
         if (errorMessage.contains('EMAIL_ALREADY_EXISTS') ||
-            errorMessage.contains(AppLocalizations.of(context)!.accountAlreadyExists)) {
+            errorMessage.contains(
+              AppLocalizations.of(context)!.accountAlreadyExists,
+            )) {
           errorMessage =
               AppLocalizations.of(context)!.googleAccountExistsRedirect;
 
@@ -199,7 +202,6 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-
   // ✅ HEADER SIMPLIFIÉ
   // Centré, comme l'en-tête du login.
   Widget _buildHeader(AppLocalizations l10n) {
@@ -209,7 +211,7 @@ class _SignUpPageState extends State<SignUpPage> {
         Text(
           l10n.createAccount,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -245,25 +247,29 @@ class _SignUpPageState extends State<SignUpPage> {
           width: double.infinity,
           height: 50,
           child: OutlinedButton.icon(
-            onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signUpWithGoogle,
+            onPressed:
+                (_isGoogleLoading || _isAppleLoading || _isLoading)
+                    ? null
+                    : _signUpWithGoogle,
             style: OutlinedButton.styleFrom(backgroundColor: AppColors.surface),
-            icon: _isGoogleLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.textSecondary,
+            icon:
+                _isGoogleLoading
+                    ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.textSecondary,
+                      ),
+                    )
+                    : const Icon(
+                      Icons.g_mobiledata,
+                      size: 26,
+                      color: Color(0xFF4285F4),
                     ),
-                  )
-                : const Icon(
-                    Icons.g_mobiledata,
-                    size: 26,
-                    color: Color(0xFF4285F4),
-                  ),
             label: Text(
               _isGoogleLoading ? '…' : l10n.signUpWithGoogle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
@@ -279,19 +285,22 @@ class _SignUpPageState extends State<SignUpPage> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton.icon(
-              onPressed: (_isGoogleLoading || _isAppleLoading || _isLoading) ? null : _signUpWithApple,
+              onPressed:
+                  (_isGoogleLoading || _isAppleLoading || _isLoading)
+                      ? null
+                      : _signUpWithApple,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.textPrimary,
+                foregroundColor: AppColors.surface,
               ),
               icon:
                   _isAppleLoading
-                      ? const SizedBox(
+                      ?  SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: AppColors.onPrimary,
                         ),
                       )
                       : const Icon(Icons.apple, size: 18),
@@ -311,7 +320,11 @@ class _SignUpPageState extends State<SignUpPage> {
         // Disclaimer SSO normal
         Text(
           l10n.ssoSignupDisclaimer,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary, height: 1.3),
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+            height: 1.3,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -327,7 +340,7 @@ class _SignUpPageState extends State<SignUpPage> {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
             l10n.or,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textDisabled,
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -462,16 +475,17 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 52,
             child: ElevatedButton(
               onPressed: (_isLoading || !_acceptTerms) ? null : _signUp,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(l10n.createMyAccount),
+              child:
+                  _isLoading
+                      ?  SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.onPrimary,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : Text(l10n.createMyAccount),
             ),
           ),
         ],
@@ -526,14 +540,20 @@ class _SignUpPageState extends State<SignUpPage> {
               text: TextSpan(
                 style: TextStyle(
                   fontSize: 14,
-                  color: _isLoading ? AppColors.textDisabled : AppColors.textPrimary,
+                  color:
+                      _isLoading
+                          ? AppColors.textDisabled
+                          : AppColors.textPrimary,
                 ),
                 children: [
                   TextSpan(text: l10n.iAcceptThe),
                   TextSpan(
                     text: l10n.termsOfService,
                     style: TextStyle(
-                      color: _isLoading ? AppColors.textDisabled : AppColors.primary,
+                      color:
+                          _isLoading
+                              ? AppColors.textDisabled
+                              : AppColors.primary,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
                     ),
@@ -542,7 +562,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   TextSpan(
                     text: l10n.privacyPolicy,
                     style: TextStyle(
-                      color: _isLoading ? AppColors.textDisabled : AppColors.primary,
+                      color:
+                          _isLoading
+                              ? AppColors.textDisabled
+                              : AppColors.primary,
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
                     ),
@@ -569,7 +592,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           child: Row(
             children: [
-              Icon(Icons.email_outlined, color: AppColors.primary, size: 18),
+              Icon(Icons.email_outlined, color: AppColors.primaryDark, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -600,7 +623,8 @@ class _SignUpPageState extends State<SignUpPage> {
               child: Text(
                 l10n.login,
                 style: TextStyle(
-                  color: _isLoading ? AppColors.textDisabled : AppColors.primary,
+                  color:
+                      _isLoading ? AppColors.textDisabled : AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

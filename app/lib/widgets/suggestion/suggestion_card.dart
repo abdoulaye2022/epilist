@@ -3,6 +3,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SuggestionCard extends StatelessWidget {
   final ProductSuggestion suggestion;
@@ -22,11 +23,9 @@ class SuggestionCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-        ),
+      child: AppCard.tight(
+        radius: 16,
+        bordered: false,
         child: Material(
           // Material propre au ListTile : le fond du conteneur parent
           // masquerait sinon son fond et ses effets de pression
@@ -52,7 +51,7 @@ class SuggestionCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.blue[100]!, Colors.blue[200]!],
+          colors: [AppColors.infoTint, AppColors.infoBorder],
         ),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -67,7 +66,7 @@ class SuggestionCard extends StatelessWidget {
   Widget _buildTitle() {
     return Text(
       suggestion.productName,
-      style: const TextStyle(
+      style: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 16,
         color: AppColors.textPrimary,
@@ -98,13 +97,13 @@ class SuggestionCard extends StatelessWidget {
         if (suggestion.hasPrice)
           _buildBadge(
             text: suggestion.formattedPrice,
-            color: Colors.green,
+            color: AppColors.success,
             icon: Icons.attach_money,
           ),
         if (suggestion.hasStore)
           _buildBadge(
             text: suggestion.storeName!,
-            color: Colors.purple,
+            color: AppColors.violet,
             icon: Icons.store,
           ),
       ],
@@ -113,20 +112,20 @@ class SuggestionCard extends StatelessWidget {
 
   Widget _buildBadge({
     required String text,
-    required MaterialColor color,
+    required Color color,
     required IconData icon,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color[50],
+        color: AppTint.fill(color),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color[200]!),
+        border: Border.all(color: AppTint.line(color)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color[700]),
+          Icon(icon, size: 12, color: color),
           const SizedBox(width: 4),
           // Limitation de la largeur du texte du badge
           ConstrainedBox(
@@ -134,7 +133,7 @@ class SuggestionCard extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: color[700],
+                color: AppTint.ink(color),
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -156,13 +155,13 @@ class SuggestionCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.orange[50],
+              color: AppColors.warningTint,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.trending_up, size: 12, color: AppColors.warning),
+                Icon(Icons.trending_up, size: 12, color: AppColors.warningInk),
                 const SizedBox(width: 4),
                 Flexible(
                   // Permet au texte de s'adapter

@@ -35,6 +35,7 @@ import 'package:epilist/screens/stores_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -232,10 +233,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           icon: Icons.auto_awesome,
           title: l10n.manageSuggestions,
           subtitle:
-              AppLocalizations.of(context)!.manageYourSuggestions, // Exemple de sous-titre
+              AppLocalizations.of(
+                context,
+              )!.manageYourSuggestions, // Exemple de sous-titre
           onTap: _navigateToSuggestionManagement,
           iconColor: AppColors.warning,
-          iconBackgroundColor: Colors.orange.withValues(alpha: 0.1),
+          iconBackgroundColor: AppColors.warningTint,
         ),
         ProfileActionTile(
           icon: Icons.storefront,
@@ -243,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           subtitle: l10n.aisleOrder,
           onTap: _navigateToStores,
           iconColor: AppColors.primary,
-          iconBackgroundColor: Colors.green.withValues(alpha: 0.1),
+          iconBackgroundColor: AppColors.successTint,
         ),
       ],
     );
@@ -282,20 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildCurrencySettingTile(AppLocalizations l10n) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
+    return AppCard.tight(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -338,10 +328,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Center(
                         child: Text(
                           currentCurrency.symbol,
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.onPrimary,
                           ),
                         ),
                       ),
@@ -354,7 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Text(
                             l10n.currency,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
@@ -429,13 +419,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         // Vérification en deux étapes : OPTIONNELLE, par email.
         ProfileActionTile(
-          icon: _twoFactorEnabled == true
-              ? Icons.verified_user_outlined
-              : Icons.shield_outlined,
+          icon:
+              _twoFactorEnabled == true
+                  ? Icons.verified_user_outlined
+                  : Icons.shield_outlined,
           title: l10n.twoFactorSetting,
-          subtitle: _twoFactorEnabled == null
-              ? '…'
-              : (_twoFactorEnabled! ? l10n.enabled : l10n.disabled),
+          subtitle:
+              _twoFactorEnabled == null
+                  ? '…'
+                  : (_twoFactorEnabled! ? l10n.enabled : l10n.disabled),
           onTap: _toggleTwoFactor,
         ),
       ],
@@ -452,48 +444,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final passwordController = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.twoFactorSetting),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.twoFactorSettingHint,
-                style: const TextStyle(fontSize: 13)),
-            const SizedBox(height: 16),
-            Text(l10n.twoFactorPasswordPrompt,
-                style: const TextStyle(fontSize: 12.5)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              autofocus: true,
-              decoration: InputDecoration(labelText: l10n.password),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(l10n.twoFactorSetting),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.twoFactorSettingHint,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.twoFactorPasswordPrompt,
+                  style: const TextStyle(fontSize: 12.5),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  autofocus: true,
+                  decoration: InputDecoration(labelText: l10n.password),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.cancel),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(target ? l10n.activate : l10n.deactivate),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(target ? l10n.activate : l10n.deactivate),
-          ),
-        ],
-      ),
     );
 
     if (confirmed != true || !mounted) return;
     try {
-      await context
-          .read<AuthService>()
-          .setTwoFactorEnabled(target, passwordController.text);
+      await context.read<AuthService>().setTwoFactorEnabled(
+        target,
+        passwordController.text,
+      );
       if (!mounted) return;
       setState(() => _twoFactorEnabled = target);
       SmartSnackBarManager.showSuccessSnackBar(
-          context, target ? l10n.twoFactorEnabled : l10n.twoFactorDisabled);
+        context,
+        target ? l10n.twoFactorEnabled : l10n.twoFactorDisabled,
+      );
     } on DioException catch (e) {
       if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(
@@ -519,7 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           subtitle: l10n.feedbackSubtitle,
           onTap: _showFeedbackDialog,
           iconColor: AppColors.primary, // Couleur verte pour l'icône
-          iconBackgroundColor: Colors.green.withValues(alpha: 0.1), // Fond vert clair
+          iconBackgroundColor: AppColors.successTint, // Fond vert clair
         ),
         // Vous pouvez ajouter d'autres éléments de support ici si nécessaire
       ],

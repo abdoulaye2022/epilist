@@ -2,6 +2,7 @@
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SuggestionLoadingState extends StatelessWidget {
   const SuggestionLoadingState({super.key});
@@ -15,12 +16,10 @@ class SuggestionLoadingState extends StatelessWidget {
         margin: const EdgeInsets.all(32),
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
+        child: AppCard(
+          radius: 20,
+          bordered: false,
           padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -31,13 +30,13 @@ class SuggestionLoadingState extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Colors.blue[100]!, Colors.blue[200]!],
+                    colors: [AppColors.infoTint, AppColors.infoBorder],
                   ),
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const CircularProgressIndicator(
+                child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.info),
                 ),
               ),
               const SizedBox(height: 24),

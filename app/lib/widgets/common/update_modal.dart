@@ -40,7 +40,8 @@ class UpdateModal extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final force = result.updateRequired;
     final isEn = Localizations.localeOf(context).languageCode == 'en';
-    final message = (isEn ? result.messageEn : result.messageFr) ??
+    final message =
+        (isEn ? result.messageEn : result.messageFr) ??
         (isEn ? result.messageFr : result.messageEn);
 
     return PopScope(
@@ -54,16 +55,17 @@ class UpdateModal extends StatelessWidget {
             children: [
               AppDialogHeader(
                 icon: Icons.system_update_alt,
-                title: force
-                    ? l10n.updateRequiredTitle
-                    : l10n.updateAvailableTitle,
+                title:
+                    force
+                        ? l10n.updateRequiredTitle
+                        : l10n.updateAvailableTitle,
                 color: force ? AppColors.warning : AppColors.primary,
               ),
               if (message != null && message.trim().isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   message,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     color: AppColors.textSecondary,
                     height: 1.4,

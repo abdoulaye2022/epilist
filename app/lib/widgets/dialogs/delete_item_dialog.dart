@@ -40,7 +40,7 @@ class DeleteItemDialog extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             RichText(
               text: TextSpan(
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                   height: 1.4,
@@ -49,7 +49,7 @@ class DeleteItemDialog extends StatelessWidget {
                   TextSpan(text: l10n.sureToDeleteItem),
                   TextSpan(
                     text: ' « ${item.productName} »',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
                     ),
@@ -61,7 +61,7 @@ class DeleteItemDialog extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(
               l10n.actionIrreversible,
-              style: const TextStyle(fontSize: 12.5, color: AppColors.error),
+              style: TextStyle(fontSize: 12.5, color: AppColors.error),
             ),
             const SizedBox(height: AppSpacing.lg),
             BlocBuilder<ListItemBloc, ListItemState>(

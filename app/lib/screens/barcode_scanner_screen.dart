@@ -7,10 +7,7 @@ import 'dart:async';
 class BarcodeScannerScreen extends StatefulWidget {
   final int listId;
 
-  const BarcodeScannerScreen({
-    super.key,
-    required this.listId,
-  });
+  const BarcodeScannerScreen({super.key, required this.listId});
 
   @override
   State<BarcodeScannerScreen> createState() => _BarcodeScannerScreenState();
@@ -95,14 +92,11 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.backdrop,
       body: Stack(
         children: [
           // Camera preview
-          MobileScanner(
-            controller: controller,
-            onDetect: _onDetect,
-          ),
+          MobileScanner(controller: controller, onDetect: _onDetect),
 
           // Overlay avec zone de scan
           CustomPaint(
@@ -127,16 +121,16 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.7),
-                        Colors.transparent,
-                      ],
+                      colors: [AppColors.scrim, Colors.transparent],
                     ),
                   ),
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
+                        icon: const Icon(
+                          Icons.close,
+                          color: AppColors.onOverlay,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 12),
@@ -147,7 +141,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                             Text(
                               AppLocalizations.of(context)!.scanBarcode,
                               style: theme.textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
+                                color: AppColors.onOverlay,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -155,7 +149,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                             Text(
                               AppLocalizations.of(context)!.alignBarcodeInFrame,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: Colors.white70,
+                                color: AppColors.onOverlay.withValues(
+                                  alpha: 0.7,
+                                ),
                               ),
                             ),
                           ],
@@ -173,7 +169,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     margin: const EdgeInsets.symmetric(horizontal: 32),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                      color: AppColors.scrim,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -181,7 +177,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                       children: [
                         const Icon(
                           Icons.qr_code_scanner,
-                          color: Colors.white,
+                          color: AppColors.onOverlay,
                           size: 24,
                         ),
                         const SizedBox(width: 12),
@@ -189,7 +185,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           child: Text(
                             AppLocalizations.of(context)!.positionBarcodeInZone,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
+                              color: AppColors.onOverlay,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -225,14 +221,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                             children: [
                               const Icon(
                                 Icons.check_circle,
-                                color: Colors.white,
+                                color: AppColors.onOverlay,
                                 size: 48,
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 AppLocalizations.of(context)!.codeDetected,
                                 style: theme.textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
+                                  color: AppColors.onOverlay,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -241,7 +237,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                                 Text(
                                   scannedCode!,
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white70,
+                                    color: AppColors.onOverlay.withValues(
+                                      alpha: 0.7,
+                                    ),
                                     fontFamily: 'monospace',
                                   ),
                                 ),
@@ -262,10 +260,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.7),
-                        Colors.transparent,
-                      ],
+                      colors: [AppColors.scrim, Colors.transparent],
                     ),
                   ),
                   child: Row(
@@ -317,12 +312,16 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive
-              ? AppColors.primary.withValues(alpha: 0.3)
-              : Colors.white.withValues(alpha: 0.1),
+          color:
+              isActive
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.onOverlay.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive ? AppColors.primary : Colors.white.withValues(alpha: 0.3),
+            color:
+                isActive
+                    ? AppColors.primary
+                    : AppColors.onOverlay.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -331,14 +330,14 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.primary : Colors.white,
+              color: isActive ? AppColors.primary : AppColors.onOverlay,
               size: 28,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppColors.primary : Colors.white,
+                color: isActive ? AppColors.primary : AppColors.onOverlay,
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
@@ -368,27 +367,26 @@ class ScannerOverlayPainter extends CustomPainter {
     final Rect scanRect = Rect.fromLTWH(left, top, scanAreaSize, scanAreaSize);
 
     // Draw dark overlay
-    final Paint overlayPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.5);
+    final Paint overlayPaint = Paint()..color = AppColors.scrim;
 
     canvas.drawPath(
       Path.combine(
         PathOperation.difference,
         Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-        Path()
-          ..addRRect(
-            RRect.fromRectAndRadius(scanRect, const Radius.circular(24)),
-          ),
+        Path()..addRRect(
+          RRect.fromRectAndRadius(scanRect, const Radius.circular(24)),
+        ),
       ),
       overlayPaint,
     );
 
     // Draw corner brackets
-    final Paint cornerPaint = Paint()
-      ..color = AppColors.primary
-      ..strokeWidth = 4
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+    final Paint cornerPaint =
+        Paint()
+          ..color = AppColors.primary
+          ..strokeWidth = 4
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round;
 
     final double cornerLength = 30;
 
@@ -430,17 +428,17 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // Draw scanning line
     if (isScanning) {
-      final double lineY =
-          top + (scanAreaSize * scanLineAnimation.value);
-      final Paint linePaint = Paint()
-        ..shader = LinearGradient(
-          colors: [
-            Colors.transparent,
-            AppColors.primary.withValues(alpha: 0.8),
-            Colors.transparent,
-          ],
-        ).createShader(Rect.fromLTWH(left, lineY - 2, scanAreaSize, 4))
-        ..strokeWidth = 2;
+      final double lineY = top + (scanAreaSize * scanLineAnimation.value);
+      final Paint linePaint =
+          Paint()
+            ..shader = LinearGradient(
+              colors: [
+                Colors.transparent,
+                AppColors.primary.withValues(alpha: 0.8),
+                Colors.transparent,
+              ],
+            ).createShader(Rect.fromLTWH(left, lineY - 2, scanAreaSize, 4))
+            ..strokeWidth = 2;
 
       canvas.drawLine(
         Offset(left + 20, lineY),
@@ -449,15 +447,16 @@ class ScannerOverlayPainter extends CustomPainter {
       );
 
       // Glow effect
-      final Paint glowPaint = Paint()
-        ..shader = LinearGradient(
-          colors: [
-            Colors.transparent,
-            AppColors.primary.withValues(alpha: 0.3),
-            Colors.transparent,
-          ],
-        ).createShader(Rect.fromLTWH(left, lineY - 10, scanAreaSize, 20))
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      final Paint glowPaint =
+          Paint()
+            ..shader = LinearGradient(
+              colors: [
+                Colors.transparent,
+                AppColors.primary.withValues(alpha: 0.3),
+                Colors.transparent,
+              ],
+            ).createShader(Rect.fromLTWH(left, lineY - 10, scanAreaSize, 20))
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
 
       canvas.drawLine(
         Offset(left + 20, lineY),

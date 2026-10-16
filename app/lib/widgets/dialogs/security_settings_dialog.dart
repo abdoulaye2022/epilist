@@ -6,6 +6,7 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/profile/delete_account_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class SecuritySettingsDialog extends StatefulWidget {
   const SecuritySettingsDialog({super.key});
@@ -22,12 +23,10 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 10,
-      child: Container(
+      child: AppCard(
+        radius: 20,
+        bordered: false,
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -54,14 +53,14 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.security, size: 22, color: AppColors.accent),
+      child: Icon(Icons.security, size: 22, color: AppColors.infoInk),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.security,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -88,7 +87,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
           icon: Icons.lock_outline,
           title: l10n.changePasswordTitle,
           description: l10n.changePasswordDescription,
-          color: Colors.blue,
+          color: AppColors.info,
           onTap: _showChangePasswordDialog,
         ),
         const SizedBox(height: 12),
@@ -96,7 +95,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
           icon: Icons.delete_forever_outlined,
           title: l10n.deleteAccountTitle,
           description: l10n.deleteAccountDescription,
-          color: Colors.red,
+          color: AppColors.error,
           onTap: _showDeleteAccountDialog,
         ),
       ],
@@ -107,7 +106,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     required IconData icon,
     required String title,
     required String description,
-    required MaterialColor color,
+    required Color color,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -116,19 +115,19 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color[50],
+          color: AppTint.fill(color),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color[200]!),
+          border: Border.all(color: AppTint.line(color)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color[100],
+                color: AppTint.fill(color),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: color[600], size: 20),
+              child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -140,18 +139,18 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: color[800],
+                      color: AppTint.ink(color),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 12, color: color[600]),
+                    style: TextStyle(fontSize: 12, color: AppTint.ink(color)),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: color[600]),
+            Icon(Icons.arrow_forward_ios, size: 16, color: color),
           ],
         ),
       ),
@@ -276,12 +275,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 10,
-          child: Container(
+          child: AppCard(
+            radius: 20,
+            bordered: false,
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -323,7 +320,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       _showCodeStep ? l10n.newPasswordTitle : l10n.changePassword,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -429,7 +426,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         color: _showCodeStep ? AppColors.primaryLight : AppColors.accentLight,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: _showCodeStep ? Colors.green[200]! : Colors.blue[200]!,
+          color: _showCodeStep ? AppColors.successBorder : AppColors.infoBorder,
         ),
       ),
       child: Row(
@@ -488,9 +485,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   _showCodeStep ? AppColors.primary : AppColors.accent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               disabledBackgroundColor:
-                  _showCodeStep ? Colors.green[300] : Colors.blue[300],
+                  _showCodeStep
+                      ? AppColors.successBorder
+                      : AppColors.infoBorder,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -499,12 +498,12 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             ),
             child:
                 isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     )
                     : Text(

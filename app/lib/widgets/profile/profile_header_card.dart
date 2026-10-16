@@ -23,11 +23,11 @@ class ProfileHeaderCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: AppColors.shadow,
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -58,7 +58,7 @@ class ProfileHeaderCard extends StatelessWidget {
       children: [
         Text(
           user.fullName,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -77,11 +77,16 @@ class ProfileHeaderCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: user.isEmailVerified ? AppColors.primaryLight : Colors.orange[50],
+        color:
+            user.isEmailVerified
+                ? AppColors.primaryLight
+                : AppColors.warningTint,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color:
-              user.isEmailVerified ? Colors.green[200]! : Colors.orange[200]!,
+              user.isEmailVerified
+                  ? AppColors.successBorder
+                  : AppColors.warningBorder,
         ),
       ),
       child: Row(
@@ -90,8 +95,7 @@ class ProfileHeaderCard extends StatelessWidget {
           Icon(
             user.isEmailVerified ? Icons.verified : Icons.warning,
             size: 16,
-            color:
-                user.isEmailVerified ? AppColors.primary : AppColors.warning,
+            color: user.isEmailVerified ? AppColors.primary : AppColors.warning,
           ),
           const SizedBox(width: 4),
           Text(
@@ -117,7 +121,7 @@ class ProfileHeaderCard extends StatelessWidget {
       label: Text(l10n.editProfile),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),

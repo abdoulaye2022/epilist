@@ -8,6 +8,7 @@ import 'package:epilist/blocs/suggestion/suggestion_state.dart';
 import 'package:epilist/widgets/suggestions/suggestion_card.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 class SuggestionList extends StatefulWidget {
   final String currencySymbol;
@@ -98,11 +99,7 @@ class _SuggestionListState extends State<SuggestionList> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 16),
             Text(
               l10n?.errorLoadingSuggestions ?? 'Failed to load suggestions',
@@ -177,12 +174,15 @@ class _SuggestionListState extends State<SuggestionList> {
       final topSuggestions = state.suggestions.take(5).toList();
       return Column(
         mainAxisSize: MainAxisSize.min,
-        children: topSuggestions
-            .map((suggestion) => CompactSuggestionCard(
-                  suggestion: suggestion,
-                  onTap: () => _handleAcceptSuggestion(suggestion),
-                ))
-            .toList(),
+        children:
+            topSuggestions
+                .map(
+                  (suggestion) => CompactSuggestionCard(
+                    suggestion: suggestion,
+                    onTap: () => _handleAcceptSuggestion(suggestion),
+                  ),
+                )
+                .toList(),
       );
     }
 
@@ -207,9 +207,9 @@ class _SuggestionListState extends State<SuggestionList> {
                 const SizedBox(width: 8),
                 Text(
                   l10n?.smartSuggestions ?? 'Smart Suggestions',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 IconButton(
@@ -226,7 +226,7 @@ class _SuggestionListState extends State<SuggestionList> {
             _buildSectionHeader(
               l10n?.highConfidence ?? 'Highly Recommended',
               Icons.verified,
-              Colors.green,
+              AppColors.success,
             ),
             ...state.highConfidence.map(
               (suggestion) => _buildSuggestionCard(suggestion),
@@ -238,7 +238,7 @@ class _SuggestionListState extends State<SuggestionList> {
             _buildSectionHeader(
               l10n?.mediumConfidence ?? 'Good Matches',
               Icons.thumb_up_outlined,
-              Colors.orange,
+              AppColors.warning,
             ),
             ...state.mediumConfidence.map(
               (suggestion) => _buildSuggestionCard(suggestion),
@@ -250,7 +250,7 @@ class _SuggestionListState extends State<SuggestionList> {
             _buildSectionHeader(
               l10n?.lowConfidence ?? 'You Might Like',
               Icons.info_outline,
-              Colors.grey,
+              AppColors.textSecondary,
             ),
             ...state.lowConfidence.map(
               (suggestion) => _buildSuggestionCard(suggestion),
@@ -299,18 +299,15 @@ class _SuggestionListState extends State<SuggestionList> {
 
     // Record acceptance in bloc
     context.read<SuggestionBloc>().add(
-          AcceptSuggestion(
-            suggestion.productName,
-            suggestion.suggestedQuantity,
-          ),
-        );
+      AcceptSuggestion(suggestion.productName, suggestion.suggestedQuantity),
+    );
   }
 
   /// Handle rejecting a suggestion
   void _handleRejectSuggestion(SmartSuggestion suggestion) {
     context.read<SuggestionBloc>().add(
-          RejectSuggestion(suggestion.productName),
-        );
+      RejectSuggestion(suggestion.productName),
+    );
   }
 
   /// Show information dialog about suggestions
@@ -320,61 +317,62 @@ class _SuggestionListState extends State<SuggestionList> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
-            const SizedBox(width: 8),
-            Text(l10n?.smartSuggestions ?? 'Smart Suggestions'),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n?.suggestionsInfoDescription ??
-                    AppLocalizations.of(context)!.suggestionsExplain,
-                style: theme.textTheme.bodyMedium,
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(l10n?.smartSuggestions ?? 'Smart Suggestions'),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n?.suggestionsInfoDescription ??
+                        AppLocalizations.of(context)!.suggestionsExplain,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildInfoItem(
+                    Icons.auto_graph,
+                    l10n?.patternBased ?? 'Pattern-based',
+                    l10n?.patternBasedDescription ??
+                        AppLocalizations.of(context)!.suggestionsFrequency,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoItem(
+                    Icons.calendar_today,
+                    l10n?.seasonal ?? 'Seasonal',
+                    l10n?.seasonalDescription ??
+                        AppLocalizations.of(context)!.suggestionsSeasonal,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoItem(
+                    Icons.link,
+                    l10n?.associations ?? 'Associations',
+                    l10n?.associationsDescription ??
+                        AppLocalizations.of(context)!.suggestionsAssociations,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoItem(
+                    Icons.trending_up,
+                    l10n?.trending ?? 'Trending',
+                    l10n?.trendingDescription ?? 'Popular items right now',
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              _buildInfoItem(
-                Icons.auto_graph,
-                l10n?.patternBased ?? 'Pattern-based',
-                l10n?.patternBasedDescription ??
-                    AppLocalizations.of(context)!.suggestionsFrequency,
-              ),
-              const SizedBox(height: 12),
-              _buildInfoItem(
-                Icons.calendar_today,
-                l10n?.seasonal ?? 'Seasonal',
-                l10n?.seasonalDescription ??
-                    AppLocalizations.of(context)!.suggestionsSeasonal,
-              ),
-              const SizedBox(height: 12),
-              _buildInfoItem(
-                Icons.link,
-                l10n?.associations ?? 'Associations',
-                l10n?.associationsDescription ??
-                    AppLocalizations.of(context)!.suggestionsAssociations,
-              ),
-              const SizedBox(height: 12),
-              _buildInfoItem(
-                Icons.trending_up,
-                l10n?.trending ?? 'Trending',
-                l10n?.trendingDescription ?? 'Popular items right now',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n?.close ?? 'Close'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.close ?? 'Close'),
-          ),
-        ],
-      ),
     );
   }
 

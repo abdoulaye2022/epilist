@@ -15,7 +15,7 @@ class TermsOfServicePage extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.termsOfService),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 1,
         foregroundColor: AppColors.textPrimary,
       ),
@@ -44,20 +44,11 @@ class TermsOfServicePage extends StatelessWidget {
               l10n.termsAcceptanceText,
             ),
 
-            _buildTermSection(
-              l10n.termsServiceTitle,
-              l10n.termsServiceText,
-            ),
+            _buildTermSection(l10n.termsServiceTitle, l10n.termsServiceText),
 
-            _buildTermSection(
-              l10n.termsAccountTitle,
-              l10n.termsAccountText,
-            ),
+            _buildTermSection(l10n.termsAccountTitle, l10n.termsAccountText),
 
-            _buildTermSection(
-              l10n.termsUsageTitle,
-              l10n.termsUsageText,
-            ),
+            _buildTermSection(l10n.termsUsageTitle, l10n.termsUsageText),
 
             _buildTermSection(
               l10n.termsAcceptableTitle,
@@ -130,7 +121,7 @@ class TermsOfServicePage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
       ),
@@ -180,7 +171,7 @@ class TermsOfServicePage extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -198,7 +189,7 @@ class TermsOfServicePage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
       ),

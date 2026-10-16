@@ -55,20 +55,16 @@ class _AccountDeletionStatusWidgetState
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.orange[50],
+        color: AppColors.warningTint,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange[300]!),
+        border: Border.all(color: AppColors.warningBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.schedule_outlined,
-                color: AppColors.warning,
-                size: 24,
-              ),
+              Icon(Icons.schedule_outlined, color: AppColors.warningInk, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -76,7 +72,7 @@ class _AccountDeletionStatusWidgetState
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orange[800],
+                    color: AppColors.warningInk,
                   ),
                 ),
               ),
@@ -130,7 +126,7 @@ class _AccountDeletionStatusWidgetState
                 label: Text(l10n.cancelDeletion),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -142,13 +138,13 @@ class _AccountDeletionStatusWidgetState
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.red[50],
+                color: AppColors.errorTint,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red[200]!),
+                border: Border.all(color: AppColors.errorBorder),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber, color: AppColors.error, size: 20),
+                  Icon(Icons.warning_amber, color: AppColors.errorInk, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -197,7 +193,7 @@ class _AccountDeletionStatusWidgetState
           (context) => AlertDialog(
             title: Row(
               children: [
-                const Icon(Icons.undo, color: Colors.green),
+                Icon(Icons.undo, color: AppColors.success),
                 const SizedBox(width: 12),
                 Text(l10n.confirmCancelDeletion),
               ],
@@ -215,7 +211,7 @@ class _AccountDeletionStatusWidgetState
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                 ),
                 child: Text(l10n.yesCancelDeletion),
               ),

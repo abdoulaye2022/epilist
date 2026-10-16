@@ -17,6 +17,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
+import 'package:epilist/screens/appearance_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/create_space_screen.dart';
@@ -43,6 +44,8 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/chat_flow.dart';
 import 'package:epilist/utils/list_picker.dart';
 import 'package:epilist/widgets/common/app_action_tile.dart';
+import 'package:epilist/widgets/common/app_card.dart';
+import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +108,11 @@ class _MoreScreenState extends State<MoreScreen> {
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xl),
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.xl,
+            ),
             children: [
               AppSearchField(
                 controller: _search,
@@ -114,43 +121,28 @@ class _MoreScreenState extends State<MoreScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               ...sections.expand((section) {
-                final shown = q.isEmpty
-                    ? section.entries
-                    : section.entries
-                        .where((e) => e.label.toLowerCase().contains(q))
-                        .toList();
+                final shown =
+                    q.isEmpty
+                        ? section.entries
+                        : section.entries
+                            .where((e) => e.label.toLowerCase().contains(q))
+                            .toList();
                 if (shown.isEmpty) return const <Widget>[];
                 return [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.sm, AppSpacing.sm, 0, AppSpacing.xs),
-                    child: Text(
-                      section.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(color: AppColors.textSecondary),
-                    ),
+                  AppSectionHeader(
+                    title: section.title,
+                    count: q.isEmpty ? null : '${shown.length}',
                   ),
-                  // Material, et non un Container decore : un fond pose
-                  // par un DecoratedBox intermediaire masque le fond et
-                  // l'onde d'appui des ListTile qu'il contient (Flutter
-                  // le signale en assertion, en mode debug).
-                  Material(
-                    color: AppColors.surface,
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(color: AppColors.border),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
+                  AppCard.tight(
                     child: Column(
                       children: [
                         for (var i = 0; i < shown.length; i++) ...[
                           if (i > 0)
                             const Divider(
-                                height: 1,
-                                indent: AppSpacing.md,
-                                endIndent: AppSpacing.md),
+                              height: 1,
+                              indent: AppSpacing.md,
+                              endIndent: AppSpacing.md,
+                            ),
                           AppActionTile(
                             icon: shown[i].icon,
                             title: shown[i].label,
@@ -165,17 +157,24 @@ class _MoreScreenState extends State<MoreScreen> {
                 ];
               }),
               if (q.isNotEmpty &&
-                  sections.every((s) => s.entries.every(
-                      (e) => !e.label.toLowerCase().contains(q))))
+                  sections.every(
+                    (s) => s.entries.every(
+                      (e) => !e.label.toLowerCase().contains(q),
+                    ),
+                  ))
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
                   child: Column(
                     children: [
-                      Text(l10n.noResultsFound,
-                          style: Theme.of(context).textTheme.titleSmall),
+                      Text(
+                        l10n.noResultsFound,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
                       const SizedBox(height: AppSpacing.xs),
-                      Text(l10n.tryOtherKeywords,
-                          style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        l10n.tryOtherKeywords,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ],
                   ),
                 ),
@@ -187,7 +186,8 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   List<_Section> _sections(AppLocalizations l10n, Space? space) {
-    final pro = space != null &&
+    final pro =
+        space != null &&
         (space.type == 'restaurant' || space.type == 'organization');
 
     return [
@@ -310,6 +310,12 @@ class _MoreScreenState extends State<MoreScreen> {
           open: (c) => _push(c, const ProfileScreen()),
         ),
         _Destination(
+          icon: Icons.contrast_outlined,
+          label: l10n.appearance,
+          hint: l10n.appearanceHint,
+          open: (c) => _push(c, const AppearanceScreen()),
+        ),
+        _Destination(
           icon: Icons.auto_awesome_outlined,
           label: l10n.intelligenceSettings,
           open: (c) => _push(c, const IntelligenceSettingsScreen()),
@@ -335,10 +341,7 @@ class _MoreScreenState extends State<MoreScreen> {
   Future<void> _compareStores(BuildContext context) async {
     final list = await pickShoppingList(context);
     if (list == null || !context.mounted) return;
-    _push(
-      context,
-      StoreComparisonScreen(listId: list.id, listName: list.name),
-    );
+    _push(context, StoreComparisonScreen(listId: list.id, listName: list.name));
   }
 
   /// Le mode courses a besoin d'un ListItemBloc : il était fourni par
@@ -355,10 +358,11 @@ class _MoreScreenState extends State<MoreScreen> {
     _push(
       context,
       BlocProvider<ListItemBloc>(
-        create: (_) => ListItemBloc(
-          listItemService: itemService,
-          localizationBloc: localization,
-        )..add(LoadListItems(list.id)),
+        create:
+            (_) => ListItemBloc(
+              listItemService: itemService,
+              localizationBloc: localization,
+            )..add(LoadListItems(list.id)),
         child: ShoppingModeScreen(shoppingList: list),
       ),
     );

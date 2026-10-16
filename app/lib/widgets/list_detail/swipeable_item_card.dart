@@ -48,12 +48,12 @@ class SwipeableItemCard extends StatelessWidget {
       onDismissed: (direction) => onDelete(item),
       child: Card(
         margin: const EdgeInsets.only(bottom: 8),
-        color: Colors.white,
+        color: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side:
               shoppingList.isReadOnly
-                  ? BorderSide(color: Colors.blue[200]!, width: 1)
+                  ? BorderSide(color: AppColors.infoBorder, width: 1)
                   : BorderSide.none,
         ),
         child: ListTile(
@@ -102,12 +102,16 @@ class SwipeableItemCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.delete_rounded, color: Colors.white, size: 32),
+           Icon(
+            Icons.delete_rounded,
+            color: AppColors.onPrimary,
+            size: 32,
+          ),
           const SizedBox(height: 4),
           Text(
             l10n.delete,
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -133,7 +137,9 @@ class SwipeableItemCard extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                    ),
                     child: Text(l10n.delete),
                   ),
                 ],
@@ -149,9 +155,11 @@ class SwipeableItemCard extends StatelessWidget {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: item.isPurchased ? AppColors.primaryLight : AppColors.background,
+          color:
+              item.isPurchased ? AppColors.primaryLight : AppColors.background,
           border: Border.all(
-            color: item.isPurchased ? Colors.green[300]! : AppColors.border,
+            color:
+                item.isPurchased ? AppColors.successBorder : AppColors.border,
             width: 2,
           ),
         ),
@@ -183,8 +191,12 @@ class SwipeableItemCard extends StatelessWidget {
         decoration: item.isPurchased ? TextDecoration.lineThrough : null,
         color:
             shoppingList.isReadOnly
-                ? (item.isPurchased ? AppColors.textDisabled : AppColors.textSecondary)
-                : (item.isPurchased ? Colors.grey : AppColors.textPrimary),
+                ? (item.isPurchased
+                    ? AppColors.textDisabled
+                    : AppColors.textSecondary)
+                : (item.isPurchased
+                    ? AppColors.textSecondary
+                    : AppColors.textPrimary),
         fontWeight:
             shoppingList.isReadOnly ? FontWeight.normal : FontWeight.w500,
       ),
@@ -275,12 +287,12 @@ class SwipeableItemCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue[200]!),
+          border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.visibility, size: 14, color: AppColors.accent),
+            Icon(Icons.visibility, size: 14, color: AppColors.infoInk),
             const SizedBox(width: 4),
             Text(
               l10n.readOnlyShort,

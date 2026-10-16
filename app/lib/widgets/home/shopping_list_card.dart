@@ -33,7 +33,11 @@ class ShoppingListCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.sm + 4, AppSpacing.xs, AppSpacing.sm + 4),
+            AppSpacing.md,
+            AppSpacing.sm + 4,
+            AppSpacing.xs,
+            AppSpacing.sm + 4,
+          ),
           child: Row(
             children: [
               _buildProgressRing(progress, done),
@@ -47,7 +51,7 @@ class ShoppingListCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             list.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
@@ -61,9 +65,10 @@ class ShoppingListCard extends StatelessWidget {
                           Icon(
                             Icons.people_alt_rounded,
                             size: 14,
-                            color: list.isOwner
-                                ? AppColors.accent
-                                : AppColors.primary,
+                            color:
+                                list.isOwner
+                                    ? AppColors.accent
+                                    : AppColors.primary,
                           ),
                         ],
                       ],
@@ -77,21 +82,25 @@ class ShoppingListCard extends StatelessWidget {
                               : '$completedItems/$totalItems ${l10n.articles.toLowerCase()}',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: done
-                                ? AppColors.primaryDark
-                                : AppColors.textSecondary,
+                            color:
+                                done
+                                    ? AppColors.primaryDark
+                                    : AppColors.textSecondary,
                             fontWeight:
                                 done ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
                         if (list.hasReceipts) ...[
                           const SizedBox(width: 8),
-                          const Icon(Icons.receipt_long,
-                              size: 12, color: AppColors.textDisabled),
+                          Icon(
+                            Icons.receipt_long,
+                            size: 12,
+                            color: AppColors.textDisabled,
+                          ),
                           const SizedBox(width: 2),
                           Text(
                             '${list.receiptsCount}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               color: AppColors.textDisabled,
                             ),
@@ -100,7 +109,7 @@ class ShoppingListCard extends StatelessWidget {
                         const Spacer(),
                         Text(
                           DateFormatter.formatDate(list.createdAt),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             color: AppColors.textDisabled,
                           ),
@@ -135,16 +144,15 @@ class ShoppingListCard extends StatelessWidget {
             ),
           ),
           done
-              ? const Icon(Icons.check_rounded,
-                  size: 18, color: AppColors.primary)
+              ? Icon(Icons.check_rounded, size: 18, color: AppColors.primary)
               : Text(
-                  '${(progress * 100).round()}',
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                '${(progress * 100).round()}',
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
+              ),
         ],
       ),
     );
@@ -229,14 +237,14 @@ class ShoppingListCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
-                  color: Colors.blue[100],
+                  color: AppColors.infoTint,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '${list.receiptsCount}',
                   style: TextStyle(
                     fontSize: 9,
-                    color: AppColors.accent,
+                    color: AppColors.infoInk,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

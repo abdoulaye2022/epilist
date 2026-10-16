@@ -15,12 +15,12 @@ class SuggestionAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         l10n.manageSuggestions,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       elevation: 1,
       foregroundColor: AppColors.textPrimary,
       actions: [

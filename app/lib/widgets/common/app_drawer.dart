@@ -82,7 +82,10 @@ class AppDrawer extends StatelessWidget {
                     label: l10n.tabMore,
                     tab: MainTab.more,
                   ),
-                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  const Divider(
+                    indent: AppSpacing.md,
+                    endIndent: AppSpacing.md,
+                  ),
                   _item(
                     context,
                     icon: Icons.savings_outlined,
@@ -107,14 +110,18 @@ class AppDrawer extends StatelessWidget {
                     label: l10n.priceAlerts,
                     onTap: () => _push(context, const PriceAlertsScreen()),
                   ),
-                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  const Divider(
+                    indent: AppSpacing.md,
+                    endIndent: AppSpacing.md,
+                  ),
                   // Espaces professionnels (Phase 3) : demandes d'achat
                   // et fournisseurs, seulement quand l'espace actif
                   // est un restaurant ou une organisation.
                   ValueListenableBuilder<Space?>(
                     valueListenable: ActiveSpaceStore.current,
                     builder: (context, space, _) {
-                      final pro = space != null &&
+                      final pro =
+                          space != null &&
                           (space.type == 'restaurant' ||
                               space.type == 'organization');
                       if (!pro) return const SizedBox.shrink();
@@ -124,15 +131,18 @@ class AppDrawer extends StatelessWidget {
                             context,
                             icon: Icons.assignment_outlined,
                             label: l10n.purchaseRequests,
-                            onTap: () => _push(
-                                context, const PurchaseRequestsScreen()),
+                            onTap:
+                                () => _push(
+                                  context,
+                                  const PurchaseRequestsScreen(),
+                                ),
                           ),
                           _item(
                             context,
                             icon: Icons.local_shipping_outlined,
                             label: l10n.suppliers,
-                            onTap: () =>
-                                _push(context, const SuppliersScreen()),
+                            onTap:
+                                () => _push(context, const SuppliersScreen()),
                           ),
                         ],
                       );
@@ -156,7 +166,10 @@ class AppDrawer extends StatelessWidget {
                     label: l10n.mealPlannerTitle,
                     onTap: () => _push(context, const MealPlannerScreen()),
                   ),
-                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  const Divider(
+                    indent: AppSpacing.md,
+                    endIndent: AppSpacing.md,
+                  ),
                   _item(
                     context,
                     icon: Icons.storefront_outlined,
@@ -167,10 +180,13 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: Icons.category_outlined,
                     label: l10n.categories,
-                    onTap: () =>
-                        _push(context, const CategoryManagementScreen()),
+                    onTap:
+                        () => _push(context, const CategoryManagementScreen()),
                   ),
-                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
+                  const Divider(
+                    indent: AppSpacing.md,
+                    endIndent: AppSpacing.md,
+                  ),
                   _item(
                     context,
                     icon: Icons.person_outline,
@@ -181,8 +197,9 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: Icons.auto_awesome_outlined,
                     label: l10n.intelligenceSettings,
-                    onTap: () =>
-                        _push(context, const IntelligenceSettingsScreen()),
+                    onTap:
+                        () =>
+                            _push(context, const IntelligenceSettingsScreen()),
                   ),
                   _item(
                     context,
@@ -237,7 +254,7 @@ class AppDrawer extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -247,7 +264,7 @@ class AppDrawer extends StatelessWidget {
                     if (email.isNotEmpty)
                       Text(
                         email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           color: AppColors.textSecondary,
                         ),
@@ -279,7 +296,11 @@ class AppDrawer extends StatelessWidget {
         };
         return Padding(
           padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
@@ -291,7 +312,9 @@ class AppDrawer extends StatelessWidget {
             },
             child: Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm + 4, vertical: AppSpacing.sm),
+                horizontal: AppSpacing.sm + 4,
+                vertical: AppSpacing.sm,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(12),
@@ -304,15 +327,18 @@ class AppDrawer extends StatelessWidget {
                     child: Text(
                       label,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryDark,
                       ),
                     ),
                   ),
-                  const Icon(Icons.expand_more_rounded,
-                      size: 18, color: AppColors.primaryDark),
+                  Icon(
+                    Icons.expand_more_rounded,
+                    size: 18,
+                    color: AppColors.primaryDark,
+                  ),
                 ],
               ),
             ),
@@ -359,14 +385,18 @@ class AppDrawer extends StatelessWidget {
         leading: Icon(
           icon,
           size: 22,
-          color: color ?? (selected ? AppColors.primaryDark : AppColors.textSecondary),
+          color:
+              color ??
+              (selected ? AppColors.primaryDark : AppColors.textSecondary),
         ),
         title: Text(
           label,
           style: TextStyle(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: color ?? (selected ? AppColors.primaryDark : AppColors.textPrimary),
+            color:
+                color ??
+                (selected ? AppColors.primaryDark : AppColors.textPrimary),
           ),
         ),
         selected: selected,
@@ -389,10 +419,11 @@ class AppDrawer extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<AuthBloc>(),
-        child: const LogoutConfirmationDialog(),
-      ),
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: context.read<AuthBloc>(),
+            child: const LogoutConfirmationDialog(),
+          ),
     );
   }
 }

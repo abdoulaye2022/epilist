@@ -14,6 +14,7 @@ import 'package:epilist/blocs/suggestion/suggestion_bloc.dart';
 import 'package:epilist/config/app_config.dart';
 import 'package:epilist/config/app_navigator.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/theme/theme_mode_controller.dart';
 import 'package:epilist/config/token_refresh_interceptor.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
@@ -102,6 +103,9 @@ void main() async {
     await NotificationService.initializeBasic();
 
     final sharedPreferences = await SharedPreferences.getInstance();
+    // Avant runApp : sinon le premier ecran s'affiche en clair puis
+    // bascule en sombre sous les yeux de l'utilisateur.
+    await appThemeMode.load();
     await ConnectivityService().initialize();
 
     // ETAPE 4: Initialiser le nouveau systeme de cache
@@ -158,10 +162,7 @@ void main() async {
       authService: authService,
     );
 
-    final listItemService = ListItemService(
-      dio: dio,
-      authService: authService,
-    );
+    final listItemService = ListItemService(dio: dio, authService: authService);
 
     // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne.
     // TOUS les services rejouables doivent être injectés : un service
@@ -249,9 +250,7 @@ void main() async {
           RepositoryProvider<ShoppingListService>.value(
             value: shoppingListService,
           ),
-          RepositoryProvider<ListItemService>.value(
-            value: listItemService,
-          ),
+          RepositoryProvider<ListItemService>.value(value: listItemService),
           RepositoryProvider<OfflineSyncService>.value(
             value: OfflineSyncService(),
           ),
@@ -395,80 +394,98 @@ class MyApp extends StatelessWidget {
           currentLocale = localizationState.locale;
         }
 
-        return MaterialApp(
-          title: 'EpiList',
-          // Permet d'ouvrir un écran depuis un clic sur une notification,
-          // quand aucun BuildContext d'écran n'est disponible.
-          navigatorKey: appNavigatorKey,
-          debugShowCheckedModeBanner: false,
-          locale: currentLocale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('fr', ''), Locale('en', '')],
-          theme: AppTheme.light,
-          routes: {
-            '/register': (context) => _wrapWithConnectivity(const SignUpPage()),
-            '/login': (context) => _wrapWithConnectivity(const LoginScreen()),
-            '/home':
-                (context) => _wrapWithConnectivity(
-                  const MainShell(),
-                  showBanner: false,
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: appThemeMode,
+          builder:
+              (context, themeMode, _) => MaterialApp(
+                title: 'EpiList',
+                // Permet d'ouvrir un écran depuis un clic sur une notification,
+                // quand aucun BuildContext d'écran n'est disponible.
+                navigatorKey: appNavigatorKey,
+                debugShowCheckedModeBanner: false,
+                locale: currentLocale,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('fr', ''), Locale('en', '')],
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
+                themeMode: themeMode,
+                // Pose la palette des jetons de couleur : voir
+                // AppPaletteBinding, dans lib/theme/app_theme.dart.
+                builder: (context, child) => AppPaletteBinding(
+                  child: child ?? const SizedBox.shrink(),
                 ),
-            '/profil':
-                (context) => _wrapWithConnectivity(const ProfileScreen()),
-            '/welcome': (context) => const WelcomeScreen(),
-            '/email-verification': (context) {
-              final args =
-                  ModalRoute.of(context)!.settings.arguments
-                      as Map<String, dynamic>;
-              return _wrapWithConnectivity(
-                EmailVerificationScreen(
-                  email: args['email'],
-                  fromRegistration: args['fromRegistration'] ?? false,
-                ),
-              );
-            },
-            '/share': (context) {
-              final args =
-                  ModalRoute.of(context)!.settings.arguments
-                      as Map<String, dynamic>?;
-              final shareToken = args?['token'] as String?;
-              if (shareToken != null) {
-                return _wrapWithConnectivity(
-                  BlocProvider(
-                    create:
-                        (context) => SharedListBloc(
-                          sharedListService: context.read<SharedListService>(),
-                          localizationBloc: context.read<LocalizationBloc>(),
+                routes: {
+                  '/register':
+                      (context) => _wrapWithConnectivity(const SignUpPage()),
+                  '/login':
+                      (context) => _wrapWithConnectivity(const LoginScreen()),
+                  '/home':
+                      (context) => _wrapWithConnectivity(
+                        const MainShell(),
+                        showBanner: false,
+                      ),
+                  '/profil':
+                      (context) => _wrapWithConnectivity(const ProfileScreen()),
+                  '/welcome': (context) => const WelcomeScreen(),
+                  '/email-verification': (context) {
+                    final args =
+                        ModalRoute.of(context)!.settings.arguments
+                            as Map<String, dynamic>;
+                    return _wrapWithConnectivity(
+                      EmailVerificationScreen(
+                        email: args['email'],
+                        fromRegistration: args['fromRegistration'] ?? false,
+                      ),
+                    );
+                  },
+                  '/share': (context) {
+                    final args =
+                        ModalRoute.of(context)!.settings.arguments
+                            as Map<String, dynamic>?;
+                    final shareToken = args?['token'] as String?;
+                    if (shareToken != null) {
+                      return _wrapWithConnectivity(
+                        BlocProvider(
+                          create:
+                              (context) => SharedListBloc(
+                                sharedListService:
+                                    context.read<SharedListService>(),
+                                localizationBloc:
+                                    context.read<LocalizationBloc>(),
+                              ),
+                          child: ShareInvitationScreen(shareToken: shareToken),
                         ),
-                    child: ShareInvitationScreen(shareToken: shareToken),
-                  ),
-                );
-              }
-              return _wrapWithConnectivity(
-                const MainShell(),
-                showBanner: false,
-              );
-            },
-            '/budget': (context) => _wrapWithConnectivity(const BudgetScreen()),
-            '/list/details': (context) {
-              final args =
-                  ModalRoute.of(context)!.settings.arguments
-                      as Map<String, dynamic>?;
-              final listId = args?['list_id'] as String?;
+                      );
+                    }
+                    return _wrapWithConnectivity(
+                      const MainShell(),
+                      showBanner: false,
+                    );
+                  },
+                  '/budget':
+                      (context) => _wrapWithConnectivity(const BudgetScreen()),
+                  '/list/details': (context) {
+                    final args =
+                        ModalRoute.of(context)!.settings.arguments
+                            as Map<String, dynamic>?;
+                    final listId = args?['list_id'] as String?;
 
-              if (listId != null) {
-                return _wrapWithConnectivity(ListDetailsScreen(listId: listId));
-              }
-              return _wrapWithConnectivity(const MainShell());
-            },
-          },
-          navigatorObservers: [routeObserver],
-          home: const AuthWrapper(),
+                    if (listId != null) {
+                      return _wrapWithConnectivity(
+                        ListDetailsScreen(listId: listId),
+                      );
+                    }
+                    return _wrapWithConnectivity(const MainShell());
+                  },
+                },
+                navigatorObservers: [routeObserver],
+                home: const AuthWrapper(),
+              ),
         );
       },
     );
@@ -477,7 +494,8 @@ class MyApp extends StatelessWidget {
   Widget _wrapWithConnectivity(Widget child, {bool showBanner = true}) {
     return ConnectivityWrapper(
       showOfflineBanner: showBanner,
-      blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
+      blockActionsWhenOffline:
+          false, // 🔓 Permettre le fonctionnement hors ligne
       child: child,
     );
   }
@@ -638,7 +656,9 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
                 '🔔 Initialisation complète des notifications après connexion...',
               );
               await NotificationService.initializeAfterLogin();
-              debugPrint('✅ Notifications initialisées avec succès après connexion');
+              debugPrint(
+                '✅ Notifications initialisées avec succès après connexion',
+              );
             } catch (e) {
               debugPrint(
                 '⚠️ Erreur lors de l\'initialisation des notifications: $e',
@@ -669,9 +689,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
           return true;
         },
         builder: (context, state) {
-          if (_isInitializing ||
-              state is AuthInitial ||
-              state is AuthLoading) {
+          if (_isInitializing || state is AuthInitial || state is AuthLoading) {
             String message = l10n.initialization;
             if (state is AuthLoading) {
               message = l10n.checkingAuthentication;
@@ -699,7 +717,8 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
 
             return ConnectivityWrapper(
               showOfflineBanner: false,
-              blockActionsWhenOffline: false, // 🔓 Permettre le fonctionnement hors ligne
+              blockActionsWhenOffline:
+                  false, // 🔓 Permettre le fonctionnement hors ligne
               child: const MainShell(),
             );
           }
@@ -727,7 +746,7 @@ class LoadingScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -751,20 +770,17 @@ class LoadingScreen extends StatelessWidget {
                         colors: [AppColors.primary, AppColors.primary],
                       ),
                     ),
-                    child: const Icon(
+                    child:  Icon(
                       Icons.shopping_cart_rounded,
                       size: 50,
-                      color: Colors.white,
+                      color: AppColors.onPrimary,
                     ),
                   );
                 },
               ),
             ),
             const SizedBox(height: 32),
-            const CircularProgressIndicator(
-              color: Colors.green,
-              strokeWidth: 3,
-            ),
+            CircularProgressIndicator(color: AppColors.success, strokeWidth: 3),
             const SizedBox(height: 24),
             Text(
               l10n.appTitle,
@@ -841,7 +857,7 @@ class _LoadingDotsState extends State<LoadingDots>
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: opacity),
+                color: AppColors.success.withValues(alpha: opacity),
                 shape: BoxShape.circle,
               ),
             );
@@ -860,6 +876,8 @@ class ErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       home: Scaffold(
         body: Center(
           child: Padding(
@@ -867,7 +885,7 @@ class ErrorApp extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                Icon(Icons.error_outline, size: 64, color: AppColors.error),
                 const SizedBox(height: 16),
                 const Text(
                   'Erreur d\'initialisation',
@@ -875,9 +893,9 @@ class ErrorApp extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Impossible de démarrer l\'application',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: AppColors.textSecondary),
                   textAlign: TextAlign.center,
                 ),
                 if (error != null && kDebugMode) ...[
@@ -885,15 +903,17 @@ class ErrorApp extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
+                      color: AppColors.errorTint,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: AppColors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       'Détails: $error',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.red,
+                        color: AppColors.errorInk,
                         fontFamily: 'monospace',
                       ),
                       textAlign: TextAlign.center,

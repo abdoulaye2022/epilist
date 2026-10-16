@@ -33,15 +33,19 @@ class _IntelligenceSettingsScreenState
   }
 
   Future<void> _load() async {
-    final predictions =
-        await IntelligenceSettings.get(IntelligenceSettings.keyPredictions);
+    final predictions = await IntelligenceSettings.get(
+      IntelligenceSettings.keyPredictions,
+    );
     final estimates = await IntelligenceSettings.get(
-        IntelligenceSettings.keyInventoryEstimates);
+      IntelligenceSettings.keyInventoryEstimates,
+    );
     final autoAdd = await IntelligenceSettings.get(
-        IntelligenceSettings.keyAutoAddOut,
-        defaultValue: false);
-    final forecast =
-        await IntelligenceSettings.get(IntelligenceSettings.keyBudgetForecast);
+      IntelligenceSettings.keyAutoAddOut,
+      defaultValue: false,
+    );
+    final forecast = await IntelligenceSettings.get(
+      IntelligenceSettings.keyBudgetForecast,
+    );
     if (!mounted) return;
     setState(() {
       _predictions = predictions;
@@ -80,11 +84,14 @@ class _IntelligenceSettingsScreenState
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: SwitchListTile(
-        title: Text(title,
-            style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle,
-            style:
-                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
         value: value,
         onChanged: (v) {
           setState(() => apply(v));
@@ -101,56 +108,65 @@ class _IntelligenceSettingsScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(l10n.intelligenceSettings)),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              children: [
-                _tile(
-                  title: l10n.settingPredictions,
-                  subtitle: l10n.settingPredictionsHint,
-                  value: _predictions,
-                  key: IntelligenceSettings.keyPredictions,
-                  apply: (v) => _predictions = v,
-                ),
-                _tile(
-                  title: l10n.settingInventoryEstimates,
-                  subtitle: l10n.settingInventoryEstimatesHint,
-                  value: _inventoryEstimates,
-                  key: IntelligenceSettings.keyInventoryEstimates,
-                  apply: (v) => _inventoryEstimates = v,
-                ),
-                _tile(
-                  title: l10n.settingAutoAddOut,
-                  subtitle: l10n.settingAutoAddOutHint,
-                  value: _autoAddOut,
-                  key: IntelligenceSettings.keyAutoAddOut,
-                  apply: (v) => _autoAddOut = v,
-                ),
-                _tile(
-                  title: l10n.settingBudgetForecast,
-                  subtitle: l10n.settingBudgetForecastHint,
-                  value: _budgetForecast,
-                  key: IntelligenceSettings.keyBudgetForecast,
-                  apply: (v) => _budgetForecast = v,
-                ),
-                // Consentement communautaire (§33) — réglage SERVEUR
-                if (_communityShare != null)
-                  Card(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: SwitchListTile(
-                      title: Text(l10n.communityShareTitle,
-                          style: const TextStyle(
-                              fontSize: 14.5, fontWeight: FontWeight.w600)),
-                      subtitle: Text(l10n.communityShareHint,
-                          style: const TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
-                      value: _communityShare!,
-                      onChanged: _setCommunityShare,
-                    ),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                children: [
+                  _tile(
+                    title: l10n.settingPredictions,
+                    subtitle: l10n.settingPredictionsHint,
+                    value: _predictions,
+                    key: IntelligenceSettings.keyPredictions,
+                    apply: (v) => _predictions = v,
                   ),
-              ],
-            ),
+                  _tile(
+                    title: l10n.settingInventoryEstimates,
+                    subtitle: l10n.settingInventoryEstimatesHint,
+                    value: _inventoryEstimates,
+                    key: IntelligenceSettings.keyInventoryEstimates,
+                    apply: (v) => _inventoryEstimates = v,
+                  ),
+                  _tile(
+                    title: l10n.settingAutoAddOut,
+                    subtitle: l10n.settingAutoAddOutHint,
+                    value: _autoAddOut,
+                    key: IntelligenceSettings.keyAutoAddOut,
+                    apply: (v) => _autoAddOut = v,
+                  ),
+                  _tile(
+                    title: l10n.settingBudgetForecast,
+                    subtitle: l10n.settingBudgetForecastHint,
+                    value: _budgetForecast,
+                    key: IntelligenceSettings.keyBudgetForecast,
+                    apply: (v) => _budgetForecast = v,
+                  ),
+                  // Consentement communautaire (§33) — réglage SERVEUR
+                  if (_communityShare != null)
+                    Card(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: SwitchListTile(
+                        title: Text(
+                          l10n.communityShareTitle,
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          l10n.communityShareHint,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        value: _communityShare!,
+                        onChanged: _setCommunityShare,
+                      ),
+                    ),
+                ],
+              ),
     );
   }
 }

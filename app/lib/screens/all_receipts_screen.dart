@@ -14,6 +14,8 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/list_picker.dart';
 import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:epilist/widgets/common/app_empty_state.dart';
+import 'package:epilist/widgets/common/app_card.dart';
+import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/widgets/receipts/receipt_card.dart';
@@ -74,9 +76,11 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return all;
     return all
-        .where((r) =>
-            r.storeName.toLowerCase().contains(q) ||
-            (r.listName ?? '').toLowerCase().contains(q))
+        .where(
+          (r) =>
+              r.storeName.toLowerCase().contains(q) ||
+              (r.listName ?? '').toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -125,10 +129,7 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
         icon: const Icon(Icons.document_scanner_outlined),
         label: Text(l10n.scanReceipt),
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _buildBody(l10n),
-      ),
+      body: RefreshIndicator(onRefresh: _load, child: _buildBody(l10n)),
     );
   }
 
@@ -159,7 +160,11 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
     final shown = _shown;
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md, AppSpacing.md, AppSpacing.md, 96),
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        96,
+      ),
       children: [
         _buildSummary(l10n, all),
         const SizedBox(height: AppSpacing.sm + 4),
@@ -174,11 +179,15 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
             child: Column(
               children: [
-                Text(l10n.noResultsFound,
-                    style: Theme.of(context).textTheme.titleSmall),
+                Text(
+                  l10n.noResultsFound,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(l10n.tryOtherKeywords,
-                    style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  l10n.tryOtherKeywords,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           )
@@ -199,15 +208,10 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
 
   /// En-tête : nombre de factures, total, magasins distincts.
   Widget _buildSummary(AppLocalizations l10n, List<Receipt> all) {
-    final total = _overview?.formattedTotal ??
+    final total =
+        _overview?.formattedTotal ??
         all.fold<double>(0, (sum, r) => sum + r.totalAmount).toStringAsFixed(2);
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
-      ),
+    return AppCard(
       child: Row(
         children: [
           Container(
@@ -217,8 +221,11 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
               color: AppColors.primaryLight,
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: const Icon(Icons.receipt_long_rounded,
-                size: 22, color: AppColors.primaryDark),
+            child: Icon(
+              Icons.receipt_long_rounded,
+              size: 22,
+              color: AppColors.primaryDark,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -243,8 +250,7 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
 
   /// Regroupement par mois : une facture se cherche par « quand », pas
   /// par rang dans une liste sans fin.
-  List<Widget> _groupedByMonth(
-      List<Receipt> receipts, AppLocalizations l10n) {
+  List<Widget> _groupedByMonth(List<Receipt> receipts, AppLocalizations l10n) {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final monthFormat = DateFormat.yMMMM(locale);
     final widgets = <Widget>[];
@@ -254,23 +260,23 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
       final label = monthFormat.format(receipt.purchaseDate);
       if (label != currentMonth) {
         currentMonth = label;
-        widgets.add(Padding(
-          padding: EdgeInsets.only(
+        widgets.add(
+          AppSectionHeader(
+            title: label,
+            padding: EdgeInsets.only(
               top: widgets.isEmpty ? 0 : AppSpacing.sm,
-              bottom: AppSpacing.sm),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+              bottom: AppSpacing.sm,
+            ),
           ),
-        ));
+        );
       }
-      widgets.add(ReceiptCard(
-        receipt: receipt,
-        canEdit: false,
-        onOpenList: () => _openList(receipt),
-      ));
+      widgets.add(
+        ReceiptCard(
+          receipt: receipt,
+          canEdit: false,
+          onOpenList: () => _openList(receipt),
+        ),
+      );
     }
     return widgets;
   }

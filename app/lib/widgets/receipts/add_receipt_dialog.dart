@@ -56,7 +56,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+          color: AppColors.surface,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -105,14 +105,14 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.receipt_long, size: 40, color: AppColors.primary),
+      child: Icon(Icons.receipt_long, size: 40, color: AppColors.primaryDark),
     );
   }
 
   Widget _buildTitle(AppLocalizations l10n) {
     return Text(
       l10n.addReceipt,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -124,7 +124,11 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     return Text(
       l10n.addReceiptDescription,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.4),
+      style: TextStyle(
+        fontSize: 16,
+        color: AppColors.textSecondary,
+        height: 1.4,
+      ),
     );
   }
 
@@ -239,7 +243,10 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
                   const SizedBox(height: 2),
                   Text(
                     _formatDate(_selectedDate),
-                    style: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -288,20 +295,23 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.file(_photo!,
-                width: 64, height: 64, fit: BoxFit.cover),
+            child: Image.file(
+              _photo!,
+              width: 64,
+              height: 64,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               l10n.receiptPhotoAttached,
-              style: const TextStyle(
-                  fontSize: 13.5, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
             ),
           ),
           IconButton(
             tooltip: l10n.removePhoto,
-            icon: const Icon(Icons.delete_outline, color: AppColors.error),
+            icon: Icon(Icons.delete_outline, color: AppColors.error),
             onPressed: _isLoading ? null : () => setState(() => _photo = null),
           ),
         ],
@@ -316,9 +326,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         padding: const EdgeInsets.symmetric(vertical: 14),
         foregroundColor: AppColors.textSecondary,
         side: BorderSide(color: AppColors.border),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -327,29 +335,30 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: Text(l10n.takePhoto),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickPhoto(ImageSource.camera);
-              },
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_outlined),
+                  title: Text(l10n.takePhoto),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickPhoto(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library_outlined),
+                  title: Text(l10n.chooseFromGallery),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickPhoto(ImageSource.gallery);
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: Text(l10n.chooseFromGallery),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickPhoto(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -398,8 +407,8 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
             onPressed: _isLoading ? null : _submitForm,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.green[300],
+              foregroundColor: AppColors.onPrimary,
+              disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -408,12 +417,12 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
             ),
             child:
                 _isLoading
-                    ? const SizedBox(
+                    ?  SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     )
                     : Text(

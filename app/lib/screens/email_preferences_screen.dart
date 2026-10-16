@@ -8,6 +8,7 @@ import '../models/email_preference.dart';
 import '../services/email_preference_service.dart';
 import '../utils/smart_snackbar_manager.dart';
 import '../widgets/common/app_dialog.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class EmailPreferencesScreen extends StatefulWidget {
   const EmailPreferencesScreen({super.key});
@@ -47,7 +48,9 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
 
     setState(() => _isSaving = true);
 
-    final success = await EmailPreferenceService.updatePreferences(_preferences!);
+    final success = await EmailPreferenceService.updatePreferences(
+      _preferences!,
+    );
 
     setState(() => _isSaving = false);
 
@@ -71,37 +74,38 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppDialogHeader(
-                icon: Icons.restart_alt_rounded,
-                title: l10n.epResetDefaults,
+      builder:
+          (dialogContext) => Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppDialogHeader(
+                    icon: Icons.restart_alt_rounded,
+                    title: l10n.epResetDefaults,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l10n.epResetConfirm,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  AppDialogActions(
+                    cancelLabel: l10n.cancel,
+                    submitLabel: l10n.epResetDefaults,
+                    onCancel: () => Navigator.pop(dialogContext, false),
+                    onSubmit: () => Navigator.pop(dialogContext, true),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                l10n.epResetConfirm,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppDialogActions(
-                cancelLabel: l10n.cancel,
-                submitLabel: l10n.epResetDefaults,
-                onCancel: () => Navigator.pop(dialogContext, false),
-                onSubmit: () => Navigator.pop(dialogContext, true),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
 
     if (confirmed == true) {
@@ -138,140 +142,155 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
             ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _preferences == null
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _preferences == null
               ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.cloud_off_rounded,
-                            size: 56, color: Colors.grey[400]),
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          l10n.emailPreferencesUnavailableOffline,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                          textAlign: TextAlign.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.cloud_off_rounded,
+                        size: 56,
+                        color: AppColors.textDisabled,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        l10n.emailPreferencesUnavailableOffline,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
                         ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          l10n.visitPageOnlineToCache,
-                          style: const TextStyle(
-                            fontSize: 13.5,
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        l10n.visitPageOnlineToCache,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          color: AppColors.textSecondary,
                         ),
-                        const SizedBox(height: AppSpacing.md),
-                        OutlinedButton.icon(
-                          onPressed: _loadPreferences,
-                          icon: const Icon(Icons.refresh, size: 18),
-                          label: Text(l10n.tryAgain),
-                        ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      OutlinedButton.icon(
+                        onPressed: _loadPreferences,
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: Text(l10n.tryAgain),
+                      ),
+                    ],
                   ),
-                )
+                ),
+              )
               : Stack(
-                  children: [
-                    ListView(
-                      padding: const EdgeInsets.all(16),
-                      children: [
-                        // NOTIFICATIONS PUSH — le canal principal.
-                        // Chaque interrupteur est indépendant des emails.
-                        _buildSection(
-                          title: AppLocalizations.of(context)!.npPushTitle,
-                          subtitle: AppLocalizations.of(context)!.npPushDesc,
-                          icon: Icons.notifications_active_outlined,
-                          color: Colors.green,
-                          children: [
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.npListsTitle,
-                              subtitle: AppLocalizations.of(context)!.npListsDesc,
-                              value: _preferences!.pushListActivity,
-                              onChanged: (val) => setState(() {
-                                _preferences =
-                                    _preferences!.copyWith(pushListActivity: val);
-                              }),
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.npBudgetTitle,
-                              subtitle: AppLocalizations.of(context)!.npBudgetDesc,
-                              value: _preferences!.pushBudget,
-                              onChanged: (val) => setState(() {
-                                _preferences =
-                                    _preferences!.copyWith(pushBudget: val);
-                              }),
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.npPriceTitle,
-                              subtitle: AppLocalizations.of(context)!.npPriceDesc,
-                              value: _preferences!.pushPriceAlert,
-                              onChanged: (val) => setState(() {
-                                _preferences =
-                                    _preferences!.copyWith(pushPriceAlert: val);
-                              }),
-                            ),
-                            _buildSwitchTile(
-                              title: AppLocalizations.of(context)!.npRemindersTitle,
-                              subtitle: AppLocalizations.of(context)!.npRemindersDesc,
-                              value: _preferences!.pushReminders,
-                              onChanged: (val) => setState(() {
-                                _preferences =
-                                    _preferences!.copyWith(pushReminders: val);
-                              }),
-                            ),
-                          ],
-                        ),
+                children: [
+                  ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      // NOTIFICATIONS PUSH — le canal principal.
+                      // Chaque interrupteur est indépendant des emails.
+                      _buildSection(
+                        title: AppLocalizations.of(context)!.npPushTitle,
+                        subtitle: AppLocalizations.of(context)!.npPushDesc,
+                        icon: Icons.notifications_active_outlined,
+                        color: AppColors.success,
+                        children: [
+                          _buildSwitchTile(
+                            title: AppLocalizations.of(context)!.npListsTitle,
+                            subtitle: AppLocalizations.of(context)!.npListsDesc,
+                            value: _preferences!.pushListActivity,
+                            onChanged:
+                                (val) => setState(() {
+                                  _preferences = _preferences!.copyWith(
+                                    pushListActivity: val,
+                                  );
+                                }),
+                          ),
+                          _buildSwitchTile(
+                            title: AppLocalizations.of(context)!.npBudgetTitle,
+                            subtitle:
+                                AppLocalizations.of(context)!.npBudgetDesc,
+                            value: _preferences!.pushBudget,
+                            onChanged:
+                                (val) => setState(() {
+                                  _preferences = _preferences!.copyWith(
+                                    pushBudget: val,
+                                  );
+                                }),
+                          ),
+                          _buildSwitchTile(
+                            title: AppLocalizations.of(context)!.npPriceTitle,
+                            subtitle: AppLocalizations.of(context)!.npPriceDesc,
+                            value: _preferences!.pushPriceAlert,
+                            onChanged:
+                                (val) => setState(() {
+                                  _preferences = _preferences!.copyWith(
+                                    pushPriceAlert: val,
+                                  );
+                                }),
+                          ),
+                          _buildSwitchTile(
+                            title:
+                                AppLocalizations.of(context)!.npRemindersTitle,
+                            subtitle:
+                                AppLocalizations.of(context)!.npRemindersDesc,
+                            value: _preferences!.pushReminders,
+                            onChanged:
+                                (val) => setState(() {
+                                  _preferences = _preferences!.copyWith(
+                                    pushReminders: val,
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
 
-                        // EMAILS : rien à régler ici. Nous n'écrivons que
-                        // lorsqu'un email est indispensable.
-                        _buildSection(
-                          title: AppLocalizations.of(context)!.npEmailsTitle,
-                          subtitle: AppLocalizations.of(context)!.npEmailsDesc,
-                          icon: Icons.mark_email_read_outlined,
-                          color: Colors.blueGrey,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                              child: Text(
-                                AppLocalizations.of(context)!.npEmailsBody,
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    color: AppColors.textSecondary,
-                                    height: 1.45),
+                      // EMAILS : rien à régler ici. Nous n'écrivons que
+                      // lorsqu'un email est indispensable.
+                      _buildSection(
+                        title: AppLocalizations.of(context)!.npEmailsTitle,
+                        subtitle: AppLocalizations.of(context)!.npEmailsDesc,
+                        icon: Icons.mark_email_read_outlined,
+                        color: AppColors.slate,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                            child: Text(
+                              AppLocalizations.of(context)!.npEmailsBody,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                                height: 1.45,
                               ),
                             ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 100),
-                      ],
-                    ),
-                    if (_isSaving)
-                      Container(
-                        color: Colors.black26,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                          ),
+                        ],
                       ),
-                  ],
-                ),
-      floatingActionButton: !_isLoading && _preferences != null
-          ? FloatingActionButton.extended(
-              onPressed: _isSaving ? null : _savePreferences,
-              icon: const Icon(Icons.save_outlined),
-              label: Text(l10n.save),
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-            )
-          : null,
+
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                  if (_isSaving)
+                    Container(
+                      color: AppColors.overlay,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                ],
+              ),
+      floatingActionButton:
+          !_isLoading && _preferences != null
+              ? FloatingActionButton.extended(
+                onPressed: _isSaving ? null : _savePreferences,
+                icon: const Icon(Icons.save_outlined),
+                label: Text(l10n.save),
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.onPrimary,
+              )
+              : null,
     );
   }
 
@@ -283,12 +302,8 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     required List<Widget> children,
   }) {
     // Carte plate bordée, en-tête compact : le gabarit des autres écrans.
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
+    return AppCard(
+      radius: 14,
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,7 +326,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -319,7 +334,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                     ),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12.5,
                         color: AppColors.textSecondary,
                       ),
@@ -345,7 +360,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     return SwitchListTile(
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
@@ -353,11 +368,11 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       value: value,
       onChanged: onChanged,
-      activeThumbColor: Colors.white,
+      activeThumbColor: AppColors.onPrimary,
       activeTrackColor: AppColors.primary,
       contentPadding: EdgeInsets.zero,
       dense: true,

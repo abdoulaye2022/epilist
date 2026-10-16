@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:epilist/theme/app_theme.dart';
 
 /// Widget d'animation de fade-in pour les transitions douces
 class FadeInAnimation extends StatefulWidget {
@@ -27,15 +28,9 @@ class _FadeInAnimationState extends State<FadeInAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: widget.curve,
-    );
+    _animation = CurvedAnimation(parent: _controller, curve: widget.curve);
 
     // Démarrer l'animation après le délai
     Future.delayed(widget.delay, () {
@@ -53,10 +48,7 @@ class _FadeInAnimationState extends State<FadeInAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _animation,
-      child: widget.child,
-    );
+    return FadeTransition(opacity: _animation, child: widget.child);
   }
 }
 
@@ -90,23 +82,14 @@ class _SlideInAnimationState extends State<SlideInAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, widget.offsetY / 100),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: widget.curve,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
 
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: widget.curve,
-    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: widget.curve);
 
     Future.delayed(widget.delay, () {
       if (mounted) {
@@ -125,10 +108,7 @@ class _SlideInAnimationState extends State<SlideInAnimation>
   Widget build(BuildContext context) {
     return SlideTransition(
       position: _slideAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: widget.child,
-      ),
+      child: FadeTransition(opacity: _fadeAnimation, child: widget.child),
     );
   }
 }
@@ -163,18 +143,12 @@ class _ScaleInAnimationState extends State<ScaleInAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
     _scaleAnimation = Tween<double>(
       begin: widget.startScale,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: widget.curve,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
 
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
@@ -198,10 +172,7 @@ class _ScaleInAnimationState extends State<ScaleInAnimation>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _scaleAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: widget.child,
-      ),
+      child: FadeTransition(opacity: _fadeAnimation, child: widget.child),
     );
   }
 }
@@ -224,25 +195,18 @@ class StaggeredListAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return direction == Axis.vertical
-        ? Column(
-            children: _buildAnimatedChildren(),
-          )
-        : Row(
-            children: _buildAnimatedChildren(),
-          );
+        ? Column(children: _buildAnimatedChildren())
+        : Row(children: _buildAnimatedChildren());
   }
 
   List<Widget> _buildAnimatedChildren() {
-    return List.generate(
-      children.length,
-      (index) {
-        return SlideInAnimation(
-          delay: delayBetweenItems * index,
-          duration: itemDuration,
-          child: children[index],
-        );
-      },
-    );
+    return List.generate(children.length, (index) {
+      return SlideInAnimation(
+        delay: delayBetweenItems * index,
+        duration: itemDuration,
+        child: children[index],
+      );
+    });
   }
 }
 
@@ -272,10 +236,8 @@ class _ShimmerAnimationState extends State<ShimmerAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    )..repeat();
+    _controller = AnimationController(duration: widget.duration, vsync: this)
+      ..repeat();
   }
 
   @override
@@ -299,11 +261,12 @@ class _ShimmerAnimationState extends State<ShimmerAnimation>
                 widget.highlightColor,
                 widget.baseColor,
               ],
-              stops: [
-                _controller.value - 0.3,
-                _controller.value,
-                _controller.value + 0.3,
-              ].map((e) => e.clamp(0.0, 1.0)).toList(),
+              stops:
+                  [
+                    _controller.value - 0.3,
+                    _controller.value,
+                    _controller.value + 0.3,
+                  ].map((e) => e.clamp(0.0, 1.0)).toList(),
             ).createShader(bounds);
           },
           child: widget.child,
@@ -333,7 +296,7 @@ class ShimmerCard extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),

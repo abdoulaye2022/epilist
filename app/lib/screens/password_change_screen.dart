@@ -5,6 +5,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epilist/widgets/common/app_card.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   final String? initialEmail;
@@ -43,7 +44,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.changePassword),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 1,
         foregroundColor: AppColors.textPrimary,
       ),
@@ -105,20 +106,10 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // En-tête avec icône
-              Container(
+              AppCard(
+                radius: 20,
+                bordered: false,
                 padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                      spreadRadius: 1,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
                 child: Column(
                   children: [
                     Container(
@@ -129,11 +120,11 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.orange[400]!, AppColors.warning],
+                          colors: [AppColors.warning, AppColors.warning],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.orange.withValues(alpha: 0.3),
+                            color: AppColors.shadow,
                             spreadRadius: 2,
                             blurRadius: 8,
                             offset: Offset(0, 4),
@@ -143,7 +134,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       child: Icon(
                         Icons.lock_reset,
                         size: 50,
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                       ),
                     ),
                     SizedBox(height: 20),
@@ -186,7 +177,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.accentLight,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue[200]!),
+                    border: Border.all(color: AppColors.infoBorder),
                   ),
                   child: Row(
                     children: [
@@ -218,11 +209,11 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: AppColors.shadow,
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: Offset(0, 2),
@@ -349,7 +340,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     _hasRequestedCode ? l10n.changePassword : l10n.sendCode,
                     _hasRequestedCode ? Icons.lock_reset : Icons.send,
                     _isLoading ? null : _handleAction,
-                    _hasRequestedCode ? Colors.green : Colors.orange,
+                    _hasRequestedCode ? AppColors.success : AppColors.warning,
                   ),
                   if (_hasRequestedCode) ...[
                     SizedBox(height: 12),
@@ -357,7 +348,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       l10n.resendCode,
                       Icons.refresh,
                       _isLoading ? null : _resendCode,
-                      Colors.blue,
+                      AppColors.info,
                     ),
                   ],
                 ],
@@ -372,10 +363,10 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.accentLight,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue[200]!),
+                  border: Border.all(color: AppColors.infoBorder),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: AppColors.shadow,
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: Offset(0, 2),
@@ -462,7 +453,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
-                    color: Colors.white,
+                    color: AppColors.onPrimary,
                     strokeWidth: 2,
                   ),
                 )
@@ -470,7 +461,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         label: Text(text),
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onPrimary,
           disabledBackgroundColor: AppColors.border,
           padding: EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

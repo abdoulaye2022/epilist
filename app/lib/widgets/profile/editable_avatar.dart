@@ -42,13 +42,13 @@ class _EditableAvatarState extends State<EditableAvatar> {
           if (_busy)
             Positioned.fill(
               child: CircleAvatar(
-                backgroundColor: Colors.black38,
+                backgroundColor: AppColors.overlay,
                 child: const SizedBox(
                   width: 22,
                   height: 22,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: AppColors.onOverlay,
                   ),
                 ),
               ),
@@ -67,7 +67,7 @@ class _EditableAvatarState extends State<EditableAvatar> {
                 child: const Icon(
                   Icons.photo_camera,
                   size: 13,
-                  color: Colors.white,
+                  color: AppColors.onOverlay,
                 ),
               ),
             ),
@@ -78,47 +78,46 @@ class _EditableAvatarState extends State<EditableAvatar> {
 
   void _showOptions(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final hasAvatar =
-        (_localUrl ?? widget.user.avatarUrl)?.isNotEmpty == true;
+    final hasAvatar = (_localUrl ?? widget.user.avatarUrl)?.isNotEmpty == true;
 
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: Text(l10n.takePhoto),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickAndUpload(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: Text(l10n.chooseFromGallery),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _pickAndUpload(ImageSource.gallery);
-              },
-            ),
-            if (hasAvatar)
-              ListTile(
-                leading: const Icon(Icons.delete_outline,
-                    color: AppColors.error),
-                title: Text(
-                  l10n.removePhoto,
-                  style: const TextStyle(color: AppColors.error),
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_outlined),
+                  title: Text(l10n.takePhoto),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickAndUpload(ImageSource.camera);
+                  },
                 ),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _removeAvatar();
-                },
-              ),
-          ],
-        ),
-      ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library_outlined),
+                  title: Text(l10n.chooseFromGallery),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _pickAndUpload(ImageSource.gallery);
+                  },
+                ),
+                if (hasAvatar)
+                  ListTile(
+                    leading: Icon(Icons.delete_outline, color: AppColors.error),
+                    title: Text(
+                      l10n.removePhoto,
+                      style: TextStyle(color: AppColors.error),
+                    ),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _removeAvatar();
+                    },
+                  ),
+              ],
+            ),
+          ),
     );
   }
 
@@ -134,9 +133,9 @@ class _EditableAvatarState extends State<EditableAvatar> {
       if (picked == null || !mounted) return;
 
       setState(() => _busy = true);
-      final url = await context
-          .read<ImageUploadService>()
-          .uploadAvatar(File(picked.path));
+      final url = await context.read<ImageUploadService>().uploadAvatar(
+        File(picked.path),
+      );
       if (!mounted) return;
       setState(() {
         _localUrl = url;

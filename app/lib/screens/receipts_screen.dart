@@ -129,7 +129,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -223,7 +223,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           children: [
             Text(
               l10n.receipts,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
@@ -231,7 +231,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             ),
             Text(
               widget.shoppingList.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12.5,
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.normal,
@@ -239,20 +239,23 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             ),
           ],
         ),
-        backgroundColor: Colors.white, // ✅ Fond blanc comme BudgetScreen
-        foregroundColor: Colors.black, // ✅ Texte noir comme BudgetScreen
+        backgroundColor: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
+        foregroundColor:
+            AppColors.textPrimary, // ✅ Texte noir comme BudgetScreen
         elevation: 0, // ✅ Pas d'ombre comme BudgetScreen
-        iconTheme: const IconThemeData(color: Colors.black), // ✅ Icônes noires
+        iconTheme: IconThemeData(
+          color: AppColors.textPrimary,
+        ), // ✅ Icônes noires
         // ✅ AJOUT: Menu d'actions comme dans BudgetScreen
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(
+            icon: Icon(
               Icons.more_vert,
-              color: Colors.black, // ✅ Icône noire
+              color: AppColors.textPrimary, // ✅ Icône noire
             ),
             tooltip: l10n.moreOptions,
             onSelected: (value) => _handleMenuAction(value, context),
-            color: Colors.white,
+            color: AppColors.surface,
             elevation: 8,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -311,9 +314,14 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
           indicatorWeight: 2.5,
-          labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-          unselectedLabelStyle:
-              const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          labelStyle: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           onTap: _onTabChanged,
           tabs: [
             Tab(text: l10n.allReceipts),
@@ -375,32 +383,32 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       floatingActionButton:
           widget.shoppingList.canEdit
               ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Scanner un reçu (OCR) : même flux que l'accueil.
-                    FloatingActionButton(
-                      heroTag: 'receipts_scan_fab',
-                      onPressed: () {
-                        startReceiptScan(
-                          context,
-                          listId: widget.shoppingList.id,
-                        ).then((saved) {
-                          if (saved && mounted) _loadDataForCurrentTab();
-                        });
-                      },
-                      backgroundColor: AppColors.primaryLight,
-                      foregroundColor: AppColors.primaryDark,
-                      child: const Icon(Icons.receipt_long_rounded),
-                    ),
-                    const SizedBox(height: AppSpacing.sm + 4),
-                    FloatingActionButton(
-                      heroTag: 'receipts_add_fab',
-                      onPressed: _showAddReceiptDialog,
-                      backgroundColor: AppColors.primary,
-                      child: const Icon(Icons.add, color: Colors.white),
-                    ),
-                  ],
-                )
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Scanner un reçu (OCR) : même flux que l'accueil.
+                  FloatingActionButton(
+                    heroTag: 'receipts_scan_fab',
+                    onPressed: () {
+                      startReceiptScan(
+                        context,
+                        listId: widget.shoppingList.id,
+                      ).then((saved) {
+                        if (saved && mounted) _loadDataForCurrentTab();
+                      });
+                    },
+                    backgroundColor: AppColors.primaryLight,
+                    foregroundColor: AppColors.primaryDark,
+                    child: const Icon(Icons.receipt_long_rounded),
+                  ),
+                  const SizedBox(height: AppSpacing.sm + 4),
+                  FloatingActionButton(
+                    heroTag: 'receipts_add_fab',
+                    onPressed: _showAddReceiptDialog,
+                    backgroundColor: AppColors.primary,
+                    child:  Icon(Icons.add, color: AppColors.onPrimary),
+                  ),
+                ],
+              )
               : null,
     );
   }
@@ -522,7 +530,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             minHeight: MediaQuery.of(context).size.height * 0.5,
           ),
           child: Card(
-            color: Colors.white, // ✅ Fond blanc comme BudgetScreen
+            color: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -542,13 +550,13 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     child: Icon(
                       Icons.receipt_long,
                       size: 48,
-                      color: Colors.green[300],
+                      color: AppColors.successBorder,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     l10n.noReceipts,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -559,7 +567,10 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   Flexible(
                     child: Text(
                       l10n.addFirstReceipt,
-                      style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
                       maxLines: 3,
@@ -573,7 +584,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                       label: Text(l10n.addReceipt),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.onPrimary,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,
@@ -601,7 +612,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             minHeight: MediaQuery.of(context).size.height * 0.4,
           ),
           child: Card(
-            color: Colors.white, // ✅ Fond blanc comme BudgetScreen
+            color: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -612,7 +623,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                  Icon(Icons.error_outline, size: 64, color: AppColors.error),
                   const SizedBox(height: 16),
                   Text(
                     l10n.error,
@@ -627,7 +638,10 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                   Flexible(
                     child: Text(
                       message,
-                      style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.visible,
                       maxLines: 4,
@@ -643,7 +657,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     label: Text(l10n.retry),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.accent,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.onPrimary,
                     ),
                   ),
                 ],
@@ -735,7 +749,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            backgroundColor: Colors.white, // ✅ Fond blanc pour cohérence
+            backgroundColor: AppColors.surface, // ✅ Fond blanc pour cohérence
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -764,7 +778,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onPrimary,
                 ),
                 child: Text(l10n.delete),
               ),

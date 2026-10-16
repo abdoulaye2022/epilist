@@ -99,9 +99,9 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.red[50],
+          color: AppColors.errorTint,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.red[200]!),
+          border: Border.all(color: AppColors.errorBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
               l10n.attention,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: AppColors.error,
+                color: AppColors.errorInk,
                 fontSize: 16,
               ),
             ),
@@ -130,7 +130,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       Text(
         l10n.whatWillBeDeleted,
-        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        ),
       ),
       const SizedBox(height: 8),
 
@@ -143,7 +146,10 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       Text(
         l10n.whatWillBePreserved,
-        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: AppColors.primaryDark,
+        ),
       ),
       const SizedBox(height: 8),
 
@@ -183,13 +189,13 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.orange[50],
+          color: AppColors.warningTint,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.orange[200]!),
+          border: Border.all(color: AppColors.warningBorder),
         ),
         child: Column(
           children: [
-            Icon(Icons.mail_outline, size: 48, color: AppColors.warning),
+            Icon(Icons.mail_outline, size: 48, color: AppColors.warningInk),
             const SizedBox(height: 12),
             Text(
               l10n.verificationCodeSent,
@@ -235,11 +241,11 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         decoration: BoxDecoration(
           color: AppColors.accentLight,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue[200]!),
+          border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(
           children: [
-            Icon(Icons.info_outline, color: AppColors.accent),
+            Icon(Icons.info_outline, color: AppColors.infoInk),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -272,7 +278,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           onPressed: _confirmDeletion && !_isLoading ? _requestDeletion : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.error,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.onPrimary,
           ),
           child: Text(l10n.requestDeletion),
         ),
@@ -282,7 +288,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           onPressed: !_isLoading ? _confirmDeletionWithCode : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.error,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.onPrimary,
           ),
           child: Text(l10n.confirmDeletionWithCode),
         ),

@@ -3,12 +3,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
-enum ListFilter {
-  all,
-  active,
-  completed,
-  shared,
-}
+enum ListFilter { all, active, completed, shared }
 
 class ListFilterChips extends StatelessWidget {
   final ListFilter selectedFilter;
@@ -100,13 +95,14 @@ class ListFilterChips extends StatelessWidget {
               Icon(
                 icon,
                 size: 14,
-                color: isSelected ? Colors.white : primaryColor,
+                color: isSelected ? AppColors.onPrimary : primaryColor,
               ),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  color:
+                      isSelected ? AppColors.onPrimary : AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   fontSize: 12,
                 ),
@@ -114,17 +110,21 @@ class ListFilterChips extends StatelessWidget {
               if (count != null && count > 0) ...[
                 const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? Colors.white.withValues(alpha: 0.3)
-                        : primaryColor.withValues(alpha: 0.1),
+                    color:
+                        isSelected
+                            ? AppColors.onPrimary.withValues(alpha: 0.3)
+                            : primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     count.toString(),
                     style: TextStyle(
-                      color: isSelected ? Colors.white : primaryColor,
+                      color: isSelected ? AppColors.onPrimary : primaryColor,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),

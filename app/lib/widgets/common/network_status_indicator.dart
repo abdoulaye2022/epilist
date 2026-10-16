@@ -61,7 +61,7 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
         color: _isConnected ? AppColors.primary : AppColors.warning,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: AppColors.shadow,
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -72,7 +72,7 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
         children: [
           Icon(
             _isConnected ? Icons.wifi : Icons.wifi_off,
-            color: Colors.white,
+            color: AppColors.onPrimary,
             size: 18,
           ),
           const SizedBox(width: 8),
@@ -81,8 +81,8 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
               _isConnected
                   ? l10n.connectionRestored
                   : l10n.offlineModeModificationsWillSync,
-              style: const TextStyle(
-                color: Colors.white,
+              style:  TextStyle(
+                color: AppColors.onPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -139,16 +139,12 @@ class _NetworkStatusBadgeState extends State<NetworkStatusBadge> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.wifi_off,
-            color: Colors.white,
-            size: 14,
-          ),
+          Icon(Icons.wifi_off, color: AppColors.onWarning, size: 14),
           const SizedBox(width: 4),
           Text(
             l10n.offline,
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: AppColors.onPrimary,
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
