@@ -91,6 +91,20 @@ class OfflineSyncService {
 
     _isInitialized = true;
     debugPrint('✅ [OfflineSync] Service de synchronisation initialisé');
+
+    // Rejouer la file DES MAINTENANT si le reseau est la.
+    //
+    // `connectivityStream` est un flux broadcast SANS rejeu, et l'etat
+    // initial y a deja ete emis par ConnectivityService.initialize(), bien
+    // avant cet abonnement. L'abonnement ci-dessus ne reagit donc qu'aux
+    // CHANGEMENTS a venir. Sans ce premier appel, une file remplie hors
+    // ligne puis l'application fermee n'etait jamais rejouee au lancement
+    // suivant : il fallait que la connexion tombe PUIS revienne. Les
+    // articles ajoutes hors ligne semblaient perdus, et rien n'apparaissait
+    // dans les journaux du serveur — aucune requete n'etait partie.
+    if (_connectivityService.isConnected) {
+      unawaited(syncPendingActions());
+    }
   }
 
   /// Synchronise toutes les actions en attente
