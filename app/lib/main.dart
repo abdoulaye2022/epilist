@@ -118,7 +118,12 @@ void main() async {
       BaseOptions(
         baseUrl: AppConfig.baseUrl,
         connectTimeout: const Duration(seconds: 20),
-        receiveTimeout: const Duration(seconds: 120), // TEMPORARY: Very high for debugging slow server
+        // 45 s : large pour les ecrans lourds (analyses, export PDF des
+        // factures) sans laisser l'app tourner DEUX MINUTES sur une requete
+        // perdue. L'ancienne valeur de 120 s etait marquee « TEMPORARY, pour
+        // deboguer un serveur lent » et etait partie en production ; un appel
+        // sans reponse y ressemblait a une application figee.
+        receiveTimeout: const Duration(seconds: 45),
         sendTimeout: const Duration(seconds: 20),
         headers: {
           'Content-Type': 'application/json',

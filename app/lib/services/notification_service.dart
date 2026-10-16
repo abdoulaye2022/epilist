@@ -445,7 +445,7 @@ class NotificationService {
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       dio.options.headers['Content-Type'] = 'application/json';
       dio.options.connectTimeout = const Duration(seconds: 20);
-      dio.options.receiveTimeout = const Duration(seconds: 120); // TEMPORARY: Very high for debugging
+      dio.options.receiveTimeout = const Duration(seconds: 45); // aligne sur main.dart
       dio.options.sendTimeout = const Duration(seconds: 20);
 
       final deviceData = {

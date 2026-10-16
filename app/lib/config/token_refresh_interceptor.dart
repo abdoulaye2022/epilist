@@ -4,14 +4,43 @@ import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
+/// Issue d'une tentative de rafraichissement du jeton.
+enum RefreshOutcome {
+  /// Nouveaux jetons obtenus et enregistres.
+  success,
+
+  /// Le serveur a refuse : le refresh token est expire ou revoque.
+  /// C'est le SEUL cas qui justifie de deconnecter l'utilisateur.
+  rejected,
+
+  /// Le serveur n'a pas pu etre joint (reseau coupe, delai depasse).
+  /// La session est peut-etre encore valide : on ne deconnecte pas.
+  unreachable,
+}
+
 class TokenRefreshInterceptor extends Interceptor {
   final AuthService authService;
   final AuthBloc authBloc;
   final Dio dio;
 
-  // Mutex pour éviter les refreshs multiples simultanés
-  bool _isRefreshing = false;
-  final List<Completer<void>> _pendingRequests = [];
+  /// Rafraichissement en cours, s'il y en a un. Les requetes qui recoivent
+  /// un 401 pendant ce temps attendent SON resultat au lieu d'en lancer un
+  /// deuxieme.
+  ///
+  /// Remplace l'ancien couple (booleen + liste de Completer). Cette liste
+  /// etait VIDEE sans etre completee quand le rafraichissement echouait :
+  /// les requetes en attente ne recevaient alors plus jamais de reponse, ni
+  /// resultat ni erreur. Les ecrans qui en dependaient tournaient
+  /// indefiniment — rien n'arrivait au serveur, donc rien n'apparaissait
+  /// non plus dans le journal d'erreurs de l'API.
+  Completer<RefreshOutcome>? _refreshEnCours;
+
+  /// Fabrique du client utilise pour l'appel /auth/refresh. Il doit rester
+  /// SEPARE de `dio`, sinon l'appel repasse par cet intercepteur et la
+  /// recursion est infinie. Remplacable par les tests, qui n'ont pas de
+  /// serveur en face.
+  @visibleForTesting
+  Dio Function()? refreshClientFactory;
 
   TokenRefreshInterceptor({
     required this.authService,
@@ -53,104 +82,120 @@ class TokenRefreshInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401) {
-      debugPrint('🔄 Token expiré - Tentative de refresh');
+    final estUn401 = err.response?.statusCode == 401;
+    final estUnePageDAuth = _noAuthPaths.any(err.requestOptions.path.contains);
+    if (!estUn401 || estUnePageDAuth) {
+      return handler.next(err);
+    }
 
-      try {
-        // Vérifier si un refresh est déjà en cours
-        if (_isRefreshing) {
-          // Attendre que le refresh en cours se termine
-          final completer = Completer<void>();
-          _pendingRequests.add(completer);
-          await completer.future;
-        } else {
-          // Démarrer le processus de refresh
-          _isRefreshing = true;
-          await _refreshTokenAndRetry(err, handler);
+    debugPrint('🔄 Token expiré - Tentative de refresh');
+    final issue = await _rafraichir();
 
-          // Notifier toutes les requêtes en attente
-          for (final completer in _pendingRequests) {
-            completer.complete();
-          }
-          _pendingRequests.clear();
-          _isRefreshing = false;
-          return;
-        }
+    if (issue != RefreshOutcome.success) {
+      // L'appelant recoit son 401 d'origine : une erreur, jamais le silence.
+      return handler.next(err);
+    }
 
-        // Réessayer la requête avec le nouveau token
-        final response = await _retryRequest(err.requestOptions);
-        return handler.resolve(response);
-      } catch (e) {
-        debugPrint('❌ Échec du refresh token: $e');
-        _isRefreshing = false;
-        _pendingRequests.clear();
+    try {
+      return handler.resolve(await _retryRequest(err.requestOptions));
+    } on DioException catch (erreurDeLaSecondeTentative) {
+      // Un echec de la NOUVELLE TENTATIVE n'est pas un echec
+      // d'authentification : le jeton vient d'etre renouvele. L'ancienne
+      // version deconnectait l'utilisateur ici, sur un simple incident
+      // reseau survenu une seconde apres un rafraichissement reussi.
+      return handler.next(erreurDeLaSecondeTentative);
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la nouvelle tentative: $e');
+      return handler.next(err);
+    }
+  }
 
-        // Déconnecter l'utilisateur en cas d'échec
-        authBloc.add(LogoutRequested());
-        return handler.next(err);
+  /// Rafraichit le jeton, ou rejoint le rafraichissement deja en cours.
+  /// Ne leve jamais : toute issue est un [RefreshOutcome].
+  Future<RefreshOutcome> _rafraichir() async {
+    final dejaEnCours = _refreshEnCours;
+    if (dejaEnCours != null) {
+      return dejaEnCours.future;
+    }
+
+    final completer = Completer<RefreshOutcome>();
+    _refreshEnCours = completer;
+
+    // Initialisee des maintenant : si quoi que ce soit tourne mal avant
+    // l'affectation, les requetes en attente recoivent une issue, pas rien.
+    RefreshOutcome issue = RefreshOutcome.unreachable;
+    try {
+      issue = await _demanderDeNouveauxJetons();
+    } catch (e) {
+      debugPrint('❌ Erreur lors du refresh: $e');
+      issue = RefreshOutcome.unreachable;
+    } finally {
+      // Dans un `finally` : quoi qu'il arrive, personne n'attend dans le vide.
+      _refreshEnCours = null;
+      if (!completer.isCompleted) {
+        completer.complete(issue);
       }
     }
 
-    return handler.next(err);
+    if (issue == RefreshOutcome.rejected) {
+      debugPrint('❌ Refresh token refusé par le serveur — déconnexion');
+      authBloc.add(LogoutRequested());
+    }
+    return issue;
   }
 
-  Future<void> _refreshTokenAndRetry(
-    DioException err,
-    ErrorInterceptorHandler handler,
-  ) async {
+  Future<RefreshOutcome> _demanderDeNouveauxJetons() async {
     final refreshToken = await authService.getRefreshToken();
-
     if (refreshToken == null || refreshToken.isEmpty) {
-      throw Exception('Aucun refresh token disponible');
+      return RefreshOutcome.rejected;
     }
 
     // Créer une nouvelle instance Dio pour éviter l'interception
-    final refreshDio = Dio(
-      BaseOptions(
-        baseUrl: dio.options.baseUrl,
-        connectTimeout: dio.options.connectTimeout,
-        receiveTimeout: dio.options.receiveTimeout,
-      ),
-    );
+    final refreshDio =
+        refreshClientFactory?.call() ??
+        Dio(
+          BaseOptions(
+            baseUrl: dio.options.baseUrl,
+            connectTimeout: dio.options.connectTimeout,
+            receiveTimeout: dio.options.receiveTimeout,
+          ),
+        );
 
     try {
-      // Appeler directement l'API de refresh
       final response = await refreshDio.post(
         '/auth/refresh',
         data: {'refresh_token': refreshToken},
       );
 
-      final newAccessToken = response.data['access_token'] as String?;
-      final newRefreshToken = response.data['refresh_token'] as String?;
+      final data = response.data;
+      final newAccessToken = data is Map ? data['access_token'] as String? : null;
+      final newRefreshToken = data is Map ? data['refresh_token'] as String? : null;
 
       if (newAccessToken == null || newRefreshToken == null) {
-        throw Exception('Tokens manquants dans la réponse');
+        return RefreshOutcome.rejected;
       }
 
-      // Sauvegarder les nouveaux tokens
       await authService.saveTokens(newAccessToken, newRefreshToken);
-
       debugPrint('✅ Tokens rafraîchis avec succès');
-
-      // Réessayer la requête originale
-      final retryResponse = await _retryRequest(err.requestOptions);
-      handler.resolve(retryResponse);
-    } catch (e) {
-      debugPrint('❌ Erreur lors du refresh: $e');
-      rethrow;
+      return RefreshOutcome.success;
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      // Un refus explicite du serveur (401/403, ou une demande invalide)
+      // signifie que la session est bel et bien terminee. Une coupure
+      // reseau, un delai depasse ou un 500 passager, non.
+      final refusParLeServeur =
+          status == 400 || status == 401 || status == 403 || status == 422;
+      return refusParLeServeur
+          ? RefreshOutcome.rejected
+          : RefreshOutcome.unreachable;
     }
   }
 
   Future<Response> _retryRequest(RequestOptions options) async {
-    try {
-      final newToken = await authService.getToken();
-      if (newToken != null && newToken.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $newToken';
-      }
-      return await dio.fetch(options);
-    } catch (e) {
-      debugPrint('❌ Erreur lors de la nouvelle tentative: $e');
-      rethrow;
+    final newToken = await authService.getToken();
+    if (newToken != null && newToken.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $newToken';
     }
+    return dio.fetch(options);
   }
 }
