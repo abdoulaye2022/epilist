@@ -184,49 +184,59 @@ class DuplicateConfirmationDialog extends StatelessWidget {
   }
 
   Widget _buildDuplicatesList(AppLocalizations l10n) {
-    return Container(
-      width: double.infinity,
-      constraints: const BoxConstraints(maxHeight: 200),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+    // Material : les ListTile de la liste peignent leur fond sur le
+    // Material le plus proche. Sans celui-ci, c'etait celui du Dialog,
+    // recouvert par le fond blanc du dialogue — meme defaut que dans
+    // add_item_dialog, et meme assertion Flutter.
+    return Material(
+      color: Colors.white,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+      child: SizedBox(
+        width: double.infinity,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  l10n.similarItemsFound, // ✅ TRADUIT
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
               ),
-            ),
-            child: Text(
-              l10n.similarItemsFound, // ✅ TRADUIT
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+              Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: duplicates.length,
+                  separatorBuilder:
+                      (context, index) =>
+                          Divider(height: 1, color: AppColors.border),
+                  itemBuilder: (context, index) {
+                    final duplicate = duplicates[index];
+                    return _buildDuplicateItem(duplicate, l10n);
+                  },
+                ),
               ),
-            ),
+            ],
           ),
-          Expanded(
-            child: ListView.separated(
-              shrinkWrap: true,
-              itemCount: duplicates.length,
-              separatorBuilder:
-                  (context, index) =>
-                      Divider(height: 1, color: AppColors.border),
-              itemBuilder: (context, index) {
-                final duplicate = duplicates[index];
-                return _buildDuplicateItem(duplicate, l10n);
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -132,11 +132,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         title: l10n.newItem,
                       ),
                       const SizedBox(height: 16),
+                      // Les suggestions ne sont PLUS ajoutees ici : elles
+                      // apparaissaient tout en bas du dialogue, apres la
+                      // categorie, la quantite, le prix et le magasin,
+                      // loin du champ en train d'etre rempli. Elles sont
+                      // desormais rendues juste sous le champ « Nom du
+                      // produit », dans _buildProductNameFieldWithSuggestions.
                       _buildForm(l10n),
-                      if (_showSuggestions) ...[
-                        const SizedBox(height: 16),
-                        _buildSuggestions(l10n),
-                      ],
                       const SizedBox(height: 24),
                       _buildButtons(l10n),
                     ],
@@ -262,6 +264,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
           textCapitalization: TextCapitalization.words,
           onChanged: _onProductNameChanged,
         ),
+        // Juste sous le champ : c'est la que le regard est pose pendant
+        // la frappe, et la proposition se lit en regard de ce qui est
+        // tape.
+        if (_showSuggestions) ...[
+          const SizedBox(height: 8),
+          _buildSuggestions(l10n),
+        ],
         if (_selectedSuggestion != null) _buildSelectedSuggestionInfo(l10n),
       ],
     );
@@ -296,42 +305,52 @@ class _AddItemDialogState extends State<AddItemDialog> {
   }
 
   Widget _buildSuggestions(AppLocalizations l10n) {
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+    // Material, et non Container : le ListTile peint son fond et l'onde
+    // de l'appui sur le Material le plus proche. Enveloppe dans une
+    // simple boite decoree, il les peignait sur le Material du Dialog,
+    // que le fond blanc de cette boite recouvrait — d'ou l'assertion
+    // « ListTile background color or ink splashes may be invisible »
+    // et un appui sans aucun retour visuel.
+    return Material(
+      color: Colors.white,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
-        builder: (context, state) {
-          if (state is ProductSuggestionLoading) {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 200),
+        child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
+          builder: (context, state) {
+            if (state is ProductSuggestionLoading) {
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-          if (state is ProductSuggestionLoaded) {
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: state.suggestions.length,
-              separatorBuilder:
-                  (context, index) =>
-                      Divider(height: 1, color: AppColors.border),
-              itemBuilder: (context, index) {
-                final suggestion = state.suggestions[index];
-                return _buildSuggestionItem(suggestion, l10n);
-              },
-            );
-          }
+            if (state is ProductSuggestionLoaded) {
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: state.suggestions.length,
+                separatorBuilder:
+                    (context, index) =>
+                        Divider(height: 1, color: AppColors.border),
+                itemBuilder: (context, index) {
+                  final suggestion = state.suggestions[index];
+                  return _buildSuggestionItem(suggestion, l10n);
+                },
+              );
+            }
 
-          if (state is ProductSuggestionEmpty) {
-            // Ne rien afficher si aucune suggestion n'est trouvée
+            if (state is ProductSuggestionEmpty) {
+              // Ne rien afficher si aucune suggestion n'est trouvée
+              return const SizedBox.shrink();
+            }
+
             return const SizedBox.shrink();
-          }
-
-          return const SizedBox.shrink();
-        },
+          },
+        ),
       ),
     );
   }

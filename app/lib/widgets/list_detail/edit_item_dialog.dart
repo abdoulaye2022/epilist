@@ -139,12 +139,12 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       const SizedBox(height: 16),
                       _buildPhotoSection(l10n),
                       const SizedBox(height: 16),
+                      // Les suggestions ne sont plus rendues ici, en bas
+                      // du dialogue : elles le sont sous le champ « Nom du
+                      // produit » qui les declenche. Voir
+                      // _buildProductNameFieldWithSuggestions.
                       _buildForm(l10n),
                       _buildPriceHistoryLink(l10n),
-                      if (_showSuggestions) ...[
-                        const SizedBox(height: 16),
-                        _buildSuggestions(l10n),
-                      ],
                       const SizedBox(height: 24),
                       _buildButtons(l10n),
                     ],
@@ -207,7 +207,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     ? IconButton(
                       icon: Icon(Icons.refresh, color: AppColors.warning),
                       onPressed: _resetToOriginal,
-                      tooltip: AppLocalizations.of(context)!.restoreOriginalName,
+                      tooltip:
+                          AppLocalizations.of(context)!.restoreOriginalName,
                     )
                     : null,
           ),
@@ -215,6 +216,11 @@ class _EditItemDialogState extends State<EditItemDialog> {
           textCapitalization: TextCapitalization.words,
           onChanged: _onProductNameChanged,
         ),
+        // Juste sous le champ, la ou se porte le regard pendant la frappe.
+        if (_showSuggestions) ...[
+          const SizedBox(height: 8),
+          _buildSuggestions(l10n),
+        ],
         if (_selectedSuggestion != null) _buildSelectedSuggestionInfo(l10n),
       ],
     );
@@ -249,42 +255,50 @@ class _EditItemDialogState extends State<EditItemDialog> {
   }
 
   Widget _buildSuggestions(AppLocalizations l10n) {
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+    // Material, et non Container : voir add_item_dialog. Le ListTile
+    // peint son fond et l'onde de l'appui sur le Material le plus
+    // proche ; sous une simple boite decoree blanche, ils etaient
+    // invisibles (assertion Flutter, appui sans retour visuel).
+    return Material(
+      color: Colors.white,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: AppColors.border),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
-        builder: (context, state) {
-          if (state is ProductSuggestionLoading) {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 200),
+        child: BlocBuilder<ProductSuggestionBloc, ProductSuggestionState>(
+          builder: (context, state) {
+            if (state is ProductSuggestionLoading) {
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
 
-          if (state is ProductSuggestionLoaded) {
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: state.suggestions.length,
-              separatorBuilder:
-                  (context, index) =>
-                      Divider(height: 1, color: AppColors.border),
-              itemBuilder: (context, index) {
-                final suggestion = state.suggestions[index];
-                return _buildSuggestionItem(suggestion, l10n);
-              },
-            );
-          }
+            if (state is ProductSuggestionLoaded) {
+              return ListView.separated(
+                shrinkWrap: true,
+                itemCount: state.suggestions.length,
+                separatorBuilder:
+                    (context, index) =>
+                        Divider(height: 1, color: AppColors.border),
+                itemBuilder: (context, index) {
+                  final suggestion = state.suggestions[index];
+                  return _buildSuggestionItem(suggestion, l10n);
+                },
+              );
+            }
 
-          if (state is ProductSuggestionEmpty) {
-            // Ne rien afficher si aucune suggestion n'est trouvée
+            if (state is ProductSuggestionEmpty) {
+              // Ne rien afficher si aucune suggestion n'est trouvée
+              return const SizedBox.shrink();
+            }
+
             return const SizedBox.shrink();
-          }
-
-          return const SizedBox.shrink();
-        },
+          },
+        ),
       ),
     );
   }
