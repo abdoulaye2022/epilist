@@ -37,6 +37,7 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/common/offline_indicator.dart';
+import 'package:epilist/utils/list_picker.dart';
 import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:epilist/services/app_version_service.dart';
 import 'package:epilist/widgets/common/update_modal.dart';
@@ -326,68 +327,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   /// Ouvre la liste la plus recente avec l'action demandee (ajout, voix).
-  /// Liste cible des actions rapides : directe s'il n'y en a qu'une,
-  /// sinon l'utilisateur choisit dans une feuille. Null = annulé/aucune.
-  Future<ShoppingList?> _pickTargetList() async {
-    final l10n = AppLocalizations.of(context)!;
-    final state = context.read<ShoppingListBloc>().state;
-    final lists = state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
-
-    if (lists.isEmpty) {
-      SmartSnackBarManager.showInfoSnackBar(context, l10n.noListYet);
-      _showCreateListDialog(context);
-      return null;
-    }
-    if (lists.length == 1) return lists.first;
-
-    return showModalBottomSheet<ShoppingList>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs),
-              child: Text(
-                l10n.pickListTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                children: lists
-                    .map((list) => ListTile(
-                          leading: Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryLight,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.sm + 2),
-                            ),
-                            child: const Icon(Icons.shopping_basket_outlined,
-                                size: 20, color: AppColors.primaryDark),
-                          ),
-                          title: Text(list.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
-                          onTap: () =>
-                              Navigator.of(sheetContext).pop(list),
-                        ))
-                    .toList(),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
-        ),
-      ),
-    );
-  }
-
+  /// Le choix de la liste vit dans utils/list_picker.dart : il etait
+  /// recopie ici, et c'est pour cela que toute action ayant besoin d'une
+  /// liste — scan, facture, code-barres, photo — n'etait atteignable que
+  /// depuis ce tableau de bord.
   Future<void> _openRecentListWith(ListDetailAction action) async {
-    final list = await _pickTargetList();
+    final list = await pickShoppingList(context, where: (l) => l.canEdit);
     if (list == null || !mounted) return;
     Navigator.push(
       context,
@@ -402,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   /// Scanne un reçu et le rattache à la liste la plus récente.
   Future<void> _scanReceipt() async {
-    final list = await _pickTargetList();
+    final list = await pickShoppingList(context, where: (l) => l.canEdit);
     if (list == null || !mounted) return;
     startReceiptScan(context, listId: list.id)
         .then((_) => _loadDashboardData());
