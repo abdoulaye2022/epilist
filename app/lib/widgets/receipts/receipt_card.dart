@@ -11,12 +11,17 @@ class ReceiptCard extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
+  /// Vue « toutes listes » (onglet Factures) : ouvre la liste porteuse.
+  /// Null depuis l'ecran d'une liste — on y est deja.
+  final VoidCallback? onOpenList;
+
   const ReceiptCard({
     super.key,
     required this.receipt,
     required this.canEdit,
     this.onEdit,
     this.onDelete,
+    this.onOpenList,
   });
 
   @override
@@ -48,6 +53,48 @@ class ReceiptCard extends StatelessWidget {
               const SizedBox(height: 10),
               _buildPhoto(context),
             ],
+            if (receipt.listName != null &&
+                receipt.listName!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              _buildListChip(context),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Liste porteuse de la facture, cliquable : sans elle, une facture
+  /// vue dans l'onglet « Factures » serait orpheline.
+  Widget _buildListChip(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return InkWell(
+      onTap: onOpenList,
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          children: [
+            const Icon(Icons.checklist_rounded,
+                size: 15, color: AppColors.textDisabled),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                receipt.listName!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    fontSize: 12.5, color: AppColors.textSecondary),
+              ),
+            ),
+            if (onOpenList != null)
+              Text(
+                l10n.openList,
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryDark),
+              ),
           ],
         ),
       ),

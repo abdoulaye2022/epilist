@@ -129,6 +129,55 @@ class ReceiptService {
     }
   }
 
+  /// TOUTES les factures visibles dans l'espace actif, sans choisir de
+  /// liste d'abord. C'est la route de l'onglet « Factures » : les treize
+  /// routes de factures vivaient sous /shopping-lists/{listId}/, ce qui
+  /// rendait impossible une vue d'ensemble des dépenses.
+  Future<ReceiptsOverview> getAllReceipts() async {
+    try {
+      final token = await _authService.getToken();
+      final response = await _dio.get(
+        '/receipts',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final responseData = _parseApiResponse(response.data);
+      if (responseData['success'] != true) {
+        throw _handleApiError(responseData);
+      }
+
+      final raw = responseData['data'];
+      final receipts = <Receipt>[];
+      if (raw is List) {
+        for (final entry in raw) {
+          // Décodage facture par facture : une ligne au format
+          // inattendu ne doit pas vider tout l'écran.
+          try {
+            if (entry is Map<String, dynamic>) {
+              receipts.add(Receipt.fromJson(entry));
+            }
+          } catch (e) {
+            debugPrint('❌ Erreur parsing facture globale: $e');
+          }
+        }
+      }
+
+      final meta = responseData['meta'];
+      return ReceiptsOverview(
+        receipts: receipts,
+        formattedTotal: meta is Map ? meta['formatted_total'] as String? : null,
+        uniqueStores: meta is Map ? (meta['unique_stores'] as num?)?.toInt() ?? 0 : 0,
+        truncated: meta is Map && meta['truncated'] == true,
+      );
+    } on DioException catch (e) {
+      debugPrint('❌ Erreur Dio (toutes factures): ${e.response?.statusCode}');
+      throw Exception('Erreur lors de la récupération des factures');
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Erreur lors de la récupération des factures');
+    }
+  }
+
   /// Créer une nouvelle facture
   /// Crée la facture, puis téléverse la photo du reçu si elle est
   /// fournie. L'ordre importe : le serveur a besoin de l'identifiant de
@@ -492,4 +541,23 @@ class ReceiptService {
       throw Exception('Erreur lors de la récupération des statistiques');
     }
   }
+}
+
+/// Vue d'ensemble des factures : les lignes et les totaux que l'en-tête
+/// de l'onglet affiche sans avoir à les recalculer côté app.
+class ReceiptsOverview {
+  const ReceiptsOverview({
+    required this.receipts,
+    this.formattedTotal,
+    this.uniqueStores = 0,
+    this.truncated = false,
+  });
+
+  final List<Receipt> receipts;
+  final String? formattedTotal;
+  final int uniqueStores;
+
+  /// Le serveur plafonne à 500 lignes : l'écran le dit plutôt que de
+  /// laisser croire qu'il n'y en a pas davantage.
+  final bool truncated;
 }

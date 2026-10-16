@@ -31,6 +31,13 @@ abstract final class AppColors {
   static const Color textSecondary = Color(0xFF6B716D);
   static const Color textDisabled = Color(0xFFA6ACA8);
 
+  /// Ce qui se pose SUR une couleur forte (texte et icônes d'un bouton
+  /// vert, d'une pastille colorée). Distinct de `surface` : un fond de
+  /// carte suivra le thème sombre le jour où il existera, le contenu
+  /// d'un bouton vert restera blanc. C'est cette confusion qui explique
+  /// l'essentiel des 344 `Colors.white` écrits à la main dans lib/.
+  static const Color onPrimary = Colors.white;
+
   // Sémantiques
   static const Color success = primary;
   static const Color warning = Color(0xFFF29D38);

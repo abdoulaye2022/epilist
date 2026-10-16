@@ -51,5 +51,39 @@ void main() {
       expect(r.totalAmount, 0);
       expect(r.imageUrl, isNull);
     });
+
+    // GET /receipts (onglet Factures) renvoie le nom de la liste
+    // porteuse ; les routes par liste ne le renvoient pas, puisqu'on la
+    // connait deja. Les deux doivent se decoder.
+    test('retient le nom de la liste quand le serveur le donne', () {
+      final r = Receipt.fromJson({
+        'id': 12,
+        'list_id': 160,
+        'list_name': 'Diag factures',
+        'store_name': 'Maxi',
+        'total_amount': 18.75,
+        'purchase_date': '2026-10-14',
+        'created_at': '2026-10-14T10:00:00.000Z',
+        'updated_at': '2026-10-14T10:00:00.000Z',
+      });
+
+      expect(r.listName, 'Diag factures');
+      expect(r.toJson()['list_name'], 'Diag factures');
+    });
+
+    test('accepte une facture sans nom de liste', () {
+      final r = Receipt.fromJson({
+        'id': 12,
+        'list_id': 160,
+        'store_name': 'Maxi',
+        'total_amount': 18.75,
+        'purchase_date': '2026-10-14',
+        'created_at': '2026-10-14T10:00:00.000Z',
+        'updated_at': '2026-10-14T10:00:00.000Z',
+      });
+
+      expect(r.listName, isNull);
+    });
+
   });
 }

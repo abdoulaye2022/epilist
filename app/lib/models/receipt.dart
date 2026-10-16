@@ -17,6 +17,11 @@ class Receipt extends Equatable {
   /// Photo du reçu papier (stockage GCS), null si absente.
   final String? imageUrl;
 
+  /// Nom de la liste porteuse. Renseigné par GET /receipts (onglet
+  /// Factures, toutes listes confondues), absent des routes par liste —
+  /// on y connaît déjà la liste.
+  final String? listName;
+
   const Receipt({
     required this.id,
     required this.listId,
@@ -29,6 +34,7 @@ class Receipt extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.imageUrl,
+    this.listName,
   });
 
   /// Décodage TOLÉRANT. Chaque champ était auparavant casté durement
@@ -62,6 +68,7 @@ class Receipt extends Equatable {
       createdAt: asDate(json['created_at']),
       updatedAt: asDate(json['updated_at']),
       imageUrl: json['image_url'] as String?,
+      listName: json['list_name'] as String?,
     );
   }
 
@@ -78,6 +85,7 @@ class Receipt extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'image_url': imageUrl,
+      'list_name': listName,
     };
   }
 
@@ -93,6 +101,7 @@ class Receipt extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? imageUrl,
+    String? listName,
   }) {
     return Receipt(
       id: id ?? this.id,
@@ -106,6 +115,7 @@ class Receipt extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       imageUrl: imageUrl ?? this.imageUrl,
+      listName: listName ?? this.listName,
     );
   }
 
@@ -122,6 +132,7 @@ class Receipt extends Equatable {
     createdAt,
     updatedAt,
     imageUrl,
+    listName,
   ];
 
   @override

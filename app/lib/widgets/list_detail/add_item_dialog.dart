@@ -27,7 +27,16 @@ import 'package:epilist/l10n/app_localizations.dart';
 class AddItemDialog extends StatefulWidget {
   final int listId;
 
-  const AddItemDialog({super.key, required this.listId});
+  /// Ouvre le scanner de code-barres des l'affichage. Le code-barres
+  /// n'etait atteignable que par ce dialogue, derriere une icone sans
+  /// libelle : le bouton + du MainShell y mene maintenant directement.
+  final bool autoScanBarcode;
+
+  const AddItemDialog({
+    super.key,
+    required this.listId,
+    this.autoScanBarcode = false,
+  });
 
   @override
   State<AddItemDialog> createState() => _AddItemDialogState();
@@ -54,6 +63,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
     // Charger les catégories au démarrage du dialogue
     context.read<CategoryBloc>().add(const LoadCategories());
+
+    if (widget.autoScanBarcode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _openBarcodeScanner();
+      });
+    }
 
     // Charger les suggestions intelligentes
     context.read<SuggestionBloc>().add(const LoadSuggestions());

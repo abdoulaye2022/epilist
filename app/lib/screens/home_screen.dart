@@ -30,7 +30,8 @@ import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/widgets/home/space_dashboard_card.dart';
-import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/drawer_menu_button.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
@@ -494,9 +495,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      // Navigation centralisée dans le drawer : la barre reste minimale.
-      drawer: const AppDrawer(),
+      // Le tiroir appartient au MainShell : il s'ouvre depuis les quatre
+      // onglets, et non plus seulement d'ici.
       appBar: AppBar(
+        leading: DrawerMenuButton.leadingOrNull(context),
         title: const Text('EpiList'),
         actions: [
           Padding(
@@ -895,7 +897,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _goToAllLists(BuildContext context) {
-    // ✅ Mode offline supporté: Les listes en cache peuvent être consultées
+    // Bascule sur l'onglet Listes au lieu d'EMPILER une copie de l'ecran
+    // par-dessus l'accueil : l'ancienne version laissait une fleche
+    // retour qui ne correspondait a rien, et l'onglet Listes restait
+    // affiche comme non selectionne.
+    final scope = MainShellScope.maybeOf(context);
+    if (scope != null) {
+      scope.goToTab(MainTab.lists);
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ShoppingListScreen()),

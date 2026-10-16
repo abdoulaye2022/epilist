@@ -11160,6 +11160,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Photo du reçu'**
   String get receiptPhotoTitle;
+
+  /// No description provided for @tabMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus'**
+  String get tabMore;
+
+  /// No description provided for @quickActionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que voulez-vous ajouter ?'**
+  String get quickActionsTitle;
+
+  /// No description provided for @qaProductPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo d\'un produit'**
+  String get qaProductPhoto;
+
+  /// No description provided for @qaProductPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur un article de vos listes'**
+  String get qaProductPhotoHint;
+
+  /// No description provided for @pickItemTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel article ?'**
+  String get pickItemTitle;
+
+  /// No description provided for @noItemsInList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun article dans cette liste'**
+  String get noItemsInList;
+
+  /// No description provided for @moreSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher une fonctionnalité'**
+  String get moreSearchHint;
+
+  /// No description provided for @moreSectionSpending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépenses'**
+  String get moreSectionSpending;
+
+  /// No description provided for @moreSectionShopping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courses'**
+  String get moreSectionShopping;
+
+  /// No description provided for @moreSectionSpace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon espace'**
+  String get moreSectionSpace;
+
+  /// No description provided for @moreSectionSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages et compte'**
+  String get moreSectionSettings;
+
+  /// No description provided for @allReceiptsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes factures'**
+  String get allReceiptsTitle;
+
+  /// No description provided for @allReceiptsSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Magasin ou liste'**
+  String get allReceiptsSearchHint;
+
+  /// No description provided for @allReceiptsEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scannez un reçu : EpiList lit le magasin, la date et le total.'**
+  String get allReceiptsEmptyHint;
+
+  /// No description provided for @allReceiptsTruncated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seules les 500 factures les plus récentes sont affichées'**
+  String get allReceiptsTruncated;
+
+  /// No description provided for @receiptsSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} factures · {total}'**
+  String receiptsSummary(int count, String total);
+
+  /// No description provided for @openList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la liste'**
+  String get openList;
+
+  /// No description provided for @needsAList.
+  ///
+  /// In fr, this message translates to:
+  /// **'demande une liste'**
+  String get needsAList;
 }
 
 class _AppLocalizationsDelegate

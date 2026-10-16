@@ -14,13 +14,13 @@ import 'package:epilist/screens/intelligence_settings_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/category_management_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
-import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/screens/pre_shopping_screen.dart';
 import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/screens/purchase_requests_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/screens/suppliers_screen.dart';
 import 'package:epilist/services/space_service.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/common/space_selector_sheet.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
@@ -53,19 +53,36 @@ class AppDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 children: [
-                  _item(
+                  // Les quatre onglets : on BASCULE, on n'empile pas.
+                  // Pousser une deuxieme instance de l'ecran Listes
+                  // par-dessus l'onglet Listes etait l'ancien
+                  // comportement — deux copies, une fleche retour, et
+                  // l'onglet toujours affiche comme non selectionne.
+                  _tab(
                     context,
                     icon: Icons.space_dashboard_outlined,
                     label: l10n.dashboardTitle,
-                    selected: true, // l'accueil EST le tableau de bord
-                    onTap: () => Navigator.pop(context),
+                    tab: MainTab.home,
                   ),
-                  _item(
+                  _tab(
                     context,
                     icon: Icons.checklist_rounded,
                     label: l10n.myShoppingLists,
-                    onTap: () => _push(context, const ShoppingListScreen()),
+                    tab: MainTab.lists,
                   ),
+                  _tab(
+                    context,
+                    icon: Icons.receipt_long_outlined,
+                    label: l10n.receipts,
+                    tab: MainTab.receipts,
+                  ),
+                  _tab(
+                    context,
+                    icon: Icons.widgets_outlined,
+                    label: l10n.tabMore,
+                    tab: MainTab.more,
+                  ),
+                  const Divider(indent: AppSpacing.md, endIndent: AppSpacing.md),
                   _item(
                     context,
                     icon: Icons.savings_outlined,
@@ -301,6 +318,29 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
         );
+      },
+    );
+  }
+
+  /// Entree qui designe un ONGLET : elle bascule la coquille et se
+  /// marque comme selectionnee quand c'est l'onglet courant. Hors de la
+  /// coquille (drawer ouvert depuis un ecran pousse), elle se contente
+  /// de fermer le tiroir.
+  Widget _tab(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required MainTab tab,
+  }) {
+    final scope = MainShellScope.maybeOf(context);
+    return _item(
+      context,
+      icon: icon,
+      label: label,
+      selected: scope?.currentTab == tab,
+      onTap: () {
+        Navigator.pop(context);
+        scope?.goToTab(tab);
       },
     );
   }

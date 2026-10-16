@@ -315,6 +315,11 @@ $app->group('', function ($group) {
     $group->put('/shopping-lists/{listId}/items/{itemId}/merge', [ListItemController::class, 'mergeWithExisting']);
 
     //  NOUVELLES ROUTES POUR LES FACTURES DE LISTES
+    // Toutes les factures de l'espace actif, sans choisir de liste :
+    // c'est la route de l'onglet « Factures ». Declaree AVANT les routes
+    // /receipts/... pour rester lisible, elle n'entre en conflit avec
+    // aucune (pas de parametre).
+    $group->get('/receipts', [ListReceiptsController::class, 'all']);
     $group->get('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'index']);
     $group->post('/shopping-lists/{listId}/receipts', [ListReceiptsController::class, 'store']);
     $group->get('/shopping-lists/{listId}/receipts/by-store', [ListReceiptsController::class, 'byStore']);

@@ -2813,5 +2813,33 @@
   "invalidNumber": "Invalid number",
   "receiptPhotoAdd": "Add a photo of the receipt",
   "receiptPhotoAttached": "Receipt photo attached",
-  "receiptPhotoTitle": "Receipt photo"
+  "receiptPhotoTitle": "Receipt photo",
+  "tabMore": "More",
+  "quickActionsTitle": "What would you like to add?",
+  "qaProductPhoto": "A product photo",
+  "qaProductPhotoHint": "on an item from your lists",
+  "pickItemTitle": "Which item?",
+  "noItemsInList": "No item in this list",
+  "moreSearchHint": "Search a feature",
+  "moreSectionSpending": "Spending",
+  "moreSectionShopping": "Shopping",
+  "moreSectionSpace": "My space",
+  "moreSectionSettings": "Settings and account",
+  "allReceiptsTitle": "My receipts",
+  "allReceiptsSearchHint": "Store or list",
+  "allReceiptsEmptyHint": "Scan a receipt: EpiList reads the store, date and total.",
+  "allReceiptsTruncated": "Only the 500 most recent receipts are shown",
+  "receiptsSummary": "{count} receipts · {total}",
+  "openList": "Open list",
+  "needsAList": "needs a list",
+  "@receiptsSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

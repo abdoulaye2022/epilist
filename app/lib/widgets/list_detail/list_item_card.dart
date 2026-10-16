@@ -1,6 +1,7 @@
 // widgets/list_detail/list_item_card.dart - VERSION ENTIÈREMENT TRADUITE
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/utils/product_photo_flow.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
@@ -343,6 +344,31 @@ class ListItemCard extends StatelessWidget {
       );
     }
 
+    // Photo du produit : elle etait enterree dans EditItemDialog, a six
+    // appuis, et rien ne la signalait. Ici, elle est a trois.
+    if (shoppingList.canEdit) {
+      items.add(
+        PopupMenuItem(
+          value: 'photo',
+          child: Row(
+            children: [
+              Icon(
+                item.imageUrl?.isNotEmpty == true
+                    ? Icons.image_outlined
+                    : Icons.add_a_photo_outlined,
+                size: 18,
+                color: AppColors.primaryDark,
+              ),
+              const SizedBox(width: 8),
+              Text(item.imageUrl?.isNotEmpty == true
+                  ? l10n.receiptPhotoTitle
+                  : l10n.addPhoto),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (onDelete != null) {
       items.add(
         PopupMenuItem(
@@ -373,6 +399,13 @@ class ListItemCard extends StatelessWidget {
       case 'edit':
         if (shoppingList.canEdit) {
           onEdit?.call();
+        } else {
+          _showPermissionDenied(context, l10n.modifyThisItem);
+        }
+        break;
+      case 'photo':
+        if (shoppingList.canEdit) {
+          uploadPhotoForItem(context, item);
         } else {
           _showPermissionDenied(context, l10n.modifyThisItem);
         }

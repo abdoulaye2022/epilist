@@ -154,6 +154,13 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
+    // Neuf entrees dans ce menu : le lire d'un coup d'oeil demande des
+    // blocs, et une couleur qui veut dire quelque chose — vert pour le
+    // partage, bleu pour l'argent, rouge pour ce qui detruit.
+    if (items.isNotEmpty) {
+      items.add(const PopupMenuDivider());
+    }
+
     // Partager (si propriétaire ou admin)
     if (shoppingList.canShare && onShare != null) {
       items.add(
@@ -183,7 +190,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           value: 'manage_shares',
           child: Row(
             children: [
-              Icon(Icons.group, size: 20, color: Colors.teal[600]),
+              const Icon(Icons.group, size: 20, color: AppColors.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -218,6 +225,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
+    items.add(const PopupMenuDivider());
+
     // Factures
     items.add(
       PopupMenuItem(
@@ -246,7 +255,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               const Icon(Icons.document_scanner_outlined,
-                  size: 20, color: AppColors.primary),
+                  size: 20, color: AppColors.accent),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -268,7 +277,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           children: [
             const Icon(Icons.storefront_outlined,
-                size: 20, color: AppColors.primary),
+                size: 20, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(

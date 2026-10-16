@@ -2813,5 +2813,33 @@
   "invalidNumber": "Nombre invalide",
   "receiptPhotoAdd": "Ajouter une photo du reçu",
   "receiptPhotoAttached": "Photo du reçu jointe",
-  "receiptPhotoTitle": "Photo du reçu"
+  "receiptPhotoTitle": "Photo du reçu",
+  "tabMore": "Plus",
+  "quickActionsTitle": "Que voulez-vous ajouter ?",
+  "qaProductPhoto": "Photo d'un produit",
+  "qaProductPhotoHint": "sur un article de vos listes",
+  "pickItemTitle": "Quel article ?",
+  "noItemsInList": "Aucun article dans cette liste",
+  "moreSearchHint": "Rechercher une fonctionnalité",
+  "moreSectionSpending": "Dépenses",
+  "moreSectionShopping": "Courses",
+  "moreSectionSpace": "Mon espace",
+  "moreSectionSettings": "Réglages et compte",
+  "allReceiptsTitle": "Mes factures",
+  "allReceiptsSearchHint": "Magasin ou liste",
+  "allReceiptsEmptyHint": "Scannez un reçu : EpiList lit le magasin, la date et le total.",
+  "allReceiptsTruncated": "Seules les 500 factures les plus récentes sont affichées",
+  "receiptsSummary": "{count} factures · {total}",
+  "openList": "Ouvrir la liste",
+  "needsAList": "demande une liste",
+  "@receiptsSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

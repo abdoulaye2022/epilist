@@ -1,25 +1,20 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/screens/shopping_mode_screen.dart';
-import 'package:dio/dio.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
-import 'package:epilist/blocs/chat/chat_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
-import 'package:epilist/config/app_config.dart';
 import 'package:epilist/l10n/app_localizations.dart';
-import 'package:epilist/screens/chat_screen.dart';
-import 'package:epilist/services/auth_service.dart';
-import 'package:epilist/services/chat_service.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/screens/receipts_screen.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/receipt_service.dart';
+import 'package:epilist/utils/chat_flow.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/list_detail/add_item_dialog.dart';
 import 'package:epilist/widgets/list_detail/edit_item_dialog.dart';
@@ -41,7 +36,7 @@ import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum ListDetailAction { none, addItem, voiceItem }
+enum ListDetailAction { none, addItem, voiceItem, barcodeItem }
 
 class ListDetailScreen extends StatefulWidget {
   final ShoppingList shoppingList;
@@ -117,6 +112,9 @@ class _ListDetailViewState extends State<_ListDetailView> {
           break;
         case ListDetailAction.voiceItem:
           _addItemByVoice();
+          break;
+        case ListDetailAction.barcodeItem:
+          _addNewItem(autoScanBarcode: true);
           break;
         case ListDetailAction.none:
           break;
@@ -961,32 +959,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
       _showPermissionDenied(AppLocalizations.of(context)!.permActionAccessChat);
       return;
     }
-
-    // Créer un Dio configuré avec l'authentification
-    final authService = context.read<AuthService>();
-    final token = await authService.getToken();
-
-    final dio = Dio();
-    dio.options.baseUrl = AppConfig.baseUrl;
-    dio.options.headers['Authorization'] = 'Bearer $token';
-
-    if (!mounted) return;
-
-    Navigator.push(
+    // Montage du ChatBloc : voir utils/chat_flow.dart (partage avec
+    // l'ecran « Plus »).
+    await openListChat(
       context,
-      MaterialPageRoute(
-        builder:
-            (newContext) => BlocProvider(
-              create:
-                  (blocContext) => ChatBloc(
-                    chatService: ChatService(dio: dio),
-                  ),
-              child: ChatScreen(
-                listId: currentList.id,
-                listName: currentList.name,
-              ),
-            ),
-      ),
+      listId: currentList.id,
+      listName: currentList.name,
     );
   }
 
@@ -1037,7 +1015,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
     );
   }
 
-  void _addNewItem() {
+  void _addNewItem({bool autoScanBarcode = false}) {
     if (!currentList.canManageItems) {
       _showPermissionDenied(AppLocalizations.of(context)!.permActionAddItems);
       return;
@@ -1048,7 +1026,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ListItemBloc>(),
-            child: AddItemDialog(listId: currentList.id),
+            child: AddItemDialog(
+              listId: currentList.id,
+              autoScanBarcode: autoScanBarcode,
+            ),
           ),
     );
   }

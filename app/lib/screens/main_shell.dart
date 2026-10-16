@@ -1,21 +1,34 @@
-// screens/main_shell.dart - Coquille principale avec onglets en bas :
-// Accueil | Listes | (+) | Statistiques | Budget.
-// Le bouton central vert crée une nouvelle liste (remplace l'ancien FAB
-// et le bouton « Nouvelle liste » du tableau de bord).
+// screens/main_shell.dart - Coquille principale : Accueil | Listes | (+)
+// | Factures | Plus.
 //
-// Les onglets sont construits paresseusement (au premier affichage) pour
-// ne pas déclencher quatre chargements API à l'ouverture de l'app, puis
-// gardés vivants dans un IndexedStack.
-import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
+// Trois changements de structure, et leurs raisons :
+//
+//  — « Factures » devient une destination. Les dépenses étaient
+//    enfermées dans le menu ⋮ d'une liste, et l'écran existant exige
+//    encore un `shoppingList` : voir ses factures demandait de se
+//    rappeler à quelle liste on avait rattaché un reçu.
+//
+//  — Statistiques et Budget descendent dans « Plus ». Ce sont des
+//    écrans de consultation mensuelle ; ils occupaient deux des quatre
+//    places permanentes de l'écran, et le budget reste résumé sur
+//    l'accueil, d'où on l'ouvre en un appui.
+//
+//  — le tiroir appartient maintenant à la coquille. Il n'était déclaré
+//    que sur l'accueil (un seul `drawer:` dans tout lib/) : depuis
+//    l'onglet Listes, changer d'espace imposait de revenir en arrière.
+//
+// Le bouton central n'ouvre plus la création de liste — geste fait une
+// fois par semaine — mais les six actions du quotidien.
 import 'package:epilist/l10n/app_localizations.dart';
-import 'package:epilist/screens/analytics_screen.dart';
-import 'package:epilist/screens/budget_screen.dart';
+import 'package:epilist/screens/all_receipts_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
+import 'package:epilist/screens/more_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
-import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
+import 'package:epilist/widgets/common/quick_actions_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -25,52 +38,57 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _index = 0;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  /// Onglets déjà visités : seuls ceux-là sont réellement construits.
-  final List<bool> _visited = [true, false, false, false];
+  MainTab _tab = MainTab.home;
 
-  void _select(int index) {
-    if (index == _index) return;
+  /// Onglets déjà visités : seuls ceux-là sont réellement construits, pour
+  /// ne pas déclencher quatre chargements API à l'ouverture de l'app.
+  final Set<MainTab> _visited = {MainTab.home};
+
+  void _select(MainTab tab) {
+    if (tab == _tab) return;
     setState(() {
-      _index = index;
-      _visited[index] = true;
+      _tab = tab;
+      _visited.add(tab);
     });
   }
 
-  void _createList() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: context.read<ShoppingListBloc>(),
-        child: const CreateListDialog(),
-      ),
-    );
+  Widget _tabBody(MainTab tab) {
+    if (!_visited.contains(tab)) return const SizedBox.shrink();
+    return switch (tab) {
+      MainTab.home => const HomeScreen(),
+      MainTab.lists => const ShoppingListScreen(),
+      MainTab.receipts => const AllReceiptsScreen(),
+      MainTab.more => const MoreScreen(),
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: _index,
-        children: [
-          const HomeScreen(),
-          _visited[1] ? const ShoppingListScreen() : const SizedBox.shrink(),
-          _visited[2] ? const AnalyticsScreen() : const SizedBox.shrink(),
-          _visited[3] ? const BudgetScreen() : const SizedBox.shrink(),
-        ],
+    return MainShellScope(
+      currentTab: _tab,
+      openDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+      goToTab: _select,
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: AppColors.background,
+        drawer: const AppDrawer(),
+        body: IndexedStack(
+          index: MainTab.values.indexOf(_tab),
+          children: MainTab.values.map(_tabBody).toList(),
+        ),
+        bottomNavigationBar: _buildBottomBar(l10n),
       ),
-      bottomNavigationBar: _buildBottomBar(l10n),
     );
   }
 
   Widget _buildBottomBar(AppLocalizations l10n) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: SafeArea(
@@ -79,15 +97,15 @@ class _MainShellState extends State<MainShell> {
           height: 64,
           child: Row(
             children: [
-              _tabItem(0, Icons.home_outlined, Icons.home_rounded,
+              _tabItem(MainTab.home, Icons.home_outlined, Icons.home_rounded,
                   l10n.tabHome),
-              _tabItem(1, Icons.list_alt_outlined, Icons.list_alt_rounded,
-                  l10n.tabLists),
+              _tabItem(MainTab.lists, Icons.list_alt_outlined,
+                  Icons.list_alt_rounded, l10n.tabLists),
               _centerButton(l10n),
-              _tabItem(2, Icons.bar_chart_outlined, Icons.bar_chart_rounded,
-                  l10n.statistics),
-              _tabItem(3, Icons.account_balance_wallet_outlined,
-                  Icons.account_balance_wallet_rounded, l10n.budget),
+              _tabItem(MainTab.receipts, Icons.receipt_long_outlined,
+                  Icons.receipt_long_rounded, l10n.receipts),
+              _tabItem(MainTab.more, Icons.widgets_outlined,
+                  Icons.widgets_rounded, l10n.tabMore),
             ],
           ),
         ),
@@ -96,41 +114,44 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget _tabItem(
-      int index, IconData icon, IconData activeIcon, String label) {
-    final selected = _index == index;
+      MainTab tab, IconData icon, IconData activeIcon, String label) {
+    final selected = _tab == tab;
     final color = selected ? AppColors.primary : AppColors.textSecondary;
 
     return Expanded(
       child: InkWell(
-        onTap: () => _select(index),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(selected ? activeIcon : icon, size: 24, color: color),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: color,
+        onTap: () => _select(tab),
+        child: Semantics(
+          selected: selected,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(selected ? activeIcon : icon, size: 24, color: color),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: color,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Bouton central vert : créer une nouvelle liste.
+  /// Bouton central vert : la feuille des six actions du quotidien.
   Widget _centerButton(AppLocalizations l10n) {
     return Expanded(
       child: Center(
         child: Semantics(
           button: true,
-          label: l10n.createList,
+          label: l10n.quickActionsTitle,
           child: Material(
             color: AppColors.primary,
             shape: const CircleBorder(),
@@ -138,11 +159,11 @@ class _MainShellState extends State<MainShell> {
             shadowColor: AppColors.primary.withValues(alpha: 0.4),
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: _createList,
+              onTap: () => QuickActionsSheet.show(context),
               child: const SizedBox(
                 width: 52,
                 height: 52,
-                child: Icon(Icons.add, color: Colors.white, size: 28),
+                child: Icon(Icons.add, color: AppColors.onPrimary, size: 28),
               ),
             ),
           ),

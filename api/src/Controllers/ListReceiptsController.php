@@ -144,6 +144,125 @@ class ListReceiptsController
         }
     }
 
+
+    /**
+     * TOUTES les factures visibles, sans passer par une liste.
+     *
+     * L'onglet « Factures » de l'app n'avait aucune route : les treize
+     * routes existantes vivent sous /shopping-lists/{listId}/receipts, ce
+     * qui obligeait a choisir une liste AVANT de voir ses depenses. On
+     * rend donc le meme perimetre que l'onglet Listes — ni plus, ni
+     * moins : l'espace actif decide, et chaque facture porte le nom de sa
+     * liste pour rester cliquable.
+     */
+    public function all(Request $request, Response $response): Response
+    {
+        try {
+            $user_id = (int) $request->getAttribute('auth_id');
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $user_id);
+
+            // Nom de chaque liste accessible, indexe par identifiant.
+            $listNames = [];
+
+            if ($space->type !== \App\Models\Space::TYPE_PERSONAL) {
+                // Espace partage : toutes les listes de l'espace.
+                \App\Services\SpaceAccessService::assertMember($space->id, $user_id);
+                $lists = ShoppingList::where('space_id', $space->id)
+                    ->get(['id', 'name']);
+            } else {
+                // Espace personnel : les listes propres...
+                $lists = ListAccessService::scopeLists(
+                    ShoppingList::query(),
+                    $space,
+                    $user_id
+                )->get(['id', 'name']);
+
+                // ...plus celles qu'on a acceptees d'un autre utilisateur.
+                $sharedIds = SharedList::where('shared_with_user_id', $user_id)
+                    ->where('status', SharedList::STATUS_ACCEPTED)
+                    ->where('is_active', true)
+                    ->pluck('list_id')
+                    ->all();
+
+                if (!empty($sharedIds)) {
+                    foreach (ShoppingList::whereIn('id', $sharedIds)->get(['id', 'name']) as $shared) {
+                        $listNames[(int) $shared->id] = $shared->name;
+                    }
+                }
+            }
+
+            foreach ($lists as $list) {
+                $listNames[(int) $list->id] = $list->name;
+            }
+
+            if (empty($listNames)) {
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => [],
+                    'meta' => [
+                        'space_id' => $space->id,
+                        'lists_count' => 0,
+                        'total_receipts' => 0,
+                        'total_amount' => 0,
+                        'unique_stores' => 0,
+                        'truncated' => false,
+                    ],
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
+            // Plafond : une facture par course pendant dix ans tient dans
+            // 500 lignes. Au-dela, `truncated` le dit plutot que de faire
+            // grossir la reponse sans fin.
+            $limit = 500;
+            $query = ListReceipt::whereIn('list_id', array_keys($listNames))
+                ->orderBy('purchase_date', 'desc')
+                ->orderBy('created_at', 'desc');
+
+            $totalCount = (clone $query)->count();
+            $receipts = $query->limit($limit)->get();
+
+            $user = User::with('currency')->find($user_id);
+            $formatted = $receipts->map(function ($receipt) use ($user, $listNames) {
+                $data = $receipt->getApiDataForUser($user);
+                $data['list_id'] = (int) $receipt->list_id;
+                $data['list_name'] = $listNames[(int) $receipt->list_id] ?? null;
+                return $data;
+            });
+
+            $totalAmount = $receipts->sum('total_amount');
+            $currency = ($user && $user->currency) ? $user->currency : Currency::getDefault();
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $formatted,
+                'meta' => [
+                    'space_id' => $space->id,
+                    'lists_count' => count($listNames),
+                    'total_receipts' => $receipts->count(),
+                    'total_amount' => round($totalAmount, 2),
+                    'formatted_total' => $currency->formatAmount($totalAmount),
+                    'unique_stores' => $receipts->unique('store_name')->count(),
+                    'truncated' => $totalCount > $receipts->count(),
+                ],
+            ]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
+        } catch (\Exception $e) {
+            error_log('❌ [ERROR] Receipt all error: ' . $e->getMessage());
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => [
+                    'code' => 'INTERNAL_ERROR',
+                    'message' => 'An error occurred while retrieving receipts',
+                ],
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
     /**
      * ✅ CREATE NEW RECEIPT
      */

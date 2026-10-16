@@ -6062,4 +6062,62 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get receiptPhotoTitle => 'Photo du reçu';
+
+  @override
+  String get tabMore => 'Plus';
+
+  @override
+  String get quickActionsTitle => 'Que voulez-vous ajouter ?';
+
+  @override
+  String get qaProductPhoto => 'Photo d\'un produit';
+
+  @override
+  String get qaProductPhotoHint => 'sur un article de vos listes';
+
+  @override
+  String get pickItemTitle => 'Quel article ?';
+
+  @override
+  String get noItemsInList => 'Aucun article dans cette liste';
+
+  @override
+  String get moreSearchHint => 'Rechercher une fonctionnalité';
+
+  @override
+  String get moreSectionSpending => 'Dépenses';
+
+  @override
+  String get moreSectionShopping => 'Courses';
+
+  @override
+  String get moreSectionSpace => 'Mon espace';
+
+  @override
+  String get moreSectionSettings => 'Réglages et compte';
+
+  @override
+  String get allReceiptsTitle => 'Mes factures';
+
+  @override
+  String get allReceiptsSearchHint => 'Magasin ou liste';
+
+  @override
+  String get allReceiptsEmptyHint =>
+      'Scannez un reçu : EpiList lit le magasin, la date et le total.';
+
+  @override
+  String get allReceiptsTruncated =>
+      'Seules les 500 factures les plus récentes sont affichées';
+
+  @override
+  String receiptsSummary(int count, String total) {
+    return '$count factures · $total';
+  }
+
+  @override
+  String get openList => 'Ouvrir la liste';
+
+  @override
+  String get needsAList => 'demande une liste';
 }

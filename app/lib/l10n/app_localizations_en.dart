@@ -5968,4 +5968,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get receiptPhotoTitle => 'Receipt photo';
+
+  @override
+  String get tabMore => 'More';
+
+  @override
+  String get quickActionsTitle => 'What would you like to add?';
+
+  @override
+  String get qaProductPhoto => 'A product photo';
+
+  @override
+  String get qaProductPhotoHint => 'on an item from your lists';
+
+  @override
+  String get pickItemTitle => 'Which item?';
+
+  @override
+  String get noItemsInList => 'No item in this list';
+
+  @override
+  String get moreSearchHint => 'Search a feature';
+
+  @override
+  String get moreSectionSpending => 'Spending';
+
+  @override
+  String get moreSectionShopping => 'Shopping';
+
+  @override
+  String get moreSectionSpace => 'My space';
+
+  @override
+  String get moreSectionSettings => 'Settings and account';
+
+  @override
+  String get allReceiptsTitle => 'My receipts';
+
+  @override
+  String get allReceiptsSearchHint => 'Store or list';
+
+  @override
+  String get allReceiptsEmptyHint =>
+      'Scan a receipt: EpiList reads the store, date and total.';
+
+  @override
+  String get allReceiptsTruncated =>
+      'Only the 500 most recent receipts are shown';
+
+  @override
+  String receiptsSummary(int count, String total) {
+    return '$count receipts · $total';
+  }
+
+  @override
+  String get openList => 'Open list';
+
+  @override
+  String get needsAList => 'needs a list';
 }
