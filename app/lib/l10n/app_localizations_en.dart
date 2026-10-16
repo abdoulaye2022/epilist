@@ -4379,6 +4379,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discountLine => 'Discount / return (not counted)';
 
   @override
+  String get copyOcrText => 'Copy scanned text';
+
+  @override
+  String get ocrTextCopied => 'Receipt text copied';
+
+  @override
   String unrecognizedLinesTitle(int count) {
     return 'Unrecognized lines ($count)';
   }

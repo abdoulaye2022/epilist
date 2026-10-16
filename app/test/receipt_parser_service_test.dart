@@ -132,16 +132,19 @@ void main() {
       expect(r.totalMismatch, closeTo(-1.50, 0.001));
     });
 
-    test('les lignes illisibles vont dans unrecognizedLines, jamais en article', () {
-      final r = parser.parse([
-        'LAIT 5.00',
-        '~~~###~~~',
-        'xQ zz',
-        'TOTAL 5.00',
-      ]);
-      expect(r.items.length, 1);
-      expect(r.unrecognizedLines, containsAll(['~~~###~~~', 'xQ zz']));
-    });
+    test(
+      'les lignes illisibles vont dans unrecognizedLines, jamais en article',
+      () {
+        final r = parser.parse([
+          'LAIT 5.00',
+          '~~~###~~~',
+          'xQ zz',
+          'TOTAL 5.00',
+        ]);
+        expect(r.items.length, 1);
+        expect(r.unrecognizedLines, containsAll(['~~~###~~~', 'xQ zz']));
+      },
+    );
 
     test('reçu vide -> aucun article, aucune erreur', () {
       final r = parser.parse([]);
@@ -183,6 +186,100 @@ void main() {
     test('sinon, prend une ligne d\'en-tête plausible', () {
       final r = parser.parse(['MARCHE DU COIN', 'LAIT 5.00', 'TOTAL 5.00']);
       expect(r.storeName, 'Marche Du Coin');
+    });
+  });
+
+  // Les reçus d'ici écrivent « 4,99 $ » : virgule décimale, dollar APRÈS
+  // le nombre. Le parseur ne l'acceptait qu'avant (« $4.99 ») et ne
+  // reconnaissait alors PLUS RIEN sur un tel reçu — ni article, ni taxe,
+  // ni total.
+  group('Reçu en français du Canada (montant suivi du signe dollar)', () {
+    final lines = [
+      'MAXI',
+      '2026-10-14 18:04',
+      'LAIT 2% 4L            4,99 \$',
+      'PAIN TRANCHE  3,49\$',
+      'COCA-COLA 2L 2 X 2,50  5,00 \$',
+      'BANANES 1,48 \$',
+      '0,680 kg @ 2,18 \$/kg',
+      'SOUS-TOTAL  14,96 \$',
+      'TPS 5%  0,75 \$',
+      'TVQ 9,975%  1,49 \$',
+      'TOTAL  17,20 \$',
+    ];
+
+    test('lit les quatre articles', () {
+      final r = parser.parse(lines, knownStoreNames: ['Maxi']);
+      expect(r.items.map((i) => i.rawLabel), [
+        'LAIT 2% 4L',
+        'PAIN TRANCHE',
+        'COCA-COLA 2L',
+        'BANANES',
+      ]);
+      expect(r.items.map((i) => i.linePrice), [4.99, 3.49, 5.00, 1.48]);
+    });
+
+    test('lit sous-total, taxes et total', () {
+      final r = parser.parse(lines, knownStoreNames: ['Maxi']);
+      expect(r.subtotal, 14.96);
+      expect(r.taxes, closeTo(2.24, 0.001));
+      expect(r.total, 17.20);
+    });
+
+    test('rattache le poids à l\'article précédent', () {
+      final r = parser.parse(lines);
+      final bananes = r.items.last;
+      expect(bananes.quantity, closeTo(0.680, 0.001));
+      expect(bananes.unit, 'kg');
+      expect(bananes.unitPrice, 2.18);
+    });
+
+    test('lit la multi-quantité incluse dans la ligne', () {
+      final r = parser.parse(lines);
+      final coca = r.items[2];
+      expect(coca.quantity, 2);
+      expect(coca.unitPrice, 2.50);
+    });
+
+    test('garde tout le texte lu pour le diagnostic', () {
+      final r = parser.parse(lines);
+      expect(r.rawLines.length, lines.length);
+      expect(r.rawLines.first, 'MAXI');
+    });
+  });
+
+  group('Montants : formes rencontrées sur les reçus', () {
+    test('espace des milliers, insécable comprise', () {
+      final r = parser.parse(['TOTAL 1 234,56 \$']);
+      expect(r.total, 1234.56);
+      final insecable = parser.parse(['TOTAL 1 234,56 \$']);
+      expect(insecable.total, 1234.56);
+    });
+
+    test('astérisque de ligne taxable et code taxe en suffixe', () {
+      final r = parser.parse(['FROMAGE 8,99 \$ H', 'BEURRE 6,49 \$*']);
+      expect(r.items.map((i) => i.linePrice), [8.99, 6.49]);
+    });
+
+    test('retour : montant négatif, avant ou après le nombre', () {
+      final r = parser.parse(['RETOUR CANETTE -1,20 \$', 'CONSIGNE 2,40 \$-']);
+      expect(r.items.every((i) => i.isDiscount), isTrue);
+    });
+
+    test('une ligne « TOTAL ECONOMIES » ne remplace pas le total payé', () {
+      final r = parser.parse([
+        'LAIT 4,99 \$',
+        'TOTAL  4,99 \$',
+        'TOTAL ECONOMIES  1,50 \$',
+        'TOTAL POINTS  120',
+      ]);
+      expect(r.total, 4.99);
+    });
+
+    test('« TOTAL AVANT TAXES » est le sous-total', () {
+      final r = parser.parse(['TOTAL AVANT TAXES 10,00 \$', 'TOTAL 11,50 \$']);
+      expect(r.subtotal, 10.00);
+      expect(r.total, 11.50);
     });
   });
 }

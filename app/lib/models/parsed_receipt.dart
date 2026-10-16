@@ -65,6 +65,13 @@ class ParsedReceipt {
   /// Lignes que le parseur n'a pas su classer (affichées à titre indicatif).
   final List<String> unrecognizedLines;
 
+  /// TOUT le texte lu par l'OCR, dans l'ordre, classé ou non.
+  ///
+  /// Sert au diagnostic : quand un reçu est mal lu, c'est la seule
+  /// matière qui permette de savoir si le moteur a mal vu ou si le
+  /// parseur a mal classé. L'écran de validation permet de le copier.
+  final List<String> rawLines;
+
   ParsedReceipt({
     this.storeName,
     this.purchaseDate,
@@ -74,13 +81,14 @@ class ParsedReceipt {
     this.receiptNumber,
     List<ParsedReceiptItem>? items,
     List<String>? unrecognizedLines,
+    List<String>? rawLines,
   }) : items = items ?? [],
-       unrecognizedLines = unrecognizedLines ?? [];
+       unrecognizedLines = unrecognizedLines ?? [],
+       rawLines = rawLines ?? [];
 
   /// Somme des lignes d'articles retenues (hors rabais exclus).
-  double get itemsSum => items
-      .where((i) => !i.isDiscount)
-      .fold(0.0, (s, i) => s + i.linePrice);
+  double get itemsSum =>
+      items.where((i) => !i.isDiscount).fold(0.0, (s, i) => s + i.linePrice);
 
   /// Écart entre la somme des lignes et le total lu — sert d'avertissement
   /// dans l'écran de validation, jamais de blocage.

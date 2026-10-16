@@ -13,12 +13,16 @@ import 'package:epilist/models/parsed_receipt.dart';
 class ReceiptParserService {
   /// [knownStoreNames] : noms des magasins de l'utilisateur (facultatif),
   /// utilisés pour reconnaître l'en-tête du reçu.
-  ParsedReceipt parse(List<String> lines, {List<String> knownStoreNames = const []}) {
+  ParsedReceipt parse(
+    List<String> lines, {
+    List<String> knownStoreNames = const [],
+  }) {
     final receipt = ParsedReceipt();
-    final cleaned = lines
-        .map((l) => l.trim())
-        .where((l) => l.isNotEmpty)
-        .toList();
+    final cleaned =
+        lines.map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
+    // Conservé tel quel : seule matière utilisable pour comprendre un
+    // reçu mal lu (voir ParsedReceipt.rawLines).
+    receipt.rawLines.addAll(cleaned);
 
     for (var i = 0; i < cleaned.length; i++) {
       final line = cleaned[i];
@@ -137,38 +141,67 @@ class ReceiptParserService {
 
   // --- Montants -------------------------------------------------------
 
-  /// Montant en fin de ligne : « 6.49 », « 6,49 », « 6.49- », « $6.49 »,
-  /// éventuellement suivi d'un code taxe court (« H », « MRJ », « F »).
+  /// Montant en fin de ligne.
+  ///
+  /// Le signe de dollar APRÈS le nombre est la notation française du
+  /// Canada — « 4,99 $ » — et c'est celle de tous les reçus d'ici. La
+  /// version precedente ne l'acceptait qu'AVANT (« $4.99 ») : sur un reçu
+  /// québécois, plus une seule ligne n'était reconnue. Ni les articles, ni
+  /// le sous-total, ni les taxes, ni le total. Constate sur fixture :
+  /// 0 article et 11 lignes non classees sur un ticket de 12 lignes.
+  ///
+  /// Sont acceptés : « 6.49 », « 6,49 », « 4,99 \$ », « 3,49\$ »,
+  /// « 1 234,56 \$ » (espace des milliers, y compris l'espace insécable
+  /// que rend l'OCR), « 6.49- » et « -6.49 » (retours), un code taxe court
+  /// en suffixe (« H », « F », « MRJ ») et l'astérisque dont certains
+  /// reçus marquent les lignes taxables.
   ({double value, bool negative, int start})? _trailingAmount(String line) {
     final m = RegExp(
-      r'(-?)\$?\s*(\d{1,5}[.,]\d{2})\s*(-?)\s*([A-Z]{0,3})$',
+      r'(-|\u2212)?\s*[\$€]?\s*'
+      r'(\d{1,3}(?:[ \u00A0\u202F]\d{3})+|\d{1,6})[.,](\d{2})'
+      r'\s*(?:[\$€¢]|CAD|USD)?'
+      r'\s*(-|\u2212)?\s*[*✱•]?\s*([A-Za-z]{0,3})\s*[*✱•]?$',
     ).firstMatch(line);
     if (m == null) return null;
-    final value = _toDouble(m.group(2)!);
-    // Garde-fou : un montant seul sans libellé n'est pas un article.
-    final negative = m.group(1) == '-' || m.group(3) == '-';
+    final value = _toDouble('${m.group(2)!}.${m.group(3)!}');
+    final negative = m.group(1) != null || m.group(4) != null;
     return (value: value, negative: negative, start: m.start);
   }
 
-  double _toDouble(String s) => double.parse(s.replaceAll(',', '.'));
+  /// Les espaces (dont l'insécable et l'étroite insécable, que l'OCR rend
+  /// sur « 1 234,56 ») séparent les milliers : ils disparaissent avant la
+  /// conversion.
+  double _toDouble(String s) => double.parse(
+    s.replaceAll(RegExp(r'[ \u00A0\u202F]'), '').replaceAll(',', '.'),
+  );
 
   // --- Classification de lignes ----------------------------------------
 
+  /// « TOTAL » seul, ou « MONTANT TOTAL », « TOTAL DE L'ACHAT »…
+  ///
+  /// Les reçus impriment souvent APRÈS le total des lignes qui portent
+  /// aussi le mot : « TOTAL ECONOMIES 4,15 \$ », « TOTAL RABAIS »,
+  /// « TOTAL POINTS ». Comme on retient la DERNIÈRE ligne de total, l'une
+  /// d'elles remplaçait le vrai montant payé.
   bool _isTotalLine(String upper) =>
       RegExp(r'(^|\s)TOTAL(\s|$)').hasMatch(upper) &&
-      !upper.contains('SOUS') &&
-      !upper.contains('SUB');
+      !_isSubtotalLine(upper) &&
+      !RegExp(
+        r'ECONOM|EPARGNE|SAVING|RABAIS|COUPON|POINTS?|ARTICLES?|ITEMS?',
+      ).hasMatch(upper);
 
   bool _isSubtotalLine(String upper) =>
       upper.contains('SOUS-TOTAL') ||
       upper.contains('SOUS TOTAL') ||
       upper.contains('SUBTOTAL') ||
       upper.contains('SUB-TOTAL') ||
-      upper.contains('SUB TOTAL');
+      upper.contains('SUB TOTAL') ||
+      // « TOTAL AVANT TAXES » est le sous-total, pas le montant payé.
+      RegExp(r'TOTAL\s+(AVANT|BEFORE)').hasMatch(upper);
 
   bool _isTaxLine(String upper) => RegExp(
-        r'(^|\s)(TPS|TVQ|TVH|GST|QST|HST|PST|TAXE?S?)(\s|/|$)',
-      ).hasMatch(upper);
+    r'(^|\s)(TPS|TVQ|TVH|GST|QST|HST|PST|TAXE?S?)(\s|/|$)',
+  ).hasMatch(upper);
 
   bool _isDiscountLabel(String upper) =>
       upper.contains('RABAIS') ||
@@ -182,11 +215,11 @@ class ReceiptParserService {
 
   /// Paiement, solde de carte, messages : jamais des articles.
   bool _isNoiseLine(String upper) => RegExp(
-        r'(^|\s)(VISA|MASTERCARD|INTERAC|DEBIT|CREDIT|COMPTANT|CASH|'
-        r'MONNAIE|CHANGE|APPROUV|APPROVED|AUTORIS|AUTH|CARTE|CARD|'
-        r'SOLDE|BALANCE|MERCI|THANK|BIENVENUE|WELCOME|CAISSE|CASHIER|'
-        r'TEL|WWW\.|HTTP|POINTS?|AIRMILES|OPTIMUM)(\s|:|$)',
-      ).hasMatch(upper);
+    r'(^|\s)(VISA|MASTERCARD|INTERAC|DEBIT|CREDIT|COMPTANT|CASH|'
+    r'MONNAIE|CHANGE|APPROUV|APPROVED|AUTORIS|AUTH|CARTE|CARD|'
+    r'SOLDE|BALANCE|MERCI|THANK|BIENVENUE|WELCOME|CAISSE|CASHIER|'
+    r'TEL|WWW\.|HTTP|POINTS?|AIRMILES|OPTIMUM)(\s|:|$)',
+  ).hasMatch(upper);
 
   bool _looksLikeStoreName(String upper) =>
       upper.length >= 3 &&
@@ -246,7 +279,9 @@ class ReceiptParserService {
     var m = RegExp(r'(20\d{2})[-/](\d{1,2})[-/](\d{1,2})').firstMatch(line);
     if (m != null) {
       return _safeDate(
-        int.parse(m.group(1)!), int.parse(m.group(2)!), int.parse(m.group(3)!),
+        int.parse(m.group(1)!),
+        int.parse(m.group(2)!),
+        int.parse(m.group(3)!),
       );
     }
     // dd/mm/yyyy ou dd-mm-yyyy (interprétation jour d'abord, usage canadien
@@ -258,7 +293,9 @@ class ReceiptParserService {
       final y = int.parse(m.group(3)!);
       // Si le premier nombre ne peut pas être un jour valide en mois b,
       // on suppose mm/dd.
-      return a > 12 ? _safeDate(y, b, a) : _safeDate(y, b > 12 ? a : b, b > 12 ? b : a);
+      return a > 12
+          ? _safeDate(y, b, a)
+          : _safeDate(y, b > 12 ? a : b, b > 12 ? b : a);
     }
     return null;
   }

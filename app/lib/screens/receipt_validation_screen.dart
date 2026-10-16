@@ -10,6 +10,7 @@ import 'package:epilist/services/price_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -71,17 +72,25 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
   /// Pré-remplit les noms de produits à partir des correspondances
   /// serveur (alias appris, historique). Ne remplace jamais une saisie.
   Future<void> _resolveLabels() async {
-    final labels = _items
-        .where((it) => it.nameController.text.trim().isEmpty ||
-            it.nameController.text == it.item.rawLabel)
-        .map((it) => it.item.rawLabel)
-        .toList();
+    final labels =
+        _items
+            .where(
+              (it) =>
+                  it.nameController.text.trim().isEmpty ||
+                  it.nameController.text == it.item.rawLabel,
+            )
+            .map((it) => it.item.rawLabel)
+            .toList();
     if (labels.isEmpty) return;
     try {
-      final store = widget.knownStores
-          .where((s) => s.name.toLowerCase() ==
-              _storeController.text.trim().toLowerCase())
-          .toList();
+      final store =
+          widget.knownStores
+              .where(
+                (s) =>
+                    s.name.toLowerCase() ==
+                    _storeController.text.trim().toLowerCase(),
+              )
+              .toList();
       final resolutions = await context.read<PriceService>().resolveLabels(
         labels,
         storeId: store.isEmpty ? null : store.first.id,
@@ -107,8 +116,13 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
 
   double get _itemsSum => _items
       .where((it) => !it.item.isDiscount && !it.removed)
-      .fold(0.0, (s, it) => s + (double.tryParse(
-          it.priceController.text.replaceAll(',', '.')) ?? 0));
+      .fold(
+        0.0,
+        (s, it) =>
+            s +
+            (double.tryParse(it.priceController.text.replaceAll(',', '.')) ??
+                0),
+      );
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -127,31 +141,34 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
     final items = _items.where((it) => !it.removed && !it.item.isDiscount);
 
     if (store.isEmpty || total == null || items.isEmpty) {
-      SmartSnackBarManager.showErrorSnackBar(
-        context, l10n.allFieldsRequired);
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.allFieldsRequired);
       return;
     }
 
     setState(() => _saving = true);
     try {
-      final payload = items.map((it) {
-        final i = it.item;
-        return ParsedReceiptItem(
-          rawLabel: i.rawLabel,
-          productName: it.nameController.text.trim().isEmpty
-              ? null
-              : it.nameController.text.trim(),
-          quantity: double.tryParse(
-                  it.qtyController.text.replaceAll(',', '.')) ??
-              i.quantity,
-          unit: i.unit,
-          unitPrice: i.unitPrice,
-          linePrice: double.tryParse(
-                  it.priceController.text.replaceAll(',', '.')) ??
-              i.linePrice,
-          confidence: i.confidence,
-        );
-      }).toList();
+      final payload =
+          items.map((it) {
+            final i = it.item;
+            return ParsedReceiptItem(
+              rawLabel: i.rawLabel,
+              productName:
+                  it.nameController.text.trim().isEmpty
+                      ? null
+                      : it.nameController.text.trim(),
+              quantity:
+                  double.tryParse(it.qtyController.text.replaceAll(',', '.')) ??
+                  i.quantity,
+              unit: i.unit,
+              unitPrice: i.unitPrice,
+              linePrice:
+                  double.tryParse(
+                    it.priceController.text.replaceAll(',', '.'),
+                  ) ??
+                  i.linePrice,
+              confidence: i.confidence,
+            );
+          }).toList();
 
       await context.read<PriceService>().importReceipt(
         listId: widget.listId,
@@ -173,20 +190,21 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
       setState(() => _saving = false);
       final confirm = await showDialog<bool>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.duplicateReceiptTitle),
-          content: Text(l10n.duplicateReceiptMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l10n.cancel),
+        builder:
+            (ctx) => AlertDialog(
+              title: Text(l10n.duplicateReceiptTitle),
+              content: Text(l10n.duplicateReceiptMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text(l10n.cancel),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text(l10n.saveAnyway),
+                ),
+              ],
             ),
-            FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(l10n.saveAnyway),
-            ),
-          ],
-        ),
       );
       if (confirm == true) await _save(force: true);
     } catch (e) {
@@ -213,7 +231,9 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
           Text(
             l10n.reviewReceiptHint,
             style: const TextStyle(
-              fontSize: 13, color: AppColors.textSecondary),
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
 
@@ -234,14 +254,17 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                           child: InputDecorator(
                             decoration: InputDecoration(
                               labelText: l10n.purchaseDateLabel,
-                              suffixIcon:
-                                  const Icon(Icons.calendar_today, size: 18),
+                              suffixIcon: const Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                              ),
                             ),
-                            child: Text(DateFormat(
-                                    'd MMM yyyy',
-                                    Localizations.localeOf(context)
-                                        .languageCode)
-                                .format(_date)),
+                            child: Text(
+                              DateFormat(
+                                'd MMM yyyy',
+                                Localizations.localeOf(context).languageCode,
+                              ).format(_date),
+                            ),
                           ),
                         ),
                       ),
@@ -250,7 +273,8 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                         child: TextField(
                           controller: _totalController,
                           keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
+                            decimal: true,
+                          ),
                           decoration: InputDecoration(
                             labelText: l10n.receiptTotalLabel,
                           ),
@@ -286,19 +310,27 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.receiptItemsSection(
-              visibleItems.where((i) => !i.item.isDiscount).length),
-            style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.w700),
+              visibleItems.where((i) => !i.item.isDiscount).length,
+            ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: AppSpacing.sm),
           ...visibleItems.map((it) => _itemCard(it, l10n)),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
-              onPressed: () => setState(() => _items.add(_EditableItem(
-                    ParsedReceiptItem(
-                        rawLabel: '', linePrice: 0, confidence: 100),
-                  ))),
+              onPressed:
+                  () => setState(
+                    () => _items.add(
+                      _EditableItem(
+                        ParsedReceiptItem(
+                          rawLabel: '',
+                          linePrice: 0,
+                          confidence: 100,
+                        ),
+                      ),
+                    ),
+                  ),
               icon: const Icon(Icons.add, size: 18),
               label: Text(l10n.addReceiptItem),
             ),
@@ -311,39 +343,87 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
               tilePadding: EdgeInsets.zero,
               title: Text(
                 l10n.unrecognizedLinesTitle(
-                    widget.receipt.unrecognizedLines.length),
+                  widget.receipt.unrecognizedLines.length,
+                ),
                 style: const TextStyle(
-                    fontSize: 13.5, color: AppColors.textSecondary),
+                  fontSize: 13.5,
+                  color: AppColors.textSecondary,
+                ),
               ),
-              children: widget.receipt.unrecognizedLines
-                  .map((l) => Padding(
-                        padding: const EdgeInsets.only(
-                            left: AppSpacing.sm, bottom: 4),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(l,
+              children:
+                  widget.receipt.unrecognizedLines
+                      .map(
+                        (l) => Padding(
+                          padding: const EdgeInsets.only(
+                            left: AppSpacing.sm,
+                            bottom: 4,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              l,
                               style: const TextStyle(
-                                  fontSize: 12.5,
-                                  color: AppColors.textDisabled)),
+                                fontSize: 12.5,
+                                color: AppColors.textDisabled,
+                              ),
+                            ),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      )
+                      .toList(),
             ),
           ],
+
+          // --- Texte brut lu par l'OCR ------------------------------------
+          // Quand un reçu est mal lu, c'est la seule matière qui permette
+          // de savoir si le moteur a mal vu ou si le parseur a mal classé.
+          // Sans elle, le diagnostic se fait a l'aveugle.
+          if (widget.receipt.rawLines.isNotEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () async {
+                  await Clipboard.setData(
+                    ClipboardData(text: widget.receipt.rawLines.join('\n')),
+                  );
+                  if (context.mounted) {
+                    SmartSnackBarManager.showSuccessSnackBar(
+                      context,
+                      l10n.ocrTextCopied,
+                    );
+                  }
+                },
+                icon: const Icon(Icons.content_copy, size: 16),
+                label: Text(
+                  l10n.copyOcrText,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.textSecondary,
+                ),
+              ),
+            ),
           const SizedBox(height: 90),
         ],
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
           child: FilledButton(
             onPressed: _saving ? null : () => _save(),
-            child: _saving
-                ? const SizedBox(
-                    height: 20, width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(l10n.saveReceipt),
+            child:
+                _saving
+                    ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : Text(l10n.saveReceipt),
           ),
         ),
       ),
@@ -384,9 +464,13 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
           const Icon(Icons.info_outline, size: 18, color: AppColors.warning),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Text(text,
-                style: const TextStyle(
-                    fontSize: 12.5, color: AppColors.textPrimary)),
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.textPrimary,
+              ),
+            ),
           ),
         ],
       ),
@@ -401,7 +485,11 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.sm, AppSpacing.xs, AppSpacing.sm),
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.xs,
+          AppSpacing.sm,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -414,17 +502,21 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.itemNameLabel,
                       isDense: true,
-                      helperText: item.rawLabel.isNotEmpty &&
-                              item.rawLabel != it.nameController.text
-                          ? l10n.rawLabelHint(item.rawLabel)
-                          : null,
+                      helperText:
+                          item.rawLabel.isNotEmpty &&
+                                  item.rawLabel != it.nameController.text
+                              ? l10n.rawLabelHint(item.rawLabel)
+                              : null,
                       helperMaxLines: 1,
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close,
-                      size: 18, color: AppColors.textDisabled),
+                  icon: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: AppColors.textDisabled,
+                  ),
                   onPressed: () => setState(() => it.removed = true),
                 ),
               ],
@@ -438,9 +530,11 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                     controller: it.qtyController,
                     enabled: !item.isDiscount,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
+                      decimal: true,
+                    ),
                     decoration: InputDecoration(
-                      labelText: l10n.quantityShort +
+                      labelText:
+                          l10n.quantityShort +
                           (item.unit != null ? ' (${item.unit})' : ''),
                       isDense: true,
                     ),
@@ -453,7 +547,9 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                     controller: it.priceController,
                     enabled: !item.isDiscount,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: l10n.priceLabel,
                       isDense: true,
@@ -463,11 +559,17 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                 ),
                 const Spacer(),
                 if (item.isDiscount)
-                  _flag(l10n.discountLine, AppColors.textDisabled,
-                      Icons.remove_circle_outline)
+                  _flag(
+                    l10n.discountLine,
+                    AppColors.textDisabled,
+                    Icons.remove_circle_outline,
+                  )
                 else if (uncertain)
-                  _flag(l10n.uncertainLine, AppColors.warning,
-                      Icons.help_outline),
+                  _flag(
+                    l10n.uncertainLine,
+                    AppColors.warning,
+                    Icons.help_outline,
+                  ),
               ],
             ),
           ],
@@ -501,14 +603,18 @@ class _EditableItem {
   bool removed = false;
 
   _EditableItem(this.item)
-      : nameController =
-            TextEditingController(text: item.productName ?? item.rawLabel),
-        qtyController = TextEditingController(
-            text: item.quantity == item.quantity.roundToDouble()
+    : nameController = TextEditingController(
+        text: item.productName ?? item.rawLabel,
+      ),
+      qtyController = TextEditingController(
+        text:
+            item.quantity == item.quantity.roundToDouble()
                 ? item.quantity.toInt().toString()
-                : item.quantity.toStringAsFixed(3)),
-        priceController =
-            TextEditingController(text: item.linePrice.toStringAsFixed(2));
+                : item.quantity.toStringAsFixed(3),
+      ),
+      priceController = TextEditingController(
+        text: item.linePrice.toStringAsFixed(2),
+      );
 
   void dispose() {
     nameController.dispose();

@@ -1758,6 +1758,8 @@
   "addReceiptItem": "Ajouter un article",
   "uncertainLine": "À vérifier",
   "discountLine": "Rabais / retour (non compté)",
+  "copyOcrText": "Copier le texte lu",
+  "ocrTextCopied": "Texte du reçu copié",
   "unrecognizedLinesTitle": "Lignes non reconnues ({count})",
   "@unrecognizedLinesTitle": {
     "placeholders": {

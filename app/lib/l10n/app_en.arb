@@ -1750,6 +1750,8 @@
   "addReceiptItem": "Add an item",
   "uncertainLine": "Needs review",
   "discountLine": "Discount / return (not counted)",
+  "copyOcrText": "Copy scanned text",
+  "ocrTextCopied": "Receipt text copied",
   "unrecognizedLinesTitle": "Unrecognized lines ({count})",
   "totalMismatchWarning": "Items sum ({sum}) doesn't match the read total ({total}).",
   "saveReceipt": "Save receipt",

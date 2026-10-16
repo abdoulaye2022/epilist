@@ -8359,6 +8359,18 @@ abstract class AppLocalizations {
   /// **'Rabais / retour (non compté)'**
   String get discountLine;
 
+  /// No description provided for @copyOcrText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le texte lu'**
+  String get copyOcrText;
+
+  /// No description provided for @ocrTextCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Texte du reçu copié'**
+  String get ocrTextCopied;
+
   /// No description provided for @unrecognizedLinesTitle.
   ///
   /// In fr, this message translates to:

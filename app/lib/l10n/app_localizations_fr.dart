@@ -4451,6 +4451,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discountLine => 'Rabais / retour (non compté)';
 
   @override
+  String get copyOcrText => 'Copier le texte lu';
+
+  @override
+  String get ocrTextCopied => 'Texte du reçu copié';
+
+  @override
   String unrecognizedLinesTitle(int count) {
     return 'Lignes non reconnues ($count)';
   }
