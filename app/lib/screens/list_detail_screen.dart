@@ -16,6 +16,7 @@ import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/utils/chat_flow.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/common/product_photo_button.dart';
 import 'package:epilist/widgets/list_detail/add_item_dialog.dart';
 import 'package:epilist/widgets/list_detail/edit_item_dialog.dart';
 import 'package:epilist/widgets/profile/delete_confirmation_dialog.dart';
@@ -906,8 +907,23 @@ class _ListDetailViewState extends State<_ListDetailView> {
   }
 
   Widget _buildItemTrailing(ListItem item) {
+    // La photo d'abord, et VISIBLE : jusqu'ici rien, sur la ligne, ne
+    // disait qu'un article pouvait en porter une. Le bouton s'efface de
+    // lui-meme quand il n'y a ni photo ni droit d'en ajouter.
+    final photo = ProductPhotoButton(
+      item: item,
+      canEdit: currentList.canEdit,
+      size: 36,
+      // Sans ce rechargement, la vignette n'apparaitrait qu'a la
+      // prochaine ouverture de la liste.
+      onChanged: () =>
+          context.read<ListItemBloc>().add(LoadListItems(currentList.id)),
+    );
+    final montrePhoto =
+        item.imageUrl?.isNotEmpty == true || currentList.canEdit;
+
     if (currentList.isReadOnly) {
-      return Container(
+      final badge = Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: AppColors.accentLight,
@@ -930,9 +946,14 @@ class _ListDetailViewState extends State<_ListDetailView> {
           ],
         ),
       );
+      if (!montrePhoto) return badge;
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [photo, const SizedBox(width: AppSpacing.sm), badge],
+      );
     }
 
-    return IconButton(
+    final crayon = IconButton(
       icon: Icon(Icons.edit, color: AppColors.accent),
       onPressed:
           currentList.canEdit
@@ -944,6 +965,11 @@ class _ListDetailViewState extends State<_ListDetailView> {
           currentList.canEdit
               ? AppLocalizations.of(context)!.editItem
               : AppLocalizations.of(context)!.insufficientPermission,
+    );
+    if (!montrePhoto) return crayon;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [photo, crayon],
     );
   }
 

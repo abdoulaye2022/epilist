@@ -11209,6 +11209,12 @@ abstract class AppLocalizations {
   /// **'Un titre, un texte secondaire, et un bouton.'**
   String get appearancePreviewLine;
 
+  /// No description provided for @replacePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplacer la photo'**
+  String get replacePhoto;
+
   /// No description provided for @tabMore.
   ///
   /// In fr, this message translates to:

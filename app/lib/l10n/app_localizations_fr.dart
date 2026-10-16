@@ -6089,6 +6089,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un titre, un texte secondaire, et un bouton.';
 
   @override
+  String get replacePhoto => 'Remplacer la photo';
+
+  @override
   String get tabMore => 'Plus';
 
   @override

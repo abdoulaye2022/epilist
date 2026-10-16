@@ -5995,6 +5995,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'A title, a secondary line, and a button.';
 
   @override
+  String get replacePhoto => 'Replace the photo';
+
+  @override
   String get tabMore => 'More';
 
   @override
