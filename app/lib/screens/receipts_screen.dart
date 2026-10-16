@@ -330,6 +330,14 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
               state.message,
               duration: const Duration(seconds: 3),
             );
+          } else if (state is ReceiptRefreshFailed) {
+            // Rafraichissement rate alors que la liste est deja a l'ecran :
+            // on la laisse en place et on dit pourquoi elle n'a pas bouge.
+            SmartSnackBarManager.showErrorSnackBar(
+              context,
+              state.message,
+              duration: const Duration(seconds: 3),
+            );
           } else if (state is ReceiptOperationSuccess) {
             SmartSnackBarManager.showSuccessSnackBar(
               context,

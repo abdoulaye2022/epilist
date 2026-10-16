@@ -79,8 +79,10 @@ class RecurringListController
     {
         $userId = (int) $request->getAttribute('auth_id');
         $data = $request->getParsedBody() ?? [];
-        $name = trim((string) ($data['name'] ?? ''));
-        $type = (string) ($data['recurrence_type'] ?? 'weekly');
+        // is_scalar : voir SpaceController::create — un tableau recu la ou un
+        // texte est attendu imprimait un avertissement PHP avant le JSON.
+        $name = trim(is_scalar($data['name'] ?? null) ? (string) $data['name'] : '');
+        $type = is_scalar($data['recurrence_type'] ?? null) ? (string) $data['recurrence_type'] : 'weekly';
         $items = $data['items'] ?? [];
 
         if ($name === '' || !in_array($type, ['weekly', 'biweekly', 'monthly'], true) || !is_array($items)) {

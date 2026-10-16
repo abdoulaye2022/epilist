@@ -133,10 +133,14 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     } catch (e) {
       debugPrint("Error loading receipts: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
-      // Echec silencieux si des donnees sont deja affichees.
-      if (nothingDisplayed) {
-        emit(ReceiptError(errorMessage));
-      }
+      // Les donnees deja affichees ne sont pas remplacees par un ecran
+      // d'erreur, mais l'echec est SIGNALE : sans cela rien n'etait emis du
+      // tout et la page restait muette, figee sur un etat perime.
+      emit(
+        nothingDisplayed
+            ? ReceiptError(errorMessage)
+            : ReceiptRefreshFailed(errorMessage),
+      );
     }
   }
 
@@ -272,10 +276,12 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     } catch (e) {
       debugPrint("Error loading receipt stats: $e");
       final errorMessage = _getTranslatedErrorMessage(e);
-      // Echec silencieux si des donnees sont deja affichees.
-      if (nothingDisplayed) {
-        emit(ReceiptError(errorMessage));
-      }
+      // Voir _onLoadReceipts : on garde l'affichage, on signale l'echec.
+      emit(
+        nothingDisplayed
+            ? ReceiptError(errorMessage)
+            : ReceiptRefreshFailed(errorMessage),
+      );
     }
   }
 }

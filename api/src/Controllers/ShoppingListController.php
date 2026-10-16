@@ -598,6 +598,15 @@ class ShoppingListController
         } catch (\App\Services\SpaceAccessException $sae) {
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Liste inexistante (ou appartenant a quelqu'un d'autre) : 404.
+            // Le catch generique en dessous repondait 500, ce qui remplissait
+            // le journal d'erreurs de faux positifs.
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Liste introuvable'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,

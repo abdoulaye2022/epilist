@@ -107,8 +107,12 @@ class SpaceController
         $userId = (int) $request->getAttribute('auth_id');
         $data = (array) $request->getParsedBody();
 
-        $type = (string) ($data['type'] ?? '');
-        $name = trim((string) ($data['name'] ?? ''));
+        // is_scalar : un client qui envoie un tableau la ou un texte est
+        // attendu declenchait un avertissement PHP « Array to string
+        // conversion ». En developpement cet avertissement s'imprimait AVANT
+        // le JSON et rendait la reponse indecodable par l'application.
+        $type = is_scalar($data['type'] ?? null) ? (string) $data['type'] : '';
+        $name = trim(is_scalar($data['name'] ?? null) ? (string) $data['name'] : '');
 
         // L'espace personnel est unique et géré par le système.
         $allowed = [Space::TYPE_HOUSEHOLD, Space::TYPE_RESTAURANT, Space::TYPE_ORGANIZATION];

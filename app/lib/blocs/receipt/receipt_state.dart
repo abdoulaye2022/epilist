@@ -47,6 +47,21 @@ class ReceiptOperationSuccess extends ReceiptState {
   List<Object?> get props => [message];
 }
 
+/// Un rafraichissement a echoue ALORS QUE des donnees sont deja affichees.
+/// Volontairement absent des `buildWhen` de l'ecran : la liste visible n'est
+/// pas remplacee par un ecran d'erreur. Le `BlocListener` en fait un message
+/// passager, pour que l'echec soit VU au lieu d'etre avale en silence (la
+/// page semblait alors figee : la facture ajoutee n'apparaissait pas et rien
+/// n'expliquait pourquoi).
+class ReceiptRefreshFailed extends ReceiptState {
+  final String message;
+
+  const ReceiptRefreshFailed(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class ReceiptError extends ReceiptState {
   final String message;
 

@@ -123,6 +123,15 @@ class ProductSuggestionController
                 'message' => 'Suggestion supprimée avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Un identifiant qui ne designe rien n'est pas une panne du
+            // serveur : 404. Avant, le catch generique en dessous renvoyait
+            // 500, ce qui remplissait le journal d'erreurs de faux positifs.
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Suggestion introuvable'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
@@ -210,6 +219,15 @@ class ProductSuggestionController
                 'message' => 'Suggestion mise à jour avec succès'
             ]));
             return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Un identifiant qui ne designe rien n'est pas une panne du
+            // serveur : 404. Avant, le catch generique en dessous renvoyait
+            // 500, ce qui remplissait le journal d'erreurs de faux positifs.
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Suggestion introuvable'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,

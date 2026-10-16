@@ -115,8 +115,13 @@ $app->add($errorMiddleware);
 // Ajouter le middleware pour parser le JSON
 $app->addBodyParsingMiddleware();
 
-// Activer le middleware d'erreurs
-$app->addErrorMiddleware(true, true, true);
+// Activer le middleware d'erreurs. Le 1er argument expose le detail des
+// exceptions (fichier, ligne, pile d'appels) dans la reponse HTTP : en
+// production cela livrait l'arborescence du serveur a quiconque provoquait
+// une erreur, et renvoyait du HTML la ou l'application attend du JSON.
+// Reserve au developpement.
+$displayErrorDetails = ($_ENV['APP_ENV'] ?? '') === 'dev';
+$app->addErrorMiddleware($displayErrorDetails, true, true);
 
 //  ROUTES D'AUTHENTIFICATION (sans authentification)
 $app->post('/auth/login', [AuthController::class, 'login']);
@@ -127,9 +132,11 @@ $app->post('/auth/2fa/verify', [AuthController::class, 'twoFactorVerify']);
 $app->post('/auth/admin/otp', [AuthController::class, 'adminOtpRequest']);
 $app->post('/auth/admin/verify-otp', [AuthController::class, 'adminOtpVerify']);
 $app->post('/auth/register', [AuthController::class, 'register']);
-$app->post('/auth/reset-link', [AuthController::class, 'resetLink']);
-$app->post('/auth/validate-reset-token', [AuthController::class, 'validateResetToken']);
-$app->post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+// Les trois routes /auth/reset-link, /auth/validate-reset-token et
+// /auth/reset-password designaient des methodes qui n'existent PAS dans
+// AuthController : chaque appel repondait 500 (« ... is not resolvable »).
+// Le mot de passe oublie passe en realite par /auth/request-password-change
+// puis /auth/verify-password-change-code (ecran PasswordChangeScreen).
 $app->post('/auth/confirm-email', [AuthController::class, 'confirmEmail']);
 $app->post('/auth/resend-verification', [AuthController::class, 'resendVerificationEmail']);
 $app->post('/auth/logout', [AuthController::class, 'logout']);
