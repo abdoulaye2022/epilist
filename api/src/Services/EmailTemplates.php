@@ -420,12 +420,19 @@ class EmailTemplates
      * Un invité déjà inscrit reçoit une notification push (voir
      * SpaceController::notifyInvitee).
      */
+    /**
+     * @param bool $hasAccount L'invité possède déjà un compte EpiList. La
+     *   marche à suivre n'est alors pas la même : il n'a rien à créer,
+     *   l'invitation l'attend dans l'application. Lui demander de
+     *   « créer son compte » l'enverrait dans un mur.
+     */
     public static function spaceInvitationEmail(
         string $inviterName,
         string $spaceName,
         string $spaceType,
         int $expiresInDays,
-        string $lang = 'fr'
+        string $lang = 'fr',
+        bool $hasAccount = false
     ): string {
         $kind = match ($spaceType) {
             'household' => $lang === 'en' ? 'household' : 'foyer',
@@ -446,8 +453,11 @@ class EmailTemplates
                     <strong>{$space}</strong> on EpiList — to share shopping
                     lists, budgets and what's left at home.</p>
                 <p style='margin:0 0 20px; font-size:14px; color:#4a5568; line-height:1.6;'>
-                    Install EpiList and create your account with THIS email
-                    address: the invitation will be waiting for you in the app.</p>
+                    " . ($hasAccount
+                        ? "Open EpiList and go to <strong>Spaces &rsaquo; My
+                           invitations</strong> to accept it."
+                        : 'Install EpiList and create your account with THIS email
+                           address: the invitation will be waiting for you in the app.') . "</p>
                 <p style='margin:0; font-size:13px; color:#718096;'>
                     This invitation expires in {$expiresInDays} days.</p>";
         } else {
@@ -459,8 +469,11 @@ class EmailTemplates
                     <strong>{$space}</strong> sur EpiList — pour partager listes
                     de courses, budgets et stock à la maison.</p>
                 <p style='margin:0 0 20px; font-size:14px; color:#4a5568; line-height:1.6;'>
-                    Installez EpiList et créez votre compte avec CETTE adresse
-                    courriel : l'invitation vous attendra dans l'application.</p>
+                    " . ($hasAccount
+                        ? 'Ouvrez EpiList et rendez-vous dans <strong>Espaces &rsaquo;
+                           Mes invitations</strong> pour l\'accepter.'
+                        : "Installez EpiList et créez votre compte avec CETTE adresse
+                           courriel : l'invitation vous attendra dans l'application.") . "</p>
                 <p style='margin:0; font-size:13px; color:#718096;'>
                     Cette invitation expire dans {$expiresInDays} jours.</p>";
         }

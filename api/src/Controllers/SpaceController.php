@@ -451,14 +451,21 @@ class SpaceController
     }
 
     /**
-     * Annonce l'invitation à son destinataire. Deux canaux selon le cas :
+     * Annonce l'invitation à son destinataire.
      *
-     *  - l'invité a déjà un compte : notification push. L'invitation
-     *    apparaît de toute façon dans l'application, l'email serait du
-     *    courrier en trop (politique courrier, voir MailSender) ;
-     *  - l'invité n'a PAS de compte : email. C'est le seul moyen de le
-     *    joindre, et sans lui l'invitation reste invisible — c'est
-     *    précisément ce qui ne fonctionnait pas.
+     * L'EMAIL PART TOUJOURS. C'est le seul canal dont on sache qu'il
+     * atteint la personne : un invité déjà inscrit peut n'avoir aucun
+     * appareil joignable, et c'est même le cas courant — on invite
+     * justement quelqu'un qui n'utilise pas l'application tous les jours.
+     * Un appareil est tenu pour inactif après 30 jours sans ouverture
+     * (UserDevice::isActive), son jeton push peut avoir été révoqué, et
+     * les notifications peuvent simplement être refusées sur le
+     * téléphone. La version précédente n'envoyait QUE le push aux
+     * inscrits : quand il n'aboutissait pas, l'invitation n'existait plus
+     * que dans la base et dans l'écran « Mes invitations », invisible.
+     *
+     * Le push s'ajoute à l'email pour un invité inscrit : il ouvre
+     * directement le bon écran, et son échec n'a plus de conséquence.
      *
      * Best-effort : un échec d'envoi ne doit pas faire échouer la
      * création de l'invitation, qui est déjà enregistrée.
@@ -469,15 +476,21 @@ class SpaceController
         int $inviterId,
         ?User $existingUser
     ): void {
-        try {
-            $inviter = User::find($inviterId);
-            $inviterName = $inviter
-                ? trim($inviter->first_name . ' ' . $inviter->last_name)
-                : 'EpiList';
-            $spaceName = $space->name;
+        $inviter = User::find($inviterId);
+        $inviterName = $inviter
+            ? trim($inviter->first_name . ' ' . $inviter->last_name)
+            : 'EpiList';
+        $spaceName = $space->name;
 
-            if ($existingUser !== null) {
-                (new \App\Services\NotificationService())->sendToUser(
+        // Langue de l'invité quand on la connait, sinon celle de
+        // l'inviteur : c'est la meilleure approximation disponible.
+        $lang = in_array($existingUser?->language, ['fr', 'en'], true)
+            ? $existingUser->language
+            : (in_array($inviter?->language, ['fr', 'en'], true) ? $inviter->language : 'fr');
+
+        if ($existingUser !== null) {
+            try {
+                $resultat = (new \App\Services\NotificationService())->sendToUser(
                     (int) $existingUser->id,
                     'space_invitation',
                     'Invitation à rejoindre ' . $spaceName,
@@ -489,21 +502,34 @@ class SpaceController
                         'inviter_name' => $inviterName,
                     ]
                 );
-                return;
+                if (empty($resultat['success'])) {
+                    // Journalisé, pas fatal : l'email ci-dessous reste le
+                    // canal qui porte l'invitation.
+                    error_log('Invitation ' . $invitation->id . ' : push non delivre ('
+                        . json_encode($resultat) . ') — l\'email reste envoye');
+                }
+            } catch (\Throwable $e) {
+                error_log('Invitation ' . $invitation->id . ' : push impossible: ' . $e->getMessage());
             }
+        }
 
+        try {
             \App\Services\MailSender::sendMail(
-                $inviterName . ' vous invite sur EpiList',
+                $lang === 'en'
+                    ? $inviterName . ' invites you to EpiList'
+                    : $inviterName . ' vous invite sur EpiList',
                 [['email' => $invitation->email]],
                 \App\Services\EmailTemplates::spaceInvitationEmail(
                     $inviterName,
                     $spaceName,
                     $space->type,
-                    SpaceInvitation::TTL_DAYS
+                    SpaceInvitation::TTL_DAYS,
+                    $lang,
+                    $existingUser !== null
                 )
             );
         } catch (\Throwable $e) {
-            error_log('Invitation : notification non envoyee: ' . $e->getMessage());
+            error_log('Invitation ' . $invitation->id . ' : email non envoye: ' . $e->getMessage());
         }
     }
 
