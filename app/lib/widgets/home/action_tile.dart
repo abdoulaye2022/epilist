@@ -80,3 +80,32 @@ class ActionTile extends StatelessWidget {
     );
   }
 }
+
+/// Deux tuiles côte à côte, de même hauteur.
+///
+/// [IntrinsicHeight] n'est pas décoratif, et son absence a sorti
+/// l'accueil tout blanc : la rangée vit dans un défilement vertical, où
+/// la hauteur disponible est INFINIE. `CrossAxisAlignment.stretch` y
+/// demande aux tuiles de s'étirer sur une hauteur infinie, la mise en
+/// page échoue, et l'échec remonte jusqu'à la page entière — rien n'est
+/// dessiné, pas même le dégradé ni la barre du bas.
+///
+/// L'intrinsèque mesure d'abord la plus haute des deux tuiles, puis
+/// étire l'autre à cette hauteur : « Dicter ma liste » sur deux lignes
+/// et « Scanner » sur une seule gardent le même cadre.
+class ActionTileRow extends StatelessWidget {
+  const ActionTileRow({super.key, required this.left, required this.right});
+
+  final ActionTile left;
+  final ActionTile right;
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [left, const SizedBox(width: AppSpacing.sm + 2), right],
+      ),
+    );
+  }
+}

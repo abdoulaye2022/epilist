@@ -684,52 +684,42 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildActionTiles(AppLocalizations l10n) {
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ActionTile(
-              icon: Icons.mic_none_rounded,
-              label: l10n.dictateList,
-              tint: AppColors.primaryVivid,
-              onTap: () => _openRecentListWith(ListDetailAction.voiceItem),
-            ),
-            const SizedBox(width: AppSpacing.sm + 2),
-            ActionTile(
-              icon: Icons.photo_camera_outlined,
-              label: l10n.scanReceipt,
-              tint: AppColors.accent,
-              onTap: _scanReceipt,
-            ),
-          ],
+        ActionTileRow(
+          left: ActionTile(
+            icon: Icons.mic_none_rounded,
+            label: l10n.dictateList,
+            tint: AppColors.primaryVivid,
+            onTap: () => _openRecentListWith(ListDetailAction.voiceItem),
+          ),
+          right: ActionTile(
+            icon: Icons.photo_camera_outlined,
+            label: l10n.scanReceipt,
+            tint: AppColors.accent,
+            onTap: _scanReceipt,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm + 2),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ActionTile(
-              icon: Icons.restaurant_menu_outlined,
-              label: l10n.mealPlannerTitle,
-              tint: AppColors.gold,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MealPlannerScreen(),
-                    ),
-                  ),
-            ),
-            const SizedBox(width: AppSpacing.sm + 2),
-            ActionTile(
-              icon: Icons.storefront_outlined,
-              label: l10n.myStores,
-              tint: AppColors.warning,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const StoresScreen()),
-                  ),
-            ),
-          ],
+        ActionTileRow(
+          left: ActionTile(
+            icon: Icons.restaurant_menu_outlined,
+            label: l10n.mealPlannerTitle,
+            tint: AppColors.gold,
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MealPlannerScreen()),
+                ),
+          ),
+          right: ActionTile(
+            icon: Icons.storefront_outlined,
+            label: l10n.myStores,
+            tint: AppColors.warning,
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const StoresScreen()),
+                ),
+          ),
         ),
       ],
     );
