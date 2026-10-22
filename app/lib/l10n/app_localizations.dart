@@ -11610,6 +11610,306 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Devanture illustrée du magasin {name}'**
   String storeFrontOf(String name);
+
+  /// No description provided for @mealPlannerIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un repas par bloc, en pleine largeur : rien n\'est coupé sur le côté. Choisissez vos repas de la semaine, puis un seul grand bouton crée la liste de courses avec tous les ingrédients.'**
+  String get mealPlannerIntro;
+
+  /// No description provided for @mealChooseForWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir ce repas pour la semaine'**
+  String get mealChooseForWeek;
+
+  /// No description provided for @mealChosenForWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisi pour cette semaine'**
+  String get mealChosenForWeek;
+
+  /// No description provided for @mealServingsLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour {count} personnes.'**
+  String mealServingsLine(int count);
+
+  /// No description provided for @mealPrepLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Temps de préparation : {minutes} minutes.'**
+  String mealPrepLine(int minutes);
+
+  /// No description provided for @mealIngredientsLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} ingrédients dans la recette.'**
+  String mealIngredientsLine(int count);
+
+  /// No description provided for @priceAlertsIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les produits que vous suivez, et où en est leur prix. Chaque baisse est écrite en toutes lettres, avec une flèche et le mot Baisse : vous ne dépendez jamais de la seule couleur.'**
+  String get priceAlertsIntro;
+
+  /// No description provided for @priceAlertDrop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Baisse de {percent} pour cent'**
+  String priceAlertDrop(String percent);
+
+  /// No description provided for @priceAlertRise.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hausse de {percent} pour cent'**
+  String priceAlertRise(String percent);
+
+  /// No description provided for @priceAlertOldPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ancien prix : {price} \$.'**
+  String priceAlertOldPrice(String price);
+
+  /// No description provided for @priceAlertTargetLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix visé : {price} \$.'**
+  String priceAlertTargetLine(String price);
+
+  /// No description provided for @priceAlertSeenLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier prix vu : {price} \$ chez {store}.'**
+  String priceAlertSeenLine(String price, String store);
+
+  /// No description provided for @priceAlertSeenLineNoStore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier prix vu : {price} \$.'**
+  String priceAlertSeenLineNoStore(String price);
+
+  /// No description provided for @priceAlertSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous économisez {amount} \$ sur ce produit.'**
+  String priceAlertSaving(String amount);
+
+  /// No description provided for @priceAlertReached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix visé est atteint : c\'est le moment d\'acheter.'**
+  String get priceAlertReached;
+
+  /// No description provided for @priceAlertWaiting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix visé n\'est pas encore atteint. Nous continuons à le surveiller.'**
+  String get priceAlertWaiting;
+
+  /// No description provided for @priceAlertNoPriceYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun prix relevé pour le moment sur ce produit.'**
+  String get priceAlertNoPriceYet;
+
+  /// No description provided for @priceAlertStateOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillance : Activée'**
+  String get priceAlertStateOn;
+
+  /// No description provided for @priceAlertStateOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillance : En pause'**
+  String get priceAlertStateOff;
+
+  /// No description provided for @priceAlertNewPriceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau prix :'**
+  String get priceAlertNewPriceLabel;
+
+  /// No description provided for @budgetMonthTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget du mois : {budget}'**
+  String budgetMonthTitle(String budget);
+
+  /// No description provided for @budgetMonthSpentLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez dépensé {spent} sur un budget de {budget}.'**
+  String budgetMonthSpentLine(String spent, String budget);
+
+  /// No description provided for @budgetMonthPercentLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soit {percent} pour cent utilisé. Il vous reste {remaining} pour finir le mois.'**
+  String budgetMonthPercentLine(String percent, String remaining);
+
+  /// No description provided for @budgetGaugeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} pour cent utilisé, {remaining} restants'**
+  String budgetGaugeLabel(String percent, String remaining);
+
+  /// No description provided for @budgetGaugePercent.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} pour cent utilisé'**
+  String budgetGaugePercent(String percent);
+
+  /// No description provided for @budgetMonthOverLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez dépassé ce budget de {over}.'**
+  String budgetMonthOverLine(String over);
+
+  /// No description provided for @shareOfSpending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Part de vos dépenses'**
+  String get shareOfSpending;
+
+  /// No description provided for @shoppingItemsRemainingOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'{remaining, plural, =0{Tous les articles sont dans le panier} =1{1 article restant sur {total}} other{{remaining} articles restants sur {total}}}'**
+  String shoppingItemsRemainingOf(int remaining, int total);
+
+  /// No description provided for @shoppingBasketSentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'{remaining, plural, =0{Vos courses sont terminées : tout est dans le panier.} =1{Vous avez déjà mis {done} articles dans le panier. Encore un article et vos courses sont terminées.} other{Vous avez déjà mis {done} articles dans le panier. Encore {remaining} articles et vos courses sont terminées.}}'**
+  String shoppingBasketSentence(int remaining, int done);
+
+  /// No description provided for @shoppingFinish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer mes courses'**
+  String get shoppingFinish;
+
+  /// No description provided for @shoppingSaveForLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer et revenir plus tard'**
+  String get shoppingSaveForLater;
+
+  /// No description provided for @shoppingSuccessTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courses terminées, bravo !'**
+  String get shoppingSuccessTitle;
+
+  /// No description provided for @shoppingSuccessSentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez terminé la liste {list}. {count} articles sont dans votre panier.'**
+  String shoppingSuccessSentence(String list, int count);
+
+  /// No description provided for @shoppingSuccessSeeBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mes budgets'**
+  String get shoppingSuccessSeeBudgets;
+
+  /// No description provided for @shoppingSuccessBackHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour au tableau de bord'**
+  String get shoppingSuccessBackHome;
+
+  /// No description provided for @shoppingSuccessBackLists.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à mes listes'**
+  String get shoppingSuccessBackLists;
+
+  /// No description provided for @shoppingInBasket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans le panier'**
+  String get shoppingInBasket;
+
+  /// No description provided for @listFullSentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette liste est pleine à {percent} pour cent.'**
+  String listFullSentence(String percent);
+
+  /// No description provided for @listCheckedSentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez coché {done} articles sur {total}.'**
+  String listCheckedSentence(int done, int total);
+
+  /// No description provided for @listRemainingSentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'{remaining, plural, =0{Tout est pris.} =1{Il en reste un à prendre en magasin.} other{Il en reste {remaining} à prendre en magasin.}}'**
+  String listRemainingSentence(int remaining);
+
+  /// No description provided for @listEmptySentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette liste est encore vide : ajoutez-y vos premiers articles.'**
+  String get listEmptySentence;
+
+  /// No description provided for @listGaugeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} pour cent pleine'**
+  String listGaugeLabel(String percent);
+
+  /// No description provided for @listOpenAndShop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la liste et faire les courses'**
+  String get listOpenAndShop;
+
+  /// No description provided for @listCollaborators.
+  ///
+  /// In fr, this message translates to:
+  /// **'Collaborateurs : {names} partagent cette liste avec vous. Les actions de chacun sont visibles tout de suite.'**
+  String listCollaborators(String names);
+
+  /// No description provided for @listSharedNoNames.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette liste est partagée : les actions de chacun sont visibles tout de suite.'**
+  String get listSharedNoNames;
+
+  /// No description provided for @listsActiveCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Vous n\'avez aucune liste active pour le moment.} =1{Vous avez 1 liste active. La carte dit en toutes lettres où vous en êtes, et qui partage la liste avec vous.} other{Vous avez {count} listes actives. Chaque carte dit en toutes lettres où vous en êtes, et qui partage la liste avec vous.}}'**
+  String listsActiveCount(int count);
+
+  /// No description provided for @seeMyReceipts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mes factures'**
+  String get seeMyReceipts;
+
+  /// No description provided for @seeMyAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mes analyses'**
+  String get seeMyAnalytics;
+
+  /// No description provided for @seeMyBudgets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir mes budgets'**
+  String get seeMyBudgets;
+
+  /// No description provided for @seeSavingsDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le détail des économies'**
+  String get seeSavingsDetail;
 }
 
 class _AppLocalizationsDelegate

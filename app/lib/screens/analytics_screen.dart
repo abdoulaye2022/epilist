@@ -1,6 +1,8 @@
 // screens/analytics_screen.dart - Analytiques : une page sobre, sections
 // commutées par chips (même langage que la page Budgets). Le bloc ne porte
 // qu'un jeu de données à la fois : chaque section charge à la sélection.
+import 'package:epilist/screens/budget_screen.dart';
+import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/analytics/analytics_event.dart';
 import 'package:epilist/blocs/analytics/analytics_state.dart';
@@ -156,7 +158,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: content,
+        children: [
+          ...content,
+          const SizedBox(height: AppSpacing.lg),
+          OutlinedButton.icon(
+            onPressed:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const BudgetScreen()),
+                ),
+            icon: const Icon(Icons.savings_outlined),
+            label: Text(l10n.seeMyBudgets),
+          ),
+          const SizedBox(height: AppSpacing.sm + 4),
+          OutlinedButton.icon(
+            onPressed:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PriceAlertsScreen()),
+                ),
+            icon: const Icon(Icons.trending_down_rounded),
+            label: Text(l10n.seeSavingsDetail),
+          ),
+        ],
       ),
     );
   }

@@ -439,55 +439,52 @@ class DashboardCard extends StatelessWidget {
     Color color, {
     bool isAmount = false,
   }) {
+    // Le chiffre d'abord, en grand, et son nom en dessous en entier :
+    // la planche veut « des chiffres grands et lisibles ». Il etait en
+    // 18 points sous un libelle de 12.
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: AppTint.fill(color),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: color, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, color: color, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+          Icon(icon, color: AppTint.ink(color), size: 26),
+          const SizedBox(height: AppSpacing.sm),
           if (isAmount)
             FormattedAmount(
               amount: value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
+              style: AppFonts.displayStyle(
+                size: 30,
+                color: AppTint.ink(color),
+                height: 1.1,
               ),
               showCode: false,
             )
           else
             Text(
               value.toInt().toString(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
+              style: AppFonts.displayStyle(
+                size: 30,
+                color: AppTint.ink(color),
+                height: 1.1,
               ),
               overflow: TextOverflow.ellipsis,
             ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 17,
+              height: 1.35,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 3,
+          ),
         ],
       ),
     );

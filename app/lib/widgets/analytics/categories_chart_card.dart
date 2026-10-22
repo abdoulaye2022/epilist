@@ -1,4 +1,5 @@
 // widgets/analytics/categories_chart_card.dart - VERSION CORRIGÉE AVEC CALCUL SÉCURISÉ
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -256,8 +257,8 @@ class CategoriesChartCard extends StatelessWidget {
                     Text(
                       categoryName,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -265,7 +266,7 @@ class CategoriesChartCard extends StatelessWidget {
                     Text(
                       '$totalItems ${l10n.articles}',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 17,
                         color: AppColors.textSecondary,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -280,32 +281,26 @@ class CategoriesChartCard extends StatelessWidget {
                   FormattedAmount(
                     amount: totalAmount,
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: color,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                      color: AppTint.ink(color),
                     ),
                     showCode: false,
-                  ),
-                  Text(
-                    '${percentage.toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
                   ),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: percentage > 0 ? (percentage / 100).clamp(0.0, 1.0) : 0.0,
-              backgroundColor: AppColors.border,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-              minHeight: 6,
-            ),
+          // La part, ECRITE sous sa barre. Elle etait a droite du
+          // montant, en 12 points et en gris : la plus petite ligne de
+          // la carte portait le seul chiffre comparable d'une
+          // categorie a l'autre.
+          AppShareRow(
+            label: l10n.shareOfSpending,
+            share: '${percentage.toStringAsFixed(1)} %',
+            ratio: percentage > 0 ? (percentage / 100).clamp(0.0, 1.0) : 0.0,
+            color: color,
           ),
         ],
       ),

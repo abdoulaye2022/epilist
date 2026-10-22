@@ -715,34 +715,51 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                 final height = maxValue > 0 ? (value / maxValue) * 120 : 5.0;
 
                 return Container(
-                  width: 45,
+                  width: 62,
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Barre du graphique
+                      // Le montant, ECRIT au-dessus de sa barre.
+                      // Il ne vivait que dans une infobulle : il
+                      // fallait maintenir le doigt sur une barre de
+                      // 24 points de large pour lire un chiffre, et
+                      // l'axe ne portait aucune echelle.
+                      Text(
+                        value > 0 ? value.toStringAsFixed(0) : '0',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
                       Tooltip(
                         message: '${value.toStringAsFixed(2)} $currencyCode',
                         child: Container(
-                          width: 24,
+                          width: 30,
                           height: height < 5 ? 5 : height,
                           decoration: BoxDecoration(
                             color: value > 0 ? chartColor : AppColors.border,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(8),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 6),
                       // Label avec traduction pour les mois
                       SizedBox(
-                        height: 16,
+                        height: 20,
                         child: Text(
                           label,
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: 14,
                             color: AppColors.textSecondary,
                             fontWeight:
-                                value > 0 ? FontWeight.w600 : FontWeight.normal,
+                                value > 0 ? FontWeight.w700 : FontWeight.normal,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 1,

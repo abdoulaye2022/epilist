@@ -47,6 +47,18 @@ class _MainShellState extends State<MainShell> {
   /// ne pas déclencher cinq chargements API à l'ouverture de l'app.
   final Set<MainTab> _visited = {MainTab.home};
 
+  @override
+  void initState() {
+    super.initState();
+    MainShellRoute.goToTab = _select;
+  }
+
+  @override
+  void dispose() {
+    if (MainShellRoute.goToTab == _select) MainShellRoute.goToTab = null;
+    super.dispose();
+  }
+
   void _select(MainTab tab) {
     if (tab == _tab) return;
     setState(() {

@@ -2,6 +2,7 @@
 // choix des recettes, personnes, budget facultatif -> aperçu des
 // ingrédients consolidés (« Déjà à la maison » identifié, coût estimé
 // avec couverture affichée) -> création du plan + liste de courses.
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -111,6 +112,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -122,80 +124,61 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 children: [
                   Text(
-                    l10n.chooseMeals,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    l10n.mealPlannerIntro,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  ..._recipes.map((r) {
-                    final selected = _selected.contains(r.id);
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        side: BorderSide(
-                          color:
-                              selected ? AppColors.primary : AppColors.border,
-                          width: selected ? 1.6 : 1,
-                        ),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        onTap:
-                            () => setState(
-                              () =>
-                                  selected
-                                      ? _selected.remove(r.id)
-                                      : _selected.add(r.id),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(l10n.chooseMeals, style: theme.textTheme.headlineSmall),
+                  const SizedBox(height: AppSpacing.md),
+                  // Un repas par bloc pleine largeur, en-tete teinte.
+                  // Les cartes faisaient 14,5 points, avec un cercle a
+                  // cocher de 22 : le choix de la semaine se faisait a
+                  // la loupe. L'etat est maintenant ECRIT dans la
+                  // ligne qu'on touche.
+                  for (final (n, r) in _recipes.indexed)
+                    AppZoneCard(
+                      title: r.name,
+                      tint: AppColors.chart[n % AppColors.chart.length],
+                      icon: Icons.restaurant_menu_outlined,
+                      children: [
+                        if (r.description != null &&
+                            r.description!.trim().isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
                             ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: Row(
-                            children: [
-                              Icon(
-                                selected
-                                    ? Icons.check_circle
-                                    : Icons.circle_outlined,
-                                color:
-                                    selected
-                                        ? AppColors.primary
-                                        : AppColors.textDisabled,
-                                size: 22,
-                              ),
-                              const SizedBox(width: AppSpacing.sm + 2),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      r.name,
-                                      style: const TextStyle(
-                                        fontSize: 14.5,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      [
-                                        if (r.preparationTime != null)
-                                          l10n.minutesShort(r.preparationTime!),
-                                        l10n.servingsCount(r.servings),
-                                      ].join(' · '),
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            child: Text(
+                              r.description!,
+                              style: theme.textTheme.bodyMedium,
+                            ),
                           ),
+                        Text(
+                          [
+                            l10n.mealServingsLine(r.servings),
+                            if (r.preparationTime != null)
+                              l10n.mealPrepLine(r.preparationTime!),
+                            if (r.ingredientsCount > 0)
+                              l10n.mealIngredientsLine(r.ingredientsCount),
+                          ].join(' '),
+                          style: theme.textTheme.bodyMedium,
                         ),
-                      ),
-                    );
-                  }),
+                        const SizedBox(height: AppSpacing.sm + 4),
+                        AppCheckRow(
+                          checked: _selected.contains(r.id),
+                          title:
+                              _selected.contains(r.id)
+                                  ? l10n.mealChosenForWeek
+                                  : l10n.mealChooseForWeek,
+                          onChanged:
+                              (v) => setState(
+                                () =>
+                                    v
+                                        ? _selected.add(r.id)
+                                        : _selected.remove(r.id),
+                              ),
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: AppSpacing.sm),
                   Row(
                     children: [

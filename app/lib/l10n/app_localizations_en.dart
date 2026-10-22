@@ -6267,4 +6267,242 @@ class AppLocalizationsEn extends AppLocalizations {
   String storeFrontOf(String name) {
     return 'Illustrated storefront of the store $name';
   }
+
+  @override
+  String get mealPlannerIntro =>
+      'One meal per block, full width: nothing is cut off at the side. Pick your meals for the week, then a single large button creates the shopping list with every ingredient.';
+
+  @override
+  String get mealChooseForWeek => 'Choose this meal for the week';
+
+  @override
+  String get mealChosenForWeek => 'Chosen for this week';
+
+  @override
+  String mealServingsLine(int count) {
+    return 'For $count people.';
+  }
+
+  @override
+  String mealPrepLine(int minutes) {
+    return 'Preparation time: $minutes minutes.';
+  }
+
+  @override
+  String mealIngredientsLine(int count) {
+    return '$count ingredients in the recipe.';
+  }
+
+  @override
+  String get priceAlertsIntro =>
+      'The products you follow, and where their price stands. Every drop is written out, with an arrow and the word Drop: you never depend on colour alone.';
+
+  @override
+  String priceAlertDrop(String percent) {
+    return 'Down $percent per cent';
+  }
+
+  @override
+  String priceAlertRise(String percent) {
+    return 'Up $percent per cent';
+  }
+
+  @override
+  String priceAlertOldPrice(String price) {
+    return 'Old price: $price.';
+  }
+
+  @override
+  String priceAlertTargetLine(String price) {
+    return 'Target price: $price.';
+  }
+
+  @override
+  String priceAlertSeenLine(String price, String store) {
+    return 'Last price seen: $price at $store.';
+  }
+
+  @override
+  String priceAlertSeenLineNoStore(String price) {
+    return 'Last price seen: $price.';
+  }
+
+  @override
+  String priceAlertSaving(String amount) {
+    return 'You save $amount on this product.';
+  }
+
+  @override
+  String get priceAlertReached =>
+      'The target price is reached: now is the time to buy.';
+
+  @override
+  String get priceAlertWaiting =>
+      'The target price is not reached yet. We keep watching it.';
+
+  @override
+  String get priceAlertNoPriceYet => 'No price recorded for this product yet.';
+
+  @override
+  String get priceAlertStateOn => 'Watching: On';
+
+  @override
+  String get priceAlertStateOff => 'Watching: Paused';
+
+  @override
+  String get priceAlertNewPriceLabel => 'New price:';
+
+  @override
+  String budgetMonthTitle(String budget) {
+    return 'Budget for the month: $budget';
+  }
+
+  @override
+  String budgetMonthSpentLine(String spent, String budget) {
+    return 'You have spent $spent of a $budget budget.';
+  }
+
+  @override
+  String budgetMonthPercentLine(String percent, String remaining) {
+    return 'That is $percent per cent used. You have $remaining left to finish the month.';
+  }
+
+  @override
+  String budgetGaugeLabel(String percent, String remaining) {
+    return '$percent per cent used, $remaining left';
+  }
+
+  @override
+  String budgetGaugePercent(String percent) {
+    return '$percent per cent used';
+  }
+
+  @override
+  String budgetMonthOverLine(String over) {
+    return 'You have gone over this budget by $over.';
+  }
+
+  @override
+  String get shareOfSpending => 'Share of your spending';
+
+  @override
+  String shoppingItemsRemainingOf(int remaining, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: '$remaining items left out of $total',
+      one: '1 item left out of $total',
+      zero: 'Every item is in the basket',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shoppingBasketSentence(int remaining, int done) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other:
+          'You have already put $done items in the basket. $remaining more items and your shopping is done.',
+      one:
+          'You have already put $done items in the basket. One more item and your shopping is done.',
+      zero: 'Your shopping is done: everything is in the basket.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingFinish => 'Finish my shopping';
+
+  @override
+  String get shoppingSaveForLater => 'Save and come back later';
+
+  @override
+  String get shoppingSuccessTitle => 'Shopping done, well done!';
+
+  @override
+  String shoppingSuccessSentence(String list, int count) {
+    return 'You finished the list $list. $count items are in your basket.';
+  }
+
+  @override
+  String get shoppingSuccessSeeBudgets => 'See my budgets';
+
+  @override
+  String get shoppingSuccessBackHome => 'Back to the dashboard';
+
+  @override
+  String get shoppingSuccessBackLists => 'Back to my lists';
+
+  @override
+  String get shoppingInBasket => 'In the basket';
+
+  @override
+  String listFullSentence(String percent) {
+    return 'This list is $percent per cent full.';
+  }
+
+  @override
+  String listCheckedSentence(int done, int total) {
+    return 'You have ticked $done items out of $total.';
+  }
+
+  @override
+  String listRemainingSentence(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: '$remaining left to pick up in store.',
+      one: 'One left to pick up in store.',
+      zero: 'Everything is taken.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listEmptySentence =>
+      'This list is still empty: add your first items to it.';
+
+  @override
+  String listGaugeLabel(String percent) {
+    return '$percent per cent full';
+  }
+
+  @override
+  String get listOpenAndShop => 'Open the list and go shopping';
+
+  @override
+  String listCollaborators(String names) {
+    return 'Collaborators: $names share this list with you. Everyone\'s actions show up right away.';
+  }
+
+  @override
+  String get listSharedNoNames =>
+      'This list is shared: everyone\'s actions show up right away.';
+
+  @override
+  String listsActiveCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'You have $count active lists. Each card says in full words where you stand, and who shares the list with you.',
+      one:
+          'You have 1 active list. The card says in full words where you stand, and who shares the list with you.',
+      zero: 'You have no active list right now.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seeMyReceipts => 'See my receipts';
+
+  @override
+  String get seeMyAnalytics => 'See my analytics';
+
+  @override
+  String get seeMyBudgets => 'See my budgets';
+
+  @override
+  String get seeSavingsDetail => 'See the savings detail';
 }

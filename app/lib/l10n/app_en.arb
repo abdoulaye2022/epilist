@@ -3022,5 +3022,254 @@
         "type": "String"
       }
     }
-  }
+  },
+  "mealPlannerIntro": "One meal per block, full width: nothing is cut off at the side. Pick your meals for the week, then a single large button creates the shopping list with every ingredient.",
+  "mealChooseForWeek": "Choose this meal for the week",
+  "mealChosenForWeek": "Chosen for this week",
+  "mealServingsLine": "For {count} people.",
+  "@mealServingsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealPrepLine": "Preparation time: {minutes} minutes.",
+  "@mealPrepLine": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "mealIngredientsLine": "{count} ingredients in the recipe.",
+  "@mealIngredientsLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceAlertsIntro": "The products you follow, and where their price stands. Every drop is written out, with an arrow and the word Drop: you never depend on colour alone.",
+  "priceAlertDrop": "Down {percent} per cent",
+  "@priceAlertDrop": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertRise": "Up {percent} per cent",
+  "@priceAlertRise": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertOldPrice": "Old price: {price}.",
+  "@priceAlertOldPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertTargetLine": "Target price: {price}.",
+  "@priceAlertTargetLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertSeenLine": "Last price seen: {price} at {store}.",
+  "@priceAlertSeenLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "store": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertSeenLineNoStore": "Last price seen: {price}.",
+  "@priceAlertSeenLineNoStore": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertSaving": "You save {amount} on this product.",
+  "@priceAlertSaving": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "priceAlertReached": "The target price is reached: now is the time to buy.",
+  "priceAlertWaiting": "The target price is not reached yet. We keep watching it.",
+  "priceAlertNoPriceYet": "No price recorded for this product yet.",
+  "priceAlertStateOn": "Watching: On",
+  "priceAlertStateOff": "Watching: Paused",
+  "priceAlertNewPriceLabel": "New price:",
+  "budgetMonthTitle": "Budget for the month: {budget}",
+  "@budgetMonthTitle": {
+    "placeholders": {
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetMonthSpentLine": "You have spent {spent} of a {budget} budget.",
+  "@budgetMonthSpentLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetMonthPercentLine": "That is {percent} per cent used. You have {remaining} left to finish the month.",
+  "@budgetMonthPercentLine": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetGaugeLabel": "{percent} per cent used, {remaining} left",
+  "@budgetGaugeLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetGaugePercent": "{percent} per cent used",
+  "@budgetGaugePercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetMonthOverLine": "You have gone over this budget by {over}.",
+  "@budgetMonthOverLine": {
+    "placeholders": {
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "shareOfSpending": "Share of your spending",
+  "shoppingItemsRemainingOf": "{remaining, plural, =0{Every item is in the basket} =1{1 item left out of {total}} other{{remaining} items left out of {total}}}",
+  "@shoppingItemsRemainingOf": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingBasketSentence": "{remaining, plural, =0{Your shopping is done: everything is in the basket.} =1{You have already put {done} items in the basket. One more item and your shopping is done.} other{You have already put {done} items in the basket. {remaining} more items and your shopping is done.}}",
+  "@shoppingBasketSentence": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingFinish": "Finish my shopping",
+  "shoppingSaveForLater": "Save and come back later",
+  "shoppingSuccessTitle": "Shopping done, well done!",
+  "shoppingSuccessSentence": "You finished the list {list}. {count} items are in your basket.",
+  "@shoppingSuccessSentence": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingSuccessSeeBudgets": "See my budgets",
+  "shoppingSuccessBackHome": "Back to the dashboard",
+  "shoppingSuccessBackLists": "Back to my lists",
+  "shoppingInBasket": "In the basket",
+  "listFullSentence": "This list is {percent} per cent full.",
+  "@listFullSentence": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "listCheckedSentence": "You have ticked {done} items out of {total}.",
+  "@listCheckedSentence": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "listRemainingSentence": "{remaining, plural, =0{Everything is taken.} =1{One left to pick up in store.} other{{remaining} left to pick up in store.}}",
+  "@listRemainingSentence": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "listEmptySentence": "This list is still empty: add your first items to it.",
+  "listGaugeLabel": "{percent} per cent full",
+  "@listGaugeLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "listOpenAndShop": "Open the list and go shopping",
+  "listCollaborators": "Collaborators: {names} share this list with you. Everyone's actions show up right away.",
+  "@listCollaborators": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "listSharedNoNames": "This list is shared: everyone's actions show up right away.",
+  "listsActiveCount": "{count, plural, =0{You have no active list right now.} =1{You have 1 active list. The card says in full words where you stand, and who shares the list with you.} other{You have {count} active lists. Each card says in full words where you stand, and who shares the list with you.}}",
+  "@listsActiveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seeMyReceipts": "See my receipts",
+  "seeMyAnalytics": "See my analytics",
+  "seeMyBudgets": "See my budgets",
+  "seeSavingsDetail": "See the savings detail"
 }

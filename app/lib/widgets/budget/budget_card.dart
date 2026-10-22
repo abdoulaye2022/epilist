@@ -1,4 +1,5 @@
 // widgets/budget/budget_card.dart - VERSION AVEC BACKGROUND BLANC
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -145,16 +146,14 @@ class BudgetCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.sm + 2),
-              Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.sm + 4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: ratio,
-                    minHeight: 5,
-                    backgroundColor: AppColors.background,
-                    valueColor: AlwaysStoppedAnimation<Color>(_statusColor),
-                  ),
+              // Jauge ECRITE : la barre de 5 points de haut ne disait
+              // le pourcentage a personne.
+              AppGauge(
+                ratio: ratio,
+                color: _statusColor,
+                label: l10n.budgetGaugeLabel(
+                  '${budget.spentPercentage.round()}',
+                  budget.formattedRemainingAmount,
                 ),
               ),
             ],
@@ -374,34 +373,24 @@ class BudgetAlertsWidget extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(
-                    value: (budget.spentPercentage / 100).clamp(0.0, 1.0),
-                    backgroundColor: AppColors.border,
-                    valueColor: AlwaysStoppedAnimation<Color>(_getAlertColor()),
-                    minHeight: 6,
+                  AppGauge(
+                    ratio: (budget.spentPercentage / 100).clamp(0.0, 1.0),
+                    color: _getAlertColor(),
+                    label: l10n.budgetGaugeLabel(
+                      '${budget.spentPercentage.round()}',
+                      budget.formattedRemainingAmount,
+                    ),
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${budget.spentPercentage.toStringAsFixed(1)}% ${l10n.spent.toLowerCase()}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _getAlertColor(),
-                          fontWeight: FontWeight.w500,
-                        ),
+                  if (budget.daysRemaining > 0) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      '${budget.daysRemaining} ${_getDaysText(l10n)}',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: AppColors.textSecondary,
                       ),
-                      if (budget.daysRemaining > 0)
-                        Text(
-                          '${budget.daysRemaining} ${_getDaysText(l10n)}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -571,7 +560,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:  Icon(
+                  child: Icon(
                     Icons.account_balance_wallet,
                     color: AppColors.onPrimary,
                     size: 24,

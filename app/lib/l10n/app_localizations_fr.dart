@@ -6364,4 +6364,243 @@ class AppLocalizationsFr extends AppLocalizations {
   String storeFrontOf(String name) {
     return 'Devanture illustrée du magasin $name';
   }
+
+  @override
+  String get mealPlannerIntro =>
+      'Un repas par bloc, en pleine largeur : rien n\'est coupé sur le côté. Choisissez vos repas de la semaine, puis un seul grand bouton crée la liste de courses avec tous les ingrédients.';
+
+  @override
+  String get mealChooseForWeek => 'Choisir ce repas pour la semaine';
+
+  @override
+  String get mealChosenForWeek => 'Choisi pour cette semaine';
+
+  @override
+  String mealServingsLine(int count) {
+    return 'Pour $count personnes.';
+  }
+
+  @override
+  String mealPrepLine(int minutes) {
+    return 'Temps de préparation : $minutes minutes.';
+  }
+
+  @override
+  String mealIngredientsLine(int count) {
+    return '$count ingrédients dans la recette.';
+  }
+
+  @override
+  String get priceAlertsIntro =>
+      'Les produits que vous suivez, et où en est leur prix. Chaque baisse est écrite en toutes lettres, avec une flèche et le mot Baisse : vous ne dépendez jamais de la seule couleur.';
+
+  @override
+  String priceAlertDrop(String percent) {
+    return 'Baisse de $percent pour cent';
+  }
+
+  @override
+  String priceAlertRise(String percent) {
+    return 'Hausse de $percent pour cent';
+  }
+
+  @override
+  String priceAlertOldPrice(String price) {
+    return 'Ancien prix : $price \$.';
+  }
+
+  @override
+  String priceAlertTargetLine(String price) {
+    return 'Prix visé : $price \$.';
+  }
+
+  @override
+  String priceAlertSeenLine(String price, String store) {
+    return 'Dernier prix vu : $price \$ chez $store.';
+  }
+
+  @override
+  String priceAlertSeenLineNoStore(String price) {
+    return 'Dernier prix vu : $price \$.';
+  }
+
+  @override
+  String priceAlertSaving(String amount) {
+    return 'Vous économisez $amount \$ sur ce produit.';
+  }
+
+  @override
+  String get priceAlertReached =>
+      'Le prix visé est atteint : c\'est le moment d\'acheter.';
+
+  @override
+  String get priceAlertWaiting =>
+      'Le prix visé n\'est pas encore atteint. Nous continuons à le surveiller.';
+
+  @override
+  String get priceAlertNoPriceYet =>
+      'Aucun prix relevé pour le moment sur ce produit.';
+
+  @override
+  String get priceAlertStateOn => 'Surveillance : Activée';
+
+  @override
+  String get priceAlertStateOff => 'Surveillance : En pause';
+
+  @override
+  String get priceAlertNewPriceLabel => 'Nouveau prix :';
+
+  @override
+  String budgetMonthTitle(String budget) {
+    return 'Budget du mois : $budget';
+  }
+
+  @override
+  String budgetMonthSpentLine(String spent, String budget) {
+    return 'Vous avez dépensé $spent sur un budget de $budget.';
+  }
+
+  @override
+  String budgetMonthPercentLine(String percent, String remaining) {
+    return 'Soit $percent pour cent utilisé. Il vous reste $remaining pour finir le mois.';
+  }
+
+  @override
+  String budgetGaugeLabel(String percent, String remaining) {
+    return '$percent pour cent utilisé, $remaining restants';
+  }
+
+  @override
+  String budgetGaugePercent(String percent) {
+    return '$percent pour cent utilisé';
+  }
+
+  @override
+  String budgetMonthOverLine(String over) {
+    return 'Vous avez dépassé ce budget de $over.';
+  }
+
+  @override
+  String get shareOfSpending => 'Part de vos dépenses';
+
+  @override
+  String shoppingItemsRemainingOf(int remaining, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: '$remaining articles restants sur $total',
+      one: '1 article restant sur $total',
+      zero: 'Tous les articles sont dans le panier',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shoppingBasketSentence(int remaining, int done) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other:
+          'Vous avez déjà mis $done articles dans le panier. Encore $remaining articles et vos courses sont terminées.',
+      one:
+          'Vous avez déjà mis $done articles dans le panier. Encore un article et vos courses sont terminées.',
+      zero: 'Vos courses sont terminées : tout est dans le panier.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingFinish => 'Terminer mes courses';
+
+  @override
+  String get shoppingSaveForLater => 'Enregistrer et revenir plus tard';
+
+  @override
+  String get shoppingSuccessTitle => 'Courses terminées, bravo !';
+
+  @override
+  String shoppingSuccessSentence(String list, int count) {
+    return 'Vous avez terminé la liste $list. $count articles sont dans votre panier.';
+  }
+
+  @override
+  String get shoppingSuccessSeeBudgets => 'Voir mes budgets';
+
+  @override
+  String get shoppingSuccessBackHome => 'Retour au tableau de bord';
+
+  @override
+  String get shoppingSuccessBackLists => 'Retour à mes listes';
+
+  @override
+  String get shoppingInBasket => 'Dans le panier';
+
+  @override
+  String listFullSentence(String percent) {
+    return 'Cette liste est pleine à $percent pour cent.';
+  }
+
+  @override
+  String listCheckedSentence(int done, int total) {
+    return 'Vous avez coché $done articles sur $total.';
+  }
+
+  @override
+  String listRemainingSentence(int remaining) {
+    String _temp0 = intl.Intl.pluralLogic(
+      remaining,
+      locale: localeName,
+      other: 'Il en reste $remaining à prendre en magasin.',
+      one: 'Il en reste un à prendre en magasin.',
+      zero: 'Tout est pris.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listEmptySentence =>
+      'Cette liste est encore vide : ajoutez-y vos premiers articles.';
+
+  @override
+  String listGaugeLabel(String percent) {
+    return '$percent pour cent pleine';
+  }
+
+  @override
+  String get listOpenAndShop => 'Ouvrir la liste et faire les courses';
+
+  @override
+  String listCollaborators(String names) {
+    return 'Collaborateurs : $names partagent cette liste avec vous. Les actions de chacun sont visibles tout de suite.';
+  }
+
+  @override
+  String get listSharedNoNames =>
+      'Cette liste est partagée : les actions de chacun sont visibles tout de suite.';
+
+  @override
+  String listsActiveCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Vous avez $count listes actives. Chaque carte dit en toutes lettres où vous en êtes, et qui partage la liste avec vous.',
+      one:
+          'Vous avez 1 liste active. La carte dit en toutes lettres où vous en êtes, et qui partage la liste avec vous.',
+      zero: 'Vous n\'avez aucune liste active pour le moment.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seeMyReceipts => 'Voir mes factures';
+
+  @override
+  String get seeMyAnalytics => 'Voir mes analyses';
+
+  @override
+  String get seeMyBudgets => 'Voir mes budgets';
+
+  @override
+  String get seeSavingsDetail => 'Voir le détail des économies';
 }

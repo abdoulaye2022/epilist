@@ -22,6 +22,21 @@ import 'package:flutter/material.dart';
 /// dans Budgets, et les réglages tiennent dans le menu latéral.
 enum MainTab { home, lists, preShopping, alerts, sections }
 
+/// Le chemin vers un onglet depuis un ecran POUSSE.
+///
+/// [MainShellScope] est un heritage : il ne descend que dans le
+/// sous-arbre de la coquille. Un ecran pousse par le Navigator est
+/// au-dessus d'elle, pas dedans — il ne la voit pas. L'ecran de
+/// reussite des courses, lui, doit pouvoir refermer sa pile et demander
+/// l'onglet « Mes listes ».
+///
+/// D'ou cette reference, posee par la coquille a sa construction et
+/// retiree a sa disparition. `null` quand aucune coquille n'est montee,
+/// ce qui est le cas des tests d'un ecran seul.
+abstract final class MainShellRoute {
+  static void Function(MainTab tab)? goToTab;
+}
+
 class MainShellScope extends InheritedWidget {
   const MainShellScope({
     super.key,

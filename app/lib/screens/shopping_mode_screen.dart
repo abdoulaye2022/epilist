@@ -3,6 +3,9 @@
 // tactiles, progression visible, regroupement par rayon dans l'ordre du
 // magasin actif, articles cochés repliés. Le toggle passe par le
 // ListItemBloc existant : le hors ligne fonctionne comme partout.
+import 'package:epilist/screens/shopping_success_screen.dart';
+import 'package:epilist/widgets/common/app_meters.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -103,7 +106,9 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
 
           return Column(
             children: [
-              // Progression bien visible (§29)
+              // Le compteur vivant de la planche. Il s'annonce aux
+              // lecteurs d'ecran a chaque article coche, ce qui est
+              // tout l'interet d'un compteur pendant les courses.
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md,
@@ -111,39 +116,10 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                   AppSpacing.md,
                   0,
                 ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          done == total
-                              ? l10n.shoppingDone
-                              : l10n.itemsRemaining(total - done),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${l10n.itemsProgress(done, total)} · ${(progress * 100).round()} %',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 7,
-                        backgroundColor: AppColors.border,
-                      ),
-                    ),
-                  ],
+                child: AppCounterCard(
+                  count: l10n.shoppingItemsRemainingOf(total - done, total),
+                  sentence: l10n.shoppingBasketSentence(total - done, done),
+                  ratio: progress,
                 ),
               ),
               Expanded(
@@ -161,6 +137,18 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                       const Divider(),
                       ...completed.map((i) => _bigTile(i, l10n)),
                     ],
+                    const SizedBox(height: AppSpacing.lg),
+                    FilledButton.icon(
+                      onPressed: () => _finish(total),
+                      icon: const Icon(Icons.celebration_outlined),
+                      label: Text(l10n.shoppingFinish),
+                    ),
+                    const SizedBox(height: AppSpacing.sm + 4),
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.bookmark_outline),
+                      label: Text(l10n.shoppingSaveForLater),
+                    ),
                   ],
                 ),
               ),
@@ -202,15 +190,16 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
               children: [
                 Icon(
                   cat?.icon ?? Icons.help_outline,
-                  size: 18,
-                  color: cat?.color ?? AppColors.textDisabled,
+                  size: 24,
+                  color: cat?.color ?? AppColors.textSecondary,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm + 2),
                 Text(
                   header,
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                  style: AppFonts.displayStyle(
+                    size: 20,
+                    color: AppColors.primary,
+                    weight: 700,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -225,51 +214,32 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
     return rows;
   }
 
-  /// Grande zone tactile : toute la carte coche/décoche.
+  /// La ligne cochable de la planche : 64 dp de haut, case de 34.
+  ///
+  /// Avant : un cercle de 28 dans une carte, et un nom en 16,5. La
+  /// quantite etait collee au nom (« Pommes ×6 ») au lieu d'etre sa
+  /// propre ligne.
   Widget _bigTile(ListItem item, AppLocalizations l10n) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: () => _toggle(item),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                item.isPurchased
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
-                size: 28,
-                color:
-                    item.isPurchased
-                        ? AppColors.primary
-                        : AppColors.textDisabled,
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Text(
-                  item.quantity > 1
-                      ? '${item.productName} ×${item.quantity}'
-                      : item.productName,
-                  style: TextStyle(
-                    fontSize: 16.5,
-                    fontWeight: FontWeight.w600,
-                    decoration:
-                        item.isPurchased ? TextDecoration.lineThrough : null,
-                    color:
-                        item.isPurchased
-                            ? AppColors.textDisabled
-                            : AppColors.textPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+    return AppCheckRow(
+      checked: item.isPurchased,
+      title: item.productName,
+      subtitle:
+          item.quantity > 1 ? '${l10n.voiceQuantity} : ${item.quantity}' : null,
+      doneLabel: l10n.shoppingInBasket,
+      onChanged: (_) => _toggle(item),
+    );
+  }
+
+  /// Fin des courses : l'ecran de reussite, en REMPLACANT le mode
+  /// courses dans la pile — y revenir en arriere n'aurait aucun sens.
+  void _finish(int total) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder:
+            (_) => ShoppingSuccessScreen(
+              listName: widget.shoppingList.name,
+              itemsCount: total,
+            ),
       ),
     );
   }

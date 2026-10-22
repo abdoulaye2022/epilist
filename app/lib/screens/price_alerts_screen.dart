@@ -4,6 +4,8 @@
 // de l'historique (§26 : prix habituel = médiane, bon prix = 25e
 // percentile) mais c'est toujours l'utilisateur qui confirme. Les
 // droits (créateur ou manage_lists) sont tranchés par le serveur.
+import 'package:epilist/utils/add_product_to_list.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
@@ -14,7 +16,6 @@ import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:epilist/widgets/common/app_card.dart';
 
 class PriceAlertsScreen extends StatefulWidget {
   const PriceAlertsScreen({super.key});
@@ -341,99 +342,229 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                     AppSpacing.md,
                     96,
                   ),
-                  itemCount: _alerts!.length,
-                  itemBuilder: (context, i) => _alertCard(_alerts![i], l10n),
+                  itemCount: _alerts!.length + 1,
+                  itemBuilder: (context, i) {
+                    if (i == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                        child: Text(
+                          l10n.priceAlertsIntro,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      );
+                    }
+                    return _alertCard(_alerts![i - 1], l10n);
+                  },
                 ),
               ),
     );
   }
 
+  /// La carte d'une alerte, comme sur la planche.
+  ///
+  /// Avant : une `ListTile` ou tout tenait en « Vu a 4.99 $ · IGA · Par
+  /// Sara » en 12 points, avec une puce « Cible 5.00 $ » en 11. Aucune
+  /// baisse n'etait annoncee, et il fallait comparer deux nombres de
+  /// taille differente pour savoir s'il fallait acheter.
+  ///
+  /// Maintenant : la baisse en toutes lettres avec sa fleche, l'ancien
+  /// et le nouveau prix, l'economie, et le bouton qui met le produit
+  /// dans une liste.
   Widget _alertCard(PriceAlertInfo a, AppLocalizations l10n) {
-    final subtitle = <String>[
-      if (a.lastObservedPrice != null)
-        l10n.priceAlertLastSeen(
-          _money(a.lastObservedPrice!),
-          a.lastObservedStore ?? '—',
-        ),
-      if (a.createdByName != null && a.createdByName!.isNotEmpty)
-        l10n.priceAlertBy(a.createdByName!),
-    ];
+    final vu = a.lastObservedPrice;
+    final notifie = a.lastNotifiedPrice;
 
-    return AppCard.tight(
-      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
-      child: Material(
-        // Material propre au ListTile : le fond du conteneur parent
-        // masquerait sinon son fond et ses effets de pression
-        // (assertion « ink splashes may be invisible »).
-        type: MaterialType.transparency,
-        child: ListTile(
-          onTap: () => _edit(a),
-          onLongPress: () => _delete(a),
-          leading: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: a.isActive ? AppColors.primaryLight : AppColors.background,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              a.isActive
-                  ? Icons.notifications_active_outlined
-                  : Icons.notifications_paused_outlined,
-              size: 20,
-              color:
-                  a.isActive ? AppColors.primaryDark : AppColors.textDisabled,
-            ),
+    // La baisse n'est annoncee que si DEUX prix la prouvent. Comparer
+    // un prix vu a un prix VISE ne dit rien d'une baisse : le prix vise
+    // est un souhait, pas un historique.
+    double? baisse;
+    if (vu != null && notifie != null && notifie > 0 && vu != notifie) {
+      baisse = (notifie - vu) / notifie * 100;
+    }
+    final atteint = vu != null && vu <= a.targetPrice;
+    final economie = atteint ? a.targetPrice - vu : null;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border.all(
+            color:
+                a.isActive
+                    ? (atteint ? AppColors.primaryVivid : AppColors.border)
+                    : AppColors.border,
+            width: 3,
           ),
-          title: Row(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md + 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Text(
-                  a.productName,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color:
-                        a.isActive
-                            ? AppColors.textPrimary
-                            : AppColors.textDisabled,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      a.productName,
+                      style: AppFonts.displayStyle(
+                        size: 23,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
                   ),
-                ),
+                  IconButton(
+                    tooltip: l10n.edit,
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: () => _edit(a),
+                  ),
+                  IconButton(
+                    tooltip: l10n.delete,
+                    icon: Icon(Icons.delete_outline, color: AppColors.errorInk),
+                    onPressed: () => _delete(a),
+                  ),
+                ],
               ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  l10n.priceAlertTargetChip(_money(a.targetPrice)),
+              if (a.lastObservedStore != null &&
+                  a.lastObservedStore!.isNotEmpty)
+                Text(
+                  a.lastObservedStore!,
                   style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryDark,
+                    fontSize: 18,
+                    color: AppColors.textSecondary,
                   ),
                 ),
+              if (baisse != null) ...[
+                const SizedBox(height: AppSpacing.sm + 4),
+                _baisseBadge(l10n, baisse),
+              ],
+              const SizedBox(height: AppSpacing.sm + 4),
+              if (vu == null)
+                Text(
+                  '${l10n.priceAlertTargetLine(_money(a.targetPrice))} '
+                  '${l10n.priceAlertNoPriceYet}',
+                  style: TextStyle(
+                    fontSize: 19,
+                    height: 1.55,
+                    color: AppColors.textPrimary,
+                  ),
+                )
+              else ...[
+                if (notifie != null && baisse != null && baisse > 0)
+                  Text(
+                    l10n.priceAlertOldPrice(_money(notifie)),
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1.55,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${l10n.priceAlertNewPriceLabel} ',
+                        style: TextStyle(
+                          fontSize: 19,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${_money(vu)} \$',
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  l10n.priceAlertTargetLine(_money(a.targetPrice)),
+                  style: TextStyle(
+                    fontSize: 19,
+                    height: 1.55,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs + 2),
+                Text(
+                  atteint
+                      ? (economie != null && economie > 0
+                          ? '${l10n.priceAlertReached} '
+                              '${l10n.priceAlertSaving(_money(economie))}'
+                          : l10n.priceAlertReached)
+                      : l10n.priceAlertWaiting,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    height: 1.5,
+                    color:
+                        atteint
+                            ? AppColors.successInk
+                            : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+              const SizedBox(height: AppSpacing.sm + 4),
+              AppStateSwitch(
+                value: a.isActive,
+                stateLabel:
+                    a.isActive
+                        ? l10n.priceAlertStateOn
+                        : l10n.priceAlertStateOff,
+                semanticLabel: a.productName,
+                onChanged: (v) => _toggleActive(a, v),
+              ),
+              const SizedBox(height: AppSpacing.sm + 4),
+              OutlinedButton.icon(
+                onPressed: () => addProductToList(context, a.productName),
+                icon: const Icon(Icons.add_shopping_cart_outlined),
+                label: Text(l10n.addToMyList),
               ),
             ],
           ),
-          subtitle:
-              subtitle.isEmpty
-                  ? null
-                  : Text(
-                    subtitle.join(' · '),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-          trailing: Switch(
-            value: a.isActive,
-            activeThumbColor: AppColors.primary,
-            onChanged: (v) => _toggleActive(a, v),
-          ),
         ),
+      ),
+    );
+  }
+
+  /// « ↓ Baisse de 14 pour cent ». La fleche ET le mot : une pastille
+  /// verte seule laisse deviner le sens de la variation.
+  Widget _baisseBadge(AppLocalizations l10n, double variation) {
+    final baisse = variation > 0;
+    final pourcent = variation.abs().round().toString();
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm + 2,
+      ),
+      decoration: BoxDecoration(
+        color: baisse ? AppColors.primary : AppColors.error,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            baisse ? Icons.south_rounded : Icons.north_rounded,
+            size: 24,
+            color: AppColors.onPrimary,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            baisse
+                ? l10n.priceAlertDrop(pourcent)
+                : l10n.priceAlertRise(pourcent),
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+              color: AppColors.onPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

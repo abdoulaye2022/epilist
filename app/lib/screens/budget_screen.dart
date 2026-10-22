@@ -1,6 +1,7 @@
 // screens/budget_screen.dart - VERSION CORRIGÉE AVEC DESIGN HARMONISÉ
+import 'package:epilist/screens/all_receipts_screen.dart';
+import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
-import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
@@ -77,7 +78,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             return Column(
               children: [
                 if (state.summary != null && state.summary!.totalBudgets > 0)
-                  _buildSummaryStrip(state.summary!, l10n),
+                  _buildMonthCard(state.summary!, l10n),
                 _buildStatusChips(state.activeStatusFilter, l10n),
                 Expanded(child: _buildBudgetList(state, l10n)),
               ],
@@ -90,81 +91,109 @@ class _BudgetScreenState extends State<BudgetScreen> {
         onPressed: () => _showCreateBudgetDialog(context),
         backgroundColor: AppColors.primary,
         tooltip: l10n.createBudget,
-        child:  Icon(Icons.add, color: AppColors.onPrimary),
+        child: Icon(Icons.add, color: AppColors.onPrimary),
       ),
     );
   }
 
   /// Bandeau resume : trois chiffres sur UNE ligne, pas de grosses cartes.
-  Widget _buildSummaryStrip(BudgetSummary summary, AppLocalizations l10n) {
-    Widget cell(String label, Widget value) => Expanded(
-      child: Column(
-        children: [
-          value,
-          const SizedBox(height: 1),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
-          ),
-        ],
-      ),
-    );
+  /// La carte « Budget du mois » de la planche : orange, et tout y est
+  /// ECRIT en phrases.
+  ///
+  /// Avant : trois cellules — budgete, depense, restant — en 15 points,
+  /// avec des libelles de 11,5. Trois nombres a rapprocher soi-meme, et
+  /// aucun pourcentage.
+  ///
+  /// L'orange porte l'encre sombre, jamais du blanc : du blanc dessus
+  /// ne donne que 2,2 de contraste.
+  Widget _buildMonthCard(BudgetSummary summary, AppLocalizations l10n) {
+    final budgete = summary.totalBudgeted;
+    final depense = summary.totalSpent;
+    final restant = budgete - depense;
+    final pourcent = budgete <= 0 ? 0 : (depense / budgete * 100).round();
+    final depasse = restant < 0;
 
     return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm + 2,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.sm,
       ),
-      child: Row(
+      padding: const EdgeInsets.all(AppSpacing.md + 4),
+      decoration: BoxDecoration(
+        color: AppColors.warning,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          cell(
-            l10n.budgeted,
-            Text(
-              summary.formattedTotalBudgeted,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Text(
+            l10n.budgetMonthTitle(summary.formattedTotalBudgeted),
+            style: AppFonts.displayStyle(size: 23, color: AppColors.onWarning),
           ),
-          Container(width: 1, height: 26, color: AppColors.border),
-          cell(
-            l10n.spent,
-            Text(
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.budgetMonthSpentLine(
               summary.formattedTotalSpent,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primaryDark,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              summary.formattedTotalBudgeted,
+            ),
+            style: TextStyle(
+              fontSize: 21,
+              fontWeight: FontWeight.w700,
+              height: 1.45,
+              color: AppColors.onWarning,
             ),
           ),
-          Container(width: 1, height: 26, color: AppColors.border),
-          cell(
-            l10n.remaining,
-            FormattedAmount(
-              amount: summary.totalBudgeted - summary.totalSpent,
-              showCode: false,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color:
-                    summary.totalSpent > summary.totalBudgeted
-                        ? AppColors.error
-                        : AppColors.textPrimary,
+          const SizedBox(height: AppSpacing.xs + 2),
+          Text(
+            depasse
+                ? l10n.budgetMonthOverLine(_money(-restant))
+                : l10n.budgetMonthPercentLine('$pourcent', _money(restant)),
+            style: TextStyle(
+              fontSize: 19,
+              height: 1.55,
+              color: AppColors.onWarning,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm + 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            child: SizedBox(
+              height: 18,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: AppColors.onWarning.withValues(alpha: 0.28),
+                    ),
+                  ),
+                  FractionallySizedBox(
+                    widthFactor: (pourcent / 100).clamp(0.0, 1.0),
+                    child: ColoredBox(color: AppColors.onWarning),
+                  ),
+                ],
               ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            depasse
+                ? l10n.budgetGaugePercent('$pourcent')
+                : l10n.budgetGaugeLabel('$pourcent', _money(restant)),
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppColors.onWarning,
             ),
           ),
         ],
       ),
     );
   }
+
+  /// Un montant, ecrit comme le serveur ecrit les siens.
+  String _money(double v) => v.toStringAsFixed(2);
 
   /// Filtres de statut : une rangee de chips, remplace onglets + panneau.
   Widget _buildStatusChips(String? active, AppLocalizations l10n) {
@@ -222,8 +251,44 @@ class _BudgetScreenState extends State<BudgetScreen> {
           96,
         ),
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: budgets.length,
+        // +1 : le pied de page de la planche, qui mene aux factures du
+        // mois et aux analyses. Les deux ecrans existaient sans qu'aucun
+        // chemin n'y conduise depuis les budgets.
+        itemCount: budgets.length + 1,
         itemBuilder: (context, index) {
+          if (index == budgets.length) {
+            return Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AllReceiptsScreen(),
+                          ),
+                        ),
+                    icon: const Icon(Icons.receipt_long_outlined),
+                    label: Text(l10n.seeMyReceipts),
+                  ),
+                  const SizedBox(height: AppSpacing.sm + 4),
+                  OutlinedButton.icon(
+                    onPressed:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AnalyticsScreen(),
+                          ),
+                        ),
+                    icon: const Icon(Icons.insights_outlined),
+                    label: Text(l10n.seeMyAnalytics),
+                  ),
+                ],
+              ),
+            );
+          }
           final budget = budgets[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),

@@ -1,8 +1,8 @@
 // widgets/home/shopping_list_card.dart - VERSION SIMPLIFIÉE POUR HOME SCREEN
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/receipts_screen.dart';
-import 'package:epilist/utils/date_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
@@ -24,102 +24,114 @@ class ShoppingListCard extends StatelessWidget {
     final totalItems = list.itemsCount;
     final completedItems = list.purchasedItemsCount;
     final progress = list.progress;
+    final percent = (progress * 100).round();
     final done = list.isCompleted && totalItems > 0;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+    // La bordure prend la couleur de l'avancement : verte quand c'est
+    // fini, vive quand ca avance, orange au debut. Elle ne porte jamais
+    // le sens seule — les phrases en dessous le disent.
+    final teinte =
+        totalItems == 0
+            ? AppColors.border
+            : done
+            ? AppColors.primary
+            : percent >= 50
+            ? AppColors.primaryVivid
+            : AppColors.warning;
+
+    final noms =
+        list.sharedWith
+            .map((p) => p.sharedWithUser?.firstName ?? '')
+            .where((n) => n.isNotEmpty)
+            .toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border.all(color: teinte, width: 3),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.sm + 4,
-            AppSpacing.xs,
-            AppSpacing.sm + 4,
-          ),
-          child: Row(
+          padding: const EdgeInsets.all(AppSpacing.md + 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProgressRing(progress, done),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            list.name,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                        if (list.isShared) ...[
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.people_alt_rounded,
-                            size: 14,
-                            color:
-                                list.isOwner
-                                    ? AppColors.accent
-                                    : AppColors.primary,
-                          ),
-                        ],
-                      ],
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      list.name,
+                      style: AppFonts.displayStyle(
+                        size: 23,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                    const SizedBox(height: 3),
-                    Row(
-                      children: [
-                        Text(
-                          totalItems == 0
-                              ? l10n.inProgress
-                              : '$completedItems/$totalItems ${l10n.articles.toLowerCase()}',
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color:
-                                done
-                                    ? AppColors.primaryDark
-                                    : AppColors.textSecondary,
-                            fontWeight:
-                                done ? FontWeight.w600 : FontWeight.w400,
-                          ),
-                        ),
-                        if (list.hasReceipts) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.receipt_long,
-                            size: 12,
-                            color: AppColors.textDisabled,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            '${list.receiptsCount}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: AppColors.textDisabled,
-                            ),
-                          ),
-                        ],
-                        const Spacer(),
-                        Text(
-                          DateFormatter.formatDate(list.createdAt),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textDisabled,
-                          ),
-                        ),
-                      ],
+                  ),
+                  if (list.isShared)
+                    Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.xs),
+                      child: Icon(
+                        Icons.people_alt_rounded,
+                        size: 24,
+                        color: AppColors.accent,
+                      ),
                     ),
-                  ],
+                  _buildPopupMenu(l10n),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xs),
+
+              // Trois phrases, la ou tenait « 14/17 articles » en 12,5
+              // points : l'etat de la liste se lisait a la loupe, et le
+              // reste a prendre n'etait ecrit nulle part.
+              Text(
+                totalItems == 0
+                    ? l10n.listEmptySentence
+                    : [
+                      l10n.listFullSentence('$percent'),
+                      l10n.listCheckedSentence(completedItems, totalItems),
+                      l10n.listRemainingSentence(totalItems - completedItems),
+                    ].join(' '),
+                style: TextStyle(
+                  fontSize: 18,
+                  height: 1.5,
+                  color: AppColors.textPrimary,
                 ),
               ),
-              _buildPopupMenu(l10n),
+
+              if (totalItems > 0) ...[
+                const SizedBox(height: AppSpacing.sm + 2),
+                AppGauge(
+                  ratio: progress,
+                  color: teinte,
+                  label: l10n.listGaugeLabel('$percent'),
+                ),
+              ],
+
+              if (list.isShared) ...[
+                const SizedBox(height: AppSpacing.sm + 4),
+                _buildCollaborators(l10n, noms),
+              ],
+
+              if (list.hasReceipts) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  '${l10n.receipts} : ${list.receiptsCount}',
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: AppSpacing.md),
+              FilledButton.icon(
+                onPressed: onTap,
+                icon: const Icon(Icons.shopping_cart_checkout_rounded),
+                label: Text(l10n.listOpenAndShop),
+              ),
             ],
           ),
         ),
@@ -127,35 +139,70 @@ class ShoppingListCard extends StatelessWidget {
     );
   }
 
-  /// Anneau de progression : l'etat de la liste d'un coup d'oeil.
-  Widget _buildProgressRing(double progress, bool done) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CircularProgressIndicator(
-            value: progress,
-            strokeWidth: 3.5,
-            backgroundColor: AppColors.background,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              done ? AppColors.primary : AppColors.primary,
+  /// Les collaborateurs : leurs initiales en pastilles colorees, ET
+  /// leurs noms ecrits en toutes lettres. La pastille seule ne dit rien
+  /// a qui ne connait pas la couleur de chacun.
+  Widget _buildCollaborators(AppLocalizations l10n, List<String> noms) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (noms.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.sm + 2),
+            child: SizedBox(
+              height: 38,
+              width: 38 + (noms.length - 1) * 29,
+              child: Stack(
+                children: [
+                  for (final (i, nom) in noms.indexed)
+                    Positioned(
+                      left: i * 29,
+                      child: Container(
+                        width: 38,
+                        height: 38,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.chart[i % AppColors.chart.length],
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.surface,
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(
+                          nom.characters.first.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.onOverlay,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-          done
-              ? Icon(Icons.check_rounded, size: 18, color: AppColors.primary)
-              : Text(
-                '${(progress * 100).round()}',
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-        ],
-      ),
+        Expanded(
+          child: Text(
+            noms.isEmpty
+                ? l10n.listSharedNoNames
+                : l10n.listCollaborators(_enumerate(noms)),
+            style: TextStyle(
+              fontSize: 17.5,
+              height: 1.5,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  /// « Sara, Malik et Chloé » — avec le « et » avant le dernier.
+  String _enumerate(List<String> noms) {
+    if (noms.length == 1) return noms.first;
+    return '${noms.sublist(0, noms.length - 1).join(', ')} et ${noms.last}';
   }
 
   Widget _buildPopupMenu(AppLocalizations l10n) {

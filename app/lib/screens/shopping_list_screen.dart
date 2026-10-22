@@ -143,8 +143,50 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget _buildListView(List<ShoppingList> lists) {
     final filteredLists = _filterLists(lists);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
+        // L'en-tete vert de la planche : combien de listes, et le
+        // bouton qui en cree une. « Nouvelle liste » n'etait joignable
+        // que par le bouton + de la barre du bas, que la planche
+        // supprime.
+        Container(
+          margin: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+            0,
+          ),
+          padding: const EdgeInsets.all(AppSpacing.md + 4),
+          decoration: BoxDecoration(
+            color: AppColors.brandBand,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.listsActiveCount(lists.length),
+                style: TextStyle(
+                  fontSize: 18,
+                  height: 1.5,
+                  color: AppColors.onBrandBand,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.surface,
+                  foregroundColor: AppColors.primary,
+                ),
+                onPressed: _showCreateListDialog,
+                icon: const Icon(Icons.playlist_add_rounded),
+                label: Text(l10n.createList),
+              ),
+            ],
+          ),
+        ),
         ListFilterChips(
           selectedFilter: _currentFilter,
           onFilterChanged: (filter) {
