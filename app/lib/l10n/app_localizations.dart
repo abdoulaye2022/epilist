@@ -11370,6 +11370,246 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ajouter un membre de la famille'**
   String get addFamilyMember;
+
+  /// No description provided for @preShoppingChecklist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant de partir'**
+  String get preShoppingChecklist;
+
+  /// No description provided for @preShoppingChecklistIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cinq étapes simples à vérifier avant de partir. Cochez chaque grande case quand l\'étape est faite : le compteur se met à jour tout de suite.'**
+  String get preShoppingChecklistIntro;
+
+  /// No description provided for @preShoppingStepsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{ready, plural, =0{Aucune étape prête sur {total}} =1{1 étape prête sur {total}} other{{ready} étapes prêtes sur {total}}}'**
+  String preShoppingStepsCount(int ready, int total);
+
+  /// No description provided for @preShoppingStepsLeft.
+  ///
+  /// In fr, this message translates to:
+  /// **'{left, plural, =0{Tout est prêt : vous pouvez partir l\'esprit tranquille.} =1{Plus qu\'une étape et vous pouvez partir l\'esprit tranquille.} other{Plus que {left} étapes et vous pouvez partir l\'esprit tranquille.}}'**
+  String preShoppingStepsLeft(int left);
+
+  /// No description provided for @preShoppingStepStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier ce qui reste à la maison'**
+  String get preShoppingStepStock;
+
+  /// No description provided for @preShoppingStepStockHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Regardez le réfrigérateur et le garde-manger, ou la page À la maison'**
+  String get preShoppingStepStockHint;
+
+  /// No description provided for @preShoppingStepBags.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre les sacs réutilisables'**
+  String get preShoppingStepBags;
+
+  /// No description provided for @preShoppingStepBagsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Près de la porte d\'entrée'**
+  String get preShoppingStepBagsHint;
+
+  /// No description provided for @preShoppingStepCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apporter la carte de fidélité'**
+  String get preShoppingStepCard;
+
+  /// No description provided for @preShoppingStepCardHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos cartes de magasin, dans le portefeuille'**
+  String get preShoppingStepCardHint;
+
+  /// No description provided for @preShoppingStepAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consulter les alertes de prix actives'**
+  String get preShoppingStepAlerts;
+
+  /// No description provided for @preShoppingStepAlertsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucune baisse repérée cette semaine} =1{1 baisse repérée cette semaine} other{{count} baisses repérées cette semaine}}'**
+  String preShoppingStepAlertsHint(int count);
+
+  /// No description provided for @preShoppingStepBattery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Charger le téléphone'**
+  String get preShoppingStepBattery;
+
+  /// No description provided for @preShoppingStepBatteryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au moins la moitié de la batterie pour le mode courses'**
+  String get preShoppingStepBatteryHint;
+
+  /// No description provided for @preShoppingReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je suis prêt, ouvrir ma liste'**
+  String get preShoppingReady;
+
+  /// No description provided for @preShoppingCheckStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier mes stocks à la maison'**
+  String get preShoppingCheckStock;
+
+  /// No description provided for @stepDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fait'**
+  String get stepDone;
+
+  /// No description provided for @recurringFrequencyLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fréquence : {value}.'**
+  String recurringFrequencyLabel(String value);
+
+  /// No description provided for @recurringNextLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochaine génération : {value}.'**
+  String recurringNextLabel(String value);
+
+  /// No description provided for @recurringContentLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu : {value}.'**
+  String recurringContentLabel(String value);
+
+  /// No description provided for @recurringStateOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'État : Activée'**
+  String get recurringStateOn;
+
+  /// No description provided for @recurringStateOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'État : En pause'**
+  String get recurringStateOff;
+
+  /// No description provided for @recurringSwitchLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Interrupteur de la liste {name}'**
+  String recurringSwitchLabel(String name);
+
+  /// No description provided for @recurringIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos listes qui reviennent toutes seules. Touchez un interrupteur pour activer la liste ou la mettre en pause : son état est toujours écrit en texte.'**
+  String get recurringIntro;
+
+  /// No description provided for @addToMyList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter à ma liste'**
+  String get addToMyList;
+
+  /// No description provided for @alreadyInList.
+  ///
+  /// In fr, this message translates to:
+  /// **'{product} est déjà dans la liste {list}.'**
+  String alreadyInList(String product, String list);
+
+  /// No description provided for @productAddedToList.
+  ///
+  /// In fr, this message translates to:
+  /// **'{product} a été ajouté à la liste {list}.'**
+  String productAddedToList(String product, String list);
+
+  /// No description provided for @inventoryIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'inventaire de vos provisions, zone par zone. Les quantités sont écrites, et les alertes de stock bas sont rédigées en phrases complètes.'**
+  String get inventoryIntro;
+
+  /// No description provided for @inventoryQuantityLine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité restante : {quantity}.'**
+  String inventoryQuantityLine(String quantity);
+
+  /// No description provided for @inventoryQuantityThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité restante : {quantity}, pour un seuil de {threshold}.'**
+  String inventoryQuantityThreshold(String quantity, String threshold);
+
+  /// No description provided for @inventoryLowWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte stock bas : {product}, sous le seuil que vous avez fixé.'**
+  String inventoryLowWarning(String product);
+
+  /// No description provided for @inventoryOutWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte rupture : {product}, il n\'y en a plus à la maison.'**
+  String inventoryOutWarning(String product);
+
+  /// No description provided for @storesIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos magasins, avec leur devanture, l\'ordre de leurs rayons et leurs alertes actives. Touchez l\'étoile pour marquer un magasin comme favori : l\'état est écrit en texte.'**
+  String get storesIntro;
+
+  /// No description provided for @storeFavoriteYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Favori : Oui, magasin favori'**
+  String get storeFavoriteYes;
+
+  /// No description provided for @storeFavoriteNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Favori : Non, pas encore favori'**
+  String get storeFavoriteNo;
+
+  /// No description provided for @storeActiveAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Alertes actives dans ce magasin : aucune pour le moment.} =1{Alertes actives dans ce magasin : 1 alerte.} other{Alertes actives dans ce magasin : {count} alertes.}}'**
+  String storeActiveAlerts(int count);
+
+  /// No description provided for @storeAisleConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ordre des rayons : {count} rayons rangés comme vous les parcourez.'**
+  String storeAisleConfigured(int count);
+
+  /// No description provided for @storeAisleMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ordre des rayons : pas encore réglé pour ce magasin.'**
+  String get storeAisleMissing;
+
+  /// No description provided for @storeSeeAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les alertes de ce magasin'**
+  String get storeSeeAlerts;
+
+  /// No description provided for @storeFrontOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devanture illustrée du magasin {name}'**
+  String storeFrontOf(String name);
 }
 
 class _AppLocalizationsDelegate

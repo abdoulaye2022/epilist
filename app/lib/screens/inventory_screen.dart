@@ -3,6 +3,8 @@
 // d'état en un geste, recherche, ajout. Un produit marqué « Terminé »
 // propose l'ajout à la liste récente (ou l'ajoute seul si le réglage
 // auto_add_out_of_stock est activé).
+import 'package:epilist/utils/add_product_to_list.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
@@ -391,7 +393,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
         onPressed: _addProduct,
         backgroundColor: AppColors.primary,
         tooltip: l10n.inventoryAddProduct,
-        child:  Icon(Icons.add, color: AppColors.onPrimary),
+        child: Icon(Icons.add, color: AppColors.onPrimary),
       ),
       body:
           _loading
@@ -407,6 +409,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     96,
                   ),
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: Text(
+                        l10n.inventoryIntro,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
                     TextField(
                       decoration: InputDecoration(
                         hintText: l10n.search,
@@ -433,28 +442,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       ),
                     ] else
                       for (final (status, title, items) in sections)
-                        if (items.isNotEmpty) ...[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: AppSpacing.md,
-                              bottom: AppSpacing.sm,
-                            ),
-                            child: Row(
-                              children: [
-                                _statusDot(status),
-                                const SizedBox(width: AppSpacing.sm),
-                                Text(
-                                  '$title (${items.length})',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        if (items.isNotEmpty)
+                          // Une zone par etat, en-tete teinte de la
+                          // couleur de l'etat : la carte dit de quoi
+                          // elle parle avant qu'on lise une ligne.
+                          AppZoneCard(
+                            title: '$title (${items.length})',
+                            tint: _statusColor(status),
+                            icon: switch (status) {
+                              'out' => Icons.remove_shopping_cart_outlined,
+                              'running_low' => Icons.hourglass_bottom,
+                              _ => Icons.home_outlined,
+                            },
+                            children: [
+                              for (final (n, i) in items.indexed)
+                                _itemLine(i, l10n, first: n == 0),
+                            ],
                           ),
-                          ...items.map((i) => _itemCard(i, l10n)),
-                        ],
                   ],
                 ),
               ),
@@ -467,143 +471,174 @@ class _InventoryScreenState extends State<InventoryScreen> {
     _ => AppColors.primary,
   };
 
-  Widget _statusDot(String status) => Container(
-    width: 10,
-    height: 10,
-    decoration: BoxDecoration(
-      color: _statusColor(status),
-      shape: BoxShape.circle,
-    ),
-  );
-
-  Widget _itemCard(InventoryItem item, AppLocalizations l10n) {
-    // L'estimation n'est montrée que si elle diffère de l'état manuel
-    final showEstimate =
+  /// Une ligne de provision DANS sa zone.
+  ///
+  /// Remplace la carte precedente, qui disait « 1.0kg / 2.0kg · sous le
+  /// seuil » en 11,5 points : trois fragments a interpreter, dont une
+  /// couleur, pour une information qui tient en une phrase.
+  Widget _itemLine(
+    InventoryItem item,
+    AppLocalizations l10n, {
+    required bool first,
+  }) {
+    final quantite =
+        item.quantity != null
+            ? (item.minQuantity != null
+                ? l10n.inventoryQuantityThreshold(
+                  '${_qty(item.quantity!)}${item.unit ?? ''}',
+                  '${_qty(item.minQuantity!)}${item.unit ?? ''}',
+                )
+                : l10n.inventoryQuantityLine(
+                  '${_qty(item.quantity!)}${item.unit ?? ''}',
+                ))
+            : null;
+    final estimation =
         item.status == 'at_home' &&
         (item.estimatedStatus == 'running_low' ||
             item.estimatedStatus == 'out');
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.productName,
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (showEstimate)
-                    Text(
-                      l10n.inventoryProbablyLow,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.warning,
-                      ),
-                    ),
-                  // Quantitatif (§21) : quantité / seuil + alerte
-                  if (item.quantity != null && item.minQuantity != null)
-                    Text(
-                      '${_qty(item.quantity!)}${item.unit ?? ''} / '
-                      '${_qty(item.minQuantity!)}${item.unit ?? ''}'
-                      '${item.belowMin ? ' · ${l10n.inventoryBelowMin}' : ''}',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight:
-                            item.belowMin ? FontWeight.w700 : FontWeight.w500,
-                        color:
-                            item.belowMin
-                                ? AppColors.error
-                                : AppColors.textSecondary,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Trois pastilles d'état, changement en un tap
-            for (final status in const ['at_home', 'running_low', 'out'])
-              Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.xs),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  onTap:
-                      item.status == status
-                          ? null
-                          : () => _setStatus(item, status),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          item.status == status
-                              ? _statusColor(status).withValues(alpha: 0.12)
-                              : Colors.transparent,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      border: Border.all(
-                        color:
-                            item.status == status
-                                ? _statusColor(status)
-                                : AppColors.border,
-                      ),
-                    ),
-                    child: Icon(
-                      switch (status) {
-                        'out' => Icons.remove_shopping_cart_outlined,
-                        'running_low' => Icons.hourglass_bottom,
-                        _ => Icons.home_outlined,
-                      },
-                      size: 17,
-                      color:
-                          item.status == status
-                              ? _statusColor(status)
-                              : AppColors.textDisabled,
-                    ),
-                  ),
-                ),
-              ),
-            PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                size: 18,
-                color: AppColors.textDisabled,
-              ),
-              onSelected: (action) async {
-                if (action == 'thresholds') {
-                  await _editThresholds(item);
-                  return;
-                }
-                await context.read<IntelligenceService>().deleteInventoryItem(
-                  item.id,
-                );
-                _load();
-              },
-              itemBuilder:
-                  (_) => [
-                    PopupMenuItem(
-                      value: 'thresholds',
-                      child: Text(l10n.inventoryThresholds),
-                    ),
-                    PopupMenuItem(
-                      value: 'remove',
-                      child: Text(l10n.removeFromInventory),
-                    ),
-                  ],
-            ),
-          ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm + 4),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: first ? const Color(0x00000000) : AppColors.primaryLight,
+            width: 2,
+          ),
         ),
       ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.productName,
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                if (quantite != null)
+                  Text(
+                    quantite,
+                    style: TextStyle(
+                      fontSize: 17.5,
+                      height: 1.4,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                if (estimation)
+                  Text(
+                    l10n.inventoryProbablyLow,
+                    style: TextStyle(
+                      fontSize: 17.5,
+                      color: AppColors.warningInk,
+                    ),
+                  ),
+                if (item.status == 'out')
+                  AppWarningLine(
+                    text: l10n.inventoryOutWarning(item.productName),
+                    icon: Icons.remove_shopping_cart_outlined,
+                  )
+                else if (item.belowMin || item.status == 'running_low')
+                  AppWarningLine(
+                    text: l10n.inventoryLowWarning(item.productName),
+                    icon: Icons.hourglass_bottom,
+                  ),
+                if (item.status != 'at_home') ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  OutlinedButton.icon(
+                    onPressed:
+                        () => addProductToList(context, item.productName),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, AppSizes.buttonSmall),
+                    ),
+                    icon: const Icon(Icons.add_shopping_cart_outlined),
+                    label: Text(l10n.addToMyList),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          _statusMenu(item, l10n),
+        ],
+      ),
+    );
+  }
+
+  /// Les trois pastilles d'etat — a la maison, stock bas, epuise — et
+  /// le menu des seuils. Elles changent l'etat en un appui, et c'est
+  /// pour cela qu'elles restent a droite de chaque ligne.
+  Widget _statusMenu(InventoryItem item, AppLocalizations l10n) {
+    return Row(
+      children: [
+        // Trois pastilles d'état, changement en un tap
+        for (final status in const ['at_home', 'running_low', 'out'])
+          Padding(
+            padding: const EdgeInsets.only(left: AppSpacing.xs),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              onTap:
+                  item.status == status ? null : () => _setStatus(item, status),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color:
+                      item.status == status
+                          ? _statusColor(status).withValues(alpha: 0.12)
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  border: Border.all(
+                    color:
+                        item.status == status
+                            ? _statusColor(status)
+                            : AppColors.border,
+                  ),
+                ),
+                child: Icon(
+                  switch (status) {
+                    'out' => Icons.remove_shopping_cart_outlined,
+                    'running_low' => Icons.hourglass_bottom,
+                    _ => Icons.home_outlined,
+                  },
+                  size: 17,
+                  color:
+                      item.status == status
+                          ? _statusColor(status)
+                          : AppColors.textDisabled,
+                ),
+              ),
+            ),
+          ),
+        PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert, size: 18, color: AppColors.textDisabled),
+          onSelected: (action) async {
+            if (action == 'thresholds') {
+              await _editThresholds(item);
+              return;
+            }
+            await context.read<IntelligenceService>().deleteInventoryItem(
+              item.id,
+            );
+            _load();
+          },
+          itemBuilder:
+              (_) => [
+                PopupMenuItem(
+                  value: 'thresholds',
+                  child: Text(l10n.inventoryThresholds),
+                ),
+                PopupMenuItem(
+                  value: 'remove',
+                  child: Text(l10n.removeFromInventory),
+                ),
+              ],
+        ),
+      ],
     );
   }
 }

@@ -2858,5 +2858,169 @@
   "dictateList": "Dictate my list",
   "settingsAndMore": "Settings and more",
   "cartIllustration": "Illustration of a shopping cart filled with fresh produce",
-  "addFamilyMember": "Add a family member"
+  "addFamilyMember": "Add a family member",
+  "preShoppingChecklist": "Before you leave",
+  "preShoppingChecklistIntro": "Five simple steps to check before you leave. Tick each large box when the step is done: the counter updates right away.",
+  "preShoppingStepsCount": "{ready, plural, =0{No step ready out of {total}} =1{1 step ready out of {total}} other{{ready} steps ready out of {total}}}",
+  "@preShoppingStepsCount": {
+    "placeholders": {
+      "ready": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepsLeft": "{left, plural, =0{Everything is ready: you can go with peace of mind.} =1{One more step and you can go with peace of mind.} other{{left} more steps and you can go with peace of mind.}}",
+  "@preShoppingStepsLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepStock": "Check what is left at home",
+  "preShoppingStepStockHint": "Look in the fridge and the pantry, or on the At home page",
+  "preShoppingStepBags": "Take the reusable bags",
+  "preShoppingStepBagsHint": "By the front door",
+  "preShoppingStepCard": "Bring the loyalty card",
+  "preShoppingStepCardHint": "Your store cards, in your wallet",
+  "preShoppingStepAlerts": "Check the active price alerts",
+  "preShoppingStepAlertsHint": "{count, plural, =0{No price drop spotted this week} =1{1 price drop spotted this week} other{{count} price drops spotted this week}}",
+  "@preShoppingStepAlertsHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepBattery": "Charge the phone",
+  "preShoppingStepBatteryHint": "At least half the battery for shopping mode",
+  "preShoppingReady": "I'm ready, open my list",
+  "preShoppingCheckStock": "Check my stock at home",
+  "stepDone": "Done",
+  "recurringFrequencyLabel": "Frequency: {value}.",
+  "@recurringFrequencyLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringNextLabel": "Next run: {value}.",
+  "@recurringNextLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringContentLabel": "Contents: {value}.",
+  "@recurringContentLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringStateOn": "State: On",
+  "recurringStateOff": "State: Paused",
+  "recurringSwitchLabel": "Switch for the list {name}",
+  "@recurringSwitchLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringIntro": "Your lists that come back on their own. Tap a switch to turn a list on or pause it: its state is always written out.",
+  "addToMyList": "Add to my list",
+  "alreadyInList": "{product} is already in the list {list}.",
+  "@alreadyInList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "productAddedToList": "{product} has been added to the list {list}.",
+  "@productAddedToList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryIntro": "Your pantry inventory, zone by zone. Quantities are written out, and low-stock alerts are full sentences.",
+  "inventoryQuantityLine": "Quantity left: {quantity}.",
+  "@inventoryQuantityLine": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryQuantityThreshold": "Quantity left: {quantity}, for a threshold of {threshold}.",
+  "@inventoryQuantityThreshold": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryLowWarning": "Low stock alert: {product}, below the threshold you set.",
+  "@inventoryLowWarning": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryOutWarning": "Out of stock alert: {product}, there is none left at home.",
+  "@inventoryOutWarning": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "storesIntro": "Your stores, with their storefront, their aisle order and their active alerts. Tap the star to mark a store as a favourite: the state is written out.",
+  "storeFavoriteYes": "Favourite: Yes, favourite store",
+  "storeFavoriteNo": "Favourite: No, not a favourite yet",
+  "storeActiveAlerts": "{count, plural, =0{Active alerts in this store: none for now.} =1{Active alerts in this store: 1 alert.} other{Active alerts in this store: {count} alerts.}}",
+  "@storeActiveAlerts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAisleConfigured": "Aisle order: {count} aisles, arranged the way you walk them.",
+  "@storeAisleConfigured": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAisleMissing": "Aisle order: not set for this store yet.",
+  "storeSeeAlerts": "See this store's alerts",
+  "storeFrontOf": "Illustrated storefront of the store {name}",
+  "@storeFrontOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

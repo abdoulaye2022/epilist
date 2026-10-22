@@ -1,6 +1,7 @@
 // screens/recurring_lists_screen.dart - Listes récurrentes intelligentes :
 // modèles (hebdo / 2 semaines / mensuel), génération avec aperçu
 // pré-coché selon les habitudes (validation en quelques secondes, §34).
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -90,6 +91,47 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
     }
   }
 
+  /// Activer la liste ou la mettre en pause.
+  ///
+  /// La bascule etait enfermee dans la feuille d'edition, sous le nom
+  /// « generation automatique » : mettre une liste en pause demandait
+  /// d'ouvrir un formulaire. Elle est maintenant sur la carte, avec son
+  /// etat ECRIT a cote — un interrupteur ne dit son etat que par une
+  /// position et une couleur.
+  Future<void> _toggleEnabled(RecurringListModel list, bool enabled) async {
+    final l10n = AppLocalizations.of(context)!;
+    final service = context.read<IntelligenceService>();
+
+    // Optimiste : l'interrupteur doit repondre tout de suite. En cas
+    // d'echec, on remet l'etat precedent et on le dit.
+    setState(() {
+      final i = _lists.indexWhere((e) => e.id == list.id);
+      if (i >= 0) _lists[i] = _withEnabled(list, enabled);
+    });
+    try {
+      await service.updateRecurringList(list.id, {'enabled': enabled});
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        final i = _lists.indexWhere((e) => e.id == list.id);
+        if (i >= 0) _lists[i] = _withEnabled(list, !enabled);
+      });
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
+  }
+
+  RecurringListModel _withEnabled(RecurringListModel l, bool enabled) =>
+      RecurringListModel(
+        id: l.id,
+        name: l.name,
+        recurrenceType: l.recurrenceType,
+        weekday: l.weekday,
+        nextRunAt: l.nextRunAt,
+        enabled: enabled,
+        autoGenerate: l.autoGenerate,
+        items: l.items,
+      );
+
   // --- Création / édition du modèle ------------------------------------
 
   Future<void> _edit([RecurringListModel? existing]) async {
@@ -142,7 +184,7 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
         onPressed: () => _edit(),
         backgroundColor: AppColors.primary,
         tooltip: l10n.newRecurringList,
-        child:  Icon(Icons.add, color: AppColors.onPrimary),
+        child: Icon(Icons.add, color: AppColors.onPrimary),
       ),
       body:
           _loading
@@ -184,9 +226,20 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                             AppSpacing.md,
                             96,
                           ),
-                          itemCount: _lists.length,
+                          itemCount: _lists.length + 1,
                           itemBuilder: (context, index) {
-                            final list = _lists[index];
+                            if (index == 0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.md,
+                                ),
+                                child: Text(
+                                  l10n.recurringIntro,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              );
+                            }
+                            final list = _lists[index - 1];
                             return Card(
                               margin: const EdgeInsets.only(
                                 bottom: AppSpacing.sm,
@@ -201,9 +254,9 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                                         Expanded(
                                           child: Text(
                                             list.name,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700,
+                                            style: AppFonts.displayStyle(
+                                              size: 23,
+                                              color: AppColors.textPrimary,
                                             ),
                                           ),
                                         ),
@@ -232,16 +285,51 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                                         ),
                                       ],
                                     ),
+                                    // Trois phrases completes, comme sur
+                                    // la planche, au lieu d'une ligne
+                                    // de fragments separes par des
+                                    // points mediants.
                                     Text(
-                                      '${_recurrenceLabel(l10n, list.recurrenceType)}'
-                                      '${list.nextRunAt != null ? ' · ${l10n.nextRunOn(DateFormat('d MMM', locale).format(list.nextRunAt!))}' : ''}'
-                                      ' · ${list.items.length} ${l10n.items}',
+                                      [
+                                        l10n.recurringFrequencyLabel(
+                                          _recurrenceLabel(
+                                            l10n,
+                                            list.recurrenceType,
+                                          ),
+                                        ),
+                                        if (list.nextRunAt != null)
+                                          l10n.recurringNextLabel(
+                                            DateFormat(
+                                              'd MMMM',
+                                              locale,
+                                            ).format(list.nextRunAt!),
+                                          ),
+                                        if (list.items.isNotEmpty)
+                                          l10n.recurringContentLabel(
+                                            list.items
+                                                .map((e) => e.productName)
+                                                .join(', '),
+                                          ),
+                                      ].join(' '),
                                       style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: AppColors.textSecondary,
+                                        fontSize: 18,
+                                        height: 1.5,
+                                        color: AppColors.textPrimary,
                                       ),
                                     ),
-                                    const SizedBox(height: AppSpacing.sm),
+                                    const SizedBox(height: AppSpacing.sm + 4),
+                                    AppStateSwitch(
+                                      value: list.enabled,
+                                      stateLabel:
+                                          list.enabled
+                                              ? l10n.recurringStateOn
+                                              : l10n.recurringStateOff,
+                                      semanticLabel: l10n.recurringSwitchLabel(
+                                        list.name,
+                                      ),
+                                      onChanged: (v) => _toggleEnabled(list, v),
+                                    ),
+                                    const SizedBox(height: AppSpacing.sm + 4),
                                     SizedBox(
                                       width: double.infinity,
                                       child: FilledButton.tonalIcon(

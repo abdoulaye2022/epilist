@@ -10,9 +10,7 @@
 // Une entrée qui a besoin d'une liste (mode courses, comparaison,
 // discussion, code-barres) la demande au moment du clic au lieu
 // d'exister ailleurs ; la mention « demande une liste » le dit avant.
-import 'package:epilist/blocs/category/category_bloc.dart';
-import 'package:epilist/blocs/list_item/list_item_bloc.dart';
-import 'package:epilist/blocs/localization/localization_bloc.dart';
+import 'package:epilist/utils/shopping_mode_launcher.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/screens/about_screen.dart';
@@ -32,13 +30,11 @@ import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/purchase_requests_screen.dart';
 import 'package:epilist/screens/recurring_lists_screen.dart';
-import 'package:epilist/screens/shopping_mode_screen.dart';
 import 'package:epilist/screens/space_activity_screen.dart';
 import 'package:epilist/screens/space_members_screen.dart';
 import 'package:epilist/screens/store_comparison_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/screens/suppliers_screen.dart';
-import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/chat_flow.dart';
@@ -49,7 +45,6 @@ import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Une destination de l'index.
 class _Destination {
@@ -219,7 +214,7 @@ class _MoreScreenState extends State<MoreScreen> {
           icon: Icons.shopping_cart_checkout_rounded,
           label: l10n.shoppingModeTitle,
           hint: l10n.needsAList,
-          open: _shoppingMode,
+          open: openShoppingMode,
         ),
         _Destination(
           icon: Icons.assistant_outlined,
@@ -342,30 +337,6 @@ class _MoreScreenState extends State<MoreScreen> {
     final list = await pickShoppingList(context);
     if (list == null || !context.mounted) return;
     _push(context, StoreComparisonScreen(listId: list.id, listName: list.name));
-  }
-
-  /// Le mode courses a besoin d'un ListItemBloc : il était fourni par
-  /// l'écran de détail, d'où le fait qu'on n'y accédait que de là.
-  Future<void> _shoppingMode(BuildContext context) async {
-    final list = await pickShoppingList(context);
-    if (!context.mounted || list == null) return;
-    final itemService = context.read<ListItemService>();
-    final localization = context.read<LocalizationBloc>();
-    // Les rayons viennent des categories : sans ce chargement, tout
-    // atterrit dans « Sans rayon » quand on entre par ici plutot que
-    // par l'ecran de detail (qui, lui, les charge).
-    context.read<CategoryBloc>().add(const LoadCategories());
-    _push(
-      context,
-      BlocProvider<ListItemBloc>(
-        create:
-            (_) => ListItemBloc(
-              listItemService: itemService,
-              localizationBloc: localization,
-            )..add(LoadListItems(list.id)),
-        child: ShoppingModeScreen(shoppingList: list),
-      ),
-    );
   }
 
   Future<void> _scanBarcode(BuildContext context) async {

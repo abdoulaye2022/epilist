@@ -2858,5 +2858,169 @@
   "dictateList": "Dicter ma liste",
   "settingsAndMore": "Réglages et plus",
   "cartIllustration": "Illustration d'un chariot de courses rempli de produits frais",
-  "addFamilyMember": "Ajouter un membre de la famille"
+  "addFamilyMember": "Ajouter un membre de la famille",
+  "preShoppingChecklist": "Avant de partir",
+  "preShoppingChecklistIntro": "Cinq étapes simples à vérifier avant de partir. Cochez chaque grande case quand l'étape est faite : le compteur se met à jour tout de suite.",
+  "preShoppingStepsCount": "{ready, plural, =0{Aucune étape prête sur {total}} =1{1 étape prête sur {total}} other{{ready} étapes prêtes sur {total}}}",
+  "@preShoppingStepsCount": {
+    "placeholders": {
+      "ready": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepsLeft": "{left, plural, =0{Tout est prêt : vous pouvez partir l'esprit tranquille.} =1{Plus qu'une étape et vous pouvez partir l'esprit tranquille.} other{Plus que {left} étapes et vous pouvez partir l'esprit tranquille.}}",
+  "@preShoppingStepsLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepStock": "Vérifier ce qui reste à la maison",
+  "preShoppingStepStockHint": "Regardez le réfrigérateur et le garde-manger, ou la page À la maison",
+  "preShoppingStepBags": "Prendre les sacs réutilisables",
+  "preShoppingStepBagsHint": "Près de la porte d'entrée",
+  "preShoppingStepCard": "Apporter la carte de fidélité",
+  "preShoppingStepCardHint": "Vos cartes de magasin, dans le portefeuille",
+  "preShoppingStepAlerts": "Consulter les alertes de prix actives",
+  "preShoppingStepAlertsHint": "{count, plural, =0{Aucune baisse repérée cette semaine} =1{1 baisse repérée cette semaine} other{{count} baisses repérées cette semaine}}",
+  "@preShoppingStepAlertsHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "preShoppingStepBattery": "Charger le téléphone",
+  "preShoppingStepBatteryHint": "Au moins la moitié de la batterie pour le mode courses",
+  "preShoppingReady": "Je suis prêt, ouvrir ma liste",
+  "preShoppingCheckStock": "Vérifier mes stocks à la maison",
+  "stepDone": "Fait",
+  "recurringFrequencyLabel": "Fréquence : {value}.",
+  "@recurringFrequencyLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringNextLabel": "Prochaine génération : {value}.",
+  "@recurringNextLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringContentLabel": "Contenu : {value}.",
+  "@recurringContentLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringStateOn": "État : Activée",
+  "recurringStateOff": "État : En pause",
+  "recurringSwitchLabel": "Interrupteur de la liste {name}",
+  "@recurringSwitchLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringIntro": "Vos listes qui reviennent toutes seules. Touchez un interrupteur pour activer la liste ou la mettre en pause : son état est toujours écrit en texte.",
+  "addToMyList": "Ajouter à ma liste",
+  "alreadyInList": "{product} est déjà dans la liste {list}.",
+  "@alreadyInList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "productAddedToList": "{product} a été ajouté à la liste {list}.",
+  "@productAddedToList": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryIntro": "L'inventaire de vos provisions, zone par zone. Les quantités sont écrites, et les alertes de stock bas sont rédigées en phrases complètes.",
+  "inventoryQuantityLine": "Quantité restante : {quantity}.",
+  "@inventoryQuantityLine": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryQuantityThreshold": "Quantité restante : {quantity}, pour un seuil de {threshold}.",
+  "@inventoryQuantityThreshold": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "threshold": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryLowWarning": "Alerte stock bas : {product}, sous le seuil que vous avez fixé.",
+  "@inventoryLowWarning": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryOutWarning": "Alerte rupture : {product}, il n'y en a plus à la maison.",
+  "@inventoryOutWarning": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "storesIntro": "Vos magasins, avec leur devanture, l'ordre de leurs rayons et leurs alertes actives. Touchez l'étoile pour marquer un magasin comme favori : l'état est écrit en texte.",
+  "storeFavoriteYes": "Favori : Oui, magasin favori",
+  "storeFavoriteNo": "Favori : Non, pas encore favori",
+  "storeActiveAlerts": "{count, plural, =0{Alertes actives dans ce magasin : aucune pour le moment.} =1{Alertes actives dans ce magasin : 1 alerte.} other{Alertes actives dans ce magasin : {count} alertes.}}",
+  "@storeActiveAlerts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAisleConfigured": "Ordre des rayons : {count} rayons rangés comme vous les parcourez.",
+  "@storeAisleConfigured": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAisleMissing": "Ordre des rayons : pas encore réglé pour ce magasin.",
+  "storeSeeAlerts": "Voir les alertes de ce magasin",
+  "storeFrontOf": "Devanture illustrée du magasin {name}",
+  "@storeFrontOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

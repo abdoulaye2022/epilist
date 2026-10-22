@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:epilist/services/store_favorites.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -106,6 +107,7 @@ void main() async {
     // Avant runApp : sinon le premier ecran s'affiche en clair puis
     // bascule en sombre sous les yeux de l'utilisateur.
     await appThemeMode.load();
+    await storeFavorites.load();
     await ConnectivityService().initialize();
 
     // ETAPE 4: Initialiser le nouveau systeme de cache

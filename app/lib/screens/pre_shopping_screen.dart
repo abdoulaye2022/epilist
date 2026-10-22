@@ -4,6 +4,10 @@
 // repérés récemment, demandes d'achat en attente (espaces pro), et
 // les économies estimées DOCUMENTÉES (§30). L'icône de l'AppBar ouvre
 // « Est-ce un bon prix ? » (§29) : verdict prudent + les chiffres.
+import 'package:epilist/screens/inventory_screen.dart';
+import 'package:epilist/utils/shopping_mode_launcher.dart';
+import 'package:epilist/widgets/common/app_meters.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -22,6 +26,12 @@ class PreShoppingScreen extends StatefulWidget {
 }
 
 class _PreShoppingScreenState extends State<PreShoppingScreen> {
+  /// Les cinq etapes de la planche, cochees ou non. Elles vivent dans
+  /// l'etat de l'ecran : la coquille le garde en vie tant que
+  /// l'application tourne, et une liste de preparation n'a pas de sens
+  /// a survivre a la sortie de courses qu'elle preparait.
+  final List<bool> _steps = List<bool>.filled(5, false);
+
   Map<String, dynamic>? _brief;
   Map<String, dynamic>? _savings;
   bool _error = false;
@@ -260,6 +270,67 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
     );
   }
 
+  /// « Avant de partir » : les cinq etapes de la planche, leur compteur
+  /// vivant, et les deux boutons qui suivent.
+  ///
+  /// L'ecran etait un brief de donnees — budget, ruptures, prix reperes.
+  /// Il disait ce que l'espace actif SAIT, jamais ce qu'il reste a
+  /// FAIRE avant de sortir. Les deux coexistent : la liste d'abord, le
+  /// brief ensuite.
+  List<Widget> _checklist(AppLocalizations l10n, int alertes) {
+    final prets = _steps.where((e) => e).length;
+    final titres = <(String, String)>[
+      (l10n.preShoppingStepStock, l10n.preShoppingStepStockHint),
+      (l10n.preShoppingStepBags, l10n.preShoppingStepBagsHint),
+      (l10n.preShoppingStepCard, l10n.preShoppingStepCardHint),
+      (l10n.preShoppingStepAlerts, l10n.preShoppingStepAlertsHint(alertes)),
+      (l10n.preShoppingStepBattery, l10n.preShoppingStepBatteryHint),
+    ];
+
+    return [
+      Text(
+        l10n.preShoppingChecklist,
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      const SizedBox(height: AppSpacing.sm),
+      Text(
+        l10n.preShoppingChecklistIntro,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      const SizedBox(height: AppSpacing.md),
+      AppCounterCard(
+        count: l10n.preShoppingStepsCount(prets, _steps.length),
+        sentence: l10n.preShoppingStepsLeft(_steps.length - prets),
+        ratio: prets / _steps.length,
+      ),
+      const SizedBox(height: AppSpacing.md),
+      for (var i = 0; i < titres.length; i++)
+        AppCheckRow(
+          checked: _steps[i],
+          title: titres[i].$1,
+          subtitle: titres[i].$2,
+          doneLabel: l10n.stepDone,
+          onChanged: (v) => setState(() => _steps[i] = v),
+        ),
+      const SizedBox(height: AppSpacing.sm),
+      FilledButton.icon(
+        onPressed: () => openShoppingMode(context),
+        icon: const Icon(Icons.shopping_cart_checkout_rounded),
+        label: Text(l10n.preShoppingReady),
+      ),
+      const SizedBox(height: AppSpacing.sm + 4),
+      OutlinedButton.icon(
+        onPressed:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const InventoryScreen()),
+            ),
+        icon: const Icon(Icons.kitchen_outlined),
+        label: Text(l10n.preShoppingCheckStock),
+      ),
+    ];
+  }
+
   List<Widget> _sections(AppLocalizations l10n) {
     final brief = _brief!;
     final budget = brief['budget'] as Map<String, dynamic>?;
@@ -271,6 +342,9 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
     final savingsItems = (_savings?['items'] as List? ?? []);
 
     return [
+      ..._checklist(l10n, priceWatch.length),
+      const SizedBox(height: AppSpacing.lg),
+
       // Budget du mois
       if (budget != null)
         _card(

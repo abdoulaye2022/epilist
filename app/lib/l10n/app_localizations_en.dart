@@ -6081,4 +6081,190 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFamilyMember => 'Add a family member';
+
+  @override
+  String get preShoppingChecklist => 'Before you leave';
+
+  @override
+  String get preShoppingChecklistIntro =>
+      'Five simple steps to check before you leave. Tick each large box when the step is done: the counter updates right away.';
+
+  @override
+  String preShoppingStepsCount(int ready, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      ready,
+      locale: localeName,
+      other: '$ready steps ready out of $total',
+      one: '1 step ready out of $total',
+      zero: 'No step ready out of $total',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String preShoppingStepsLeft(int left) {
+    String _temp0 = intl.Intl.pluralLogic(
+      left,
+      locale: localeName,
+      other: '$left more steps and you can go with peace of mind.',
+      one: 'One more step and you can go with peace of mind.',
+      zero: 'Everything is ready: you can go with peace of mind.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get preShoppingStepStock => 'Check what is left at home';
+
+  @override
+  String get preShoppingStepStockHint =>
+      'Look in the fridge and the pantry, or on the At home page';
+
+  @override
+  String get preShoppingStepBags => 'Take the reusable bags';
+
+  @override
+  String get preShoppingStepBagsHint => 'By the front door';
+
+  @override
+  String get preShoppingStepCard => 'Bring the loyalty card';
+
+  @override
+  String get preShoppingStepCardHint => 'Your store cards, in your wallet';
+
+  @override
+  String get preShoppingStepAlerts => 'Check the active price alerts';
+
+  @override
+  String preShoppingStepAlertsHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count price drops spotted this week',
+      one: '1 price drop spotted this week',
+      zero: 'No price drop spotted this week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get preShoppingStepBattery => 'Charge the phone';
+
+  @override
+  String get preShoppingStepBatteryHint =>
+      'At least half the battery for shopping mode';
+
+  @override
+  String get preShoppingReady => 'I\'m ready, open my list';
+
+  @override
+  String get preShoppingCheckStock => 'Check my stock at home';
+
+  @override
+  String get stepDone => 'Done';
+
+  @override
+  String recurringFrequencyLabel(String value) {
+    return 'Frequency: $value.';
+  }
+
+  @override
+  String recurringNextLabel(String value) {
+    return 'Next run: $value.';
+  }
+
+  @override
+  String recurringContentLabel(String value) {
+    return 'Contents: $value.';
+  }
+
+  @override
+  String get recurringStateOn => 'State: On';
+
+  @override
+  String get recurringStateOff => 'State: Paused';
+
+  @override
+  String recurringSwitchLabel(String name) {
+    return 'Switch for the list $name';
+  }
+
+  @override
+  String get recurringIntro =>
+      'Your lists that come back on their own. Tap a switch to turn a list on or pause it: its state is always written out.';
+
+  @override
+  String get addToMyList => 'Add to my list';
+
+  @override
+  String alreadyInList(String product, String list) {
+    return '$product is already in the list $list.';
+  }
+
+  @override
+  String productAddedToList(String product, String list) {
+    return '$product has been added to the list $list.';
+  }
+
+  @override
+  String get inventoryIntro =>
+      'Your pantry inventory, zone by zone. Quantities are written out, and low-stock alerts are full sentences.';
+
+  @override
+  String inventoryQuantityLine(String quantity) {
+    return 'Quantity left: $quantity.';
+  }
+
+  @override
+  String inventoryQuantityThreshold(String quantity, String threshold) {
+    return 'Quantity left: $quantity, for a threshold of $threshold.';
+  }
+
+  @override
+  String inventoryLowWarning(String product) {
+    return 'Low stock alert: $product, below the threshold you set.';
+  }
+
+  @override
+  String inventoryOutWarning(String product) {
+    return 'Out of stock alert: $product, there is none left at home.';
+  }
+
+  @override
+  String get storesIntro =>
+      'Your stores, with their storefront, their aisle order and their active alerts. Tap the star to mark a store as a favourite: the state is written out.';
+
+  @override
+  String get storeFavoriteYes => 'Favourite: Yes, favourite store';
+
+  @override
+  String get storeFavoriteNo => 'Favourite: No, not a favourite yet';
+
+  @override
+  String storeActiveAlerts(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Active alerts in this store: $count alerts.',
+      one: 'Active alerts in this store: 1 alert.',
+      zero: 'Active alerts in this store: none for now.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String storeAisleConfigured(int count) {
+    return 'Aisle order: $count aisles, arranged the way you walk them.';
+  }
+
+  @override
+  String get storeAisleMissing => 'Aisle order: not set for this store yet.';
+
+  @override
+  String get storeSeeAlerts => 'See this store\'s alerts';
+
+  @override
+  String storeFrontOf(String name) {
+    return 'Illustrated storefront of the store $name';
+  }
 }
