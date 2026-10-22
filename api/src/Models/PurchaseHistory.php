@@ -126,7 +126,14 @@ class PurchaseHistory extends Model
             'î' => 'i', 'ï' => 'i',
             'ô' => 'o', 'ó' => 'o',
             'ù' => 'u', 'û' => 'u', 'ü' => 'u',
-            'ç' => 'c', 'ñ' => 'n'
+            'ç' => 'c', 'ñ' => 'n',
+            // Ligatures. Sans elles, « Œuf » devenait « uf » : le « Œ »
+            // n'etait pas traduit, puis le filtre [^a-z0-9 ] le jetait.
+            // « Oeuf » et « Œuf » donnaient donc DEUX produits
+            // differents dans l'historique, les alias et les prix
+            // communautaires. Aucune ligne existante n'utilise la
+            // ligature (verifie le 2026-10-22), donc rien a reindexer.
+            'œ' => 'oe', 'æ' => 'ae'
         ];
 
         $normalized = strtr($normalized, $accents);
