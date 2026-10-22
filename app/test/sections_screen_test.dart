@@ -1,0 +1,81 @@
+// L'ecran qui MONTRE l'architecture a plat.
+//
+// La planche « Version B » demande dix destinations egales. La
+// hierarchie precedente faisait passer Budgets, Analyses, Alertes de
+// prix et Listes recurrentes pour des dependances de Mes listes : elles
+// vivaient apres deux separateurs du menu, et nulle part ailleurs.
+//
+// Ce test verrouille le CONTRAT de l'ecran : les dix, numerotees, dans
+// l'ordre de la planche. Un ajout ou un retrait silencieux le casse.
+import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/screens/sections_screen.dart';
+import 'package:epilist/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  tearDown(() => AppColors.palette = AppPalette.light);
+
+  Future<void> ouvrir(WidgetTester tester) => tester.pumpWidget(
+    MaterialApp(
+      locale: const Locale('fr'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      home: const SectionsScreen(),
+    ),
+  );
+
+  const attendues = [
+    '1. Tableau de bord',
+    '2. Mes listes de courses',
+    '3. Budgets',
+    '4. Analyses',
+    '5. Avant les courses',
+    '6. Alertes de prix',
+    '7. À la maison',
+    '8. Listes récurrentes',
+    '9. Planifier mes repas',
+    '10. Mes magasins',
+  ];
+
+  testWidgets('les dix sections, numerotees, dans l ordre de la planche', (
+    tester,
+  ) async {
+    await ouvrir(tester);
+    for (final titre in attendues) {
+      expect(find.text(titre), findsOneWidget, reason: titre);
+    }
+  });
+
+  testWidgets('aucune onzieme tuile ne s est glissee dedans', (tester) async {
+    await ouvrir(tester);
+    // Les tuiles sont les InkWell de la grille ; le bouton du menu
+    // lateral n'en est pas une (il n'existe que dans la coquille, et
+    // cet ecran est ouvert seul).
+    expect(
+      find.descendant(
+        of: find.byType(GridView),
+        matching: find.byType(InkWell),
+      ),
+      findsNWidgets(attendues.length),
+    );
+  });
+
+  testWidgets('le titre et l intro disent que l architecture est a plat', (
+    tester,
+  ) async {
+    await ouvrir(tester);
+    expect(find.text('Toutes les sections'), findsOneWidget);
+    expect(find.textContaining('dix destinations égales'), findsOneWidget);
+  });
+
+  testWidgets('hors de la coquille, le bouton du menu lateral disparait', (
+    tester,
+  ) async {
+    // Il n'ouvrirait rien : le tiroir appartient au MainShell.
+    await ouvrir(tester);
+    expect(find.text('Ouvrir le menu latéral'), findsNothing);
+  });
+}

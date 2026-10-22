@@ -6148,4 +6148,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get needsAList => 'demande une liste';
+
+  @override
+  String get allSections => 'Toutes les sections';
+
+  @override
+  String get allSectionsIntro =>
+      'L\'architecture de l\'application est à plat : dix destinations égales, au même niveau. Alertes de prix, Analyses, Budgets et Listes récurrentes sont des sections autonomes de premier niveau, exactement comme Mes listes : aucune n\'est une sous-section des listes, et chacune a sa propre page.';
+
+  @override
+  String get allSectionsMenuHint =>
+      'Vous pouvez aussi ouvrir le menu latéral avec le bouton menu en haut de l\'écran : il présente les mêmes dix destinations à plat, sans aucun regroupement.';
+
+  @override
+  String get openSideMenu => 'Ouvrir le menu latéral';
+
+  @override
+  String get dictateList => 'Dicter ma liste';
+
+  @override
+  String get settingsAndMore => 'Réglages et plus';
+
+  @override
+  String get cartIllustration =>
+      'Illustration d\'un chariot de courses rempli de produits frais';
+
+  @override
+  String get addFamilyMember => 'Ajouter un membre de la famille';
 }

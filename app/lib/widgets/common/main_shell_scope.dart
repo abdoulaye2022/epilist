@@ -11,8 +11,16 @@
 import 'package:flutter/material.dart';
 
 /// Onglets de la barre du bas, dans l'ordre d'affichage.
-/// Le bouton + n'est pas un onglet : il ouvre une feuille d'actions.
-enum MainTab { home, lists, receipts, more }
+///
+/// Ce sont les cinq destinations de la planche Version B, et la barre
+/// est la MÊME sur toutes les pages : Accueil, Mes listes, Avant les
+/// courses, Alertes de prix, Toutes les sections. Plus de bouton + au
+/// centre — les actions du quotidien sont devenues quatre tuiles
+/// visibles sur l'accueil, au lieu d'être cachées derrière un geste.
+///
+/// Factures et Réglages ne sont plus des onglets : les reçus se lisent
+/// dans Budgets, et les réglages tiennent dans le menu latéral.
+enum MainTab { home, lists, preShopping, alerts, sections }
 
 class MainShellScope extends InheritedWidget {
   const MainShellScope({

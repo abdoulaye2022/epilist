@@ -2850,5 +2850,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "allSections": "Toutes les sections",
+  "allSectionsIntro": "L'architecture de l'application est à plat : dix destinations égales, au même niveau. Alertes de prix, Analyses, Budgets et Listes récurrentes sont des sections autonomes de premier niveau, exactement comme Mes listes : aucune n'est une sous-section des listes, et chacune a sa propre page.",
+  "allSectionsMenuHint": "Vous pouvez aussi ouvrir le menu latéral avec le bouton menu en haut de l'écran : il présente les mêmes dix destinations à plat, sans aucun regroupement.",
+  "openSideMenu": "Ouvrir le menu latéral",
+  "dictateList": "Dicter ma liste",
+  "settingsAndMore": "Réglages et plus",
+  "cartIllustration": "Illustration d'un chariot de courses rempli de produits frais",
+  "addFamilyMember": "Ajouter un membre de la famille"
 }

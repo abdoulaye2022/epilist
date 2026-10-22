@@ -1,28 +1,43 @@
-// widgets/common/app_drawer.dart - Navigation centrale de l'application.
-// Le drawer remplace les sections « actions rapides » qui encombraient
-// l'accueil : identité en tête, navigation claire, déconnexion en pied.
+// widgets/common/app_drawer.dart - Le menu latéral, planche « Version B ».
+//
+// Il présente les DIX sections à plat, dans l'ordre de la planche, sans
+// aucun regroupement : Tableau de bord, Mes listes, Budgets, Analyses,
+// Avant les courses, Alertes de prix, À la maison, Listes récurrentes,
+// Planifier mes repas, Mes magasins. Les trois séparateurs ne groupent
+// rien — ils respirent, et toutes les entrées restent de premier niveau.
+//
+// Ce qui a changé, et pourquoi :
+//
+//  — PLUS DE COURRIEL dans l'en-tête. Le nom suffit à dire de quel
+//    compte il s'agit ; l'adresse, elle, s'affichait en clair devant
+//    quiconque regardait l'écran par-dessus l'épaule.
+//
+//  — BUDGETS, ANALYSES, ALERTES et LISTES RÉCURRENTES remontent au même
+//    rang que Mes listes. Elles vivaient après deux séparateurs, dans
+//    un second bloc qui les faisait passer pour des dépendances des
+//    listes. Ce ne sont pas des sous-sections.
+//
+//  — RÉGLAGES, PROFIL, CATÉGORIES, À PROPOS tiennent désormais en une
+//    entrée, « Réglages et plus », qui ouvre l'index déjà existant. Ils
+//    occupaient sept lignes du menu et noyaient les dix sections.
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/models/user.dart';
-import 'package:epilist/screens/about_screen.dart';
+import 'package:epilist/screens/all_receipts_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
-import 'package:epilist/screens/inventory_screen.dart';
-import 'package:epilist/screens/recurring_lists_screen.dart';
-import 'package:epilist/screens/meal_planner_screen.dart';
-import 'package:epilist/screens/intelligence_settings_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
-import 'package:epilist/screens/category_management_screen.dart';
-import 'package:epilist/screens/profil_screen.dart';
-import 'package:epilist/screens/pre_shopping_screen.dart';
-import 'package:epilist/screens/price_alerts_screen.dart';
+import 'package:epilist/screens/inventory_screen.dart';
+import 'package:epilist/screens/meal_planner_screen.dart';
+import 'package:epilist/screens/more_screen.dart';
 import 'package:epilist/screens/purchase_requests_screen.dart';
+import 'package:epilist/screens/recurring_lists_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/screens/suppliers_screen.dart';
 import 'package:epilist/services/space_service.dart';
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/common/space_selector_sheet.dart';
-import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:flutter/material.dart';
@@ -37,27 +52,21 @@ class AppDrawer extends StatelessWidget {
 
     return Drawer(
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(
-          right: Radius.circular(AppRadius.lg),
-        ),
-      ),
+      width: 350,
+      shape: const RoundedRectangleBorder(),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildHeader(context),
-            _buildSpaceSelector(context),
-            const Divider(),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm + 4,
+                  vertical: AppSpacing.sm + 2,
+                ),
                 children: [
-                  // Les quatre onglets : on BASCULE, on n'empile pas.
-                  // Pousser une deuxieme instance de l'ecran Listes
-                  // par-dessus l'onglet Listes etait l'ancien
-                  // comportement — deux copies, une fleche retour, et
-                  // l'onglet toujours affiche comme non selectionne.
+                  // ── Les dix sections, à plat ──────────────────────
                   _tab(
                     context,
                     icon: Icons.space_dashboard_outlined,
@@ -69,22 +78,6 @@ class AppDrawer extends StatelessWidget {
                     icon: Icons.checklist_rounded,
                     label: l10n.myShoppingLists,
                     tab: MainTab.lists,
-                  ),
-                  _tab(
-                    context,
-                    icon: Icons.receipt_long_outlined,
-                    label: l10n.receipts,
-                    tab: MainTab.receipts,
-                  ),
-                  _tab(
-                    context,
-                    icon: Icons.widgets_outlined,
-                    label: l10n.tabMore,
-                    tab: MainTab.more,
-                  ),
-                  const Divider(
-                    indent: AppSpacing.md,
-                    endIndent: AppSpacing.md,
                   ),
                   _item(
                     context,
@@ -98,25 +91,56 @@ class AppDrawer extends StatelessWidget {
                     label: l10n.analytics,
                     onTap: () => _push(context, const AnalyticsScreen()),
                   ),
-                  _item(
+                  _tab(
                     context,
                     icon: Icons.assistant_outlined,
                     label: l10n.preShopping,
-                    onTap: () => _push(context, const PreShoppingScreen()),
+                    tab: MainTab.preShopping,
                   ),
-                  _item(
+                  _tab(
                     context,
                     icon: Icons.notifications_active_outlined,
                     label: l10n.priceAlerts,
-                    onTap: () => _push(context, const PriceAlertsScreen()),
+                    tab: MainTab.alerts,
                   ),
-                  const Divider(
-                    indent: AppSpacing.md,
-                    endIndent: AppSpacing.md,
+                  _separator(),
+                  _item(
+                    context,
+                    icon: Icons.kitchen_outlined,
+                    label: l10n.inventoryTitle,
+                    onTap: () => _push(context, const InventoryScreen()),
                   ),
-                  // Espaces professionnels (Phase 3) : demandes d'achat
-                  // et fournisseurs, seulement quand l'espace actif
-                  // est un restaurant ou une organisation.
+                  _item(
+                    context,
+                    icon: Icons.event_repeat_outlined,
+                    label: l10n.recurringListsTitle,
+                    onTap: () => _push(context, const RecurringListsScreen()),
+                  ),
+                  _item(
+                    context,
+                    icon: Icons.restaurant_menu_outlined,
+                    label: l10n.mealPlannerTitle,
+                    onTap: () => _push(context, const MealPlannerScreen()),
+                  ),
+                  _separator(),
+                  _item(
+                    context,
+                    icon: Icons.storefront_outlined,
+                    label: l10n.myStores,
+                    onTap: () => _push(context, const StoresScreen()),
+                  ),
+
+                  // ── Ce que la planche ne modélise pas, et qui doit
+                  //    rester joignable : les reçus (lus depuis
+                  //    Budgets, mais aussi en entier), les réglages, et
+                  //    les deux écrans des espaces professionnels.
+                  _separator(),
+                  _item(
+                    context,
+                    icon: Icons.receipt_long_outlined,
+                    label: l10n.receipts,
+                    onTap: () => _push(context, const AllReceiptsScreen()),
+                  ),
                   ValueListenableBuilder<Space?>(
                     valueListenable: ActiveSpaceStore.current,
                     builder: (context, space, _) {
@@ -150,138 +174,88 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _item(
                     context,
-                    icon: Icons.kitchen_outlined,
-                    label: l10n.inventoryTitle,
-                    onTap: () => _push(context, const InventoryScreen()),
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.event_repeat_outlined,
-                    label: l10n.recurringListsTitle,
-                    onTap: () => _push(context, const RecurringListsScreen()),
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.restaurant_menu_outlined,
-                    label: l10n.mealPlannerTitle,
-                    onTap: () => _push(context, const MealPlannerScreen()),
-                  ),
-                  const Divider(
-                    indent: AppSpacing.md,
-                    endIndent: AppSpacing.md,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.storefront_outlined,
-                    label: l10n.myStores,
-                    onTap: () => _push(context, const StoresScreen()),
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.category_outlined,
-                    label: l10n.categories,
-                    onTap:
-                        () => _push(context, const CategoryManagementScreen()),
-                  ),
-                  const Divider(
-                    indent: AppSpacing.md,
-                    endIndent: AppSpacing.md,
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.person_outline,
-                    label: l10n.profile,
-                    onTap: () => _push(context, const ProfileScreen()),
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.auto_awesome_outlined,
-                    label: l10n.intelligenceSettings,
-                    onTap:
-                        () =>
-                            _push(context, const IntelligenceSettingsScreen()),
-                  ),
-                  _item(
-                    context,
-                    icon: Icons.info_outline,
-                    label: l10n.aboutEpiList,
-                    onTap: () => _push(context, const AboutPage()),
+                    icon: Icons.settings_outlined,
+                    label: l10n.settingsAndMore,
+                    onTap: () => _push(context, const MoreScreen()),
                   ),
                 ],
               ),
             ),
-            const Divider(),
-            _item(
-              context,
-              icon: Icons.logout_rounded,
-              label: l10n.logout,
-              color: AppColors.error,
-              onTap: () {
-                Navigator.pop(context);
-                _showLogoutDialog(context);
-              },
+            Divider(color: AppColors.primaryLight, thickness: 2, height: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm + 4,
+                vertical: AppSpacing.sm,
+              ),
+              child: _item(
+                context,
+                icon: Icons.logout_rounded,
+                label: l10n.logout,
+                color: AppColors.errorInk,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showLogoutDialog(context);
+                },
+              ),
             ),
-            const SizedBox(height: AppSpacing.sm),
           ],
         ),
       ),
     );
   }
 
-  /// En-tête : avatar aux initiales, nom et email de l'utilisateur.
+  /// En-tête sur fond teinté de marque : l'avatar, le nom, et le
+  /// sélecteur d'espace. Aucun courriel.
   Widget _buildHeader(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        User? user;
-        if (state is AuthSuccess) {
-          user = state.user;
-        } else if (state is ProfileUpdated) {
-          user = state.user;
-        }
+    return Container(
+      color: AppColors.primaryLight,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md + 2,
+        AppSpacing.md + 2,
+        AppSpacing.md + 2,
+        AppSpacing.md - 2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              User? user;
+              if (state is AuthSuccess) {
+                user = state.user;
+              } else if (state is ProfileUpdated) {
+                user = state.user;
+              }
+              final name = user?.fullName ?? 'EpiList';
 
-        final name = user?.fullName ?? 'EpiList';
-        final email = user?.email ?? '';
-
-        return Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              UserAvatar(user: user, radius: 26),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+              return Row(
+                children: [
+                  UserAvatar(user: user, radius: 28),
+                  const SizedBox(width: AppSpacing.md - 4),
+                  Expanded(
+                    child: Text(
                       name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppFonts.displayStyle(
+                        size: 21,
                         color: AppColors.textPrimary,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    if (email.isNotEmpty)
-                      Text(
-                        email,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: AppColors.textSecondary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
-        );
-      },
+          const SizedBox(height: AppSpacing.md - 2),
+          _buildSpaceSelector(context),
+        ],
+      ),
     );
   }
 
-  /// Sélecteur d'espace (§9) : « Personnel ▼ » ou « Famille Diallo ▼ »,
-  /// ouvre la feuille des espaces (bascule, invitations, création).
+  /// Sélecteur d'espace : « Personnel ▼ » ou « Famille Diallo ▼ », sur
+  /// toute la largeur et 54 dp de haut, comme sur la planche.
   Widget _buildSpaceSelector(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ValueListenableBuilder<Space?>(
@@ -294,15 +268,14 @@ class AppDrawer extends StatelessWidget {
           'organization' => Icons.apartment_rounded,
           _ => Icons.person_rounded,
         };
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            0,
-            AppSpacing.md,
-            AppSpacing.sm,
+        return Material(
+          color: AppColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            side: BorderSide(color: AppColors.primary, width: 2),
           ),
           child: InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             onTap: () {
               // Le drawer se ferme : on ouvre la feuille depuis le
               // contexte du Navigator (sous les providers), qui survit.
@@ -310,34 +283,30 @@ class AppDrawer extends StatelessWidget {
               Navigator.pop(context);
               SpaceSelectorSheet.show(navContext);
             },
-            child: Container(
+            child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm + 4,
-                vertical: AppSpacing.sm,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(12),
+                horizontal: AppSpacing.md - 2,
+                vertical: AppSpacing.sm + 4,
               ),
               child: Row(
                 children: [
-                  Icon(icon, size: 18, color: AppColors.primaryDark),
-                  const SizedBox(width: AppSpacing.sm),
+                  Icon(icon, size: 22, color: AppColors.primary),
+                  const SizedBox(width: AppSpacing.sm + 2),
                   Expanded(
                     child: Text(
                       label,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDark,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
                   Icon(
                     Icons.expand_more_rounded,
-                    size: 18,
-                    color: AppColors.primaryDark,
+                    size: 22,
+                    color: AppColors.primary,
                   ),
                 ],
               ),
@@ -347,6 +316,16 @@ class AppDrawer extends StatelessWidget {
       },
     );
   }
+
+  /// Un filet qui fait respirer la liste. Il ne groupe rien : les dix
+  /// sections restent au même rang de part et d'autre.
+  Widget _separator() => Padding(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.xs,
+      vertical: AppSpacing.sm,
+    ),
+    child: Divider(color: AppColors.primaryLight, thickness: 2, height: 2),
+  );
 
   /// Entree qui designe un ONGLET : elle bascule la coquille et se
   /// marque comme selectionnee quand c'est l'onglet courant. Hors de la
@@ -379,34 +358,29 @@ class AppDrawer extends StatelessWidget {
     bool selected = false,
     Color? color,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-      child: ListTile(
-        leading: Icon(
-          icon,
-          size: 22,
-          color:
-              color ??
-              (selected ? AppColors.primaryDark : AppColors.textSecondary),
-        ),
-        title: Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color:
-                color ??
-                (selected ? AppColors.primaryDark : AppColors.textPrimary),
-          ),
-        ),
-        selected: selected,
-        selectedTileColor: AppColors.primaryLight,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        visualDensity: const VisualDensity(vertical: -1),
-        onTap: onTap,
+    return ListTile(
+      leading: Icon(
+        icon,
+        size: 27,
+        color:
+            color ?? (selected ? AppColors.primary : AppColors.textSecondary),
       ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 18.5,
+          height: 1.25,
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+          color: color ?? AppColors.textPrimary,
+        ),
+      ),
+      minTileHeight: 58,
+      selected: selected,
+      selectedTileColor: AppColors.primaryLight,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      onTap: onTap,
     );
   }
 

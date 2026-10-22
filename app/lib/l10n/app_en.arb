@@ -2850,5 +2850,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "allSections": "All sections",
+  "allSectionsIntro": "The app's architecture is flat: ten equal destinations, all at the same level. Price alerts, Analytics, Budgets and Recurring lists are standalone top-level sections, exactly like My lists: none of them is a sub-section of the lists, and each has its own page.",
+  "allSectionsMenuHint": "You can also open the side menu with the menu button at the top of the screen: it shows the same ten destinations, flat, with no grouping.",
+  "openSideMenu": "Open the side menu",
+  "dictateList": "Dictate my list",
+  "settingsAndMore": "Settings and more",
+  "cartIllustration": "Illustration of a shopping cart filled with fresh produce",
+  "addFamilyMember": "Add a family member"
 }

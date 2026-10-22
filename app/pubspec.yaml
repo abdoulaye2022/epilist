@@ -106,6 +106,30 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/app_logo.png
+    - assets/images/chariot.svg
+    - assets/images/nav/
+
+  # Deux familles, reprises de la planche Version B.
+  #
+  # Atkinson Hyperlegible porte TOUT le texte courant : dessinee par le
+  # Braille Institute pour la basse vision, elle separe les formes qui
+  # se confondent ailleurs (I l 1, O 0, c e). C'est le choix qui sert
+  # l'accessibilite, pas la decoration.
+  #
+  # Sora ne sert qu'aux titres. C'est une fonte variable : son poids se
+  # demande par `fontVariations`, pas par `fontWeight` — voir
+  # `AppFonts.display` dans theme/app_theme.dart.
+  fonts:
+    - family: Atkinson Hyperlegible
+      fonts:
+        - asset: assets/fonts/AtkinsonHyperlegible-Regular.ttf
+        - asset: assets/fonts/AtkinsonHyperlegible-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/AtkinsonHyperlegible-Italic.ttf
+          style: italic
+    - family: Sora
+      fonts:
+        - asset: assets/fonts/Sora-Variable.ttf
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

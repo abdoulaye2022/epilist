@@ -11,6 +11,8 @@ import 'package:epilist/screens/profil_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/widgets/home/action_tile.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:epilist/widgets/home/lists_section_header.dart';
 import 'package:epilist/widgets/home/shopping_lists_content.dart';
 import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
@@ -30,7 +32,6 @@ import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/widgets/home/space_dashboard_card.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -46,6 +47,7 @@ import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/screens/predictions_screen.dart';
 import 'package:epilist/screens/meal_planner_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -286,27 +288,80 @@ class _HomeScreenState extends State<HomeScreen>
                 ? state.user
                 : (state is ProfileUpdated ? state.user : null);
         final name = user?.firstName ?? '';
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        // Avatar, salutation, bouton menu : l'en-tete de l'accueil
+        // tient sur une ligne. Le bouton menu est ici parce que
+        // l'accueil n'a plus de barre d'application — sans lui, le
+        // tiroir serait injoignable depuis cet ecran.
+        return Row(
           children: [
-            Text(
-              name.isEmpty
-                  ? l10n.helloGreeting
-                  : '${l10n.helloGreeting.replaceAll(' 👋', '')} $name 👋',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+            GestureDetector(
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  ),
+              child: UserAvatar(user: user, radius: 31),
+            ),
+            const SizedBox(width: AppSpacing.md - 2),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name.isEmpty
+                        ? l10n.helloGreeting
+                        : '${l10n.helloGreeting.replaceAll(' 👋', '')} $name 👋',
+                    style: AppFonts.displayStyle(
+                      size: 27,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.readyToShop,
+                    style: TextStyle(
+                      fontSize: 17.5,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              l10n.readyToShop,
-              style: TextStyle(fontSize: 14.5, color: AppColors.textSecondary),
-            ),
+            const SizedBox(width: AppSpacing.sm),
+            _buildMenuButton(context),
           ],
         );
       },
+    );
+  }
+
+  /// Le bouton menu de l'accueil : 56 dp, pose sur le degrade, et donc
+  /// legerement opaque pour s'en detacher. Rien hors de la coquille.
+  Widget _buildMenuButton(BuildContext context) {
+    final scope = MainShellScope.maybeOf(context);
+    if (scope == null) return const SizedBox.shrink();
+    return Material(
+      color: AppColors.surface.withValues(alpha: 0.55),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md - 2),
+        side: BorderSide(color: AppColors.textSecondary, width: 2),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md - 2),
+        onTap: scope.openDrawer,
+        child: Tooltip(
+          message: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          child: SizedBox(
+            width: 56,
+            height: 56,
+            child: Icon(
+              Icons.menu_rounded,
+              size: 30,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -449,197 +504,234 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // Le tiroir appartient au MainShell : il s'ouvre depuis les quatre
-      // onglets, et non plus seulement d'ici.
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: const Text('EpiList'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.md),
-            child: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                final user =
-                    state is AuthSuccess
-                        ? state.user
-                        : (state is ProfileUpdated ? state.user : null);
-                return GestureDetector(
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileScreen(),
-                        ),
-                      ),
-                  child: UserAvatar(user: user, radius: 17),
-                );
+    // Pas de barre d'application ici. La planche masque l'en-tete sur
+    // l'accueil : l'avatar, la salutation et le bouton menu tiennent sur
+    // une seule ligne, en haut du contenu, et le degrade monte jusqu'en
+    // haut de l'ecran sans couture.
+    //
+    // D'ou l'AnnotatedRegion : c'est l'AppBar qui disait au systeme
+    // quelle teinte donner a l'heure et aux icones d'etat. Sans elle,
+    // elles restaient claires, donc invisibles sur le vert du haut.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value:
+          AppColors.isDark
+              ? SystemUiOverlayStyle.light
+              : SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<ShoppingListBloc, ShoppingListState>(
+              listener: (context, state) {
+                if (state is ShoppingListError) {
+                  SmartSnackBarManager.showErrorSnackBar(
+                    context,
+                    state.message,
+                    duration: const Duration(seconds: 3),
+                  );
+                } else if (state is ShoppingListOperationSuccess) {
+                  SmartSnackBarManager.showSuccessSnackBar(
+                    context,
+                    state.message,
+                    duration: const Duration(seconds: 2),
+                  );
+                }
               },
             ),
-          ),
-        ],
-      ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<ShoppingListBloc, ShoppingListState>(
-            listener: (context, state) {
-              if (state is ShoppingListError) {
-                SmartSnackBarManager.showErrorSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 3),
-                );
-              } else if (state is ShoppingListOperationSuccess) {
-                SmartSnackBarManager.showSuccessSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 2),
-                );
-              }
-            },
-          ),
-          BlocListener<SharedListBloc, SharedListState>(
-            listener: (context, state) {
-              if (state is SharedListError) {
-                SmartSnackBarManager.showErrorSnackBar(context, state.message);
-              } else if (state is ShareOperationSuccess) {
-                SmartSnackBarManager.showInfoSnackBar(
-                  context,
-                  state.message,
-                  duration: const Duration(seconds: 2),
-                );
-                _loadShoppingLists();
-              }
-            },
-          ),
-        ],
-        child: ConnectedRefreshIndicator(
-          onRefresh: () async => _loadShoppingLists(),
-          child: Column(
-            children: [
-              // Indicateur de mode hors ligne avec actions en attente
-              const OfflineIndicator(),
+            BlocListener<SharedListBloc, SharedListState>(
+              listener: (context, state) {
+                if (state is SharedListError) {
+                  SmartSnackBarManager.showErrorSnackBar(
+                    context,
+                    state.message,
+                  );
+                } else if (state is ShareOperationSuccess) {
+                  SmartSnackBarManager.showInfoSnackBar(
+                    context,
+                    state.message,
+                    duration: const Duration(seconds: 2),
+                  );
+                  _loadShoppingLists();
+                }
+              },
+            ),
+          ],
+          child: ConnectedRefreshIndicator(
+            onRefresh: () async => _loadShoppingLists(),
+            child: DecoratedBox(
+              decoration: BoxDecoration(gradient: AppGradients.home),
+              child: Column(
+                children: [
+                  // Indicateur de mode hors ligne avec actions en attente
+                  const OfflineIndicator(),
 
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildGreeting(l10n),
-                      const SizedBox(height: AppSpacing.md),
-                      // Dashboard adaptatif (§45) : seulement dans un
-                      // espace PARTAGÉ — le personnel garde l'accueil
-                      // actuel. La clé force le rechargement au
-                      // changement d'espace.
-                      ValueListenableBuilder<Space?>(
-                        valueListenable: ActiveSpaceStore.current,
-                        builder:
-                            (context, space, _) =>
-                                space == null
-                                    ? const SizedBox.shrink()
-                                    : SpaceDashboardCard(
-                                      key: ValueKey('space-dash-${space.id}'),
-                                      space: space,
-                                    ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.md,
+                        MediaQuery.paddingOf(context).top + AppSpacing.sm,
+                        AppSpacing.md,
+                        AppSpacing.md,
                       ),
-                      if (_monthBudget != null)
-                        BudgetMonthCard(
-                          budget: _monthBudget!,
-                          onSeeDetail: _openBudgets,
-                          selectedMonth: _selectedMonth,
-                          onPickMonth: _pickBudgetMonth,
-                        )
-                      else
-                        BudgetCtaCard(
-                          onCreate: _openBudgets,
-                          selectedMonth: _selectedMonth,
-                          onPickMonth: _pickBudgetMonth,
-                        ),
-                      if (_forecast != null && _forecast!.hasBudget)
-                        _buildForecastLine(l10n),
-                      if (_predictions.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.lg),
-                        _buildPredictionsSection(l10n),
-                      ],
-                      const SizedBox(height: AppSpacing.lg),
-                      ListsSectionHeader(
-                        onViewAll: () => _goToAllLists(context),
-                        onCreateNew: () => _showCreateListDialog(context),
-                      ),
-                      const SizedBox(height: AppSpacing.sm + 4),
-                      _buildListsCarousel(context),
-                      const SizedBox(height: AppSpacing.lg),
-                      Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          QuickActionButton(
-                            icon: Icons.add,
-                            label: l10n.quickAddItem,
-                            sublabel: l10n.toChosenList,
-                            onTap:
-                                () => _openRecentListWith(
-                                  ListDetailAction.addItem,
-                                ),
+                          _buildGreeting(l10n),
+                          const SizedBox(height: AppSpacing.md),
+                          // Dashboard adaptatif (§45) : seulement dans un
+                          // espace PARTAGÉ — le personnel garde l'accueil
+                          // actuel. La clé force le rechargement au
+                          // changement d'espace.
+                          ValueListenableBuilder<Space?>(
+                            valueListenable: ActiveSpaceStore.current,
+                            builder:
+                                (context, space, _) =>
+                                    space == null
+                                        ? const SizedBox.shrink()
+                                        : SpaceDashboardCard(
+                                          key: ValueKey(
+                                            'space-dash-${space.id}',
+                                          ),
+                                          space: space,
+                                        ),
                           ),
-                          QuickActionButton(
-                            icon: Icons.mic_none_rounded,
-                            label: l10n.quickVoice,
-                            sublabel: l10n.toChosenList,
-                            onTap:
-                                () => _openRecentListWith(
-                                  ListDetailAction.voiceItem,
-                                ),
+                          if (_monthBudget != null)
+                            BudgetMonthCard(
+                              budget: _monthBudget!,
+                              onSeeDetail: _openBudgets,
+                              selectedMonth: _selectedMonth,
+                              onPickMonth: _pickBudgetMonth,
+                            )
+                          else
+                            BudgetCtaCard(
+                              onCreate: _openBudgets,
+                              selectedMonth: _selectedMonth,
+                              onPickMonth: _pickBudgetMonth,
+                            ),
+                          if (_forecast != null && _forecast!.hasBudget)
+                            _buildForecastLine(l10n),
+
+                          // La sequence de la planche : le chariot, le
+                          // bouton qui cree une liste, puis les quatre
+                          // actions du quotidien.
+                          const SizedBox(height: AppSpacing.sm),
+                          _buildCartIllustration(l10n),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildCreateListButton(l10n),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildActionTiles(l10n),
+
+                          if (_predictions.isNotEmpty) ...[
+                            const SizedBox(height: AppSpacing.lg),
+                            _buildPredictionsSection(l10n),
+                          ],
+                          const SizedBox(height: AppSpacing.lg),
+                          ListsSectionHeader(
+                            onViewAll: () => _goToAllLists(context),
+                            onCreateNew: () => _showCreateListDialog(context),
                           ),
-                          QuickActionButton(
-                            icon: Icons.receipt_long_outlined,
-                            label: l10n.quickScan,
-                            sublabel: l10n.aReceipt,
-                            onTap: _scanReceipt,
-                          ),
+                          const SizedBox(height: AppSpacing.sm + 4),
+                          _buildListsCarousel(context),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Row(
-                        children: [
-                          // Analytiques est desormais un onglet du bas :
-                          // la tuile devient le planificateur de repas.
-                          DashboardTile(
-                            icon: Icons.restaurant_menu_outlined,
-                            title: l10n.mealPlannerTitle,
-                            subtitle: l10n.mealPlannerSubtitle,
-                            onTap:
-                                () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const MealPlannerScreen(),
-                                  ),
-                                ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm + 4),
-                          DashboardTile(
-                            icon: Icons.storefront_outlined,
-                            title: l10n.myStores,
-                            subtitle: l10n.aisleOrder,
-                            onTap:
-                                () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const StoresScreen(),
-                                  ),
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
-      // La création de liste passe par le bouton + central du MainShell.
+    );
+  }
+
+  /// L'illustration de la planche : chariot aux lignes bleues, sac kraft,
+  /// legumes, roues bleue et rouge. Dessin vectoriel, donc net a toute
+  /// taille, et decrit en toutes lettres pour qui ne le voit pas.
+  Widget _buildCartIllustration(AppLocalizations l10n) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 350),
+        child: Semantics(
+          image: true,
+          label: l10n.cartIllustration,
+          child: SvgPicture.asset(
+            'assets/images/chariot.svg',
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Le vert VIF, en gelule, sur toute la largeur. Il porte l'encre
+  /// sombre et non du blanc : le vert vif ne donne que 2,2 de contraste
+  /// avec du blanc dessus, et 7,8 avec l'encre.
+  Widget _buildCreateListButton(AppLocalizations l10n) {
+    return FilledButton(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.primaryVivid,
+        foregroundColor: AppColors.onVivid,
+      ),
+      onPressed: () => _showCreateListDialog(context),
+      child: Text('+ ${l10n.createList}'),
+    );
+  }
+
+  /// Les quatre actions du quotidien, en deux rangees. Elles etaient
+  /// cachees derriere le bouton + de la barre du bas : un geste, un
+  /// libelle muet, et six entrees a lire avant de choisir.
+  Widget _buildActionTiles(AppLocalizations l10n) {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ActionTile(
+              icon: Icons.mic_none_rounded,
+              label: l10n.dictateList,
+              tint: AppColors.primaryVivid,
+              onTap: () => _openRecentListWith(ListDetailAction.voiceItem),
+            ),
+            const SizedBox(width: AppSpacing.sm + 2),
+            ActionTile(
+              icon: Icons.photo_camera_outlined,
+              label: l10n.scanReceipt,
+              tint: AppColors.accent,
+              onTap: _scanReceipt,
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm + 2),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ActionTile(
+              icon: Icons.restaurant_menu_outlined,
+              label: l10n.mealPlannerTitle,
+              tint: AppColors.gold,
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const MealPlannerScreen(),
+                    ),
+                  ),
+            ),
+            const SizedBox(width: AppSpacing.sm + 2),
+            ActionTile(
+              icon: Icons.storefront_outlined,
+              label: l10n.myStores,
+              tint: AppColors.warning,
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const StoresScreen()),
+                  ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

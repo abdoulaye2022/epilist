@@ -98,7 +98,7 @@ class _MoreScreenState extends State<MoreScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.tabMore),
+        title: Text(l10n.settingsAndMore),
       ),
       body: ValueListenableBuilder<Space?>(
         valueListenable: ActiveSpaceStore.current,

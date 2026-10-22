@@ -11322,6 +11322,54 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'demande une liste'**
   String get needsAList;
+
+  /// No description provided for @allSections.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les sections'**
+  String get allSections;
+
+  /// No description provided for @allSectionsIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'architecture de l\'application est à plat : dix destinations égales, au même niveau. Alertes de prix, Analyses, Budgets et Listes récurrentes sont des sections autonomes de premier niveau, exactement comme Mes listes : aucune n\'est une sous-section des listes, et chacune a sa propre page.'**
+  String get allSectionsIntro;
+
+  /// No description provided for @allSectionsMenuHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez aussi ouvrir le menu latéral avec le bouton menu en haut de l\'écran : il présente les mêmes dix destinations à plat, sans aucun regroupement.'**
+  String get allSectionsMenuHint;
+
+  /// No description provided for @openSideMenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir le menu latéral'**
+  String get openSideMenu;
+
+  /// No description provided for @dictateList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dicter ma liste'**
+  String get dictateList;
+
+  /// No description provided for @settingsAndMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages et plus'**
+  String get settingsAndMore;
+
+  /// No description provided for @cartIllustration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Illustration d\'un chariot de courses rempli de produits frais'**
+  String get cartIllustration;
+
+  /// No description provided for @addFamilyMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un membre de la famille'**
+  String get addFamilyMember;
 }
 
 class _AppLocalizationsDelegate

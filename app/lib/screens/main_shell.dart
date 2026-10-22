@@ -1,34 +1,35 @@
-// screens/main_shell.dart - Coquille principale : Accueil | Listes | (+)
-// | Factures | Plus.
+// screens/main_shell.dart - Coquille principale, planche « Version B ».
 //
-// Trois changements de structure, et leurs raisons :
+// Accueil | Mes listes | Avant les courses | Alertes de prix | Sections.
 //
-//  — « Factures » devient une destination. Les dépenses étaient
-//    enfermées dans le menu ⋮ d'une liste, et l'écran existant exige
-//    encore un `shoppingList` : voir ses factures demandait de se
-//    rappeler à quelle liste on avait rattaché un reçu.
+// Trois choses que la planche impose, et leurs raisons :
 //
-//  — Statistiques et Budget descendent dans « Plus ». Ce sont des
-//    écrans de consultation mensuelle ; ils occupaient deux des quatre
-//    places permanentes de l'écran, et le budget reste résumé sur
-//    l'accueil, d'où on l'ouvre en un appui.
+//  — ARCHITECTURE À PLAT. Les dix sections sont égales. Alertes de prix
+//    et Avant les courses montent donc dans la barre : ce sont les deux
+//    pages qu'on ouvre AVANT de partir, et elles étaient enterrées dans
+//    le menu latéral, derrière un défilement.
 //
-//  — le tiroir appartient maintenant à la coquille. Il n'était déclaré
-//    que sur l'accueil (un seul `drawer:` dans tout lib/) : depuis
-//    l'onglet Listes, changer d'espace imposait de revenir en arrière.
+//  — LA BARRE NE CHANGE JAMAIS. Mêmes cinq icônes, même ordre, mêmes
+//    destinations, sur toutes les pages. Une pastille teintée claire
+//    marque la section ouverte — la forme, pas seulement la couleur.
 //
-// Le bouton central n'ouvre plus la création de liste — geste fait une
-// fois par semaine — mais les six actions du quotidien.
+//  — PLUS DE BOUTON + AU CENTRE. Les six actions qu'il cachait sont
+//    devenues quatre tuiles visibles sur l'accueil (dicter, scanner,
+//    repas, magasins). Un geste de moins pour la même chose.
+//
+// Factures et « Plus » cessent d'être des onglets : les reçus se lisent
+// sur la page Budgets, et les réglages dans le menu latéral.
 import 'package:epilist/l10n/app_localizations.dart';
-import 'package:epilist/screens/all_receipts_screen.dart';
 import 'package:epilist/screens/home_screen.dart';
-import 'package:epilist/screens/more_screen.dart';
+import 'package:epilist/screens/pre_shopping_screen.dart';
+import 'package:epilist/screens/price_alerts_screen.dart';
+import 'package:epilist/screens/sections_screen.dart';
 import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
-import 'package:epilist/widgets/common/quick_actions_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -43,7 +44,7 @@ class _MainShellState extends State<MainShell> {
   MainTab _tab = MainTab.home;
 
   /// Onglets déjà visités : seuls ceux-là sont réellement construits, pour
-  /// ne pas déclencher quatre chargements API à l'ouverture de l'app.
+  /// ne pas déclencher cinq chargements API à l'ouverture de l'app.
   final Set<MainTab> _visited = {MainTab.home};
 
   void _select(MainTab tab) {
@@ -59,8 +60,9 @@ class _MainShellState extends State<MainShell> {
     return switch (tab) {
       MainTab.home => const HomeScreen(),
       MainTab.lists => const ShoppingListScreen(),
-      MainTab.receipts => const AllReceiptsScreen(),
-      MainTab.more => const MoreScreen(),
+      MainTab.preShopping => const PreShoppingScreen(),
+      MainTab.alerts => const PriceAlertsScreen(),
+      MainTab.sections => const SectionsScreen(),
     };
   }
 
@@ -85,110 +87,136 @@ class _MainShellState extends State<MainShell> {
     );
   }
 
+  /// La barre de la planche : fond blanc, cinq icônes dessinées en
+  /// couleur (ce ne sont pas des glyphes teintés par l'état), et une
+  /// pastille ronde teintée derrière celle de la section ouverte.
   Widget _buildBottomBar(AppLocalizations l10n) {
+    final destinations = <_Destination>[
+      _Destination(
+        tab: MainTab.home,
+        actif: 'accueil',
+        label: l10n.tabHome,
+        pastille: AppColors.primaryLight,
+        montreLeLabel: true,
+      ),
+      _Destination(
+        tab: MainTab.lists,
+        actif: 'listes',
+        label: l10n.myShoppingLists,
+        pastille: AppColors.warningTint,
+      ),
+      _Destination(
+        tab: MainTab.preShopping,
+        actif: 'avant',
+        label: l10n.preShopping,
+        pastille: AppColors.goldTint,
+      ),
+      _Destination(
+        tab: MainTab.alerts,
+        actif: 'alertes',
+        label: l10n.priceAlerts,
+        pastille: AppColors.errorTint,
+      ),
+      _Destination(
+        tab: MainTab.sections,
+        actif: 'sections',
+        label: l10n.allSections,
+        pastille: AppColors.warningTint,
+      ),
+    ];
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        border: Border(top: BorderSide(color: AppColors.border, width: 2)),
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            children: [
-              _tabItem(
-                MainTab.home,
-                Icons.home_outlined,
-                Icons.home_rounded,
-                l10n.tabHome,
-              ),
-              _tabItem(
-                MainTab.lists,
-                Icons.list_alt_outlined,
-                Icons.list_alt_rounded,
-                l10n.tabLists,
-              ),
-              _centerButton(l10n),
-              _tabItem(
-                MainTab.receipts,
-                Icons.receipt_long_outlined,
-                Icons.receipt_long_rounded,
-                l10n.receipts,
-              ),
-              _tabItem(
-                MainTab.more,
-                Icons.widgets_outlined,
-                Icons.widgets_rounded,
-                l10n.tabMore,
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.sm,
+            bottom: AppSpacing.sm + 2,
           ),
+          child: Row(children: destinations.map(_navItem).toList()),
         ),
       ),
     );
   }
 
-  Widget _tabItem(
-    MainTab tab,
-    IconData icon,
-    IconData activeIcon,
-    String label,
-  ) {
-    final selected = _tab == tab;
-    final color = selected ? AppColors.primary : AppColors.textSecondary;
+  Widget _navItem(_Destination d) {
+    final selected = _tab == d.tab;
 
     return Expanded(
-      child: InkWell(
-        onTap: () => _select(tab),
-        child: Semantics(
-          selected: selected,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(selected ? activeIcon : icon, size: 24, color: color),
-              const SizedBox(height: 3),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: color,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: d.label,
+        child: InkWell(
+          onTap: () => _select(d.tab),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 62),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: selected ? d.pastille : null,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(
+                    'assets/images/nav/${d.actif}.svg',
+                    width: 30,
+                    height: 30,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Bouton central vert : la feuille des six actions du quotidien.
-  Widget _centerButton(AppLocalizations l10n) {
-    return Expanded(
-      child: Center(
-        child: Semantics(
-          button: true,
-          label: l10n.quickActionsTitle,
-          child: Material(
-            color: AppColors.primary,
-            shape: const CircleBorder(),
-            elevation: 3,
-            shadowColor: AppColors.primary.withValues(alpha: 0.4),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: () => QuickActionsSheet.show(context),
-              child:  SizedBox(
-                width: 52,
-                height: 52,
-                child: Icon(Icons.add, color: AppColors.onPrimary, size: 28),
-              ),
+                if (d.montreLeLabel) ...[
+                  const SizedBox(height: 3),
+                  // #16A34A, le vert de la planche, ne donne que 2,8 de
+                  // contraste sur blanc : illisible pour un libellé.
+                  // C'est le vert foncé qui le porte, à 5,0.
+                  Text(
+                    d.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w700,
+                      height: 1.1,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
       ),
     );
   }
+}
+
+/// Une destination de la barre : l'onglet, son dessin, son libellé parlé
+/// et la teinte de sa pastille active.
+@immutable
+class _Destination {
+  const _Destination({
+    required this.tab,
+    required this.actif,
+    required this.label,
+    required this.pastille,
+    this.montreLeLabel = false,
+  });
+
+  final MainTab tab;
+
+  /// Nom du fichier SVG, sans son chemin ni son extension.
+  final String actif;
+
+  /// Lu par les lecteurs d'écran, et affiché sous l'icône quand
+  /// [montreLeLabel] — la planche ne l'écrit que sous Accueil.
+  final String label;
+
+  final Color pastille;
+  final bool montreLeLabel;
 }

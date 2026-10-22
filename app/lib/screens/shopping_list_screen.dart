@@ -1,4 +1,7 @@
 // screens/shopping_list_screen.dart - VERSION AVEC NAVIGATION FACTURES CORRIGÉE
+import 'package:epilist/screens/create_space_screen.dart';
+import 'package:epilist/screens/space_members_screen.dart';
+import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
@@ -151,29 +154,81 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           },
         ),
         Expanded(
-          child: filteredLists.isEmpty
-              ? _buildEmptyFilterState()
-              : RefreshIndicator(
-                  onRefresh: () async => _loadShoppingLists(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: filteredLists.length,
-                    itemBuilder: (context, index) {
-                      final list = filteredLists[index];
-                      return ShoppingListCard(
-                        list: list,
-                        onTap: () => _openListDetails(list),
-                        onAction:
-                            (action) => _handleListAction(
-                              action,
-                              list,
-                            ),
-                      );
-                    },
+          child:
+              filteredLists.isEmpty
+                  ? _buildEmptyFilterState()
+                  : RefreshIndicator(
+                    onRefresh: () async => _loadShoppingLists(),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      // +1 : le pied de page des deux actions. Il defile
+                      // avec les cartes au lieu de manger une bande fixe
+                      // au-dessus de la barre du bas.
+                      itemCount: filteredLists.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == filteredLists.length) {
+                          return _buildListFooter();
+                        }
+                        final list = filteredLists[index];
+                        return ShoppingListCard(
+                          list: list,
+                          onTap: () => _openListDetails(list),
+                          onAction: (action) => _handleListAction(action, list),
+                        );
+                      },
+                    ),
                   ),
-                ),
         ),
       ],
+    );
+  }
+
+  /// Les deux actions du bas de la page, comme sur la planche : inviter
+  /// quelqu'un de la maison, et creer une liste.
+  ///
+  /// « Nouvelle liste » est ici parce qu'elle n'etait nulle part :
+  /// elle vivait dans le bouton + central de la barre, que la planche
+  /// supprime. Depuis l'onglet Listes, creer une liste demandait de
+  /// repasser par l'accueil.
+  Widget _buildListFooter() {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          OutlinedButton.icon(
+            onPressed: _addFamilyMember,
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            label: Text(l10n.addFamilyMember),
+          ),
+          const SizedBox(height: AppSpacing.sm + 4),
+          FilledButton.icon(
+            onPressed: _showCreateListDialog,
+            icon: const Icon(Icons.playlist_add_rounded),
+            label: Text(l10n.createList),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Inviter quelqu'un de la maison. Les membres appartiennent a un
+  /// ESPACE : sans espace actif, il n'y a pas de maison a rejoindre, et
+  /// l'ecran de creation vient donc d'abord. C'est ce que la planche
+  /// appelle « les personnes de la maison invitees voient la liste
+  /// partagee ».
+  void _addFamilyMember() {
+    final space = ActiveSpaceStore.current.value;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) =>
+                space == null
+                    ? const CreateSpaceScreen()
+                    : SpaceMembersScreen(space: space),
+      ),
     );
   }
 
@@ -206,11 +261,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 80,
-              color: AppColors.textDisabled,
-            ),
+            Icon(icon, size: 80, color: AppColors.textDisabled),
             const SizedBox(height: 16),
             Text(
               message,
@@ -224,10 +275,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.tryAnotherFilter,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textDisabled,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textDisabled),
             ),
           ],
         ),

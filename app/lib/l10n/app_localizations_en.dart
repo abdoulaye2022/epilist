@@ -6054,4 +6054,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get needsAList => 'needs a list';
+
+  @override
+  String get allSections => 'All sections';
+
+  @override
+  String get allSectionsIntro =>
+      'The app\'s architecture is flat: ten equal destinations, all at the same level. Price alerts, Analytics, Budgets and Recurring lists are standalone top-level sections, exactly like My lists: none of them is a sub-section of the lists, and each has its own page.';
+
+  @override
+  String get allSectionsMenuHint =>
+      'You can also open the side menu with the menu button at the top of the screen: it shows the same ten destinations, flat, with no grouping.';
+
+  @override
+  String get openSideMenu => 'Open the side menu';
+
+  @override
+  String get dictateList => 'Dictate my list';
+
+  @override
+  String get settingsAndMore => 'Settings and more';
+
+  @override
+  String get cartIllustration =>
+      'Illustration of a shopping cart filled with fresh produce';
+
+  @override
+  String get addFamilyMember => 'Add a family member';
 }

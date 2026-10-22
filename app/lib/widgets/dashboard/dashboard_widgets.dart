@@ -42,7 +42,7 @@ class BudgetMonthCard extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-             Icon(
+            Icon(
               Icons.calendar_today_outlined,
               size: 11,
               color: AppColors.onBrandBand,
@@ -50,7 +50,7 @@ class BudgetMonthCard extends StatelessWidget {
             const SizedBox(width: 5),
             Text(
               month,
-              style:  TextStyle(
+              style: TextStyle(
                 color: AppColors.onBrandBand,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
@@ -58,11 +58,7 @@ class BudgetMonthCard extends StatelessWidget {
             ),
             if (onPickMonth != null) ...[
               const SizedBox(width: 2),
-               Icon(
-                Icons.expand_more,
-                size: 13,
-                color: AppColors.onBrandBand,
-              ),
+              Icon(Icons.expand_more, size: 13, color: AppColors.onBrandBand),
             ],
           ],
         ),
@@ -96,7 +92,7 @@ class BudgetMonthCard extends StatelessWidget {
                   color: AppColors.onBrandBand.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child:  Icon(
+                child: Icon(
                   Icons.account_balance_wallet_outlined,
                   color: AppColors.onBrandBand,
                   size: 20,
@@ -109,7 +105,7 @@ class BudgetMonthCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         l10n.budgetOfMonth,
-                        style:  TextStyle(
+                        style: TextStyle(
                           color: AppColors.onBrandBand,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -126,7 +122,9 @@ class BudgetMonthCard extends StatelessWidget {
                 onPressed: onSeeDetail,
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.onBrandBand,
-                  backgroundColor: AppColors.onBrandBand.withValues(alpha: 0.14),
+                  backgroundColor: AppColors.onBrandBand.withValues(
+                    alpha: 0.14,
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -151,7 +149,7 @@ class BudgetMonthCard extends StatelessWidget {
             children: [
               Text(
                 budget.formattedSpentAmount,
-                style:  TextStyle(
+                style: TextStyle(
                   color: AppColors.onBrandBand,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
@@ -189,7 +187,7 @@ class BudgetMonthCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm + 4),
               Text(
                 '${(ratio * 100).round()} %',
-                style:  TextStyle(
+                style: TextStyle(
                   color: AppColors.onBrandBand,
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -271,7 +269,7 @@ class BudgetCtaCard extends StatelessWidget {
               color: AppColors.onBrandBand.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child:  Icon(
+            child: Icon(
               Icons.account_balance_wallet_outlined,
               color: AppColors.onBrandBand,
               size: 20,
@@ -284,7 +282,7 @@ class BudgetCtaCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.budgetOfMonth,
-                  style:  TextStyle(
+                  style: TextStyle(
                     color: AppColors.onBrandBand,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -313,7 +311,7 @@ class BudgetCtaCard extends StatelessWidget {
                   color: AppColors.onBrandBand.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child:  Icon(
+                child: Icon(
                   Icons.expand_more,
                   size: 15,
                   color: AppColors.onBrandBand,
@@ -423,140 +421,6 @@ class DashboardListCard extends StatelessWidget {
                       AppColors.primary,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Bouton d'action rapide rond (ajouter, voix, scanner...).
-class QuickActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String sublabel;
-  final VoidCallback onTap;
-
-  const QuickActionButton({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.sublabel,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Column(
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 24, color: AppColors.primaryDark),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 1),
-            Text(
-              sublabel,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 10.5, color: AppColors.textDisabled),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Petite tuile de navigation (dépenses du mois, magasins...).
-class DashboardTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final VoidCallback onTap;
-
-  const DashboardTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, size: 18, color: AppColors.primaryDark),
-                ),
-                const SizedBox(width: AppSpacing.sm + 2),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (subtitle != null)
-                        Text(
-                          subtitle!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  size: 18,
-                  color: AppColors.textDisabled,
                 ),
               ],
             ),
