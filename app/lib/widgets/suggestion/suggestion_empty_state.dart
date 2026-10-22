@@ -93,7 +93,7 @@ class SuggestionEmptyState extends StatelessWidget {
                   Expanded(
                     child: Text(
                       l10n.searchTips, // "Essayez des termes plus généraux ou vérifiez l'orthographe"
-                      style: TextStyle(color: AppColors.accent, fontSize: 14),
+                      style: TextStyle(color: AppColors.accent, fontSize: 16),
                     ),
                   ),
                 ],
@@ -114,14 +114,18 @@ class SuggestionEmptyState extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: AppColors.primaryDark, size: 20),
+                  Icon(
+                    Icons.auto_awesome,
+                    color: AppColors.primaryDark,
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       l10n.suggestionsBasedOnUsage, // "Les suggestions se basent sur vos habitudes d'achat"
                       style: TextStyle(
                         color: AppColors.primaryDark,
-                        fontSize: 14,
+                        fontSize: 16,
                       ),
                     ),
                   ),

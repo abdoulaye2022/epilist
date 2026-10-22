@@ -190,7 +190,7 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   color:
                       highlight
                           ? AppColors.textPrimary

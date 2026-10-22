@@ -72,7 +72,7 @@ class _PriceHistorySheet extends StatelessWidget {
                     Text(
                       l10n.priceHistoryTitle,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -94,7 +94,7 @@ class _PriceHistorySheet extends StatelessWidget {
                           l10n.noPriceHistory,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 13.5,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -121,7 +121,7 @@ class _PriceHistorySheet extends StatelessWidget {
                           stats.windowDays,
                         ),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -174,7 +174,7 @@ class _PriceHistorySheet extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 14.5, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 2),
           value,
@@ -203,12 +203,12 @@ class _PriceHistorySheet extends StatelessWidget {
                 children: [
                   FormattedAmount(
                     amount: stats.minPrice,
-                    style: valueStyle.copyWith(fontSize: 13.5),
+                    style: valueStyle.copyWith(fontSize: 16),
                   ),
-                  const Text(' – ', style: TextStyle(fontSize: 13.5)),
+                  const Text(' – ', style: TextStyle(fontSize: 16)),
                   FormattedAmount(
                     amount: stats.maxPrice,
-                    style: valueStyle.copyWith(fontSize: 13.5),
+                    style: valueStyle.copyWith(fontSize: 16),
                   ),
                 ],
               ),
@@ -247,7 +247,7 @@ class _PriceHistorySheet extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 12.5,
+                fontSize: 16,
                 color: color,
                 fontWeight: FontWeight.w600,
               ),
@@ -286,12 +286,12 @@ class _PriceHistorySheet extends StatelessWidget {
           Expanded(
             child: Text(
               provenance,
-              style: TextStyle(fontSize: 13, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
             ),
           ),
           FormattedAmount(
             amount: o.price,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ],
       ),

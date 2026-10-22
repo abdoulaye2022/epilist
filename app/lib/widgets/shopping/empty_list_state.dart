@@ -44,7 +44,7 @@ class EmptyListState extends StatelessWidget {
                   l10n.createFirstListToStart,
                   style: TextStyle(
                     color: AppColors.textDisabled,
-                    fontSize: 14, // ✅ Taille réduite
+                    fontSize: 16, // ✅ Taille réduite
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2, // ✅ Limite le nombre de lignes
@@ -57,7 +57,7 @@ class EmptyListState extends StatelessWidget {
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(
                   l10n.createList,
-                  style: const TextStyle(fontSize: 14), // ✅ Taille réduite
+                  style: const TextStyle(fontSize: 16), // ✅ Taille réduite
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,

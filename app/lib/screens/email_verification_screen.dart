@@ -271,7 +271,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 l10n.pasteCode,
                 style: TextStyle(
                   color: _isLoading ? AppColors.textDisabled : AppColors.accent,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -297,7 +297,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         _isLoading
                             ? AppColors.textDisabled
                             : AppColors.textSecondary,
-                    fontSize: 14,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -564,7 +564,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             l10n.processing,
                             style: TextStyle(
                               color: AppColors.accent,
-                              fontSize: 14,
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -595,7 +595,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ),
                       child:
                           _isLoading
-                              ?  SizedBox(
+                              ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
@@ -621,7 +621,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       Text(
                         l10n.verificationCodeSent,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -630,7 +630,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         Text(
                           '${l10n.resendCode} ${_resendCountdown}s',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textDisabled,
                             fontWeight: FontWeight.w500,
                           ),
@@ -675,7 +675,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           child: Text(
                             l10n.checkEmailsAndSpam,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 16,
                               color: AppColors.accent,
                               fontWeight: FontWeight.w500,
                             ),
@@ -697,13 +697,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.home, color: AppColors.primaryDark, size: 20),
+                        Icon(
+                          Icons.home,
+                          color: AppColors.primaryDark,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             l10n.afterRegistrationEmailVerification,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 16,
                               color: AppColors.primaryDark,
                               fontWeight: FontWeight.w500,
                             ),

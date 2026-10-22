@@ -56,7 +56,7 @@ class BudgetSummaryCard extends StatelessWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:  Icon(
+                  child: Icon(
                     Icons.account_balance_wallet,
                     color: AppColors.onPrimary,
                     size: 24,
@@ -78,7 +78,7 @@ class BudgetSummaryCard extends StatelessWidget {
                       Text(
                         l10n.overviewOfYourBudgets,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -154,7 +154,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         Text(
                           l10n.budgeted,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -176,7 +176,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         Text(
                           l10n.spent,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -202,7 +202,7 @@ class BudgetSummaryCard extends StatelessWidget {
                             Text(
                               l10n.spendingProgress,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 16,
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -210,7 +210,7 @@ class BudgetSummaryCard extends StatelessWidget {
                             Text(
                               '${_getSpentPercentage().toStringAsFixed(1)}%',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: _getSpentColor(),
                               ),
@@ -259,7 +259,7 @@ class BudgetSummaryCard extends StatelessWidget {
                                 Text(
                                   l10n.remaining,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 16,
                                     color: AppColors.primaryDark,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -270,7 +270,7 @@ class BudgetSummaryCard extends StatelessWidget {
                               // ✅ MONTANT RESTANT AVEC FormattedAmount
                               amount: totalBudgeted! - totalSpent!,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primaryDark,
                               ),
@@ -302,7 +302,7 @@ class BudgetSummaryCard extends StatelessWidget {
                                 Text(
                                   l10n.overBudget,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 16,
                                     color: AppColors.error,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -313,7 +313,7 @@ class BudgetSummaryCard extends StatelessWidget {
                               // ✅ MONTANT DE DÉPASSEMENT
                               amount: totalSpent! - totalBudgeted!,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.error,
                               ),
@@ -359,7 +359,7 @@ class BudgetSummaryCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

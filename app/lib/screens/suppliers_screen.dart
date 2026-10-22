@@ -250,7 +250,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                                 Text(
                                   l10n.supplierInactive,
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 14.5,
                                     color: AppColors.textDisabled,
                                   ),
                                 ),
@@ -265,7 +265,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                                       s.email,
                                     ].whereType<String>().join(' · '),
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 16,
                                       color: AppColors.textSecondary,
                                     ),
                                   )

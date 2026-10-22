@@ -290,7 +290,7 @@ class ShoppingListCard extends StatelessWidget {
                 child: Text(
                   '${list.receiptsCount}',
                   style: TextStyle(
-                    fontSize: 9,
+                    fontSize: 14.5,
                     color: AppColors.infoInk,
                     fontWeight: FontWeight.bold,
                   ),

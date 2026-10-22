@@ -111,7 +111,7 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
                 Text(
                   l10n.confirmLogoutMessage,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                     height: 1.4,
                   ),

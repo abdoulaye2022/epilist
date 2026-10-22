@@ -190,7 +190,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                   Text(
                     l10n.spaceLeaveConfirm,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       height: 1.4,
                     ),
@@ -265,7 +265,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                       Text(
                         l10n.spacePendingInvitations,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
                         ),
@@ -321,7 +321,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
               style: TextStyle(
                 color: AppColors.primaryDark,
                 fontWeight: FontWeight.w700,
-                fontSize: 13,
+                fontSize: 16,
               ),
             ),
           ),
@@ -334,7 +334,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
           ),
           subtitle: Text(
             _roleLabel(m.role, l10n),
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           trailing:
               (widget.space.canManageMembers && m.role != 'owner')

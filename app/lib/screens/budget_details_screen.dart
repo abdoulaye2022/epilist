@@ -123,7 +123,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                     context,
                   )!.budgetAllocated, // TODO: Add to l10n
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -172,7 +172,7 @@ class BudgetDetailsScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
         FormattedAmount(
@@ -238,7 +238,7 @@ class BudgetDetailsScreen extends StatelessWidget {
               Text(
                 'Exceeded by: ${(budget.spentAmount - budget.budgetAmount).toStringAsFixed(2)}',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   color: AppColors.error,
                   fontWeight: FontWeight.w500,
                 ),
@@ -311,14 +311,14 @@ class BudgetDetailsScreen extends StatelessWidget {
                     Text(
                       '${l10n.daysRemaining}: ${budget.daysRemaining}',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),
                     Text(
                       '$daysElapsed / $daysTotal ${l10n.days}',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -348,7 +348,7 @@ class BudgetDetailsScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
         Row(
@@ -359,7 +359,7 @@ class BudgetDetailsScreen extends StatelessWidget {
               child: Text(
                 date,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textPrimary,
                 ),
@@ -396,7 +396,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                         ? l10n.budgetExceeded
                         : 'Budget Near Limit', // TODO: Add to l10n
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color:
                           budget.isExceeded
@@ -409,7 +409,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                     Text(
                       budget.alertMessage!,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color:
                             budget.isExceeded
                                 ? AppColors.error
@@ -496,13 +496,13 @@ class BudgetDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: valueColor ?? AppColors.textPrimary,
           ),

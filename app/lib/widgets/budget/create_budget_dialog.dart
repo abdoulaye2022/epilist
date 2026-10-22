@@ -272,7 +272,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
             children: [
               Text(
                 l10n.budgetAmount,
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
               FormattedAmount(
                 // ✅ UTILISATION DE FormattedAmount POUR LE PREVIEW
@@ -435,7 +435,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               ),
               Text(
                 l10n.alertThresholdDescription,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
             ],

@@ -161,7 +161,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                       Text(
                         l10n.spaceMyInvitations,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textSecondary,
                         ),
@@ -233,7 +233,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                   : Text(
                     '${space.membersCount} · ${_roleLabel(space.myRole, l10n)}',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -318,7 +318,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
                 Text(
                   l10n.spaceInvitedBy(inv.invitedByName),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),

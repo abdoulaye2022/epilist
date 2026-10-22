@@ -105,7 +105,7 @@ class ComparisonCard extends StatelessWidget {
                               Text(
                                 absoluteChange > 0 ? '+' : '',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
@@ -114,7 +114,7 @@ class ComparisonCard extends StatelessWidget {
                                 child: FormattedAmount(
                                   amount: absoluteChange.abs(),
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     color: AppColors.textSecondary,
                                   ),
                                   showCode: false,
@@ -178,7 +178,7 @@ class ComparisonCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),

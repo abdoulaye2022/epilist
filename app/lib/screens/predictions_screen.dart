@@ -120,7 +120,7 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
                                 l10n.noPredictionsYet,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 13.5,
+                                  fontSize: 16,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
@@ -203,7 +203,7 @@ class PredictionCard extends StatelessWidget {
                   child: Text(
                     statusLabel,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 14.5,
                       fontWeight: FontWeight.w600,
                       color: statusColor,
                     ),
@@ -216,7 +216,7 @@ class PredictionCard extends StatelessWidget {
               '${l10n.usuallyEveryDays(p.frequencyDays)} · '
               '${l10n.lastBoughtDaysAgo(p.daysSinceLast)}'
               '${p.confidence == 'low' ? ' · ${l10n.confidenceLow}' : ''}',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
             const SizedBox(height: AppSpacing.xs),
             Row(
@@ -238,7 +238,7 @@ class PredictionCard extends StatelessWidget {
                     onPressed: () => onAction('still_have'),
                     child: Text(
                       l10n.predictionStillHave,
-                      style: const TextStyle(fontSize: 12.5),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],

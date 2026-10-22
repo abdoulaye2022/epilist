@@ -198,18 +198,14 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
             ),
             child: Row(
               children: [
-                 Icon(
-                  Icons.wifi_off,
-                  color: AppColors.onPrimary,
-                  size: 20,
-                ),
+                Icon(Icons.wifi_off, color: AppColors.onPrimary, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     l10n.offlineMode,
-                    style:  TextStyle(
+                    style: TextStyle(
                       color: AppColors.onPrimary,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -256,9 +252,9 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                     ),
                     child: Text(
                       l10n.retry,
-                      style:  TextStyle(
+                      style: TextStyle(
                         color: AppColors.onPrimary,
-                        fontSize: 12,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

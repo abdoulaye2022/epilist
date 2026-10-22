@@ -48,7 +48,7 @@ class SharedListsFilter extends StatelessWidget {
                 child: Text(
                   l10n.includeSharedLists,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -87,7 +87,7 @@ class SharedListsFilter extends StatelessWidget {
                     child: Text(
                       l10n.showingOnlyOwnLists,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.6,
                         ),
@@ -145,7 +145,7 @@ class SharedListsFilter extends StatelessWidget {
         children: [
           Text(
             l10n.spendingBreakdown,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
 
@@ -182,7 +182,7 @@ class SharedListsFilter extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${l10n.myLists}: ${ownPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 14.5),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -208,7 +208,7 @@ class SharedListsFilter extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${l10n.sharedLists}: ${sharedPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 14.5),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -285,7 +285,7 @@ class FilterStatusIndicator extends StatelessWidget {
           Text(
             l10n.ownListsOnly,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 14.5,
               color: AppColors.warning,
               fontWeight: FontWeight.w500,
             ),

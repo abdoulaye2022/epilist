@@ -97,7 +97,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                       child: Center(
                         child: Text(
                           _currentCurrency?.symbol ?? '\$',
-                          style:  TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.onPrimary,
@@ -124,7 +124,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                             Text(
                               _currentCurrency!.code.toUpperCase(),
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -133,7 +133,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                             Text(
                               l10n.defaultCurrencyCAD,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
                               ),

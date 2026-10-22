@@ -38,7 +38,7 @@ class DeleteListDialog extends StatelessWidget {
             RichText(
               text: TextSpan(
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: AppColors.textSecondary,
                   height: 1.4,
                 ),
@@ -58,7 +58,7 @@ class DeleteListDialog extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(
               l10n.actionIrreversible,
-              style: TextStyle(fontSize: 12.5, color: AppColors.error),
+              style: TextStyle(fontSize: 16, color: AppColors.error),
             ),
             const SizedBox(height: AppSpacing.lg),
             BlocBuilder<ShoppingListBloc, ShoppingListState>(

@@ -70,7 +70,7 @@ class BudgetCard extends StatelessWidget {
                     child: Text(
                       '${budget.spentPercentage.round()}%',
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: _statusColor,
                       ),
@@ -103,7 +103,7 @@ class BudgetCard extends StatelessWidget {
                               Text(
                                 l10n.expired,
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 14.5,
                                   color: AppColors.textDisabled,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -115,7 +115,7 @@ class BudgetCard extends StatelessWidget {
                         Text(
                           period,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -128,7 +128,7 @@ class BudgetCard extends StatelessWidget {
                       Text(
                         budget.formattedSpentAmount,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: _statusColor,
                         ),
@@ -136,7 +136,7 @@ class BudgetCard extends StatelessWidget {
                       Text(
                         '/ ${budget.formattedBudgetAmount}',
                         style: TextStyle(
-                          fontSize: 11.5,
+                          fontSize: 14.5,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -293,7 +293,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         budget.name,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -337,14 +337,14 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         l10n.budgeted,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       FormattedAmount(
                         amount: budget.budgetAmount,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -358,14 +358,14 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         l10n.spent,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
                       FormattedAmount(
                         amount: budget.spentAmount,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: _getAlertColor(),
                         ),
@@ -416,7 +416,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       child: Text(
                         budget.alertMessage!,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: _getAlertColor(),
                           fontWeight: FontWeight.w500,
                         ),
@@ -440,7 +440,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                   Text(
                     budget.listName!,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
                     ),
@@ -582,7 +582,7 @@ class BudgetSummaryCard extends StatelessWidget {
                       Text(
                         l10n.overviewOfYourBudgets,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -658,7 +658,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         Text(
                           l10n.budgeted,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -679,7 +679,7 @@ class BudgetSummaryCard extends StatelessWidget {
                         Text(
                           l10n.spent,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -742,7 +742,7 @@ class BudgetSummaryCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

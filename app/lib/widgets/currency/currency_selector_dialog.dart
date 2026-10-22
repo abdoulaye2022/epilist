@@ -142,7 +142,11 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.currency_exchange, size: 40, color: AppColors.primaryDark),
+      child: Icon(
+        Icons.currency_exchange,
+        size: 40,
+        color: AppColors.primaryDark,
+      ),
     );
   }
 
@@ -182,7 +186,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.loadingCurrencies,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
             ),
           ],
         ),
@@ -209,7 +213,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             Text(
               AppLocalizations.of(context)!.currencyLoadFailed,
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
             ),
           ],
         ),
@@ -223,7 +227,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         Text(
           AppLocalizations.of(context)!.currentCurrency,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
           ),
@@ -291,7 +295,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                                 Text(
                                   currency.name,
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.primaryDark,
                                   ),
@@ -299,7 +303,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                                 Text(
                                   currency.code.toUpperCase(),
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 16,
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -322,7 +326,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                               child: Text(
                                 'Populaire',
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 14.5,
                                   color: AppColors.warningInk,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -360,7 +364,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
               Expanded(
                 child: Text(
                   'Cette devise sera utilisée pour l\'affichage uniquement. Les prix ne sont pas convertis.',
-                  style: TextStyle(fontSize: 12, color: AppColors.accent),
+                  style: TextStyle(fontSize: 16, color: AppColors.accent),
                 ),
               ),
             ],
@@ -417,7 +421,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                 ),
                 child:
                     isLoading
-                        ?  SizedBox(
+                        ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

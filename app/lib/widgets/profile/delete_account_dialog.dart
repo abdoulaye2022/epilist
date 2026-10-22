@@ -155,7 +155,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       Text(
         l10n.sharedListsAnonymized,
-        style: TextStyle(color: AppColors.primary, fontSize: 14),
+        style: TextStyle(color: AppColors.primary, fontSize: 16),
       ),
 
       const SizedBox(height: 20),
@@ -205,7 +205,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             Text(
               l10n.verificationCodeSentToEmail(_userEmail ?? ''),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),
@@ -250,7 +250,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
             Expanded(
               child: Text(
                 l10n.codeExpiresInTwoHours,
-                style: TextStyle(color: AppColors.accent, fontSize: 12),
+                style: TextStyle(color: AppColors.accent, fontSize: 16),
               ),
             ),
           ],
@@ -262,7 +262,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
   Widget _buildDeletionItem(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Text(text, style: TextStyle(color: AppColors.error, fontSize: 14)),
+      child: Text(text, style: TextStyle(color: AppColors.error, fontSize: 16)),
     );
   }
 

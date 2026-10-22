@@ -122,7 +122,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                           child: Text(
                             l10n.aisleOrderHint,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 16,
                               color: AppColors.infoInk,
                               height: 1.3,
                             ),

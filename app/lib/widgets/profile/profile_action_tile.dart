@@ -66,7 +66,7 @@ class ProfileActionTile extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
                       ),

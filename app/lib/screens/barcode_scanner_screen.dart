@@ -338,7 +338,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               label,
               style: TextStyle(
                 color: isActive ? AppColors.primary : AppColors.onOverlay,
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
             ),

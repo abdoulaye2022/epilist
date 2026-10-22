@@ -418,9 +418,10 @@ class MyApp extends StatelessWidget {
                 themeMode: themeMode,
                 // Pose la palette des jetons de couleur : voir
                 // AppPaletteBinding, dans lib/theme/app_theme.dart.
-                builder: (context, child) => AppPaletteBinding(
-                  child: child ?? const SizedBox.shrink(),
-                ),
+                builder:
+                    (context, child) => AppPaletteBinding(
+                      child: child ?? const SizedBox.shrink(),
+                    ),
                 routes: {
                   '/register':
                       (context) => _wrapWithConnectivity(const SignUpPage()),
@@ -772,7 +773,7 @@ class LoadingScreen extends StatelessWidget {
                         colors: [AppColors.primary, AppColors.primary],
                       ),
                     ),
-                    child:  Icon(
+                    child: Icon(
                       Icons.shopping_cart_rounded,
                       size: 50,
                       color: AppColors.onPrimary,
@@ -914,7 +915,7 @@ class ErrorApp extends StatelessWidget {
                     child: Text(
                       'Détails: $error',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.errorInk,
                         fontFamily: 'monospace',
                       ),

@@ -143,7 +143,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: AppTint.ink(color),
                 fontWeight: FontWeight.w500,
               ),

@@ -175,7 +175,7 @@ class SuggestionCard extends StatelessWidget {
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onErrorContainer,
                               fontWeight: FontWeight.bold,
-                              fontSize: 11,
+                              fontSize: 14.5,
                             ),
                           ),
                         ],
@@ -273,7 +273,7 @@ class SuggestionCard extends StatelessWidget {
             label,
             style: TextStyle(
               color: textColor,
-              fontSize: 12,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -320,7 +320,7 @@ class CompactSuggestionCard extends StatelessWidget {
           backgroundColor: _getColorForConfidence(suggestion.confidenceLevel),
           child: Text(
             '${suggestion.suggestedQuantity}',
-            style:  TextStyle(
+            style: TextStyle(
               color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
             ),

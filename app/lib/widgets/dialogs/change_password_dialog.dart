@@ -110,7 +110,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             Text(
               l10n.verificationCodeWillBeSent,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),
@@ -159,7 +159,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             Text(
               l10n.checkEmailAndEnterCode,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),

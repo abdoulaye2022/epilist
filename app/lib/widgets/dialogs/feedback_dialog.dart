@@ -244,7 +244,11 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.feedback_outlined, size: 22, color: AppColors.primaryDark),
+      child: Icon(
+        Icons.feedback_outlined,
+        size: 22,
+        color: AppColors.primaryDark,
+      ),
     );
   }
 
@@ -264,7 +268,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
       l10n.feedbackDescription,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -340,7 +344,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         Text(
           l10n.feedbackType,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -381,7 +385,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                           Expanded(
                             child: Text(
                               localLabel,
-                              style: const TextStyle(fontSize: 14),
+                              style: const TextStyle(fontSize: 16),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -413,7 +417,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         Text(
           l10n.priority,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
           ),
@@ -448,7 +452,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                       value: priority.value,
                       child: Text(
                         localLabel,
-                        style: const TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 16),
                       ),
                     );
                   }).toList(),
@@ -539,7 +543,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           Expanded(
             child: Text(
               l10n.feedbackPrivacyNote,
-              style: TextStyle(fontSize: 11, color: AppColors.accent),
+              style: TextStyle(fontSize: 14.5, color: AppColors.accent),
             ),
           ),
         ],
@@ -586,7 +590,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
             ),
             child:
                 _isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

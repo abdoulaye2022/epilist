@@ -148,7 +148,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   color:
                       selected
@@ -210,14 +210,14 @@ class WelcomeScreen extends StatelessWidget {
         foregroundColor: AppColors.textSecondary,
         minimumSize: Size.zero,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        textStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       child: Text(label),
     );
 
     Widget dot() => Text(
       '·',
-      style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+      style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
     );
 
     // Wrap et non Row : les libellés français (« Politique de

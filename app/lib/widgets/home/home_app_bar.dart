@@ -203,7 +203,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                                 l10n.epilistUser, // Au lieu de AppLocalizations.of(context)!.epilistUser
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
-                                  fontSize: 12,
+                                  fontSize: 16,
                                 ),
                               ),
                               const Divider(height: 16),
@@ -328,7 +328,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
           initials,
           style: TextStyle(
             color: AppColors.primaryDark,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -563,7 +563,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
                                 AppLocalizations.of(context)!.epilistUser,
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
-                                  fontSize: 12,
+                                  fontSize: 16,
                                 ),
                               ),
                               const Divider(height: 16),
@@ -656,7 +656,7 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
           initials,
           style: TextStyle(
             color: AppColors.primaryDark,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),

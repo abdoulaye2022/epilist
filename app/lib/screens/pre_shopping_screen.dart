@@ -154,7 +154,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                                       _money(result!['good_price'] as num),
                                     ),
                                     style: TextStyle(
-                                      fontSize: 12.5,
+                                      fontSize: 16,
                                       color: AppColors.textSecondary,
                                     ),
                                   ),
@@ -180,7 +180,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                                           0,
                                     ),
                                     style: TextStyle(
-                                      fontSize: 12.5,
+                                      fontSize: 16,
                                       color: AppColors.textSecondary,
                                     ),
                                   ),
@@ -355,7 +355,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               budget['days_left'] as int? ?? 0,
             ),
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textPrimary,
               height: 1.4,
             ),
@@ -369,7 +369,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
           title: l10n.purchaseRequests,
           child: Text(
             l10n.preShoppingRequests(pending),
-            style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
           ),
         ),
 
@@ -382,7 +382,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                 ? Text(
                   l10n.preShoppingRestockEmpty,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 )
@@ -448,7 +448,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                       _money(a['target_price'] as num? ?? 0),
                     ),
                     style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 14.5,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primaryDark,
                     ),
@@ -467,7 +467,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                 ? Text(
                   l10n.savingsEmpty,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 )
@@ -477,7 +477,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                     Text(
                       l10n.savingsTotal(_money(savingsTotal)),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryDark,
                       ),
@@ -494,7 +494,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                         trailing: Text(
                           '+${_money(s['saving'] as num? ?? 0)} \$',
                           style: TextStyle(
-                            fontSize: 12.5,
+                            fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: AppColors.primaryDark,
                           ),
@@ -521,7 +521,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       child: Text(
         belowMin ? '$label ↓' : label,
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 14.5,
           fontWeight: FontWeight.w700,
           color: color,
         ),
@@ -542,7 +542,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                   title,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 13.5,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -552,7 +552,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                     sub,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 11.5,
+                      fontSize: 14.5,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -584,7 +584,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),

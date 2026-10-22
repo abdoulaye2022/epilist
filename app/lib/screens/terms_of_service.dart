@@ -35,7 +35,7 @@ class TermsOfServicePage extends StatelessWidget {
             SizedBox(height: 8),
             Text(
               l10n.termsLastUpdated,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
             ),
             SizedBox(height: 24),
 
@@ -101,7 +101,7 @@ class TermsOfServicePage extends StatelessWidget {
             Center(
               child: Text(
                 '© 2025 EpiList - ${l10n.aboutRightsReserved}',
-                style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+                style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
               ),
             ),
           ],
@@ -140,7 +140,7 @@ class TermsOfServicePage extends StatelessWidget {
           Text(
             content,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textSecondary,
               height: 1.5,
             ),
@@ -208,7 +208,7 @@ class TermsOfServicePage extends StatelessWidget {
           Text(
             content,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textSecondary,
               height: 1.5,
             ),

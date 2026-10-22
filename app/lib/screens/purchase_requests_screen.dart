@@ -338,7 +338,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontSize: 11.5,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w700,
                     color: color,
                   ),
@@ -349,12 +349,12 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
           const SizedBox(height: 4),
           Text(
             l10n.prRequestedBy(r.requesterName),
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           if (r.approverName != null)
             Text(
               l10n.prDecidedBy(r.approverName!),
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
           if (r.decisionComment != null && r.decisionComment!.isNotEmpty)
             Padding(
@@ -362,7 +362,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
               child: Text(
                 '« ${r.decisionComment} »',
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 16,
                   fontStyle: FontStyle.italic,
                   color: AppColors.textSecondary,
                 ),

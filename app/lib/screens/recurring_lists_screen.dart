@@ -217,7 +217,7 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                                 l10n.recurringEmpty,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 13.5,
+                                  fontSize: 16,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
@@ -407,7 +407,7 @@ class _PreviewSheetState extends State<_PreviewSheet> {
                 Text(
                   widget.listName,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -426,12 +426,12 @@ class _PreviewSheetState extends State<_PreviewSheet> {
                             (v) => setState(() => item.suggested = v ?? false),
                         title: Text(
                           item.productName,
-                          style: const TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 16),
                         ),
                         subtitle: Text(
                           reasonLabel(item.reason),
                           style: TextStyle(
-                            fontSize: 11.5,
+                            fontSize: 14.5,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -610,11 +610,11 @@ class _EditSheetState extends State<_EditSheet> {
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     l10n.autoGenerateLabel,
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   subtitle: Text(
                     l10n.autoGenerateHint,
-                    style: const TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   value: _autoGenerate,
                   onChanged: (v) => setState(() => _autoGenerate = v),
@@ -623,7 +623,7 @@ class _EditSheetState extends State<_EditSheet> {
                 Text(
                   l10n.recurringProducts,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -634,7 +634,7 @@ class _EditSheetState extends State<_EditSheet> {
                   children: [
                     for (final p in _products)
                       Chip(
-                        label: Text(p, style: const TextStyle(fontSize: 12.5)),
+                        label: Text(p, style: const TextStyle(fontSize: 16)),
                         onDeleted: () => setState(() => _products.remove(p)),
                       ),
                   ],

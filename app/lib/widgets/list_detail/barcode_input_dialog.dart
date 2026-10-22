@@ -54,7 +54,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
               Text(
                 AppLocalizations.of(context)!.scannerUnavailableSimulator,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: AppColors.warning,
                   fontWeight: FontWeight.w500,
                 ),
@@ -62,7 +62,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
               const SizedBox(height: 8),
               Text(
                 AppLocalizations.of(context)!.enterBarcodeHint,
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 20),
 
@@ -99,7 +99,7 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
               Text(
                 AppLocalizations.of(context)!.barcodeExamples,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
                 ),
@@ -128,14 +128,14 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                       title: Text(
                         example['name']!,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       subtitle: Text(
                         example['code']!,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                           fontFamily: 'monospace',
                         ),

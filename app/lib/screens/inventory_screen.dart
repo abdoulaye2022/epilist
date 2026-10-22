@@ -213,7 +213,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           child: Text(
                             item.productName,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 16,
                               color: AppColors.textSecondary,
                             ),
                           ),
@@ -442,7 +442,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         l10n.inventoryEmpty,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),

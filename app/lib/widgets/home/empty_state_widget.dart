@@ -42,7 +42,7 @@ class EmptyStateWidget extends StatelessWidget {
                 l10n.createFirstList,
                 style: TextStyle(
                   color: AppColors.textDisabled,
-                  fontSize: 14, // ✅ AJOUTÉ: Taille explicite
+                  fontSize: 16, // ✅ AJOUTÉ: Taille explicite
                 ),
                 textAlign: TextAlign.center, // ✅ AJOUTÉ: Centrage du texte
                 maxLines: 2, // ✅ AJOUTÉ: Limite de lignes
@@ -55,7 +55,7 @@ class EmptyStateWidget extends StatelessWidget {
               icon: const Icon(Icons.add, size: 18), // ✅ AJOUTÉ: Taille icône
               label: Text(
                 l10n.createList,
-                style: const TextStyle(fontSize: 14), // ✅ AJOUTÉ: Taille texte
+                style: const TextStyle(fontSize: 16), // ✅ AJOUTÉ: Taille texte
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,

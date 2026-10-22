@@ -437,7 +437,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     child: Text(
                       l10n.tryAdjustingFilters,
                       style: TextStyle(
-                        fontSize: 13, // ✅ RÉDUIT de 14 à 13
+                        fontSize: 16, // ✅ RÉDUIT de 14 à 13
                         color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
@@ -469,7 +469,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                 icon: const Icon(Icons.clear_all, size: 18),
                                 label: Text(
                                   l10n.clearFilters,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ElevatedButton.styleFrom(
@@ -491,7 +491,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                 icon: const Icon(Icons.add, size: 18),
                                 label: Text(
                                   l10n.createBudget,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: OutlinedButton.styleFrom(
@@ -522,7 +522,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                 icon: const Icon(Icons.clear_all, size: 18),
                                 label: Text(
                                   l10n.clearFilters,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: ElevatedButton.styleFrom(
@@ -544,7 +544,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                 icon: const Icon(Icons.add, size: 18),
                                 label: Text(
                                   l10n.createBudget,
-                                  style: const TextStyle(fontSize: 13),
+                                  style: const TextStyle(fontSize: 16),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 style: OutlinedButton.styleFrom(
@@ -621,7 +621,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                   child: Text(
                     l10n.createFirstBudgetDescription,
                     style: TextStyle(
-                      fontSize: 13, // ✅ RÉDUIT
+                      fontSize: 16, // ✅ RÉDUIT
                       color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
@@ -642,7 +642,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       icon: const Icon(Icons.add, size: 18),
                       label: Text(
                         l10n.createBudget,
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: 16),
                         overflow: TextOverflow.ellipsis,
                       ),
                       style: ElevatedButton.styleFrom(

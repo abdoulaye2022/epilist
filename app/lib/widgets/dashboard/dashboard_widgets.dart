@@ -52,7 +52,7 @@ class BudgetMonthCard extends StatelessWidget {
               month,
               style: TextStyle(
                 color: AppColors.onBrandBand,
-                fontSize: 11.5,
+                fontSize: 14.5,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -134,7 +134,7 @@ class BudgetMonthCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -189,7 +189,7 @@ class BudgetMonthCard extends StatelessWidget {
                 '${(ratio * 100).round()} %',
                 style: TextStyle(
                   color: AppColors.onBrandBand,
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -209,7 +209,7 @@ class BudgetMonthCard extends StatelessWidget {
                   over ? l10n.budgetExceededShort : l10n.withinBudget,
                   style: TextStyle(
                     color: AppColors.onBrandBand.withValues(alpha: 0.85),
-                    fontSize: 12.5,
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -217,7 +217,7 @@ class BudgetMonthCard extends StatelessWidget {
                 l10n.remainingThisMonth(budget.formattedRemainingAmount),
                 style: TextStyle(
                   color: AppColors.onBrandBand.withValues(alpha: 0.85),
-                  fontSize: 12.5,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -295,7 +295,7 @@ class BudgetCtaCard extends StatelessWidget {
                       : l10n.noBudgetForMonth(_monthLabel(context)),
                   style: TextStyle(
                     color: AppColors.onBrandBand.withValues(alpha: 0.8),
-                    fontSize: 12.5,
+                    fontSize: 16,
                   ),
                 ),
               ],
@@ -331,7 +331,7 @@ class BudgetCtaCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
               ),
               textStyle: const TextStyle(
-                fontSize: 12.5,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -406,7 +406,7 @@ class DashboardListCard extends StatelessWidget {
                 Text(
                   '$done / $total ${l10n.articles.toLowerCase()}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),

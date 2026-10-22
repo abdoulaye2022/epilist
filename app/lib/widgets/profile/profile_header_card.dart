@@ -67,7 +67,7 @@ class ProfileHeaderCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           user.email,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
         ),
       ],
     );
@@ -103,7 +103,7 @@ class ProfileHeaderCard extends StatelessWidget {
                 ? l10n.emailVerified
                 : l10n.emailNotVerifiedStatus,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color:
                   user.isEmailVerified ? AppColors.primary : AppColors.warning,
               fontWeight: FontWeight.w500,

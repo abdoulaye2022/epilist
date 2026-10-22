@@ -69,7 +69,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         budget.name,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -113,7 +113,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         l10n.budgeted,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -121,7 +121,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                         // ✅ UTILISATION DE FormattedAmount
                         amount: budget.budgetAmount,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -135,7 +135,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         l10n.spent,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -143,7 +143,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                         // ✅ UTILISATION DE FormattedAmount
                         amount: budget.spentAmount,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: _getAlertColor(),
                         ),
@@ -164,7 +164,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       Text(
                         '${budget.spentPercentage.toStringAsFixed(1)}% ${l10n.spent.toLowerCase()}',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: _getAlertColor(),
                           fontWeight: FontWeight.w500,
                         ),
@@ -173,7 +173,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                         Text(
                           '${budget.daysRemaining} ${_getDaysText(l10n)}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -204,7 +204,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                       child: Text(
                         budget.alertMessage!,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: _getAlertColor(),
                           fontWeight: FontWeight.w500,
                         ),
@@ -228,7 +228,7 @@ class BudgetAlertsWidget extends StatelessWidget {
                   Text(
                     budget.listName!,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       fontStyle: FontStyle.italic,
                     ),
@@ -292,7 +292,7 @@ class BudgetAlertsWidget extends StatelessWidget {
               Text(
                 isOverBudget ? (l10n.overBudget) : l10n.remaining,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: isOverBudget ? AppColors.error : AppColors.primaryDark,
                 ),
@@ -303,7 +303,7 @@ class BudgetAlertsWidget extends StatelessWidget {
             // ✅ UTILISATION DE FormattedAmount POUR LE RÉSUMÉ
             amount: remainingAmount.abs(), // Valeur absolue pour l'affichage
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: isOverBudget ? AppColors.error : AppColors.primaryDark,
             ),
@@ -430,14 +430,14 @@ class BudgetAlertsWidget extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),

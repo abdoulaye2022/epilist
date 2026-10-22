@@ -83,7 +83,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Text(
       subtitle,
       style: TextStyle(
-        fontSize: 12,
+        fontSize: 16,
         color: subtitleColor,
         fontWeight: FontWeight.normal,
       ),
@@ -537,7 +537,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
-              fontSize: 14,
+              fontSize: 16,
             ),
           ),
         ),
@@ -547,7 +547,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
             value,
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -648,7 +648,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                     child: Text(
                       permission['text'] as String,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color:
                             permission['granted']
                                 ? AppColors.textPrimary
@@ -674,7 +674,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                       child: Text(
                         l10n.allowed,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 14.5,
                           color: AppColors.primaryDark,
                           fontWeight: FontWeight.w500,
                         ),
@@ -694,7 +694,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                       child: Text(
                         l10n.denied,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 14.5,
                           color: AppColors.errorInk,
                           fontWeight: FontWeight.w500,
                         ),

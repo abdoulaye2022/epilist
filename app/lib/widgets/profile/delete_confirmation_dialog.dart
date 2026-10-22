@@ -156,7 +156,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
         itemName,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontSize: 13.5,
+          fontSize: 16,
           color: AppColors.textSecondary,
           height: 1.4,
         ),
@@ -167,7 +167,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontSize: 13.5,
+          fontSize: 16,
           color: AppColors.textSecondary,
           height: 1.4,
         ),
@@ -190,7 +190,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
     return Text(
       warningText!,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.w500),
+      style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.w500),
     );
   }
 
@@ -247,7 +247,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
             ),
             child:
                 isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

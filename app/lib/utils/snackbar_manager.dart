@@ -39,7 +39,7 @@ class SnackBarManager {
                     message,
                     style: TextStyle(
                       color: AppColors.onPrimary,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -99,7 +99,7 @@ class SnackBarManager {
                     message,
                     style: TextStyle(
                       color: AppColors.onPrimary,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

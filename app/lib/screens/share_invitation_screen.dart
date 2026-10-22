@@ -145,7 +145,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
 
           Text(
             AppLocalizations.of(context)!.siVerifyingToken,
-            style: TextStyle(fontSize: 14, color: AppColors.textDisabled),
+            style: TextStyle(fontSize: 16, color: AppColors.textDisabled),
           ),
 
           const SizedBox(height: 32),
@@ -162,7 +162,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Text(
                   'Token',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -171,7 +171,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Text(
                   widget.shareToken,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 14.5,
                     color: AppColors.textPrimary,
                     fontFamily: 'monospace',
                   ),
@@ -291,7 +291,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           Text(
             text,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -313,7 +313,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 8),
           Text(
             'Contact ${invitation.ownerName} to receive a new invitation.',
-            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -457,7 +457,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             Expanded(
               child: Text(
                 'This invitation expires on ${_formatDate(invitation.expiresAt)}.',
-                style: TextStyle(color: AppColors.accent, fontSize: 14),
+                style: TextStyle(color: AppColors.accent, fontSize: 16),
               ),
             ),
           ],
@@ -689,13 +689,17 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.security, color: AppColors.primaryDark, size: 16),
+                      Icon(
+                        Icons.security,
+                        color: AppColors.primaryDark,
+                        size: 16,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Permissions: ${invitation.permissionDisplayName}',
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             color: AppColors.primaryDark,
                             fontWeight: FontWeight.w500,
                           ),
@@ -865,7 +869,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         child: Text(
                           AppLocalizations.of(context)!.siDeclineWarning,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             color: AppColors.warning,
                             fontWeight: FontWeight.w500,
                           ),
@@ -960,7 +964,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1008,7 +1012,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           ),
           Text(
             title,
-            style: TextStyle(fontSize: 12, color: AppTint.ink(color)),
+            style: TextStyle(fontSize: 16, color: AppTint.ink(color)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -1075,7 +1079,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),
@@ -1086,7 +1090,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
           const SizedBox(height: 8),
           Text(
             description,
-            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
           ...abilities.map(
@@ -1100,7 +1104,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                     child: Text(
                       ability,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),

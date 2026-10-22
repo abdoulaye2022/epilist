@@ -74,7 +74,7 @@ class LanguageSettingTile extends StatelessWidget {
                           Text(
                             _getLanguageDisplayName(currentLanguage, l10n),
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               color: AppColors.textSecondary,
                               fontWeight: FontWeight.w400,
                             ),
@@ -108,7 +108,7 @@ class LanguageSettingTile extends StatelessWidget {
                               Text(
                                 _getLanguageCode(currentLanguage),
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textSecondary,
                                 ),
@@ -253,7 +253,11 @@ class LanguageSettingTile extends StatelessWidget {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(40),
       ),
-      child: Icon(Icons.language_rounded, size: 40, color: AppColors.primaryDark),
+      child: Icon(
+        Icons.language_rounded,
+        size: 40,
+        color: AppColors.primaryDark,
+      ),
     );
   }
 
@@ -354,7 +358,7 @@ class LanguageSettingTile extends StatelessWidget {
                   Text(
                     nativeName,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 16,
                       color:
                           isSelected
                               ? AppColors.primary
@@ -375,7 +379,7 @@ class LanguageSettingTile extends StatelessWidget {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child:  Icon(
+                child: Icon(
                   Icons.check_rounded,
                   color: AppColors.onPrimary,
                   size: 16,

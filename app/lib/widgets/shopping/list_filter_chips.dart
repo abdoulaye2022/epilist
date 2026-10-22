@@ -104,7 +104,7 @@ class ListFilterChips extends StatelessWidget {
                   color:
                       isSelected ? AppColors.onPrimary : AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 12,
+                  fontSize: 16,
                 ),
               ),
               if (count != null && count > 0) ...[
@@ -125,7 +125,7 @@ class ListFilterChips extends StatelessWidget {
                     count.toString(),
                     style: TextStyle(
                       color: isSelected ? AppColors.onPrimary : primaryColor,
-                      fontSize: 10,
+                      fontSize: 14.5,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

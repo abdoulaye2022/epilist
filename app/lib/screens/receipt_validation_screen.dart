@@ -230,7 +230,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
         children: [
           Text(
             l10n.reviewReceiptHint,
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.md),
 
@@ -342,10 +342,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                 l10n.unrecognizedLinesTitle(
                   widget.receipt.unrecognizedLines.length,
                 ),
-                style: TextStyle(
-                  fontSize: 13.5,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
               children:
                   widget.receipt.unrecognizedLines
@@ -360,7 +357,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                             child: Text(
                               l,
                               style: TextStyle(
-                                fontSize: 12.5,
+                                fontSize: 16,
                                 color: AppColors.textDisabled,
                               ),
                             ),
@@ -393,7 +390,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
                 icon: const Icon(Icons.content_copy, size: 16),
                 label: Text(
                   l10n.copyOcrText,
-                  style: const TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.textSecondary,
@@ -463,7 +460,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
             ),
           ),
         ],
@@ -580,7 +577,7 @@ class _ReceiptValidationScreenState extends State<ReceiptValidationScreen> {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(text, style: TextStyle(fontSize: 11.5, color: color)),
+          Text(text, style: TextStyle(fontSize: 14.5, color: color)),
         ],
       ),
     );

@@ -60,7 +60,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
           SnackBar(
             content: Text(
               AppLocalizations.of(context)!.voiceRequiresInternet,
-              style:  TextStyle(color: AppColors.onWarning),
+              style: TextStyle(color: AppColors.onWarning),
             ),
             backgroundColor: AppColors.warning,
             duration: const Duration(seconds: 3),
@@ -207,7 +207,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
                 ? (_currentText.isEmpty ? l10n.voiceListening : _currentText)
                 : l10n.voiceTapToSpeak,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: _isListening ? FontWeight.w600 : FontWeight.normal,
               color:
                   _isListening

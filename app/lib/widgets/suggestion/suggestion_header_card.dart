@@ -62,7 +62,7 @@ class SuggestionHeaderCard extends StatelessWidget {
                         '$suggestionsCount ${l10n.productSuggestions.toLowerCase()}',
                         style: TextStyle(
                           color: AppColors.accent,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -87,7 +87,7 @@ class SuggestionHeaderCard extends StatelessWidget {
                       l10n.basedOnHistory,
                       style: TextStyle(
                         color: AppColors.accent,
-                        fontSize: 12,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

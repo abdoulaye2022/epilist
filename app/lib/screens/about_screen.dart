@@ -80,7 +80,7 @@ class AboutPage extends StatelessWidget {
                   Text(
                     l10n.manageGroceryListsEasily,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -99,7 +99,7 @@ class AboutPage extends StatelessWidget {
                     child: Text(
                       'Version 1.0.0',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.primaryDark,
                         fontWeight: FontWeight.w600,
                       ),
@@ -160,19 +160,19 @@ class AboutPage extends StatelessWidget {
             // Copyright
             Text(
               '© 2025 EpiList. ${l10n.aboutRightsReserved}',
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               '${l10n.aboutDevelopedWith} ❤️ ${l10n.aboutByCompany}',
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               'Moncton, New Brunswick, Canada',
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 10),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 14.5),
               textAlign: TextAlign.center,
             ),
           ],
@@ -213,7 +213,7 @@ class AboutPage extends StatelessWidget {
           Text(
             content,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textSecondary,
               height: 1.5,
             ),

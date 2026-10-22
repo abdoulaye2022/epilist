@@ -160,7 +160,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                         '${topSuggestions.length}',
                         style: TextStyle(
                           color: theme.colorScheme.onPrimaryContainer,
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -228,7 +228,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                           firstSuggestion.productName,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: 16,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -252,7 +252,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                                   Theme.of(
                                     context,
                                   ).colorScheme.onErrorContainer,
-                              fontSize: 10,
+                              fontSize: 14.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

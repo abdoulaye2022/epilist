@@ -309,7 +309,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ? l10n.offlineUnavailableHint
               : AppLocalizations.of(context)!.analyticsEmptyHint,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.md),
         Center(

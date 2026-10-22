@@ -212,7 +212,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                         subtitle: Text(
                           _getPermissionDescription(permission),
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             color:
                                 isSelected
                                     ? AppColors.accent
@@ -317,7 +317,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                         SizedBox(
+                        SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -391,7 +391,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                       child: Text(
                         _generatedLink!,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontFamily: 'monospace',
                         ),
                         maxLines: 2,
@@ -476,7 +476,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
             child: Text(
               l10n.linkExpirationInfo(_expirationDays),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),

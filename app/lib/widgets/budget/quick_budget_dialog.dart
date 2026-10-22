@@ -369,7 +369,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                       Text(
                         l10n.generalBudgetDescription,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -390,7 +390,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           Text(
             l10n.orSelectSpecificList,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -559,18 +559,18 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 14)),
+          Text(label, style: const TextStyle(fontSize: 16)),
           // ✅ UTILISATION CONDITIONNELLE DE FormattedAmount
           if (amount != null && amount > 0)
             FormattedAmount(
               amount: amount,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               showCode: true, // ✅ AFFICHER LE CODE DE DEVISE DANS LE PREVIEW
             )
           else
             Text(
               value ?? '0.00',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
         ],
       ),

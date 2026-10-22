@@ -99,7 +99,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                         style: TextStyle(
                           color: themeColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -173,7 +173,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 16,
             color: AppColors.textPrimary,
           ),
           overflow: TextOverflow.ellipsis,
@@ -397,7 +397,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                                   isActive
                                       ? FontWeight.w600
                                       : FontWeight.normal,
-                              fontSize: 14,
+                              fontSize: 16,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -497,7 +497,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                                 : AppColors.textPrimary,
                         fontWeight:
                             isActive ? FontWeight.w600 : FontWeight.normal,
-                        fontSize: 12,
+                        fontSize: 16,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

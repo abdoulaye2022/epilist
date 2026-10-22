@@ -45,7 +45,7 @@ class LeaveSharedListDialog extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.loseAccessWarning,
-                    style: TextStyle(fontSize: 13, color: AppColors.warning),
+                    style: TextStyle(fontSize: 16, color: AppColors.warning),
                   ),
                 ),
               ],

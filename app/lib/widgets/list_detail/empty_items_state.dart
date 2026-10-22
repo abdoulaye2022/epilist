@@ -126,10 +126,10 @@ class EmptyItemsState extends StatelessWidget {
     // Bouton normal d'ajout
     return ElevatedButton.icon(
       onPressed: onAddItem,
-      icon:  Icon(Icons.add, color: AppColors.onPrimary),
+      icon: Icon(Icons.add, color: AppColors.onPrimary),
       label: Text(
         l10n.addItem,
-        style:  TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.onPrimary,
@@ -175,7 +175,7 @@ class EmptyItemsState extends StatelessWidget {
           Text(
             infoText,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: infoColor,
               fontWeight: FontWeight.w500,
             ),

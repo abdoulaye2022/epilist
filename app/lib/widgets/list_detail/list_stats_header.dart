@@ -46,7 +46,7 @@ class ListStatsHeader extends StatelessWidget {
               Text(
                 '$purchasedItems/$totalItems ${l10n.articles.toLowerCase()}',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
@@ -55,7 +55,7 @@ class ListStatsHeader extends StatelessWidget {
               FormattedAmount(
                 amount: totalPrice,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryDark,
                 ),

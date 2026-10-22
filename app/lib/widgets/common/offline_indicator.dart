@@ -106,10 +106,10 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                     children: [
                       Text(
                         _getStatusTitle(l10n),
-                        style:  TextStyle(
+                        style: TextStyle(
                           color: AppColors.onPrimary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 16,
                         ),
                       ),
                       if (_getStatusSubtitle(l10n) != null) ...[
@@ -118,7 +118,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                           _getStatusSubtitle(l10n)!,
                           style: TextStyle(
                             color: AppColors.onPrimary.withValues(alpha: 0.9),
-                            fontSize: 12,
+                            fontSize: 16,
                           ),
                         ),
                       ],
@@ -137,10 +137,10 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                     ),
                     child: Text(
                       '$_pendingCount',
-                      style:  TextStyle(
+                      style: TextStyle(
                         color: AppColors.onPrimary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -160,7 +160,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
 
   Widget _buildIcon() {
     if (_isSyncing) {
-      return  SizedBox(
+      return SizedBox(
         width: 20,
         height: 20,
         child: CircularProgressIndicator(
@@ -171,14 +171,14 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
     }
 
     if (!_isOnline) {
-      return  Icon(Icons.cloud_off, color: AppColors.onPrimary, size: 20);
+      return Icon(Icons.cloud_off, color: AppColors.onPrimary, size: 20);
     }
 
     if (_pendingCount > 0) {
-      return  Icon(Icons.sync, color: AppColors.onPrimary, size: 20);
+      return Icon(Icons.sync, color: AppColors.onPrimary, size: 20);
     }
 
-    return  Icon(Icons.check_circle, color: AppColors.onPrimary, size: 20);
+    return Icon(Icons.check_circle, color: AppColors.onPrimary, size: 20);
   }
 
   Color _getBackgroundColor() {
@@ -322,13 +322,17 @@ class _OfflineDetailsDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.warningInk, size: 20),
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.warningInk,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.offlineDataWillSync,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.warningInk,
                       ),
                     ),
@@ -360,7 +364,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+          style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -372,7 +376,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
           child: Text(
             value,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: color,
             ),

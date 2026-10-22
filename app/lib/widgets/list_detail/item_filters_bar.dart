@@ -234,7 +234,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                         style: TextStyle(
                           color: themeColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -316,7 +316,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
           title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 16,
             color: AppColors.textPrimary,
           ),
           overflow: TextOverflow.ellipsis,
@@ -439,7 +439,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                                   isActive
                                       ? FontWeight.w600
                                       : FontWeight.normal,
-                              fontSize: 14,
+                              fontSize: 16,
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -475,7 +475,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
     if (widget.availableStores.isEmpty) {
       return Text(
         l10n.noStoresAvailable,
-        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
       );
     }
 
@@ -636,7 +636,7 @@ class _ItemFiltersBarState extends State<ItemFiltersBar> {
                     color:
                         isActive ? AppColors.onPrimary : AppColors.textPrimary,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                    fontSize: 12,
+                    fontSize: 16,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,

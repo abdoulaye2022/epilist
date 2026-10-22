@@ -62,7 +62,7 @@ class ReceiptStatsCard extends StatelessWidget {
                       Text(
                         l10n.totalExpensesSummary,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -154,7 +154,7 @@ class ReceiptStatsCard extends StatelessWidget {
                       Text(
                         l10n.receiptVsItemComparison,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -204,7 +204,7 @@ class ReceiptStatsCard extends StatelessWidget {
                           variance.toStringAsFixed(1),
                         ),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: AppColors.warning,
                         ),
                       ),
@@ -256,7 +256,7 @@ class ReceiptStatsCard extends StatelessWidget {
                       Text(
                         qualityText,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppTint.ink(qualityColor),
                           fontWeight: FontWeight.w500,
                         ),
@@ -302,7 +302,7 @@ class ReceiptStatsCard extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
             ),
@@ -343,7 +343,7 @@ class ReceiptStatsCard extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: AppTint.ink(color),
               fontWeight: FontWeight.w500,
             ),
@@ -362,7 +362,7 @@ class ReceiptStatsCard extends StatelessWidget {
           FormattedAmount(
             amount: amount,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: AppTint.ink(color),
             ),
@@ -415,7 +415,7 @@ class ReceiptStatsCard extends StatelessWidget {
                     child: Text(
                       recommendation,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),

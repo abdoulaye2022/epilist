@@ -134,7 +134,7 @@ class SuggestionCard extends StatelessWidget {
               text,
               style: TextStyle(
                 color: AppTint.ink(color),
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
               overflow: TextOverflow.ellipsis,
@@ -169,7 +169,7 @@ class SuggestionCard extends StatelessWidget {
                     suggestion.getUsageInfo(context),
                     style: TextStyle(
                       color: AppColors.warning,
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -188,7 +188,7 @@ class SuggestionCard extends StatelessWidget {
             flex: 1,
             child: Text(
               '${l10n.lastUsed}: ${suggestion.getLastUsedFormatted(context)}',
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 11),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 14.5),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               textAlign: TextAlign.end,

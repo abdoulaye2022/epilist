@@ -152,7 +152,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     Text(
                       l10n.createFirstCategoryDescription,
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
@@ -187,7 +187,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                 child: Text(
                   '${categories.length} ${l10n.categories.toLowerCase()}',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,
                   ),
@@ -292,7 +292,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                   RichText(
                     text: TextSpan(
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                         height: 1.4,
                       ),
@@ -312,7 +312,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     l10n.actionIrreversible,
-                    style: TextStyle(fontSize: 12.5, color: AppColors.error),
+                    style: TextStyle(fontSize: 16, color: AppColors.error),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   BlocBuilder<CategoryBloc, CategoryState>(

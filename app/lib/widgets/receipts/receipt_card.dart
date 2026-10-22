@@ -81,17 +81,14 @@ class ReceiptCard extends StatelessWidget {
                 receipt.listName!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
             ),
             if (onOpenList != null)
               Text(
                 l10n.openList,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryDark,
                 ),
@@ -129,10 +126,7 @@ class ReceiptCard extends StatelessWidget {
                         top: 4,
                         right: 4,
                         child: IconButton(
-                          icon:  Icon(
-                            Icons.close,
-                            color: AppColors.onPrimary,
-                          ),
+                          icon: Icon(Icons.close, color: AppColors.onPrimary),
                           onPressed: () => Navigator.pop(dialogContext),
                         ),
                       ),
@@ -165,7 +159,7 @@ class ReceiptCard extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             l10n.receiptPhotoTitle,
-            style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           const SizedBox(width: 4),
           Icon(
@@ -191,7 +185,11 @@ class ReceiptCard extends StatelessWidget {
                   color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.store, color: AppColors.primaryDark, size: 20),
+                child: Icon(
+                  Icons.store,
+                  color: AppColors.primaryDark,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -239,7 +237,7 @@ class ReceiptCard extends StatelessWidget {
           child: Text(
             _formatPurchaseDate(context, receipt.purchaseDate),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
@@ -266,7 +264,7 @@ class ReceiptCard extends StatelessWidget {
           Text(
             l10n.notes,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -274,7 +272,7 @@ class ReceiptCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             receipt.notes!,
-            style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -290,7 +288,7 @@ class ReceiptCard extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           '${l10n.added} ${_formatCreatedDate(context, receipt.createdAt)}',
-          style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
+          style: TextStyle(fontSize: 16, color: AppColors.textDisabled),
         ),
       ],
     );

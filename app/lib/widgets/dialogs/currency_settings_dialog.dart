@@ -130,7 +130,11 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         color: AppColors.primaryLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(Icons.currency_exchange, size: 22, color: AppColors.primaryDark),
+      child: Icon(
+        Icons.currency_exchange,
+        size: 22,
+        color: AppColors.primaryDark,
+      ),
     );
   }
 
@@ -150,7 +154,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
       l10n.chooseCurrencyDescription,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -168,7 +172,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             const SizedBox(height: 16),
             Text(
               l10n.loadingCurrencies,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
             ),
           ],
         ),
@@ -195,7 +199,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             Text(
               l10n.cannotLoadCurrencies,
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textDisabled, fontSize: 12),
+              style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
             ),
           ],
         ),
@@ -209,7 +213,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
         Text(
           l10n.currentCurrency,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
           ),
@@ -274,7 +278,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                                 Text(
                                   currency.name,
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.primaryDark,
                                   ),
@@ -282,7 +286,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                                 Text(
                                   currency.code.toUpperCase(),
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 16,
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -304,7 +308,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                               child: Text(
                                 l10n.popular,
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 14.5,
                                   color: AppColors.warningInk,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -341,7 +345,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
               Expanded(
                 child: Text(
                   l10n.currencyDisplayOnly,
-                  style: TextStyle(fontSize: 12, color: AppColors.accent),
+                  style: TextStyle(fontSize: 16, color: AppColors.accent),
                 ),
               ),
             ],
@@ -398,7 +402,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                 ),
                 child:
                     isLoading
-                        ?  SizedBox(
+                        ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

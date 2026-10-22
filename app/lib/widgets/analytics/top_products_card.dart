@@ -65,7 +65,7 @@ class TopProductsCard extends StatelessWidget {
                         Text(
                           l10n.totalProducts,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -90,7 +90,7 @@ class TopProductsCard extends StatelessWidget {
                         Text(
                           l10n.showing,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -377,10 +377,10 @@ class TopProductsCard extends StatelessWidget {
             child: Center(
               child: Text(
                 '$rank',
-                style:  TextStyle(
+                style: TextStyle(
                   color: AppColors.onPrimary,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -395,7 +395,7 @@ class TopProductsCard extends StatelessWidget {
                 Text(
                   productName,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -407,7 +407,7 @@ class TopProductsCard extends StatelessWidget {
                   Text(
                     '${l10n.storesLabel}: ${stores.take(2).join(', ')}${stores.length > 2 ? '...' : ''}',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -418,7 +418,7 @@ class TopProductsCard extends StatelessWidget {
                     Text(
                       '${l10n.averagePriceLabel}: ',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -426,7 +426,7 @@ class TopProductsCard extends StatelessWidget {
                       child: FormattedAmount(
                         amount: averagePrice,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                         showCode: false,
@@ -454,7 +454,7 @@ class TopProductsCard extends StatelessWidget {
                 Text(
                   subValue,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),

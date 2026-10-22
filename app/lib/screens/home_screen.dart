@@ -760,7 +760,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Text(
                     '${l10n.atYourCurrentPace('${f.projection.toStringAsFixed(0)} \$')} · ${l10n.daysLeftShort(f.daysLeft)}',
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 16,
                       color: AppColors.textPrimary,
                     ),
                   ),
@@ -775,7 +775,7 @@ class _HomeScreenState extends State<HomeScreen>
                     '${f.perDayRemaining.toStringAsFixed(2)} \$',
                   ),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -809,7 +809,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ).then((_) => _loadIntelligence()),
               child: Text(
                 l10n.seeAllSuggestions,
-                style: const TextStyle(fontSize: 12.5),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],
@@ -857,7 +857,7 @@ class _HomeScreenState extends State<HomeScreen>
                         l10n.recentLists('${state.lists.length}'),
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -875,7 +875,7 @@ class _HomeScreenState extends State<HomeScreen>
                             l10n.viewAll,
                             style: TextStyle(
                               color: AppColors.primaryDark,
-                              fontSize: 12,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -924,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen>
                       l10n.recentLists('0'),
                       style: TextStyle(
                         color: AppColors.textSecondary,
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

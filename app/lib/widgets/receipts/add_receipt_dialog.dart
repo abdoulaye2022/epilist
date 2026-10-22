@@ -235,7 +235,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
                   Text(
                     l10n.purchaseDate,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -306,7 +306,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
           Expanded(
             child: Text(
               l10n.receiptPhotoAttached,
-              style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
             ),
           ),
           IconButton(
@@ -417,7 +417,7 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
             ),
             child:
                 _isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

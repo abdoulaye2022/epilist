@@ -51,7 +51,7 @@ class DashboardCard extends StatelessWidget {
                         Text(
                           l10n.ownListsOnly,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.warning,
                             fontWeight: FontWeight.w500,
                           ),
@@ -187,13 +187,13 @@ class DashboardCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   '${l10n.averageDailySpending}: ',
-                  style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                  style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
                 ),
                 FormattedAmount(
                   amount:
                       quickStats['average_daily_spending']?.toDouble() ?? 0.0,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
@@ -212,7 +212,7 @@ class DashboardCard extends StatelessWidget {
                     child: Text(
                       '${l10n.busiestDay}: ${_getBusiestDay(last7Days, l10n)}', // ✅ AJOUT: Passer l10n
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -228,14 +228,14 @@ class DashboardCard extends StatelessWidget {
                   Text(
                     '${l10n.highestPurchase}: ',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   FormattedAmount(
                     amount: _getHighestDaySpending(last7Days),
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.error,
                     ),
@@ -252,7 +252,7 @@ class DashboardCard extends StatelessWidget {
                     child: Text(
                       '${l10n.weeklyActivity}: ${_getActiveDaysCount(last7Days)} jours actifs',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textPrimary,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -365,7 +365,7 @@ class DashboardCard extends StatelessWidget {
                 child: Text(
                   l10n.dataSourceBreakdown,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.accent,
                   ),
@@ -393,7 +393,7 @@ class DashboardCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${l10n.myLists}: ${ownPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 14.5),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -417,7 +417,7 @@ class DashboardCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${l10n.sharedLists}: ${sharedPercentage.toStringAsFixed(1)}%',
-                        style: const TextStyle(fontSize: 11),
+                        style: const TextStyle(fontSize: 14.5),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -524,7 +524,7 @@ class DashboardCard extends StatelessWidget {
           Text(
             dayShort,
             style: TextStyle(
-              fontSize: 9,
+              fontSize: 14.5,
               fontWeight: FontWeight.w500,
               color: AppColors.textSecondary,
             ),
@@ -537,7 +537,7 @@ class DashboardCard extends StatelessWidget {
               child: FormattedAmount(
                 amount: totalSpent,
                 style: TextStyle(
-                  fontSize: 9,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
                 ),
@@ -547,12 +547,12 @@ class DashboardCard extends StatelessWidget {
           else
             Text(
               '-',
-              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 14.5, color: AppColors.textSecondary),
             ),
           const SizedBox(height: 1),
           Text(
             '$itemsCount',
-            style: TextStyle(fontSize: 8, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 14.5, color: AppColors.textSecondary),
             overflow: TextOverflow.ellipsis,
           ),
         ],

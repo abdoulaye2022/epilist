@@ -60,7 +60,7 @@ class CategoriesChartCard extends StatelessWidget {
                         Text(
                           l10n.totalSpent,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -86,7 +86,7 @@ class CategoriesChartCard extends StatelessWidget {
                         Text(
                           l10n.categories,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -147,7 +147,7 @@ class CategoriesChartCard extends StatelessWidget {
                 child: Text(
                   '${l10n.andXMore} ${categories.length - 8} ${l10n.moreCategories}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                     fontStyle: FontStyle.italic,
                   ),

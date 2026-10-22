@@ -215,7 +215,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             child: Text(
               active?.name ?? l10n.chooseStore,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight:
                     active != null ? FontWeight.w600 : FontWeight.normal,
                 color:
@@ -561,7 +561,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             child: Text(
               bannerText,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 16,
                 color: bannerColor,
                 fontWeight: FontWeight.w500,
               ),
@@ -572,7 +572,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             Text(
               '${l10n.by} ${currentList.sharedBy!.name}',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: bannerColor,
                 fontStyle: FontStyle.italic,
               ),
@@ -668,7 +668,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 Text(
                   header,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color:
                         inAisle
@@ -771,7 +771,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             style: TextStyle(
               color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
-              fontSize: 12,
+              fontSize: 16,
             ),
           ),
         ],
@@ -894,7 +894,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 child: Text(
                   item.storeName!,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color:
                         currentList.isReadOnly
                             ? AppColors.textDisabled
@@ -943,7 +943,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             Text(
               AppLocalizations.of(context)!.readOnly,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 14.5,
                 color: AppColors.accent,
                 fontWeight: FontWeight.w500,
               ),
@@ -1163,7 +1163,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                       ? AppLocalizations.of(context)!.itemExistsInList
                       : AppLocalizations.of(context)!.similarItemExists,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -1202,7 +1202,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 Text(
                   AppLocalizations.of(context)!.whatToDo,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
@@ -1305,7 +1305,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                 Text(
                   'Cette liste a été partagée par ${currentList.sharedBy!.name}',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     color: AppColors.textSecondary,
                     fontStyle: FontStyle.italic,
                   ),

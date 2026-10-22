@@ -191,7 +191,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                       Text(
                         '${l10n.peopleCount} : ',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -313,7 +313,7 @@ class _MealPreviewSheetState extends State<_MealPreviewSheet> {
                   Text(
                     l10n.estimationCoverage(p.priceCoveragePct),
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -333,14 +333,14 @@ class _MealPreviewSheetState extends State<_MealPreviewSheet> {
                             (v) => setState(() => item.suggested = v ?? false),
                         title: Text(
                           '${item.productName} ${_qty(item)}',
-                          style: const TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 16),
                         ),
                         subtitle:
                             item.atHome
                                 ? Text(
                                   '${l10n.alreadyAtHome} — ${l10n.addAnyway} ?',
                                   style: TextStyle(
-                                    fontSize: 11.5,
+                                    fontSize: 14.5,
                                     color: AppColors.primary,
                                   ),
                                 )
@@ -348,7 +348,7 @@ class _MealPreviewSheetState extends State<_MealPreviewSheet> {
                                     ? Text(
                                       '≈ ${item.estimatedPrice!.toStringAsFixed(2)} \$',
                                       style: TextStyle(
-                                        fontSize: 11.5,
+                                        fontSize: 14.5,
                                         color: AppColors.textSecondary,
                                       ),
                                     )

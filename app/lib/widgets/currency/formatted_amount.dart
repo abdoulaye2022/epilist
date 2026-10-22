@@ -326,7 +326,7 @@ class CurrencyIndicator extends StatelessWidget {
                 style:
                     style ??
                     TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.gold,
                       fontWeight: FontWeight.w500,
                     ),

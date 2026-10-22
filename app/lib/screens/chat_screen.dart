@@ -258,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.startConversation,
-            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -329,7 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Text(
                     l10n.deleteMessageConfirmation,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       height: 1.4,
                     ),
@@ -410,7 +410,7 @@ class _MessageBubble extends StatelessWidget {
                         child: Text(
                           message.user!.displayName,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: AppColors.primaryDark,
                           ),
@@ -431,7 +431,7 @@ class _MessageBubble extends StatelessWidget {
                     Text(
                       _formatTime(message.createdAt, context),
                       style: TextStyle(
-                        fontSize: 10.5,
+                        fontSize: 14.5,
                         color:
                             isCurrentUser
                                 ? AppColors.onPrimary.withValues(alpha: 0.7)
@@ -463,7 +463,7 @@ class _MessageBubble extends StatelessWidget {
         initials,
         style: TextStyle(
           color: AppColors.primaryDark,
-          fontSize: 11.5,
+          fontSize: 14.5,
           fontWeight: FontWeight.w700,
         ),
       ),

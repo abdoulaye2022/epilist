@@ -309,7 +309,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
               'Suggestion sélectionnée • ${_selectedSuggestion!.usageInfo}',
               style: TextStyle(
                 color: AppColors.primaryDark,
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -403,7 +403,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
           const Spacer(),
           Text(
             suggestion.usageInfo,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           ),
         ],
       ),
@@ -448,7 +448,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   Widget _buildCurrencyIndicator() {
     // Utiliser le nouveau widget CurrencyIndicator au lieu d'un placeholder fixe
     return const CurrencyIndicator(
-      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
     );
   }
 
@@ -502,7 +502,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                         l10n.selectCategory,
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 4),

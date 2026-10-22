@@ -94,7 +94,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                   Text(
                     l10n.epResetConfirm,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       height: 1.4,
                     ),
@@ -177,7 +177,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                       Text(
                         l10n.visitPageOnlineToCache,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                         textAlign: TextAlign.center,
@@ -268,7 +268,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                             child: Text(
                               AppLocalizations.of(context)!.npEmailsBody,
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 16,
                                 color: AppColors.textSecondary,
                                 height: 1.45,
                               ),
@@ -341,7 +341,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -367,14 +367,14 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
       ),
       value: value,
       onChanged: onChanged,

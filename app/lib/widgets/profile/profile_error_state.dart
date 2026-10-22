@@ -53,7 +53,7 @@ class ProfileErrorState extends StatelessWidget {
                   child: Text(
                     AppLocalizations.of(context)!.connectToLoadProfile,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,

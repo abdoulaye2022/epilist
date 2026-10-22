@@ -139,7 +139,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       l10n.modifyPersonalInformation,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -214,7 +214,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             child: Text(
               l10n.emailCannotBeModified,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),
@@ -264,7 +264,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             ),
             child:
                 isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

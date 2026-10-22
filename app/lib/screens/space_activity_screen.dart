@@ -194,7 +194,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
                             child: Text(
                               text,
                               style: TextStyle(
-                                fontSize: 13.5,
+                                fontSize: 16,
                                 color: AppColors.textPrimary,
                                 height: 1.35,
                               ),
@@ -204,7 +204,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
                           Text(
                             _when(a['created_at'] as String?),
                             style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 14.5,
                               color: AppColors.textDisabled,
                             ),
                           ),

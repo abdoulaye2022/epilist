@@ -235,7 +235,7 @@ class _SuggestionManagementWidgetState
                               : "This action is irreversible",
                           style: TextStyle(
                             color: AppColors.warning,
-                            fontSize: 12,
+                            fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

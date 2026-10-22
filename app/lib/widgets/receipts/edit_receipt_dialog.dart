@@ -288,7 +288,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
                   Text(
                     l10n.purchaseDate,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -356,7 +356,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             child: Text(
               l10n.noChangeDetected,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: AppColors.gold,
                 fontWeight: FontWeight.w500,
               ),
@@ -406,7 +406,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             ),
             child:
                 _isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

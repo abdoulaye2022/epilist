@@ -179,7 +179,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       const SizedBox(height: 2),
       Text(
         l10n.comparisonBasedOn(_windowDays),
-        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
       ),
       const SizedBox(height: AppSpacing.md),
       if (_section == _Section.comparison)
@@ -224,7 +224,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
         ),
         subtitle: Text(
           l10n.knownPricesOn(s.knownItems, s.itemsCount),
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         trailing: FormattedAmount(
           amount: s.estimatedTotal,
@@ -251,14 +251,14 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
                             it.quantity > 1
                                 ? '${it.name} ×${it.quantity}'
                                 : it.name,
-                            style: const TextStyle(fontSize: 13),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                         if (it.price == null)
                           Text(
                             l10n.unknownPrice,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 16,
                               color: AppColors.textDisabled,
                               fontStyle: FontStyle.italic,
                             ),
@@ -269,7 +269,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
                           FormattedAmount(
                             amount: it.price! * it.quantity,
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -296,7 +296,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
         color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
-      child: Text(label, style: TextStyle(fontSize: 10.5, color: color)),
+      child: Text(label, style: TextStyle(fontSize: 14.5, color: color)),
     );
   }
 
@@ -315,7 +315,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
         children: [
           Text(
             '${l10n.maxStoresLabel} : ',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
           for (final n in const [1, 2, 3]) ...[
             const SizedBox(width: AppSpacing.xs),
@@ -342,7 +342,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
               o.singleStoreName!,
               '${o.singleStoreTotal!.toStringAsFixed(2)} \$',
             ),
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ),
 
@@ -351,7 +351,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
           child: Text(
             l10n.notWorthSplitting,
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ),
 
@@ -374,7 +374,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
               Text(
                 l10n.estimatedSaving('${o.saving.toStringAsFixed(2)} \$'),
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryDark,
                 ),
@@ -428,12 +428,12 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
                             it.quantity > 1
                                 ? '${it.name} ×${it.quantity}'
                                 : it.name,
-                            style: const TextStyle(fontSize: 13),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                         FormattedAmount(
                           amount: it.price * it.quantity,
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
@@ -452,7 +452,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
             l10n.estimatedElsewhereNote(
               o.estimatedElsewhere.map((e) => e.name).join(', '),
             ),
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ),
     ];
@@ -472,7 +472,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ],
       ),

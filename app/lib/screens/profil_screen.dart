@@ -359,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Text(
                             '${currentCurrency.name} (${currentCurrency.code.toUpperCase()})',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 16,
                               color: AppColors.textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
@@ -458,12 +458,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   l10n.twoFactorSettingHint,
-                  style: const TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   l10n.twoFactorPasswordPrompt,
-                  style: const TextStyle(fontSize: 12.5),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 8),
                 TextField(

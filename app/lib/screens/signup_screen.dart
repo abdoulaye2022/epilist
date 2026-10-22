@@ -295,7 +295,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               icon:
                   _isAppleLoading
-                      ?  SizedBox(
+                      ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
@@ -321,7 +321,7 @@ class _SignUpPageState extends State<SignUpPage> {
         Text(
           l10n.ssoSignupDisclaimer,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 16,
             color: AppColors.textSecondary,
             height: 1.3,
           ),
@@ -342,7 +342,7 @@ class _SignUpPageState extends State<SignUpPage> {
             l10n.or,
             style: TextStyle(
               color: AppColors.textDisabled,
-              fontSize: 13,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -477,7 +477,7 @@ class _SignUpPageState extends State<SignUpPage> {
               onPressed: (_isLoading || !_acceptTerms) ? null : _signUp,
               child:
                   _isLoading
-                      ?  SizedBox(
+                      ? SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -539,7 +539,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: RichText(
               text: TextSpan(
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color:
                       _isLoading
                           ? AppColors.textDisabled
@@ -592,13 +592,17 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           child: Row(
             children: [
-              Icon(Icons.email_outlined, color: AppColors.primaryDark, size: 18),
+              Icon(
+                Icons.email_outlined,
+                color: AppColors.primaryDark,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.afterRegistrationEmailVerification,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 16,
                     color: AppColors.primaryDark,
                     fontWeight: FontWeight.w500,
                   ),

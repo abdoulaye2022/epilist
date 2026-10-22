@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: _anyLoading ? null : _login,
               child:
                   _isLoading
-                      ?  SizedBox(
+                      ? SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
             l10n.or,
             style: TextStyle(
               color: AppColors.textDisabled,
-              fontSize: 13,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -271,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               icon:
                   _isAppleLoading
-                      ?  SizedBox(
+                      ? SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
@@ -303,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             l10n.dontHaveAccount,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           ),
         ),
         TextButton(

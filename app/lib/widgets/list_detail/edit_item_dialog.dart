@@ -244,7 +244,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
               'Suggestion sélectionnée • ${_selectedSuggestion!.usageInfo}',
               style: TextStyle(
                 color: AppColors.accent,
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -336,7 +336,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
           const Spacer(),
           Text(
             suggestion.usageInfo,
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           ),
         ],
       ),
@@ -381,7 +381,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
   Widget _buildCurrencyIndicator() {
     // Utiliser le nouveau widget CurrencyIndicator au lieu d'un placeholder fixe
     return const CurrencyIndicator(
-      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
     );
   }
 
@@ -552,7 +552,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                         l10n.selectCategory,
                         style: TextStyle(
                           color: AppColors.textSecondary,
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -768,7 +768,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
         Expanded(
           child: Text(
             hasPhoto ? l10n.productPhoto : l10n.addPhoto,
-            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
           ),
         ),
       ],

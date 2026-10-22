@@ -73,7 +73,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
       l10n.manageAccountSecurity,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -145,7 +145,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 12, color: AppTint.ink(color)),
+                    style: TextStyle(fontSize: 16, color: AppTint.ink(color)),
                   ),
                 ],
               ),
@@ -335,7 +335,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           : l10n.verificationCodeWillBeSent,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -444,7 +444,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   ? l10n.passwordMustBeSixCharacters
                   : l10n.youWillReceiveVerificationCode,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 color: _showCodeStep ? AppColors.primaryDark : AppColors.accent,
                 fontWeight: FontWeight.w500,
               ),
@@ -498,7 +498,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             ),
             child:
                 isLoading
-                    ?  SizedBox(
+                    ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

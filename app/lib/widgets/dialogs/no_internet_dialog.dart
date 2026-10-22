@@ -141,11 +141,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                 color: AppColors.error,
                 shape: BoxShape.circle,
               ),
-              child:  Icon(
-                Icons.close,
-                size: 14,
-                color: AppColors.onPrimary,
-              ),
+              child: Icon(Icons.close, size: 14, color: AppColors.onPrimary),
             ),
           ),
         ],
@@ -170,7 +166,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       l10n.noInternetMessage,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -227,7 +223,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               color: AppColors.accent,
               height: 1.3,
             ),
@@ -254,7 +250,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
         ),
         child:
             _isChecking
-                ?  SizedBox(
+                ? SizedBox(
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(

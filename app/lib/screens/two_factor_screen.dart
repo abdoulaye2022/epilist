@@ -135,7 +135,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 l10n.twoFactorSentTo(widget.email),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: AppColors.textSecondary,
                   height: 1.4,
                 ),
@@ -169,7 +169,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
               Text(
                 l10n.twoFactorExpires,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
+                style: TextStyle(fontSize: 16, color: AppColors.textDisabled),
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
@@ -184,7 +184,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 ),
                 child:
                     _loading
-                        ?  SizedBox(
+                        ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

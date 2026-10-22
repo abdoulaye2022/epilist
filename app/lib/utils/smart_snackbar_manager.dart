@@ -235,9 +235,9 @@ class SmartSnackBarManager {
                 Expanded(
                   child: Text(
                     message,
-                    style:  TextStyle(
+                    style: TextStyle(
                       color: AppColors.onPrimary,
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

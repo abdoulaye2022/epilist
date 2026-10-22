@@ -67,7 +67,7 @@ class LanguageSelector extends StatelessWidget {
                         Text(
                           l10n.choosePreferredLanguage,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             color: AppColors.primary,
                           ),
                         ),
@@ -355,7 +355,7 @@ class LanguageSelectorDialog {
                               ),
                             ],
                           ),
-                          child:  Icon(
+                          child: Icon(
                             Icons.language_rounded,
                             color: AppColors.onPrimary,
                             size: 28,
@@ -374,7 +374,7 @@ class LanguageSelectorDialog {
                         Text(
                           l10n.choosePreferredLanguage,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                           textAlign: TextAlign.center,
@@ -478,7 +478,7 @@ class CurrentLanguageIndicator extends StatelessWidget {
                     Text(
                       label,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

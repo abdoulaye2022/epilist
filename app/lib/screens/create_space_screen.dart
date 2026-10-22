@@ -127,7 +127,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
               Text(
                 l10n.spaceOptionalInfo,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
                 ),
@@ -200,7 +200,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
               Text(
                 l10n.spacePhase1Note,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppColors.textDisabled),
+                style: TextStyle(fontSize: 16, color: AppColors.textDisabled),
               ),
             ],
           ],
@@ -244,7 +244,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                   Text(
                     desc,
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 16,
                       color: AppColors.textSecondary,
                       height: 1.3,
                     ),

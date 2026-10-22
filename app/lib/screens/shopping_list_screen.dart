@@ -317,7 +317,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.tryAnotherFilter,
-              style: TextStyle(fontSize: 14, color: AppColors.textDisabled),
+              style: TextStyle(fontSize: 16, color: AppColors.textDisabled),
             ),
           ],
         ),

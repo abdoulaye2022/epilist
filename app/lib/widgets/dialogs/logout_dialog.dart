@@ -71,7 +71,7 @@ class LogoutDialog extends StatelessWidget {
       l10n.confirmLogoutMessage,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -140,7 +140,7 @@ class LogoutDialog extends StatelessWidget {
                 onPressed: isLoading ? null : () => _logout(context),
                 icon:
                     isLoading
-                        ?  SizedBox(
+                        ? SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(

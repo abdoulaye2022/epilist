@@ -102,7 +102,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       message,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 13.5,
+        fontSize: 16,
         color: AppColors.textSecondary,
         height: 1.4,
       ),
@@ -128,7 +128,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
               Text(
                 l10n.itemToAdd, // ✅ TRADUIT
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.accent,
                 ),
@@ -162,7 +162,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
             child: Text(
               '$label:',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 16,
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
@@ -172,7 +172,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 16,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w500,
               ),
@@ -215,7 +215,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 child: Text(
                   l10n.similarItemsFound, // ✅ TRADUIT
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,
                   ),
@@ -269,7 +269,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
             Text(
               '${duplicate.similarityScore}%',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 14.5,
                 fontWeight: FontWeight.bold,
                 color: matchColor,
               ),
@@ -279,7 +279,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       ),
       title: Text(
         duplicate.productName,
-        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +294,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
           if (duplicate.storeName != null && duplicate.storeName!.isNotEmpty)
             Text(
               duplicate.storeName!,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
             ),
         ],
       ),
@@ -310,7 +310,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 child: Text(
                   l10n.identical, // ✅ TRADUIT
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.errorInk,
                   ),
@@ -326,7 +326,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 child: Text(
                   l10n.similar, // ✅ TRADUIT
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 14.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.warningInk,
                   ),

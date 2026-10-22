@@ -180,7 +180,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                             child: Text(
                               suggestion!,
                               style: TextStyle(
-                                fontSize: 12.5,
+                                fontSize: 16,
                                 color: AppColors.textSecondary,
                               ),
                             ),

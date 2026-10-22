@@ -81,9 +81,9 @@ class _NetworkStatusIndicatorState extends State<NetworkStatusIndicator> {
               _isConnected
                   ? l10n.connectionRestored
                   : l10n.offlineModeModificationsWillSync,
-              style:  TextStyle(
+              style: TextStyle(
                 color: AppColors.onPrimary,
-                fontSize: 13,
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
               maxLines: 2,
@@ -143,9 +143,9 @@ class _NetworkStatusBadgeState extends State<NetworkStatusBadge> {
           const SizedBox(width: 4),
           Text(
             l10n.offline,
-            style:  TextStyle(
+            style: TextStyle(
               color: AppColors.onPrimary,
-              fontSize: 11,
+              fontSize: 14.5,
               fontWeight: FontWeight.w600,
             ),
           ),

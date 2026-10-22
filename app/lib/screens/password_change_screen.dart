@@ -156,7 +156,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           ? l10n.enterCodeAndNewPassword
                           : l10n.enterEmailForVerificationCode,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
@@ -196,7 +196,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             : l10n.sendingCode,
                         style: TextStyle(
                           color: AppColors.accent,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -383,7 +383,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             ? l10n.codeExpiresInTwoHours
                             : l10n.verificationCodeWillBeSent,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.accent,
                           fontWeight: FontWeight.w500,
                           height: 1.5,

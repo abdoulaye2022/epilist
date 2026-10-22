@@ -173,7 +173,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                               l10n.selectIcon,
                               style: TextStyle(
                                 color: AppColors.textSecondary,
-                                fontSize: 12,
+                                fontSize: 16,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -241,7 +241,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                               l10n.selectColor,
                               style: TextStyle(
                                 color: AppColors.textSecondary,
-                                fontSize: 12,
+                                fontSize: 16,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -327,7 +327,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         ),
                         child:
                             isLoading
-                                ?  SizedBox(
+                                ? SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(

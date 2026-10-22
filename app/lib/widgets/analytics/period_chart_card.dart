@@ -667,7 +667,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       return Center(
         child: Text(
           l10n.noDataAvailable,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
           textAlign: TextAlign.center,
         ),
       );
@@ -693,7 +693,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
             const SizedBox(height: 12),
             Text(
               l10n.noSpendingRecorded,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
               textAlign: TextAlign.center,
             ),
           ],
@@ -756,7 +756,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                         child: Text(
                           label,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                             fontWeight:
                                 value > 0 ? FontWeight.w700 : FontWeight.normal,
@@ -794,7 +794,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -860,7 +860,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               Text(
                 AppLocalizations.of(context)!.periodInfo,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.accent,
                 ),
@@ -874,7 +874,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
               const SizedBox(width: 6),
               Text(
                 'Périodes avec données: $periodsWithData/${periodData.length}',
-                style: const TextStyle(fontSize: 11),
+                style: const TextStyle(fontSize: 14.5),
               ),
             ],
           ),

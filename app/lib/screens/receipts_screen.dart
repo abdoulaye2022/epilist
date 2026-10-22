@@ -291,11 +291,11 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           indicatorColor: AppColors.primary,
           indicatorWeight: 2.5,
           labelStyle: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
           unselectedLabelStyle: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
           onTap: _onTabChanged,
@@ -544,7 +544,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     child: Text(
                       l10n.addFirstReceipt,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,
@@ -615,7 +615,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     child: Text(
                       message,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
                       textAlign: TextAlign.center,

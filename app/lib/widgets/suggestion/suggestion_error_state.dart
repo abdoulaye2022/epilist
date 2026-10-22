@@ -81,7 +81,7 @@ class SuggestionErrorState extends StatelessWidget {
       message,
       style: TextStyle(
         color: AppColors.textSecondary,
-        fontSize: 14,
+        fontSize: 16,
         height: 1.4,
       ),
       textAlign: TextAlign.center,

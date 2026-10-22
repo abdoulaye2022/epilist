@@ -64,7 +64,11 @@ class _AccountDeletionStatusWidgetState
         children: [
           Row(
             children: [
-              Icon(Icons.schedule_outlined, color: AppColors.warningInk, size: 24),
+              Icon(
+                Icons.schedule_outlined,
+                color: AppColors.warningInk,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -84,7 +88,7 @@ class _AccountDeletionStatusWidgetState
           if (status.deletionEffectiveDate != null) ...[
             Text(
               l10n.accountWillBeDeleted(status.formattedDeletionDate),
-              style: TextStyle(color: AppColors.warning, fontSize: 14),
+              style: TextStyle(color: AppColors.warning, fontSize: 16),
             ),
 
             if (status.daysRemaining != null) ...[
@@ -96,7 +100,7 @@ class _AccountDeletionStatusWidgetState
                 ),
                 style: TextStyle(
                   color: AppColors.warning,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -109,7 +113,7 @@ class _AccountDeletionStatusWidgetState
               l10n.reason(status.deletionReason!),
               style: TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: 12,
+                fontSize: 16,
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -144,14 +148,18 @@ class _AccountDeletionStatusWidgetState
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber, color: AppColors.errorInk, size: 20),
+                  Icon(
+                    Icons.warning_amber,
+                    color: AppColors.errorInk,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.cancellationPeriodExpired,
                       style: TextStyle(
                         color: AppColors.error,
-                        fontSize: 12,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

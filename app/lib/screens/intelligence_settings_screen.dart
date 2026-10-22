@@ -94,7 +94,7 @@ class _IntelligenceSettingsScreenState
         ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
         ),
         value: value,
         onChanged: (v) {
@@ -163,7 +163,7 @@ class _IntelligenceSettingsScreenState
                         subtitle: Text(
                           l10n.communityShareHint,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
                           ),
                         ),
