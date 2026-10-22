@@ -1,5 +1,6 @@
 // services/notification_service.dart - VERSION OPTIMISÉE POUR LOGIN UNIQUEMENT
 
+import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/chat/chat_bloc.dart';
 import 'package:epilist/config/app_navigator.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -230,7 +231,9 @@ class NotificationService {
           Duration(seconds: Platform.isAndroid ? 15 : 20),
           onTimeout: () {
             if (kDebugMode) {
-              debugPrint('⏰ [EPILIST] Token request timeout on attempt $attempt');
+              debugPrint(
+                '⏰ [EPILIST] Token request timeout on attempt $attempt',
+              );
             }
             return null;
           },
@@ -241,7 +244,9 @@ class NotificationService {
           await _saveTokenToPreferences(token);
 
           if (kDebugMode) {
-            debugPrint('✅ [EPILIST] FCM token obtained: ${token.substring(0, 20)}...');
+            debugPrint(
+              '✅ [EPILIST] FCM token obtained: ${token.substring(0, 20)}...',
+            );
             debugPrint('📱 [EPILIST] Full token length: ${token.length}');
           }
 
@@ -256,22 +261,30 @@ class NotificationService {
             // Attendre 3 secondes avant d'enregistrer pour ne pas bloquer le démarrage
             Future.delayed(const Duration(seconds: 3), () {
               // ignore: unawaited_futures
-              _registerDeviceWithToken().then((_) {
-                if (kDebugMode) {
-                  debugPrint('✅ [EPILIST] Device registration completed in background');
-                }
-              }).catchError((e) {
-                if (kDebugMode) {
-                  debugPrint('⚠️ [EPILIST] Background device registration failed: $e');
-                }
-                // Réessayer dans 60 secondes
-                Future.delayed(const Duration(seconds: 60), () {
-                  _registerDeviceWithToken();
-                });
-              });
+              _registerDeviceWithToken()
+                  .then((_) {
+                    if (kDebugMode) {
+                      debugPrint(
+                        '✅ [EPILIST] Device registration completed in background',
+                      );
+                    }
+                  })
+                  .catchError((e) {
+                    if (kDebugMode) {
+                      debugPrint(
+                        '⚠️ [EPILIST] Background device registration failed: $e',
+                      );
+                    }
+                    // Réessayer dans 60 secondes
+                    Future.delayed(const Duration(seconds: 60), () {
+                      _registerDeviceWithToken();
+                    });
+                  });
             });
             if (kDebugMode) {
-              debugPrint('⏰ [EPILIST] Device registration scheduled in 3 seconds');
+              debugPrint(
+                '⏰ [EPILIST] Device registration scheduled in 3 seconds',
+              );
             }
           } else {
             if (kDebugMode) {
@@ -295,7 +308,9 @@ class NotificationService {
 
         if (e.toString().contains('apns-token-not-set')) {
           if (kDebugMode) {
-            debugPrint('ℹ️ [EPILIST] APNS token not set, this is normal for Android');
+            debugPrint(
+              'ℹ️ [EPILIST] APNS token not set, this is normal for Android',
+            );
           }
           if (attempt == maxAttempts) {
             break;
@@ -306,14 +321,18 @@ class NotificationService {
       if (attempt < maxAttempts) {
         final delay = Duration(milliseconds: Platform.isAndroid ? 2000 : 3000);
         if (kDebugMode) {
-          debugPrint('⏳ [EPILIST] Waiting ${delay.inMilliseconds}ms before retry...');
+          debugPrint(
+            '⏳ [EPILIST] Waiting ${delay.inMilliseconds}ms before retry...',
+          );
         }
         await Future.delayed(delay);
       }
     }
 
     if (kDebugMode) {
-      debugPrint('❌ [EPILIST] Failed to get FCM token after $maxAttempts attempts');
+      debugPrint(
+        '❌ [EPILIST] Failed to get FCM token after $maxAttempts attempts',
+      );
     }
   }
 
@@ -428,7 +447,9 @@ class NotificationService {
 
       if (authToken == null) {
         if (kDebugMode) {
-          debugPrint('⚠️ [EPILIST] No auth token, skipping device registration');
+          debugPrint(
+            '⚠️ [EPILIST] No auth token, skipping device registration',
+          );
         }
         return;
       }
@@ -445,7 +466,9 @@ class NotificationService {
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       dio.options.headers['Content-Type'] = 'application/json';
       dio.options.connectTimeout = const Duration(seconds: 20);
-      dio.options.receiveTimeout = const Duration(seconds: 45); // aligne sur main.dart
+      dio.options.receiveTimeout = const Duration(
+        seconds: 45,
+      ); // aligne sur main.dart
       dio.options.sendTimeout = const Duration(seconds: 20);
 
       final deviceData = {
@@ -469,7 +492,9 @@ class NotificationService {
       final response = await dio.post('/devices/register', data: deviceData);
 
       if (kDebugMode) {
-        debugPrint('📡 [EPILIST] Registration response: ${response.statusCode}');
+        debugPrint(
+          '📡 [EPILIST] Registration response: ${response.statusCode}',
+        );
         debugPrint('📡 [EPILIST] Response data: ${response.data}');
       }
 
@@ -482,13 +507,17 @@ class NotificationService {
         }
       } else {
         if (kDebugMode) {
-          debugPrint('⚠️ [EPILIST] Unexpected response code: ${response.statusCode}');
+          debugPrint(
+            '⚠️ [EPILIST] Unexpected response code: ${response.statusCode}',
+          );
         }
       }
     } on DioException catch (e) {
       if (kDebugMode) {
         if (e.type == DioExceptionType.receiveTimeout) {
-          debugPrint('⏱️ [EPILIST] Device registration timeout - Server is slow, will retry later');
+          debugPrint(
+            '⏱️ [EPILIST] Device registration timeout - Server is slow, will retry later',
+          );
         } else if (e.type == DioExceptionType.connectionTimeout) {
           debugPrint('⏱️ [EPILIST] Connection timeout - Network is slow');
         } else if (e.type == DioExceptionType.connectionError) {
@@ -598,7 +627,9 @@ class NotificationService {
         // Vérifier les permissions des notifications
         final isGranted = await Permission.notification.isGranted;
         if (kDebugMode) {
-          debugPrint('🤖 [EPILIST] Notification permission granted: $isGranted');
+          debugPrint(
+            '🤖 [EPILIST] Notification permission granted: $isGranted',
+          );
         }
       }
     } catch (e) {
@@ -633,7 +664,9 @@ class NotificationService {
       );
 
       if (kDebugMode) {
-        debugPrint('🔔 [EPILIST] Local notifications initialized: $initialized');
+        debugPrint(
+          '🔔 [EPILIST] Local notifications initialized: $initialized',
+        );
       }
 
       if (Platform.isAndroid) {
@@ -666,50 +699,50 @@ class NotificationService {
       }
 
       final channels = [
-        const AndroidNotificationChannel(
+        AndroidNotificationChannel(
           _channelGeneral,
           'Général',
           description: 'Notifications générales',
           importance: Importance.defaultImportance,
           enableVibration: true,
           enableLights: true,
-          ledColor: Color(0xFF4CAF50),
+          ledColor: AppPalette.light.primary,
         ),
-        const AndroidNotificationChannel(
+        AndroidNotificationChannel(
           _channelBudgetAlerts,
           'Alertes Budget',
           description: 'Notifications de budget',
           importance: Importance.high,
           enableVibration: true,
           enableLights: true,
-          ledColor: Color(0xFFFF5722),
+          ledColor: AppPalette.light.warning,
         ),
-        const AndroidNotificationChannel(
+        AndroidNotificationChannel(
           _channelListUpdates,
           'Mises à jour de listes',
           description: 'Notifications de listes partagées',
           importance: Importance.defaultImportance,
           enableVibration: true,
           enableLights: true,
-          ledColor: Color(0xFF2196F3),
+          ledColor: AppPalette.light.accent,
         ),
-        const AndroidNotificationChannel(
+        AndroidNotificationChannel(
           _channelMessages,
           'Messages',
           description: 'Notifications de nouveaux messages',
           importance: Importance.high,
           enableVibration: true,
           enableLights: true,
-          ledColor: Color(0xFF9C27B0),
+          ledColor: AppPalette.light.primaryVivid,
         ),
-        const AndroidNotificationChannel(
+        AndroidNotificationChannel(
           _channelReminders,
           'Rappels',
           description: 'Rappels et alertes importantes',
           importance: Importance.high,
           enableVibration: true,
           enableLights: true,
-          ledColor: Color(0xFFFFC107),
+          ledColor: AppPalette.light.gold,
         ),
       ];
 
@@ -760,17 +793,17 @@ class NotificationService {
         return;
       }
 
-      const androidDetails = AndroidNotificationDetails(
+      final androidDetails = AndroidNotificationDetails(
         _channelGeneral,
         'Général',
         channelDescription: 'Notifications générales',
         importance: Importance.high,
         priority: Priority.high,
         icon: '@mipmap/ic_launcher',
-        color: Color(0xFF4CAF50),
+        color: AppPalette.light.primary,
         enableVibration: true,
         enableLights: true,
-        ledColor: Color(0xFF4CAF50),
+        ledColor: AppPalette.light.primary,
         ledOnMs: 1000,
         ledOffMs: 500,
         playSound: true,
@@ -782,7 +815,7 @@ class NotificationService {
         presentSound: true,
       );
 
-      const details = NotificationDetails(
+      final details = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
@@ -800,7 +833,9 @@ class NotificationService {
       );
 
       if (kDebugMode) {
-        debugPrint('✅ [EPILIST] Local notification shown with ID: $notificationId');
+        debugPrint(
+          '✅ [EPILIST] Local notification shown with ID: $notificationId',
+        );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -859,7 +894,9 @@ class NotificationService {
           '🔍 [EPILIST] - Registered: $isRegistered (type: ${registeredValue?.runtimeType})',
         );
         debugPrint('🔍 [EPILIST] - Token match: ${lastToken == _currentToken}');
-        debugPrint('🔍 [EPILIST] - Current token present: ${_currentToken != null}');
+        debugPrint(
+          '🔍 [EPILIST] - Current token present: ${_currentToken != null}',
+        );
       }
 
       return result;
@@ -873,7 +910,9 @@ class NotificationService {
         await prefs.remove('last_registered_token');
       } catch (cleanupError) {
         if (kDebugMode) {
-          debugPrint('❌ [EPILIST] Error cleaning up preferences: $cleanupError');
+          debugPrint(
+            '❌ [EPILIST] Error cleaning up preferences: $cleanupError',
+          );
         }
       }
       return false;
@@ -888,7 +927,9 @@ class NotificationService {
 
     if (_currentToken == null || _currentToken!.isEmpty) {
       if (kDebugMode) {
-        debugPrint('⚠️ [EPILIST] No FCM token available for registration after login');
+        debugPrint(
+          '⚠️ [EPILIST] No FCM token available for registration after login',
+        );
       }
       return;
     }
@@ -949,11 +990,12 @@ class NotificationService {
       if (deviceId == null || deviceId.isEmpty) return;
       if (token == null || token.isEmpty) return;
 
-      final dio = Dio()
-        ..options.baseUrl = AppConfig.baseUrl
-        ..options.headers['Authorization'] = 'Bearer $token'
-        ..options.connectTimeout = const Duration(seconds: 8)
-        ..options.receiveTimeout = const Duration(seconds: 8);
+      final dio =
+          Dio()
+            ..options.baseUrl = AppConfig.baseUrl
+            ..options.headers['Authorization'] = 'Bearer $token'
+            ..options.connectTimeout = const Duration(seconds: 8)
+            ..options.receiveTimeout = const Duration(seconds: 8);
 
       await dio.post('/devices/deactivate', data: {'device_id': deviceId});
       if (kDebugMode) {
@@ -1090,7 +1132,9 @@ class NotificationService {
     NotificationResponse response,
   ) async {
     if (kDebugMode) {
-      debugPrint('👆 [EPILIST] Notification locale touchée: ${response.payload}');
+      debugPrint(
+        '👆 [EPILIST] Notification locale touchée: ${response.payload}',
+      );
     }
     try {
       if (response.payload == null) return;
@@ -1142,7 +1186,8 @@ class NotificationService {
         return;
       }
 
-      final opensList = action == 'open_list' ||
+      final opensList =
+          action == 'open_list' ||
           action == 'add_receipt' ||
           type == 'list_updated' ||
           type == 'list_shared' ||
@@ -1153,14 +1198,14 @@ class NotificationService {
       }
 
       if (type.startsWith('budget')) {
-        navigator.push(
-            MaterialPageRoute(builder: (_) => const BudgetScreen()));
+        navigator.push(MaterialPageRoute(builder: (_) => const BudgetScreen()));
         return;
       }
 
       if (type == 'price_alert') {
         navigator.push(
-            MaterialPageRoute(builder: (_) => const PriceAlertsScreen()));
+          MaterialPageRoute(builder: (_) => const PriceAlertsScreen()),
+        );
         return;
       }
 
@@ -1183,16 +1228,18 @@ class NotificationService {
     String listName,
   ) async {
     final token = await authService.getToken();
-    final dio = Dio()
-      ..options.baseUrl = AppConfig.baseUrl
-      ..options.headers['Authorization'] = 'Bearer $token';
+    final dio =
+        Dio()
+          ..options.baseUrl = AppConfig.baseUrl
+          ..options.headers['Authorization'] = 'Bearer $token';
 
     navigator.push(
       MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (_) => ChatBloc(chatService: ChatService(dio: dio)),
-          child: ChatScreen(listId: listId, listName: listName),
-        ),
+        builder:
+            (_) => BlocProvider(
+              create: (_) => ChatBloc(chatService: ChatService(dio: dio)),
+              child: ChatScreen(listId: listId, listName: listName),
+            ),
       ),
     );
   }
@@ -1220,7 +1267,9 @@ class NotificationService {
 @pragma('vm:entry-point')
 Future<void> _handleBackgroundMessage(RemoteMessage message) async {
   if (kDebugMode) {
-    debugPrint('📨 [EPILIST] Background message: ${message.notification?.title}');
+    debugPrint(
+      '📨 [EPILIST] Background message: ${message.notification?.title}',
+    );
   }
   // Handle background messages
 }

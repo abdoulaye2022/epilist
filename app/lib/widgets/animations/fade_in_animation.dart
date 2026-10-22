@@ -214,15 +214,19 @@ class StaggeredListAnimation extends StatelessWidget {
 class ShimmerAnimation extends StatefulWidget {
   final Widget child;
   final Duration duration;
-  final Color baseColor;
-  final Color highlightColor;
+
+  /// Nulles par defaut : les gris en dur #E0E0E0 et #F5F5F5 restaient
+  /// gris en mode sombre, et ne font pas partie des sept couleurs de la
+  /// planche. La teinte vient donc du theme, au moment du rendu.
+  final Color? baseColor;
+  final Color? highlightColor;
 
   const ShimmerAnimation({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 1500),
-    this.baseColor = const Color(0xFFE0E0E0),
-    this.highlightColor = const Color(0xFFF5F5F5),
+    this.baseColor,
+    this.highlightColor,
   });
 
   @override
@@ -257,9 +261,9 @@ class _ShimmerAnimationState extends State<ShimmerAnimation>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                widget.baseColor,
-                widget.highlightColor,
-                widget.baseColor,
+                widget.baseColor ?? AppColors.surfaceAlt,
+                widget.highlightColor ?? AppColors.surface,
+                widget.baseColor ?? AppColors.surfaceAlt,
               ],
               stops:
                   [

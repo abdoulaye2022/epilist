@@ -1,4 +1,5 @@
 // widgets/budget/budget_summary_card.dart - VERSION COMPLETE AVEC FormattedAmount
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -218,19 +219,15 @@ class BudgetSummaryCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        LinearProgressIndicator(
-                          value:
+                        AppGauge(
+                          ratio:
                               totalBudgeted! > 0
-                                  ? (totalSpent! / totalBudgeted!).clamp(
-                                    0.0,
-                                    1.0,
-                                  )
+                                  ? totalSpent! / totalBudgeted!
                                   : 0.0,
-                          backgroundColor: AppColors.border,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            _getSpentColor(),
+                          color: _getSpentColor(),
+                          label: l10n.budgetGaugePercent(
+                            _getSpentPercentage().toStringAsFixed(0),
                           ),
-                          minHeight: 8,
                         ),
                       ],
                     ),

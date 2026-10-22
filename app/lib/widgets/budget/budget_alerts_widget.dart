@@ -1,4 +1,5 @@
 // widgets/budget/budget_alerts_widget.dart - VERSION COMPLETE AVEC FormattedAmount
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/models/budget.dart';
@@ -151,11 +152,12 @@ class BudgetAlertsWidget extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(
-                    value: (budget.spentPercentage / 100).clamp(0.0, 1.0),
-                    backgroundColor: AppColors.border,
-                    valueColor: AlwaysStoppedAnimation<Color>(_getAlertColor()),
-                    minHeight: 6,
+                  AppGauge(
+                    ratio: budget.spentPercentage / 100,
+                    color: _getAlertColor(),
+                    label: l10n.budgetGaugePercent(
+                      budget.spentPercentage.toStringAsFixed(0),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Row(

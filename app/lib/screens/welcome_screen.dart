@@ -163,7 +163,7 @@ class WelcomeScreen extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: const Color(0xFFEFF1EF),
+            color: AppColors.surfaceAlt,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Row(

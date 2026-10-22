@@ -3319,5 +3319,16 @@
       }
     }
   },
-  "priceHistoryButton": "Voir l'historique du prix"
+  "priceHistoryButton": "Voir l'historique du prix",
+  "budgetDaysGaugeLabel": "Jour {elapsed} sur {total} de la période.",
+  "@budgetDaysGaugeLabel": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1,6 +1,7 @@
 // widgets/dashboard/dashboard_widgets.dart
 // Briques visuelles du tableau de bord d'accueil : carte budget du mois,
 // cartes de listes horizontales, actions rapides, tuiles de navigation.
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/models/shopping_list.dart';
@@ -170,17 +171,14 @@ class BudgetMonthCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: ratio,
-                    minHeight: 8,
-                    backgroundColor: AppColors.onBrandBand.withValues(
-                      alpha: 0.18,
-                    ),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      over ? const Color(0xFFFFB4A9) : const Color(0xFF9BE7A0),
-                    ),
+                // Les deux couleurs etaient ecrites en dur (#FFB4A9,
+                // #9BE7A0) : hors des sept couleurs de la planche, et
+                // figees en mode sombre.
+                child: AppGauge(
+                  ratio: ratio,
+                  color: over ? AppColors.error : AppColors.primaryVivid,
+                  label: l10n.budgetGaugePercent(
+                    (ratio * 100).toStringAsFixed(0),
                   ),
                 ),
               ),
@@ -411,16 +409,9 @@ class DashboardListCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: list.progress,
-                    minHeight: 5,
-                    backgroundColor: AppColors.background,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
-                    ),
-                  ),
+                AppGauge(
+                  ratio: list.progress,
+                  label: l10n.listCheckedSentence(done, total),
                 ),
               ],
             ),

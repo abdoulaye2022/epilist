@@ -242,7 +242,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
 
   (Color, String) _statusStyle(String status, AppLocalizations l10n) =>
       switch (status) {
-        'pending' => (const Color(0xFFB45309), l10n.prStatusPending),
+        'pending' => (AppColors.warningInk, l10n.prStatusPending),
         'approved' => (AppColors.primaryDark, l10n.prStatusApproved),
         'rejected' => (AppColors.error, l10n.prStatusRejected),
         'purchased' => (AppColors.textSecondary, l10n.prStatusPurchased),

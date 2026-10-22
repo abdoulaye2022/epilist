@@ -11940,6 +11940,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Voir l\'historique du prix'**
   String get priceHistoryButton;
+
+  /// No description provided for @budgetDaysGaugeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour {elapsed} sur {total} de la période.'**
+  String budgetDaysGaugeLabel(String elapsed, String total);
 }
 
 class _AppLocalizationsDelegate

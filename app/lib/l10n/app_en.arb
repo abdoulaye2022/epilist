@@ -3319,5 +3319,16 @@
       }
     }
   },
-  "priceHistoryButton": "See the price history"
+  "priceHistoryButton": "See the price history",
+  "budgetDaysGaugeLabel": "Day {elapsed} of {total} in the period.",
+  "@budgetDaysGaugeLabel": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  }
 }

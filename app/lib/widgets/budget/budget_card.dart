@@ -694,16 +694,18 @@ class BudgetSummaryCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    LinearProgressIndicator(
-                      value:
+                    AppGauge(
+                      ratio:
                           totalBudgeted! > 0
-                              ? (totalSpent! / totalBudgeted!).clamp(0.0, 1.0)
+                              ? totalSpent! / totalBudgeted!
                               : 0.0,
-                      backgroundColor: AppColors.border,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _getSpentColor(),
+                      color: _getSpentColor(),
+                      label: l10n.budgetGaugePercent(
+                        totalBudgeted! > 0
+                            ? (totalSpent! / totalBudgeted! * 100)
+                                .toStringAsFixed(0)
+                            : '0',
                       ),
-                      minHeight: 8,
                     ),
                   ],
                 ),

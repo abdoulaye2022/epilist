@@ -6626,4 +6626,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get priceHistoryButton => 'Voir l\'historique du prix';
+
+  @override
+  String budgetDaysGaugeLabel(String elapsed, String total) {
+    return 'Jour $elapsed sur $total de la période.';
+  }
 }

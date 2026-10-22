@@ -85,7 +85,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               final verdict = result?['verdict'] as String?;
               final (verdictLabel, verdictColor) = switch (verdict) {
                 'good' => (l10n.priceCheckGood, AppColors.primaryDark),
-                'fair' => (l10n.priceCheckFair, const Color(0xFFB45309)),
+                'fair' => (l10n.priceCheckFair, AppColors.warningInk),
                 'high' => (l10n.priceCheckHigh, AppColors.error),
                 'unknown' => (l10n.priceCheckUnknown, AppColors.textSecondary),
                 _ => ('', AppColors.textSecondary),
@@ -509,7 +509,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
   Widget _statusChip(String status, bool belowMin, AppLocalizations l10n) {
     final (label, color) = switch (status) {
       'overdue' => (l10n.statusOverdue, AppColors.error),
-      'likely_needed' => (l10n.statusLikelyNeeded, const Color(0xFFB45309)),
+      'likely_needed' => (l10n.statusLikelyNeeded, AppColors.warningInk),
       _ => (l10n.statusSoon, AppColors.primaryDark),
     };
     return Container(

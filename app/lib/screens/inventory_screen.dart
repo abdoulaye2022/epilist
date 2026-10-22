@@ -508,7 +508,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: first ? const Color(0x00000000) : AppColors.primaryLight,
+            color: first ? Colors.transparent : AppColors.primaryLight,
             width: 2,
           ),
         ),

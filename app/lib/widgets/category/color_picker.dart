@@ -15,74 +15,19 @@ class ColorPickerDialog extends StatefulWidget {
 class _ColorPickerDialogState extends State<ColorPickerDialog> {
   late Color _selectedColor;
 
-  // Palette de couleurs prédéfinies
-  final List<Color> _predefinedColors = [
-    // Verts
-    const Color(0xFF4CAF50),
-    const Color(0xFF8BC34A),
-    const Color(0xFFCDDC39),
-    const Color(0xFF009688),
-
-    // Bleus
-    const Color(0xFF2196F3),
-    const Color(0xFF03A9F4),
-    const Color(0xFF00BCD4),
-    const Color(0xFF3F51B5),
-
-    // Rouges
-    const Color(0xFFF44336),
-    const Color(0xFFE91E63),
-    const Color(0xFF9C27B0),
-    const Color(0xFFFF5722),
-
-    // Oranges/Jaunes
-    const Color(0xFFFF9800),
-    const Color(0xFFFFC107),
-    const Color(0xFFFFEB3B),
-    const Color(0xFFFF6F00),
-
-    // Marrons/Gris
-    const Color(0xFF795548),
-    const Color(0xFF9E9E9E),
-    const Color(0xFF607D8B),
-    const Color(0xFF424242),
-
-    // Roses
-    const Color(0xFFFF4081),
-    const Color(0xFFE040FB),
-    const Color(0xFFEA80FC),
-    const Color(0xFFF8BBD0),
-
-    // Violets
-    const Color(0xFF673AB7),
-    const Color(0xFF9C27B0),
-    const Color(0xFF7B1FA2),
-    const Color(0xFF4A148C),
-
-    // Cyans/Turquoise
-    const Color(0xFF00E5FF),
-    const Color(0xFF18FFFF),
-    const Color(0xFF84FFFF),
-    const Color(0xFF006064),
-
-    // Verts foncés
-    const Color(0xFF1B5E20),
-    const Color(0xFF2E7D32),
-    const Color(0xFF388E3C),
-    const Color(0xFF43A047),
-
-    // Bleus foncés
-    const Color(0xFF0D47A1),
-    const Color(0xFF1565C0),
-    const Color(0xFF1976D2),
-    const Color(0xFF1E88E5),
-
-    // Tons chauds
-    const Color(0xFFBF360C),
-    const Color(0xFFD84315),
-    const Color(0xFFE64A19),
-    const Color(0xFFF4511E),
-  ];
+  /// Les couleurs qu'une categorie peut porter.
+  ///
+  /// Il y en avait quarante-quatre, prises dans toute la palette
+  /// Material : cyan, violet, magenta, gris anthracite. Or une couleur
+  /// de categorie n'est pas une decoration — elle teinte des cartes,
+  /// des icones et des pastilles sur toutes les pages. C'est donc une
+  /// couleur d'INTERFACE, et la planche n'en admet que sept :
+  ///
+  ///   « Sept couleurs, et aucune autre comme couleur d'interface. »
+  ///
+  /// Celles-ci viennent du theme, suivent le mode sombre, et chacune a
+  /// une encre verifiee pour porter du texte dessus.
+  List<Color> get _predefinedColors => AppColors.chart;
 
   @override
   void initState() {
@@ -175,7 +120,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                         ),
                         child:
                             isSelected
-                                ?  Icon(
+                                ? Icon(
                                   Icons.check,
                                   color: AppColors.onPrimary,
                                   size: 20,

@@ -1,4 +1,5 @@
 // screens/budget_details_screen.dart
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -223,13 +224,14 @@ class BudgetDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Barre de progression (plafonnée à 100% visuellement)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: (budget.spentPercentage / 100).clamp(0.0, 1.0),
-                minHeight: 12,
-                backgroundColor: AppColors.border,
-                valueColor: AlwaysStoppedAnimation<Color>(_getSpentColor()),
+            // La barre est doublee de sa phrase : la planche ne laisse
+            // jamais un chiffre vivre dans un seul dessin.
+            AppGauge(
+              ratio: budget.spentPercentage / 100,
+              color: _getSpentColor(),
+              label: l10n.budgetGaugeLabel(
+                budget.spentPercentage.toStringAsFixed(0),
+                budget.formattedRemainingAmount,
               ),
             ),
 
@@ -325,13 +327,12 @@ class BudgetDetailsScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: progressDays.clamp(0.0, 1.0),
-                    minHeight: 8,
-                    backgroundColor: AppColors.border,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.info),
+                AppGauge(
+                  ratio: progressDays,
+                  color: AppColors.info,
+                  label: l10n.budgetDaysGaugeLabel(
+                    daysElapsed.toString(),
+                    daysTotal.toString(),
                   ),
                 ),
               ],
