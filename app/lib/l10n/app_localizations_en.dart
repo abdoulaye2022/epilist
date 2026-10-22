@@ -5442,9 +5442,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spaceInviteEmail => 'Email of the member to invite';
 
   @override
-  String get spaceInviteSent => 'Invitation sent';
-
-  @override
   String get spaceRole => 'Role';
 
   @override
@@ -6539,4 +6536,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingOff => 'State: Off';
+
+  @override
+  String get spaceRoleAdminWhat =>
+      'This person will be able to manage everything: members, lists and budgets.';
+
+  @override
+  String get spaceRoleManagerWhat =>
+      'This person will be able to manage lists and budgets, but not members.';
+
+  @override
+  String get spaceRoleMemberWhat =>
+      'This person will be able to edit the lists.';
+
+  @override
+  String get spaceRoleViewerWhat =>
+      'This person will only be able to read: they will not be able to change anything.';
+
+  @override
+  String spaceInviteSentTo(String email) {
+    return 'Invitation sent to $email.';
+  }
+
+  @override
+  String get spaceInviteFailed =>
+      'The invitation was not sent. Check the address, then try again.';
 }

@@ -2388,7 +2388,6 @@
   "spaceMembers": "Membres",
   "spaceInvite": "Inviter",
   "spaceInviteEmail": "Email du membre à inviter",
-  "spaceInviteSent": "Invitation envoyée",
   "spaceRole": "Rôle",
   "spaceRoleOwner": "Propriétaire",
   "spaceRoleAdmin": "Administrateur",
@@ -3332,5 +3331,18 @@
     }
   },
   "settingOn": "État : Activé",
-  "settingOff": "État : Désactivé"
+  "settingOff": "État : Désactivé",
+  "spaceRoleAdminWhat": "Cette personne pourra tout gérer : les membres, les listes et les budgets.",
+  "spaceRoleManagerWhat": "Cette personne pourra gérer les listes et les budgets, mais pas les membres.",
+  "spaceRoleMemberWhat": "Cette personne pourra modifier les listes.",
+  "spaceRoleViewerWhat": "Cette personne pourra seulement lire : elle ne pourra rien modifier.",
+  "spaceInviteSentTo": "Invitation envoyée à {email}.",
+  "@spaceInviteSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceInviteFailed": "L'invitation n'est pas partie. Vérifiez l'adresse, puis réessayez."
 }

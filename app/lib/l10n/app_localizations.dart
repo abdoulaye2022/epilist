@@ -10249,12 +10249,6 @@ abstract class AppLocalizations {
   /// **'Email du membre à inviter'**
   String get spaceInviteEmail;
 
-  /// No description provided for @spaceInviteSent.
-  ///
-  /// In fr, this message translates to:
-  /// **'Invitation envoyée'**
-  String get spaceInviteSent;
-
   /// No description provided for @spaceRole.
   ///
   /// In fr, this message translates to:
@@ -11958,6 +11952,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'État : Désactivé'**
   String get settingOff;
+
+  /// No description provided for @spaceRoleAdminWhat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette personne pourra tout gérer : les membres, les listes et les budgets.'**
+  String get spaceRoleAdminWhat;
+
+  /// No description provided for @spaceRoleManagerWhat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette personne pourra gérer les listes et les budgets, mais pas les membres.'**
+  String get spaceRoleManagerWhat;
+
+  /// No description provided for @spaceRoleMemberWhat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette personne pourra modifier les listes.'**
+  String get spaceRoleMemberWhat;
+
+  /// No description provided for @spaceRoleViewerWhat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette personne pourra seulement lire : elle ne pourra rien modifier.'**
+  String get spaceRoleViewerWhat;
+
+  /// No description provided for @spaceInviteSentTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation envoyée à {email}.'**
+  String spaceInviteSentTo(String email);
+
+  /// No description provided for @spaceInviteFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'invitation n\'est pas partie. Vérifiez l\'adresse, puis réessayez.'**
+  String get spaceInviteFailed;
 }
 
 class _AppLocalizationsDelegate

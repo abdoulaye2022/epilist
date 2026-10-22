@@ -2388,7 +2388,6 @@
   "spaceMembers": "Members",
   "spaceInvite": "Invite",
   "spaceInviteEmail": "Email of the member to invite",
-  "spaceInviteSent": "Invitation sent",
   "spaceRole": "Role",
   "spaceRoleOwner": "Owner",
   "spaceRoleAdmin": "Administrator",
@@ -3332,5 +3331,18 @@
     }
   },
   "settingOn": "State: On",
-  "settingOff": "State: Off"
+  "settingOff": "State: Off",
+  "spaceRoleAdminWhat": "This person will be able to manage everything: members, lists and budgets.",
+  "spaceRoleManagerWhat": "This person will be able to manage lists and budgets, but not members.",
+  "spaceRoleMemberWhat": "This person will be able to edit the lists.",
+  "spaceRoleViewerWhat": "This person will only be able to read: they will not be able to change anything.",
+  "spaceInviteSentTo": "Invitation sent to {email}.",
+  "@spaceInviteSentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "spaceInviteFailed": "The invitation was not sent. Check the address, then try again."
 }

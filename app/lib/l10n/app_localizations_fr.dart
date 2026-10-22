@@ -5536,9 +5536,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get spaceInviteEmail => 'Email du membre à inviter';
 
   @override
-  String get spaceInviteSent => 'Invitation envoyée';
-
-  @override
   String get spaceRole => 'Rôle';
 
   @override
@@ -6637,4 +6634,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingOff => 'État : Désactivé';
+
+  @override
+  String get spaceRoleAdminWhat =>
+      'Cette personne pourra tout gérer : les membres, les listes et les budgets.';
+
+  @override
+  String get spaceRoleManagerWhat =>
+      'Cette personne pourra gérer les listes et les budgets, mais pas les membres.';
+
+  @override
+  String get spaceRoleMemberWhat =>
+      'Cette personne pourra modifier les listes.';
+
+  @override
+  String get spaceRoleViewerWhat =>
+      'Cette personne pourra seulement lire : elle ne pourra rien modifier.';
+
+  @override
+  String spaceInviteSentTo(String email) {
+    return 'Invitation envoyée à $email.';
+  }
+
+  @override
+  String get spaceInviteFailed =>
+      'L\'invitation n\'est pas partie. Vérifiez l\'adresse, puis réessayez.';
 }

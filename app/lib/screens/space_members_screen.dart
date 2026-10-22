@@ -72,6 +72,20 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     String role = 'member';
+    // Un drapeau plutot qu'une valeur de retour : refermer le panneau
+    // en touchant a cote rend `null` lui aussi, et on annoncerait une
+    // erreur a qui a simplement renonce.
+    var echec = false;
+
+    // La planche demande que le role soit EXPLIQUE, pas seulement
+    // nomme : « Peut modifier les listes » / « Lecture seulement ».
+    // « Gestionnaire » ne dit rien a qui n'a pas lu la documentation.
+    String ceQuePermet(String r) => switch (r) {
+      'admin' => l10n.spaceRoleAdminWhat,
+      'manager' => l10n.spaceRoleManagerWhat,
+      'viewer' => l10n.spaceRoleViewerWhat,
+      _ => l10n.spaceRoleMemberWhat,
+    };
 
     final sent = await showDialog<bool>(
       context: context,
@@ -131,6 +145,15 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                           onChanged:
                               (v) => setLocal(() => role = v ?? 'member'),
                         ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          ceQuePermet(role),
+                          style: TextStyle(
+                            fontSize: 16.5,
+                            height: 1.4,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                         const SizedBox(height: AppSpacing.lg),
                         AppDialogActions(
                           cancelLabel: l10n.cancel,
@@ -149,6 +172,10 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                                 Navigator.pop(dialogContext, true);
                               }
                             } catch (_) {
+                              // Sans ceci, un envoi qui echoue refermait
+                              // le panneau en silence : on croyait avoir
+                              // annule.
+                              echec = true;
                               if (dialogContext.mounted) {
                                 Navigator.pop(dialogContext, false);
                               }
@@ -164,8 +191,13 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
 
     if (!mounted) return;
     if (sent == true) {
-      SmartSnackBarManager.showSuccessSnackBar(context, l10n.spaceInviteSent);
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        l10n.spaceInviteSentTo(controller.text.trim()),
+      );
       _load();
+    } else if (echec) {
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.spaceInviteFailed);
     }
   }
 
