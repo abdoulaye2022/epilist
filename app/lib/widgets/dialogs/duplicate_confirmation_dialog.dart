@@ -31,7 +31,9 @@ class DuplicateConfirmationDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -90,6 +92,8 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       l10n.similarItemDetected, // ✅ TRADUIT
       textAlign: TextAlign.center,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 22,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,

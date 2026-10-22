@@ -788,6 +788,8 @@ class LoadingScreen extends StatelessWidget {
             Text(
               l10n.appTitle,
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: [FontVariation('wght', 800)],
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primaryDark,
@@ -892,7 +894,12 @@ class ErrorApp extends StatelessWidget {
                 const SizedBox(height: 16),
                 const Text(
                   'Erreur d\'initialisation',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: [FontVariation('wght', 800)],
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),

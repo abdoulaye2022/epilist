@@ -334,6 +334,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Text(
                           currentCurrency.symbol,
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.onPrimary,

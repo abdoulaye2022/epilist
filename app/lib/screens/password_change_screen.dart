@@ -143,6 +143,8 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           ? l10n.enterYourCode
                           : l10n.changePassword,
                       style: TextStyle(
+                        fontFamily: AppFonts.display,
+                        fontVariations: const [FontVariation('wght', 800)],
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.warning,
@@ -421,7 +423,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         hintText: hintText,
         prefixIcon: Icon(icon),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),

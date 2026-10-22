@@ -27,6 +27,8 @@ class TermsOfServicePage extends StatelessWidget {
             Text(
               l10n.termsOfService,
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,

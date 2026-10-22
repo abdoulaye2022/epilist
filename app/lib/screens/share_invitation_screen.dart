@@ -222,6 +222,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 ? 'Invitation ${invitation.statusDisplayName.toLowerCase()}'
                 : AppLocalizations.of(context)!.siTitle,
             style: TextStyle(
+              fontFamily: AppFonts.display,
+              fontVariations: const [FontVariation('wght', 800)],
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -509,6 +511,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 child: Text(
                   invitation.listName,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -640,6 +644,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Text(
                   AppLocalizations.of(context)!.siAccept,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -810,6 +816,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 Text(
                   AppLocalizations.of(context)!.siDecline,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -1130,6 +1138,8 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             Text(
               AppLocalizations.of(context)!.siInvalid,
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,

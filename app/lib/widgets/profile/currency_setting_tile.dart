@@ -98,6 +98,8 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                         child: Text(
                           _currentCurrency?.symbol ?? '\$',
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.onPrimary,

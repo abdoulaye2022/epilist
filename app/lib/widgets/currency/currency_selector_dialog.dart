@@ -49,7 +49,9 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
       child: Container(
@@ -155,6 +157,8 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     return Text(
       AppLocalizations.of(context)!.selectCurrencyTitle,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -321,7 +325,9 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.warningTint,
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
                               ),
                               child: Text(
                                 'Populaire',

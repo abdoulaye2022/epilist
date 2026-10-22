@@ -164,6 +164,8 @@ class _StoresViewState extends State<_StoresView> {
             Text(
               l10n.noStoresYet,
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,

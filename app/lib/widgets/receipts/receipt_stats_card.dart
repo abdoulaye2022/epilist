@@ -27,7 +27,9 @@ class ReceiptStatsCard extends StatelessWidget {
 
   Widget _buildSummaryCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -55,6 +57,8 @@ class ReceiptStatsCard extends StatelessWidget {
                       Text(
                         l10n.spendingSummary,
                         style: const TextStyle(
+                          fontFamily: AppFonts.display,
+                          fontVariations: [FontVariation('wght', 800)],
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -113,7 +117,9 @@ class ReceiptStatsCard extends StatelessWidget {
     final hasSignificantVariance = variance > 20.0; // 20% de différence
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -225,7 +231,9 @@ class ReceiptStatsCard extends StatelessWidget {
     final qualityText = _getQualityText(stats.dataQuality, l10n);
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -352,6 +360,8 @@ class ReceiptStatsCard extends StatelessWidget {
           Text(
             count.toString(),
             style: TextStyle(
+              fontFamily: AppFonts.display,
+              fontVariations: [FontVariation('wght', 800)],
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppTint.ink(color),

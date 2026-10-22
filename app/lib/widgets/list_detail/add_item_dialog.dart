@@ -88,7 +88,9 @@ class _AddItemDialogState extends State<AddItemDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -584,6 +586,8 @@ class _AddItemDialogState extends State<AddItemDialog> {
                   Text(
                     l10n.selectCategory,
                     style: const TextStyle(
+                      fontFamily: AppFonts.display,
+                      fontVariations: [FontVariation('wght', 800)],
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),

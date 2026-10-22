@@ -74,6 +74,8 @@ class TopProductsCard extends StatelessWidget {
                         Text(
                           '${summary['total_unique_products'] ?? 0}',
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.gold,
@@ -99,6 +101,8 @@ class TopProductsCard extends StatelessWidget {
                         Text(
                           '${summary['showing_top'] ?? 0}',
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.gold,
@@ -174,7 +178,9 @@ class TopProductsCard extends StatelessWidget {
             ChangeTopProductsSort(sortBy: sortBy, period: 'month', limit: 10),
           );
         },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
         color: AppColors.surface,
         elevation: 8,
         itemBuilder:

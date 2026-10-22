@@ -266,6 +266,8 @@ class LanguageSettingTile extends StatelessWidget {
     return Text(
       l10n.selectLanguage,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,

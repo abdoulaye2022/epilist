@@ -78,6 +78,8 @@ class EmptyItemsState extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         // ✅ MODIFICATION: Couleur plus foncée pour fond blanc
@@ -138,7 +140,9 @@ class EmptyItemsState extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
         elevation: 2,
       ),
     );

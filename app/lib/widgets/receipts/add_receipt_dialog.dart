@@ -45,7 +45,9 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -113,6 +115,8 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
     return Text(
       l10n.addReceipt,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
@@ -326,7 +330,9 @@ class _AddReceiptDialogState extends State<AddReceiptDialog> {
         padding: const EdgeInsets.symmetric(vertical: 14),
         foregroundColor: AppColors.textSecondary,
         side: BorderSide(color: AppColors.border),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
       ),
     );
   }

@@ -127,7 +127,9 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
       onSelected: (value) => _handleMenuAction(value, context),
       color: AppColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       elevation: 8,
       itemBuilder: (context) => _buildMenuItems(context),
     );
@@ -465,6 +467,8 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Text(
       l10n.listInformation,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,

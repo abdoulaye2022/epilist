@@ -59,6 +59,8 @@ class ProfileHeaderCard extends StatelessWidget {
         Text(
           user.fullName,
           style: TextStyle(
+            fontFamily: AppFonts.display,
+            fontVariations: const [FontVariation('wght', 800)],
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -123,7 +125,9 @@ class ProfileHeaderCard extends StatelessWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
       ),
     );
   }

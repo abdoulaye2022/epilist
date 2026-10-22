@@ -150,6 +150,8 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                 enabled: !_loading,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 style: const TextStyle(
+                  fontFamily: AppFonts.display,
+                  fontVariations: [FontVariation('wght', 800)],
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 10,

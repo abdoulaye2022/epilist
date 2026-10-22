@@ -110,7 +110,9 @@ class _EditItemDialogState extends State<EditItemDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
         elevation: 10,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Container(
@@ -634,6 +636,8 @@ class _EditItemDialogState extends State<EditItemDialog> {
                   Text(
                     l10n.selectCategory,
                     style: const TextStyle(
+                      fontFamily: AppFonts.display,
+                      fontVariations: [FontVariation('wght', 800)],
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),

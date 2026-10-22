@@ -185,6 +185,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         keyboardType: TextInputType.number,
         maxLength: 1,
         style: TextStyle(
+          fontFamily: AppFonts.display,
+          fontVariations: const [FontVariation('wght', 800)],
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
@@ -493,6 +495,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   Text(
                     l10n.emailVerified,
                     style: TextStyle(
+                      fontFamily: AppFonts.display,
+                      fontVariations: const [FontVariation('wght', 800)],
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,

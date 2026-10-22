@@ -145,6 +145,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
               summary.formattedTotalBudgeted,
             ),
             style: TextStyle(
+              fontFamily: AppFonts.display,
+              fontVariations: const [FontVariation('wght', 800)],
               fontSize: 21,
               fontWeight: FontWeight.w700,
               height: 1.45,

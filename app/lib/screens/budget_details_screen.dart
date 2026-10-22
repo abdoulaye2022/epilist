@@ -110,7 +110,9 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -132,6 +134,8 @@ class BudgetDetailsScreen extends StatelessWidget {
                 FormattedAmount(
                   amount: budget.budgetAmount,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -192,7 +196,9 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -213,6 +219,8 @@ class BudgetDetailsScreen extends StatelessWidget {
                 Text(
                   '${budget.spentPercentage.toStringAsFixed(1)}%',
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: _getSpentColor(),
@@ -264,7 +272,9 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -377,7 +387,9 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: budget.isExceeded ? AppColors.errorTint : AppColors.warningTint,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -431,7 +443,9 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

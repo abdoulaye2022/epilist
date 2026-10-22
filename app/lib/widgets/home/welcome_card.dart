@@ -109,6 +109,8 @@ class _WelcomeCardState extends State<WelcomeCard> {
                 child: Text(
                   l10n.hello,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.infoInk,

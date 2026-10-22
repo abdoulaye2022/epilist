@@ -70,6 +70,8 @@ class CategoriesChartCard extends StatelessWidget {
                         FormattedAmount(
                           amount: _calculateTotalSpent(summary, categories),
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.violet,
@@ -95,6 +97,8 @@ class CategoriesChartCard extends StatelessWidget {
                         Text(
                           '${_getTotalCategories(summary, categories)}',
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.violet,

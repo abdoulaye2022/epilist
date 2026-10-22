@@ -40,6 +40,8 @@ class DashboardCard extends StatelessWidget {
                       Text(
                         l10n.monthlyOverview,
                         style: TextStyle(
+                          fontFamily: AppFonts.display,
+                          fontVariations: const [FontVariation('wght', 800)],
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,

@@ -70,6 +70,8 @@ class AboutPage extends StatelessWidget {
                   Text(
                     'EpiList',
                     style: TextStyle(
+                      fontFamily: AppFonts.display,
+                      fontVariations: const [FontVariation('wght', 800)],
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primaryDark,
@@ -239,7 +241,9 @@ class AboutPage extends StatelessWidget {
           backgroundColor: color,
           foregroundColor: AppColors.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
         ),
       ),
     );

@@ -44,6 +44,10 @@ class WelcomeScreen extends StatelessWidget {
                           Text(
                             l10n.welcomeToEpiList,
                             style: TextStyle(
+                              fontFamily: AppFonts.display,
+                              fontVariations: const [
+                                FontVariation('wght', 800),
+                              ],
                               fontSize: 26,
                               fontWeight: FontWeight.w700,
                               color: AppColors.textPrimary,

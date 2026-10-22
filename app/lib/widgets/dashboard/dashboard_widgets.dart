@@ -151,6 +151,8 @@ class BudgetMonthCard extends StatelessWidget {
               Text(
                 budget.formattedSpentAmount,
                 style: TextStyle(
+                  fontFamily: AppFonts.display,
+                  fontVariations: const [FontVariation('wght', 800)],
                   color: AppColors.onBrandBand,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,

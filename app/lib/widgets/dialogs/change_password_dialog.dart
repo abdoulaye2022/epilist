@@ -50,6 +50,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               child: Text(
                 _showCodeStep ? l10n.newPassword : l10n.changePassword,
                 style: const TextStyle(
+                  fontFamily: AppFonts.display,
+                  fontVariations: [FontVariation('wght', 800)],
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),

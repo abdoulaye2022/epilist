@@ -139,6 +139,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
             title: Text(
               'EpiList',
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 color: AppColors.primaryDark,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -480,6 +482,8 @@ class _HomeAppBarWithUserImageState extends State<HomeAppBarWithUserImage> {
             title: Text(
               'EpiList',
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 color: AppColors.primaryDark,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

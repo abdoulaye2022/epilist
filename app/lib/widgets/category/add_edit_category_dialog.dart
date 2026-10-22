@@ -45,7 +45,9 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -78,6 +80,8 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
             Text(
               isEditing ? l10n.editCategory : l10n.addCategory,
               style: TextStyle(
+                fontFamily: AppFonts.display,
+                fontVariations: const [FontVariation('wght', 800)],
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,

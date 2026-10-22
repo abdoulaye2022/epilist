@@ -104,6 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
           l10n.login,
           textAlign: TextAlign.center,
           style: TextStyle(
+            fontFamily: AppFonts.display,
+            fontVariations: const [FontVariation('wght', 800)],
             fontSize: 26,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,

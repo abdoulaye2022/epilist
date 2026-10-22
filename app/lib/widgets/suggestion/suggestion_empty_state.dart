@@ -35,6 +35,8 @@ class SuggestionEmptyState extends StatelessWidget {
                     .noSearchResults // AppLocalizations.of(context)!.noResultsFound
                 : l10n.noSuggestionsYet, // "Aucune suggestion pour le moment"
             style: TextStyle(
+              fontFamily: AppFonts.display,
+              fontVariations: const [FontVariation('wght', 800)],
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textSecondary,

@@ -365,6 +365,8 @@ class LanguageSelectorDialog {
                         Text(
                           l10n.selectLanguage,
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -409,7 +411,9 @@ class LanguageSelectorDialog {
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
                               ),
                             ),
                             child: Text(

@@ -92,6 +92,8 @@ class ComparisonCard extends StatelessWidget {
                         Text(
                           '${changePercentage > 0 ? '+' : ''}${changePercentage.toStringAsFixed(1)}%',
                           style: TextStyle(
+                            fontFamily: AppFonts.display,
+                            fontVariations: const [FontVariation('wght', 800)],
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: trendColor,

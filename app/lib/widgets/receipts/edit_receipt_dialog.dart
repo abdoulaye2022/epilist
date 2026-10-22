@@ -95,7 +95,9 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
         elevation: 10,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Container(
@@ -166,6 +168,8 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
     return Text(
       l10n.editReceipt,
       style: TextStyle(
+        fontFamily: AppFonts.display,
+        fontVariations: const [FontVariation('wght', 800)],
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,

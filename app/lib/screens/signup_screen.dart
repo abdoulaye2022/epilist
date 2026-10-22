@@ -212,6 +212,8 @@ class _SignUpPageState extends State<SignUpPage> {
           l10n.createAccount,
           textAlign: TextAlign.center,
           style: TextStyle(
+            fontFamily: AppFonts.display,
+            fontVariations: const [FontVariation('wght', 800)],
             fontSize: 26,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,

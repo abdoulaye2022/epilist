@@ -95,7 +95,9 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                             decoration: InputDecoration(
                               labelText: l10n.priceAlertProduct,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
                               ),
                             ),
                           ),
@@ -471,6 +473,8 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                       TextSpan(
                         text: '${_money(vu)} \$',
                         style: TextStyle(
+                          fontFamily: AppFonts.display,
+                          fontVariations: const [FontVariation('wght', 800)],
                           fontSize: 21,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,

@@ -52,6 +52,8 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
           child: Text(
             _showCodeStep ? l10n.confirmDeletion : l10n.deleteAccount,
             style: TextStyle(
+              fontFamily: AppFonts.display,
+              fontVariations: const [FontVariation('wght', 800)],
               color: AppColors.error,
               fontWeight: FontWeight.bold,
               fontSize: 20,

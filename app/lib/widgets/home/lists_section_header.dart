@@ -27,6 +27,8 @@ class ListsSectionHeader extends StatelessWidget {
               Text(
                 l10n.myGroceryLists,
                 style: TextStyle(
+                  fontFamily: AppFonts.display,
+                  fontVariations: const [FontVariation('wght', 800)],
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -71,6 +73,8 @@ class ListsSectionHeader extends StatelessWidget {
                 child: Text(
                   l10n.myGroceryLists,
                   style: TextStyle(
+                    fontFamily: AppFonts.display,
+                    fontVariations: const [FontVariation('wght', 800)],
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
