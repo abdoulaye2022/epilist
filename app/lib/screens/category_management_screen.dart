@@ -1,4 +1,8 @@
 // screens/category_management_screen.dart
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,8 +36,10 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(l10n.manageCategories),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.manageCategories,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

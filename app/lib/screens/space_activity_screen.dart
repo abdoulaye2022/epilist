@@ -1,6 +1,10 @@
 // screens/space_activity_screen.dart - Journal d'activité d'un espace
 // (§12, Phase 2). Les événements arrivent STRUCTURÉS (type + payload) :
 // le texte est rendu ici, traduit fr/en.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -136,25 +140,9 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.space.name,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            Text(
-              l10n.spaceActivity,
-              style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-      ),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.spaceActivity, subtitle: widget.space.name),
       body:
           _activities == null && !_error
               ? const Center(child: CircularProgressIndicator())

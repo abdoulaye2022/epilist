@@ -1,6 +1,10 @@
 // screens/store_aisle_order_screen.dart - Ordre des rayons d'un magasin.
 // Glisser-déposer les rayons (kinds des catégories par défaut) dans l'ordre
 // où on parcourt le magasin ; sauvegarde à chaque dépôt (optimiste).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
 import 'package:epilist/blocs/store/store_bloc.dart';
@@ -79,31 +83,9 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
 
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: AppBar(
-            backgroundColor: AppColors.surface,
-            elevation: 0,
-            iconTheme: IconThemeData(color: AppColors.textPrimary),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  store?.name ?? '',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  l10n.aisleOrder,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          drawer: const AppDrawer(),
+          bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+          appBar: AppTopBar(title: l10n.aisleOrder, subtitle: store?.name),
           body: BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, categoryState) {
               if (store == null) {

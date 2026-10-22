@@ -10,6 +10,7 @@
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,9 @@ class ShoppingSuccessScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      // La planche montre la barre du bas jusque sur l'ecran de
+      // reussite : c'est de la qu'on repart.
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.lists),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(

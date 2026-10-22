@@ -1,5 +1,9 @@
 // screens/predictions_screen.dart - « Toutes les suggestions » :
 // prédictions d'achat avec les quatre actions de feedback (§8).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
@@ -88,7 +92,9 @@ class _PredictionsScreenState extends State<PredictionsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.allPredictions)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.allPredictions),
       body:
           _loading
               ? const Center(child: CircularProgressIndicator())

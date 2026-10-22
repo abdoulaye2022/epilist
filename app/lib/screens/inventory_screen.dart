@@ -3,6 +3,10 @@
 // d'état en un geste, recherche, ajout. Un produit marqué « Terminé »
 // propose l'ajout à la liste récente (ou l'ajoute seul si le réglage
 // auto_add_out_of_stock est activé).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/utils/add_product_to_list.dart';
 import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
@@ -388,7 +392,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.inventoryTitle)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.inventoryTitle),
       floatingActionButton: FloatingActionButton(
         onPressed: _addProduct,
         backgroundColor: AppColors.primary,

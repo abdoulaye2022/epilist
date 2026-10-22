@@ -1,4 +1,8 @@
 // screens/budget_details_screen.dart
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,15 +24,10 @@ class BudgetDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          budget.name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: budget.name,
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

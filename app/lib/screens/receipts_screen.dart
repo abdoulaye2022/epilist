@@ -1,4 +1,8 @@
 // screens/receipts_screen.dart
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -214,39 +218,11 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
     return Scaffold(
       // ✅ CORRECTION: Background gris clair comme BudgetScreen
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        // ✅ CORRECTION: Style harmonisé avec BudgetScreen (fond blanc)
-        // Même gabarit d'en-tête que la Discussion : titre sombre compact,
-        // nom de la liste en sous-titre.
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.receipts,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            Text(
-              widget.shoppingList.name,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
-        foregroundColor:
-            AppColors.textPrimary, // ✅ Texte noir comme BudgetScreen
-        elevation: 0, // ✅ Pas d'ombre comme BudgetScreen
-        iconTheme: IconThemeData(
-          color: AppColors.textPrimary,
-        ), // ✅ Icônes noires
-        // ✅ AJOUT: Menu d'actions comme dans BudgetScreen
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.receipts,
+        subtitle: widget.shoppingList.name,
         actions: [
           PopupMenuButton<String>(
             icon: Icon(
@@ -405,7 +381,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
                     heroTag: 'receipts_add_fab',
                     onPressed: _showAddReceiptDialog,
                     backgroundColor: AppColors.primary,
-                    child:  Icon(Icons.add, color: AppColors.onPrimary),
+                    child: Icon(Icons.add, color: AppColors.onPrimary),
                   ),
                 ],
               )

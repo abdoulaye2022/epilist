@@ -1,5 +1,6 @@
 // widgets/list_detail/list_detail_app_bar.dart - POPUP INFORMATION CORRIGÉ
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/blocs/receipt/receipt_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -38,25 +39,29 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppColors.surface,
-      elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.textPrimary),
-      foregroundColor: AppColors.textPrimary,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            listName,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          if (shoppingList.isShared) _buildSharingSubtitle(context),
-        ],
-      ),
+    return AppTopBar(
+      title: listName,
+      // Le sous-titre de partage est un widget (qui partage, et depuis
+      // quand) : il passe donc par titleWidget, pas par la ligne de
+      // texte simple de l'en-tete partage.
+      titleWidget:
+          shoppingList.isShared
+              ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    listName,
+                    style: AppFonts.displayStyle(
+                      size: 18,
+                      color: AppColors.textPrimary,
+                      weight: 700,
+                    ),
+                  ),
+                  _buildSharingSubtitle(context),
+                ],
+              )
+              : null,
       actions: _buildActions(context),
     );
   }

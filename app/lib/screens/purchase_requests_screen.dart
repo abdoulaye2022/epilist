@@ -3,6 +3,10 @@
 // gestionnaire approuve ou refuse (motif obligatoire), l'achat clôt la
 // demande. Les droits sont tranchés par le serveur ; l'UI se contente
 // de masquer les actions hors rôle.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -252,7 +256,9 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.purchaseRequests)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.purchaseRequests),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _create,
         backgroundColor: AppColors.primary,

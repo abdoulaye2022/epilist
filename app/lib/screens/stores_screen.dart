@@ -1,4 +1,8 @@
 // screens/stores_screen.dart - Mes magasins (tri par rayon)
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/services/store_favorites.dart';
@@ -72,18 +76,9 @@ class _StoresViewState extends State<_StoresView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
-        title: Text(
-          l10n.myStores,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.myStores),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showStoreNameDialog(context),
         backgroundColor: AppColors.primary,

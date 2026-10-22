@@ -1,6 +1,10 @@
 // screens/suppliers_screen.dart - Fournisseurs (§22, Phase 3).
 // CRUD léger : nom, contact, téléphone, email, notes, actif/inactif.
 // Écriture réservée à manage_suppliers (le serveur tranche).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -163,7 +167,9 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.suppliers)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.suppliers),
       floatingActionButton:
           _canManage
               ? FloatingActionButton.extended(

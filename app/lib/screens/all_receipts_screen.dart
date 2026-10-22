@@ -6,6 +6,10 @@
 // /shopping-lists/{listId}/receipts. Voir ses dépenses imposait donc de
 // se souvenir de la liste à laquelle on avait rattaché un reçu — ce que
 // personne ne retient. La route GET /receipts rend ce détour inutile.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/screens/receipts_screen.dart';
@@ -17,7 +21,6 @@ import 'package:epilist/widgets/common/app_empty_state.dart';
 import 'package:epilist/widgets/common/app_card.dart';
 import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/widgets/receipts/receipt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -112,9 +115,10 @@ class _AllReceiptsScreenState extends State<AllReceiptsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.allReceiptsTitle),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.allReceiptsTitle,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),

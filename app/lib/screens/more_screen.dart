@@ -10,6 +10,10 @@
 // Une entrée qui a besoin d'une liste (mode courses, comparaison,
 // discussion, code-barres) la demande au moment du clic au lieu
 // d'exister ailleurs ; la mention « demande une liste » le dit avant.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/utils/shopping_mode_launcher.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
@@ -43,7 +47,6 @@ import 'package:epilist/widgets/common/app_action_tile.dart';
 import 'package:epilist/widgets/common/app_card.dart';
 import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:flutter/material.dart';
 
 /// Une destination de l'index.
@@ -91,10 +94,9 @@ class _MoreScreenState extends State<MoreScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.settingsAndMore),
-      ),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.settingsAndMore),
       body: ValueListenableBuilder<Space?>(
         valueListenable: ActiveSpaceStore.current,
         builder: (context, space, _) {

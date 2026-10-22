@@ -1,4 +1,7 @@
 // screens/list_detail_screen.dart - VERSION REFACTORISÉE AVEC WIDGETS RÉUTILISABLES
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/screens/shopping_mode_screen.dart';
 import 'package:epilist/blocs/category/category_bloc.dart';
@@ -309,6 +312,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       // ✅ UTILISATION DU WIDGET RÉUTILISABLE ListDetailAppBar
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.lists),
       appBar: ListDetailAppBar(
         listName: currentList.name,
         shoppingList: currentList,
@@ -407,7 +412,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           heroTag: "receipts_fab",
           backgroundColor: AppColors.accent,
           tooltip: l10n.receipts,
-          child:  Icon(Icons.receipt_long, color: AppColors.onPrimary),
+          child: Icon(Icons.receipt_long, color: AppColors.onPrimary),
         ),
         const SizedBox(height: 12),
         // Bouton d'ajout vocal
@@ -417,7 +422,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           backgroundColor:
               currentList.canEdit ? AppColors.violet : AppColors.textDisabled,
           tooltip: AppLocalizations.of(context)!.quickVoice,
-          child:  Icon(Icons.mic, color: AppColors.onPrimary),
+          child: Icon(Icons.mic, color: AppColors.onPrimary),
         ),
         const SizedBox(height: 12),
         // Bouton d'ajout d'article
@@ -427,7 +432,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           backgroundColor:
               currentList.canEdit ? AppColors.primary : AppColors.textDisabled,
           tooltip: l10n.addItem,
-          child:  Icon(Icons.add, color: AppColors.onPrimary),
+          child: Icon(Icons.add, color: AppColors.onPrimary),
         ),
       ],
     );
@@ -763,7 +768,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
           const SizedBox(height: 4),
           Text(
             l10n.delete,
-            style:  TextStyle(
+            style: TextStyle(
               color: AppColors.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 12,
@@ -916,8 +921,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
       size: 36,
       // Sans ce rechargement, la vignette n'apparaitrait qu'a la
       // prochaine ouverture de la liste.
-      onChanged: () =>
-          context.read<ListItemBloc>().add(LoadListItems(currentList.id)),
+      onChanged:
+          () => context.read<ListItemBloc>().add(LoadListItems(currentList.id)),
     );
     final montrePhoto =
         item.imageUrl?.isNotEmpty == true || currentList.canEdit;
@@ -967,10 +972,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
               : AppLocalizations.of(context)!.insufficientPermission,
     );
     if (!montrePhoto) return crayon;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [photo, crayon],
-    );
+    return Row(mainAxisSize: MainAxisSize.min, children: [photo, crayon]);
   }
 
   // ===== MÉTHODES D'ACTION =====

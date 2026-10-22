@@ -1,4 +1,8 @@
 // screens/budget_screen.dart - VERSION CORRIGÉE AVEC DESIGN HARMONISÉ
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/all_receipts_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -35,8 +39,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(l10n.budgets),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.budgets,
         actions: [
           IconButton(
             icon: const Icon(Icons.flash_on_outlined),

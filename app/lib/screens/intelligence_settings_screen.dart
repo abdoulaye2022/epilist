@@ -1,6 +1,10 @@
 // screens/intelligence_settings_screen.dart - Réglages « Intelligence
 // EpiList » (§43) : interrupteurs stockés en SharedPreferences, sauf
 // le partage communautaire (§33) qui est un consentement SERVEUR.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/space_service.dart';
@@ -107,7 +111,9 @@ class _IntelligenceSettingsScreenState
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.intelligenceSettings)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.intelligenceSettings),
       body:
           _loading
               ? const Center(child: CircularProgressIndicator())

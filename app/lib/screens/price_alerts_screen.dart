@@ -4,10 +4,10 @@
 // de l'historique (§26 : prix habituel = médiane, bon prix = 25e
 // percentile) mais c'est toujours l'utilisateur qui confirme. Les
 // droits (créateur ou manage_lists) sont tranchés par le serveur.
+import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/price/price_history_sheet.dart';
 import 'package:epilist/utils/add_product_to_list.dart';
 import 'package:epilist/widgets/common/app_states.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/screen_cache.dart';
@@ -302,10 +302,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.priceAlerts),
-      ),
+      appBar: AppTopBar(title: l10n.priceAlerts),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _edit(),
         backgroundColor: AppColors.primary,

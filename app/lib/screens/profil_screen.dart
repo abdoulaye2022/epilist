@@ -1,5 +1,9 @@
 // screens/profile_screen.dart - VERSION AVEC FEEDBACK
 
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:dio/dio.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -23,7 +27,6 @@ import 'package:epilist/widgets/dialogs/feedback_dialog.dart'; // ✅ NOUVEAU
 import 'package:epilist/widgets/profile/account_deletion_status_widget.dart';
 import 'package:epilist/widgets/profile/logout_button.dart';
 import 'package:epilist/widgets/profile/profile_action_tile.dart';
-import 'package:epilist/widgets/profile/profile_app_bar.dart';
 import 'package:epilist/widgets/profile/profile_error_state.dart';
 import 'package:epilist/widgets/profile/profile_header_card.dart';
 import 'package:epilist/widgets/profile/profile_loading_state.dart';
@@ -184,7 +187,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileView(User user, AppLocalizations l10n) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const ProfileAppBar(),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.myProfile),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -328,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Center(
                         child: Text(
                           currentCurrency.symbol,
-                          style:  TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.onPrimary,

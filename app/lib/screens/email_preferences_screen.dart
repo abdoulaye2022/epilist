@@ -1,5 +1,9 @@
 // lib/screens/email_preferences_screen.dart
 
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -131,8 +135,10 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.epTitle),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: AppLocalizations.of(context)!.epTitle,
         actions: [
           if (!_isLoading && _preferences != null)
             IconButton(

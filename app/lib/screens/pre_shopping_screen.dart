@@ -4,11 +4,11 @@
 // repérés récemment, demandes d'achat en attente (espaces pro), et
 // les économies estimées DOCUMENTÉES (§30). L'icône de l'AppBar ouvre
 // « Est-ce un bon prix ? » (§29) : verdict prudent + les chiffres.
+import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/screens/inventory_screen.dart';
 import 'package:epilist/utils/shopping_mode_launcher.dart';
 import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/widgets/common/app_states.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
@@ -239,9 +239,8 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.preShopping),
+      appBar: AppTopBar(
+        title: l10n.preShopping,
         actions: [
           IconButton(
             tooltip: l10n.priceCheckTitle,

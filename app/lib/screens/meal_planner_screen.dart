@@ -2,6 +2,10 @@
 // choix des recettes, personnes, budget facultatif -> aperçu des
 // ingrédients consolidés (« Déjà à la maison » identifié, coût estimé
 // avec couverture affichée) -> création du plan + liste de courses.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
@@ -116,7 +120,9 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.mealPlannerTitle)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.mealPlannerTitle),
       body:
           _loading
               ? const Center(child: CircularProgressIndicator())

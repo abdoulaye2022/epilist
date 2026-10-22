@@ -1,7 +1,6 @@
 // widgets/shopping/shopping_list_app_bar.dart
-import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
+import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingListAppBar extends StatelessWidget
@@ -14,21 +13,11 @@ class ShoppingListAppBar extends StatelessWidget
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AppBar(
-      // Onglet de la coquille : bouton menu ; ecran pousse : fleche retour.
-      leading: DrawerMenuButton.leadingOrNull(context),
-      title: Text(
-        l10n.myShoppingLists,
-        style: TextStyle(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      backgroundColor: AppColors.surface,
-      elevation: 0,
+    return AppTopBar(
+      title: l10n.myShoppingLists,
       actions: [
         IconButton(
-          icon: Icon(Icons.refresh, color: AppColors.textPrimary),
+          icon: const Icon(Icons.refresh_rounded),
           onPressed: onRefresh,
           tooltip: l10n.refresh,
         ),

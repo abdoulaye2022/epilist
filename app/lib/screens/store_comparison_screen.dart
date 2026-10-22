@@ -5,6 +5,10 @@
 // Honnêteté des données avant tout : couverture affichée (« 10 prix
 // connus sur 12 articles »), fraîcheur de chaque prix, et rappel que ce
 // sont les prix de VOS achats, pas des prix officiels.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/price_intelligence.dart';
 import 'package:epilist/services/price_service.dart';
@@ -81,8 +85,10 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(l10n.storeComparisonTitle),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.storeComparisonTitle,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

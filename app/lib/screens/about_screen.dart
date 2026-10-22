@@ -1,3 +1,7 @@
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,13 +19,9 @@ class AboutPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(l10n.aboutEpiList),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
-        foregroundColor: AppColors.textPrimary,
-      ),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.aboutEpiList),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -57,7 +57,7 @@ class AboutPage extends StatelessWidget {
                               colors: [AppColors.primary, AppColors.primary],
                             ),
                           ),
-                          child:  Icon(
+                          child: Icon(
                             Icons.shopping_cart_rounded,
                             size: 50,
                             color: AppColors.onPrimary,

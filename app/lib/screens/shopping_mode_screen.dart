@@ -3,6 +3,10 @@
 // tactiles, progression visible, regroupement par rayon dans l'ordre du
 // magasin actif, articles cochés repliés. Le toggle passe par le
 // ListItemBloc existant : le hors ligne fonctionne comme partout.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/shopping_success_screen.dart';
 import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/widgets/common/app_states.dart';
@@ -54,8 +58,10 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(widget.store?.name ?? widget.shoppingList.name),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.lists),
+      appBar: AppTopBar(
+        title: widget.store?.name ?? widget.shoppingList.name,
         actions: [
           IconButton(
             tooltip:

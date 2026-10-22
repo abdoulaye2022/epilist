@@ -1,6 +1,10 @@
 // screens/create_space_screen.dart - Création d'un espace (Phase 1).
 // Onboarding court (§5 du cahier des charges) : le type, le nom, puis
 // seulement des informations facultatives (ville, pays).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
 import 'package:epilist/services/space_service.dart';
@@ -63,7 +67,9 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.createSpace)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.createSpace),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
@@ -180,7 +186,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                 ),
                 child:
                     _saving
-                        ?  SizedBox(
+                        ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

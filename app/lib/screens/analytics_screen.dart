@@ -1,6 +1,10 @@
 // screens/analytics_screen.dart - Analytiques : une page sobre, sections
 // commutées par chips (même langage que la page Budgets). Le bloc ne porte
 // qu'un jeu de données à la fois : chaque section charge à la sélection.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -67,8 +71,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(l10n.analytics),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(
+        title: l10n.analytics,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

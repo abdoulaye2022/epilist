@@ -9,6 +9,7 @@
 // offre tout l'écran, et c'est à elle de n'en prendre que ce qu'il lui
 // faut.
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/widgets/common/app_nav.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:flutter/material.dart';
@@ -171,4 +172,28 @@ class _Destination {
 
   final Color pastille;
   final bool montreLeLabel;
+}
+
+/// La même barre, pour une page EMPILÉE par le Navigator.
+///
+/// La planche l'exige partout, pas seulement sur les cinq onglets :
+/// « La barre du bas est strictement la même sur toutes les pages. »
+/// Toucher une destination referme la pile et bascule sur l'onglet, au
+/// lieu d'empiler un écran de plus.
+///
+/// [tab] est la section à laquelle cette page appartient : le détail
+/// d'une liste éclaire « Mes listes », les budgets et les analyses
+/// éclairent « Toutes les sections ».
+class AppPageBottomBar extends StatelessWidget {
+  const AppPageBottomBar({super.key, required this.tab});
+
+  final MainTab tab;
+
+  @override
+  Widget build(BuildContext context) {
+    return MainBottomBar(
+      current: tab,
+      onSelect: (t) => AppNav.goTo(context, t),
+    );
+  }
 }

@@ -1,4 +1,8 @@
 // screens/chat_screen.dart
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:flutter/material.dart';
@@ -88,31 +92,9 @@ class _ChatScreenState extends State<ChatScreen> {
         return Scaffold(
           backgroundColor: AppColors.background,
           // Barre blanche plate, comme partout ailleurs dans l'app.
-          appBar: AppBar(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.listName,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  l10n.chatTitle,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12.5,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: AppColors.surface,
-            foregroundColor: AppColors.textPrimary,
-            elevation: 0,
-          ),
+          drawer: const AppDrawer(),
+          bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+          appBar: AppTopBar(title: l10n.chatTitle, subtitle: widget.listName),
           body: Column(
             children: [
               // Messages list
@@ -232,10 +214,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon:  Icon(
-                          Icons.send,
-                          color: AppColors.onPrimary,
-                        ),
+                        icon: Icon(Icons.send, color: AppColors.onPrimary),
                         onPressed: _sendMessage,
                       ),
                     ),
@@ -410,8 +389,7 @@ class _MessageBubble extends StatelessWidget {
                 // Ma bulle : vert plein. Les autres : carte blanche
                 // bordée, comme les cartes du reste de l'app.
                 decoration: BoxDecoration(
-                  color:
-                      isCurrentUser ? AppColors.primary : AppColors.surface,
+                  color: isCurrentUser ? AppColors.primary : AppColors.surface,
                   border:
                       isCurrentUser
                           ? null

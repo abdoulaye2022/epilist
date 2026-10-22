@@ -1,4 +1,7 @@
 // screens/suggestion_management_widget.dart - CORRECTION AVEC BACKGROUND GRIS UNIFORME
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/product_suggestion/product_suggestion_bloc.dart';
 import 'package:epilist/models/product_suggestion.dart';
@@ -36,6 +39,8 @@ class _SuggestionManagementWidgetState
     return Scaffold(
       // ✅ BACKGROUND GRIS UNIFORME (comme les autres pages)
       backgroundColor: AppColors.background,
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
       appBar: SuggestionAppBar(
         onClearAll: () => _showClearConfirmation(context, l10n),
       ),

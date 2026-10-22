@@ -9,6 +9,7 @@
 // Chaque tuile porte la teinte et la bordure de sa famille : la couleur
 // dit de quoi on parle, le numéro et le titre le disent aussi. Jamais la
 // couleur seule.
+import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -17,7 +18,6 @@ import 'package:epilist/screens/meal_planner_screen.dart';
 import 'package:epilist/screens/recurring_lists_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
-import 'package:epilist/widgets/common/drawer_menu_button.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:flutter/material.dart';
 
@@ -104,10 +104,7 @@ class SectionsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: DrawerMenuButton.leadingOrNull(context),
-        title: Text(l10n.allSections),
-      ),
+      appBar: AppTopBar(title: l10n.allSections),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md + 2,

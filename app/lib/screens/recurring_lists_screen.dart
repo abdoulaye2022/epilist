@@ -1,6 +1,10 @@
 // screens/recurring_lists_screen.dart - Listes récurrentes intelligentes :
 // modèles (hebdo / 2 semaines / mensuel), génération avec aperçu
 // pré-coché selon les habitudes (validation en quelques secondes, §34).
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
@@ -179,7 +183,9 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.recurringListsTitle)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.lists),
+      appBar: AppTopBar(title: l10n.recurringListsTitle),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _edit(),
         backgroundColor: AppColors.primary,

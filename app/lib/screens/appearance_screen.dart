@@ -4,6 +4,10 @@
 // désormais lus dans une palette (voir theme/app_theme.dart), le mode
 // sombre est devenu un choix et non un chantier : cet écran l'expose,
 // et `ThemeModeController` l'enregistre.
+import 'package:epilist/widgets/common/app_top_bar.dart';
+import 'package:epilist/widgets/common/app_drawer.dart';
+import 'package:epilist/widgets/common/main_bottom_bar.dart';
+import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/theme/theme_mode_controller.dart';
@@ -18,44 +22,47 @@ class AppearanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appearance)),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: const AppPageBottomBar(tab: MainTab.sections),
+      appBar: AppTopBar(title: l10n.appearance),
       body: ValueListenableBuilder<ThemeMode>(
         valueListenable: appThemeMode,
-        builder: (context, mode, _) => ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            AppCard.tight(
-              child: Column(
-                children: [
-                  _Choice(
-                    mode: ThemeMode.system,
-                    current: mode,
-                    icon: Icons.brightness_auto_outlined,
-                    label: l10n.appearanceSystem,
-                    hint: l10n.appearanceSystemHint,
+        builder:
+            (context, mode, _) => ListView(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              children: [
+                AppCard.tight(
+                  child: Column(
+                    children: [
+                      _Choice(
+                        mode: ThemeMode.system,
+                        current: mode,
+                        icon: Icons.brightness_auto_outlined,
+                        label: l10n.appearanceSystem,
+                        hint: l10n.appearanceSystemHint,
+                      ),
+                      const Divider(height: 1, indent: AppSpacing.md),
+                      _Choice(
+                        mode: ThemeMode.light,
+                        current: mode,
+                        icon: Icons.light_mode_outlined,
+                        label: l10n.appearanceLight,
+                      ),
+                      const Divider(height: 1, indent: AppSpacing.md),
+                      _Choice(
+                        mode: ThemeMode.dark,
+                        current: mode,
+                        icon: Icons.dark_mode_outlined,
+                        label: l10n.appearanceDark,
+                      ),
+                    ],
                   ),
-                  const Divider(height: 1, indent: AppSpacing.md),
-                  _Choice(
-                    mode: ThemeMode.light,
-                    current: mode,
-                    icon: Icons.light_mode_outlined,
-                    label: l10n.appearanceLight,
-                  ),
-                  const Divider(height: 1, indent: AppSpacing.md),
-                  _Choice(
-                    mode: ThemeMode.dark,
-                    current: mode,
-                    icon: Icons.dark_mode_outlined,
-                    label: l10n.appearanceDark,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppSectionHeader(title: l10n.appearancePreview),
+                const _Preview(),
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            AppSectionHeader(title: l10n.appearancePreview),
-            const _Preview(),
-          ],
-        ),
       ),
     );
   }
@@ -86,12 +93,12 @@ class _Choice extends StatelessWidget {
         color: selected ? AppColors.primary : AppColors.textSecondary,
       ),
       title: Text(label, style: Theme.of(context).textTheme.titleSmall),
-      subtitle: hint == null
-          ? null
-          : Text(hint!, style: Theme.of(context).textTheme.bodySmall),
-      trailing: selected
-          ? Icon(Icons.check_rounded, color: AppColors.primary)
-          : null,
+      subtitle:
+          hint == null
+              ? null
+              : Text(hint!, style: Theme.of(context).textTheme.bodySmall),
+      trailing:
+          selected ? Icon(Icons.check_rounded, color: AppColors.primary) : null,
     );
   }
 }
