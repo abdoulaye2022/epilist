@@ -3344,5 +3344,41 @@
       }
     }
   },
-  "spaceInviteFailed": "The invitation was not sent. Check the address, then try again."
+  "spaceInviteFailed": "The invitation was not sent. Check the address, then try again.",
+  "storeFavoriteFailed": "The star could not be saved. Try again.",
+  "storeOpenToday": "Open today from {open} to {close}.",
+  "@storeOpenToday": {
+    "placeholders": {
+      "open": {
+        "type": "String"
+      },
+      "close": {
+        "type": "String"
+      }
+    }
+  },
+  "storeClosedToday": "Closed today.",
+  "recipeFavoriteYes": "Favourite: Yes, favourite recipe",
+  "recipeFavoriteNo": "Favourite: No, not a favourite yet",
+  "recipeFavoriteFailed": "The star could not be saved. Try again.",
+  "mealDayLabel": "Day: {day}",
+  "@mealDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDayNotChosen": "Day: not chosen yet",
+  "mealDayQuestion": "Which day of the week?",
+  "weekdayMon": "Monday",
+  "weekdayTue": "Tuesday",
+  "weekdayWed": "Wednesday",
+  "weekdayThu": "Thursday",
+  "weekdayFri": "Friday",
+  "weekdaySat": "Saturday",
+  "weekdaySun": "Sunday",
+  "spaceInviteName": "Person's name (optional)",
+  "spaceInvitePhone": "Phone (optional)",
+  "spaceInvitePhoneHint": "The number is kept so you can follow up yourself. The invitation is sent by email."
 }

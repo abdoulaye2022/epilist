@@ -5,7 +5,6 @@ import 'package:epilist/widgets/common/main_bottom_bar.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/price_alerts_screen.dart';
 import 'package:epilist/services/space_service.dart';
-import 'package:epilist/services/store_favorites.dart';
 import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/store_front.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -53,6 +52,61 @@ class _StoresViewState extends State<_StoresView> {
   void initState() {
     super.initState();
     _chargerAlertes();
+  }
+
+  /// Allume ou eteint l'etoile, et le dit tout de suite.
+  ///
+  /// L'ecran se recharge depuis le bloc : le serveur est la source de
+  /// verite du favori, et c'est lui qui decide aussi de l'ordre — les
+  /// magasins favoris remontent en tete.
+  Future<void> _basculerFavori(Store store) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await context.read<StoreService>().setFavorite(
+        store.id,
+        !store.isFavorite,
+      );
+      if (!mounted) return;
+      context.read<StoreBloc>().add(const LoadStores());
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.storeFavoriteFailed);
+    }
+  }
+
+  /// Une ligne « icone + phrase », pour l'adresse et les horaires.
+  Widget _ligne(IconData icone, String texte) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icone, size: 22, color: AppColors.textSecondary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              texte,
+              style: TextStyle(
+                fontSize: 17,
+                height: 1.45,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// « Ouvert aujourd'hui de 8 h a 21 h » ou « Ferme aujourd'hui ».
+  ///
+  /// La phrase parle du JOUR EN COURS : c'est la seule question qu'on
+  /// se pose devant une carte de magasin.
+  String _horairesDuJour(AppLocalizations l10n, Store store) {
+    final heures = store.hoursFor(DateTime.now().weekday);
+    return heures == null
+        ? l10n.storeClosedToday
+        : l10n.storeOpenToday(heures.open, heures.close);
   }
 
   Future<void> _chargerAlertes() async {
@@ -265,20 +319,42 @@ class _StoresViewState extends State<_StoresView> {
                       ),
                     ),
                   ],
+                  // L'adresse et les horaires que la planche montre sur
+                  // chaque carte. Ils n'existaient pas en base avant la
+                  // migration 012 : la carte n'avait que le nom.
+                  if (store.addressLine != null) ...[
+                    const SizedBox(height: AppSpacing.xs + 2),
+                    _ligne(Icons.place_outlined, store.addressLine!),
+                  ],
+                  if (store.hasOpeningHours) ...[
+                    const SizedBox(height: AppSpacing.xs + 2),
+                    _ligne(
+                      Icons.schedule_outlined,
+                      _horairesDuJour(l10n, store),
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.sm + 4),
-                  ValueListenableBuilder<Set<int>>(
-                    valueListenable: storeFavorites,
-                    builder: (context, favoris, _) {
-                      final favori = favoris.contains(store.id);
-                      return AppFavoriteButton(
-                        favorite: favori,
-                        label:
-                            favori
-                                ? l10n.storeFavoriteYes
-                                : l10n.storeFavoriteNo,
-                        onPressed: () => storeFavorites.toggle(store.id),
-                      );
-                    },
+                  // Le favori vit sur le SERVEUR depuis la migration
+                  // 012. Il suivait l'appareil auparavant : perdu au
+                  // changement de telephone, et invisible pour les
+                  // autres membres de l'espace.
+                  AppFavoriteButton(
+                    favorite: store.isFavorite,
+                    label:
+                        store.isFavorite
+                            ? l10n.storeFavoriteYes
+                            : l10n.storeFavoriteNo,
+                    // Un magasin pas encore synchronise n'a pas
+                    // d'identifiant serveur : l'etoile ne peut rien
+                    // enregistrer, et on le DIT plutot que d'offrir un
+                    // bouton qui ne repond pas.
+                    onPressed:
+                        pendingSync
+                            ? () => SmartSnackBarManager.showInfoSnackBar(
+                              context,
+                              l10n.storePendingSync,
+                            )
+                            : () => _basculerFavori(store),
                   ),
                   const SizedBox(height: AppSpacing.sm + 4),
                   OutlinedButton.icon(

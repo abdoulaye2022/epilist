@@ -129,13 +129,16 @@ class IntelligenceService {
     bool autoGenerate = false,
     required List<String> productNames,
   }) async {
-    final response = await _dio.post('/recurring-lists', data: {
-      'name': name,
-      'recurrence_type': recurrenceType,
-      if (weekday != null) 'weekday': weekday,
-      'auto_generate': autoGenerate,
-      'items': productNames.map((n) => {'product_name': n}).toList(),
-    });
+    final response = await _dio.post(
+      '/recurring-lists',
+      data: {
+        'name': name,
+        'recurrence_type': recurrenceType,
+        if (weekday != null) 'weekday': weekday,
+        'auto_generate': autoGenerate,
+        'items': productNames.map((n) => {'product_name': n}).toList(),
+      },
+    );
     return RecurringListModel.fromJson(
       response.data['data']['recurring_list'] as Map<String, dynamic>,
     );
@@ -168,11 +171,20 @@ class IntelligenceService {
     int id,
     List<RecurringPreviewItem> chosen,
   ) async {
-    final response = await _dio.post('/recurring-lists/$id/generate', data: {
-      'items': chosen
-          .map((i) => {'product_name': i.productName, 'quantity': i.quantity})
-          .toList(),
-    });
+    final response = await _dio.post(
+      '/recurring-lists/$id/generate',
+      data: {
+        'items':
+            chosen
+                .map(
+                  (i) => {
+                    'product_name': i.productName,
+                    'quantity': i.quantity,
+                  },
+                )
+                .toList(),
+      },
+    );
     return (response.data['data']['shopping_list_id'] as num).toInt();
   }
 
@@ -191,11 +203,14 @@ class IntelligenceService {
     required int people,
     double? budgetMax,
   }) async {
-    final response = await _dio.post('/meal-plans/preview', data: {
-      'recipe_ids': recipeIds,
-      'people': people,
-      if (budgetMax != null) 'budget_max': budgetMax,
-    });
+    final response = await _dio.post(
+      '/meal-plans/preview',
+      data: {
+        'recipe_ids': recipeIds,
+        'people': people,
+        if (budgetMax != null) 'budget_max': budgetMax,
+      },
+    );
     return MealPlanPreview.fromJson(
       response.data['data'] as Map<String, dynamic>,
     );
@@ -207,15 +222,46 @@ class IntelligenceService {
     required int people,
     double? budgetMax,
     required List<MealPlanItem> items,
+    Map<int, int>? weekdays,
   }) async {
-    final response = await _dio.post('/meal-plans', data: {
-      'recipe_ids': recipeIds,
-      'people': people,
-      if (budgetMax != null) 'budget_max': budgetMax,
-      'items': items
-          .map((i) => {'product_name': i.productName, 'quantity': i.quantity})
-          .toList(),
-    });
+    final response = await _dio.post(
+      '/meal-plans',
+      data: {
+        'recipe_ids': recipeIds,
+        'people': people,
+        if (budgetMax != null) 'budget_max': budgetMax,
+        // « Lundi vert, Mardi jaune, Mercredi bleu » : un plat, un jour.
+        // 1 = lundi ... 7 = dimanche. Facultatif — un plan sans jours
+        // reste un plan, et c'est ainsi que l'application l'envoyait.
+        if (weekdays != null && weekdays.isNotEmpty)
+          'assignments':
+              weekdays.entries
+                  .map((e) => {'recipe_id': e.key, 'weekday': e.value})
+                  .toList(),
+        'items':
+            items
+                .map(
+                  (i) => {
+                    'product_name': i.productName,
+                    'quantity': i.quantity,
+                  },
+                )
+                .toList(),
+      },
+    );
     return (response.data['data']['shopping_list_id'] as num).toInt();
+  }
+
+  /// Allume ou éteint l'étoile d'une recette.
+  ///
+  /// Le favori appartient au MEMBRE : les recettes livrées avec
+  /// l'application sont partagées par tous les comptes, donc le marquer
+  /// sur la recette elle-même aurait valu pour tout le monde.
+  Future<void> setRecipeFavorite(int recipeId, bool favorite) async {
+    if (favorite) {
+      await _dio.put('/recipes/$recipeId/favorite');
+    } else {
+      await _dio.delete('/recipes/$recipeId/favorite');
+    }
   }
 }

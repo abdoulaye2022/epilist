@@ -16,9 +16,10 @@ class StoreService {
     try {
       final response = await _dio.get('/stores');
       final data = response.data['data'] as List?;
-      final stores = (data ?? [])
-          .map((json) => Store.fromJson(json as Map<String, dynamic>))
-          .toList();
+      final stores =
+          (data ?? [])
+              .map((json) => Store.fromJson(json as Map<String, dynamic>))
+              .toList();
       await OfflineStorageService.saveStores(
         stores.map((s) => s.toJson()).toList(),
       );
@@ -49,6 +50,52 @@ class StoreService {
   Future<Store> renameStore(int storeId, String name) async {
     final response = await _dio.put('/stores/$storeId', data: {'name': name});
     return Store.fromJson(response.data['data'] as Map<String, dynamic>);
+  }
+
+  /// Enregistre l'adresse, les coordonnées et les heures d'ouverture.
+  ///
+  /// Le nom est obligatoire côté serveur, même quand on ne change que
+  /// l'adresse : il reste donc dans la requête. Seuls les champs
+  /// fournis sont modifiés — passer `null` à [address] laisse l'adresse
+  /// en place, et une chaîne vide l'efface.
+  Future<Store> updateStoreDetails(
+    int storeId, {
+    required String name,
+    String? address,
+    String? city,
+    String? postalCode,
+    double? latitude,
+    double? longitude,
+    Map<String, StoreHours?>? openingHours,
+  }) async {
+    final corps = <String, dynamic>{'name': name};
+    if (address != null) corps['address'] = address;
+    if (city != null) corps['city'] = city;
+    if (postalCode != null) corps['postal_code'] = postalCode;
+    if (latitude != null) corps['latitude'] = latitude;
+    if (longitude != null) corps['longitude'] = longitude;
+    if (openingHours != null) {
+      corps['opening_hours'] = openingHours.map(
+        (jour, heures) => MapEntry(jour, heures?.toJson()),
+      );
+    }
+
+    final response = await _dio.put('/stores/$storeId', data: corps);
+    return Store.fromJson(response.data['data'] as Map<String, dynamic>);
+  }
+
+  /// Allume ou éteint l'étoile « Favori ».
+  ///
+  /// Le favori vit sur le SERVEUR depuis la migration 012 : il suivait
+  /// l'appareil auparavant, donc il se perdait au changement de
+  /// téléphone et restait invisible pour les autres membres de
+  /// l'espace. Les deux appels sont idempotents.
+  Future<void> setFavorite(int storeId, bool favorite) async {
+    if (favorite) {
+      await _dio.put('/stores/$storeId/favorite');
+    } else {
+      await _dio.delete('/stores/$storeId/favorite');
+    }
   }
 
   Future<void> deleteStore(int storeId) async {

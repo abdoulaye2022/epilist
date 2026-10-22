@@ -11988,6 +11988,120 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'L\'invitation n\'est pas partie. Vérifiez l\'adresse, puis réessayez.'**
   String get spaceInviteFailed;
+
+  /// No description provided for @storeFavoriteFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'étoile n\'a pas pu être enregistrée. Réessayez.'**
+  String get storeFavoriteFailed;
+
+  /// No description provided for @storeOpenToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvert aujourd\'hui de {open} à {close}.'**
+  String storeOpenToday(String open, String close);
+
+  /// No description provided for @storeClosedToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé aujourd\'hui.'**
+  String get storeClosedToday;
+
+  /// No description provided for @recipeFavoriteYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Favori : Oui, recette favorite'**
+  String get recipeFavoriteYes;
+
+  /// No description provided for @recipeFavoriteNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Favori : Non, pas encore favorite'**
+  String get recipeFavoriteNo;
+
+  /// No description provided for @recipeFavoriteFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'étoile n\'a pas pu être enregistrée. Réessayez.'**
+  String get recipeFavoriteFailed;
+
+  /// No description provided for @mealDayLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour : {day}'**
+  String mealDayLabel(String day);
+
+  /// No description provided for @mealDayNotChosen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jour : pas encore choisi'**
+  String get mealDayNotChosen;
+
+  /// No description provided for @mealDayQuestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel jour de la semaine ?'**
+  String get mealDayQuestion;
+
+  /// No description provided for @weekdayMon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lundi'**
+  String get weekdayMon;
+
+  /// No description provided for @weekdayTue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mardi'**
+  String get weekdayTue;
+
+  /// No description provided for @weekdayWed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mercredi'**
+  String get weekdayWed;
+
+  /// No description provided for @weekdayThu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeudi'**
+  String get weekdayThu;
+
+  /// No description provided for @weekdayFri.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendredi'**
+  String get weekdayFri;
+
+  /// No description provided for @weekdaySat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Samedi'**
+  String get weekdaySat;
+
+  /// No description provided for @weekdaySun.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dimanche'**
+  String get weekdaySun;
+
+  /// No description provided for @spaceInviteName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la personne (facultatif)'**
+  String get spaceInviteName;
+
+  /// No description provided for @spaceInvitePhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (facultatif)'**
+  String get spaceInvitePhone;
+
+  /// No description provided for @spaceInvitePhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le numéro est gardé pour que vous puissiez la relancer vous-même. L\'invitation part par courriel.'**
+  String get spaceInvitePhoneHint;
 }
 
 class _AppLocalizationsDelegate

@@ -3344,5 +3344,41 @@
       }
     }
   },
-  "spaceInviteFailed": "L'invitation n'est pas partie. Vérifiez l'adresse, puis réessayez."
+  "spaceInviteFailed": "L'invitation n'est pas partie. Vérifiez l'adresse, puis réessayez.",
+  "storeFavoriteFailed": "L'étoile n'a pas pu être enregistrée. Réessayez.",
+  "storeOpenToday": "Ouvert aujourd'hui de {open} à {close}.",
+  "@storeOpenToday": {
+    "placeholders": {
+      "open": {
+        "type": "String"
+      },
+      "close": {
+        "type": "String"
+      }
+    }
+  },
+  "storeClosedToday": "Fermé aujourd'hui.",
+  "recipeFavoriteYes": "Favori : Oui, recette favorite",
+  "recipeFavoriteNo": "Favori : Non, pas encore favorite",
+  "recipeFavoriteFailed": "L'étoile n'a pas pu être enregistrée. Réessayez.",
+  "mealDayLabel": "Jour : {day}",
+  "@mealDayLabel": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDayNotChosen": "Jour : pas encore choisi",
+  "mealDayQuestion": "Quel jour de la semaine ?",
+  "weekdayMon": "Lundi",
+  "weekdayTue": "Mardi",
+  "weekdayWed": "Mercredi",
+  "weekdayThu": "Jeudi",
+  "weekdayFri": "Vendredi",
+  "weekdaySat": "Samedi",
+  "weekdaySun": "Dimanche",
+  "spaceInviteName": "Nom de la personne (facultatif)",
+  "spaceInvitePhone": "Téléphone (facultatif)",
+  "spaceInvitePhoneHint": "Le numéro est gardé pour que vous puissiez la relancer vous-même. L'invitation part par courriel."
 }

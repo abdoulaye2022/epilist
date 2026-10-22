@@ -6659,4 +6659,68 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get spaceInviteFailed =>
       'L\'invitation n\'est pas partie. Vérifiez l\'adresse, puis réessayez.';
+
+  @override
+  String get storeFavoriteFailed =>
+      'L\'étoile n\'a pas pu être enregistrée. Réessayez.';
+
+  @override
+  String storeOpenToday(String open, String close) {
+    return 'Ouvert aujourd\'hui de $open à $close.';
+  }
+
+  @override
+  String get storeClosedToday => 'Fermé aujourd\'hui.';
+
+  @override
+  String get recipeFavoriteYes => 'Favori : Oui, recette favorite';
+
+  @override
+  String get recipeFavoriteNo => 'Favori : Non, pas encore favorite';
+
+  @override
+  String get recipeFavoriteFailed =>
+      'L\'étoile n\'a pas pu être enregistrée. Réessayez.';
+
+  @override
+  String mealDayLabel(String day) {
+    return 'Jour : $day';
+  }
+
+  @override
+  String get mealDayNotChosen => 'Jour : pas encore choisi';
+
+  @override
+  String get mealDayQuestion => 'Quel jour de la semaine ?';
+
+  @override
+  String get weekdayMon => 'Lundi';
+
+  @override
+  String get weekdayTue => 'Mardi';
+
+  @override
+  String get weekdayWed => 'Mercredi';
+
+  @override
+  String get weekdayThu => 'Jeudi';
+
+  @override
+  String get weekdayFri => 'Vendredi';
+
+  @override
+  String get weekdaySat => 'Samedi';
+
+  @override
+  String get weekdaySun => 'Dimanche';
+
+  @override
+  String get spaceInviteName => 'Nom de la personne (facultatif)';
+
+  @override
+  String get spaceInvitePhone => 'Téléphone (facultatif)';
+
+  @override
+  String get spaceInvitePhoneHint =>
+      'Le numéro est gardé pour que vous puissiez la relancer vous-même. L\'invitation part par courriel.';
 }

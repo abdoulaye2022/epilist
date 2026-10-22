@@ -403,6 +403,26 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // « Vrais visuels produits en grand », dit la planche. La
+              // photo vient de product_images : prise une fois sur un
+              // article de liste, elle sert ici sans etre reprise. La
+              // carte se referme sur son texte si elle ne charge pas —
+              // un trou gris serait pire que pas d'image du tout.
+              if (a.imageUrl != null && a.imageUrl!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm + 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image.network(
+                        a.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(

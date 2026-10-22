@@ -71,6 +71,8 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
   Future<void> _showInviteDialog() async {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
+    final nomCtrl = TextEditingController();
+    final telCtrl = TextEditingController();
     String role = 'member';
     // Un drapeau plutot qu'une valeur de retour : refermer le panneau
     // en touchant a cote rend `null` lui aussi, et on annoncerait une
@@ -104,12 +106,43 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                           title: l10n.spaceInvite,
                         ),
                         const SizedBox(height: AppSpacing.md),
+                        // La planche demande « nom, courriel ou
+                        // telephone ». Le nom vient en premier : c'est
+                        // par lui que le courriel d'invitation dira
+                        // « Bonjour Sara » au lieu de « Bonjour ».
+                        TextField(
+                          controller: nomCtrl,
+                          textCapitalization: TextCapitalization.words,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: l10n.spaceInviteName,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
                         TextField(
                           controller: controller,
                           keyboardType: TextInputType.emailAddress,
-                          autofocus: true,
                           decoration: InputDecoration(
                             labelText: l10n.spaceInviteEmail,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        TextField(
+                          controller: telCtrl,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            labelText: l10n.spaceInvitePhone,
+                            // Dire la verite : le numero est garde pour
+                            // que l'invitant puisse relancer la personne
+                            // lui-meme, mais rien ne part par SMS.
+                            helperText: l10n.spaceInvitePhoneHint,
+                            helperMaxLines: 3,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
@@ -167,6 +200,8 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                                 widget.space.id,
                                 email,
                                 role,
+                                name: nomCtrl.text,
+                                phone: telCtrl.text,
                               );
                               if (dialogContext.mounted) {
                                 Navigator.pop(dialogContext, true);
@@ -193,7 +228,11 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
     if (sent == true) {
       SmartSnackBarManager.showSuccessSnackBar(
         context,
-        l10n.spaceInviteSentTo(controller.text.trim()),
+        l10n.spaceInviteSentTo(
+          nomCtrl.text.trim().isNotEmpty
+              ? nomCtrl.text.trim()
+              : controller.text.trim(),
+        ),
       );
       _load();
     } else if (echec) {

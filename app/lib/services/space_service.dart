@@ -97,14 +97,18 @@ class SpaceService {
     String? city,
     String? postalCode,
   }) async {
-    final res = await dio.post('/spaces', data: {
-      'type': type,
-      'name': name,
-      if (country != null && country.isNotEmpty) 'country': country,
-      if (region != null && region.isNotEmpty) 'region': region,
-      if (city != null && city.isNotEmpty) 'city': city,
-      if (postalCode != null && postalCode.isNotEmpty) 'postal_code': postalCode,
-    });
+    final res = await dio.post(
+      '/spaces',
+      data: {
+        'type': type,
+        'name': name,
+        if (country != null && country.isNotEmpty) 'country': country,
+        if (region != null && region.isNotEmpty) 'region': region,
+        if (city != null && city.isNotEmpty) 'city': city,
+        if (postalCode != null && postalCode.isNotEmpty)
+          'postal_code': postalCode,
+      },
+    );
     return Space.fromJson(res.data['data']['space'] as Map<String, dynamic>);
   }
 
@@ -116,9 +120,33 @@ class SpaceService {
         .toList();
   }
 
-  Future<void> invite(int spaceId, String email, String role) async {
-    await dio.post('/spaces/$spaceId/invitations',
-        data: {'email': email, 'role': role});
+  /// Invite quelqu'un dans un espace.
+  ///
+  /// La planche demande « nom, courriel ou téléphone ». Le NOM
+  /// personnalise le courriel d'invitation (« Bonjour Sara ») et la
+  /// liste des invitations en attente.
+  ///
+  /// Le TÉLÉPHONE est enregistré, mais rien ne l'envoie : l'application
+  /// n'a aucun fournisseur SMS. Il permet à qui invite de relancer la
+  /// personne elle-même. L'envoi reste par courriel, et l'adresse reste
+  /// donc obligatoire.
+  Future<void> invite(
+    int spaceId,
+    String email,
+    String role, {
+    String? name,
+    String? phone,
+  }) async {
+    await dio.post(
+      '/spaces/$spaceId/invitations',
+      data: {
+        'email': email,
+        'role': role,
+        if (name != null && name.trim().isNotEmpty) 'invitee_name': name.trim(),
+        if (phone != null && phone.trim().isNotEmpty)
+          'invitee_phone': phone.trim(),
+      },
+    );
   }
 
   Future<List<Map<String, dynamic>>> pendingInvitations(int spaceId) async {
@@ -145,7 +173,8 @@ class SpaceService {
     final token = inv.token;
     if (token == null) return null;
     final res = await dio.post(
-        '/space-invitations/$token/${accept ? 'accept' : 'decline'}');
+      '/space-invitations/$token/${accept ? 'accept' : 'decline'}',
+    );
     if (accept && res.data['data']?['space'] != null) {
       return Space.fromJson(res.data['data']['space'] as Map<String, dynamic>);
     }
@@ -198,13 +227,17 @@ extension SpaceServicePhase3 on SpaceService {
     }
   }
 
-  Future<(List<PurchaseRequestInfo>, int)> getPurchaseRequests(
-      {String? status}) async {
-    final res = await dio.get('/purchase-requests',
-        queryParameters: status == null ? null : {'status': status});
-    final list = ((res.data['data']['requests'] as List? ?? []))
-        .map((e) => PurchaseRequestInfo.fromJson(e as Map<String, dynamic>))
-        .toList();
+  Future<(List<PurchaseRequestInfo>, int)> getPurchaseRequests({
+    String? status,
+  }) async {
+    final res = await dio.get(
+      '/purchase-requests',
+      queryParameters: status == null ? null : {'status': status},
+    );
+    final list =
+        ((res.data['data']['requests'] as List? ?? []))
+            .map((e) => PurchaseRequestInfo.fromJson(e as Map<String, dynamic>))
+            .toList();
     return (list, res.data['data']['pending_count'] as int? ?? 0);
   }
 
@@ -214,18 +247,26 @@ extension SpaceServicePhase3 on SpaceService {
     String? unit,
     String? note,
   }) async {
-    await dio.post('/purchase-requests', data: {
-      'product_name': productName,
-      if (quantity != null) 'quantity': quantity,
-      if (unit != null && unit.isNotEmpty) 'unit': unit,
-      if (note != null && note.isNotEmpty) 'note': note,
-    });
+    await dio.post(
+      '/purchase-requests',
+      data: {
+        'product_name': productName,
+        if (quantity != null) 'quantity': quantity,
+        if (unit != null && unit.isNotEmpty) 'unit': unit,
+        if (note != null && note.isNotEmpty) 'note': note,
+      },
+    );
   }
 
-  Future<void> actOnPurchaseRequest(int id, String action,
-      {String? comment}) async {
-    await dio.post('/purchase-requests/$id/$action',
-        data: comment == null ? null : {'comment': comment});
+  Future<void> actOnPurchaseRequest(
+    int id,
+    String action, {
+    String? comment,
+  }) async {
+    await dio.post(
+      '/purchase-requests/$id/$action',
+      data: comment == null ? null : {'comment': comment},
+    );
   }
 }
 
@@ -240,28 +281,37 @@ extension SpaceServicePhase4 on SpaceService {
   }
 
   Future<PriceTargetSuggestion> suggestPriceTarget(String product) async {
-    final res = await dio
-        .get('/price-alerts/suggest', queryParameters: {'product': product});
+    final res = await dio.get(
+      '/price-alerts/suggest',
+      queryParameters: {'product': product},
+    );
     return PriceTargetSuggestion.fromJson(
-        (res.data['data'] as Map).cast<String, dynamic>());
+      (res.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
   Future<void> createPriceAlert({
     required String productName,
     required double targetPrice,
   }) async {
-    await dio.post('/price-alerts', data: {
-      'product_name': productName,
-      'target_price': targetPrice,
-    });
+    await dio.post(
+      '/price-alerts',
+      data: {'product_name': productName, 'target_price': targetPrice},
+    );
   }
 
-  Future<void> updatePriceAlert(int id,
-      {double? targetPrice, bool? isActive}) async {
-    await dio.put('/price-alerts/$id', data: {
-      if (targetPrice != null) 'target_price': targetPrice,
-      if (isActive != null) 'is_active': isActive,
-    });
+  Future<void> updatePriceAlert(
+    int id, {
+    double? targetPrice,
+    bool? isActive,
+  }) async {
+    await dio.put(
+      '/price-alerts/$id',
+      data: {
+        if (targetPrice != null) 'target_price': targetPrice,
+        if (isActive != null) 'is_active': isActive,
+      },
+    );
   }
 
   Future<void> deletePriceAlert(int id) async {
@@ -279,14 +329,18 @@ extension SpaceServicePhase5 on SpaceService {
   }
 
   Future<Map<String, dynamic>> getSavings({int days = 30}) async {
-    final res =
-        await dio.get('/assistant/savings', queryParameters: {'days': days});
+    final res = await dio.get(
+      '/assistant/savings',
+      queryParameters: {'days': days},
+    );
     return (res.data['data'] as Map).cast<String, dynamic>();
   }
 
   Future<Map<String, dynamic>> checkPrice(String product, double price) async {
-    final res = await dio.get('/prices/check',
-        queryParameters: {'product': product, 'price': price});
+    final res = await dio.get(
+      '/prices/check',
+      queryParameters: {'product': product, 'price': price},
+    );
     return (res.data['data'] as Map).cast<String, dynamic>();
   }
 }
@@ -304,10 +358,11 @@ extension SpaceServicePhase6 on SpaceService {
     await dio.put('/community/settings', data: {'enabled': enabled});
   }
 
-  Future<List<Map<String, dynamic>>> getCommunityPrices(
-      String product) async {
-    final res = await dio
-        .get('/community/prices', queryParameters: {'product': product});
+  Future<List<Map<String, dynamic>>> getCommunityPrices(String product) async {
+    final res = await dio.get(
+      '/community/prices',
+      queryParameters: {'product': product},
+    );
     return ((res.data['data']['stores'] as List? ?? []))
         .cast<Map<String, dynamic>>();
   }

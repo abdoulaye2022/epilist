@@ -85,9 +85,10 @@ class InventoryItem {
     quantity: (json['quantity'] as num?)?.toDouble(),
     unit: json['unit'] as String?,
     source: json['source'] as String? ?? 'manual',
-    updatedAt: json['updated_at'] != null
-        ? DateTime.tryParse(json['updated_at'] as String)
-        : null,
+    updatedAt:
+        json['updated_at'] != null
+            ? DateTime.tryParse(json['updated_at'] as String)
+            : null,
     estimatedStatus: json['estimated_status'] as String?,
     minQuantity: (json['min_quantity'] as num?)?.toDouble(),
     reorderQuantity: (json['reorder_quantity'] as num?)?.toDouble(),
@@ -163,14 +164,16 @@ class RecurringListModel {
         name: json['name'] as String,
         recurrenceType: json['recurrence_type'] as String? ?? 'weekly',
         weekday: (json['weekday'] as num?)?.toInt(),
-        nextRunAt: json['next_run_at'] != null
-            ? DateTime.tryParse(json['next_run_at'] as String)
-            : null,
+        nextRunAt:
+            json['next_run_at'] != null
+                ? DateTime.tryParse(json['next_run_at'] as String)
+                : null,
         enabled: json['enabled'] as bool? ?? true,
         autoGenerate: json['auto_generate'] as bool? ?? false,
-        items: (json['items'] as List<dynamic>? ?? [])
-            .map((e) => RecurringItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        items:
+            (json['items'] as List<dynamic>? ?? [])
+                .map((e) => RecurringItem.fromJson(e as Map<String, dynamic>))
+                .toList(),
       );
 }
 
@@ -189,7 +192,8 @@ class RecurringItem {
 
   factory RecurringItem.fromJson(Map<String, dynamic> json) => RecurringItem(
     productName: json['product_name'] as String,
-    quantity: (json['default_quantity'] as num?)?.toInt() ??
+    quantity:
+        (json['default_quantity'] as num?)?.toInt() ??
         (json['quantity'] as num?)?.toInt() ??
         1,
     unit: json['unit'] as String?,
@@ -236,6 +240,16 @@ class RecipeSummary {
   final String? category;
   final int ingredientsCount;
 
+  /// La photo du plat. `recipes.image_url` existait en base depuis le
+  /// debut ; c'est la reponse de l'API qui ne la transmettait pas, et
+  /// la planche la demande sur chaque carte de jour.
+  final String? imageUrl;
+
+  /// Le favori appartient au MEMBRE, pas a la recette : les recettes
+  /// livrees avec l'application ont `user_id IS NULL`, donc elles sont
+  /// partagees par tous les comptes.
+  final bool isFavorite;
+
   const RecipeSummary({
     required this.id,
     required this.name,
@@ -244,7 +258,21 @@ class RecipeSummary {
     this.preparationTime,
     this.category,
     this.ingredientsCount = 0,
+    this.imageUrl,
+    this.isFavorite = false,
   });
+
+  RecipeSummary copyWith({bool? isFavorite}) => RecipeSummary(
+    id: id,
+    name: name,
+    description: description,
+    servings: servings,
+    preparationTime: preparationTime,
+    category: category,
+    ingredientsCount: ingredientsCount,
+    imageUrl: imageUrl,
+    isFavorite: isFavorite ?? this.isFavorite,
+  );
 
   factory RecipeSummary.fromJson(Map<String, dynamic> json) => RecipeSummary(
     id: (json['id'] as num).toInt(),
@@ -254,6 +282,8 @@ class RecipeSummary {
     preparationTime: (json['preparation_time'] as num?)?.toInt(),
     category: json['category'] as String?,
     ingredientsCount: (json['ingredients_count'] as num?)?.toInt() ?? 0,
+    imageUrl: json['image_url'] as String?,
+    isFavorite: json['is_favorite'] == true,
   );
 }
 
@@ -306,9 +336,10 @@ class MealPlanPreview {
   factory MealPlanPreview.fromJson(Map<String, dynamic> json) {
     final budget = json['budget'] as Map<String, dynamic>? ?? {};
     return MealPlanPreview(
-      items: (json['items'] as List<dynamic>? ?? [])
-          .map((e) => MealPlanItem.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      items:
+          (json['items'] as List<dynamic>? ?? [])
+              .map((e) => MealPlanItem.fromJson(e as Map<String, dynamic>))
+              .toList(),
       estimatedTotal: (budget['estimated_total'] as num?)?.toDouble() ?? 0,
       budgetMax: (budget['budget_max'] as num?)?.toDouble(),
       overBudget: budget['over_budget'] as bool? ?? false,

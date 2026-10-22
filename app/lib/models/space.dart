@@ -31,18 +31,18 @@ class Space {
   bool get canManageMembers => myRole == 'owner' || myRole == 'admin';
 
   factory Space.fromJson(Map<String, dynamic> json) => Space(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        type: json['type'] as String? ?? 'personal',
-        ownerUserId: json['owner_user_id'] as int? ?? 0,
-        country: json['country'] as String?,
-        region: json['region'] as String?,
-        city: json['city'] as String?,
-        postalCode: json['postal_code'] as String?,
-        currency: json['currency'] as String?,
-        membersCount: json['members_count'] as int? ?? 1,
-        myRole: json['my_role'] as String?,
-      );
+    id: json['id'] as int,
+    name: json['name'] as String? ?? '',
+    type: json['type'] as String? ?? 'personal',
+    ownerUserId: json['owner_user_id'] as int? ?? 0,
+    country: json['country'] as String?,
+    region: json['region'] as String?,
+    city: json['city'] as String?,
+    postalCode: json['postal_code'] as String?,
+    currency: json['currency'] as String?,
+    membersCount: json['members_count'] as int? ?? 1,
+    myRole: json['my_role'] as String?,
+  );
 }
 
 class SpaceMemberInfo {
@@ -64,7 +64,8 @@ class SpaceMemberInfo {
 
   String get fullName => '$firstName $lastName'.trim();
 
-  factory SpaceMemberInfo.fromJson(Map<String, dynamic> json) => SpaceMemberInfo(
+  factory SpaceMemberInfo.fromJson(Map<String, dynamic> json) =>
+      SpaceMemberInfo(
         userId: json['user_id'] as int,
         firstName: json['first_name'] as String? ?? '',
         lastName: json['last_name'] as String? ?? '',
@@ -130,14 +131,14 @@ class SupplierInfo {
   });
 
   factory SupplierInfo.fromJson(Map<String, dynamic> json) => SupplierInfo(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        contactName: json['contact_name'] as String?,
-        phone: json['phone'] as String?,
-        email: json['email'] as String?,
-        notes: json['notes'] as String?,
-        isActive: json['is_active'] as bool? ?? true,
-      );
+    id: json['id'] as int,
+    name: json['name'] as String? ?? '',
+    contactName: json['contact_name'] as String?,
+    phone: json['phone'] as String?,
+    email: json['email'] as String?,
+    notes: json['notes'] as String?,
+    isActive: json['is_active'] as bool? ?? true,
+  );
 }
 
 class PurchaseRequestInfo {
@@ -196,6 +197,11 @@ class PriceAlertInfo {
   final double? lastObservedPrice;
   final String? lastObservedStore;
 
+  /// « Vrais visuels produits en grand », demande la planche. La photo
+  /// vient de la table partagée product_images : prise une fois sur un
+  /// article de liste, elle sert ici sans être reprise.
+  final String? imageUrl;
+
   const PriceAlertInfo({
     required this.id,
     required this.productName,
@@ -208,6 +214,7 @@ class PriceAlertInfo {
     this.lastNotifiedPrice,
     this.lastObservedPrice,
     this.lastObservedStore,
+    this.imageUrl,
   });
 
   factory PriceAlertInfo.fromJson(Map<String, dynamic> json) {
@@ -220,12 +227,14 @@ class PriceAlertInfo {
       isActive: json['is_active'] as bool? ?? true,
       createdByUserId: json['created_by_user_id'] as int? ?? 0,
       createdByName: json['created_by_name'] as String?,
-      lastTriggeredAt: json['last_triggered_at'] != null
-          ? DateTime.tryParse(json['last_triggered_at'] as String)
-          : null,
+      lastTriggeredAt:
+          json['last_triggered_at'] != null
+              ? DateTime.tryParse(json['last_triggered_at'] as String)
+              : null,
       lastNotifiedPrice: (json['last_notified_price'] as num?)?.toDouble(),
       lastObservedPrice: (lastObs?['price'] as num?)?.toDouble(),
       lastObservedStore: lastObs?['store_name'] as String?,
+      imageUrl: json['image_url'] as String?,
     );
   }
 }

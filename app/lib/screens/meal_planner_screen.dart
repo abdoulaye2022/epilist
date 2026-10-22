@@ -26,6 +26,12 @@ class MealPlannerScreen extends StatefulWidget {
 class _MealPlannerScreenState extends State<MealPlannerScreen> {
   List<RecipeSummary> _recipes = [];
   final Set<int> _selected = {};
+
+  /// Le jour choisi pour chaque recette : 1 = lundi ... 7 = dimanche.
+  /// « Lundi vert, Mardi jaune, Mercredi bleu », dit la planche. Une
+  /// recette sans jour reste dans le plan : le jour est facultatif.
+  final Map<int, int> _jours = {};
+
   int _people = 4;
   final TextEditingController _budget = TextEditingController();
   bool _loading = true;
@@ -60,6 +66,113 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _loading = false);
+    }
+  }
+
+  /// Les sept jours, ecrits. L'index vaut `weekday - 1`, la meme
+  /// convention que `DateTime.weekday` et que `recurring_lists.weekday`
+  /// cote serveur.
+  List<String> _nomsDesJours(AppLocalizations l10n) => [
+    l10n.weekdayMon,
+    l10n.weekdayTue,
+    l10n.weekdayWed,
+    l10n.weekdayThu,
+    l10n.weekdayFri,
+    l10n.weekdaySat,
+    l10n.weekdaySun,
+  ];
+
+  /// « Quel jour de la semaine ? », et le jour choisi ECRIT dessous.
+  ///
+  /// Les puces portent la couleur de la planche — « Lundi vert, Mardi
+  /// jaune, Mercredi bleu » — mais la couleur ne dit jamais seule ce
+  /// qui est choisi : la phrase sous les puces le dit aussi.
+  Widget _choixDuJour(AppLocalizations l10n, int recetteId) {
+    final noms = _nomsDesJours(l10n);
+    final choisi = _jours[recetteId];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.mealDayQuestion,
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: [
+            for (var jour = 1; jour <= 7; jour++)
+              ChoiceChip(
+                label: Text(noms[jour - 1]),
+                selected: choisi == jour,
+                showCheckmark: false,
+                selectedColor: AppTint.fill(
+                  AppColors.chart[(jour - 1) % AppColors.chart.length],
+                ),
+                onSelected:
+                    (pris) => setState(() {
+                      if (pris) {
+                        _jours[recetteId] = jour;
+                      } else {
+                        _jours.remove(recetteId);
+                      }
+                    }),
+              ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          choisi == null
+              ? l10n.mealDayNotChosen
+              : l10n.mealDayLabel(noms[choisi - 1]),
+          style: TextStyle(
+            fontSize: 16.5,
+            fontWeight: FontWeight.w700,
+            color:
+                choisi == null ? AppColors.textSecondary : AppColors.successInk,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Allume ou eteint l'etoile d'une recette, et le dit tout de suite.
+  Future<void> _basculerFavori(RecipeSummary recette) async {
+    final l10n = AppLocalizations.of(context)!;
+    final voulu = !recette.isFavorite;
+
+    // Reponse immediate : la planche demande qu'un controle reponde
+    // « tout de suite ». On remet l'etat d'avant si le serveur refuse.
+    setState(() {
+      _recipes = [
+        for (final r in _recipes)
+          r.id == recette.id ? r.copyWith(isFavorite: voulu) : r,
+      ];
+    });
+
+    try {
+      await context.read<IntelligenceService>().setRecipeFavorite(
+        recette.id,
+        voulu,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _recipes = [
+          for (final r in _recipes)
+            r.id == recette.id ? r.copyWith(isFavorite: !voulu) : r,
+        ];
+      });
+      SmartSnackBarManager.showErrorSnackBar(
+        context,
+        l10n.recipeFavoriteFailed,
+      );
     }
   }
 
@@ -101,6 +214,10 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
     try {
       await service.createMealPlan(
         recipeIds: _selected.toList(),
+        weekdays: {
+          for (final e in _jours.entries)
+            if (_selected.contains(e.key)) e.key: e.value,
+        },
         people: _people,
         budgetMax: _budgetMax,
         items: confirmed,
@@ -147,6 +264,30 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                       tint: AppColors.chart[n % AppColors.chart.length],
                       icon: Icons.restaurant_menu_outlined,
                       children: [
+                        // La photo du plat : elle dormait en base
+                        // (recipes.image_url) sans jamais sortir de
+                        // l'API.
+                        if (r.imageUrl != null && r.imageUrl!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                              child: AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Image.network(
+                                  r.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  // Une photo qui ne charge pas ne doit
+                                  // pas laisser un trou : la carte se
+                                  // referme sur son texte.
+                                  errorBuilder:
+                                      (_, _, _) => const SizedBox.shrink(),
+                                ),
+                              ),
+                            ),
+                          ),
                         if (r.description != null &&
                             r.description!.trim().isNotEmpty)
                           Padding(
@@ -169,6 +310,15 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                           style: theme.textTheme.bodyMedium,
                         ),
                         const SizedBox(height: AppSpacing.sm + 4),
+                        AppFavoriteButton(
+                          favorite: r.isFavorite,
+                          label:
+                              r.isFavorite
+                                  ? l10n.recipeFavoriteYes
+                                  : l10n.recipeFavoriteNo,
+                          onPressed: () => _basculerFavori(r),
+                        ),
+                        const SizedBox(height: AppSpacing.sm + 4),
                         AppCheckRow(
                           checked: _selected.contains(r.id),
                           title:
@@ -183,6 +333,13 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                                         : _selected.remove(r.id),
                               ),
                         ),
+                        // Le jour ne se demande qu'une fois le plat
+                        // choisi : sinon la carte poserait une question
+                        // sans objet.
+                        if (_selected.contains(r.id)) ...[
+                          const SizedBox(height: AppSpacing.sm + 4),
+                          _choixDuJour(l10n, r.id),
+                        ],
                       ],
                     ),
                   const SizedBox(height: AppSpacing.sm),

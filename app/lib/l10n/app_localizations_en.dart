@@ -6561,4 +6561,66 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get spaceInviteFailed =>
       'The invitation was not sent. Check the address, then try again.';
+
+  @override
+  String get storeFavoriteFailed => 'The star could not be saved. Try again.';
+
+  @override
+  String storeOpenToday(String open, String close) {
+    return 'Open today from $open to $close.';
+  }
+
+  @override
+  String get storeClosedToday => 'Closed today.';
+
+  @override
+  String get recipeFavoriteYes => 'Favourite: Yes, favourite recipe';
+
+  @override
+  String get recipeFavoriteNo => 'Favourite: No, not a favourite yet';
+
+  @override
+  String get recipeFavoriteFailed => 'The star could not be saved. Try again.';
+
+  @override
+  String mealDayLabel(String day) {
+    return 'Day: $day';
+  }
+
+  @override
+  String get mealDayNotChosen => 'Day: not chosen yet';
+
+  @override
+  String get mealDayQuestion => 'Which day of the week?';
+
+  @override
+  String get weekdayMon => 'Monday';
+
+  @override
+  String get weekdayTue => 'Tuesday';
+
+  @override
+  String get weekdayWed => 'Wednesday';
+
+  @override
+  String get weekdayThu => 'Thursday';
+
+  @override
+  String get weekdayFri => 'Friday';
+
+  @override
+  String get weekdaySat => 'Saturday';
+
+  @override
+  String get weekdaySun => 'Sunday';
+
+  @override
+  String get spaceInviteName => 'Person\'s name (optional)';
+
+  @override
+  String get spaceInvitePhone => 'Phone (optional)';
+
+  @override
+  String get spaceInvitePhoneHint =>
+      'The number is kept so you can follow up yourself. The invitation is sent by email.';
 }
