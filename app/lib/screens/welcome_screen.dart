@@ -78,7 +78,6 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                           const Spacer(flex: 3),
                           SizedBox(
-                            height: 52,
                             child: ElevatedButton(
                               onPressed: () => _navigateToLogin(context),
                               child: Text(l10n.getStarted),

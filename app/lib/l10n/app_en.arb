@@ -3330,5 +3330,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingOn": "State: On",
+  "settingOff": "State: Off"
 }

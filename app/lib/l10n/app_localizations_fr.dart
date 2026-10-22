@@ -6631,4 +6631,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String budgetDaysGaugeLabel(String elapsed, String total) {
     return 'Jour $elapsed sur $total de la période.';
   }
+
+  @override
+  String get settingOn => 'État : Activé';
+
+  @override
+  String get settingOff => 'État : Désactivé';
 }

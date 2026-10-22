@@ -245,7 +245,6 @@ class _SignUpPageState extends State<SignUpPage> {
         // Bouton Google corrigé
         SizedBox(
           width: double.infinity,
-          height: 50,
           child: OutlinedButton.icon(
             onPressed:
                 (_isGoogleLoading || _isAppleLoading || _isLoading)
@@ -283,7 +282,6 @@ class _SignUpPageState extends State<SignUpPage> {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            height: 50,
             child: ElevatedButton.icon(
               onPressed:
                   (_isGoogleLoading || _isAppleLoading || _isLoading)
@@ -472,7 +470,6 @@ class _SignUpPageState extends State<SignUpPage> {
           // Bouton d'inscription normal
           SizedBox(
             width: double.infinity,
-            height: 52,
             child: ElevatedButton(
               onPressed: (_isLoading || !_acceptTerms) ? null : _signUp,
               child:

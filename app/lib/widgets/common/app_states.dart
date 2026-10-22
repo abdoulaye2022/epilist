@@ -349,3 +349,112 @@ class AppWarningLine extends StatelessWidget {
     );
   }
 }
+
+/// Un réglage : son nom, ce qu'il fait, et son état ÉCRIT.
+///
+/// Remplace `SwitchListTile`, dont l'état ne se lit que dans la
+/// position d'un curseur et sa couleur. La planche l'interdit :
+///
+///   « Chaque contrôle répond tout de suite, avec son état écrit en
+///     texte. »
+///
+/// Les réglages d'intelligence, les préférences de courriel et les
+/// fournisseurs portaient tous le même défaut, chacun avec sa propre
+/// typographie en prime.
+class AppSwitchTile extends StatelessWidget {
+  const AppSwitchTile({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    required this.stateLabel,
+    this.subtitle,
+    this.icon,
+  });
+
+  final String title;
+
+  /// Ce que fait le réglage, en une phrase.
+  final String? subtitle;
+
+  /// « Activé » / « Désactivé », déjà traduit. Écrit sous le nom, en
+  /// gras : c'est la réponse à « est-ce en marche ? ».
+  final String stateLabel;
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      toggled: value,
+      child: InkWell(
+        onTap: () => onChanged(!value),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSizes.row),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm + 2,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, size: 26, color: AppColors.primary),
+                  const SizedBox(width: AppSpacing.sm + 4),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 17.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 16,
+                            height: 1.35,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 4),
+                      Text(
+                        stateLabel,
+                        style: TextStyle(
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w700,
+                          color:
+                              value
+                                  ? AppColors.successInk
+                                  : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                ExcludeSemantics(
+                  child: Transform.scale(
+                    scale: 1.25,
+                    child: Switch(value: value, onChanged: onChanged),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

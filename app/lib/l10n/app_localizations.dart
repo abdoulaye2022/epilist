@@ -11946,6 +11946,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Jour {elapsed} sur {total} de la période.'**
   String budgetDaysGaugeLabel(String elapsed, String total);
+
+  /// No description provided for @settingOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'État : Activé'**
+  String get settingOn;
+
+  /// No description provided for @settingOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'État : Désactivé'**
+  String get settingOff;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 // screens/suppliers_screen.dart - Fournisseurs (§22, Phase 3).
 // CRUD léger : nom, contact, téléphone, email, notes, actif/inactif.
 // Écriture réservée à manage_suppliers (le serveur tranche).
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -113,12 +114,12 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                           const SizedBox(height: AppSpacing.sm),
                         ],
                         if (existing != null)
-                          SwitchListTile(
-                            title: Text(l10n.supplierInactive),
+                          AppSwitchTile(
+                            title: l10n.supplierInactive,
+                            stateLabel:
+                                !active ? l10n.settingOn : l10n.settingOff,
                             value: !active,
                             onChanged: (v) => setLocal(() => active = !v),
-                            contentPadding: EdgeInsets.zero,
-                            dense: true,
                           ),
                         const SizedBox(height: AppSpacing.sm),
                         AppDialogActions(

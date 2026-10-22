@@ -1,6 +1,7 @@
 // screens/intelligence_settings_screen.dart - Réglages « Intelligence
 // EpiList » (§43) : interrupteurs stockés en SharedPreferences, sauf
 // le partage communautaire (§33) qui est un consentement SERVEUR.
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -85,17 +86,13 @@ class _IntelligenceSettingsScreenState
     required String key,
     required void Function(bool) apply,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: SwitchListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-        ),
+      child: AppSwitchTile(
+        title: title,
+        subtitle: subtitle,
+        stateLabel: value ? l10n.settingOn : l10n.settingOff,
         value: value,
         onChanged: (v) {
           setState(() => apply(v));
@@ -152,21 +149,11 @@ class _IntelligenceSettingsScreenState
                   if (_communityShare != null)
                     Card(
                       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: SwitchListTile(
-                        title: Text(
-                          l10n.communityShareTitle,
-                          style: const TextStyle(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: Text(
-                          l10n.communityShareHint,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
+                      child: AppSwitchTile(
+                        title: l10n.communityShareTitle,
+                        subtitle: l10n.communityShareHint,
+                        stateLabel:
+                            _communityShare! ? l10n.settingOn : l10n.settingOff,
                         value: _communityShare!,
                         onChanged: _setCommunityShare,
                       ),

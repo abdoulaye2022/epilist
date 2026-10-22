@@ -173,4 +173,58 @@ void main() {
       expect(find.byType(Icon), findsOneWidget);
     });
   });
+
+  group('AppSwitchTile', () {
+    testWidgets('un reglage dit son nom, son role ET son etat', (tester) async {
+      await poser(
+        tester,
+        AppSwitchTile(
+          title: 'Suggestions intelligentes',
+          subtitle: 'Propose les produits que vous rachetez souvent.',
+          stateLabel: 'Etat : Active',
+          value: true,
+          onChanged: (_) {},
+        ),
+      );
+      expect(find.text('Suggestions intelligentes'), findsOneWidget);
+      expect(
+        find.text('Propose les produits que vous rachetez souvent.'),
+        findsOneWidget,
+      );
+      expect(find.text('Etat : Active'), findsOneWidget);
+    });
+
+    testWidgets('la ligne entiere bascule le reglage', (tester) async {
+      // SwitchListTile n'offrait que le curseur ; la planche demande une
+      // cible genereuse, et toute la ligne en est une.
+      bool? recu;
+      await poser(
+        tester,
+        AppSwitchTile(
+          title: 'Prevision de budget',
+          stateLabel: 'Etat : Desactive',
+          value: false,
+          onChanged: (v) => recu = v,
+        ),
+      );
+      await tester.tap(find.text('Prevision de budget'));
+      expect(recu, isTrue);
+    });
+
+    testWidgets('la ligne fait au moins 64 dp', (tester) async {
+      await poser(
+        tester,
+        AppSwitchTile(
+          title: 'Court',
+          stateLabel: 'Etat : Active',
+          value: true,
+          onChanged: (_) {},
+        ),
+      );
+      expect(
+        tester.getSize(find.byType(AppSwitchTile)).height,
+        greaterThanOrEqualTo(AppSizes.row),
+      );
+    });
+  });
 }

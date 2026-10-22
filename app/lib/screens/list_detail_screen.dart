@@ -725,10 +725,12 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   : BorderSide.none,
         ),
         child: ListTile(
+          minVerticalPadding: AppSpacing.sm + 2,
           leading: _buildCheckbox(item),
           title: Text(
             item.productName,
             style: TextStyle(
+              fontSize: 19,
               decoration: item.isPurchased ? TextDecoration.lineThrough : null,
               color:
                   currentList.isReadOnly
@@ -739,7 +741,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                           ? AppColors.textSecondary
                           : AppColors.textPrimary),
               fontWeight:
-                  currentList.isReadOnly ? FontWeight.normal : FontWeight.w500,
+                  currentList.isReadOnly ? FontWeight.w600 : FontWeight.w700,
             ),
           ),
           subtitle: _buildItemSubtitle(item),
@@ -796,8 +798,8 @@ class _ListDetailViewState extends State<_ListDetailView> {
   Widget _buildCheckbox(ListItem item) {
     if (currentList.isReadOnly) {
       return Container(
-        width: 24,
-        height: 24,
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color:
@@ -810,43 +812,60 @@ class _ListDetailViewState extends State<_ListDetailView> {
         ),
         child:
             item.isPurchased
-                ? Icon(Icons.check, size: 16, color: AppColors.primary)
+                ? Icon(Icons.check, size: 22, color: AppColors.primary)
                 : null,
       );
     }
 
-    return Checkbox(
-      value: item.isPurchased,
-      onChanged:
-          currentList.canManageItems
-              ? (value) {
-                context.read<ListItemBloc>().add(
-                  TogglePurchasedStatus(
-                    listId: currentList.id,
-                    itemId: item.id,
-                    isPurchased: value!,
-                  ),
-                );
-              }
-              : (value) => _showPermissionDenied(
-                AppLocalizations.of(context)!.permActionEditStatus,
-              ),
-      activeColor: AppColors.primary,
-      fillColor:
-          currentList.canManageItems
-              ? null
-              : WidgetStateProperty.all(AppColors.border),
+    // Agrandie d'un tiers : la planche demande une cible touchable
+    // genereuse, la ou Material se contente de 24 dp de dessin.
+    return Transform.scale(
+      scale: 1.35,
+      child: Checkbox(
+        value: item.isPurchased,
+        onChanged:
+            currentList.canManageItems
+                ? (value) {
+                  context.read<ListItemBloc>().add(
+                    TogglePurchasedStatus(
+                      listId: currentList.id,
+                      itemId: item.id,
+                      isPurchased: value!,
+                    ),
+                  );
+                }
+                : (value) => _showPermissionDenied(
+                  AppLocalizations.of(context)!.permActionEditStatus,
+                ),
+        activeColor: AppColors.primary,
+        fillColor:
+            currentList.canManageItems
+                ? null
+                : WidgetStateProperty.all(AppColors.border),
+      ),
     );
   }
 
   Widget _buildItemSubtitle(ListItem item) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // La planche : « chaque controle repond tout de suite, avec son
+        // etat ECRIT en texte ». Une rature et un gris ne suffisent pas.
+        if (item.isPurchased)
+          Text(
+            l10n.shoppingInBasket,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.successInk,
+            ),
+          ),
         Row(
           children: [
             Text(
-              'Qté: ${item.quantity}',
+              '${l10n.quantity}: ${item.quantity}',
               style: TextStyle(
                 color:
                     currentList.isReadOnly

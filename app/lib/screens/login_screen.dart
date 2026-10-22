@@ -184,7 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: AppSpacing.sm),
           SizedBox(
-            height: 52,
             child: ElevatedButton(
               onPressed: _anyLoading ? null : _login,
               child:
@@ -230,7 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: 50,
           child: OutlinedButton.icon(
             onPressed: _anyLoading ? null : _signInWithGoogle,
             style: OutlinedButton.styleFrom(backgroundColor: AppColors.surface),
@@ -262,7 +260,6 @@ class _LoginScreenState extends State<LoginScreen> {
         if (Platform.isIOS) ...[
           const SizedBox(height: AppSpacing.sm + 4),
           SizedBox(
-            height: 50,
             child: ElevatedButton.icon(
               onPressed: _anyLoading ? null : _signInWithApple,
               style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 // lib/screens/email_preferences_screen.dart
 
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -363,25 +364,13 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return SwitchListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-      ),
+    final l10n = AppLocalizations.of(context)!;
+    return AppSwitchTile(
+      title: title,
+      subtitle: subtitle,
+      stateLabel: value ? l10n.settingOn : l10n.settingOff,
       value: value,
       onChanged: onChanged,
-      activeThumbColor: AppColors.onPrimary,
-      activeTrackColor: AppColors.primary,
-      contentPadding: EdgeInsets.zero,
-      dense: true,
     );
   }
 }

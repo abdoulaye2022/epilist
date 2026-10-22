@@ -580,7 +580,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   // Verification button
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
                     child: ElevatedButton(
                       onPressed:
                           (_isLoading || !_isCodeComplete) ? null : _verifyCode,
