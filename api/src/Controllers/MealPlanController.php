@@ -38,11 +38,15 @@ class MealPlanController
     {
         $userId = (int) $request->getAttribute('auth_id');
 
-        $recipes = Recipe::with('ingredients')
+        $recipes = Recipe::with(['ingredients', 'favorites'])
             ->where('active', true)
             ->where(fn($q) => $q->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)))
             ->orderBy('name')
             ->get()
+            // Les favorites d'abord : la planche en fait une grille a
+            // part. Le tri se fait ici et non en SQL, parce que le
+            // favori appartient au membre, pas a la recette.
+            ->sortByDesc(fn($r) => $r->isFavoriteFor($userId) ? 1 : 0)
             ->map(fn($r) => [
                 'id' => $r->id,
                 'name' => $r->name,
@@ -50,6 +54,12 @@ class MealPlanController
                 'servings' => $r->servings,
                 'preparation_time' => $r->preparation_time,
                 'category' => $r->category,
+                // La photo du plat existait en base depuis le debut
+                // (recipes.image_url) : c'est cette reponse qui ne la
+                // transmettait pas, et la planche la demande sur chaque
+                // carte de jour.
+                'image_url' => $r->image_url,
+                'is_favorite' => $r->isFavoriteFor($userId),
                 'is_mine' => $r->user_id !== null,
                 'ingredients_count' => $r->ingredients->count(),
             ])->values();
@@ -57,6 +67,49 @@ class MealPlanController
         return $this->json($response, [
             'success' => true,
             'data' => ['recipes' => $recipes],
+        ]);
+    }
+
+    /**
+     * PUT /recipes/{id}/favorite — met cette recette en favori.
+     *
+     * Idempotent, comme l'etoile des magasins.
+     */
+    public function setRecipeFavorite(Request $request, Response $response, array $args): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        $recette = Recipe::find((int) $args['id']);
+        if (!$recette || !$recette->active) {
+            return $this->json($response, ['success' => false, 'message' => 'Recette introuvable'], 404);
+        }
+
+        \App\Models\RecipeFavorite::firstOrCreate([
+            'recipe_id' => $recette->id,
+            'user_id' => $userId,
+        ]);
+
+        return $this->json($response, [
+            'success' => true,
+            'data' => ['id' => $recette->id, 'is_favorite' => true],
+        ]);
+    }
+
+    /** DELETE /recipes/{id}/favorite — retire cette recette des favoris. */
+    public function unsetRecipeFavorite(Request $request, Response $response, array $args): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        $recette = Recipe::find((int) $args['id']);
+        if (!$recette) {
+            return $this->json($response, ['success' => false, 'message' => 'Recette introuvable'], 404);
+        }
+
+        \App\Models\RecipeFavorite::where('recipe_id', $recette->id)
+            ->where('user_id', $userId)
+            ->delete();
+
+        return $this->json($response, [
+            'success' => true,
+            'data' => ['id' => $recette->id, 'is_favorite' => false],
         ]);
     }
 
@@ -71,6 +124,35 @@ class MealPlanController
         $userId = (int) $request->getAttribute('auth_id');
         $data = $request->getParsedBody() ?? [];
         $recipeIds = array_filter(array_map('intval', (array) ($data['recipe_ids'] ?? [])));
+        // « Lundi vert, Mardi jaune, Mercredi bleu ». Facultatif : un
+        // plan sans jours reste un plan, et c'est ce que l'application
+        // envoyait jusqu'ici.
+        //   assignments: [{recipe_id: 3, weekday: 1, meal_slot: 'dinner'}]
+        $jours = [];
+        foreach ((array) ($data['assignments'] ?? []) as $a) {
+            $rid = (int) ($a['recipe_id'] ?? 0);
+            $jour = $a['weekday'] ?? null;
+            $moment = $a['meal_slot'] ?? null;
+            if ($rid <= 0) {
+                continue;
+            }
+            if ($jour !== null && (!is_numeric($jour) || (int) $jour < 1 || (int) $jour > 7)) {
+                return $this->json($response, [
+                    'success' => false,
+                    'message' => 'weekday doit valoir de 1 (lundi) a 7 (dimanche)',
+                ], 422);
+            }
+            if ($moment !== null && !in_array($moment, ['lunch', 'dinner'], true)) {
+                return $this->json($response, [
+                    'success' => false,
+                    'message' => "meal_slot doit valoir 'lunch' ou 'dinner'",
+                ], 422);
+            }
+            $jours[$rid] = [
+                'weekday' => $jour === null ? null : (int) $jour,
+                'meal_slot' => $moment,
+            ];
+        }
         $people = max(1, min(20, (int) ($data['people'] ?? 4)));
         $budgetMax = isset($data['budget_max']) && is_numeric($data['budget_max'])
             ? (float) $data['budget_max'] : null;
@@ -80,7 +162,7 @@ class MealPlanController
         }
 
         try {
-            $recipes = Recipe::with('ingredients')
+            $recipes = Recipe::with(['ingredients', 'favorites'])
                 ->whereIn('id', $recipeIds)
                 ->where('active', true)
                 ->where(fn($q) => $q->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)))
@@ -199,6 +281,35 @@ class MealPlanController
         $userId = (int) $request->getAttribute('auth_id');
         $data = $request->getParsedBody() ?? [];
         $recipeIds = array_filter(array_map('intval', (array) ($data['recipe_ids'] ?? [])));
+        // « Lundi vert, Mardi jaune, Mercredi bleu ». Facultatif : un
+        // plan sans jours reste un plan, et c'est ce que l'application
+        // envoyait jusqu'ici.
+        //   assignments: [{recipe_id: 3, weekday: 1, meal_slot: 'dinner'}]
+        $jours = [];
+        foreach ((array) ($data['assignments'] ?? []) as $a) {
+            $rid = (int) ($a['recipe_id'] ?? 0);
+            $jour = $a['weekday'] ?? null;
+            $moment = $a['meal_slot'] ?? null;
+            if ($rid <= 0) {
+                continue;
+            }
+            if ($jour !== null && (!is_numeric($jour) || (int) $jour < 1 || (int) $jour > 7)) {
+                return $this->json($response, [
+                    'success' => false,
+                    'message' => 'weekday doit valoir de 1 (lundi) a 7 (dimanche)',
+                ], 422);
+            }
+            if ($moment !== null && !in_array($moment, ['lunch', 'dinner'], true)) {
+                return $this->json($response, [
+                    'success' => false,
+                    'message' => "meal_slot doit valoir 'lunch' ou 'dinner'",
+                ], 422);
+            }
+            $jours[$rid] = [
+                'weekday' => $jour === null ? null : (int) $jour,
+                'meal_slot' => $moment,
+            ];
+        }
         $items = $data['items'] ?? [];
         $people = max(1, min(20, (int) ($data['people'] ?? 4)));
 
@@ -211,7 +322,7 @@ class MealPlanController
             \App\Services\SpaceAccessService::assertWrite($space, $userId, 'add_items');
             $planId = null;
             $shoppingList = null;
-            DB::connection()->transaction(function () use ($userId, $space, $data, $recipeIds, $items, $people, &$planId, &$shoppingList) {
+            DB::connection()->transaction(function () use ($userId, $space, $data, $recipeIds, $jours, $items, $people, &$planId, &$shoppingList) {
                 $plan = MealPlan::create([
                     'user_id' => $userId,
                     'space_id' => $space->id,
@@ -228,6 +339,8 @@ class MealPlanController
                         'meal_plan_id' => $plan->id,
                         'recipe_id' => $rid,
                         'servings' => $people,
+                        'weekday' => $jours[$rid]['weekday'] ?? null,
+                        'meal_slot' => $jours[$rid]['meal_slot'] ?? null,
                     ]);
                 }
 

@@ -401,6 +401,25 @@ class SpaceController
         $email = strtolower(trim((string) ($data['email'] ?? '')));
         $role = (string) ($data['role'] ?? SpaceMember::ROLE_MEMBER);
 
+        // La planche demande « nom, courriel ou telephone ».
+        //
+        // Le NOM sert tout de suite : il personnalise le courriel
+        // d'invitation, et la liste des invitations en attente cesse
+        // d'etre une colonne d'adresses.
+        //
+        // Le TELEPHONE est enregistre, mais rien ne l'envoie :
+        // l'application n'a aucun fournisseur SMS. Il permet a qui
+        // invite de relancer la personne lui-meme. L'envoi reste par
+        // courriel, et l'adresse reste donc obligatoire.
+        $nom = trim((string) ($data['invitee_name'] ?? ''));
+        $telephone = trim((string) ($data['invitee_phone'] ?? ''));
+        if (mb_strlen($nom) > 120) {
+            return $this->json($response, ['success' => false, 'code' => 'INVITEE_NAME_TOO_LONG'], 422);
+        }
+        if ($telephone !== '' && !preg_match('/^[0-9+().\s-]{6,40}$/', $telephone)) {
+            return $this->json($response, ['success' => false, 'code' => 'INVALID_PHONE'], 422);
+        }
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return $this->json($response, ['success' => false, 'code' => 'INVALID_EMAIL'], 422);
         }
@@ -432,6 +451,8 @@ class SpaceController
         $invitation = SpaceInvitation::create([
             'space_id' => $spaceId,
             'email' => $email,
+            'invitee_name' => $nom !== '' ? $nom : null,
+            'invitee_phone' => $telephone !== '' ? $telephone : null,
             'role' => $role,
             'token' => bin2hex(random_bytes(32)),
             'status' => SpaceInvitation::STATUS_PENDING,
@@ -518,14 +539,17 @@ class SpaceController
                 $lang === 'en'
                     ? $inviterName . ' invites you to EpiList'
                     : $inviterName . ' vous invite sur EpiList',
-                [['email' => $invitation->email]],
+                $invitation->invitee_name
+                    ? [['email' => $invitation->email, 'name' => $invitation->invitee_name]]
+                    : [['email' => $invitation->email]],
                 \App\Services\EmailTemplates::spaceInvitationEmail(
                     $inviterName,
                     $spaceName,
                     $space->type,
                     SpaceInvitation::TTL_DAYS,
                     $lang,
-                    $existingUser !== null
+                    $existingUser !== null,
+                    $invitation->invitee_name
                 )
             );
         } catch (\Throwable $e) {
@@ -543,6 +567,8 @@ class SpaceController
             'space_name' => $inv->space?->name,
             'space_type' => $inv->space?->type,
             'email' => $inv->email,
+            'invitee_name' => $inv->invitee_name,
+            'invitee_phone' => $inv->invitee_phone,
             'role' => $inv->role,
             'status' => $inv->status,
             'invited_by_name' => trim(($inv->inviter?->first_name ?? '') . ' ' . ($inv->inviter?->last_name ?? '')),

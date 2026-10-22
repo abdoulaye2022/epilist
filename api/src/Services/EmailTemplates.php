@@ -432,7 +432,8 @@ class EmailTemplates
         string $spaceType,
         int $expiresInDays,
         string $lang = 'fr',
-        bool $hasAccount = false
+        bool $hasAccount = false,
+        ?string $inviteeName = null
     ): string {
         $kind = match ($spaceType) {
             'household' => $lang === 'en' ? 'household' : 'foyer',
@@ -444,10 +445,17 @@ class EmailTemplates
         $inviter = htmlspecialchars($inviterName, ENT_QUOTES, 'UTF-8');
         $space = htmlspecialchars($spaceName, ENT_QUOTES, 'UTF-8');
 
+        // « Bonjour Sara » plutot que « Bonjour ». Le nom est facultatif :
+        // l'invitation par la seule adresse reste possible, et c'est
+        // ainsi que l'application l'envoyait jusqu'ici.
+        $nom = $inviteeName !== null && trim($inviteeName) !== ''
+            ? ' ' . htmlspecialchars(trim($inviteeName), ENT_QUOTES, 'UTF-8')
+            : '';
+
         if ($lang === 'en') {
             $title = 'You have been invited to EpiList';
             $body = "
-                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Hello,</p>
+                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Hello{$nom},</p>
                 <p style='margin:0 0 20px; font-size:15px; color:#374151; line-height:1.6;'>
                     <strong>{$inviter}</strong> invites you to join the {$kind}
                     <strong>{$space}</strong> on EpiList — to share shopping
@@ -463,7 +471,7 @@ class EmailTemplates
         } else {
             $title = 'Vous êtes invité sur EpiList';
             $body = "
-                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Bonjour,</p>
+                <p style='margin:0 0 16px; font-size:15px; color:#1a202c;'>Bonjour{$nom},</p>
                 <p style='margin:0 0 20px; font-size:15px; color:#374151; line-height:1.6;'>
                     <strong>{$inviter}</strong> vous invite à rejoindre le {$kind}
                     <strong>{$space}</strong> sur EpiList — pour partager listes

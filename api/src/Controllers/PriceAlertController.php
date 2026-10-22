@@ -38,7 +38,7 @@ class PriceAlertController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    private function format(PriceAlert $a, ?array $lastObs = null): array
+    private function format(PriceAlert $a, ?array $lastObs = null, ?string $imageUrl = null): array
     {
         return [
             'id' => (int) $a->id,
@@ -53,6 +53,10 @@ class PriceAlertController
             'last_triggered_at' => $a->last_triggered_at?->toIso8601String(),
             'last_notified_price' => $a->last_notified_price !== null ? (float) $a->last_notified_price : null,
             'last_observed' => $lastObs,
+            // « Vrais visuels produits en grand », dit la planche. La
+            // photo vient de product_images : prise une fois sur un
+            // article de liste, elle sert ici sans etre reprise.
+            'image_url' => $imageUrl,
             'created_at' => $a->created_at?->toIso8601String(),
         ];
     }
@@ -94,11 +98,21 @@ class PriceAlertController
             }
         }
 
+        // Les photos des produits suivis, en UNE requete pour toutes.
+        $images = \App\Models\ProductImage::pourClefs(
+            $space->id,
+            $alerts->pluck('normalized_name')->all()
+        );
+
         return $this->json($response, [
             'success' => true,
             'data' => [
                 'alerts' => $alerts
-                    ->map(fn($a) => $this->format($a, $lastByProduct[$a->normalized_name] ?? null))
+                    ->map(fn($a) => $this->format(
+                        $a,
+                        $lastByProduct[$a->normalized_name] ?? null,
+                        $images[$a->normalized_name] ?? null
+                    ))
                     ->values(),
             ],
         ]);

@@ -21,11 +21,23 @@ class Store extends Model
         'household_id',
         'name',
         'slug',
+        'address',
+        'city',
+        'postal_code',
+        'latitude',
+        'longitude',
+        'opening_hours',
     ];
 
     protected $casts = [
         'user_id' => 'integer',
         'household_id' => 'integer',
+        // Les heures d'ouverture sont un JSON par jour :
+        //   {"mon":["08:00","21:00"], "sun":null}
+        // `null` ou jour absent = ferme.
+        'opening_hours' => 'array',
+        'latitude' => 'float',
+        'longitude' => 'float',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -39,6 +51,25 @@ class Store extends Model
     public function categoryOrders(): HasMany
     {
         return $this->hasMany(StoreCategoryOrder::class)->orderBy('position');
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(StoreFavorite::class);
+    }
+
+    /**
+     * Ce magasin est-il un favori de cette personne ?
+     *
+     * Le favori est porte par le MEMBRE : dans un espace partage, le
+     * magasin de quartier de l'un n'est pas celui de l'autre.
+     */
+    public function isFavoriteFor(int $userId): bool
+    {
+        if ($this->relationLoaded('favorites')) {
+            return $this->favorites->contains('user_id', $userId);
+        }
+        return $this->favorites()->where('user_id', $userId)->exists();
     }
 
     /**

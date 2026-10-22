@@ -33,4 +33,23 @@ class Recipe extends Model
     {
         return $this->hasMany(RecipeIngredient::class, 'recipe_id');
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(RecipeFavorite::class, 'recipe_id');
+    }
+
+    /**
+     * Cette recette est-elle un favori de cette personne ?
+     *
+     * Jamais une colonne sur la recette : les recettes livrees avec
+     * l'application sont partagees par tous les comptes.
+     */
+    public function isFavoriteFor(int $userId): bool
+    {
+        if ($this->relationLoaded('favorites')) {
+            return $this->favorites->contains('user_id', $userId);
+        }
+        return $this->favorites()->where('user_id', $userId)->exists();
+    }
 }

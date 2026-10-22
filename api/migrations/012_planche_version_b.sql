@@ -15,7 +15,8 @@
 --   3. Planifier mes repas — « Lundi vert, Mardi jaune, Mercredi bleu » :
 --                         aucun lien entre un plat et un jour.
 --   4. Recettes favorites  — la grille de la planche n'avait rien a
---                         trier.
+--                         trier. Le favori est porte par le MEMBRE :
+--                         les recettes livrees sont partagees.
 --   5. Alertes de prix  — « vrais visuels produits en grand » : aucune
 --                         image joignable a un produit.
 --
@@ -98,21 +99,42 @@ CREATE TABLE IF NOT EXISTS store_favorites (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
--- 2) recipes.is_favorite : la grille de recettes favorites de la planche
+-- 2) recipe_favorites : la grille de recettes favorites de la planche
 -- ----------------------------------------------------------------------------
+-- UNE FAUSSE ROUTE, corrigee avant d'etre poussee : une colonne
+-- `recipes.is_favorite` avait d'abord ete posee. Elle etait fausse par
+-- construction — les huit recettes livrees avec l'application ont
+-- `user_id IS NULL`, donc elles sont PARTAGEES : un favori pose par une
+-- personne aurait valu pour tout le monde. Comme pour les magasins, le
+-- favori appartient au MEMBRE.
+--
+-- La colonne est retiree ici si elle traine (elle n'a jamais porte la
+-- moindre valeur a 1).
 SET @c := (SELECT COUNT(*) FROM information_schema.COLUMNS
     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'recipes' AND COLUMN_NAME = 'is_favorite');
-SET @sql := IF(@c = 0,
-    'ALTER TABLE recipes ADD COLUMN is_favorite TINYINT(1) NOT NULL DEFAULT 0 AFTER active',
-    'SELECT "recipes.is_favorite deja presente"');
+SET @sql := IF(@c = 1,
+    'ALTER TABLE recipes DROP COLUMN is_favorite',
+    'SELECT "recipes.is_favorite deja absente"');
 PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
 
 SET @c := (SELECT COUNT(*) FROM information_schema.STATISTICS
     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'recipes' AND INDEX_NAME = 'idx_recipes_favorite');
-SET @sql := IF(@c = 0,
-    'CREATE INDEX idx_recipes_favorite ON recipes(user_id, is_favorite, active)',
-    'SELECT "index favori deja present"');
+SET @sql := IF(@c > 0,
+    'DROP INDEX idx_recipes_favorite ON recipes',
+    'SELECT "index favori deja absent"');
 PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+CREATE TABLE IF NOT EXISTS recipe_favorites (
+    id INT NOT NULL AUTO_INCREMENT,
+    recipe_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_recipe_favorite (recipe_id, user_id),
+    KEY idx_recipe_fav_user (user_id),
+    CONSTRAINT fk_recipe_fav_recipe FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
+    CONSTRAINT fk_recipe_fav_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
 -- 3) meal_plan_recipes : le plat trouve son jour
@@ -212,8 +234,10 @@ SELECT
         AND COLUMN_NAME IN ('address','city','postal_code','latitude','longitude','opening_hours')) AS magasin_6_colonnes,
     (SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()
         AND TABLE_NAME = 'store_favorites') AS table_favoris,
+    (SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = 'recipe_favorites') AS table_recettes_favorites,
     (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
-        AND TABLE_NAME = 'recipes' AND COLUMN_NAME = 'is_favorite') AS recette_favorite,
+        AND TABLE_NAME = 'recipes' AND COLUMN_NAME = 'is_favorite') AS colonne_fausse_route_restante,
     (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
         AND TABLE_NAME = 'meal_plan_recipes' AND COLUMN_NAME IN ('weekday','meal_slot')) AS repas_2_colonnes,
     (SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE()

@@ -451,6 +451,10 @@ $app->group('', function ($group) {
 
     // 🍽️ Planificateur de repas
     $group->get('/recipes', [MealPlanController::class, 'recipes']);
+    // Le favori appartient au MEMBRE : les recettes livrees avec
+    // l'application sont partagees par tous les comptes.
+    $group->put('/recipes/{id:[0-9]+}/favorite', [MealPlanController::class, 'setRecipeFavorite']);
+    $group->delete('/recipes/{id:[0-9]+}/favorite', [MealPlanController::class, 'unsetRecipeFavorite']);
     $group->post('/meal-plans/preview', [MealPlanController::class, 'preview']);
     $group->post('/meal-plans', [MealPlanController::class, 'store']);
 
@@ -459,6 +463,11 @@ $app->group('', function ($group) {
     $group->put('/stores/{id}', [StoreController::class, 'update']);
     $group->delete('/stores/{id}', [StoreController::class, 'destroy']);
     $group->post('/stores/{id}/merge', [StoreController::class, 'merge']);
+    // L'etoile « Favori » vivait dans les preferences de l'APPAREIL :
+    // perdue au changement de telephone, invisible pour les autres
+    // membres de l'espace.
+    $group->put('/stores/{id}/favorite', [StoreController::class, 'setFavorite']);
+    $group->delete('/stores/{id}/favorite', [StoreController::class, 'unsetFavorite']);
     $group->get('/stores/{id}/category-order', [StoreController::class, 'getCategoryOrder']);
     $group->put('/stores/{id}/category-order', [StoreController::class, 'setCategoryOrder']);
 

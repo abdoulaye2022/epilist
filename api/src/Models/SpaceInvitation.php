@@ -21,7 +21,7 @@ class SpaceInvitation extends Model
     public const TTL_DAYS = 14;
 
     protected $fillable = [
-        'space_id', 'email', 'role', 'token', 'status',
+        'space_id', 'email', 'invitee_name', 'invitee_phone', 'role', 'token', 'status',
         'invited_by', 'expires_at', 'accepted_at', 'declined_at', 'revoked_at',
     ];
 

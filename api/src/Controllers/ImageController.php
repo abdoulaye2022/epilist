@@ -131,6 +131,23 @@ class ImageController
             $item->image_url = $url;
             $item->save();
 
+            // La photo appartient au PRODUIT, pas a cet article-ci : la
+            // meme boite de pates photographiee aujourd'hui doit
+            // illustrer l'alerte de prix de la semaine prochaine, et la
+            // suggestion du mois suivant. Un echec ici ne doit jamais
+            // faire perdre la photo qui vient d'etre prise.
+            try {
+                $liste = \App\Models\ShoppingList::find($listId);
+                \App\Models\ProductImage::poser(
+                    $liste?->space_id,
+                    (string) $item->product_name,
+                    $url,
+                    (int) $userId
+                );
+            } catch (\Throwable $e) {
+                error_log('[ImageController] product_images: ' . $e->getMessage());
+            }
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $item->fresh(),
