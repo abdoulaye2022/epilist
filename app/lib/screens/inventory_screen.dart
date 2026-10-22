@@ -236,7 +236,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   labelText: '${l10n.inventoryQuantity} *',
                                   errorText: quantityError,
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(AppRadius.sm),
                                   ),
                                   isDense: true,
                                 ),
@@ -255,7 +255,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   labelText: l10n.inventoryUnit,
                                   hintText: 'kg',
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(AppRadius.sm),
                                   ),
                                   isDense: true,
                                 ),
@@ -274,7 +274,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             helperText: l10n.inventoryMinQuantityHint,
                             errorText: minError,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             isDense: true,
                           ),
@@ -295,7 +295,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             helperText: l10n.inventoryReorderQuantityHint,
                             errorText: reorderError,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             isDense: true,
                           ),

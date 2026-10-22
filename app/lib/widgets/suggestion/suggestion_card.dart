@@ -22,7 +22,7 @@ class SuggestionCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: AppCard.tight(
         radius: 16,
         bordered: false,
@@ -53,7 +53,7 @@ class SuggestionCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [AppColors.infoTint, AppColors.infoBorder],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(
         Icons.shopping_basket_outlined,
@@ -119,7 +119,7 @@ class SuggestionCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: AppTint.fill(color),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppTint.line(color)),
       ),
       child: Row(
@@ -156,7 +156,7 @@ class SuggestionCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: AppColors.warningTint,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -205,7 +205,7 @@ class SuggestionCard extends StatelessWidget {
           onDelete();
         }
       },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       itemBuilder:
           (context) => [
             PopupMenuItem(
@@ -232,7 +232,7 @@ class SuggestionCard extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: AppColors.background,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Icon(Icons.more_vert, color: AppColors.textSecondary, size: 18),
       ),

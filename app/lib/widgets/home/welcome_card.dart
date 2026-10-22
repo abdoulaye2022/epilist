@@ -86,7 +86,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.infoTint),
         boxShadow: [
           BoxShadow(
@@ -118,7 +118,7 @@ class _WelcomeCardState extends State<WelcomeCard> {
               // Bouton de fermeture
               InkWell(
                 onTap: _dismissCard,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   child: Icon(Icons.close, size: 20, color: AppColors.accent),

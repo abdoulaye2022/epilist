@@ -248,7 +248,7 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.onPrimary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Text(
                       l10n.retry,

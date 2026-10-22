@@ -63,14 +63,14 @@ class _LogoutConfirmationDialogState extends State<LogoutConfirmationDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
         width: double.infinity,
         constraints: const BoxConstraints(maxWidth: 400),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         child: BlocListener<AuthBloc, AuthState>(

@@ -171,7 +171,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   : AppColors.primary,
           width: 2,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         color:
             _controllers[index].text.isEmpty
                 ? AppColors.background
@@ -478,7 +478,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     height: 100,
                     decoration: BoxDecoration(
                       color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Icon(
                       Icons.email_outlined,
@@ -522,7 +522,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: AppColors.successBorder),
                     ),
                     child: Text(
@@ -546,7 +546,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: AppColors.accentLight,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         border: Border.all(color: AppColors.infoBorder),
                       ),
                       child: Row(
@@ -588,7 +588,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         foregroundColor: AppColors.onPrimary,
                         disabledBackgroundColor: AppColors.border,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                         elevation: 2,
                       ),
@@ -659,7 +659,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.accentLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: AppColors.infoBorder),
                     ),
                     child: Row(
@@ -691,7 +691,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: AppColors.successBorder),
                     ),
                     child: Row(

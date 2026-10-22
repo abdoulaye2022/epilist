@@ -109,7 +109,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                         decoration: InputDecoration(
                           labelText: l10n.priceAlertProduct,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                         ),
                       ),
@@ -122,7 +122,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                         decoration: InputDecoration(
                           labelText: l10n.priceCheckPrice,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                         ),
                       ),
@@ -132,7 +132,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
                           padding: const EdgeInsets.all(AppSpacing.sm + 4),
                           decoration: BoxDecoration(
                             color: verdictColor.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +516,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
         belowMin ? '$label ↓' : label,

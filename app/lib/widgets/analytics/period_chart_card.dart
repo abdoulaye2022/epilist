@@ -115,7 +115,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppTint.fill(currentColor),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         border: Border.all(color: AppTint.fill(currentColor)),
                       ),
                       child: _buildChart(
@@ -597,7 +597,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: PopupMenuButton<String>(
         icon: Icon(Icons.date_range, color: AppColors.textSecondary),
@@ -608,7 +608,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
           });
           _loadDataForPeriod(period);
         },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
         color: AppColors.surface,
         elevation: 8,
         itemBuilder:
@@ -744,7 +744,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
                           decoration: BoxDecoration(
                             color: value > 0 ? chartColor : AppColors.border,
                             borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(8),
+                              top: Radius.circular(AppRadius.sm),
                             ),
                           ),
                         ),
@@ -786,7 +786,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -847,7 +847,7 @@ class _PeriodChartCardState extends State<PeriodChartCard> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(

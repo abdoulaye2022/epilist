@@ -110,7 +110,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         elevation: 10,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Container(
@@ -120,7 +120,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
             maxWidth: 500,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             color: AppColors.surface,
           ),
           child: Column(
@@ -232,7 +232,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.infoBorder),
       ),
       child: Row(
@@ -264,7 +264,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: AppColors.border),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 200),
@@ -526,12 +526,12 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
         return InkWell(
           onTap: () => _showCategoryPicker(context, categories, l10n),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               color: AppColors.background,
             ),
             child: Row(
@@ -579,7 +579,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                     height: 32,
                     decoration: BoxDecoration(
                       color: _selectedCategory!.color.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(
                         color: _selectedCategory!.color.withValues(alpha: 0.5),
                       ),
@@ -619,7 +619,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
       ),
       builder: (context) {
         return Container(
@@ -677,7 +677,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                           height: 40,
                           decoration: BoxDecoration(
                             color: category.color.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(
                               color: category.color.withValues(alpha: 0.5),
                             ),

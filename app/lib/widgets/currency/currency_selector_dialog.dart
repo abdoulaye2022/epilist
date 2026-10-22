@@ -49,14 +49,14 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
       child: Container(
         width: double.infinity,
         constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         child: Column(
@@ -140,7 +140,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(
         Icons.currency_exchange,
@@ -240,7 +240,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.successBorder),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             color: AppColors.primaryLight,
           ),
           child: DropdownButtonHideUnderline(
@@ -271,7 +271,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                             height: 35,
                             decoration: BoxDecoration(
                               color: AppColors.primaryLight,
-                              borderRadius: BorderRadius.circular(17),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                             child: Center(
                               child: Text(
@@ -321,7 +321,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.warningTint,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                               child: Text(
                                 'Populaire',
@@ -354,7 +354,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.accentLight,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             border: Border.all(color: AppColors.infoBorder),
           ),
           child: Row(
@@ -383,7 +383,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -415,7 +415,7 @@ class _CurrencySelectionDialogState extends State<CurrencySelectionDialog> {
                   disabledBackgroundColor: AppColors.border,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   elevation: 2,
                 ),

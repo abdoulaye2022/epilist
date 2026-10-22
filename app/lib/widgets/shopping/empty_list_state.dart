@@ -67,7 +67,7 @@ class EmptyListState extends StatelessWidget {
                     vertical: 10,
                   ), // ✅ Padding réduit
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
               ),

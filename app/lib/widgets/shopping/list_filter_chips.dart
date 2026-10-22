@@ -77,13 +77,13 @@ class ListFilterChips extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => onFilterChanged(filter),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             // ✅ Style identique aux filtres de budget
             color: isSelected ? primaryColor : AppColors.background,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(
               color: isSelected ? primaryColor : AppColors.border,
               width: isSelected ? 2 : 1,
@@ -119,7 +119,7 @@ class ListFilterChips extends StatelessWidget {
                         isSelected
                             ? AppColors.onPrimary.withValues(alpha: 0.3)
                             : primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Text(
                     count.toString(),

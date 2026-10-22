@@ -135,7 +135,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           (dialogContext) => AlertDialog(
             backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             title: Row(
               children: [
@@ -234,7 +234,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             color: AppColors.surface,
             elevation: 8,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             itemBuilder:
                 (context) => [
@@ -509,7 +509,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             color: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
             elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -591,7 +591,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
             color: AppColors.surface, // ✅ Fond blanc comme BudgetScreen
             elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -727,7 +727,7 @@ class _ReceiptsScreenState extends State<ReceiptsScreen>
           (dialogContext) => AlertDialog(
             backgroundColor: AppColors.surface, // ✅ Fond blanc pour cohérence
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             title: Row(
               children: [

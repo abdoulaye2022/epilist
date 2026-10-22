@@ -28,7 +28,7 @@ class SpaceSelectorSheet extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
       ),
       builder: (_) => SpaceSelectorSheet(service: service),
     );
@@ -203,7 +203,7 @@ class _SpaceSelectorSheetState extends State<SpaceSelectorSheet> {
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       decoration: BoxDecoration(
         color: selected ? AppColors.primaryLight : AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
           color: selected ? AppColors.primary : AppColors.border,
         ),

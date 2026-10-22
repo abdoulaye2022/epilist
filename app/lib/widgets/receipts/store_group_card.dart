@@ -39,7 +39,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
         children: [
           InkWell(
             onTap: () => setState(() => _isExpanded = !_isExpanded),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sm)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -64,7 +64,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.accentLight,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(Icons.store, color: AppColors.infoInk, size: 24),
         ),
@@ -131,7 +131,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: AppTint.fill(color),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppTint.line(color)),
       ),
       child: Row(
@@ -159,7 +159,7 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppRadius.sm)),
       ),
       child: Column(
         children:

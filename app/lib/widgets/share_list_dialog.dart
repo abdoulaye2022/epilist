@@ -67,12 +67,12 @@ class _ShareListDialogState extends State<ShareListDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         elevation: 10,
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             color: AppColors.surface,
           ),
           constraints: const BoxConstraints(maxWidth: 500),
@@ -112,7 +112,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(Icons.share_rounded, size: 40, color: AppColors.infoInk),
     );
@@ -163,7 +163,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: RadioGroup<SharePermission>(
             groupValue: _selectedPermission,
@@ -257,15 +257,15 @@ class _ShareListDialogState extends State<ShareListDialog> {
               color: AppColors.textSecondary,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               borderSide: BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               borderSide: BorderSide(color: AppColors.accent, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               borderSide: BorderSide(color: AppColors.border),
             ),
             filled: true,
@@ -307,7 +307,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
               disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),
@@ -357,7 +357,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             border: Border.all(color: AppColors.successBorder),
           ),
           child: Column(
@@ -430,7 +430,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: BorderSide(color: AppColors.textDisabled),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
               ),
@@ -446,7 +446,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                   foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   elevation: 2,
                 ),
@@ -465,7 +465,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.goldTint,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
@@ -498,7 +498,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -527,7 +527,7 @@ class _ShareListDialogState extends State<ShareListDialog> {
                 foregroundColor: AppColors.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 elevation: 2,
               ),

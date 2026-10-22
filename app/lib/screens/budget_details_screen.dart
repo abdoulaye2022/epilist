@@ -110,7 +110,7 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -192,7 +192,7 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -264,7 +264,7 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -377,7 +377,7 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: budget.isExceeded ? AppColors.errorTint : AppColors.warningTint,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -431,7 +431,7 @@ class BudgetDetailsScreen extends StatelessWidget {
     return Card(
       color: AppColors.surface,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

@@ -95,7 +95,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         }
       },
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         elevation: 10,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Container(
@@ -105,7 +105,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             maxWidth: 500,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             color: AppColors.surface,
           ),
           child: Column(
@@ -156,7 +156,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(Icons.edit, size: 40, color: AppColors.infoInk),
     );
@@ -193,15 +193,15 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         hintText: l10n.enterStoreName,
         prefixIcon: Icon(Icons.store, color: AppColors.accent),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
@@ -229,15 +229,15 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         hintText: l10n.enterAmount,
         prefixIcon: Icon(Icons.attach_money, color: AppColors.accent),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
@@ -274,7 +274,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         decoration: BoxDecoration(
           border: Border.all(color: AppColors.border),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           color: AppColors.background,
         ),
         child: Row(
@@ -318,15 +318,15 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
         hintText: l10n.optionalNotes,
         prefixIcon: Icon(Icons.note, color: AppColors.accent),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.accent, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         filled: true,
@@ -345,7 +345,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.goldTint,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
@@ -376,7 +376,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -400,7 +400,7 @@ class _EditReceiptDialogState extends State<EditReceiptDialog> {
               disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),

@@ -90,7 +90,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.purchaseRequestProduct,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                     ),
                   ),
@@ -107,7 +107,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                           decoration: InputDecoration(
                             labelText: l10n.purchaseRequestQuantity,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                         ),
@@ -119,7 +119,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                           decoration: InputDecoration(
                             labelText: l10n.purchaseRequestUnit,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                         ),
@@ -132,7 +132,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.purchaseRequestNote,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                     ),
                   ),
@@ -207,7 +207,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                       decoration: InputDecoration(
                         labelText: l10n.prRejectReason,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                       ),
                     ),
@@ -333,7 +333,7 @@ class _PurchaseRequestsScreenState extends State<PurchaseRequestsScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   label,

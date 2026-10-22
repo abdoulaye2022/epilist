@@ -62,7 +62,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: 10,
           insetPadding: const EdgeInsets.symmetric(
@@ -76,7 +76,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               maxWidth: 500,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.md),
               color: AppColors.surface,
             ),
             child: Column(
@@ -117,7 +117,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       height: 44,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(Icons.person_rounded, size: 22, color: AppColors.primaryDark),
     );
@@ -203,7 +203,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.goldTint,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.goldBorder),
       ),
       child: Row(
@@ -234,7 +234,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -258,7 +258,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               disabledBackgroundColor: AppColors.border,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),

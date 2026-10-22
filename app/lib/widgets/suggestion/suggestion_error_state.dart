@@ -24,7 +24,7 @@ class SuggestionErrorState extends StatelessWidget {
         child: Card(
           elevation: 4,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: AppCard(
             radius: 20,
@@ -58,7 +58,7 @@ class SuggestionErrorState extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [AppColors.errorTint, AppColors.errorBorder],
         ),
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(Icons.error_outline, size: 40, color: AppColors.error),
     );
@@ -100,7 +100,7 @@ class SuggestionErrorState extends StatelessWidget {
         backgroundColor: AppColors.accent,
         foregroundColor: AppColors.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
         elevation: 2,
       ),
     );

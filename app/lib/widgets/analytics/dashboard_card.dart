@@ -351,7 +351,7 @@ class DashboardCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.infoTint,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.info.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -509,7 +509,7 @@ class DashboardCard extends StatelessWidget {
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: totalSpent > 0 ? AppColors.successTint : AppColors.shadow,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
           color:
               totalSpent > 0

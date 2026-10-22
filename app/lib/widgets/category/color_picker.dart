@@ -41,7 +41,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
         child: Column(
@@ -52,8 +52,8 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
               decoration: BoxDecoration(
                 color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(AppRadius.md),
+                  topRight: Radius.circular(AppRadius.md),
                 ),
               ),
               child: Row(
@@ -74,7 +74,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                     height: 40,
                     decoration: BoxDecoration(
                       color: _selectedColor,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: AppColors.border, width: 2),
                     ),
                   ),
@@ -105,11 +105,11 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
                           _selectedColor = color;
                         });
                       },
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       child: Container(
                         decoration: BoxDecoration(
                           color: color,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                           border: Border.all(
                             color:
                                 isSelected

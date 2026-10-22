@@ -51,7 +51,7 @@ class SnackBarManager {
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.only(bottom: 20, right: 20, left: 20),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             elevation: 6,
             action: SnackBarAction(
@@ -111,7 +111,7 @@ class SnackBarManager {
             behavior: SnackBarBehavior.floating,
             margin: EdgeInsets.only(bottom: 20, right: 20, left: 20),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             elevation: 6,
           ),

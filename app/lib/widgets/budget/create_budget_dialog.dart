@@ -104,7 +104,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     final isEditing = widget.budgetToEdit != null;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -114,7 +114,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           maxWidth: 500,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         child: Column(
@@ -247,7 +247,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.infoBorder),
       ),
       child: Column(
@@ -415,7 +415,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: AppColors.warningTint,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             border: Border.all(color: AppColors.warningBorder),
           ),
           child: Column(

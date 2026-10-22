@@ -133,7 +133,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.onPrimary.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Text(
                       '$_pendingCount',
@@ -279,7 +279,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       title: Row(
         children: [
           Icon(
@@ -317,7 +317,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.warningTint,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.warningBorder),
               ),
               child: Row(
@@ -370,7 +370,7 @@ class _OfflineDetailsDialog extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             border: Border.all(color: color.withValues(alpha: 0.3)),
           ),
           child: Text(

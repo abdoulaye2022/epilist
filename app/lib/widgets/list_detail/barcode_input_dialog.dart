@@ -74,10 +74,10 @@ class _BarcodeInputDialogState extends State<BarcodeInputDialog> {
                   hintText: 'Ex: 3017620422003',
                   prefixIcon: Icon(Icons.qr_code, color: AppColors.accent),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     borderSide: BorderSide(color: AppColors.accent, width: 2),
                   ),
                 ),

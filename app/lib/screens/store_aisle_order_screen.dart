@@ -107,7 +107,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: AppColors.accentLight,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(color: AppColors.infoTint),
                     ),
                     child: Row(
@@ -151,7 +151,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                           elevation: 1,
                           margin: const EdgeInsets.only(bottom: 10),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           child: ListTile(
                             leading: Container(
@@ -160,7 +160,7 @@ class _StoreAisleOrderScreenState extends State<StoreAisleOrderScreen> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: cat.color.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                               child: Text(
                                 '${index + 1}',

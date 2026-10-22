@@ -22,14 +22,14 @@ class LanguageSettingTile extends StatelessWidget {
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             color: Colors.transparent,
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () => _showLanguageDialog(context, l10n, currentLanguage),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               splashColor: AppColors.successTint,
               highlightColor: AppColors.successTint,
               child: Padding(
@@ -45,7 +45,7 @@ class LanguageSettingTile extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         border: Border.all(color: AppColors.primaryLight),
                       ),
                       child: Icon(
@@ -94,7 +94,7 @@ class LanguageSettingTile extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.background,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(color: AppColors.border),
                           ),
                           child: Row(
@@ -171,14 +171,14 @@ class LanguageSettingTile extends StatelessWidget {
       builder:
           (dialogContext) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             elevation: 10,
             child: Container(
               width: double.infinity,
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 color: AppColors.surface,
               ),
               child: SingleChildScrollView(
@@ -222,7 +222,7 @@ class LanguageSettingTile extends StatelessWidget {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             side: BorderSide(color: AppColors.border),
                           ),
                         ),
@@ -251,7 +251,7 @@ class LanguageSettingTile extends StatelessWidget {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(
         Icons.language_rounded,
@@ -305,7 +305,7 @@ class LanguageSettingTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryLight : AppColors.background,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color: isSelected ? AppColors.successBorder : AppColors.border,
             width: isSelected ? 2 : 1,
@@ -329,7 +329,7 @@ class LanguageSettingTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.border),
               ),
               child: Center(
@@ -377,7 +377,7 @@ class LanguageSettingTile extends StatelessWidget {
                 height: 24,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   Icons.check_rounded,
@@ -391,7 +391,7 @@ class LanguageSettingTile extends StatelessWidget {
                 height: 24,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.border),
                 ),
               ),

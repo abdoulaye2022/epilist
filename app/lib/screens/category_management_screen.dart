@@ -131,7 +131,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                       height: 76,
                       decoration: BoxDecoration(
                         color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(22),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Icon(
                         Icons.category_outlined,

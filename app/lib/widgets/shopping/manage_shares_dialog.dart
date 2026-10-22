@@ -18,7 +18,7 @@ class ManageSharesDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         padding: EdgeInsets.all(20),
         constraints: BoxConstraints(maxHeight: 500),

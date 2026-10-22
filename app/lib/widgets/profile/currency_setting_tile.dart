@@ -78,7 +78,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
             color: Colors.transparent,
             child: InkWell(
               onTap: _showCurrencySettings,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -92,7 +92,7 @@ class _CurrencySettingTileState extends State<CurrencySettingTile> {
                           end: Alignment.bottomRight,
                           colors: [AppColors.primary, AppColors.primary],
                         ),
-                        borderRadius: BorderRadius.circular(22),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Center(
                         child: Text(

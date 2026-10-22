@@ -19,7 +19,7 @@ class ProductInfoDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Column(
@@ -30,7 +30,7 @@ class ProductInfoDialog extends StatelessWidget {
             if (product.imageUrl != null)
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
+                  top: Radius.circular(AppRadius.md),
                 ),
                 child: Image.network(
                   product.imageUrl!,
@@ -150,7 +150,7 @@ class ProductInfoDialog extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                           child: Text(l10n?.cancel ?? 'Annuler'),
@@ -171,7 +171,7 @@ class ProductInfoDialog extends StatelessWidget {
                             backgroundColor: theme.colorScheme.primary,
                             foregroundColor: AppColors.onPrimary,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                         ),
@@ -192,7 +192,7 @@ class ProductInfoDialog extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         color: AppColors.border,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.md)),
       ),
       child: Center(
         child: Icon(

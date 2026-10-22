@@ -17,7 +17,7 @@ class LeaveSharedListDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       title: Row(
         children: [
           Icon(Icons.exit_to_app, color: AppColors.warning),
@@ -35,7 +35,7 @@ class LeaveSharedListDialog extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppColors.warningTint,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               border: Border.all(color: AppColors.warningBorder),
             ),
             child: Row(

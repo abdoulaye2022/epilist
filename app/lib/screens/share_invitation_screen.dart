@@ -120,7 +120,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             height: 80,
             decoration: BoxDecoration(
               color: AppColors.successTint,
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Center(
               child: CircularProgressIndicator(
@@ -155,7 +155,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: AppColors.background,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Column(
               children: [
@@ -202,7 +202,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             height: 120,
             decoration: BoxDecoration(
               color: _getStatusColor(invitation).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(60),
+              borderRadius: BorderRadius.circular(AppRadius.pill),
               border: Border.all(
                 color: _getStatusColor(invitation).withValues(alpha: 0.3),
                 width: 2,
@@ -280,7 +280,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -383,7 +383,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
             foregroundColor: AppColors.onPrimary,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
           ),
           child: Text(
@@ -405,7 +405,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               side: BorderSide(color: AppColors.errorBorder),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
             child: Text(
@@ -427,7 +427,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
               foregroundColor: AppColors.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),
@@ -447,7 +447,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.accentLight,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(
@@ -488,7 +488,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
@@ -612,7 +612,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       builder: (BuildContext dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: 10,
           child: AppCard(
@@ -627,7 +627,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(40),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Icon(
                     Icons.check_circle_rounded,
@@ -684,7 +684,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: AppColors.successBorder),
                   ),
                   child: Row(
@@ -718,7 +718,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             side: BorderSide(color: AppColors.border),
                           ),
                         ),
@@ -746,7 +746,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           foregroundColor: AppColors.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           elevation: 2,
                         ),
@@ -782,7 +782,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       builder: (BuildContext dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: 10,
           child: AppCard(
@@ -797,7 +797,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     color: AppColors.errorTint,
-                    borderRadius: BorderRadius.circular(40),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Icon(
                     Icons.cancel_rounded,
@@ -854,7 +854,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.warningTint,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: AppColors.warningBorder),
                   ),
                   child: Row(
@@ -888,7 +888,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             side: BorderSide(color: AppColors.border),
                           ),
                         ),
@@ -916,7 +916,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                           foregroundColor: AppColors.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           elevation: 2,
                         ),
@@ -995,7 +995,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppTint.fill(color),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppTint.line(color)),
       ),
       child: Column(
@@ -1062,7 +1062,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -1074,7 +1074,7 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
                   title,

@@ -353,7 +353,7 @@ class AppTrendBars extends StatelessWidget {
                         color:
                             b.current ? AppColors.warning : AppColors.primary,
                         borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(10),
+                          top: Radius.circular(AppRadius.sm),
                         ),
                       ),
                     ),

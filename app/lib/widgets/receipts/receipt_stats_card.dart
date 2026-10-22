@@ -27,7 +27,7 @@ class ReceiptStatsCard extends StatelessWidget {
 
   Widget _buildSummaryCard(BuildContext context, AppLocalizations l10n) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -39,7 +39,7 @@ class ReceiptStatsCard extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.accentLight,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     Icons.analytics,
@@ -113,7 +113,7 @@ class ReceiptStatsCard extends StatelessWidget {
     final hasSignificantVariance = variance > 20.0; // 20% de différence
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -128,7 +128,7 @@ class ReceiptStatsCard extends StatelessWidget {
                         hasSignificantVariance
                             ? AppColors.warningTint
                             : AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     hasSignificantVariance ? Icons.warning : Icons.check_circle,
@@ -191,7 +191,7 @@ class ReceiptStatsCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.warningTint,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.warningBorder),
                 ),
                 child: Row(
@@ -225,7 +225,7 @@ class ReceiptStatsCard extends StatelessWidget {
     final qualityText = _getQualityText(stats.dataQuality, l10n);
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -237,7 +237,7 @@ class ReceiptStatsCard extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppTint.fill(qualityColor),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(qualityIcon, color: qualityColor, size: 28),
                 ),
@@ -289,7 +289,7 @@ class ReceiptStatsCard extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isHighlighted ? AppTint.fill(color) : AppColors.background,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(
             icon,
@@ -334,7 +334,7 @@ class ReceiptStatsCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTint.fill(color),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppTint.line(color)),
       ),
       child: Column(

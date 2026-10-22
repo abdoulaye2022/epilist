@@ -32,7 +32,7 @@ class LanguageSelector extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.primaryLight),
               ),
               child: Row(
@@ -43,7 +43,7 @@ class LanguageSelector extends StatelessWidget {
                     height: 32,
                     decoration: BoxDecoration(
                       color: AppColors.primaryLight,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Icon(
                       Icons.language_rounded,
@@ -196,7 +196,7 @@ class LanguageSelector extends StatelessWidget {
         padding: EdgeInsets.all(isCompact ? 16 : 14),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
             width: isSelected ? 2 : 1,
@@ -223,7 +223,7 @@ class LanguageSelector extends StatelessWidget {
                     isSelected
                         ? AppColors.onPrimary.withValues(alpha: 0.2)
                         : AppColors.background,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(
                   color:
                       isSelected
@@ -281,7 +281,7 @@ class LanguageSelector extends StatelessWidget {
                 height: isCompact ? 24 : 20,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   Icons.check_rounded,
@@ -308,14 +308,14 @@ class LanguageSelectorDialog {
       builder:
           (dialogContext) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             elevation: 10,
             child: Container(
               width: double.infinity,
               constraints: const BoxConstraints(maxWidth: 400),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 color: AppColors.surface,
               ),
               child: Column(
@@ -334,8 +334,8 @@ class LanguageSelectorDialog {
                         ],
                       ),
                       borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(AppRadius.md),
+                        topRight: Radius.circular(AppRadius.md),
                       ),
                     ),
                     child: Column(
@@ -345,7 +345,7 @@ class LanguageSelectorDialog {
                           height: 60,
                           decoration: BoxDecoration(
                             color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.shadow,
@@ -409,7 +409,7 @@ class LanguageSelectorDialog {
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                             ),
                             child: Text(
@@ -461,12 +461,12 @@ class CurrentLanguageIndicator extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: onTap ?? () => LanguageSelectorDialog.show(context),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.border),
               ),
               child: Row(

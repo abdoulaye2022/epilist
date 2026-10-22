@@ -106,7 +106,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                             decoration: InputDecoration(
                               labelText: label,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                               isDense: true,
                             ),
@@ -223,7 +223,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                             height: 40,
                             decoration: BoxDecoration(
                               color: AppColors.primaryLight,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             child: Icon(
                               Icons.local_shipping_outlined,

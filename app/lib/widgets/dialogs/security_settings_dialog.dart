@@ -21,7 +21,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       child: AppCard(
         radius: 20,
@@ -51,7 +51,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
       height: 44,
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(Icons.security, size: 22, color: AppColors.infoInk),
     );
@@ -111,12 +111,12 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppTint.fill(color),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppTint.line(color)),
         ),
         child: Row(
@@ -125,7 +125,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppTint.fill(color),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(icon, color: color, size: 20),
             ),
@@ -165,7 +165,7 @@ class _SecuritySettingsDialogState extends State<SecuritySettingsDialog> {
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             side: BorderSide(color: AppColors.border),
           ),
         ),
@@ -272,7 +272,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
 
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           elevation: 10,
           child: AppCard(
@@ -307,7 +307,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       height: 44,
       decoration: BoxDecoration(
         color: _showCodeStep ? AppColors.primaryLight : AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(
         _showCodeStep ? Icons.mail_outline : Icons.lock_outline,
@@ -424,7 +424,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: _showCodeStep ? AppColors.primaryLight : AppColors.accentLight,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
           color: _showCodeStep ? AppColors.successBorder : AppColors.infoBorder,
         ),
@@ -464,7 +464,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -492,7 +492,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                       : AppColors.infoBorder,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),

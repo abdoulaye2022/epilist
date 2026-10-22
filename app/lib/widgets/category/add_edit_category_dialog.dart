@@ -45,12 +45,12 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         constraints: const BoxConstraints(maxWidth: 500),
@@ -63,7 +63,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
               height: 80,
               decoration: BoxDecoration(
                 color: _selectedColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
               child: Icon(
                 Category.getIconDataFromCode(_selectedIconCode),
@@ -107,15 +107,15 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                 hintText: 'Ex: ${l10n.categoryFruitsVegetables}',
                 prefixIcon: Icon(Icons.label, color: theme.primaryColor),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   borderSide: BorderSide(color: AppColors.border),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   borderSide: BorderSide(color: theme.primaryColor, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   borderSide: BorderSide(color: AppColors.border),
                 ),
                 filled: true,
@@ -147,7 +147,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         });
                       }
                     },
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -155,7 +155,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: AppColors.border),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         color: AppColors.background,
                       ),
                       child: Row(
@@ -208,7 +208,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                         });
                       }
                     },
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -216,7 +216,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: AppColors.border),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         color: AppColors.background,
                       ),
                       child: Row(
@@ -271,7 +271,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         side: BorderSide(color: AppColors.border),
                       ),
                     ),
@@ -321,7 +321,7 @@ class _AddEditCategoryDialogState extends State<AddEditCategoryDialog> {
                               .withValues(alpha: 0.5),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           elevation: 2,
                         ),

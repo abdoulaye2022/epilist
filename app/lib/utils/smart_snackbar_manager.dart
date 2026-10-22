@@ -249,7 +249,7 @@ class SmartSnackBarManager {
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             elevation: 6,
             action:

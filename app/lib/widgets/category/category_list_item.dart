@@ -41,7 +41,7 @@ class CategoryListItem extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               color: category.color.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(category.icon, color: category.color, size: 22),
           ),

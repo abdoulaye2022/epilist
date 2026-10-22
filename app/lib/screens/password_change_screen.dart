@@ -116,7 +116,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -176,7 +176,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   margin: EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: AppColors.accentLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: AppColors.infoBorder),
                   ),
                   child: Row(
@@ -210,7 +210,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.shadow,
@@ -362,7 +362,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: AppColors.accentLight,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.infoBorder),
                   boxShadow: [
                     BoxShadow(
@@ -421,13 +421,13 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         hintText: hintText,
         prefixIcon: Icon(icon),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           borderSide: BorderSide(color: AppColors.primary),
         ),
         filled: true,
@@ -465,7 +465,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
           disabledBackgroundColor: AppColors.border,
           padding: EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           elevation: 2,
         ),

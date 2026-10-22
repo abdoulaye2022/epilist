@@ -176,7 +176,7 @@ class _SpaceDashboardCardState extends State<SpaceDashboardCard> {
   }) {
     final color = highlight ? AppColors.error : AppColors.textSecondary;
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),

@@ -127,7 +127,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       icon: Icon(Icons.more_vert, color: AppColors.textPrimary),
       onSelected: (value) => _handleMenuAction(value, context),
       color: AppColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       elevation: 8,
       itemBuilder: (context) => _buildMenuItems(context),
     );
@@ -399,7 +399,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder:
           (context) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             elevation: 10,
             insetPadding: const EdgeInsets.symmetric(
@@ -413,7 +413,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                 maxWidth: 500,
               ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 color: AppColors.surface,
               ),
               child: Column(
@@ -451,7 +451,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: 80,
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Icon(
         Icons.info_outline_rounded,
@@ -490,7 +490,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -612,7 +612,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -668,7 +668,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         border: Border.all(color: AppColors.successBorder),
                       ),
                       child: Text(
@@ -688,7 +688,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.errorTint,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                         border: Border.all(color: AppColors.errorBorder),
                       ),
                       child: Text(
@@ -719,7 +719,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           foregroundColor: AppColors.onPrimary,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           elevation: 2,
         ),

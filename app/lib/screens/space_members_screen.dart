@@ -97,7 +97,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                           decoration: InputDecoration(
                             labelText: l10n.spaceInviteEmail,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                         ),
@@ -107,7 +107,7 @@ class _SpaceMembersScreenState extends State<SpaceMembersScreen> {
                           decoration: InputDecoration(
                             labelText: l10n.spaceRole,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                           items: [

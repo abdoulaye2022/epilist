@@ -95,7 +95,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                             decoration: InputDecoration(
                               labelText: l10n.priceAlertProduct,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
                               ),
                             ),
                           ),
@@ -109,7 +109,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                           decoration: InputDecoration(
                             labelText: l10n.priceAlertTarget,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                           ),
                         ),

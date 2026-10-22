@@ -47,7 +47,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
       color: AppColors.surface,
       margin: const EdgeInsets.all(16),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -55,8 +55,8 @@ class _BudgetFiltersState extends State<BudgetFilters> {
           InkWell(
             onTap: () => setState(() => _isExpanded = !_isExpanded),
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+              topLeft: Radius.circular(AppRadius.sm),
+              topRight: Radius.circular(AppRadius.sm),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -92,7 +92,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       ),
                       decoration: BoxDecoration(
                         color: themeColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Text(
                         _getActiveFiltersCount().toString(),
@@ -106,7 +106,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                     const SizedBox(width: 8),
                     InkWell(
                       onTap: _clearAllFilters,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         child: Icon(
@@ -361,7 +361,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                       widget.onSortChanged(option['key'] as String, true);
                     }
                   },
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
@@ -372,7 +372,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                           isActive
                               ? themeColor.withValues(alpha: 0.1)
                               : AppColors.background,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border:
                           isActive
                               ? Border.all(color: themeColor, width: 2)
@@ -408,7 +408,7 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               color: themeColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             child: Icon(
                               isAscending
@@ -463,13 +463,13 @@ class _BudgetFiltersState extends State<BudgetFilters> {
                 onChanged(value);
               }
             },
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.md),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 // ✅ CORRECTION: Utiliser la couleur du thème
                 color: isActive ? chipColor : AppColors.background,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 border: Border.all(
                   color: isActive ? chipColor : AppColors.border,
                   width: isActive ? 2 : 1,

@@ -181,7 +181,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
                             height: 34,
                             decoration: BoxDecoration(
                               color: AppColors.primaryLight,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             child: Icon(
                               icon,

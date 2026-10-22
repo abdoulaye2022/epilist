@@ -110,7 +110,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         side: BorderSide(
           color: theme.colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
@@ -126,7 +126,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                 _isExpanded = !_isExpanded;
               });
             },
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sm)),
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
@@ -154,7 +154,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                       ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Text(
                         '${topSuggestions.length}',
@@ -200,7 +200,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
 
     return InkWell(
       onTap: () => _handleSuggestionTap(firstSuggestion),
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppRadius.sm)),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -211,7 +211,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
               height: 40,
               decoration: BoxDecoration(
                 color: _getColorForConfidence(firstSuggestion.confidenceLevel),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
             const SizedBox(width: 12),
@@ -243,7 +243,7 @@ class _SmartSuggestionsWidgetState extends State<SmartSuggestionsWidget> {
                           ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.errorContainer,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           child: Text(
                             AppLocalizations.of(context)?.buySoon ?? 'Soon',

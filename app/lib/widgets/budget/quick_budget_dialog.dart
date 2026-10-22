@@ -96,7 +96,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -106,7 +106,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
           maxWidth: 500,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         child: Column(
@@ -193,7 +193,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Column(
             children:
@@ -215,13 +215,13 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                         borderRadius:
                             periods.indexOf(period) == 0
                                 ? const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
+                                  topLeft: Radius.circular(AppRadius.sm),
+                                  topRight: Radius.circular(AppRadius.sm),
                                 )
                                 : periods.indexOf(period) == periods.length - 1
                                 ? const BorderRadius.only(
-                                  bottomLeft: Radius.circular(12),
-                                  bottomRight: Radius.circular(12),
+                                  bottomLeft: Radius.circular(AppRadius.sm),
+                                  bottomRight: Radius.circular(AppRadius.sm),
                                 )
                                 : null,
                       ),
@@ -332,7 +332,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               color:
                   _selectedListId == null
                       ? AppColors.indigoTint
@@ -400,7 +400,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
             constraints: const BoxConstraints(maxHeight: 150),
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: ListView.separated(
               shrinkWrap: true,
@@ -426,13 +426,13 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
                       borderRadius:
                           index == 0
                               ? const BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                topRight: Radius.circular(12),
+                                topLeft: Radius.circular(AppRadius.sm),
+                                topRight: Radius.circular(AppRadius.sm),
                               )
                               : index == widget.availableLists!.length - 1
                               ? const BorderRadius.only(
-                                bottomLeft: Radius.circular(12),
-                                bottomRight: Radius.circular(12),
+                                bottomLeft: Radius.circular(AppRadius.sm),
+                                bottomRight: Radius.circular(AppRadius.sm),
                               )
                               : null,
                     ),
@@ -519,7 +519,7 @@ class _QuickBudgetDialogState extends State<QuickBudgetDialog> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.warningTint,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.warningBorder),
       ),
       child: Column(

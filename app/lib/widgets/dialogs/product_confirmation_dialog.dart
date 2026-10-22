@@ -21,7 +21,7 @@ class ProductConfirmationDialog extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Column(
@@ -33,8 +33,8 @@ class ProductConfirmationDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.successTint,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(AppRadius.md),
+                  topRight: Radius.circular(AppRadius.md),
                 ),
               ),
               child: Row(
@@ -199,7 +199,7 @@ class ProductConfirmationDialog extends StatelessWidget {
                         vertical: 12,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                     ),
                   ),

@@ -63,11 +63,11 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -87,7 +87,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: theme.primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(Icons.mic, color: theme.primaryColor, size: 24),
                 ),
@@ -138,7 +138,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 decoration: InputDecoration(
                   labelText: l10n.voiceItemName,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   prefixIcon: const Icon(Icons.shopping_cart),
                 ),
@@ -153,7 +153,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 decoration: InputDecoration(
                   labelText: l10n.voiceQuantity,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   prefixIcon: const Icon(Icons.numbers),
                 ),
@@ -179,7 +179,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                       ),
                       child: Text(l10n.voiceRetry),
@@ -192,7 +192,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                       ),
                       child: Text(l10n.voiceAdd),
@@ -209,7 +209,7 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.accentLight,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.infoBorder, width: 1),
                 ),
                 child: Column(

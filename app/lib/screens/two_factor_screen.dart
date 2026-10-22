@@ -121,7 +121,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                   height: 64,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: Icon(
                     Icons.mark_email_unread_outlined,
@@ -158,7 +158,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                   counterText: '',
                   hintText: '······',
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 onChanged: (v) {
@@ -179,7 +179,7 @@ class _TwoFactorScreenState extends State<TwoFactorScreen> {
                   foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 child:

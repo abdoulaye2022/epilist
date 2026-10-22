@@ -53,7 +53,7 @@ class TopProductsCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.goldTint,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.goldTint),
               ),
               child: Row(
@@ -164,7 +164,7 @@ class TopProductsCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: PopupMenuButton<String>(
         icon: Icon(Icons.sort, color: AppColors.textSecondary),
@@ -174,7 +174,7 @@ class TopProductsCard extends StatelessWidget {
             ChangeTopProductsSort(sortBy: sortBy, period: 'month', limit: 10),
           );
         },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
         color: AppColors.surface,
         elevation: 8,
         itemBuilder:
@@ -364,7 +364,7 @@ class TopProductsCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(

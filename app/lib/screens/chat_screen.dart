@@ -184,15 +184,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         decoration: InputDecoration(
                           hintText: l10n.typeMessage,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             borderSide: BorderSide(color: AppColors.border),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             borderSide: BorderSide(color: AppColors.border),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             borderSide: BorderSide(color: AppColors.primary),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -238,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> {
             height: 76,
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
               Icons.chat_bubble_outline_rounded,
@@ -395,8 +395,8 @@ class _MessageBubble extends StatelessWidget {
                           ? null
                           : Border.all(color: AppColors.border),
                   borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16),
-                    topRight: const Radius.circular(16),
+                    topLeft: const Radius.circular(AppRadius.md),
+                    topRight: const Radius.circular(AppRadius.md),
                     bottomLeft: Radius.circular(isCurrentUser ? 16 : 4),
                     bottomRight: Radius.circular(isCurrentUser ? 4 : 16),
                   ),

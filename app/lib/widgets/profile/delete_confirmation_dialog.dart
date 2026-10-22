@@ -101,7 +101,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
     final effectiveIcon = icon ?? Icons.delete_rounded;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       child: AppCard(
         radius: 20,
@@ -133,7 +133,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
       height: 44,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(iconData, size: 22, color: color),
     );
@@ -208,7 +208,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 side: BorderSide(color: AppColors.border),
               ),
             ),
@@ -241,7 +241,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
               disabledBackgroundColor: color.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               elevation: 2,
             ),

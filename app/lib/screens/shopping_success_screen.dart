@@ -158,7 +158,7 @@ class _ConfettiPainter extends CustomPainter {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromCenter(center: Offset.zero, width: 16, height: 7),
-          const Radius.circular(3),
+          const Radius.circular(AppRadius.sm),
         ),
         pinceau,
       );

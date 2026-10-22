@@ -60,7 +60,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
               opacity: _fadeAnimation.value,
               child: Dialog(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 elevation: 10,
                 insetPadding: const EdgeInsets.symmetric(
@@ -74,7 +74,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
                     maxWidth: 500,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     color: AppColors.surface,
                     boxShadow: [
                       BoxShadow(
@@ -124,7 +124,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       height: 44,
       decoration: BoxDecoration(
         color: AppColors.errorTint,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.errorTint, width: 2),
       ),
       child: Stack(
@@ -179,7 +179,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.infoBorder),
       ),
       child: Column(
@@ -244,7 +244,7 @@ class _NoInternetDialogState extends State<NoInternetDialog>
           disabledBackgroundColor: AppColors.border,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           elevation: 2,
         ),

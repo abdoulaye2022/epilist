@@ -54,7 +54,7 @@ class EmptyItemsState extends StatelessWidget {
       decoration: BoxDecoration(
         // ✅ MODIFICATION: Couleurs plus subtiles pour fond blanc
         color: AppColors.background,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: AppColors.border, width: 2),
       ),
       child: Icon(
@@ -138,7 +138,7 @@ class EmptyItemsState extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
         elevation: 2,
       ),
     );
@@ -164,7 +164,7 @@ class EmptyItemsState extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: infoColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: infoColor.withValues(alpha: 0.3)),
       ),
       child: Row(

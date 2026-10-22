@@ -23,7 +23,7 @@ class LogoutButton extends StatelessWidget {
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             side: BorderSide(color: AppColors.errorBorder),
           ),
         ),

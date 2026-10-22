@@ -126,7 +126,7 @@ class _SuggestionManagementWidgetState
             // ✅ FOND BLANC POUR LES DIALOGUES
             backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             title: Row(
               mainAxisSize: MainAxisSize.min,
@@ -168,7 +168,7 @@ class _SuggestionManagementWidgetState
                   backgroundColor: AppColors.error,
                   foregroundColor: AppColors.onPrimary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 child: Text(l10n.delete),
@@ -186,7 +186,7 @@ class _SuggestionManagementWidgetState
             // ✅ FOND BLANC POUR LES DIALOGUES
             backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             title: Row(
               mainAxisSize: MainAxisSize.min,
@@ -216,7 +216,7 @@ class _SuggestionManagementWidgetState
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.warningTint,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: AppColors.warningBorder),
                   ),
                   child: Row(
@@ -266,7 +266,7 @@ class _SuggestionManagementWidgetState
                   backgroundColor: AppColors.warning,
                   foregroundColor: AppColors.onWarning,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 child: Text(l10n.clearAllSuggestions),

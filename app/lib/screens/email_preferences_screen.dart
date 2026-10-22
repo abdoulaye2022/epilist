@@ -322,7 +322,7 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                 height: 36,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(icon, color: color, size: 19),
               ),

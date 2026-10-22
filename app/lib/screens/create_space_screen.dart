@@ -116,7 +116,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                           ? l10n.spaceNameHintRestaurant
                           : l10n.spaceNameHintHousehold,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   filled: true,
                   fillColor: AppColors.surface,
@@ -143,7 +143,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                       decoration: InputDecoration(
                         labelText: l10n.spaceCity,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                         filled: true,
                         fillColor: AppColors.surface,
@@ -161,7 +161,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                         labelText: l10n.spaceCountry,
                         counterText: '',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                         filled: true,
                         fillColor: AppColors.surface,
@@ -181,7 +181,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
                   foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 child:
@@ -223,7 +223,7 @@ class _CreateSpaceScreenState extends State<CreateSpaceScreen> {
               height: 44,
               decoration: BoxDecoration(
                 color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(icon, color: AppColors.primaryDark, size: 22),
             ),

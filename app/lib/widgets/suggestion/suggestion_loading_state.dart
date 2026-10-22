@@ -15,7 +15,7 @@ class SuggestionLoadingState extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.all(32),
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         child: AppCard(
           radius: 20,
           bordered: false,
@@ -32,7 +32,7 @@ class SuggestionLoadingState extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [AppColors.infoTint, AppColors.infoBorder],
                   ),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 child: CircularProgressIndicator(
                   strokeWidth: 3,

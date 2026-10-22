@@ -31,7 +31,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -41,7 +41,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
           maxWidth: 500,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           color: AppColors.surface,
         ),
         child: Column(
@@ -79,7 +79,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       height: 44,
       decoration: BoxDecoration(
         color: AppColors.warningTint,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Icon(Icons.warning_rounded, size: 22, color: AppColors.warningInk),
     );
@@ -115,7 +115,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.infoBorder),
       ),
       child: Column(
@@ -193,7 +193,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: AppColors.border),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: SizedBox(
         width: double.infinity,
@@ -208,8 +208,8 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+                    topLeft: Radius.circular(AppRadius.sm),
+                    topRight: Radius.circular(AppRadius.sm),
                   ),
                 ),
                 child: Text(
@@ -254,7 +254,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
         height: 40,
         decoration: BoxDecoration(
           color: matchColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -304,7 +304,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.errorTint,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.errorBorder),
                 ),
                 child: Text(
@@ -320,7 +320,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.warningTint,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.warningBorder),
                 ),
                 child: Text(
@@ -352,8 +352,8 @@ class DuplicateConfirmationDialog extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.background,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+          bottomLeft: Radius.circular(AppRadius.md),
+          bottomRight: Radius.circular(AppRadius.md),
         ),
       ),
       child: Column(
@@ -381,7 +381,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   foregroundColor: AppColors.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 icon: const Icon(Icons.merge, size: 18),
@@ -410,7 +410,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       side: BorderSide(color: AppColors.border),
                     ),
                   ),
@@ -436,7 +436,7 @@ class DuplicateConfirmationDialog extends StatelessWidget {
                     foregroundColor: AppColors.onWarning,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                   ),
                   child: Text(

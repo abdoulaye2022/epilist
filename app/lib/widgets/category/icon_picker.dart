@@ -126,7 +126,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
         child: Column(
@@ -137,8 +137,8 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
               decoration: BoxDecoration(
                 color: theme.primaryColor.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(AppRadius.md),
+                  topRight: Radius.circular(AppRadius.md),
                 ),
               ),
               child: Row(
@@ -164,7 +164,7 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
                   hintText: l10n.searchIcon,
                   prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 onChanged: (value) {
@@ -294,14 +294,14 @@ class _IconPickerDialogState extends State<IconPickerDialog> {
           _selectedIconCode = icon['code']!;
         });
       },
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
       child: Container(
         decoration: BoxDecoration(
           color:
               isSelected
                   ? theme.primaryColor.withValues(alpha: 0.2)
                   : AppColors.background,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color: isSelected ? theme.primaryColor : AppColors.border,
             width: isSelected ? 2 : 1,

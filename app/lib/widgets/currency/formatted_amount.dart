@@ -318,7 +318,7 @@ class CurrencyIndicator extends StatelessWidget {
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: AppColors.goldTint,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.goldBorder),
               ),
               child: Text(

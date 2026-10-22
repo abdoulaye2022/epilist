@@ -170,7 +170,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.scrim,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -207,7 +207,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.92),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppRadius.md),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.primary.withValues(alpha: 0.3),
@@ -308,7 +308,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
@@ -316,7 +316,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
               isActive
                   ? AppColors.primary.withValues(alpha: 0.3)
                   : AppColors.onOverlay.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color:
                 isActive
@@ -374,7 +374,7 @@ class ScannerOverlayPainter extends CustomPainter {
         PathOperation.difference,
         Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
         Path()..addRRect(
-          RRect.fromRectAndRadius(scanRect, const Radius.circular(24)),
+          RRect.fromRectAndRadius(scanRect, const Radius.circular(AppRadius.lg)),
         ),
       ),
       overlayPaint,

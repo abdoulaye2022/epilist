@@ -328,7 +328,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
               color: AppColors.surface,
               elevation: 2,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -391,7 +391,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             color: AppColors.surface,
             elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -580,7 +580,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
           color: AppColors.surface,
           elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Padding(
             padding: const EdgeInsets.all(24),

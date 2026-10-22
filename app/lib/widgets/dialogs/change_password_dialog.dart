@@ -100,7 +100,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.accentLight,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.infoBorder),
         ),
         child: Column(
@@ -144,7 +144,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.primaryLight,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.successBorder),
         ),
         child: Column(

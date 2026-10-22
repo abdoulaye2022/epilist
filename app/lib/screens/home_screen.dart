@@ -843,7 +843,7 @@ class _HomeScreenState extends State<HomeScreen>
                 color: AppColors.surface,
                 elevation: 1,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -910,7 +910,7 @@ class _HomeScreenState extends State<HomeScreen>
               color: AppColors.surface,
               elevation: 1,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(

@@ -100,7 +100,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.errorTint,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.errorBorder),
         ),
         child: Column(
@@ -190,7 +190,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.warningTint,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.warningBorder),
         ),
         child: Column(
@@ -240,7 +240,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.accentLight,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(

@@ -550,7 +550,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: bannerColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: bannerColor.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -718,7 +718,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         margin: const EdgeInsets.only(bottom: 8),
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           side:
               currentList.isReadOnly
                   ? BorderSide(color: AppColors.infoBorder, width: 1)
@@ -759,7 +759,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: AppColors.error,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       alignment: isStartToEnd ? Alignment.centerLeft : Alignment.centerRight,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -951,7 +951,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: AppColors.accentLight,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(color: AppColors.infoBorder),
         ),
         child: Row(
@@ -1191,7 +1191,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.accentLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                     border: Border.all(color: AppColors.infoBorder),
                   ),
                   child: Column(

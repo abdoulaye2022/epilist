@@ -56,7 +56,7 @@ class _AccountDeletionStatusWidgetState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.warningTint,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.warningBorder),
       ),
       child: Column(
@@ -132,7 +132,7 @@ class _AccountDeletionStatusWidgetState
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.onPrimary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
               ),
@@ -143,7 +143,7 @@ class _AccountDeletionStatusWidgetState
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.errorTint,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: AppColors.errorBorder),
               ),
               child: Row(

@@ -24,7 +24,7 @@ class ProfileHeaderCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
@@ -81,7 +81,7 @@ class ProfileHeaderCard extends StatelessWidget {
             user.isEmailVerified
                 ? AppColors.primaryLight
                 : AppColors.warningTint,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
           color:
               user.isEmailVerified
@@ -123,7 +123,7 @@ class ProfileHeaderCard extends StatelessWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
       ),
     );
   }
