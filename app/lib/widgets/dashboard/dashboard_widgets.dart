@@ -4,13 +4,24 @@
 import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/budget.dart';
-import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Carte sombre « Budget du mois » (inspirée de la maquette) : dépensé /
 /// alloué, barre de progression, reste du mois.
+/// Les deux cartes budget de l'accueil.
+///
+/// ORANGE, et non le vert de la marque. La planche ne laisse pas le
+/// choix :
+///
+///   « Orange #F97316 : tout ce qui touche au budget, sur TOUTES les
+///     pages avec la meme teinte (cartes Budget, tendance, accents) »
+///
+/// L'encre est sombre. La planche l'ecrit elle-meme — « texte sombre
+/// dessus (6,33:1) » — et sa propre maquette pose pourtant du blanc,
+/// qui ne donne que 2,8 sur cet orange. L'encre sombre en donne 5,3 en
+/// mode clair et 6,6 en mode sombre.
 class BudgetMonthCard extends StatelessWidget {
   final Budget budget;
   final VoidCallback onSeeDetail;
@@ -37,7 +48,7 @@ class BudgetMonthCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
         decoration: BoxDecoration(
-          color: AppColors.onBrandBand.withValues(alpha: 0.14),
+          color: AppColors.onWarning.withValues(alpha: 0.14),
           borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
         child: Row(
@@ -46,20 +57,20 @@ class BudgetMonthCard extends StatelessWidget {
             Icon(
               Icons.calendar_today_outlined,
               size: 11,
-              color: AppColors.onBrandBand,
+              color: AppColors.onWarning,
             ),
             const SizedBox(width: 5),
             Text(
               month,
               style: TextStyle(
-                color: AppColors.onBrandBand,
+                color: AppColors.onWarning,
                 fontSize: 14.5,
                 fontWeight: FontWeight.w600,
               ),
             ),
             if (onPickMonth != null) ...[
               const SizedBox(width: 2),
-              Icon(Icons.expand_more, size: 13, color: AppColors.onBrandBand),
+              Icon(Icons.expand_more, size: 13, color: AppColors.onWarning),
             ],
           ],
         ),
@@ -79,7 +90,7 @@ class BudgetMonthCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md + 2),
       decoration: BoxDecoration(
-        color: AppColors.brandBand,
+        color: AppColors.warning,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Column(
@@ -90,12 +101,12 @@ class BudgetMonthCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.onBrandBand.withValues(alpha: 0.14),
+                  color: AppColors.onWarning.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: Icon(
                   Icons.account_balance_wallet_outlined,
-                  color: AppColors.onBrandBand,
+                  color: AppColors.onWarning,
                   size: 20,
                 ),
               ),
@@ -107,7 +118,7 @@ class BudgetMonthCard extends StatelessWidget {
                       child: Text(
                         l10n.budgetOfMonth,
                         style: TextStyle(
-                          color: AppColors.onBrandBand,
+                          color: AppColors.onWarning,
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -122,10 +133,8 @@ class BudgetMonthCard extends StatelessWidget {
               TextButton(
                 onPressed: onSeeDetail,
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.onBrandBand,
-                  backgroundColor: AppColors.onBrandBand.withValues(
-                    alpha: 0.14,
-                  ),
+                  foregroundColor: AppColors.onWarning,
+                  backgroundColor: AppColors.onWarning.withValues(alpha: 0.14),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -153,7 +162,7 @@ class BudgetMonthCard extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: AppFonts.display,
                   fontVariations: const [FontVariation('wght', 800)],
-                  color: AppColors.onBrandBand,
+                  color: AppColors.onWarning,
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                 ),
@@ -162,7 +171,7 @@ class BudgetMonthCard extends StatelessWidget {
               Text(
                 '/ ${budget.formattedBudgetAmount}',
                 style: TextStyle(
-                  color: AppColors.onBrandBand.withValues(alpha: 0.7),
+                  color: AppColors.onWarning.withValues(alpha: 0.7),
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                 ),
@@ -170,30 +179,15 @@ class BudgetMonthCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sm + 4),
-          Row(
-            children: [
-              Expanded(
-                // Les deux couleurs etaient ecrites en dur (#FFB4A9,
-                // #9BE7A0) : hors des sept couleurs de la planche, et
-                // figees en mode sombre.
-                child: AppGauge(
-                  ratio: ratio,
-                  color: over ? AppColors.error : AppColors.primaryVivid,
-                  label: l10n.budgetGaugePercent(
-                    (ratio * 100).toStringAsFixed(0),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm + 4),
-              Text(
-                '${(ratio * 100).round()} %',
-                style: TextStyle(
-                  color: AppColors.onBrandBand,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+          // Les deux couleurs de la barre etaient ecrites en dur
+          // (#FFB4A9, #9BE7A0) : hors des sept couleurs de la planche,
+          // et figees en mode sombre. La phrase, elle, porte l'encre du
+          // bandeau — sinon elle sortirait sombre sur vert sombre.
+          AppGauge(
+            ratio: ratio,
+            color: over ? AppColors.error : AppColors.primaryVivid,
+            labelColor: AppColors.onWarning,
+            label: l10n.budgetGaugePercent((ratio * 100).toStringAsFixed(0)),
           ),
           const SizedBox(height: AppSpacing.sm + 2),
           Row(
@@ -201,14 +195,14 @@ class BudgetMonthCard extends StatelessWidget {
               Icon(
                 over ? Icons.error_outline : Icons.eco_outlined,
                 size: 14,
-                color: AppColors.onBrandBand.withValues(alpha: 0.85),
+                color: AppColors.onWarning.withValues(alpha: 0.85),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   over ? l10n.budgetExceededShort : l10n.withinBudget,
                   style: TextStyle(
-                    color: AppColors.onBrandBand.withValues(alpha: 0.85),
+                    color: AppColors.onWarning.withValues(alpha: 0.85),
                     fontSize: 16,
                   ),
                 ),
@@ -216,7 +210,7 @@ class BudgetMonthCard extends StatelessWidget {
               Text(
                 l10n.remainingThisMonth(budget.formattedRemainingAmount),
                 style: TextStyle(
-                  color: AppColors.onBrandBand.withValues(alpha: 0.85),
+                  color: AppColors.onWarning.withValues(alpha: 0.85),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -258,7 +252,7 @@ class BudgetCtaCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.brandBand,
+        color: AppColors.warning,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Row(
@@ -266,12 +260,12 @@ class BudgetCtaCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: AppColors.onBrandBand.withValues(alpha: 0.14),
+              color: AppColors.onWarning.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
               Icons.account_balance_wallet_outlined,
-              color: AppColors.onBrandBand,
+              color: AppColors.onWarning,
               size: 20,
             ),
           ),
@@ -283,7 +277,7 @@ class BudgetCtaCard extends StatelessWidget {
                 Text(
                   l10n.budgetOfMonth,
                   style: TextStyle(
-                    color: AppColors.onBrandBand,
+                    color: AppColors.onWarning,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -294,7 +288,7 @@ class BudgetCtaCard extends StatelessWidget {
                       ? l10n.createBudgetCta
                       : l10n.noBudgetForMonth(_monthLabel(context)),
                   style: TextStyle(
-                    color: AppColors.onBrandBand.withValues(alpha: 0.8),
+                    color: AppColors.onWarning.withValues(alpha: 0.8),
                     fontSize: 16,
                   ),
                 ),
@@ -308,13 +302,13 @@ class BudgetCtaCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.onBrandBand.withValues(alpha: 0.14),
+                  color: AppColors.onWarning.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Icon(
                   Icons.expand_more,
                   size: 15,
-                  color: AppColors.onBrandBand,
+                  color: AppColors.onWarning,
                 ),
               ),
             ),
@@ -338,87 +332,6 @@ class BudgetCtaCard extends StatelessWidget {
             child: const Text('+'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Carte de liste compacte pour le carrousel horizontal du dashboard.
-class DashboardListCard extends StatelessWidget {
-  final ShoppingList list;
-  final VoidCallback onTap;
-
-  const DashboardListCard({super.key, required this.list, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final total = list.itemsCount;
-    final done = list.purchasedItemsCount;
-
-    return SizedBox(
-      width: 190,
-      child: Card(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                      ),
-                      child: Icon(
-                        list.isShared
-                            ? Icons.people_alt_rounded
-                            : Icons.shopping_basket_outlined,
-                        size: 16,
-                        color: AppColors.primaryDark,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 18,
-                      color: AppColors.textDisabled,
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Text(
-                  list.name,
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '$done / $total ${l10n.articles.toLowerCase()}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                AppGauge(
-                  ratio: list.progress,
-                  label: l10n.listCheckedSentence(done, total),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -121,25 +121,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       (_AnalyticsSection.topProducts, l10n.topProducts),
     ];
 
-    return SizedBox(
-      height: 52,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm + 2,
-        ),
-        itemCount: options.length,
-        separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
-        itemBuilder: (context, index) {
-          final (value, label) = options[index];
-          return ChoiceChip(
-            label: Text(label),
-            selected: _section == value,
-            showCheckmark: false,
-            onSelected: (_) => _select(value),
-          );
-        },
+    // Pas de hauteur figee : un defilement HORIZONTAL prend la
+    // hauteur de son contenu, la ou un ListView exige qu'on la lui
+    // donne. Les 52 points ecrits ici ne tenaient plus depuis que le
+    // texte des puces a ete agrandi, et rien ne l'aurait signale
+    // avant l'appareil.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm + 2,
+      ),
+      child: Row(
+        children: [
+          for (final (value, label) in options) ...[
+            ChoiceChip(
+              label: Text(label),
+              selected: _section == value,
+              showCheckmark: false,
+              onSelected: (_) => _select(value),
+            ),
+            if (value != options.last.$1) const SizedBox(width: AppSpacing.sm),
+          ],
+        ],
       ),
     );
   }

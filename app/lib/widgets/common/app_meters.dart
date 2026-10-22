@@ -21,6 +21,8 @@ class AppGauge extends StatelessWidget {
     required this.label,
     this.color,
     this.semanticLabel,
+    this.labelColor,
+    this.labelMaxLines,
   });
 
   final double ratio;
@@ -34,6 +36,15 @@ class AppGauge extends StatelessWidget {
   /// Lu par les lecteurs d'écran à la place de la barre. Par défaut
   /// [label], qui est déjà une phrase.
   final String? semanticLabel;
+
+  /// L'encre de la phrase. Par défaut celle du texte courant — mais sur
+  /// un fond vert plein, le texte courant serait sombre sur sombre.
+  final Color? labelColor;
+
+  /// Borne le nombre de lignes de la phrase. À ne poser que dans une
+  /// boîte de hauteur FIXE : une phrase qui passe de deux lignes à
+  /// trois y fait déborder toute la carte.
+  final int? labelMaxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +77,12 @@ class AppGauge extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs + 2),
         Text(
           label,
+          maxLines: labelMaxLines,
+          overflow: labelMaxLines == null ? null : TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: labelColor ?? AppColors.textPrimary,
           ),
         ),
       ],

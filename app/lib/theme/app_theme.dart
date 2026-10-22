@@ -415,6 +415,19 @@ abstract final class AppTint {
 }
 
 /// Rayons de courbure — trois valeurs, pas plus.
+/// Le grossissement du texte choisi dans les réglages du système.
+///
+/// À appliquer à TOUTE hauteur fixe qui loge du texte. Une boîte de
+/// hauteur figée ne peut pas tenir sans lui : le public de cette
+/// planche agrandit le texte, c'est la première chose qu'il fait dans
+/// les réglages de son téléphone, et Android monte jusqu'à deux fois.
+///
+/// Borné à [max] : au-delà, une carte de l'accueil mangerait l'écran
+/// entier, et il vaut mieux tronquer une phrase que cacher tout le
+/// reste. Ce sont alors les `maxLines` qui absorbent la différence.
+double appTextScale(BuildContext context, {double max = 1.8}) =>
+    MediaQuery.textScalerOf(context).scale(1).clamp(1.0, max);
+
 abstract final class AppRadius {
   static const double sm = 12;
   static const double md = 18; // cartes, champs

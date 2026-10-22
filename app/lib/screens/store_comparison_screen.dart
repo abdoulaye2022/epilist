@@ -115,14 +115,18 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
   }
 
   Widget _buildChips(AppLocalizations l10n) {
-    return SizedBox(
-      height: 52,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm + 2,
-        ),
+    // Pas de hauteur figee : un defilement HORIZONTAL prend la
+    // hauteur de son contenu, la ou un ListView exige qu'on la lui
+    // donne. Les 52 points ecrits ici ne tenaient plus depuis que le
+    // texte des puces a ete agrandi, et rien ne l'aurait signale
+    // avant l'appareil.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm + 2,
+      ),
+      child: Row(
         children: [
           ChoiceChip(
             label: Text(l10n.compareStores),

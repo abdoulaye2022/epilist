@@ -124,7 +124,10 @@ class SectionsScreen extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: AppSpacing.sm + 2,
             crossAxisSpacing: AppSpacing.sm + 2,
-            childAspectRatio: 1.45,
+            // La tuile s'allonge quand le texte grossit : a deux fois,
+            // « 10. Mes magasins » sur deux lignes ne tenait plus dans
+            // un rapport fixe.
+            childAspectRatio: 1.45 / appTextScale(context),
             children: sections.map(_tuile).toList(),
           ),
           const SizedBox(height: AppSpacing.lg),

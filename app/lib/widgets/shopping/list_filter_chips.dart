@@ -19,12 +19,17 @@ class ListFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+    // Pas de hauteur figee : un defilement HORIZONTAL prend la hauteur
+    // de son contenu, la ou un ListView exige qu'on la lui donne. Les 50
+    // points ecrits ici ne tenaient plus depuis que le texte des puces a
+    // ete agrandi, et rien ne l'aurait signale avant l'appareil.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
         children: [
           _buildFilterChip(
             context,

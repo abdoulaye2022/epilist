@@ -16,16 +16,20 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   tearDown(() => AppColors.palette = AppPalette.light);
 
-  Future<void> ouvrir(WidgetTester tester) => tester.pumpWidget(
-    MaterialApp(
-      locale: const Locale('fr'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      home: const SectionsScreen(),
-    ),
-  );
+  Future<void> ouvrir(WidgetTester tester, {double echelle = 1.0}) =>
+      tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('fr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(echelle)),
+            child: const SectionsScreen(),
+          ),
+        ),
+      );
 
   const attendues = [
     '1. Tableau de bord',
@@ -77,5 +81,17 @@ void main() {
     // Il n'ouvrirait rien : le tiroir appartient au MainShell.
     await ouvrir(tester);
     expect(find.text('Ouvrir le menu latéral'), findsNothing);
+  });
+
+  testWidgets('les tuiles s allongent quand le texte grossit', (tester) async {
+    // Un rapport largeur/hauteur FIXE ne tient pas : a deux fois,
+    // « 10. Mes magasins » sur deux lignes debordait de sa tuile. Le
+    // public de cette planche agrandit le texte — c'est la premiere
+    // chose qu'il fait dans les reglages de son telephone.
+    for (final echelle in [1.0, 1.3, 1.6, 2.0]) {
+      await ouvrir(tester, echelle: echelle);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'grossissement $echelle');
+    }
   });
 }

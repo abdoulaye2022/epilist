@@ -105,4 +105,26 @@ void main() {
       }
     });
   });
+
+  group('La carte budget de la planche', () {
+    test("l'orange du budget porte une encre lisible, dans les deux modes", () {
+      // La planche : « Orange #F97316 : tout ce qui touche au budget,
+      // sur toutes les pages avec la meme teinte ». Elle ecrit aussi
+      // que cet orange porte du TEXTE SOMBRE — et sa propre maquette
+      // pose pourtant du blanc, qui n'y donne que 2,8.
+      for (final p in [AppPalette.light, AppPalette.dark]) {
+        AppColors.palette = p;
+        expect(
+          contrast(AppColors.onWarning, p.warning),
+          greaterThan(4.5),
+          reason: 'encre du budget, mode ${p.brightness.name}',
+        );
+        expect(
+          contrast(const Color(0xFFFFFFFF), p.warning),
+          lessThan(4.5),
+          reason: 'le blanc, lui, ne passe pas : mode ${p.brightness.name}',
+        );
+      }
+    });
+  });
 }

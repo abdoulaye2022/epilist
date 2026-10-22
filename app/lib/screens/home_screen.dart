@@ -5,24 +5,14 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_state.dart';
 import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
-import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/screens/list_detail_screen.dart';
 import 'package:epilist/screens/profil_screen.dart';
-import 'package:epilist/screens/shopping_list_screen.dart';
 import 'package:epilist/services/deep_link_handler.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/home/action_tile.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:epilist/widgets/home/lists_section_header.dart';
-import 'package:epilist/widgets/home/shopping_lists_content.dart';
 import 'package:epilist/widgets/dialogs/create_list_dialog.dart';
-import 'package:epilist/widgets/dialogs/delete_list_dialog.dart';
-import 'package:epilist/widgets/dialogs/edit_list_dialog.dart';
-import 'package:epilist/widgets/share_list_dialog.dart';
-import 'package:epilist/widgets/shopping/leave_shared_list_dialog.dart';
-import 'package:epilist/widgets/shopping/manage_shares_dialog.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
-import 'package:epilist/widgets/connectivity/connectivity_wrapper.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/main.dart' show routeObserver;
 import 'package:epilist/models/budget.dart';
@@ -44,8 +34,6 @@ import 'package:epilist/services/app_version_service.dart';
 import 'package:epilist/widgets/common/update_modal.dart';
 import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/intelligence_service.dart';
-import 'package:epilist/services/list_item_service.dart';
-import 'package:epilist/screens/predictions_screen.dart';
 import 'package:epilist/screens/meal_planner_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -185,37 +173,6 @@ class _HomeScreenState extends State<HomeScreen>
     } else if (_forecast != null) {
       setState(() => _forecast = null);
     }
-  }
-
-  /// Feedback sur une suggestion du dashboard (ajout, snooze…).
-  Future<void> _predictionAction(ProductPrediction p, String action) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      if (action == 'added') {
-        final state = context.read<ShoppingListBloc>().state;
-        final lists =
-            state is ShoppingListLoaded ? state.lists : <ShoppingList>[];
-        if (lists.isNotEmpty) {
-          await context.read<ListItemService>().forceAddListItem(
-            listId: lists.first.id,
-            productName: p.productName,
-            quantity: p.avgQuantity.round().clamp(1, 99),
-          );
-          if (mounted) {
-            SmartSnackBarManager.showSuccessSnackBar(
-              context,
-              l10n.predictionAdded(p.productName),
-            );
-          }
-        }
-      }
-      if (!mounted) return;
-      await context.read<IntelligenceService>().sendPredictionFeedback(
-        p.productName,
-        action,
-      );
-      if (mounted) setState(() => _predictions.remove(p));
-    } catch (_) {}
   }
 
   /// Sélecteur de mois de la carte budget : 12 derniers mois + suivant.
@@ -362,33 +319,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
       ),
-    );
-  }
-
-  /// Carrousel horizontal des listes recentes ; retombe sur la section
-  /// complete (etats vide / erreur / chargement) quand il n'y a rien.
-  Widget _buildListsCarousel(BuildContext context) {
-    return BlocBuilder<ShoppingListBloc, ShoppingListState>(
-      builder: (context, state) {
-        if (state is ShoppingListLoaded && state.lists.isNotEmpty) {
-          final lists = state.lists.take(6).toList();
-          return SizedBox(
-            height: 132,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: lists.length,
-              separatorBuilder:
-                  (_, _) => const SizedBox(width: AppSpacing.sm + 4),
-              itemBuilder:
-                  (context, index) => DashboardListCard(
-                    list: lists[index],
-                    onTap: () => _openListDetails(context, lists[index]),
-                  ),
-            ),
-          );
-        }
-        return _buildShoppingListsSection(context);
-      },
     );
   }
 
@@ -621,17 +551,19 @@ class _HomeScreenState extends State<HomeScreen>
                           const SizedBox(height: AppSpacing.md),
                           _buildActionTiles(l10n),
 
-                          if (_predictions.isNotEmpty) ...[
-                            const SizedBox(height: AppSpacing.lg),
-                            _buildPredictionsSection(l10n),
-                          ],
-                          const SizedBox(height: AppSpacing.lg),
-                          ListsSectionHeader(
-                            onViewAll: () => _goToAllLists(context),
-                            onCreateNew: () => _showCreateListDialog(context),
-                          ),
-                          const SizedBox(height: AppSpacing.sm + 4),
-                          _buildListsCarousel(context),
+                          // Et RIEN apres : la planche s'arrete ici.
+                          //
+                          //   « L'accueil se termine par quatre boutons
+                          //     d'action, en deux rangees sous le bouton
+                          //     Creer une liste, et rien apres. »
+                          //
+                          // Le carrousel des listes recentes et le bloc
+                          // « A prevoir bientot » vivaient apres les
+                          // tuiles. Les listes ont leur onglet, et les
+                          // predictions leur ecran, atteignable depuis
+                          // « Reglages et plus » : rien n'est perdu, et
+                          // la page tient desormais sur un ecran.
+                          const SizedBox(height: AppSpacing.md),
                         ],
                       ),
                     ),
@@ -786,293 +718,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  /// Section « À prévoir bientôt » : 3 suggestions max + voir tout (§7).
-  Widget _buildPredictionsSection(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              l10n.predictionsTitle,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-            ),
-            const Spacer(),
-            TextButton(
-              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-              onPressed:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PredictionsScreen(),
-                    ),
-                  ).then((_) => _loadIntelligence()),
-              child: Text(
-                l10n.seeAllSuggestions,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        ..._predictions
-            .take(3)
-            .map(
-              (p) => PredictionCard(
-                prediction: p,
-                compact: true,
-                onAction: (action) => _predictionAction(p, action),
-              ),
-            ),
-      ],
-    );
-  }
-
-  // Section simplifiée utilisant ShoppingListsContent
-  Widget _buildShoppingListsSection(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return BlocBuilder<ShoppingListBloc, ShoppingListState>(
-      builder: (context, state) {
-        if (state is ShoppingListLoaded) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header avec informations sur les listes récentes
-              Card(
-                color: AppColors.surface,
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.recentLists('${state.lists.length}'),
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (state.lists.length > 3)
-                        TextButton(
-                          onPressed: () => _goToAllLists(context),
-                          style: TextButton.styleFrom(
-                            minimumSize: Size.zero,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                          ),
-                          child: Text(
-                            l10n.viewAll,
-                            style: TextStyle(
-                              color: AppColors.primaryDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Utilisation de ShoppingListsContent avec mode horizontal
-              SizedBox(
-                height: 200,
-                child: ShoppingListsContent(
-                  onCreateNew: () => _showCreateListDialog(context),
-                  onListTap: (list) => _openListDetails(context, list),
-                  onListAction:
-                      (action, list) =>
-                          _handleListAction(action, list, context, l10n),
-                  maxDisplayLists: 5,
-                  horizontalLayout: true,
-                ),
-              ),
-            ],
-          );
-        }
-
-        // Pour les autres états (loading, error, empty)
-        return Column(
-          children: [
-            Card(
-              color: AppColors.surface,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.recentLists('0'),
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 200,
-              child: ShoppingListsContent(
-                onCreateNew: () => _showCreateListDialog(context),
-                onListTap: (list) => _openListDetails(context, list),
-                onListAction:
-                    (action, list) =>
-                        _handleListAction(action, list, context, l10n),
-                maxDisplayLists: 5,
-                horizontalLayout: true,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _openListDetails(BuildContext context, ShoppingList list) {
-    // ✅ Mode offline supporté: Pas besoin de connexion pour voir une liste en cache
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListDetailScreen(shoppingList: list),
-      ),
-    ).then((_) => _loadShoppingLists());
-  }
-
-  void _goToAllLists(BuildContext context) {
-    // Bascule sur l'onglet Listes au lieu d'EMPILER une copie de l'ecran
-    // par-dessus l'accueil : l'ancienne version laissait une fleche
-    // retour qui ne correspondait a rien, et l'onglet Listes restait
-    // affiche comme non selectionne.
-    final scope = MainShellScope.maybeOf(context);
-    if (scope != null) {
-      scope.goToTab(MainTab.lists);
-      return;
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ShoppingListScreen()),
-    ).then((_) => _loadShoppingLists());
-  }
-
-  // Gestion des actions déléguée à ShoppingListsContent
-  void _handleListAction(
-    String action,
-    ShoppingList list,
-    BuildContext context,
-    AppLocalizations l10n,
-  ) {
-    switch (action) {
-      case 'edit':
-        if (list.canEdit) {
-          // ✅ Mode offline: Les modifications seront mises en queue
-          _showEditListDialog(list, context);
-        } else {
-          SmartSnackBarManager.showWarningSnackBar(
-            context,
-            l10n.cannotEditPermission,
-          );
-        }
-        break;
-
-      case 'duplicate':
-        // ✅ Mode offline: La duplication sera mise en queue
-        context.read<ShoppingListBloc>().add(DuplicateShoppingList(list.id));
-        break;
-
-      case 'share':
-        if (list.canShare) {
-          // ⚠️ Partage: Nécessite une connexion (envoyer des invitations)
-          if (context.isConnected) {
-            _showShareDialog(list, context);
-          } else {
-            SmartSnackBarManager.showWarningSnackBar(
-              context,
-              l10n.connectionRequired,
-            );
-          }
-        } else {
-          SmartSnackBarManager.showWarningSnackBar(
-            context,
-            l10n.cannotSharePermission,
-          );
-        }
-        break;
-
-      case 'manage_shares':
-        if (list.isOwner && list.isShared) {
-          // ⚠️ Gestion partage: Nécessite une connexion
-          if (context.isConnected) {
-            _showManageSharesDialog(list, context);
-          } else {
-            SmartSnackBarManager.showWarningSnackBar(
-              context,
-              l10n.connectionRequired,
-            );
-          }
-        } else {
-          SmartSnackBarManager.showWarningSnackBar(
-            context,
-            l10n.onlyOwnerManageShares,
-          );
-        }
-        break;
-
-      case 'leave':
-        if (!list.isOwner) {
-          // ⚠️ Quitter liste partagée: Nécessite une connexion
-          if (context.isConnected) {
-            _showLeaveSharedListDialog(list, context);
-          } else {
-            SmartSnackBarManager.showWarningSnackBar(
-              context,
-              l10n.connectionRequired,
-            );
-          }
-        } else {
-          SmartSnackBarManager.showWarningSnackBar(
-            context,
-            l10n.cannotLeaveOwnList,
-          );
-        }
-        break;
-
-      case 'delete':
-        if (list.canDelete) {
-          // ✅ Mode offline: La suppression sera mise en queue
-          _showDeleteListDialog(list, context);
-        } else {
-          SmartSnackBarManager.showWarningSnackBar(
-            context,
-            l10n.cannotDeletePermission,
-          );
-        }
-        break;
-    }
-  }
-
   // Dialog methods - conservés identiques
   void _showCreateListDialog(BuildContext context) {
     showDialog(
@@ -1081,61 +726,6 @@ class _HomeScreenState extends State<HomeScreen>
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
             child: const CreateListDialog(),
-          ),
-    );
-  }
-
-  void _showEditListDialog(ShoppingList list, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<ShoppingListBloc>(),
-            child: EditListDialog(list: list),
-          ),
-    );
-  }
-
-  void _showDeleteListDialog(ShoppingList list, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<ShoppingListBloc>(),
-            child: DeleteListDialog(list: list),
-          ),
-    );
-  }
-
-  void _showShareDialog(ShoppingList list, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: ShareListDialog(listId: list.id, listName: list.name),
-          ),
-    );
-  }
-
-  void _showManageSharesDialog(ShoppingList list, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: ManageSharesDialog(list: list),
-          ),
-    );
-  }
-
-  void _showLeaveSharedListDialog(ShoppingList list, BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => BlocProvider.value(
-            value: context.read<SharedListBloc>(),
-            child: LeaveSharedListDialog(list: list),
           ),
     );
   }
