@@ -3271,5 +3271,53 @@
   "seeMyReceipts": "See my receipts",
   "seeMyAnalytics": "See my analytics",
   "seeMyBudgets": "See my budgets",
-  "seeSavingsDetail": "See the savings detail"
+  "seeSavingsDetail": "See the savings detail",
+  "priceTrendDown": "The price is going down: from {first} to {last} over {count} readings.",
+  "@priceTrendDown": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceTrendUp": "The price is going up: from {first} to {last} over {count} readings.",
+  "@priceTrendUp": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceTrendFlat": "The price is not moving: {last} over {count} readings.",
+  "@priceTrendFlat": {
+    "placeholders": {
+      "last": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "priceTrendSingle": "Only one reading so far: {last}.",
+  "@priceTrendSingle": {
+    "placeholders": {
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "priceHistoryButton": "See the price history"
 }

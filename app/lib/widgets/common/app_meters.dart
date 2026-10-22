@@ -378,3 +378,135 @@ class AppTrendBars extends StatelessWidget {
     );
   }
 }
+
+/// Une courbe de prix, et la phrase qui dit ce qu'elle fait.
+///
+/// La planche montre des « courbes descendantes » sur chaque produit en
+/// baisse. Une courbe seule ne dit rien a qui ne la voit pas : [summary]
+/// est donc lue a sa place, et affichee sous elle.
+class AppSparkline extends StatelessWidget {
+  const AppSparkline({
+    super.key,
+    required this.values,
+    required this.summary,
+    this.color,
+    this.height = 64,
+  });
+
+  /// Les relevés, du plus ancien au plus récent.
+  final List<double> values;
+
+  /// « Le prix descend : de 6,99 $ à 5,99 $ sur 4 relevés. »
+  final String summary;
+
+  final Color? color;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    if (values.length < 2) {
+      return Text(
+        summary,
+        style: TextStyle(
+          fontSize: 18,
+          height: 1.5,
+          color: AppColors.textPrimary,
+        ),
+      );
+    }
+
+    final descend = values.last < values.first;
+    final teinte =
+        color ?? (descend ? AppColors.primary : AppColors.warningInk);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          label: summary,
+          child: ExcludeSemantics(
+            child: SizedBox(
+              height: height,
+              width: double.infinity,
+              child: CustomPaint(
+                painter: _SparklinePainter(
+                  values: values,
+                  line: teinte,
+                  dot: teinte,
+                  base: AppColors.border,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          summary,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            height: 1.5,
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SparklinePainter extends CustomPainter {
+  _SparklinePainter({
+    required this.values,
+    required this.line,
+    required this.dot,
+    required this.base,
+  });
+
+  final List<double> values;
+  final Color line, dot, base;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final min = values.reduce((a, b) => a < b ? a : b);
+    final max = values.reduce((a, b) => a > b ? a : b);
+    final span = (max - min).abs() < 0.0001 ? 1.0 : max - min;
+
+    Offset point(int i) => Offset(
+      values.length == 1
+          ? size.width / 2
+          : i / (values.length - 1) * (size.width - 8) + 4,
+      size.height - 6 - (values[i] - min) / span * (size.height - 16),
+    );
+
+    canvas.drawLine(
+      Offset(0, size.height - 1),
+      Offset(size.width, size.height - 1),
+      Paint()
+        ..color = base
+        ..strokeWidth = 2,
+    );
+
+    final chemin = Path()..moveTo(point(0).dx, point(0).dy);
+    for (var i = 1; i < values.length; i++) {
+      chemin.lineTo(point(i).dx, point(i).dy);
+    }
+    canvas.drawPath(
+      chemin,
+      Paint()
+        ..color = line
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round,
+    );
+
+    final pastille = Paint()..color = dot;
+    for (var i = 0; i < values.length; i++) {
+      canvas.drawCircle(point(i), i == values.length - 1 ? 7 : 4.5, pastille);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SparklinePainter old) =>
+      old.values != values || old.line != line;
+}

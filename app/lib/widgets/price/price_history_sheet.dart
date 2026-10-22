@@ -1,6 +1,7 @@
 // widgets/price/price_history_sheet.dart - Historique de prix d'un
 // produit. Chaque prix affiche sa provenance (« Vu sur votre reçu
 // Walmart · 27 sept. 2026 ») : jamais de « prix actuel » inventé.
+import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/price_intelligence.dart';
 import 'package:epilist/services/price_service.dart';
@@ -99,6 +100,14 @@ class _PriceHistorySheet extends StatelessWidget {
                         ),
                       )
                     else ...[
+                      // La courbe de la planche, tracee sur les vrais
+                      // releves, et DOUBLEE de sa phrase : une courbe
+                      // seule ne dit rien a qui ne la voit pas.
+                      if (history != null && history.observations.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                          child: _courbe(l10n, history),
+                        ),
                       _statsRow(l10n, stats),
                       if (stats.variationPct != null &&
                           stats.variationPct!.abs() >= 3) ...[
@@ -128,6 +137,34 @@ class _PriceHistorySheet extends StatelessWidget {
             ),
           ),
     );
+  }
+
+  /// La courbe des releves, du plus ancien au plus recent, et la
+  /// phrase qui dit ce qu'elle fait.
+  Widget _courbe(AppLocalizations l10n, ProductPriceHistory history) {
+    final triees = [...history.observations]
+      ..sort((a, b) => a.purchasedAt.compareTo(b.purchasedAt));
+    final prix = triees.map((o) => o.price).toList();
+    String money(double v) => v.toStringAsFixed(2);
+
+    final phrase =
+        prix.length < 2
+            ? l10n.priceTrendSingle(money(prix.last))
+            : prix.last < prix.first
+            ? l10n.priceTrendDown(
+              money(prix.first),
+              money(prix.last),
+              prix.length,
+            )
+            : prix.last > prix.first
+            ? l10n.priceTrendUp(
+              money(prix.first),
+              money(prix.last),
+              prix.length,
+            )
+            : l10n.priceTrendFlat(money(prix.last), prix.length);
+
+    return AppSparkline(values: prix, summary: phrase);
   }
 
   Widget _statsRow(AppLocalizations l10n, PriceStats stats) {

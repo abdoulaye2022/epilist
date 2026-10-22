@@ -6603,4 +6603,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get seeSavingsDetail => 'Voir le détail des économies';
+
+  @override
+  String priceTrendDown(String first, String last, int count) {
+    return 'Le prix descend : de $first \$ à $last \$ sur $count relevés.';
+  }
+
+  @override
+  String priceTrendUp(String first, String last, int count) {
+    return 'Le prix monte : de $first \$ à $last \$ sur $count relevés.';
+  }
+
+  @override
+  String priceTrendFlat(String last, int count) {
+    return 'Le prix ne bouge pas : $last \$ sur $count relevés.';
+  }
+
+  @override
+  String priceTrendSingle(String last) {
+    return 'Un seul relevé pour le moment : $last \$.';
+  }
+
+  @override
+  String get priceHistoryButton => 'Voir l\'historique du prix';
 }

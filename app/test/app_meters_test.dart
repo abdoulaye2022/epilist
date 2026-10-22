@@ -125,6 +125,47 @@ void main() {
     });
   });
 
+  group('AppSparkline', () {
+    testWidgets('la courbe est doublee de sa phrase', (tester) async {
+      await poser(
+        tester,
+        const AppSparkline(
+          values: [6.99, 6.49, 5.99],
+          summary: 'Le prix descend : de 6,99 a 5,99 sur 3 releves.',
+        ),
+      );
+      expect(
+        find.text('Le prix descend : de 6,99 a 5,99 sur 3 releves.'),
+        findsOneWidget,
+      );
+      expect(find.byType(CustomPaint), findsWidgets);
+    });
+
+    testWidgets('un seul releve : la phrase seule, sans courbe', (
+      tester,
+    ) async {
+      // Deux points font une droite ; un seul ne fait rien, et une
+      // courbe plate laisserait croire a une stabilite mesuree.
+      await poser(
+        tester,
+        const AppSparkline(values: [4.99], summary: 'Un seul releve : 4,99.'),
+      );
+      expect(find.text('Un seul releve : 4,99.'), findsOneWidget);
+      expect(find.byType(SizedBox), findsNothing);
+    });
+
+    testWidgets('des prix identiques ne divisent pas par zero', (tester) async {
+      await poser(
+        tester,
+        const AppSparkline(
+          values: [3.0, 3.0, 3.0],
+          summary: 'Le prix ne bouge pas.',
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('AppTrendBars', () {
     testWidgets('chaque barre porte son montant et son libelle', (
       tester,

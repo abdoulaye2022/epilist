@@ -4,6 +4,7 @@
 // de l'historique (§26 : prix habituel = médiane, bon prix = 25e
 // percentile) mais c'est toujours l'utilisateur qui confirme. Les
 // droits (créateur ou manage_lists) sont tranchés par le serveur.
+import 'package:epilist/widgets/price/price_history_sheet.dart';
 import 'package:epilist/utils/add_product_to_list.dart';
 import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/common/drawer_menu_button.dart';
@@ -523,6 +524,15 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                 onPressed: () => addProductToList(context, a.productName),
                 icon: const Icon(Icons.add_shopping_cart_outlined),
                 label: Text(l10n.addToMyList),
+              ),
+              const SizedBox(height: AppSpacing.sm + 4),
+              // L'historique existait, mais ne s'ouvrait que depuis le
+              // formulaire d'edition d'un article : c'est pourtant ici
+              // qu'on se demande si le prix descend vraiment.
+              OutlinedButton.icon(
+                onPressed: () => showPriceHistorySheet(context, a.productName),
+                icon: const Icon(Icons.show_chart_rounded),
+                label: Text(l10n.priceHistoryButton),
               ),
             ],
           ),

@@ -11910,6 +11910,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Voir le détail des économies'**
   String get seeSavingsDetail;
+
+  /// No description provided for @priceTrendDown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix descend : de {first} \$ à {last} \$ sur {count} relevés.'**
+  String priceTrendDown(String first, String last, int count);
+
+  /// No description provided for @priceTrendUp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix monte : de {first} \$ à {last} \$ sur {count} relevés.'**
+  String priceTrendUp(String first, String last, int count);
+
+  /// No description provided for @priceTrendFlat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le prix ne bouge pas : {last} \$ sur {count} relevés.'**
+  String priceTrendFlat(String last, int count);
+
+  /// No description provided for @priceTrendSingle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un seul relevé pour le moment : {last} \$.'**
+  String priceTrendSingle(String last);
+
+  /// No description provided for @priceHistoryButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir l\'historique du prix'**
+  String get priceHistoryButton;
 }
 
 class _AppLocalizationsDelegate
