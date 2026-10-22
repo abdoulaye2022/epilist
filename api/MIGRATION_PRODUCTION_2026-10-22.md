@@ -86,6 +86,32 @@ Si un de ces chiffres diffère, **ne pas continuer**.
 
 ---
 
+## Étape 2 bis — Vérifier que tout est là
+
+phpMyAdmin → onglet **SQL** → coller `migrations/012_verification.sql`
+→ **Exécuter**. Lecture seule, rejouable.
+
+Il ne se contente pas de vérifier que les colonnes **existent** : une
+table peut naître sans ses clés étrangères, une colonne avec le mauvais
+type, un JSON en VARCHAR si le serveur MySQL est antérieur à 5.7. Tout
+cela passe une vérification naïve et casse au premier enregistrement.
+
+Lire la colonne `verdict`. La dernière ligne tranche :
+
+```
+colonnes et tables de la migration 012   13   13 sur 13   TOUT EST LA — le code peut partir
+```
+
+Tant qu'une ligne porte `ECHEC`, **ne pas pousser** : l'API lirait
+quelque chose qui n'est pas là.
+
+Le bloc **F** donne les comptes de lignes : ils doivent être identiques
+à ceux du bloc **C** de `012_prerequis.sql`. La migration n'écrit
+aucune donnée — un écart voudrait dire que quelque chose d'autre s'est
+passé entre-temps.
+
+---
+
 ## Étape 3 — Remonter les photos déjà prises
 
 Rattache les photos des articles de liste au **produit**, pour que les
