@@ -1,36 +1,49 @@
-// widgets/list_detail/voice_input_dialog.dart
+// widgets/list_detail/voice_input_dialog.dart - Dicter sa liste, et la
+// VÉRIFIER avant de l'ajouter.
+//
+// Le dialogue n'acceptait qu'un article par dictée, et il le présentait
+// dans deux champs : un nom et une quantité. L'unité restait collée au
+// nom (« Kilogrammes de tomates »), la quantité dite aussi (« Viande
+// croissant 2 kg », quantité 1,0), et une phrase de plusieurs produits
+// n'en faisait qu'un.
+//
+// Ici : une ligne par article — nom, quantité, unité, tous modifiables,
+// avec le retrait — et un seul bouton « Ajouter les 3 articles ». Le
+// micro peut rester ouvert d'un article à l'autre.
+import 'package:epilist/services/voice_list_parser.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/list_detail/voice_input_button.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 
 class VoiceInputDialog extends StatefulWidget {
-  final Function(String itemName, double quantity) onItemConfirmed;
+  /// Appelé une fois, avec TOUS les articles vérifiés.
+  final void Function(List<DictatedItem> items) onItemsConfirmed;
 
-  const VoiceInputDialog({super.key, required this.onItemConfirmed});
+  const VoiceInputDialog({super.key, required this.onItemsConfirmed});
 
   @override
   State<VoiceInputDialog> createState() => _VoiceInputDialogState();
 }
 
 class _VoiceInputDialogState extends State<VoiceInputDialog> {
-  String? _recognizedItemName;
-  final TextEditingController _itemController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController();
+  /// Les articles entendus, dans l'ordre où ils ont été dits.
+  final List<DictatedItem> _articles = [];
 
-  @override
-  void dispose() {
-    _itemController.dispose();
-    _quantityController.dispose();
-    super.dispose();
-  }
+  /// La dernière phrase, telle qu'elle a été comprise. Affichée parce
+  /// qu'un découpage inattendu s'explique presque toujours par ce que
+  /// le micro a entendu.
+  String? _phrase;
 
-  void _handleVoiceResult(String itemName, double quantity) {
+  bool _continu = false;
+
+  void _entendu(String phrase) {
+    final nouveaux = parseDictation(phrase);
     setState(() {
-      _recognizedItemName = itemName;
-      _itemController.text = itemName;
-      _quantityController.text = quantity.toString();
+      _phrase = phrase;
+      _articles.addAll(nouveaux);
     });
   }
 
@@ -43,17 +56,10 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
     );
   }
 
-  void _confirmItem() {
-    final itemName = _itemController.text.trim();
-    final quantityText = _quantityController.text.trim();
-
-    if (itemName.isEmpty) {
-      return;
-    }
-
-    final quantity = double.tryParse(quantityText) ?? 1.0;
-
-    widget.onItemConfirmed(itemName, quantity);
+  void _confirmer() {
+    final retenus = _articles.where((a) => a.name.trim().isNotEmpty).toList();
+    if (retenus.isEmpty) return;
+    widget.onItemsConfirmed(retenus);
     Navigator.of(context).pop();
   }
 
@@ -63,40 +69,27 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
     final theme = Theme.of(context);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              theme.primaryColor.withValues(alpha: 0.05),
-              AppColors.surface,
-            ],
-          ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+          maxWidth: 520,
         ),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Titre
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: theme.primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                  ),
-                  child: Icon(Icons.mic, color: theme.primaryColor, size: 24),
-                ),
-                const SizedBox(width: 12),
+                Icon(Icons.mic, color: theme.primaryColor, size: 26),
+                const SizedBox(width: AppSpacing.sm + 4),
                 Expanded(
                   child: Text(
                     l10n.voiceTapToSpeak,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: AppFonts.displayStyle(
+                      size: 22,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -106,149 +99,153 @@ class _VoiceInputDialogState extends State<VoiceInputDialog> {
                 ),
               ],
             ),
-
-            const SizedBox(height: 24),
-
-            // Bouton vocal avec animation
+            const SizedBox(height: AppSpacing.md),
             VoiceInputButton(
-              onItemRecognized: _handleVoiceResult,
+              onPhrase: _entendu,
               onPermissionDenied: _handlePermissionDenied,
+              continu: _continu,
             ),
-
-            const SizedBox(height: 24),
-
-            // Divider
-            const Divider(),
-
-            const SizedBox(height: 16),
-
-            // Champs de texte pour vérification/modification
-            if (_recognizedItemName != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            // « Le micro reste ouvert après chaque article » : son état
+            // est écrit, comme partout ailleurs.
+            AppSwitchTile(
+              title: l10n.voiceContinuous,
+              stateLabel:
+                  _continu ? l10n.voiceContinuousOn : l10n.voiceContinuousOff,
+              value: _continu,
+              onChanged: (v) => setState(() => _continu = v),
+            ),
+            if (_phrase != null) ...[
+              const SizedBox(height: AppSpacing.sm),
               Text(
-                l10n.voiceVerifyAndModify,
-                style: theme.textTheme.bodySmall?.copyWith(
+                l10n.voiceHeard(_phrase!),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 12),
-
-              // Champ nom de l'article
-              TextField(
-                controller: _itemController,
-                decoration: InputDecoration(
-                  labelText: l10n.voiceItemName,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                  ),
-                  prefixIcon: const Icon(Icons.shopping_cart),
-                ),
-                textCapitalization: TextCapitalization.sentences,
-              ),
-
-              const SizedBox(height: 12),
-
-              // Champ quantité
-              TextField(
-                controller: _quantityController,
-                decoration: InputDecoration(
-                  labelText: l10n.voiceQuantity,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
-                  ),
-                  prefixIcon: const Icon(Icons.numbers),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Boutons d'action
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _recognizedItemName = null;
-                          _itemController.clear();
-                          _quantityController.clear();
-                        });
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                        ),
-                      ),
-                      child: Text(l10n.voiceRetry),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _confirmItem,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                        ),
-                      ),
-                      child: Text(l10n.voiceAdd),
-                    ),
-                  ),
-                ],
-              ),
             ],
-
-            // Instructions si aucun résultat
-            if (_recognizedItemName == null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.accentLight,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  border: Border.all(color: AppColors.infoBorder, width: 1),
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.info_outline, color: AppColors.infoInk, size: 32),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.voiceExamplesTitle,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.infoInk,
+            const Divider(height: AppSpacing.lg + 8),
+            Flexible(
+              child:
+                  _articles.isEmpty
+                      ? Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.md,
+                        ),
+                        child: Text(
+                          l10n.voiceNothingYet,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                            height: 1.4,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      )
+                      : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _articles.length,
+                        itemBuilder:
+                            (context, i) => _ligne(l10n, i, _articles[i]),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.voiceExamples,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.infoInk,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            FilledButton(
+              onPressed: _articles.isEmpty ? null : _confirmer,
+              child: Text(l10n.voiceAddAll(_articles.length)),
+            ),
           ],
         ),
       ),
     );
   }
+
+  /// Une ligne de vérification : le nom, la quantité, l'unité, et le
+  /// retrait. Tout est modifiable — c'est une dictée, elle se trompe.
+  Widget _ligne(AppLocalizations l10n, int index, DictatedItem article) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextFormField(
+                  initialValue: article.name,
+                  decoration: InputDecoration(
+                    labelText: l10n.voiceItemName,
+                    isDense: true,
+                  ),
+                  onChanged: (v) => article.name = v,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: TextFormField(
+                  initialValue: _nombre(article.quantity),
+                  decoration: InputDecoration(
+                    labelText: l10n.voiceQuantity,
+                    isDense: true,
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  onChanged: (v) {
+                    final valeur = double.tryParse(v.replaceAll(',', '.'));
+                    if (valeur != null && valeur > 0) {
+                      setState(() {
+                        article.quantity = valeur;
+                        article.quantityStated = true;
+                      });
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: TextFormField(
+                  initialValue: article.unit ?? '',
+                  decoration: InputDecoration(
+                    labelText: l10n.voiceUnit,
+                    isDense: true,
+                  ),
+                  onChanged:
+                      (v) => article.unit = v.trim().isEmpty ? null : v.trim(),
+                ),
+              ),
+              IconButton(
+                tooltip: l10n.voiceRemoveItem,
+                onPressed: () => setState(() => _articles.removeAt(index)),
+                icon: Icon(Icons.close_rounded, color: AppColors.errorInk),
+              ),
+            ],
+          ),
+          // « Quantité absente : mettre 1 par défaut, mais l'indiquer
+          // visiblement pour que l'utilisatrice la corrige. »
+          if (!article.quantityStated)
+            Text(
+              l10n.voiceQuantityDefault,
+              style: TextStyle(fontSize: 16, color: AppColors.warningInk),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _nombre(double v) => v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
 }
 
 /// Fonction helper pour afficher le dialogue
 Future<void> showVoiceInputDialog(
   BuildContext context, {
-  required Function(String itemName, double quantity) onItemConfirmed,
+  required void Function(List<DictatedItem> items) onItemsConfirmed,
 }) {
   return showDialog(
     context: context,
-    builder: (context) => VoiceInputDialog(onItemConfirmed: onItemConfirmed),
+    builder: (context) => VoiceInputDialog(onItemsConfirmed: onItemsConfirmed),
   );
 }

@@ -1648,6 +1648,29 @@
   "voiceVerifyAndModify": "Verify and modify if necessary:",
   "voiceItemName": "Item name",
   "voiceQuantity": "Quantity",
+  "voiceAddAll": "{count, plural, =1{Add 1 item} other{Add the {count} items}}",
+  "@voiceAddAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "voiceContinuous": "Keep the microphone open",
+  "voiceContinuousOn": "Yes, dictate one item after another",
+  "voiceContinuousOff": "No, one sentence at a time",
+  "voiceNothingYet": "Tap the microphone and dictate your list. \"Two liters of milk and three apples.\"",
+  "voiceUnit": "Unit",
+  "voiceQuantityDefault": "Quantity not dictated: 1 by default",
+  "voiceRemoveItem": "Remove from the dictation",
+  "voiceHeard": "Heard: \"{phrase}\"",
+  "@voiceHeard": {
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
   "voiceRetry": "Retry",
   "voiceAdd": "Add",
   "voiceExamplesTitle": "Example commands:",

@@ -4149,6 +4149,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voiceQuantity => 'Quantity';
 
   @override
+  String voiceAddAll(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add the $count items',
+      one: 'Add 1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get voiceContinuous => 'Keep the microphone open';
+
+  @override
+  String get voiceContinuousOn => 'Yes, dictate one item after another';
+
+  @override
+  String get voiceContinuousOff => 'No, one sentence at a time';
+
+  @override
+  String get voiceNothingYet =>
+      'Tap the microphone and dictate your list. \"Two liters of milk and three apples.\"';
+
+  @override
+  String get voiceUnit => 'Unit';
+
+  @override
+  String get voiceQuantityDefault => 'Quantity not dictated: 1 by default';
+
+  @override
+  String get voiceRemoveItem => 'Remove from the dictation';
+
+  @override
+  String voiceHeard(String phrase) {
+    return 'Heard: \"$phrase\"';
+  }
+
+  @override
   String get voiceRetry => 'Retry';
 
   @override

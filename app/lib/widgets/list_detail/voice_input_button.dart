@@ -1,4 +1,11 @@
-// widgets/list_detail/voice_input_button.dart
+// widgets/list_detail/voice_input_button.dart - Le micro.
+//
+// Il rend la PHRASE, et pas un article : le decoupage et l'extraction
+// des quantites vivent dans voice_list_parser.dart, ou ils se
+// verifient. Le bouton ne connait que le micro.
+//
+// `continu` tient le micro ouvert apres chaque phrase : dicter dix
+// articles ne doit pas demander dix ouvertures d'ecran.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
@@ -7,13 +14,19 @@ import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
 class VoiceInputButton extends StatefulWidget {
-  final Function(String itemName, double quantity) onItemRecognized;
+  /// La phrase entendue, telle quelle.
+  final void Function(String phrase) onPhrase;
+
   final VoidCallback? onPermissionDenied;
+
+  /// Rouvrir le micro tout seul apres chaque phrase.
+  final bool continu;
 
   const VoiceInputButton({
     super.key,
-    required this.onItemRecognized,
+    required this.onPhrase,
     this.onPermissionDenied,
+    this.continu = false,
   });
 
   @override
@@ -141,21 +154,22 @@ class _VoiceInputButtonState extends State<VoiceInputButton> {
       return;
     }
 
-    // Parser le texte vocal pour extraire nom et quantité
-    final parsed = _voiceService.parseVoiceInput(voiceText);
-    final itemName = parsed['name'] as String;
-    final quantity = parsed['quantity'] as double;
+    debugPrint('📦 Phrase entendue : $voiceText');
+    widget.onPhrase(voiceText);
 
-    debugPrint('📦 Item recognized: $itemName (x$quantity)');
-
-    // Callback avec les données extraites
-    widget.onItemRecognized(itemName, quantity);
-
-    // Reset
     setState(() {
       _currentText = '';
       _isListening = false;
     });
+
+    // Mode continu : « Article suivant ». Un court delai laisse le
+    // moteur de reconnaissance se refermer — le relancer dans la
+    // seconde echoue silencieusement.
+    if (widget.continu && mounted) {
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted && widget.continu && !_isListening) _toggleListening();
+      });
+    }
   }
 
   @override

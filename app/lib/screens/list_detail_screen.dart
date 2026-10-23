@@ -1133,29 +1133,37 @@ class _ListDetailViewState extends State<_ListDetailView> {
 
     showVoiceInputDialog(
       context,
-      onItemConfirmed: (itemName, quantity) {
-        // Auto-catégorisation depuis le nom dicté (dictionnaire local)
+      onItemsConfirmed: (items) {
         final categoryState = context.read<CategoryBloc>().state;
-        final guessed = CategoryGuesser.guessCategory(
-          categoryState is CategoryLoaded
-              ? categoryState.categories
-                  .where((c) => c.deletedAt == null)
-                  .toList()
-              : const [],
-          itemName,
-        );
+        final categories =
+            categoryState is CategoryLoaded
+                ? categoryState.categories
+                    .where((c) => c.deletedAt == null)
+                    .toList()
+                : const <Category>[];
 
-        // Ajouter l'item avec les données reconnues par voix
-        context.read<ListItemBloc>().add(
-          AddListItem(
-            listId: currentList.id,
-            productName: itemName,
-            quantity: quantity.toInt(),
-            categoryId: guessed?.id,
-            storeName: null,
-            price: null,
-          ),
-        );
+        for (final item in items) {
+          // Auto-catégorisation depuis le nom dicté (dictionnaire local)
+          final guessed = CategoryGuesser.guessCategory(categories, item.name);
+
+          // L'unité rejoint le NOM : une liste de courses compte des
+          // articles, elle n'a pas de colonne d'unité. « Tomates » en
+          // 5 kg devient donc « Tomates (kg) », quantité 5 — et le kilo
+          // ne se perd pas en route.
+          final nom =
+              item.unit == null ? item.name : '${item.name} (${item.unit})';
+
+          context.read<ListItemBloc>().add(
+            AddListItem(
+              listId: currentList.id,
+              productName: nom,
+              quantity: item.quantity.round().clamp(1, 9999),
+              categoryId: guessed?.id,
+              storeName: null,
+              price: null,
+            ),
+          );
+        }
 
         // Le message de succès sera affiché par le listener
         // sauf si c'est un doublon (alors le dialogue s'affichera)

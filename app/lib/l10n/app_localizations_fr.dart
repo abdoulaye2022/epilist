@@ -4221,6 +4221,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get voiceQuantity => 'Quantité';
 
   @override
+  String voiceAddAll(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ajouter les $count articles',
+      one: 'Ajouter 1 article',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get voiceContinuous => 'Garder le micro ouvert';
+
+  @override
+  String get voiceContinuousOn => 'Oui, dicter un article après l\'autre';
+
+  @override
+  String get voiceContinuousOff => 'Non, une phrase à la fois';
+
+  @override
+  String get voiceNothingYet =>
+      'Touchez le micro et dictez votre liste. « Deux litres de lait et trois pommes. »';
+
+  @override
+  String get voiceUnit => 'Unité';
+
+  @override
+  String get voiceQuantityDefault => 'Quantité non dictée : 1 par défaut';
+
+  @override
+  String get voiceRemoveItem => 'Retirer de la dictée';
+
+  @override
+  String voiceHeard(String phrase) {
+    return 'Entendu : « $phrase »';
+  }
+
+  @override
   String get voiceRetry => 'Réessayer';
 
   @override

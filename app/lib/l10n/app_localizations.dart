@@ -7933,6 +7933,60 @@ abstract class AppLocalizations {
   /// **'Quantité'**
   String get voiceQuantity;
 
+  /// No description provided for @voiceAddAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Ajouter 1 article} other{Ajouter les {count} articles}}'**
+  String voiceAddAll(int count);
+
+  /// No description provided for @voiceContinuous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder le micro ouvert'**
+  String get voiceContinuous;
+
+  /// No description provided for @voiceContinuousOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, dicter un article après l\'autre'**
+  String get voiceContinuousOn;
+
+  /// No description provided for @voiceContinuousOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non, une phrase à la fois'**
+  String get voiceContinuousOff;
+
+  /// No description provided for @voiceNothingYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez le micro et dictez votre liste. « Deux litres de lait et trois pommes. »'**
+  String get voiceNothingYet;
+
+  /// No description provided for @voiceUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get voiceUnit;
+
+  /// No description provided for @voiceQuantityDefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité non dictée : 1 par défaut'**
+  String get voiceQuantityDefault;
+
+  /// No description provided for @voiceRemoveItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer de la dictée'**
+  String get voiceRemoveItem;
+
+  /// No description provided for @voiceHeard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entendu : « {phrase} »'**
+  String voiceHeard(String phrase);
+
   /// No description provided for @voiceRetry.
   ///
   /// In fr, this message translates to:

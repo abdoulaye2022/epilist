@@ -1649,6 +1649,29 @@
   "voiceVerifyAndModify": "Vérifiez et modifiez si nécessaire:",
   "voiceItemName": "Nom de l'article",
   "voiceQuantity": "Quantité",
+  "voiceAddAll": "{count, plural, =1{Ajouter 1 article} other{Ajouter les {count} articles}}",
+  "@voiceAddAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "voiceContinuous": "Garder le micro ouvert",
+  "voiceContinuousOn": "Oui, dicter un article après l'autre",
+  "voiceContinuousOff": "Non, une phrase à la fois",
+  "voiceNothingYet": "Touchez le micro et dictez votre liste. « Deux litres de lait et trois pommes. »",
+  "voiceUnit": "Unité",
+  "voiceQuantityDefault": "Quantité non dictée : 1 par défaut",
+  "voiceRemoveItem": "Retirer de la dictée",
+  "voiceHeard": "Entendu : « {phrase} »",
+  "@voiceHeard": {
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
   "voiceRetry": "Réessayer",
   "voiceAdd": "Ajouter",
   "voiceExamplesTitle": "Exemples de commandes:",
