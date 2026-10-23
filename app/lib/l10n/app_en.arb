@@ -2678,7 +2678,20 @@
       }
     }
   },
-  "priceAlertNoHistory": "Not enough history to suggest a target.",
+  "priceAlertNameFirst": "Enter the product name first: the suggestion is read from your purchases of that product.",
+  "priceAlertNotEnough": "{count, plural, =0{No price recorded for this product: {min} are needed to suggest a threshold. Enter it yourself.} =1{Only 1 price recorded for this product: {min} are needed. Enter the threshold yourself.} other{{count} prices recorded for this product: {min} are needed. Enter the threshold yourself.}}",
+  "@priceAlertNotEnough": {
+    "description": "Pas assez d observations pour suggerer un seuil.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "priceAlertSuggestFailed": "The suggestion did not answer. Enter the threshold yourself.",
   "priceAlertEmpty": "No price alerts yet.\nCreate one to be notified when a price drops below your target.",
   "priceAlertCreated": "Alert created",
   "priceAlertUpdated": "Alert updated",

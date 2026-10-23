@@ -149,6 +149,11 @@ class PriceAlertController
                     'product' => $product,
                     'normalized_name' => $normalized,
                     'observations' => $count,
+                    // Le minimum voyage avec la reponse : l'application
+                    // peut dire « il en faut 3 » sans le reecrire en
+                    // dur, et les deux chiffres ne divergeront pas.
+                    'min_observations' => self::SUGGEST_MIN_OBSERVATIONS,
+                    'window_days' => self::SUGGEST_WINDOW_DAYS,
                     'usual_price' => null,
                     'good_price' => null,
                     'suggested_target' => null,
@@ -167,6 +172,7 @@ class PriceAlertController
                 'product' => $product,
                 'normalized_name' => $normalized,
                 'observations' => $count,
+                'min_observations' => self::SUGGEST_MIN_OBSERVATIONS,
                 'window_days' => self::SUGGEST_WINDOW_DAYS,
                 'usual_price' => round($median, 2),
                 'good_price' => round($good, 2),

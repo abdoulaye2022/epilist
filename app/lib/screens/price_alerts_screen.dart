@@ -101,6 +101,10 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                                 ),
                               ),
                             ),
+                            // Le nom commande le bouton « Suggerer un
+                            // seuil » : sans ce rebuild, il resterait
+                            // grise alors que le produit est tape.
+                            onChanged: (_) => setLocal(() {}),
                           ),
                           const SizedBox(height: AppSpacing.sm),
                         ],
@@ -117,18 +121,28 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        // §26 : seuil suggéré depuis l'historique de l'espace
+                        // §26 : seuil suggéré depuis l'historique de
+                        // l'espace.
+                        //
+                        // Le bouton ne RÉPONDAIT PAS quand le champ du
+                        // produit était vide : `if (name.isEmpty)
+                        // return;`, sans un mot. Or c'est le premier
+                        // geste qu'on fait — on ouvre la fenêtre, on
+                        // touche « Suggérer un seuil », et rien ne se
+                        // passe. Il est maintenant grisé, avec la
+                        // raison écrite dessous.
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton.icon(
                             onPressed:
-                                suggesting
+                                (suggesting ||
+                                        (existing == null &&
+                                            product.text.trim().isEmpty))
                                     ? null
                                     : () async {
                                       final name =
                                           existing?.productName ??
                                           product.text.trim();
-                                      if (name.isEmpty) return;
                                       setLocal(() => suggesting = true);
                                       try {
                                         final s = await _service
@@ -147,15 +161,27 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                                                   s.observations,
                                                 );
                                           } else {
-                                            suggestion =
-                                                l10n.priceAlertNoHistory;
+                                            // Dire COMBIEN il en faut,
+                                            // et combien il y en a :
+                                            // « pas assez d'historique »
+                                            // ne dit pas quoi faire.
+                                            suggestion = l10n
+                                                .priceAlertNotEnough(
+                                                  s.observations,
+                                                  s.minObservations,
+                                                );
                                           }
                                         });
                                       } catch (_) {
                                         if (!dialogContext.mounted) return;
+                                        // Un échec et un manque
+                                        // d'historique ne sont pas la
+                                        // même chose, et disaient la
+                                        // même phrase.
                                         setLocal(() {
                                           suggesting = false;
-                                          suggestion = l10n.priceAlertNoHistory;
+                                          suggestion =
+                                              l10n.priceAlertSuggestFailed;
                                         });
                                       }
                                     },
@@ -175,6 +201,22 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                             label: Text(l10n.priceAlertSuggest),
                           ),
                         ),
+                        // Pourquoi le bouton est grisé. Un bouton inerte
+                        // sans explication se lit comme une panne.
+                        if (existing == null && product.text.trim().isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: Text(
+                              l10n.priceAlertNameFirst,
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.4,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
                         if (suggestion != null)
                           Padding(
                             padding: const EdgeInsets.only(
@@ -184,6 +226,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                               suggestion!,
                               style: TextStyle(
                                 fontSize: 16,
+                                height: 1.4,
                                 color: AppColors.textSecondary,
                               ),
                             ),

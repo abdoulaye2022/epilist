@@ -5868,8 +5868,27 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get priceAlertNoHistory =>
-      'Pas assez d\'historique pour suggérer un seuil.';
+  String get priceAlertNameFirst =>
+      'Entrez d\'abord le nom du produit : la suggestion se lit dans vos achats de ce produit.';
+
+  @override
+  String priceAlertNotEnough(int count, int min) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count prix relevés sur ce produit : il en faut $min. Entrez le seuil vous-même.',
+      one:
+          '1 seul prix relevé sur ce produit : il en faut $min. Entrez le seuil vous-même.',
+      zero:
+          'Aucun prix relevé sur ce produit : il en faut $min pour suggérer un seuil. Entrez-le vous-même.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceAlertSuggestFailed =>
+      'La suggestion n\'a pas répondu. Entrez le seuil vous-même.';
 
   @override
   String get priceAlertEmpty =>

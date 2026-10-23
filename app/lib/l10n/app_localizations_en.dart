@@ -5774,7 +5774,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get priceAlertNoHistory => 'Not enough history to suggest a target.';
+  String get priceAlertNameFirst =>
+      'Enter the product name first: the suggestion is read from your purchases of that product.';
+
+  @override
+  String priceAlertNotEnough(int count, int min) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count prices recorded for this product: $min are needed. Enter the threshold yourself.',
+      one:
+          'Only 1 price recorded for this product: $min are needed. Enter the threshold yourself.',
+      zero:
+          'No price recorded for this product: $min are needed to suggest a threshold. Enter it yourself.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceAlertSuggestFailed =>
+      'The suggestion did not answer. Enter the threshold yourself.';
 
   @override
   String get priceAlertEmpty =>

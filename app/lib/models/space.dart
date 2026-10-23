@@ -242,13 +242,21 @@ class PriceAlertInfo {
 /// Suggestion de prix cible (§26) calculée à partir de l'historique de
 /// l'espace : prix habituel (médiane) et bon prix (25e percentile).
 class PriceTargetSuggestion {
+  /// Combien de prix ont été relevés sur ce produit dans la fenêtre.
   final int observations;
+
+  /// Combien il en faut pour que le serveur se prononce. Il vient de la
+  /// réponse et n'est pas réécrit ici : les deux chiffres ne doivent
+  /// pas pouvoir diverger.
+  final int minObservations;
+
   final double? usualPrice;
   final double? goodPrice;
   final double? suggestedTarget;
 
   const PriceTargetSuggestion({
     required this.observations,
+    this.minObservations = 3,
     this.usualPrice,
     this.goodPrice,
     this.suggestedTarget,
@@ -257,6 +265,7 @@ class PriceTargetSuggestion {
   factory PriceTargetSuggestion.fromJson(Map<String, dynamic> json) =>
       PriceTargetSuggestion(
         observations: json['observations'] as int? ?? 0,
+        minObservations: (json['min_observations'] as num?)?.toInt() ?? 3,
         usualPrice: (json['usual_price'] as num?)?.toDouble(),
         goodPrice: (json['good_price'] as num?)?.toDouble(),
         suggestedTarget: (json['suggested_target'] as num?)?.toDouble(),

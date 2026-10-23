@@ -10795,11 +10795,23 @@ abstract class AppLocalizations {
   /// **'Prix habituel {usual} \$ · bon prix {good} \$ ({count} achats)'**
   String priceAlertSuggestion(String usual, String good, int count);
 
-  /// No description provided for @priceAlertNoHistory.
+  /// No description provided for @priceAlertNameFirst.
   ///
   /// In fr, this message translates to:
-  /// **'Pas assez d\'historique pour suggérer un seuil.'**
-  String get priceAlertNoHistory;
+  /// **'Entrez d\'abord le nom du produit : la suggestion se lit dans vos achats de ce produit.'**
+  String get priceAlertNameFirst;
+
+  /// Pas assez d observations pour suggerer un seuil.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucun prix relevé sur ce produit : il en faut {min} pour suggérer un seuil. Entrez-le vous-même.} =1{1 seul prix relevé sur ce produit : il en faut {min}. Entrez le seuil vous-même.} other{{count} prix relevés sur ce produit : il en faut {min}. Entrez le seuil vous-même.}}'**
+  String priceAlertNotEnough(int count, int min);
+
+  /// No description provided for @priceAlertSuggestFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'La suggestion n\'a pas répondu. Entrez le seuil vous-même.'**
+  String get priceAlertSuggestFailed;
 
   /// No description provided for @priceAlertEmpty.
   ///
