@@ -6231,6 +6231,60 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your lists that come back on their own. Tap a list to change what is in it, or its switch to pause it.';
 
   @override
+  String get recurringEditHint =>
+      'Changes apply to the next generations. The list already created does not change.';
+
+  @override
+  String recurringNextPreview(String date, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Next list $date: $count items',
+      one: 'Next list $date: 1 item',
+      zero: 'Next list $date: no items yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recurringDuplicate => 'Duplicate';
+
+  @override
+  String recurringCopySuffix(String name) {
+    return '$name (copy)';
+  }
+
+  @override
+  String get recurringScopeTitle => 'Scope of the change';
+
+  @override
+  String get recurringScopeThisWeek => 'For this week only';
+
+  @override
+  String get recurringScopeAlways => 'For all future generations';
+
+  @override
+  String get recurringRemoveFromModel => 'Remove from the template';
+
+  @override
+  String recurringRemovedFromModel(String product, String list) {
+    return '$product will not come back in $list.';
+  }
+
+  @override
+  String get recurringPreviewHint =>
+      'Unticking an item only removes it from this list. To stop it coming back, tap \"Remove from the template\".';
+
+  @override
+  String get recurringOpenToEdit => 'Tap the list to change what is in it';
+
+  @override
+  String get listRemoveFromRecurring => 'Remove from the recurring list';
+
+  @override
+  String get recurringAddItem => 'Add an item';
+
+  @override
   String get addToMyList => 'Add to my list';
 
   @override

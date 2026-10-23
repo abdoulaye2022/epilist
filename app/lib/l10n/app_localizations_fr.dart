@@ -6328,6 +6328,61 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vos listes qui reviennent toutes seules. Touchez une liste pour changer ce qu\'elle contient, ou son interrupteur pour la mettre en pause.';
 
   @override
+  String get recurringEditHint =>
+      'Les changements s\'appliquent aux prochaines générations. La liste déjà créée, elle, ne change pas.';
+
+  @override
+  String recurringNextPreview(String date, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Prochaine liste $date : $count articles',
+      one: 'Prochaine liste $date : 1 article',
+      zero: 'Prochaine liste $date : aucun article pour l\'instant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recurringDuplicate => 'Dupliquer';
+
+  @override
+  String recurringCopySuffix(String name) {
+    return '$name (copie)';
+  }
+
+  @override
+  String get recurringScopeTitle => 'Portée du changement';
+
+  @override
+  String get recurringScopeThisWeek => 'Pour cette semaine seulement';
+
+  @override
+  String get recurringScopeAlways => 'Pour toutes les prochaines générations';
+
+  @override
+  String get recurringRemoveFromModel => 'Retirer du modèle';
+
+  @override
+  String recurringRemovedFromModel(String product, String list) {
+    return '$product ne reviendra plus dans $list.';
+  }
+
+  @override
+  String get recurringPreviewHint =>
+      'Décocher un article ne le retire que de cette liste-ci. Pour qu\'il ne revienne plus, touchez « Retirer du modèle ».';
+
+  @override
+  String get recurringOpenToEdit =>
+      'Touchez la liste pour changer ce qu\'elle contient';
+
+  @override
+  String get listRemoveFromRecurring => 'Retirer de la liste récurrente';
+
+  @override
+  String get recurringAddItem => 'Ajouter un article';
+
+  @override
   String get addToMyList => 'Ajouter à ma liste';
 
   @override

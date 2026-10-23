@@ -167,6 +167,31 @@ class IntelligenceService {
     );
   }
 
+  /// La même création, mais avec les QUANTITÉS. Le serveur lit
+  /// « quantity » là où il rend « default_quantity » : la conversion se
+  /// fait côté appelant, pas ici.
+  Future<RecurringListModel> createRecurringListWithItems({
+    required String name,
+    required String recurrenceType,
+    int? weekday,
+    bool autoGenerate = false,
+    required List<Map<String, dynamic>> items,
+  }) async {
+    final response = await _dio.post(
+      '/recurring-lists',
+      data: {
+        'name': name,
+        'recurrence_type': recurrenceType,
+        if (weekday != null) 'weekday': weekday,
+        'auto_generate': autoGenerate,
+        'items': items,
+      },
+    );
+    return RecurringListModel.fromJson(
+      response.data['data']['recurring_list'] as Map<String, dynamic>,
+    );
+  }
+
   Future<RecurringListModel> updateRecurringList(
     int id,
     Map<String, dynamic> changes,

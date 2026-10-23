@@ -11563,6 +11563,84 @@ abstract class AppLocalizations {
   /// **'Vos listes qui reviennent toutes seules. Touchez une liste pour changer ce qu\'elle contient, ou son interrupteur pour la mettre en pause.'**
   String get recurringIntro;
 
+  /// No description provided for @recurringEditHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les changements s\'appliquent aux prochaines générations. La liste déjà créée, elle, ne change pas.'**
+  String get recurringEditHint;
+
+  /// Apercu de la prochaine generation, sur la carte.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Prochaine liste {date} : aucun article pour l\'instant} =1{Prochaine liste {date} : 1 article} other{Prochaine liste {date} : {count} articles}}'**
+  String recurringNextPreview(String date, int count);
+
+  /// No description provided for @recurringDuplicate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dupliquer'**
+  String get recurringDuplicate;
+
+  /// No description provided for @recurringCopySuffix.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} (copie)'**
+  String recurringCopySuffix(String name);
+
+  /// No description provided for @recurringScopeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portée du changement'**
+  String get recurringScopeTitle;
+
+  /// No description provided for @recurringScopeThisWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour cette semaine seulement'**
+  String get recurringScopeThisWeek;
+
+  /// No description provided for @recurringScopeAlways.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour toutes les prochaines générations'**
+  String get recurringScopeAlways;
+
+  /// No description provided for @recurringRemoveFromModel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer du modèle'**
+  String get recurringRemoveFromModel;
+
+  /// No description provided for @recurringRemovedFromModel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{product} ne reviendra plus dans {list}.'**
+  String recurringRemovedFromModel(String product, String list);
+
+  /// No description provided for @recurringPreviewHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décocher un article ne le retire que de cette liste-ci. Pour qu\'il ne revienne plus, touchez « Retirer du modèle ».'**
+  String get recurringPreviewHint;
+
+  /// No description provided for @recurringOpenToEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez la liste pour changer ce qu\'elle contient'**
+  String get recurringOpenToEdit;
+
+  /// No description provided for @listRemoveFromRecurring.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer de la liste récurrente'**
+  String get listRemoveFromRecurring;
+
+  /// No description provided for @recurringAddItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un article'**
+  String get recurringAddItem;
+
   /// No description provided for @addToMyList.
   ///
   /// In fr, this message translates to:

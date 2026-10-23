@@ -1,6 +1,16 @@
 // screens/recurring_lists_screen.dart - Listes récurrentes intelligentes :
 // modèles (hebdo / 2 semaines / mensuel), génération avec aperçu
 // pré-coché selon les habitudes (validation en quelques secondes, §34).
+//
+// Le contenu d'une liste récurrente ÉTAIT une phrase, et rien d'autre :
+// « Contenu : lait, œufs, pain… ». On ne pouvait pas la modifier. Elle
+// s'ouvre maintenant d'un appui sur sa carte, article par article, avec
+// sa quantité.
+//
+// Deux choses s'écrivent, parce qu'elles sont la confusion la plus
+// fréquente avec les listes récurrentes : modifier le modèle ne change
+// pas la liste déjà générée, et décocher un article dans l'aperçu ne le
+// retire QUE de cette liste-ci.
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -82,7 +92,13 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
     final confirmed = await showModalBottomSheet<List<RecurringPreviewItem>>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _PreviewSheet(listName: list.name, items: items),
+      builder:
+          (_) => _PreviewSheet(
+            list: list,
+            items: items,
+            service: service,
+            onModelChanged: _load,
+          ),
     );
     if (confirmed == null || confirmed.isEmpty || !mounted) return;
 
@@ -150,6 +166,26 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
           ),
     );
     if (saved == true) _load();
+  }
+
+  /// Dupliquer un modèle : la même fréquence, le même contenu, un nom
+  /// qui dit que c'en est une copie.
+  Future<void> _duplicate(RecurringListModel list) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await context.read<IntelligenceService>().createRecurringList(
+        name: l10n.recurringCopySuffix(list.name),
+        recurrenceType: list.recurrenceType,
+        weekday: list.weekday,
+        autoGenerate: list.autoGenerate,
+        productNames: list.items.map((i) => i.productName).toList(),
+      );
+      if (!mounted) return;
+      await _load();
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
   }
 
   Future<void> _delete(RecurringListModel list) async {
@@ -251,104 +287,141 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                               margin: const EdgeInsets.only(
                                 bottom: AppSpacing.sm,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(AppSpacing.md),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            list.name,
-                                            style: AppFonts.displayStyle(
-                                              size: 23,
-                                              color: AppColors.textPrimary,
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                // Toucher la carte OUVRE la liste. Le
+                                // seul chemin vers son contenu passait
+                                // par un menu « ⋮ » et une entree
+                                // « Modifier ».
+                                onTap: () => _edit(list),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              list.name,
+                                              style: AppFonts.displayStyle(
+                                                size: 23,
+                                                color: AppColors.textPrimary,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        PopupMenuButton<String>(
-                                          icon: Icon(
-                                            Icons.more_vert,
-                                            size: 20,
-                                            color: AppColors.textDisabled,
+                                          PopupMenuButton<String>(
+                                            icon: Icon(
+                                              Icons.more_vert,
+                                              size: 20,
+                                              color: AppColors.textDisabled,
+                                            ),
+                                            onSelected:
+                                                (v) => switch (v) {
+                                                  'edit' => _edit(list),
+                                                  'duplicate' => _duplicate(
+                                                    list,
+                                                  ),
+                                                  _ => _delete(list),
+                                                },
+                                            itemBuilder:
+                                                (_) => [
+                                                  PopupMenuItem(
+                                                    value: 'edit',
+                                                    child: Text(l10n.edit),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    value: 'duplicate',
+                                                    child: Text(
+                                                      l10n.recurringDuplicate,
+                                                    ),
+                                                  ),
+                                                  PopupMenuItem(
+                                                    value: 'delete',
+                                                    child: Text(l10n.delete),
+                                                  ),
+                                                ],
                                           ),
-                                          onSelected:
-                                              (v) =>
-                                                  v == 'edit'
-                                                      ? _edit(list)
-                                                      : _delete(list),
-                                          itemBuilder:
-                                              (_) => [
-                                                PopupMenuItem(
-                                                  value: 'edit',
-                                                  child: Text(l10n.edit),
-                                                ),
-                                                PopupMenuItem(
-                                                  value: 'delete',
-                                                  child: Text(l10n.delete),
-                                                ),
-                                              ],
-                                        ),
-                                      ],
-                                    ),
-                                    // Trois phrases completes, comme sur
-                                    // la planche, au lieu d'une ligne
-                                    // de fragments separes par des
-                                    // points mediants.
-                                    Text(
-                                      [
-                                        l10n.recurringFrequencyLabel(
-                                          _recurrenceLabel(
-                                            l10n,
-                                            list.recurrenceType,
-                                          ),
-                                        ),
-                                        if (list.nextRunAt != null)
-                                          l10n.recurringNextLabel(
-                                            DateFormat(
-                                              'd MMMM',
-                                              locale,
-                                            ).format(list.nextRunAt!),
-                                          ),
-                                        if (list.items.isNotEmpty)
-                                          l10n.recurringContentLabel(
-                                            list.items
-                                                .map((e) => e.productName)
-                                                .join(', '),
-                                          ),
-                                      ].join(' '),
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        height: 1.5,
-                                        color: AppColors.textPrimary,
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(height: AppSpacing.sm + 4),
-                                    AppStateSwitch(
-                                      value: list.enabled,
-                                      stateLabel:
-                                          list.enabled
-                                              ? l10n.recurringStateOn
-                                              : l10n.recurringStateOff,
-                                      semanticLabel: l10n.recurringSwitchLabel(
-                                        list.name,
-                                      ),
-                                      onChanged: (v) => _toggleEnabled(list, v),
-                                    ),
-                                    const SizedBox(height: AppSpacing.sm + 4),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: FilledButton.tonalIcon(
-                                        onPressed: () => _prepare(list),
-                                        icon: const Icon(
-                                          Icons.playlist_add_check,
-                                          size: 18,
+                                      // Trois phrases completes, comme sur
+                                      // la planche, au lieu d'une ligne
+                                      // de fragments separes par des
+                                      // points mediants.
+                                      Text(
+                                        [
+                                          l10n.recurringFrequencyLabel(
+                                            _recurrenceLabel(
+                                              l10n,
+                                              list.recurrenceType,
+                                            ),
+                                          ),
+                                          if (list.nextRunAt != null)
+                                            l10n.recurringNextLabel(
+                                              DateFormat(
+                                                'd MMMM',
+                                                locale,
+                                              ).format(list.nextRunAt!),
+                                            ),
+                                          if (list.items.isNotEmpty)
+                                            l10n.recurringContentLabel(
+                                              list.items
+                                                  .map((e) => e.productName)
+                                                  .join(', '),
+                                            ),
+                                          // « Lundi prochain : 12
+                                          // articles » : savoir ce qui
+                                          // vient avant que ça vienne.
+                                          if (list.nextRunAt != null)
+                                            l10n.recurringNextPreview(
+                                              DateFormat(
+                                                'EEEE d MMMM',
+                                                locale,
+                                              ).format(list.nextRunAt!),
+                                              list.items.length,
+                                            ),
+                                        ].join(' '),
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          height: 1.5,
+                                          color: AppColors.textPrimary,
                                         ),
-                                        label: Text(l10n.prepareMyList),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: AppSpacing.sm + 4),
+                                      AppStateSwitch(
+                                        value: list.enabled,
+                                        stateLabel:
+                                            list.enabled
+                                                ? l10n.recurringStateOn
+                                                : l10n.recurringStateOff,
+                                        semanticLabel: l10n
+                                            .recurringSwitchLabel(list.name),
+                                        onChanged:
+                                            (v) => _toggleEnabled(list, v),
+                                      ),
+                                      const SizedBox(height: AppSpacing.sm + 4),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: FilledButton.tonalIcon(
+                                          onPressed: () => _prepare(list),
+                                          icon: const Icon(
+                                            Icons.playlist_add_check,
+                                            size: 18,
+                                          ),
+                                          label: Text(l10n.prepareMyList),
+                                        ),
+                                      ),
+                                      const SizedBox(height: AppSpacing.xs),
+                                      Text(
+                                        l10n.recurringOpenToEdit,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -362,16 +435,64 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
 /// Aperçu de génération : « Votre liste est prête » avec cases à cocher
 /// et raison de chaque proposition (§34).
 class _PreviewSheet extends StatefulWidget {
-  final String listName;
+  final RecurringListModel list;
   final List<RecurringPreviewItem> items;
+  final IntelligenceService service;
 
-  const _PreviewSheet({required this.listName, required this.items});
+  /// Appelé quand le MODÈLE a changé (un article retiré pour de bon),
+  /// pour que la carte derrière la feuille se remette à jour.
+  final VoidCallback onModelChanged;
+
+  const _PreviewSheet({
+    required this.list,
+    required this.items,
+    required this.service,
+    required this.onModelChanged,
+  });
 
   @override
   State<_PreviewSheet> createState() => _PreviewSheetState();
 }
 
 class _PreviewSheetState extends State<_PreviewSheet> {
+  /// Retirer un article POUR DE BON : il ne reviendra plus dans les
+  /// prochaines générations. Décocher, à côté, ne vaut que pour cette
+  /// liste-ci — ce sont deux gestes différents, et ils doivent le
+  /// rester.
+  Future<void> _retireDuModele(RecurringPreviewItem item) async {
+    final l10n = AppLocalizations.of(context)!;
+    final restants =
+        widget.list.items
+            .where((a) => a.productName != item.productName)
+            .map(
+              (a) => {
+                'product_name': a.productName,
+                'quantity': a.quantity,
+                if (a.unit != null && a.unit!.isNotEmpty) 'unit': a.unit,
+              },
+            )
+            .toList();
+
+    try {
+      await widget.service.updateRecurringList(widget.list.id, {
+        'items': restants,
+      });
+      if (!mounted) return;
+      setState(() {
+        widget.items.remove(item);
+        item.suggested = false;
+      });
+      widget.onModelChanged();
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        l10n.recurringRemovedFromModel(item.productName, widget.list.name),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -406,9 +527,22 @@ class _PreviewSheetState extends State<_PreviewSheet> {
                   ),
                 ),
                 Text(
-                  widget.listName,
+                  widget.list.name,
                   style: TextStyle(
                     fontSize: 16,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                // La portée du changement, écrite. Décocher ici ne vaut
+                // que pour cette liste-ci ; c'est la confusion la plus
+                // fréquente avec les listes récurrentes, et rien ne la
+                // levait.
+                Text(
+                  l10n.recurringPreviewHint,
+                  style: TextStyle(
+                    fontSize: 17,
+                    height: 1.4,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -420,20 +554,27 @@ class _PreviewSheetState extends State<_PreviewSheet> {
                     itemBuilder: (context, index) {
                       final item = widget.items[index];
                       return CheckboxListTile(
-                        dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                         value: item.suggested,
                         onChanged:
                             (v) => setState(() => item.suggested = v ?? false),
                         title: Text(
                           item.productName,
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 17.5),
                         ),
                         subtitle: Text(
                           reasonLabel(item.reason),
                           style: TextStyle(
-                            fontSize: 14.5,
+                            fontSize: 16,
                             color: AppColors.textSecondary,
+                          ),
+                        ),
+                        secondary: IconButton(
+                          tooltip: l10n.recurringRemoveFromModel,
+                          onPressed: () => _retireDuModele(item),
+                          icon: Icon(
+                            Icons.playlist_remove_rounded,
+                            color: AppColors.errorInk,
                           ),
                         ),
                       );
@@ -481,7 +622,10 @@ class _EditSheetState extends State<_EditSheet> {
   String _type = 'weekly';
   int _weekday = 6; // samedi
   bool _autoGenerate = false;
-  late List<String> _products;
+
+  /// Les articles du modèle, avec leur QUANTITÉ. La feuille ne gardait
+  /// que des noms : « 2 litres de lait » revenait en « lait ».
+  late List<RecurringItem> _articles;
   bool _saving = false;
 
   @override
@@ -493,7 +637,7 @@ class _EditSheetState extends State<_EditSheet> {
     _type = e?.recurrenceType ?? 'weekly';
     _weekday = e?.weekday ?? 6;
     _autoGenerate = e?.autoGenerate ?? false;
-    _products = e?.items.map((i) => i.productName).toList() ?? [];
+    _articles = [...?e?.items];
   }
 
   @override
@@ -505,19 +649,32 @@ class _EditSheetState extends State<_EditSheet> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
-    if (_name.text.trim().isEmpty || _products.isEmpty) {
+    if (_name.text.trim().isEmpty || _articles.isEmpty) {
       SmartSnackBarManager.showErrorSnackBar(context, l10n.allFieldsRequired);
       return;
     }
     setState(() => _saving = true);
     try {
+      // Un seul chemin pour les deux cas : le serveur lit « quantity »
+      // la ou il rend « default_quantity ».
+      final items =
+          _articles
+              .map(
+                (a) => {
+                  'product_name': a.productName,
+                  'quantity': a.quantity,
+                  if (a.unit != null && a.unit!.isNotEmpty) 'unit': a.unit,
+                },
+              )
+              .toList();
+
       if (widget.existing == null) {
-        await widget.service.createRecurringList(
+        await widget.service.createRecurringListWithItems(
           name: _name.text.trim(),
           recurrenceType: _type,
           weekday: _type == 'monthly' ? null : _weekday,
           autoGenerate: _autoGenerate,
-          productNames: _products,
+          items: items,
         );
       } else {
         await widget.service.updateRecurringList(widget.existing!.id, {
@@ -525,7 +682,7 @@ class _EditSheetState extends State<_EditSheet> {
           'recurrence_type': _type,
           'weekday': _type == 'monthly' ? null : _weekday,
           'auto_generate': _autoGenerate,
-          'items': _products.map((n) => {'product_name': n}).toList(),
+          'items': items,
         });
       }
       if (mounted) Navigator.of(context).pop(true);
@@ -534,6 +691,82 @@ class _EditSheetState extends State<_EditSheet> {
       setState(() => _saving = false);
       SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
     }
+  }
+
+  void _ajoute(String brut) {
+    final nom = brut.trim();
+    if (nom.isEmpty) {
+      return;
+    }
+    final existe = _articles.any(
+      (a) => a.productName.toLowerCase() == nom.toLowerCase(),
+    );
+    if (!existe) {
+      setState(() => _articles.add(RecurringItem(productName: nom)));
+    }
+    _product.clear();
+  }
+
+  void _quantite(int index, int delta) {
+    final a = _articles[index];
+    final cible = (a.quantity + delta).clamp(1, 99);
+    if (cible == a.quantity) return;
+    setState(
+      () =>
+          _articles[index] = RecurringItem(
+            productName: a.productName,
+            quantity: cible,
+            unit: a.unit,
+            optional: a.optional,
+          ),
+    );
+  }
+
+  /// Un article du modèle : son nom, sa quantité réglable, et le
+  /// retrait.
+  Widget _ligneArticle(AppLocalizations l10n, int index, RecurringItem a) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              a.unit != null && a.unit!.isNotEmpty
+                  ? '${a.productName} (${a.unit})'
+                  : a.productName,
+              style: TextStyle(
+                fontSize: 17.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.inventoryMinusOne,
+            onPressed: a.quantity > 1 ? () => _quantite(index, -1) : null,
+            icon: const Icon(Icons.remove_rounded),
+          ),
+          Text(
+            '${a.quantity}',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.inventoryPlusOne,
+            onPressed: () => _quantite(index, 1),
+            icon: const Icon(Icons.add_rounded),
+          ),
+          IconButton(
+            tooltip: l10n.delete,
+            onPressed: () => setState(() => _articles.removeAt(index)),
+            icon: Icon(Icons.close_rounded, color: AppColors.errorInk),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -629,38 +862,34 @@ class _EditSheetState extends State<_EditSheet> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Wrap(
-                  spacing: AppSpacing.xs,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    for (final p in _products)
-                      Chip(
-                        label: Text(p, style: const TextStyle(fontSize: 16)),
-                        onDeleted: () => setState(() => _products.remove(p)),
-                      ),
-                  ],
-                ),
+                // Un article par ligne, avec sa quantite : « lait,
+                // oeufs, pain... » en une phrase ne se modifiait pas.
+                for (final (n, a) in _articles.indexed)
+                  _ligneArticle(l10n, n, a),
+                const SizedBox(height: AppSpacing.sm),
                 TextField(
                   controller: _product,
                   decoration: InputDecoration(
-                    labelText: l10n.inventoryProductName,
+                    labelText: l10n.recurringAddItem,
                     suffixIcon: IconButton(
+                      tooltip: l10n.recurringAddItem,
                       icon: const Icon(Icons.add),
-                      onPressed: () {
-                        final v = _product.text.trim();
-                        if (v.isNotEmpty && !_products.contains(v)) {
-                          setState(() => _products.add(v));
-                        }
-                        _product.clear();
-                      },
+                      onPressed: () => _ajoute(_product.text),
                     ),
                   ),
-                  onSubmitted: (v) {
-                    if (v.trim().isNotEmpty && !_products.contains(v.trim())) {
-                      setState(() => _products.add(v.trim()));
-                    }
-                    _product.clear();
-                  },
+                  onSubmitted: _ajoute,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                // La confusion la plus frequente avec les listes
+                // recurrentes : croire que modifier le modele change la
+                // liste deja creee.
+                Text(
+                  l10n.recurringEditHint,
+                  style: TextStyle(
+                    fontSize: 17,
+                    height: 1.4,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 FilledButton(

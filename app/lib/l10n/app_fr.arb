@@ -2985,6 +2985,47 @@
     }
   },
   "recurringIntro": "Vos listes qui reviennent toutes seules. Touchez une liste pour changer ce qu'elle contient, ou son interrupteur pour la mettre en pause.",
+  "recurringEditHint": "Les changements s'appliquent aux prochaines générations. La liste déjà créée, elle, ne change pas.",
+  "recurringNextPreview": "{count, plural, =0{Prochaine liste {date} : aucun article pour l'instant} =1{Prochaine liste {date} : 1 article} other{Prochaine liste {date} : {count} articles}}",
+  "@recurringNextPreview": {
+    "description": "Apercu de la prochaine generation, sur la carte.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recurringDuplicate": "Dupliquer",
+  "recurringCopySuffix": "{name} (copie)",
+  "@recurringCopySuffix": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringScopeTitle": "Portée du changement",
+  "recurringScopeThisWeek": "Pour cette semaine seulement",
+  "recurringScopeAlways": "Pour toutes les prochaines générations",
+  "recurringRemoveFromModel": "Retirer du modèle",
+  "recurringRemovedFromModel": "{product} ne reviendra plus dans {list}.",
+  "@recurringRemovedFromModel": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringPreviewHint": "Décocher un article ne le retire que de cette liste-ci. Pour qu'il ne revienne plus, touchez « Retirer du modèle ».",
+  "recurringOpenToEdit": "Touchez la liste pour changer ce qu'elle contient",
+  "listRemoveFromRecurring": "Retirer de la liste récurrente",
+  "recurringAddItem": "Ajouter un article",
   "addToMyList": "Ajouter à ma liste",
   "alreadyInList": "{product} est déjà dans la liste {list}.",
   "@alreadyInList": {

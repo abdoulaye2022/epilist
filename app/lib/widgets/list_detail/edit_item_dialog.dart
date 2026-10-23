@@ -12,6 +12,10 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/list_item.dart';
 import 'package:epilist/models/product_suggestion.dart';
 import 'package:epilist/models/category.dart';
+import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/intelligence_service.dart';
+import 'package:epilist/services/screen_cache.dart';
+import 'package:epilist/utils/product_name.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:epilist/widgets/price/price_history_sheet.dart';
@@ -41,6 +45,13 @@ class _EditItemDialogState extends State<EditItemDialog> {
   Category? _selectedCategory;
   late String _originalProductName;
 
+  /// Les modèles récurrents qui ramènent CE produit. « Je ne l'achète
+  /// plus » se réglait jusqu'ici en ouvrant les listes récurrentes, en
+  /// trouvant la bonne, puis en modifiant son contenu — alors que le
+  /// moment où on s'en aperçoit, c'est en voyant l'article dans sa
+  /// liste de courses.
+  List<RecurringListModel> _modeles = const [];
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +68,92 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
     // Charger les catégories
     context.read<CategoryBloc>().add(const LoadCategories());
+    _chercheLesModeles();
+  }
+
+  Future<void> _chercheLesModeles() async {
+    final cherche = normalizeProductName(widget.item.productName);
+    if (cherche.isEmpty) return;
+
+    List<RecurringListModel> listes =
+        ScreenCache.read<List<RecurringListModel>>('recurring_lists') ??
+        const [];
+    if (listes.isEmpty) {
+      try {
+        listes = await context.read<IntelligenceService>().getRecurringLists();
+      } catch (_) {
+        return; // Pas de réseau : le bouton ne s'affiche pas, c'est tout.
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _modeles =
+          listes
+              .where(
+                (l) => l.items.any(
+                  (a) => normalizeProductName(a.productName) == cherche,
+                ),
+              )
+              .toList();
+    });
+  }
+
+  /// Retirer ce produit d'un modèle récurrent : il ne reviendra plus.
+  Future<void> _retireDuModele(RecurringListModel liste) async {
+    final l10n = AppLocalizations.of(context)!;
+    final cherche = normalizeProductName(widget.item.productName);
+    final restants =
+        liste.items
+            .where((a) => normalizeProductName(a.productName) != cherche)
+            .map(
+              (a) => {
+                'product_name': a.productName,
+                'quantity': a.quantity,
+                if (a.unit != null && a.unit!.isNotEmpty) 'unit': a.unit,
+              },
+            )
+            .toList();
+
+    try {
+      await context.read<IntelligenceService>().updateRecurringList(liste.id, {
+        'items': restants,
+      });
+      // Le cache de l'écran des listes récurrentes porte l'ancienne
+      // version : le laisser mentirait jusqu'au prochain chargement.
+      ScreenCache.invalidate('recurring_lists');
+      if (!mounted) return;
+      setState(
+        () => _modeles = _modeles.where((l) => l.id != liste.id).toList(),
+      );
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        l10n.recurringRemovedFromModel(widget.item.productName, liste.name),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
+  }
+
+  /// Le bouton, un par modèle concerné. Rien ne s'affiche quand le
+  /// produit n'est dans aucun modèle.
+  Widget _buildRecurringRemoval(AppLocalizations l10n) {
+    if (_modeles.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 16),
+        for (final liste in _modeles)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: OutlinedButton.icon(
+              onPressed: () => _retireDuModele(liste),
+              icon: const Icon(Icons.playlist_remove_rounded),
+              label: Text('${l10n.listRemoveFromRecurring} · ${liste.name}'),
+            ),
+          ),
+      ],
+    );
   }
 
   void _tryInitializeCategory() {
@@ -147,6 +244,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
                       // _buildProductNameFieldWithSuggestions.
                       _buildForm(l10n),
                       _buildPriceHistoryLink(l10n),
+                      _buildRecurringRemoval(l10n),
                       const SizedBox(height: 24),
                       _buildButtons(l10n),
                     ],

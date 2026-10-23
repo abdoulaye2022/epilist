@@ -2985,6 +2985,47 @@
     }
   },
   "recurringIntro": "Your lists that come back on their own. Tap a list to change what is in it, or its switch to pause it.",
+  "recurringEditHint": "Changes apply to the next generations. The list already created does not change.",
+  "recurringNextPreview": "{count, plural, =0{Next list {date}: no items yet} =1{Next list {date}: 1 item} other{Next list {date}: {count} items}}",
+  "@recurringNextPreview": {
+    "description": "Apercu de la prochaine generation, sur la carte.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recurringDuplicate": "Duplicate",
+  "recurringCopySuffix": "{name} (copy)",
+  "@recurringCopySuffix": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringScopeTitle": "Scope of the change",
+  "recurringScopeThisWeek": "For this week only",
+  "recurringScopeAlways": "For all future generations",
+  "recurringRemoveFromModel": "Remove from the template",
+  "recurringRemovedFromModel": "{product} will not come back in {list}.",
+  "@recurringRemovedFromModel": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringPreviewHint": "Unticking an item only removes it from this list. To stop it coming back, tap \"Remove from the template\".",
+  "recurringOpenToEdit": "Tap the list to change what is in it",
+  "listRemoveFromRecurring": "Remove from the recurring list",
+  "recurringAddItem": "Add an item",
   "addToMyList": "Add to my list",
   "alreadyInList": "{product} is already in the list {list}.",
   "@alreadyInList": {
