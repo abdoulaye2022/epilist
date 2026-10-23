@@ -12193,6 +12193,42 @@ abstract class AppLocalizations {
   /// **'Retirer du plan'**
   String get mealRemove;
 
+  /// No description provided for @mealCooked.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai cuisiné ce repas'**
+  String get mealCooked;
+
+  /// No description provided for @mealCookedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer les ingrédients du stock ?'**
+  String get mealCookedTitle;
+
+  /// No description provided for @mealCookedWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les ingrédients de ce repas que vous suivez à la maison seront retirés de votre stock, selon la quantité de la recette.'**
+  String get mealCookedWhy;
+
+  /// No description provided for @mealCookedNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun ingrédient de ce repas n\'est suivi à la maison.'**
+  String get mealCookedNone;
+
+  /// No description provided for @mealCookedDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 produit retiré du stock.} other{{count} produits retirés du stock.}}'**
+  String mealCookedDone(int count);
+
+  /// No description provided for @mealCookedConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer du stock'**
+  String get mealCookedConfirm;
+
   /// No description provided for @mealMoveTo.
   ///
   /// In fr, this message translates to:

@@ -3243,6 +3243,19 @@
   "mealMove": "Déplacer",
   "mealReplace": "Remplacer",
   "mealRemove": "Retirer du plan",
+  "mealCooked": "J'ai cuisiné ce repas",
+  "mealCookedTitle": "Retirer les ingrédients du stock ?",
+  "mealCookedWhy": "Les ingrédients de ce repas que vous suivez à la maison seront retirés de votre stock, selon la quantité de la recette.",
+  "mealCookedNone": "Aucun ingrédient de ce repas n'est suivi à la maison.",
+  "mealCookedDone": "{count, plural, =1{1 produit retiré du stock.} other{{count} produits retirés du stock.}}",
+  "@mealCookedDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealCookedConfirm": "Retirer du stock",
   "mealMoveTo": "Déplacer vers",
   "mealWeekCount": "{count, plural, =0{Aucun repas pour l'instant.} =1{1 repas cette semaine.} other{{count} repas cette semaine.}}",
   "@mealWeekCount": {

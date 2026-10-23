@@ -23,6 +23,8 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
+import 'package:epilist/services/inventory_lookup.dart';
+import 'package:epilist/utils/product_name.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/theme/app_icons.dart';
@@ -247,6 +249,115 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
       if (i >= 0) _repas[i] = repas.copyWith(weekday: cible);
     });
   }
+
+  /// « Si un repas planifié est cuisiné, ses ingrédients se retirent du
+  /// stock. »
+  ///
+  /// C'est le dernier maillon du cycle : les courses remplissent la
+  /// maison, les repas la vident. Sans lui, l'inventaire ne baisse
+  /// jamais tout seul et finit par mentir.
+  ///
+  /// Ne touche QUE les produits déjà suivis — l'inventaire est une
+  /// liste choisie, pas le journal de tout ce qu'on cuisine — et
+  /// demande confirmation : cuisiner avec la moitié de ce que la
+  /// recette prévoit arrive tous les jours.
+  Future<void> _jAiCuisine(PlannedMeal repas) async {
+    final l10n = AppLocalizations.of(context)!;
+    final service = context.read<IntelligenceService>();
+
+    // Les ingrédients de CE plat, avec leurs quantités : l'aperçu les
+    // donne déjà, pour une recette comme pour sept.
+    MealPlanPreview apercu;
+    try {
+      apercu = await service.previewMealPlan(
+        recipeIds: [repas.recipe.id],
+        people: _people,
+      );
+    } catch (_) {
+      if (mounted) SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+      return;
+    }
+    if (!mounted) return;
+
+    // Ce qui est suivi à la maison, et ce qu'il en reste.
+    final lookup = InventoryLookup(service);
+    final aRetirer = <(InventoryItem, double)>[];
+    for (final ingredient in apercu.items) {
+      final chezMoi = await lookup.chezMoi(ingredient.productName);
+      if (chezMoi == null || chezMoi.quantity == null) continue;
+      if (normalizeProductName(ingredient.productName).isEmpty) continue;
+      aRetirer.add((chezMoi, ingredient.quantity));
+    }
+    if (!mounted) return;
+
+    if (aRetirer.isEmpty) {
+      SmartSnackBarManager.showInfoSnackBar(context, l10n.mealCookedNone);
+      return;
+    }
+
+    final confirme = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.mealCookedTitle),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.mealCookedWhy,
+                  style: const TextStyle(fontSize: 17, height: 1.4),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                // Nommer ce qui va baisser, et de combien : une
+                // confirmation sans la liste ne se confirme pas.
+                for (final (item, quantite) in aRetirer)
+                  Text(
+                    '${item.productName} : '
+                    '${_nombre(item.quantity!)} → '
+                    '${_nombre((item.quantity! - quantite).clamp(0, 99999))}'
+                    '${item.unit != null && item.unit!.isNotEmpty ? ' ${item.unit}' : ''}',
+                    style: const TextStyle(fontSize: 17, height: 1.5),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(l10n.mealCookedConfirm),
+              ),
+            ],
+          ),
+    );
+    if (confirme != true || !mounted) return;
+
+    var faits = 0;
+    for (final (item, quantite) in aRetirer) {
+      try {
+        await service.setInventoryQuantity(
+          item.id,
+          (item.quantity! - quantite).clamp(0, 99999).toDouble(),
+        );
+        faits++;
+      } catch (_) {
+        // Un produit qui résiste n'empêche pas les autres de baisser.
+      }
+    }
+    // Le cache de « À la maison » porte l'ancienne version.
+    ScreenCache.invalidate('inventory');
+    InventoryLookup.oublie();
+    if (!mounted) return;
+    SmartSnackBarManager.showSuccessSnackBar(
+      context,
+      l10n.mealCookedDone(faits),
+    );
+  }
+
+  String _nombre(double v) => v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
 
   // --- Créer le plan ---------------------------------------------------
 
@@ -513,6 +624,8 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                   await _deplacer(repas);
                 case 'replace':
                   await _ajouterUnRepas(repas.weekday, remplace: repas);
+                case 'cooked':
+                  await _jAiCuisine(repas);
                 default:
                   setState(() => _repas.remove(repas));
               }
@@ -524,6 +637,13 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                     value: 'replace',
                     child: Text(l10n.mealReplace),
                   ),
+                  // Le dernier maillon du cycle : les courses
+                  // remplissent la maison, les repas la vident.
+                  if (r.ingredientsCount > 0)
+                    PopupMenuItem(
+                      value: 'cooked',
+                      child: Text(l10n.mealCooked),
+                    ),
                   PopupMenuItem(value: 'remove', child: Text(l10n.mealRemove)),
                 ],
           ),

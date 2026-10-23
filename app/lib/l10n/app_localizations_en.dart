@@ -6636,6 +6636,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealRemove => 'Remove from the plan';
 
   @override
+  String get mealCooked => 'I cooked this meal';
+
+  @override
+  String get mealCookedTitle => 'Take the ingredients out of your stock?';
+
+  @override
+  String get mealCookedWhy =>
+      'The ingredients of this meal that you track at home will be taken out of your stock, by the recipe\'s quantity.';
+
+  @override
+  String get mealCookedNone =>
+      'None of this meal\'s ingredients is tracked at home.';
+
+  @override
+  String mealCookedDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products taken out of your stock.',
+      one: '1 product taken out of your stock.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mealCookedConfirm => 'Take out of stock';
+
+  @override
   String get mealMoveTo => 'Move to';
 
   @override

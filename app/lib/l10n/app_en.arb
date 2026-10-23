@@ -3243,6 +3243,19 @@
   "mealMove": "Move",
   "mealReplace": "Replace",
   "mealRemove": "Remove from the plan",
+  "mealCooked": "I cooked this meal",
+  "mealCookedTitle": "Take the ingredients out of your stock?",
+  "mealCookedWhy": "The ingredients of this meal that you track at home will be taken out of your stock, by the recipe's quantity.",
+  "mealCookedNone": "None of this meal's ingredients is tracked at home.",
+  "mealCookedDone": "{count, plural, =1{1 product taken out of your stock.} other{{count} products taken out of your stock.}}",
+  "@mealCookedDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealCookedConfirm": "Take out of stock",
   "mealMoveTo": "Move to",
   "mealWeekCount": "{count, plural, =0{No meals yet.} =1{1 meal this week.} other{{count} meals this week.}}",
   "@mealWeekCount": {
