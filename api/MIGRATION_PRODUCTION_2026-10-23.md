@@ -82,15 +82,26 @@ api/migrations/013_verification.sql
 
 Que des `SELECT`. Lire la colonne **`verdict`** :
 
-Ce fichier couvre **les deux** migrations : 43 lignes.
+Ce fichier couvre **les deux** migrations : 45 lignes.
 
-- chaque ligne doit dire `ok` ;
-- la dernière doit dire **« TOUT EST LA — le code peut partir »**.
+**Il n'y a qu'une ligne à lire : la dernière.** Elle rassemble tout —
+les sept colonnes, les quatre index, la valeur d'enum, et les
+incohérences restantes de l'inventaire :
 
-Les quatre lignes du bloc **F** sont les plus importantes : elles
-comptent les incohérences restantes, et doivent toutes afficher
+```
+EN UN MOT | tout est la | 7 colonnes sur 7, 4 index sur 4, 0 incoherence(s)
+          | TOUT EST LA — le code peut partir
+```
+
+Tant qu'elle dit **« INCOMPLET »**, remonter dans le tableau et lire la
+colonne `verdict` pour savoir où ça cloche. Dans phpMyAdmin, taper
+`ECHEC` dans **« Filtrer les lignes »** au-dessus du résultat : zéro
+ligne affichée = tout va bien.
+
+Les quatre lignes du bloc **F** sont celles qui comptent les
+incohérences restantes de l'inventaire, et doivent afficher
 `0 ligne(s)`. Si l'une d'elles ne le dit pas, la migration n'a pas
-tourné en entier — rejouer l'étape 1.
+tourné en entier — rejouer l'étape 1, elle est faite pour ça.
 
 Tant qu'une ligne dit `ECHEC` ou `INCOMPLET` : **ne pas pousser le
 code**.

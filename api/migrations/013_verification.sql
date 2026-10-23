@@ -12,8 +12,19 @@
 -- absent passent la verification naive et cassent au premier
 -- enregistrement.
 --
--- Lecture : la colonne `verdict`. Tant qu'une ligne ne dit pas « ok »,
--- ne pas pousser le code — l'API lirait quelque chose qui n'est pas la.
+-- COMMENT LE LIRE. Deux facons, et la premiere suffit :
+--
+--   1. La DERNIERE ligne. Elle compte tout — colonnes, index, enum, et
+--      les incoherences restantes de l'inventaire. « TOUT EST LA » veut
+--      dire que les 43 lignes au-dessus disent « ok » ; rien d'autre a
+--      lire.
+--   2. La colonne `verdict`, ligne par ligne, pour savoir OU ca cloche
+--      quand la derniere ligne n'est pas contente. Dans phpMyAdmin,
+--      taper « ECHEC » dans « Filtrer les lignes » : zero resultat =
+--      tout va bien.
+--
+-- Tant que la derniere ligne ne dit pas « TOUT EST LA », ne pas pousser
+-- le code — l'API lirait quelque chose qui n'est pas la.
 -- ============================================================================
 
 SELECT 'A. A LA MAISON — zone, peremption et niveau' AS controle, '' AS attendu, '' AS trouve, '' AS verdict
@@ -257,5 +268,58 @@ SELECT 'enum period_type', 'avec biweekly',
                                         AND COLUMN_NAME = 'period_type'), '')) > 0, 'oui', 'non'),
        IF(LOCATE('biweekly', IFNULL((SELECT COLUMN_TYPE FROM information_schema.COLUMNS
                                       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'budgets'
-                                        AND COLUMN_NAME = 'period_type'), '')) > 0,
-          'TOUT EST LA — le code peut partir', 'INCOMPLET — ne pas pousser');
+                                        AND COLUMN_NAME = 'period_type'), '')) > 0, 'ok', 'ECHEC')
+
+UNION ALL SELECT '', '', '', ''
+UNION ALL
+-- LA ligne a lire. Elle rassemble TOUT ce qui precede : les sept
+-- colonnes, les quatre index, la valeur d'enum, et les quatre comptes
+-- d'incoherences du bloc F.
+--
+-- Elle ne portait que les colonnes et l'enum au premier jet : elle
+-- pouvait donc annoncer « TOUT EST LA » avec un ECHEC dans le bloc F,
+-- c'est-a-dire avec des ruptures affichees sur des produits qui
+-- restaient en stock. Une ligne de verdict qui ne regarde pas tout est
+-- pire que pas de verdict.
+SELECT 'EN UN MOT', 'tout est la',
+       CONCAT(
+         (SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+           AND ((TABLE_NAME = 'home_inventory' AND COLUMN_NAME IN ('expires_at','level','zone'))
+             OR (TABLE_NAME = 'list_items' AND COLUMN_NAME = 'price_is_estimate')
+             OR (TABLE_NAME = 'budgets' AND COLUMN_NAME IN ('auto_renew','renewed_at'))
+             OR (TABLE_NAME = 'email_preferences' AND COLUMN_NAME = 'price_alert_digest'))),
+         ' colonnes sur 7, ',
+         (SELECT COUNT(DISTINCT CONCAT(TABLE_NAME, INDEX_NAME)) FROM information_schema.STATISTICS
+           WHERE TABLE_SCHEMA = DATABASE()
+             AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom',
+                                'idx_ingredients_nom','idx_inventory_zone')),
+         ' index sur 4, ',
+         (SELECT COUNT(*) FROM home_inventory
+           WHERE (status = 'out' AND quantity IS NOT NULL AND quantity > 0)
+              OR (status = 'running_low' AND quantity IS NOT NULL AND min_quantity IS NOT NULL
+                  AND quantity > min_quantity)
+              OR (status <> 'out' AND quantity IS NOT NULL AND quantity <= 0)
+              OR (level IS NOT NULL AND level NOT IN ('full','half','low'))
+              OR (zone IS NOT NULL AND zone NOT IN ('pantry','fridge','freezer','household'))),
+         ' incoherence(s)'),
+       IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+            AND ((TABLE_NAME = 'home_inventory' AND COLUMN_NAME IN ('expires_at','level','zone'))
+              OR (TABLE_NAME = 'list_items' AND COLUMN_NAME = 'price_is_estimate')
+              OR (TABLE_NAME = 'budgets' AND COLUMN_NAME IN ('auto_renew','renewed_at'))
+              OR (TABLE_NAME = 'email_preferences' AND COLUMN_NAME = 'price_alert_digest'))) = 7
+        AND (SELECT COUNT(DISTINCT CONCAT(TABLE_NAME, INDEX_NAME)) FROM information_schema.STATISTICS
+              WHERE TABLE_SCHEMA = DATABASE()
+                AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom',
+                                   'idx_ingredients_nom','idx_inventory_zone')) = 4
+        AND LOCATE('biweekly', IFNULL((SELECT COLUMN_TYPE FROM information_schema.COLUMNS
+                                        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'budgets'
+                                          AND COLUMN_NAME = 'period_type'), '')) > 0
+        AND (SELECT COUNT(*) FROM home_inventory
+              WHERE (status = 'out' AND quantity IS NOT NULL AND quantity > 0)
+                 OR (status = 'running_low' AND quantity IS NOT NULL AND min_quantity IS NOT NULL
+                     AND quantity > min_quantity)
+                 OR (status <> 'out' AND quantity IS NOT NULL AND quantity <= 0)
+                 OR (level IS NOT NULL AND level NOT IN ('full','half','low'))
+                 OR (zone IS NOT NULL AND zone NOT IN ('pantry','fridge','freezer','household'))) = 0,
+          'TOUT EST LA — le code peut partir',
+          'INCOMPLET — ne pas pousser, lire les ECHEC ci-dessus');
