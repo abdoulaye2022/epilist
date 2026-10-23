@@ -503,7 +503,15 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
       FilledButton.icon(
         onPressed:
             montantConnu
-                ? () => _finish(items.length, restants: restants)
+                ? () => _finish(
+                  items.length,
+                  restants: restants,
+                  achetes:
+                      items
+                          .where((i) => i.isPurchased)
+                          .map((i) => i.productName)
+                          .toList(),
+                )
                 : null,
         icon: const Icon(Icons.celebration_outlined),
         label: Text(l10n.shoppingFinish),
@@ -743,7 +751,7 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
 
   /// Fin des courses : l'ecran de reussite, en REMPLACANT le mode
   /// courses dans la pile — y revenir en arriere n'aurait aucun sens.
-  void _finish(int total, {int restants = 0}) {
+  void _finish(int total, {int restants = 0, List<String> achetes = const []}) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder:
@@ -751,6 +759,9 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
               listName: widget.shoppingList.name,
               itemsCount: total,
               remainingCount: restants,
+              // De quoi boucler le cycle : ce qui est dans le panier
+              // peut maintenant entrer dans la maison.
+              purchasedNames: achetes,
             ),
       ),
     );

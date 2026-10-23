@@ -1733,6 +1733,15 @@
   "budgetOfMonth": "Budget du mois",
   "seeDetail": "Voir le détail",
   "remainingThisMonth": "Encore {amount} ce mois-ci",
+  "budgetRemainingShort": "Encore {amount}",
+  "@budgetRemainingShort": {
+    "description": "Sur la carte du budget, dont la periode n est pas forcement un mois.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@remainingThisMonth": {
     "placeholders": {
       "amount": {
@@ -2047,11 +2056,8 @@
   "statusOverdue": "En retard",
   "confidenceLow": "confiance faible",
   "inventoryTitle": "À la maison",
-  "inventoryAtHome": "À la maison",
-  "inventoryRunningLow": "Bientôt terminé",
-  "inventoryOut": "Terminé",
   "inventoryProbablyLow": "Probablement bientôt terminé",
-  "inventoryEmpty": "Ajoutez vos produits essentiels pour suivre ce qu'il reste à la maison.",
+  "inventoryEmpty": "Commencez par une dizaine de produits essentiels : ce sont eux qui manquent, et EpiList vous prévient avant qu'ils ne manquent.",
   "inventoryAddProduct": "Ajouter un produit",
   "inventoryProductName": "Nom du produit",
   "addToListQuestion": "Ajouter {product} à votre liste ?",
@@ -3110,13 +3116,19 @@
   "inventoryExpiryDate": "Date de péremption",
   "inventoryExpiryNone": "Aucune date",
   "inventoryExpiryPick": "Choisir une date",
-  "inventoryZoneExpiring": "À terminer bientôt",
   "inventoryLevel": "Niveau",
   "inventoryLevelHint": "Pour ce qui ne se compte pas : le liquide vaisselle, la farine.",
   "inventoryLevelFull": "Plein",
   "inventoryLevelHalf": "À moitié",
   "inventoryLevelLow": "Presque vide",
   "inventoryLevelNone": "Aucun",
+  "inventoryZone": "Où est-il rangé ?",
+  "inventoryZonePantry": "Garde-manger",
+  "inventoryZoneFridge": "Réfrigérateur",
+  "inventoryZoneFreezer": "Congélateur",
+  "inventoryZoneHousehold": "Entretien",
+  "inventoryZoneOther": "Ailleurs",
+  "inventoryAddHere": "Ajouter un produit ici",
   "inventoryPlusOne": "Ajouter une unité",
   "inventoryMinusOne": "Retirer une unité",
   "inventoryLevelLine": "Niveau : {level}.",
@@ -3520,6 +3532,24 @@
   },
   "shoppingMyShopping": "Mes courses",
   "shoppingUncheckedKept": "{count, plural, =1{1 article n'a pas été coché. Il reste dans votre liste pour la prochaine fois.} other{{count} articles n'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.}}",
+  "shoppingToStockTitle": "{count, plural, =1{1 produit acheté n'est pas suivi à la maison.} other{{count} produits achetés ne sont pas suivis à la maison.}}",
+  "@shoppingToStockTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingToStockWhy": "Les suivre, c'est être prévenu quand il en reste peu.",
+  "shoppingToStockAdd": "Les ajouter à ma maison",
+  "shoppingToStockDone": "{count, plural, =1{1 produit ajouté à votre maison.} other{{count} produits ajoutés à votre maison.}}",
+  "@shoppingToStockDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@shoppingUncheckedKept": {
     "placeholders": {
       "count": {

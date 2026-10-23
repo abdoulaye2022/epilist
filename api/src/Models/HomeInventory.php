@@ -39,6 +39,24 @@ class HomeInventory extends Model
     /// pour que le produit tienne encore un repas de retard.
     public const EXPIRY_WARNING_DAYS = 3;
 
+    /// Où le produit est rangé. L'analyse demande la zone parmi les
+    /// données de chaque provision, et c'est elle qui donne son fond
+    /// coloré à chaque bloc de l'écran.
+    ///
+    /// NULL est permis : un produit suivi avant la migration 014 n'a
+    /// pas de zone, et lui en inventer une serait faux.
+    public const ZONE_PANTRY = 'pantry';
+    public const ZONE_FRIDGE = 'fridge';
+    public const ZONE_FREEZER = 'freezer';
+    public const ZONE_HOUSEHOLD = 'household';
+
+    public const ZONES = [
+        self::ZONE_PANTRY,
+        self::ZONE_FRIDGE,
+        self::ZONE_FREEZER,
+        self::ZONE_HOUSEHOLD,
+    ];
+
     protected $fillable = [
         'space_id',
         'created_by_user_id',
@@ -46,6 +64,7 @@ class HomeInventory extends Model
         'product_name',
         'normalized_name',
         'category_id',
+        'zone',
         'status',
         'quantity',
         'min_quantity',

@@ -244,7 +244,10 @@ class BudgetMonthCard extends StatelessWidget {
                 ),
               ),
               Text(
-                l10n.remainingThisMonth(budget.formattedRemainingAmount),
+                // « Encore X », et non « ce mois-ci » : la periode d'un
+                // budget n'est plus forcement un mois civil — elle peut
+                // aller du 12 au 25, ou suivre le cycle de paie.
+                l10n.budgetRemainingShort(budget.formattedRemainingAmount),
                 style: TextStyle(
                   color: AppColors.onWarning.withValues(alpha: 0.85),
                   fontSize: 16,

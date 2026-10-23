@@ -188,6 +188,33 @@ verifie(
         && $rep['data']['item']['level'] === null
 );
 
+// La zone de rangement : c'est elle qui donne son fond colore au bloc
+// de l'ecran, et le badge d'etat doit rester lisible dessus.
+[$code, $rep] = req('POST', "$base/inventory/status", [
+    'product_name' => $riz,
+    'status' => 'at_home',
+    'zone' => 'pantry',
+], $jeton);
+verifie('la zone de rangement s\'enregistre',
+    ($rep['data']['item']['zone'] ?? null) === 'pantry',
+    'zone = ' . var_export($rep['data']['item']['zone'] ?? null, true));
+
+[$code, $rep] = req('POST', "$base/inventory/status", [
+    'product_name' => $riz,
+    'status' => 'at_home',
+    'zone' => 'le-placard-du-haut',
+], $jeton);
+verifie(
+    'une zone inventee n\'entre pas en base',
+    array_key_exists('zone', $rep['data']['item'] ?? [])
+        && $rep['data']['item']['zone'] === null
+);
+
+[$code, $rep] = req('GET', "$base/inventory", null, $jeton);
+$ligne = provision($rep['data']['items'] ?? [], $riz);
+verifie('la zone revient dans /inventory',
+    array_key_exists('zone', $ligne ?? []));
+
 echo "\n";
 
 // ---------------------------------------------------------------------

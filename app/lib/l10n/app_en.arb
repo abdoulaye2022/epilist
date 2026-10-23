@@ -1732,6 +1732,15 @@
   "budgetOfMonth": "Budget of the month",
   "seeDetail": "See details",
   "remainingThisMonth": "{amount} left this month",
+  "budgetRemainingShort": "{amount} left",
+  "@budgetRemainingShort": {
+    "description": "Sur la carte du budget, dont la periode n est pas forcement un mois.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@remainingThisMonth": {
     "placeholders": {
       "amount": {
@@ -2025,11 +2034,8 @@
   "statusOverdue": "Overdue",
   "confidenceLow": "low confidence",
   "inventoryTitle": "At home",
-  "inventoryAtHome": "At home",
-  "inventoryRunningLow": "Running low",
-  "inventoryOut": "Out",
   "inventoryProbablyLow": "Probably running low",
-  "inventoryEmpty": "Add your essentials to track what's left at home.",
+  "inventoryEmpty": "Start with about ten essentials: those are the ones that run out, and EpiList warns you before they do.",
   "inventoryAddProduct": "Add a product",
   "inventoryProductName": "Product name",
   "addToListQuestion": "Add {product} to your list?",
@@ -3110,13 +3116,19 @@
   "inventoryExpiryDate": "Expiry date",
   "inventoryExpiryNone": "No date",
   "inventoryExpiryPick": "Pick a date",
-  "inventoryZoneExpiring": "Finish soon",
   "inventoryLevel": "Level",
   "inventoryLevelHint": "For what cannot be counted: dish soap, flour.",
   "inventoryLevelFull": "Full",
   "inventoryLevelHalf": "Half",
   "inventoryLevelLow": "Nearly empty",
   "inventoryLevelNone": "None",
+  "inventoryZone": "Where is it kept?",
+  "inventoryZonePantry": "Pantry",
+  "inventoryZoneFridge": "Fridge",
+  "inventoryZoneFreezer": "Freezer",
+  "inventoryZoneHousehold": "Household",
+  "inventoryZoneOther": "Elsewhere",
+  "inventoryAddHere": "Add a product here",
   "inventoryPlusOne": "Add one",
   "inventoryMinusOne": "Remove one",
   "inventoryLevelLine": "Level: {level}.",
@@ -3520,6 +3532,24 @@
   },
   "shoppingMyShopping": "My shopping",
   "shoppingUncheckedKept": "{count, plural, =1{1 item was not ticked. It stays in your list for next time.} other{{count} items were not ticked. They stay in your list for next time.}}",
+  "shoppingToStockTitle": "{count, plural, =1{1 product you bought is not tracked at home.} other{{count} products you bought are not tracked at home.}}",
+  "@shoppingToStockTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingToStockWhy": "Tracking them means being warned when little is left.",
+  "shoppingToStockAdd": "Add them to my home",
+  "shoppingToStockDone": "{count, plural, =1{1 product added to your home.} other{{count} products added to your home.}}",
+  "@shoppingToStockDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@shoppingUncheckedKept": {
     "placeholders": {
       "count": {

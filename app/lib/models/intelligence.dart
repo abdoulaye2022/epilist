@@ -69,6 +69,12 @@ class InventoryItem {
   /// pour chaque produit décourage dès le dixième.
   final String? level;
 
+  /// Où le produit est rangé : `pantry`, `fridge`, `freezer`,
+  /// `household`, ou `null` (« Ailleurs »). C'est la zone qui donne son
+  /// fond coloré à chaque bloc de l'écran, et c'est pour rester lisible
+  /// SUR ces fonds que le badge d'état est plein.
+  final String? zone;
+
   /// Péremption, facultative. `daysToExpiry` est négatif si la date est
   /// passée ; il vient du serveur, parce qu'une date de péremption
   /// calculée sur l'horloge du téléphone dérive avec son fuseau.
@@ -89,6 +95,7 @@ class InventoryItem {
     this.reorderQuantity,
     this.belowMin = false,
     this.level,
+    this.zone,
     this.expiresAt,
     this.daysToExpiry,
     this.expiringSoon = false,
@@ -132,6 +139,7 @@ class InventoryItem {
     reorderQuantity: (json['reorder_quantity'] as num?)?.toDouble(),
     belowMin: json['below_min'] == true,
     level: json['level'] as String?,
+    zone: json['zone'] as String?,
     expiresAt:
         json['expires_at'] != null
             ? DateTime.tryParse(json['expires_at'] as String)

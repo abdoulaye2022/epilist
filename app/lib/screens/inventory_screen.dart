@@ -15,6 +15,17 @@
 // Ce qui ne se compte pas (le liquide vaisselle, la farine) se suit au
 // NIVEAU : plein, à moitié, presque vide. Et ce qui se périme porte sa
 // date, avec l'alerte « À terminer dans 2 jours ».
+//
+// Les blocs sont les ZONES DE RANGEMENT — garde-manger, réfrigérateur,
+// congélateur, entretien — et non les états. C'est ce que demande
+// l'analyse (« nom, zone, quantité, unité, seuil »), et c'est la raison
+// d'être du badge plein : « les zones ont des fonds colorés (lilas,
+// menthe, miel, crème), donc une icône colorée mince peut
+// disparaître ». L'état, lui, se lit sur chaque ligne, badge et mots.
+//
+// Dans une zone, les lignes sont rangées par URGENCE : ce qui manque
+// d'abord, ce qui est disponible en dernier. Chercher dans le
+// garde-manger, c'est chercher ce qui manque.
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -70,6 +81,45 @@ class _InventoryScreenState extends State<InventoryScreen> {
       setState(() => _loading = false);
     }
   }
+
+  /// Les quatre zones de rangement, dans l'ordre où l'on range : le
+  /// garde-manger d'abord (c'est le plus gros), l'entretien en dernier.
+  /// `null` ferme la liste : « Ailleurs », pour les produits suivis
+  /// avant que la zone n'existe.
+  static const List<String?> _zones = [
+    'pantry',
+    'fridge',
+    'freezer',
+    'household',
+    null,
+  ];
+
+  String _nomDeZone(String? zone, AppLocalizations l10n) => switch (zone) {
+    'pantry' => l10n.inventoryZonePantry,
+    'fridge' => l10n.inventoryZoneFridge,
+    'freezer' => l10n.inventoryZoneFreezer,
+    'household' => l10n.inventoryZoneHousehold,
+    _ => l10n.inventoryZoneOther,
+  };
+
+  /// La couleur d'une zone — lilas, menthe, miel, crème, comme la
+  /// planche. Elle teinte le fond du bloc ; le badge d'état garde la
+  /// sienne, et c'est tout l'intérêt qu'il soit plein.
+  Color _couleurDeZone(String? zone) => switch (zone) {
+    'pantry' => AppColors.gold, // miel
+    'fridge' => AppColors.primaryVivid, // menthe
+    'freezer' => AppColors.violet, // lilas
+    'household' => AppColors.brown, // crème
+    _ => AppColors.slate,
+  };
+
+  IconData _iconeDeZone(String? zone) => switch (zone) {
+    'pantry' => Icons.shelves,
+    'fridge' => Icons.kitchen_outlined,
+    'freezer' => Icons.ac_unit_rounded,
+    'household' => Icons.cleaning_services_outlined,
+    _ => Icons.inventory_2_outlined,
+  };
 
   /// L'état d'un produit, dans l'ordre de ce qui presse.
   ///
@@ -189,7 +239,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Future<void> _addProduct() async {
+  /// Ajouter un produit, dans la zone où l'on regardait.
+  Future<void> _addProduct({String? zone}) async {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final name = await showDialog<String>(
@@ -220,6 +271,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
       await context.read<IntelligenceService>().setInventoryStatus(
         name.trim(),
         'at_home',
+        sendZone: true,
+        zone: zone,
       );
       await _load();
     } catch (_) {}
@@ -257,6 +310,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
     DateTime? peremption = item.expiresAt;
     String? niveau = item.level;
+    String? zone = item.zone;
 
     double? parse(TextEditingController c) =>
         double.tryParse(c.text.trim().replaceAll(',', '.'));
@@ -408,6 +462,35 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
+                        // Où il est rangé. L'analyse le demande parmi
+                        // les données de chaque provision, et c'est ce
+                        // qui décide du bloc où la ligne s'affiche.
+                        Text(
+                          l10n.inventoryZone,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Wrap(
+                          spacing: AppSpacing.sm,
+                          runSpacing: AppSpacing.sm,
+                          children: [
+                            for (final valeur in _zones)
+                              ChoiceChip(
+                                label: Text(_nomDeZone(valeur, l10n)),
+                                selected: zone == valeur,
+                                showCheckmark: false,
+                                selectedColor: AppTint.fill(
+                                  _couleurDeZone(valeur),
+                                ),
+                                onSelected:
+                                    (_) => setLocal(() => zone = valeur),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
                         // La date de péremption, facultative. Sans elle,
                         // « bientôt périmé » ne pouvait pas exister.
                         Text(
@@ -536,6 +619,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
         expiresAt: peremption,
         sendLevel: true,
         level: niveau,
+        sendZone: true,
+        zone: zone,
       );
       await _load();
     } catch (_) {
@@ -559,31 +644,25 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 )
                 .toList();
 
-    // Une zone par état, dans l'ordre de ce qui presse. Un produit
-    // n'apparaît QUE dans une zone : il était possible de voir le même
-    // sac de riz annoncé « Stock bas » et rangé dans « Terminé ».
-    final zones = <(StockState, String, List<InventoryItem>)>[
-      (
-        StockState.rupture,
-        l10n.inventoryOut,
-        filtered.where((i) => _etat(i) == StockState.rupture).toList(),
-      ),
-      (
-        StockState.stockBas,
-        l10n.inventoryRunningLow,
-        filtered.where((i) => _etat(i) == StockState.stockBas).toList(),
-      ),
-      (
-        StockState.peremption,
-        l10n.inventoryZoneExpiring,
-        filtered.where((i) => _etat(i) == StockState.peremption).toList(),
-      ),
-      (
-        StockState.disponible,
-        l10n.inventoryAtHome,
-        filtered.where((i) => _etat(i) == StockState.disponible).toList(),
-      ),
-    ];
+    // Un bloc par ZONE DE RANGEMENT, et dans chaque zone les lignes
+    // rangées par urgence : ce qui manque d'abord. Grouper par ÉTAT,
+    // comme avant, répondait à une question qu'on ne se pose pas —
+    // devant un garde-manger, on cherche ce qui manque DANS le
+    // garde-manger.
+    final parZone = <(String?, List<InventoryItem>)>[];
+    for (final zone in _zones) {
+      final dedans =
+          filtered.where((i) => (i.zone ?? '') == (zone ?? '')).toList()
+            ..sort((a, b) {
+              final u = _etat(a).index.compareTo(_etat(b).index);
+              return u != 0
+                  ? u
+                  : a.productName.toLowerCase().compareTo(
+                    b.productName.toLowerCase(),
+                  );
+            });
+      if (dedans.isNotEmpty) parZone.add((zone, dedans));
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -642,51 +721,44 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         ),
                       ),
                     ] else
-                      for (final (etat, title, items) in zones)
-                        if (items.isNotEmpty)
-                          // Une zone par etat, en-tete teinte de la
-                          // couleur de l'etat : la carte dit de quoi
-                          // elle parle avant qu'on lise une ligne.
-                          AppZoneCard(
-                            title: '$title (${items.length})',
-                            tint: AppStateBadge.couleurDe(etat),
-                            icon: _iconeDeZone(etat),
-                            children: [
-                              for (final (n, i) in items.indexed)
-                                _itemLine(i, l10n, first: n == 0),
-                              // « Un bouton Ajouter un produit dans
-                              // chaque zone » : le bouton flottant est
-                              // loin quand on vient de lire une ligne.
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: AppSpacing.sm,
-                                ),
-                                child: OutlinedButton.icon(
-                                  onPressed: _addProduct,
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(
-                                      0,
-                                      AppSizes.buttonSmall,
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.add),
-                                  label: Text(l10n.inventoryAddProduct),
-                                ),
+                      for (final (zone, items) in parZone)
+                        // Un bloc par zone, teinté de SA couleur : la
+                        // carte dit où l'on est avant qu'on lise une
+                        // ligne, et le badge d'état garde la sienne.
+                        AppZoneCard(
+                          title: '${_nomDeZone(zone, l10n)} (${items.length})',
+                          tint: _couleurDeZone(zone),
+                          icon: _iconeDeZone(zone),
+                          children: [
+                            for (final (n, i) in items.indexed)
+                              _itemLine(i, l10n, first: n == 0),
+                            // « Un bouton Ajouter un produit dans chaque
+                            // zone » : le bouton flottant est loin quand
+                            // on vient de lire une ligne, et il ne sait
+                            // pas dans quelle zone on regardait.
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: AppSpacing.sm,
                               ),
-                            ],
-                          ),
+                              child: OutlinedButton.icon(
+                                onPressed: () => _addProduct(zone: zone),
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(
+                                    0,
+                                    AppSizes.buttonSmall,
+                                  ),
+                                ),
+                                icon: const Icon(Icons.add),
+                                label: Text(l10n.inventoryAddHere),
+                              ),
+                            ),
+                          ],
+                        ),
                   ],
                 ),
               ),
     );
   }
-
-  IconData _iconeDeZone(StockState etat) => switch (etat) {
-    StockState.rupture => Icons.remove_shopping_cart_outlined,
-    StockState.stockBas => Icons.hourglass_bottom,
-    StockState.peremption => Icons.watch_later_outlined,
-    StockState.disponible => Icons.home_outlined,
-  };
 
   /// Une ligne de provision DANS sa zone : son nom, son état écrit avec
   /// son badge, sa quantité réglable, et ce qu'on peut en faire.

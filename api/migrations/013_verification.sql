@@ -1,9 +1,9 @@
 -- ============================================================================
--- VERIFICATION D'APRES-MIGRATION 013. NE MODIFIE RIEN.
+-- VERIFICATION D'APRES-MIGRATIONS 013 ET 014. NE MODIFIE RIEN.
 -- ============================================================================
 --
 -- A coller dans l'onglet SQL de phpMyAdmin, sur la base de PRODUCTION,
--- APRES 013_analyse_23_octobre.sql.
+-- APRES 013_analyse_23_octobre.sql ET 014_zones_de_rangement.sql.
 --
 -- Que des SELECT : il lit, il compte, il dit. Rejouable.
 --
@@ -16,7 +16,35 @@
 -- ne pas pousser le code — l'API lirait quelque chose qui n'est pas la.
 -- ============================================================================
 
-SELECT 'A. A LA MAISON — peremption et niveau' AS controle, '' AS attendu, '' AS trouve, '' AS verdict
+SELECT 'A. A LA MAISON — zone, peremption et niveau' AS controle, '' AS attendu, '' AS trouve, '' AS verdict
+UNION ALL
+-- La zone de rangement (migration 014). Ce n'est pas un detail
+-- d'affichage : c'est elle qui donne son fond colore a chaque bloc de
+-- l'ecran, et c'est pour rester lisible SUR ces fonds que le badge
+-- d'etat est plein.
+SELECT 'home_inventory.zone', 'varchar',
+       IFNULL((SELECT DATA_TYPE FROM information_schema.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory'
+                  AND COLUMN_NAME = 'zone'), 'absente'),
+       IF((SELECT DATA_TYPE FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory'
+              AND COLUMN_NAME = 'zone') = 'varchar', 'ok', 'ECHEC')
+UNION ALL
+SELECT 'index idx_inventory_zone', 'existe',
+       IF((SELECT COUNT(*) FROM information_schema.STATISTICS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory'
+              AND INDEX_NAME = 'idx_inventory_zone') > 0, 'oui', 'non'),
+       IF((SELECT COUNT(*) FROM information_schema.STATISTICS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'home_inventory'
+              AND INDEX_NAME = 'idx_inventory_zone') > 0, 'ok', 'ECHEC')
+UNION ALL
+SELECT 'zones hors des quatre valeurs (doit etre 0)', '0',
+       CONCAT((SELECT COUNT(*) FROM home_inventory
+                WHERE zone IS NOT NULL
+                  AND zone NOT IN ('pantry','fridge','freezer','household')), ' ligne(s)'),
+       IF((SELECT COUNT(*) FROM home_inventory
+            WHERE zone IS NOT NULL
+              AND zone NOT IN ('pantry','fridge','freezer','household')) = 0, 'ok', 'ECHEC')
 UNION ALL
 SELECT CONCAT('home_inventory.', c.nom), c.type,
        IFNULL((SELECT DATA_TYPE FROM information_schema.COLUMNS
@@ -205,14 +233,22 @@ SELECT 'colonnes de la migration 013', '6',
             AND TABLE_NAME = 'email_preferences' AND COLUMN_NAME = 'price_alert_digest') = 6,
           'ok', 'INCOMPLET')
 UNION ALL
-SELECT 'index de la migration 013', '3',
+SELECT 'colonne de la migration 014 (zone)', '1',
+       CONCAT((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'home_inventory' AND COLUMN_NAME = 'zone'), ' sur 1'),
+       IF((SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = 'home_inventory' AND COLUMN_NAME = 'zone') = 1, 'ok', 'INCOMPLET')
+UNION ALL
+SELECT 'index des migrations 013 et 014', '4',
        CONCAT((SELECT COUNT(DISTINCT CONCAT(TABLE_NAME, INDEX_NAME)) FROM information_schema.STATISTICS
                 WHERE TABLE_SCHEMA = DATABASE()
-                  AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom','idx_ingredients_nom')),
-              ' sur 3'),
+                  AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom',
+                                     'idx_ingredients_nom','idx_inventory_zone')),
+              ' sur 4'),
        IF((SELECT COUNT(DISTINCT CONCAT(TABLE_NAME, INDEX_NAME)) FROM information_schema.STATISTICS
             WHERE TABLE_SCHEMA = DATABASE()
-              AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom','idx_ingredients_nom')) = 3,
+              AND INDEX_NAME IN ('idx_inventory_peremption','idx_recipes_nom',
+                                 'idx_ingredients_nom','idx_inventory_zone')) = 4,
           'ok', 'INCOMPLET')
 UNION ALL
 SELECT 'enum period_type', 'avec biweekly',

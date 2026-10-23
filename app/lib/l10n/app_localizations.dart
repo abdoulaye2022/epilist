@@ -8251,6 +8251,12 @@ abstract class AppLocalizations {
   /// **'Encore {amount} ce mois-ci'**
   String remainingThisMonth(String amount);
 
+  /// Sur la carte du budget, dont la periode n est pas forcement un mois.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encore {amount}'**
+  String budgetRemainingShort(String amount);
+
   /// No description provided for @withinBudget.
   ///
   /// In fr, this message translates to:
@@ -8893,24 +8899,6 @@ abstract class AppLocalizations {
   /// **'À la maison'**
   String get inventoryTitle;
 
-  /// No description provided for @inventoryAtHome.
-  ///
-  /// In fr, this message translates to:
-  /// **'À la maison'**
-  String get inventoryAtHome;
-
-  /// No description provided for @inventoryRunningLow.
-  ///
-  /// In fr, this message translates to:
-  /// **'Bientôt terminé'**
-  String get inventoryRunningLow;
-
-  /// No description provided for @inventoryOut.
-  ///
-  /// In fr, this message translates to:
-  /// **'Terminé'**
-  String get inventoryOut;
-
   /// No description provided for @inventoryProbablyLow.
   ///
   /// In fr, this message translates to:
@@ -8920,7 +8908,7 @@ abstract class AppLocalizations {
   /// No description provided for @inventoryEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoutez vos produits essentiels pour suivre ce qu\'il reste à la maison.'**
+  /// **'Commencez par une dizaine de produits essentiels : ce sont eux qui manquent, et EpiList vous prévient avant qu\'ils ne manquent.'**
   String get inventoryEmpty;
 
   /// No description provided for @inventoryAddProduct.
@@ -11785,12 +11773,6 @@ abstract class AppLocalizations {
   /// **'Choisir une date'**
   String get inventoryExpiryPick;
 
-  /// No description provided for @inventoryZoneExpiring.
-  ///
-  /// In fr, this message translates to:
-  /// **'À terminer bientôt'**
-  String get inventoryZoneExpiring;
-
   /// No description provided for @inventoryLevel.
   ///
   /// In fr, this message translates to:
@@ -11826,6 +11808,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aucun'**
   String get inventoryLevelNone;
+
+  /// No description provided for @inventoryZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où est-il rangé ?'**
+  String get inventoryZone;
+
+  /// No description provided for @inventoryZonePantry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garde-manger'**
+  String get inventoryZonePantry;
+
+  /// No description provided for @inventoryZoneFridge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réfrigérateur'**
+  String get inventoryZoneFridge;
+
+  /// No description provided for @inventoryZoneFreezer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congélateur'**
+  String get inventoryZoneFreezer;
+
+  /// No description provided for @inventoryZoneHousehold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien'**
+  String get inventoryZoneHousehold;
+
+  /// No description provided for @inventoryZoneOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ailleurs'**
+  String get inventoryZoneOther;
+
+  /// No description provided for @inventoryAddHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un produit ici'**
+  String get inventoryAddHere;
 
   /// No description provided for @inventoryPlusOne.
   ///
@@ -12546,6 +12570,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count, plural, =1{1 article n\'a pas été coché. Il reste dans votre liste pour la prochaine fois.} other{{count} articles n\'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.}}'**
   String shoppingUncheckedKept(int count);
+
+  /// No description provided for @shoppingToStockTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 produit acheté n\'est pas suivi à la maison.} other{{count} produits achetés ne sont pas suivis à la maison.}}'**
+  String shoppingToStockTitle(int count);
+
+  /// No description provided for @shoppingToStockWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les suivre, c\'est être prévenu quand il en reste peu.'**
+  String get shoppingToStockWhy;
+
+  /// No description provided for @shoppingToStockAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les ajouter à ma maison'**
+  String get shoppingToStockAdd;
+
+  /// No description provided for @shoppingToStockDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 produit ajouté à votre maison.} other{{count} produits ajoutés à votre maison.}}'**
+  String shoppingToStockDone(int count);
 
   /// No description provided for @shoppingSeeRemaining.
   ///

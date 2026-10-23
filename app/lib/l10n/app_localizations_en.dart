@@ -4329,6 +4329,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String budgetRemainingShort(String amount) {
+    return '$amount left';
+  }
+
+  @override
   String get withinBudget => 'You\'re within budget!';
 
   @override
@@ -4712,20 +4717,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryTitle => 'At home';
 
   @override
-  String get inventoryAtHome => 'At home';
-
-  @override
-  String get inventoryRunningLow => 'Running low';
-
-  @override
-  String get inventoryOut => 'Out';
-
-  @override
   String get inventoryProbablyLow => 'Probably running low';
 
   @override
   String get inventoryEmpty =>
-      'Add your essentials to track what\'s left at home.';
+      'Start with about ten essentials: those are the ones that run out, and EpiList warns you before they do.';
 
   @override
   String get inventoryAddProduct => 'Add a product';
@@ -6392,9 +6388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryExpiryPick => 'Pick a date';
 
   @override
-  String get inventoryZoneExpiring => 'Finish soon';
-
-  @override
   String get inventoryLevel => 'Level';
 
   @override
@@ -6412,6 +6405,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryLevelNone => 'None';
+
+  @override
+  String get inventoryZone => 'Where is it kept?';
+
+  @override
+  String get inventoryZonePantry => 'Pantry';
+
+  @override
+  String get inventoryZoneFridge => 'Fridge';
+
+  @override
+  String get inventoryZoneFreezer => 'Freezer';
+
+  @override
+  String get inventoryZoneHousehold => 'Household';
+
+  @override
+  String get inventoryZoneOther => 'Elsewhere';
+
+  @override
+  String get inventoryAddHere => 'Add a product here';
 
   @override
   String get inventoryPlusOne => 'Add one';
@@ -6914,6 +6928,35 @@ class AppLocalizationsEn extends AppLocalizations {
       other:
           '$count items were not ticked. They stay in your list for next time.',
       one: '1 item was not ticked. It stays in your list for next time.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shoppingToStockTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products you bought are not tracked at home.',
+      one: '1 product you bought is not tracked at home.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingToStockWhy =>
+      'Tracking them means being warned when little is left.';
+
+  @override
+  String get shoppingToStockAdd => 'Add them to my home';
+
+  @override
+  String shoppingToStockDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count products added to your home.',
+      one: '1 product added to your home.',
     );
     return '$_temp0';
   }

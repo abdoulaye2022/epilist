@@ -74,6 +74,59 @@ class ListItemController
         }
     }
 
+    /**
+     * Un prix entre APRES avoir coche l'article.
+     *
+     * Deux choses a rattraper : la ligne d'historique d'achat, ecrite
+     * au moment du cochage avec un prix vide, et l'alerte de baisse,
+     * qui ne s'est jamais declenchee.
+     *
+     * Un prix APPROXIMATIF ne fait ni l'un ni l'autre : il sert le
+     * budget du mois (qui lit list_items), pas la comparaison entre
+     * magasins, que « a peu pres 8 $ » fausse durablement.
+     *
+     * Jamais bloquant : un echec ici ne doit pas faire rater la
+     * modification de l'article.
+     */
+    private function rattraperLePrixObserve(int $userId, ListItem $item): void
+    {
+        try {
+            $prix = is_numeric($item->price) ? (float) $item->price : 0.0;
+            if ($prix <= 0 || $item->price_is_estimate) {
+                return;
+            }
+
+            $spaceId = ShoppingList::withTrashed()->find($item->list_id)?->space_id;
+            $normalized = PurchaseHistory::normalizeProductName($item->product_name);
+
+            // La ligne d'historique de CET achat : la plus recente de ce
+            // produit dans cette liste, et seulement si elle est du
+            // jour — au-dela, c'est un autre achat, et le prix d'hier
+            // ne se reecrit pas.
+            $ligne = PurchaseHistory::where('list_id', $item->list_id)
+                ->where('normalized_name', $normalized)
+                ->where('purchased_at', '>=', Carbon::now()->subDay())
+                ->orderByDesc('purchased_at')
+                ->first();
+            if ($ligne !== null && $ligne->price === null) {
+                $ligne->price = $prix;
+                $ligne->save();
+            }
+
+            \App\Services\PriceAlertService::onObservation(
+                $spaceId !== null ? (int) $spaceId : null,
+                $userId,
+                $item->product_name,
+                $normalized,
+                $prix,
+                null,
+                $item->store_name
+            );
+        } catch (\Throwable $e) {
+            error_log('prix observe non rattrape: ' . $e->getMessage());
+        }
+    }
+
     private function recordPurchaseHistory(int $userId, ListItem $item): void
     {
         try {
@@ -646,7 +699,25 @@ class ListItemController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
             }
 
+            $prixAvant = $item->price;
+            $estimeAvant = (bool) $item->price_is_estimate;
             $item->update($cleanData);
+
+            // Le prix saisi APRES avoir coche l'article.
+            //
+            // C'est l'ordre le plus naturel au magasin : on met le
+            // produit dans le panier, PUIS on lit l'etiquette. Or
+            // l'historique des prix et les alertes de baisse ne se
+            // declenchaient qu'au moment de cocher : un prix entre
+            // ensuite n'arrivait nulle part, et « l'application garde
+            // l'historique des prix saisis en magasin » restait faux
+            // une fois sur deux.
+            $item->refresh();
+            $prixChange = (float) ($item->price ?? 0) !== (float) ($prixAvant ?? 0)
+                || (bool) $item->price_is_estimate !== $estimeAvant;
+            if ($item->is_purchased && $prixChange) {
+                $this->rattraperLePrixObserve($user_id, $item);
+            }
 
             // Update suggestions if product name changed
             if (isset($cleanData['product_name']) && $cleanData['product_name'] !== $oldData['product_name']) {

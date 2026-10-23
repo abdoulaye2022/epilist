@@ -4401,6 +4401,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String budgetRemainingShort(String amount) {
+    return 'Encore $amount';
+  }
+
+  @override
   String get withinBudget => 'Vous êtes dans les limites !';
 
   @override
@@ -4785,20 +4790,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inventoryTitle => 'À la maison';
 
   @override
-  String get inventoryAtHome => 'À la maison';
-
-  @override
-  String get inventoryRunningLow => 'Bientôt terminé';
-
-  @override
-  String get inventoryOut => 'Terminé';
-
-  @override
   String get inventoryProbablyLow => 'Probablement bientôt terminé';
 
   @override
   String get inventoryEmpty =>
-      'Ajoutez vos produits essentiels pour suivre ce qu\'il reste à la maison.';
+      'Commencez par une dizaine de produits essentiels : ce sont eux qui manquent, et EpiList vous prévient avant qu\'ils ne manquent.';
 
   @override
   String get inventoryAddProduct => 'Ajouter un produit';
@@ -6490,9 +6486,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inventoryExpiryPick => 'Choisir une date';
 
   @override
-  String get inventoryZoneExpiring => 'À terminer bientôt';
-
-  @override
   String get inventoryLevel => 'Niveau';
 
   @override
@@ -6510,6 +6503,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inventoryLevelNone => 'Aucun';
+
+  @override
+  String get inventoryZone => 'Où est-il rangé ?';
+
+  @override
+  String get inventoryZonePantry => 'Garde-manger';
+
+  @override
+  String get inventoryZoneFridge => 'Réfrigérateur';
+
+  @override
+  String get inventoryZoneFreezer => 'Congélateur';
+
+  @override
+  String get inventoryZoneHousehold => 'Entretien';
+
+  @override
+  String get inventoryZoneOther => 'Ailleurs';
+
+  @override
+  String get inventoryAddHere => 'Ajouter un produit ici';
 
   @override
   String get inventoryPlusOne => 'Ajouter une unité';
@@ -7018,6 +7032,35 @@ class AppLocalizationsFr extends AppLocalizations {
           '$count articles n\'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.',
       one:
           '1 article n\'a pas été coché. Il reste dans votre liste pour la prochaine fois.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String shoppingToStockTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count produits achetés ne sont pas suivis à la maison.',
+      one: '1 produit acheté n\'est pas suivi à la maison.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingToStockWhy =>
+      'Les suivre, c\'est être prévenu quand il en reste peu.';
+
+  @override
+  String get shoppingToStockAdd => 'Les ajouter à ma maison';
+
+  @override
+  String shoppingToStockDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count produits ajoutés à votre maison.',
+      one: '1 produit ajouté à votre maison.',
     );
     return '$_temp0';
   }

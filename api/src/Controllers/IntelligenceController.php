@@ -122,6 +122,7 @@ class IntelligenceController
                 'product_name' => $i->product_name,
                 'normalized_name' => $i->normalized_name,
                 'category_id' => $i->category_id,
+                'zone' => $i->zone,
                 // L'etat RENDU est celui que la quantite impose. Les
                 // lignes d'avant la migration 013 peuvent encore porter
                 // un status incoherent : il ne sort pas d'ici.
@@ -213,6 +214,10 @@ class IntelligenceController
             if (array_key_exists('level', $data)) {
                 $values['level'] = in_array($data['level'], HomeInventory::LEVELS, true)
                     ? $data['level'] : null;
+            }
+            if (array_key_exists('zone', $data)) {
+                $values['zone'] = in_array($data['zone'], HomeInventory::ZONES, true)
+                    ? $data['zone'] : null;
             }
 
             $normalized = PurchaseHistory::normalizeProductName($product);

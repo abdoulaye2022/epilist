@@ -88,6 +88,8 @@ class IntelligenceService {
     DateTime? expiresAt,
     bool sendLevel = false,
     String? level,
+    bool sendZone = false,
+    String? zone,
   }) async {
     final response = await _dio.post(
       '/inventory/status',
@@ -101,6 +103,7 @@ class IntelligenceService {
         if (sendExpiresAt)
           'expires_at': expiresAt?.toIso8601String().substring(0, 10),
         if (sendLevel) 'level': level,
+        if (sendZone) 'zone': zone,
       },
     );
     return InventoryItem.fromJson(

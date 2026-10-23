@@ -1,7 +1,8 @@
 # Mise en production — 23 octobre 2026
 
-Migration **013 (analyse du 23 octobre)** : six colonnes, trois index,
-et une remise en cohérence des états d'inventaire déjà enregistrés.
+Migrations **013 et 014 (analyse du 23 octobre)** : sept colonnes,
+quatre index, et une remise en cohérence des états d'inventaire déjà
+enregistrés.
 
 > **L'ordre n'est pas négociable.** Le code lit des colonnes que la base
 > de production n'a pas encore. Si le code part avant le SQL, les écrans
@@ -21,6 +22,7 @@ et une remise en cohérence des états d'inventaire déjà enregistrés.
 | `budgets` | `auto_renew`, `renewed_at` | Le budget qui se renouvelle tout seul |
 | `email_preferences` | `price_alert_digest` | Un résumé hebdomadaire au lieu d'une alerte par produit |
 | `recipes`, `recipe_ingredients` | 2 index | La recherche de recette par nom **ou par ingrédient** |
+| `home_inventory` | `zone` *(014)* | Garde-manger, réfrigérateur, congélateur, entretien — le bloc où la provision s'affiche |
 
 **Une seule écriture de données**, et elle corrige une incohérence :
 quatre `UPDATE` remettent `home_inventory.status` d'accord avec la
@@ -48,21 +50,22 @@ longtemps qui ne se contente pas d'ajouter des colonnes nulles.
 
 ---
 
-## Étape 1 — Jouer la migration
+## Étape 1 — Jouer les migrations
 
 phpMyAdmin → base de production → onglet **SQL** → coller tout le
-contenu de :
+contenu de, **dans cet ordre** :
 
 ```
 api/migrations/013_analyse_23_octobre.sql
+api/migrations/014_zones_de_rangement.sql
 ```
 
 Elle est **idempotente** : la rejouer ne casse rien et ne duplique
 rien. Chaque ajout vérifie d'abord sa présence, et le `MODIFY` de
 `period_type` ne s'exécute que si `biweekly` manque.
 
-Attendu : 54 ordres, sans erreur. Les lignes « déjà présente » sont
-normales sur une seconde exécution.
+Attendu : 54 ordres pour la 013, 10 pour la 014, sans erreur. Les
+lignes « déjà présente » sont normales sur une seconde exécution.
 
 **Prérequis** : la migration 012 doit être passée (elle l'a été le
 22 octobre). 013 n'y touche pas, mais le code qui suit en dépend.
@@ -78,6 +81,8 @@ api/migrations/013_verification.sql
 ```
 
 Que des `SELECT`. Lire la colonne **`verdict`** :
+
+Ce fichier couvre **les deux** migrations : 43 lignes.
 
 - chaque ligne doit dire `ok` ;
 - la dernière doit dire **« TOUT EST LA — le code peut partir »**.
@@ -153,14 +158,19 @@ aller plus loin** (elle crée un compte jetable) :
 php api/scripts/test_analyse_endpoints.php https://m2atodev.com/api.epilist/public
 ```
 
-Attendu : **37 vérifications réussies, 0 échec**.
+Attendu : **40 vérifications réussies, 0 échec**.
 
 ---
 
 ## Si ça tourne mal
 
 L'application plante sur **À la maison** ou **Budgets** après le push :
-c'est que le SQL n'est pas passé. Rejouer l'étape 1, puis l'étape 2.
+c'est que le SQL n'est pas passé. Rejouer l'étape 1 (les deux
+fichiers), puis l'étape 2.
+
+« À la maison » n'affiche que le bloc **Ailleurs** : la colonne `zone`
+est là, mais aucune provision n'en a encore une — c'est normal, et
+chaque produit se range depuis « Quantité et seuils ».
 
 Les états d'inventaire sont faux après la migration : les quatre
 `UPDATE` du bloc 8 se rejouent seuls, sans risque — ils sont écrits

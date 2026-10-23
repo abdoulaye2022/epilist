@@ -259,31 +259,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   /// Les deux actions du bas de la page, comme sur la planche : inviter
-  /// quelqu'un de la maison, et creer une liste.
+  /// quelqu'un de la maison. Et c'est tout.
   ///
-  /// « Nouvelle liste » est ici parce qu'elle n'etait nulle part :
-  /// elle vivait dans le bouton + central de la barre, que la planche
-  /// supprime. Depuis l'onglet Listes, creer une liste demandait de
-  /// repasser par l'accueil.
+  /// « Creer une liste » etait ICI AUSSI, en bas, alors qu'elle est
+  /// deja dans le bandeau vert du haut : un seul bouton principal par
+  /// ecran, sinon on hesite avant de toucher l'un ou l'autre. C'est
+  /// celui du haut qui reste — on cree une liste avant de faire defiler
+  /// les autres, pas apres.
   Widget _buildListFooter() {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          OutlinedButton.icon(
-            onPressed: _addFamilyMember,
-            icon: const Icon(Icons.person_add_alt_1_outlined),
-            label: Text(l10n.addFamilyMember),
-          ),
-          const SizedBox(height: AppSpacing.sm + 4),
-          FilledButton.icon(
-            onPressed: _showCreateListDialog,
-            icon: const Icon(Icons.playlist_add_rounded),
-            label: Text(l10n.createList),
-          ),
-        ],
+      child: OutlinedButton.icon(
+        onPressed: _addFamilyMember,
+        icon: const Icon(Icons.person_add_alt_1_outlined),
+        label: Text(l10n.addFamilyMember),
       ),
     );
   }

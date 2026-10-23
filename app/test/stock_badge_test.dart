@@ -26,15 +26,29 @@ void main() {
       setUp(() => AppColors.palette = mode.value);
 
       test('chaque badge se detache de la zone qui le porte', () {
+        // Les quatre zones de rangement portent chacune sa couleur —
+        // miel, menthe, lilas, creme — et c'est SUR ces fonds que le
+        // badge doit se lire : « les zones ont des fonds colores, donc
+        // une icone coloree mince peut disparaitre ». Les teintes des
+        // etats sont gardees aussi : elles servent ailleurs.
+        final couleursDeZone = <String, Color>{
+          'garde-manger (miel)': AppColors.gold,
+          'refrigerateur (menthe)': AppColors.primaryVivid,
+          'congelateur (lilas)': AppColors.violet,
+          'entretien (creme)': AppColors.brown,
+          'ailleurs': AppColors.slate,
+        };
+
         for (final etat in StockState.values) {
           final pastille = AppStateBadge.couleurDe(etat);
-          // Le pire fond possible : la teinte de SON propre etat,
-          // c'est-a-dire la zone dans laquelle il est range.
           final fonds = <String, Color>{
             'surface': AppColors.surface,
             'fond de page': AppColors.background,
+            for (final z in couleursDeZone.entries)
+              'zone ${z.key}': over(AppTint.fill(z.value), AppColors.surface),
+            // Le pire cas garde aussi la teinte de son propre etat.
             for (final autre in StockState.values)
-              'zone ${autre.name}': over(
+              'etat ${autre.name}': over(
                 AppTint.fill(AppStateBadge.couleurDe(autre)),
                 AppColors.surface,
               ),
