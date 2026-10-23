@@ -813,6 +813,9 @@ abstract final class AppTheme {
                   ? p.primary
                   : const Color(0x00000000),
         ),
+        // La coche est blanche sur le vert foncé : Material la tirerait
+        // sinon de `onPrimary` du schéma, qui change avec le thème.
+        checkColor: WidgetStatePropertyAll(p.onPrimary),
         side: BorderSide(color: p.textSecondary, width: 2.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         materialTapTargetSize: MaterialTapTargetSize.padded,

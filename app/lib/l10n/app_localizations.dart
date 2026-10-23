@@ -8857,18 +8857,6 @@ abstract class AppLocalizations {
   /// **'{done} / {total} articles'**
   String itemsProgress(int done, int total);
 
-  /// No description provided for @showCompletedItems.
-  ///
-  /// In fr, this message translates to:
-  /// **'Voir les articles cochés'**
-  String get showCompletedItems;
-
-  /// No description provided for @hideCompletedItems.
-  ///
-  /// In fr, this message translates to:
-  /// **'Masquer les articles cochés'**
-  String get hideCompletedItems;
-
   /// No description provided for @shoppingDone.
   ///
   /// In fr, this message translates to:
@@ -11814,6 +11802,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dans le panier'**
   String get shoppingInBasket;
+
+  /// No description provided for @shoppingFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout'**
+  String get shoppingFilterAll;
+
+  /// No description provided for @shoppingFilterToGet.
+  ///
+  /// In fr, this message translates to:
+  /// **'À prendre'**
+  String get shoppingFilterToGet;
+
+  /// Le compteur accroche en haut du mode En magasin.
+  ///
+  /// In fr, this message translates to:
+  /// **'{done} / {total} dans le panier'**
+  String shoppingBasketCount(int done, int total);
+
+  /// No description provided for @shoppingNothingHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun article ici pour l\'instant.'**
+  String get shoppingNothingHere;
+
+  /// Apres avoir decoche un article par erreur.
+  ///
+  /// In fr, this message translates to:
+  /// **'« {product} » est revenu dans À prendre.'**
+  String shoppingBackToGet(String product);
+
+  /// No description provided for @undoAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get undoAction;
 
   /// No description provided for @listFullSentence.
   ///

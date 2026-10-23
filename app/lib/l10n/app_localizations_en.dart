@@ -4691,12 +4691,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get showCompletedItems => 'Show checked items';
-
-  @override
-  String get hideCompletedItems => 'Hide checked items';
-
-  @override
   String get shoppingDone => 'Shopping done 🎉';
 
   @override
@@ -6426,6 +6420,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shoppingInBasket => 'In the basket';
+
+  @override
+  String get shoppingFilterAll => 'All';
+
+  @override
+  String get shoppingFilterToGet => 'To get';
+
+  @override
+  String shoppingBasketCount(int done, int total) {
+    return '$done / $total in the basket';
+  }
+
+  @override
+  String get shoppingNothingHere => 'No items here yet.';
+
+  @override
+  String shoppingBackToGet(String product) {
+    return '\"$product\" is back in To get.';
+  }
+
+  @override
+  String get undoAction => 'Undo';
 
   @override
   String listFullSentence(String percent) {

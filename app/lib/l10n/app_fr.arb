@@ -2058,8 +2058,6 @@
       }
     }
   },
-  "showCompletedItems": "Voir les articles cochés",
-  "hideCompletedItems": "Masquer les articles cochés",
   "shoppingDone": "Courses terminées 🎉",
   "recurringListsTitle": "Listes récurrentes",
   "newRecurringList": "Nouvelle liste récurrente",
@@ -3211,6 +3209,31 @@
   "shoppingSuccessBackHome": "Retour au tableau de bord",
   "shoppingSuccessBackLists": "Retour à mes listes",
   "shoppingInBasket": "Dans le panier",
+  "shoppingFilterAll": "Tout",
+  "shoppingFilterToGet": "À prendre",
+  "shoppingBasketCount": "{done} / {total} dans le panier",
+  "@shoppingBasketCount": {
+    "description": "Le compteur accroche en haut du mode En magasin.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingNothingHere": "Aucun article ici pour l'instant.",
+  "shoppingBackToGet": "« {product} » est revenu dans À prendre.",
+  "@shoppingBackToGet": {
+    "description": "Apres avoir decoche un article par erreur.",
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "undoAction": "Annuler",
   "listFullSentence": "Cette liste est pleine à {percent} pour cent.",
   "@listFullSentence": {
     "placeholders": {

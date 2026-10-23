@@ -1963,8 +1963,6 @@
   "shoppingModeTitle": "My shopping",
   "itemsRemaining": "{count} items remaining",
   "itemsProgress": "{done} / {total} items",
-  "showCompletedItems": "Show checked items",
-  "hideCompletedItems": "Hide checked items",
   "shoppingDone": "Shopping done 🎉",
   "recurringListsTitle": "Recurring lists",
   "newRecurringList": "New recurring list",
@@ -3211,6 +3209,31 @@
   "shoppingSuccessBackHome": "Back to the dashboard",
   "shoppingSuccessBackLists": "Back to my lists",
   "shoppingInBasket": "In the basket",
+  "shoppingFilterAll": "All",
+  "shoppingFilterToGet": "To get",
+  "shoppingBasketCount": "{done} / {total} in the basket",
+  "@shoppingBasketCount": {
+    "description": "Le compteur accroche en haut du mode En magasin.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingNothingHere": "No items here yet.",
+  "shoppingBackToGet": "\"{product}\" is back in To get.",
+  "@shoppingBackToGet": {
+    "description": "Apres avoir decoche un article par erreur.",
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "undoAction": "Undo",
   "listFullSentence": "This list is {percent} per cent full.",
   "@listFullSentence": {
     "placeholders": {

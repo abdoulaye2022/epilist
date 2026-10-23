@@ -5,8 +5,11 @@
 // prix et Listes recurrentes pour des dependances de Mes listes : elles
 // vivaient apres deux separateurs du menu, et nulle part ailleurs.
 //
-// Ce test verrouille le CONTRAT de l'ecran : les dix, numerotees, dans
-// l'ordre de la planche. Un ajout ou un retrait silencieux le casse.
+// Ce test verrouille le CONTRAT de l'ecran : les dix, dans l'ordre de
+// la planche. Un ajout ou un retrait silencieux le casse.
+//
+// Elles etaient numerotees « 1. » a « 10. ». Un numero n'aide pas a
+// naviguer : personne ne cherche la section 7.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/sections_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -32,21 +35,19 @@ void main() {
       );
 
   const attendues = [
-    '1. Tableau de bord',
-    '2. Mes listes de courses',
-    '3. Budgets',
-    '4. Analyses',
-    '5. Avant les courses',
-    '6. Alertes de prix',
-    '7. À la maison',
-    '8. Listes récurrentes',
-    '9. Planifier mes repas',
-    '10. Mes magasins',
+    'Tableau de bord',
+    'Mes listes de courses',
+    'Budgets',
+    'Analyses',
+    'Avant les courses',
+    'Alertes de prix',
+    'À la maison',
+    'Listes récurrentes',
+    'Planifier mes repas',
+    'Mes magasins',
   ];
 
-  testWidgets('les dix sections, numerotees, dans l ordre de la planche', (
-    tester,
-  ) async {
+  testWidgets('les dix sections, dans l ordre de la planche', (tester) async {
     await ouvrir(tester);
     for (final titre in attendues) {
       expect(find.text(titre), findsOneWidget, reason: titre);
@@ -67,12 +68,16 @@ void main() {
     );
   });
 
-  testWidgets('le titre et l intro disent que l architecture est a plat', (
+  testWidgets('l intro dit quoi faire, pas comment c est concu', (
     tester,
   ) async {
     await ouvrir(tester);
     expect(find.text('Toutes les sections'), findsOneWidget);
-    expect(find.textContaining('dix destinations égales'), findsOneWidget);
+    expect(find.textContaining('Touchez une tuile'), findsOneWidget);
+    // Le vocabulaire de concepteur n'a rien a faire sous les yeux de
+    // quelqu'un qui veut juste faire ses courses.
+    expect(find.textContaining('architecture'), findsNothing);
+    expect(find.textContaining('destinations'), findsNothing);
   });
 
   testWidgets('hors de la coquille, le bouton du menu lateral disparait', (
@@ -85,7 +90,7 @@ void main() {
 
   testWidgets('les tuiles s allongent quand le texte grossit', (tester) async {
     // Un rapport largeur/hauteur FIXE ne tient pas : a deux fois,
-    // « 10. Mes magasins » sur deux lignes debordait de sa tuile. Le
+    // « Mes magasins » sur deux lignes debordait de sa tuile. Le
     // public de cette planche agrandit le texte — c'est la premiere
     // chose qu'il fait dans les reglages de son telephone.
     for (final echelle in [1.0, 1.3, 1.6, 2.0]) {

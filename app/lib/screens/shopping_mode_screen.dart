@@ -1,8 +1,14 @@
 // screens/shopping_mode_screen.dart - Mode « Je suis au magasin » (§25-30) :
 // interface simplifiée pour l'exécution des courses. Grandes zones
 // tactiles, progression visible, regroupement par rayon dans l'ordre du
-// magasin actif, articles cochés repliés. Le toggle passe par le
-// ListItemBloc existant : le hors ligne fonctionne comme partout.
+// magasin actif. Le toggle passe par le ListItemBloc existant : le hors
+// ligne fonctionne comme partout.
+//
+// Un article coché RESTE à sa place, dans son rayon. Il était retiré de
+// sa section et renvoyé tout en bas de l'écran, derrière un bouton en
+// forme d'œil : au milieu des courses, un article qui disparaît du
+// rayon où on vient de le prendre fait douter de l'avoir pris. Le
+// filtre écrit — Tout, À prendre, Dans le panier — remplace l'œil.
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -20,6 +26,22 @@ import 'package:epilist/models/store.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+/// Ce que l'écran montre. Les trois valeurs portent un libellé ÉCRIT :
+/// un œil barré ne dit pas ce qu'il cache.
+enum ShoppingFilter {
+  tout,
+  aPrendre,
+  dansLePanier;
+
+  /// Cet article a-t-il sa place à l'écran ? `coche` = déjà dans le
+  /// panier.
+  bool accepte(bool coche) => switch (this) {
+    ShoppingFilter.tout => true,
+    ShoppingFilter.aPrendre => !coche,
+    ShoppingFilter.dansLePanier => coche,
+  };
+}
 
 class ShoppingModeScreen extends StatefulWidget {
   final ShoppingList shoppingList;
@@ -40,14 +62,42 @@ class ShoppingModeScreen extends StatefulWidget {
 }
 
 class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
-  bool _showCompleted = false;
+  ShoppingFilter _filtre = ShoppingFilter.tout;
 
   void _toggle(ListItem item) {
+    final remet = !item.isPurchased;
     context.read<ListItemBloc>().add(
       TogglePurchasedStatus(
         listId: widget.shoppingList.id,
         itemId: item.id,
-        isPurchased: !item.isPurchased,
+        isPurchased: remet,
+      ),
+    );
+    // Décoché par erreur : on le dit, et on offre de revenir dessus.
+    // Un article coché par mégarde, c'est un produit oublié au magasin.
+    if (!remet) _annulable(item);
+  }
+
+  void _annulable(ListItem item) {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.shoppingBackToGet(item.productName)),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: l10n.undoAction,
+          onPressed: () {
+            context.read<ListItemBloc>().add(
+              TogglePurchasedStatus(
+                listId: widget.shoppingList.id,
+                itemId: item.id,
+                isPurchased: true,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -60,23 +110,7 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
       backgroundColor: AppColors.background,
       drawer: const AppDrawer(),
       bottomNavigationBar: const AppPageBottomBar(tab: MainTab.lists),
-      appBar: AppTopBar(
-        title: widget.store?.name ?? widget.shoppingList.name,
-        actions: [
-          IconButton(
-            tooltip:
-                _showCompleted
-                    ? l10n.hideCompletedItems
-                    : l10n.showCompletedItems,
-            icon: Icon(
-              _showCompleted
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
-            ),
-            onPressed: () => setState(() => _showCompleted = !_showCompleted),
-          ),
-        ],
-      ),
+      appBar: AppTopBar(title: widget.store?.name ?? widget.shoppingList.name),
       body: BlocBuilder<ListItemBloc, ListItemState>(
         builder: (context, state) {
           final items =
@@ -93,7 +127,7 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
           final total = items.length;
           final progress = total > 0 ? done / total : 0.0;
 
-          // Tri par rayon (ordre du magasin), non classés à la fin
+          // Tri par rayon (ordre du magasin), non classés à la fin.
           final sorted = [...items]..sort((a, b) {
             int rank(ListItem i) =>
                 i.categoryId != null
@@ -107,14 +141,14 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                 );
           });
 
-          final remaining = sorted.where((i) => !i.isPurchased).toList();
-          final completed = sorted.where((i) => i.isPurchased).toList();
+          final montres =
+              sorted.where((i) => _filtre.accepte(i.isPurchased)).toList();
 
           return Column(
             children: [
-              // Le compteur vivant de la planche. Il s'annonce aux
-              // lecteurs d'ecran a chaque article coche, ce qui est
-              // tout l'interet d'un compteur pendant les courses.
+              // Le compteur vivant de la planche, accroché en haut : il
+              // ne défile pas avec la liste, et il s'annonce aux
+              // lecteurs d'écran à chaque article coché.
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md,
@@ -123,11 +157,12 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                   0,
                 ),
                 child: AppCounterCard(
-                  count: l10n.shoppingItemsRemainingOf(total - done, total),
+                  count: l10n.shoppingBasketCount(done, total),
                   sentence: l10n.shoppingBasketSentence(total - done, done),
                   ratio: progress,
                 ),
               ),
+              _filtres(l10n, total - done, done),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(
@@ -137,12 +172,22 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                     32,
                   ),
                   children: [
-                    ..._grouped(remaining, l10n),
-                    if (_showCompleted && completed.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.md),
-                      const Divider(),
-                      ...completed.map((i) => _bigTile(i, l10n)),
-                    ],
+                    if (montres.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.xl,
+                        ),
+                        child: Text(
+                          l10n.shoppingNothingHere,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      )
+                    else
+                      ..._grouped(montres, l10n),
                     const SizedBox(height: AppSpacing.lg),
                     FilledButton.icon(
                       onPressed: () => _finish(total),
@@ -152,7 +197,7 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
                     const SizedBox(height: AppSpacing.sm + 4),
                     OutlinedButton.icon(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.bookmark_outline),
+                      icon: const Icon(Icons.pause_circle_outline),
                       label: Text(l10n.shoppingSaveForLater),
                     ),
                   ],
@@ -161,6 +206,39 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  /// Trois puces, trois libellés écrits, chacune avec son compte.
+  Widget _filtres(AppLocalizations l10n, int aPrendre, int dansLePanier) {
+    final choix = <(ShoppingFilter, String)>[
+      (ShoppingFilter.tout, l10n.shoppingFilterAll),
+      (ShoppingFilter.aPrendre, '${l10n.shoppingFilterToGet} ($aPrendre)'),
+      (ShoppingFilter.dansLePanier, '${l10n.shoppingInBasket} ($dansLePanier)'),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm + 4,
+        AppSpacing.md,
+        0,
+      ),
+      child: Row(
+        children: [
+          for (final (valeur, libelle) in choix)
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: ChoiceChip(
+                label: Text(libelle),
+                selected: _filtre == valeur,
+                showCheckmark: false,
+                onSelected: (_) => setState(() => _filtre = valeur),
+              ),
+            ),
+        ],
       ),
     );
   }

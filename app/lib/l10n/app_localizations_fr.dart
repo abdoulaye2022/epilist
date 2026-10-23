@@ -4764,12 +4764,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get showCompletedItems => 'Voir les articles cochés';
-
-  @override
-  String get hideCompletedItems => 'Masquer les articles cochés';
-
-  @override
   String get shoppingDone => 'Courses terminées 🎉';
 
   @override
@@ -6524,6 +6518,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shoppingInBasket => 'Dans le panier';
+
+  @override
+  String get shoppingFilterAll => 'Tout';
+
+  @override
+  String get shoppingFilterToGet => 'À prendre';
+
+  @override
+  String shoppingBasketCount(int done, int total) {
+    return '$done / $total dans le panier';
+  }
+
+  @override
+  String get shoppingNothingHere => 'Aucun article ici pour l\'instant.';
+
+  @override
+  String shoppingBackToGet(String product) {
+    return '« $product » est revenu dans À prendre.';
+  }
+
+  @override
+  String get undoAction => 'Annuler';
 
   @override
   String listFullSentence(String percent) {

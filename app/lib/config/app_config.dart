@@ -1,7 +1,8 @@
 // config/app_config.dart
 class AppConfig {
   // ACTIF — PRODUCTION. C'est la valeur que doit porter le depot : une
-  // build de release partie avec une URL locale ne joindrait rien.
+  // build de release partie avec une URL de dev ne joindrait rien, et
+  // l'application ne le dirait pas. Garde-fou : scripts/check_release_config.sh
   static const String baseUrl = 'https://m2atodev.com/api.epilist/public';
 
   // Development — API locale (port 8001, voir launch.sh). Fonctionne sur
@@ -14,9 +15,12 @@ class AppConfig {
   // Development - emulateur Android (l'hote vu depuis l'emulateur)
   // static const String baseUrl = 'http://10.0.2.2:8001';
 
-  // Development - ngrok : ATTENTION, le domaine reserve m2atech.ngrok.app
-  // est partage avec un AUTRE projet. S'il est deja pris, l'app tape sur
-  // l'API de cet autre projet (symptome : « utilisateur inexistant »).
+  // Development via ngrok. Le tunnel doit pointer sur le port 8001
+  // (launch.sh s'en charge). ATTENTION : le domaine reserve
+  // m2atech.ngrok.app est partage avec un AUTRE projet. S'il est deja pris
+  // par celui-la, l'app tape sur SON API (symptome : « utilisateur
+  // inexistant »). Verifier d'abord :
+  //   curl -s http://127.0.0.1:4041/api/tunnels
   // static const String baseUrl = 'https://m2atech.ngrok.app';
 
   // Development - IP locale (appareil reel sur le meme Wi-Fi)

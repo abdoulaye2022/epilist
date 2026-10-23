@@ -49,9 +49,12 @@ void main() {
       expect(valeur, isTrue);
     });
 
-    testWidgets('coche, elle ecrit ce qui est fait et rature le nom', (
+    testWidgets('coche, elle ecrit ce qui est fait sans raturer le nom', (
       tester,
     ) async {
+      // La rature traversait les lettres : illisible au soleil, sur
+      // l'ecran baisse d'un telephone en fin de batterie — exactement
+      // la situation des courses. Le nom s'attenue, il reste lisible.
       await poser(
         tester,
         AppCheckRow(
@@ -63,7 +66,8 @@ void main() {
       );
       expect(find.text('Dans le panier'), findsOneWidget);
       final texte = tester.widget<Text>(find.text('Pommes Gala'));
-      expect(texte.style!.decoration, TextDecoration.lineThrough);
+      expect(texte.style!.decoration, isNot(TextDecoration.lineThrough));
+      expect(texte.style!.color, AppColors.textSecondary);
     });
 
     testWidgets('sans libelle de fin, rien ne s ecrit', (tester) async {

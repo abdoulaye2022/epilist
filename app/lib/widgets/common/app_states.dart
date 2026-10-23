@@ -32,9 +32,8 @@ class AppCheckRow extends StatelessWidget {
   /// La quantité, le prix, le repas auquel l'article sert.
   final String? subtitle;
 
-  /// Ce qui s'écrit quand c'est fait. `null` : rien ne s'écrit, la
-  /// rature et la couleur suffisent (une liste de courses en magasin,
-  /// où chaque ligne porterait sinon le même mot).
+  /// Ce qui s'écrit quand c'est fait — « Dans le panier ». `null` :
+  /// rien ne s'écrit, et c'est alors la case cochée seule qui le dit.
   final String? doneLabel;
 
   final ValueChanged<bool> onChanged;
@@ -90,10 +89,15 @@ class AppCheckRow extends StatelessWidget {
                             fontSize: 19,
                             fontWeight: FontWeight.w700,
                             height: 1.35,
-                            color: AppColors.textPrimary,
-                            decoration:
-                                checked ? TextDecoration.lineThrough : null,
-                            decorationColor: AppColors.textSecondary,
+                            // Fait : le nom s'atténue, il ne se rature
+                            // pas. Une rature traverse les lettres et
+                            // devient illisible au soleil, sur l'écran
+                            // baissé d'un téléphone en fin de batterie
+                            // — exactement la situation des courses.
+                            color:
+                                checked
+                                    ? AppColors.textSecondary
+                                    : AppColors.textPrimary,
                           ),
                         ),
                         if (subtitle != null)
