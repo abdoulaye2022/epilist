@@ -5935,9 +5935,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inventoryReorderQuantity => 'Quantité à racheter';
 
   @override
-  String get inventoryBelowMin => 'sous le seuil';
-
-  @override
   String get twoFactorTitle => 'Vérification en deux étapes';
 
   @override
@@ -6293,23 +6290,8 @@ class AppLocalizationsFr extends AppLocalizations {
       'Voyez ce qu\'il vous reste à la maison. EpiList vous prévient quand un produit est presque fini ou bientôt périmé.';
 
   @override
-  String inventoryQuantityLine(String quantity) {
-    return 'Quantité restante : $quantity.';
-  }
-
-  @override
   String inventoryQuantityThreshold(String quantity, String threshold) {
     return 'Quantité restante : $quantity, pour un seuil de $threshold.';
-  }
-
-  @override
-  String inventoryLowWarning(String product) {
-    return 'Alerte stock bas : $product, sous le seuil que vous avez fixé.';
-  }
-
-  @override
-  String inventoryOutWarning(String product) {
-    return 'Alerte rupture : $product, il n\'y en a plus à la maison.';
   }
 
   @override
@@ -6584,7 +6566,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shoppingFinish => 'Terminer mes courses';
 
   @override
-  String get shoppingSaveForLater => 'Enregistrer et revenir plus tard';
+  String get shoppingSaveForLater => 'Mettre mes courses en pause';
 
   @override
   String get shoppingSuccessTitle => 'Courses terminées, bravo !';
@@ -6605,6 +6587,97 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shoppingInBasket => 'Dans le panier';
+
+  @override
+  String get shoppingPauseHint =>
+      'Vos coches et vos prix sont déjà enregistrés.';
+
+  @override
+  String shoppingPriceTitle(String product) {
+    return 'Prix de $product';
+  }
+
+  @override
+  String get shoppingPriceAdd => 'Prix';
+
+  @override
+  String get shoppingPriceExact => 'Exact';
+
+  @override
+  String get shoppingPriceEstimate => 'Approximatif';
+
+  @override
+  String shoppingPriceApprox(String amount) {
+    return '≈ $amount';
+  }
+
+  @override
+  String shoppingTotal(String amount) {
+    return 'Total : $amount';
+  }
+
+  @override
+  String shoppingTotalEstimated(String amount) {
+    return 'Total estimé : $amount';
+  }
+
+  @override
+  String shoppingBudgetLeft(String amount) {
+    return 'Reste dans le budget : $amount';
+  }
+
+  @override
+  String shoppingMissingPrices(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Il manque le prix de $count articles.',
+      one: 'Il manque le prix de 1 article.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingFinishNeedsAmount =>
+      'Pour terminer, entrez les prix manquants, donnez un total, ou scannez le reçu.';
+
+  @override
+  String get shoppingGiveTotal => 'Donner un total';
+
+  @override
+  String shoppingTotalGiven(String amount) {
+    return 'Total enregistré : $amount';
+  }
+
+  @override
+  String get shoppingMyShopping => 'Mes courses';
+
+  @override
+  String shoppingUncheckedKept(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count articles n\'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.',
+      one:
+          '1 article n\'a pas été coché. Il reste dans votre liste pour la prochaine fois.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shoppingSeeRemaining => 'Voir ce qui reste';
+
+  @override
+  String itemsWithoutPrice(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles sans prix',
+      one: '1 article sans prix',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get shoppingFilterAll => 'Tout';

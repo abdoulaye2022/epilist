@@ -130,6 +130,10 @@ class UpdateListItem extends ListItemEvent {
   final String productName;
   final int quantity;
   final double? price;
+
+  /// Prix approximatif : affiche avec « ≈ », et jamais appris par le
+  /// serveur comme un prix observe.
+  final bool priceIsEstimate;
   final String? storeName;
   final int? categoryId;
 
@@ -139,6 +143,7 @@ class UpdateListItem extends ListItemEvent {
     required this.productName,
     this.quantity = 1,
     this.price,
+    this.priceIsEstimate = false,
     this.storeName,
     this.categoryId,
   });

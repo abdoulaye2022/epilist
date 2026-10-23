@@ -88,7 +88,12 @@ class ListItemController
                 'normalized_name' => $normalized,
                 'category_id' => $item->category_id,
                 'quantity' => $item->quantity ?? 1,
-                'price' => $item->price,
+                // Un prix approximatif ne rentre PAS dans l'historique :
+                // il sert le budget du mois (qui lit list_items), pas la
+                // comparaison entre magasins ni les prix de la
+                // communaute, que « a peu pres 8 $ » faussent
+                // durablement.
+                'price' => $item->price_is_estimate ? null : $item->price,
                 'store_name' => $item->store_name,
                 'barcode' => $item->barcode,
                 'purchased_at' => $now,
@@ -110,9 +115,12 @@ class ListItemController
                 $normalized
             );
 
-            // Alertes de baisse de prix (§27) : seulement si un prix est
-            // connu ; magasin inconnu -> alertes « tous magasins » seules.
-            if (is_numeric($item->price) && (float) $item->price > 0) {
+            // Alertes de baisse de prix (§27) : seulement si un prix
+            // EXACT est connu ; magasin inconnu -> alertes « tous
+            // magasins » seules. Une alerte declenchee sur une
+            // estimation annoncerait une aubaine qui n'existe pas.
+            if (!$item->price_is_estimate
+                && is_numeric($item->price) && (float) $item->price > 0) {
                 \App\Services\PriceAlertService::onObservation(
                     $spaceId !== null ? (int) $spaceId : null,
                     $userId,
@@ -315,6 +323,12 @@ class ListItemController
 
         if (isset($data['is_purchased'])) {
             $cleanData['is_purchased'] = (bool)$data['is_purchased'];
+        }
+
+        // Exact ou approximatif. array_key_exists et non isset : passer
+        // le drapeau a false doit pouvoir REPASSER un prix en exact.
+        if (array_key_exists('price_is_estimate', $data)) {
+            $cleanData['price_is_estimate'] = (bool)$data['price_is_estimate'];
         }
 
         if (isset($data['category_id'])) {

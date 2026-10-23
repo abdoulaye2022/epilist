@@ -115,7 +115,8 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
     // que si les articles affiches ne sont PAS ceux de cette liste
     // (premiere ouverture, ou passage a une autre liste).
     final current = state;
-    final sameList = current is ListItemLoaded && current.listId == event.listId;
+    final sameList =
+        current is ListItemLoaded && current.listId == event.listId;
     if (!sameList) {
       emit(ListItemLoading());
     }
@@ -134,7 +135,9 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
             (list) => list.id == event.listId,
             orElse: () => throw Exception('List not found in cache'),
           );
-          debugPrint('📦 Loading ${cachedList.items.length} items from cache (offline mode)');
+          debugPrint(
+            '📦 Loading ${cachedList.items.length} items from cache (offline mode)',
+          );
           emit(ListItemLoaded(cachedList.items, event.listId));
           return;
         }
@@ -438,6 +441,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
           'product_name': event.productName,
           'quantity': event.quantity,
           'price': event.price,
+          'price_is_estimate': event.priceIsEstimate,
           'store_name': event.storeName,
           'category_id': event.categoryId,
         },
@@ -453,6 +457,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
                   productName: event.productName,
                   quantity: event.quantity,
                   price: event.price,
+                  priceIsEstimate: event.priceIsEstimate,
                   storeName: event.storeName,
                   categoryId: event.categoryId,
                 );
@@ -475,6 +480,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
         productName: event.productName,
         quantity: event.quantity,
         price: event.price,
+        priceIsEstimate: event.priceIsEstimate,
         storeName: event.storeName,
         categoryId: event.categoryId,
       );
@@ -574,10 +580,7 @@ class ListItemBloc extends Bloc<ListItemEvent, ListItemState> {
       // Mode hors ligne : mettre en queue et supprimer localement
       await OfflineQueueService.enqueueAction(
         actionType: OfflineQueueService.actionDeleteItem,
-        payload: {
-          'list_id': event.listId,
-          'item_id': event.itemId,
-        },
+        payload: {'list_id': event.listId, 'item_id': event.itemId},
       );
 
       // Supprimer localement l'item

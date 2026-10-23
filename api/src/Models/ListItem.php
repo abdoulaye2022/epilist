@@ -20,6 +20,10 @@ class ListItem extends Model
         'product_name',
         'quantity',
         'price',
+        // Un prix de tete (« a peu pres 8 $ ») et un prix lu sur
+        // l'etiquette ne valent pas la meme chose : le total s'affiche
+        // avec ~, et l'historique des prix n'apprend QUE des exacts.
+        'price_is_estimate',
         'store_name',
         'is_purchased',
         'purchased_at', // ✅ Nouvelle colonne
@@ -34,6 +38,7 @@ class ListItem extends Model
 
     protected $casts = [
         'is_purchased' => 'boolean',
+        'price_is_estimate' => 'boolean',
         'quantity' => 'integer',
         'price' => 'float',
         'purchased_at' => 'datetime', // ✅ Cast datetime

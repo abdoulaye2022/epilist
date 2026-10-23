@@ -194,6 +194,7 @@ class ListItemService {
     required String productName,
     int quantity = 1,
     double? price,
+    bool priceIsEstimate = false,
     String? storeName,
     int? categoryId,
   }) async {
@@ -204,6 +205,7 @@ class ListItemService {
         'product_name': productName,
         'quantity': quantity,
         'price': price,
+        'price_is_estimate': priceIsEstimate,
         'store_name': storeName,
         'category_id': categoryId,
       },

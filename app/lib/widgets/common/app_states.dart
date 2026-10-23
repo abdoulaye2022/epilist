@@ -24,6 +24,7 @@ class AppCheckRow extends StatelessWidget {
     required this.onChanged,
     this.subtitle,
     this.doneLabel,
+    this.trailing,
   });
 
   final bool checked;
@@ -35,6 +36,11 @@ class AppCheckRow extends StatelessWidget {
   /// Ce qui s'écrit quand c'est fait — « Dans le panier ». `null` :
   /// rien ne s'écrit, et c'est alors la case cochée seule qui le dit.
   final String? doneLabel;
+
+  /// À droite de la ligne, hors de la zone qui coche : le prix de
+  /// l'article, en magasin. Il doit rester atteignable sans cocher, et
+  /// cocher ne doit pas demander de viser à côté.
+  final Widget? trailing;
 
   final ValueChanged<bool> onChanged;
 
@@ -121,6 +127,10 @@ class AppCheckRow extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (trailing != null) ...[
+                    const SizedBox(width: AppSpacing.sm),
+                    trailing!,
+                  ],
                 ],
               ),
             ),

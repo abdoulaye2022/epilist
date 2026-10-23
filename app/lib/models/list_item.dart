@@ -8,6 +8,14 @@ class ListItem {
   final String productName;
   final int quantity;
   final double? price; // Nullable pour gérer les prix absents
+
+  /// Le prix est-il approximatif ?
+  ///
+  /// Un prix de tête (« à peu près 8 $ ») et un prix lu sur l'étiquette
+  /// ne valent pas la même chose. Le total s'affiche alors avec « ≈ »,
+  /// et le serveur n'apprend des prix QUE des exacts : une estimation
+  /// fausserait durablement la comparaison entre magasins.
+  final bool priceIsEstimate;
   final String? storeName; // Nullable pour gérer les magasins absents
   final bool isPurchased;
   final int? categoryId; // Nullable - ID de la catégorie associée
@@ -26,6 +34,7 @@ class ListItem {
     required this.productName,
     required this.quantity,
     this.price, // Nullable
+    this.priceIsEstimate = false,
     this.storeName, // Nullable
     required this.isPurchased,
     this.categoryId,
@@ -171,9 +180,12 @@ class ListItem {
       productName: json['product_name'] as String? ?? '',
       quantity: _parseInt(json['quantity']),
       price: _parseDouble(json['price']), // Peut être null
+      priceIsEstimate:
+          json['price_is_estimate'] == true || json['price_is_estimate'] == 1,
       storeName: _parseString(json['store_name']), // Peut être null
       isPurchased: json['is_purchased'] == true || json['is_purchased'] == 1,
-      categoryId: json['category_id'] != null ? _parseInt(json['category_id']) : null,
+      categoryId:
+          json['category_id'] != null ? _parseInt(json['category_id']) : null,
       imageUrl: json['image_url'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -238,6 +250,7 @@ class ListItem {
     String? productName,
     int? quantity,
     double? price,
+    bool? priceIsEstimate,
     String? storeName,
     bool? isPurchased,
     int? categoryId,
@@ -252,6 +265,7 @@ class ListItem {
       productName: productName ?? this.productName,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
+      priceIsEstimate: priceIsEstimate ?? this.priceIsEstimate,
       storeName: storeName ?? this.storeName,
       isPurchased: isPurchased ?? this.isPurchased,
       categoryId: categoryId ?? this.categoryId,

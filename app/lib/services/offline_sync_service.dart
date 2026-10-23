@@ -320,6 +320,7 @@ class OfflineSyncService {
             itemId: itemId,
             productName: payload['product_name'] as String,
             price: (payload['price'] as num?)?.toDouble(),
+            priceIsEstimate: payload['price_is_estimate'] == true,
             quantity: payload['quantity'] as int? ?? 1,
             categoryId: payload['category_id'] as int?,
             storeName: payload['store_name'] as String?,

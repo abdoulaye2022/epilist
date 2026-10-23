@@ -3220,7 +3220,7 @@
     }
   },
   "shoppingFinish": "Terminer mes courses",
-  "shoppingSaveForLater": "Enregistrer et revenir plus tard",
+  "shoppingSaveForLater": "Mettre mes courses en pause",
   "shoppingSuccessTitle": "Courses terminées, bravo !",
   "shoppingSuccessSentence": "Vous avez terminé la liste {list}. {count} articles sont dans votre panier.",
   "@shoppingSuccessSentence": {
@@ -3237,6 +3237,87 @@
   "shoppingSuccessBackHome": "Retour au tableau de bord",
   "shoppingSuccessBackLists": "Retour à mes listes",
   "shoppingInBasket": "Dans le panier",
+  "shoppingPauseHint": "Vos coches et vos prix sont déjà enregistrés.",
+  "shoppingPriceTitle": "Prix de {product}",
+  "@shoppingPriceTitle": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingPriceAdd": "Prix",
+  "shoppingPriceExact": "Exact",
+  "shoppingPriceEstimate": "Approximatif",
+  "shoppingPriceApprox": "≈ {amount}",
+  "@shoppingPriceApprox": {
+    "description": "Un prix approximatif porte le signe ~.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingTotal": "Total : {amount}",
+  "@shoppingTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingTotalEstimated": "Total estimé : {amount}",
+  "@shoppingTotalEstimated": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingBudgetLeft": "Reste dans le budget : {amount}",
+  "@shoppingBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingMissingPrices": "{count, plural, =1{Il manque le prix de 1 article.} other{Il manque le prix de {count} articles.}}",
+  "@shoppingMissingPrices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingFinishNeedsAmount": "Pour terminer, entrez les prix manquants, donnez un total, ou scannez le reçu.",
+  "shoppingGiveTotal": "Donner un total",
+  "shoppingTotalGiven": "Total enregistré : {amount}",
+  "@shoppingTotalGiven": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingMyShopping": "Mes courses",
+  "shoppingUncheckedKept": "{count, plural, =1{1 article n'a pas été coché. Il reste dans votre liste pour la prochaine fois.} other{{count} articles n'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.}}",
+  "@shoppingUncheckedKept": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingSeeRemaining": "Voir ce qui reste",
+  "itemsWithoutPrice": "{count, plural, =1{1 article sans prix} other{{count} articles sans prix}}",
+  "@itemsWithoutPrice": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shoppingFilterAll": "Tout",
   "shoppingFilterToGet": "À prendre",
   "shoppingBasketCount": "{done} / {total} dans le panier",

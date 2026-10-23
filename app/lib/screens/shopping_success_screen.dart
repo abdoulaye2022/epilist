@@ -19,10 +19,16 @@ class ShoppingSuccessScreen extends StatelessWidget {
     super.key,
     required this.listName,
     required this.itemsCount,
+    this.remainingCount = 0,
   });
 
   final String listName;
   final int itemsCount;
+
+  /// Les articles qui n'ont PAS été cochés. Ils restent dans la liste,
+  /// et l'écran le dit : sans un mot, on referme la liste en croyant
+  /// avoir tout pris, ou on la croit perdue.
+  final int remainingCount;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +90,18 @@ class ShoppingSuccessScreen extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
             ),
+            if (remainingCount > 0) ...[
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                l10n.shoppingUncheckedKept(remainingCount),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  height: 1.5,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.xl),
             FilledButton.icon(
               onPressed:

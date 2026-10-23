@@ -28,4 +28,50 @@ void main() {
   test('les trois valeurs existent, pas une quatrieme', () {
     expect(ShoppingFilter.values, hasLength(3));
   });
+
+  group('terminer ses courses exige un montant', () {
+    // « Terminer mes courses » laissait le budget a son chiffre
+    // d'avant, quoi qu'on achete : la liste n'avait aucun champ de
+    // prix. Sans montant, le bouton reste inactif, et une phrase dit
+    // pourquoi.
+    test('tous les prix saisis : on peut terminer', () {
+      expect(
+        peutTerminerLesCourses(
+          totalPanier: 87.5,
+          sansPrix: 0,
+          totalDeclare: false,
+        ),
+        isTrue,
+      );
+    });
+
+    test('un seul prix manquant : on ne peut pas', () {
+      expect(
+        peutTerminerLesCourses(
+          totalPanier: 29.89,
+          sansPrix: 3,
+          totalDeclare: false,
+        ),
+        isFalse,
+      );
+    });
+
+    test('un total donne a la main suffit, meme sans aucun prix', () {
+      expect(
+        peutTerminerLesCourses(totalPanier: 0, sansPrix: 7, totalDeclare: true),
+        isTrue,
+      );
+    });
+
+    test('un panier vide n a pas de montant a enregistrer', () {
+      expect(
+        peutTerminerLesCourses(
+          totalPanier: 0,
+          sansPrix: 0,
+          totalDeclare: false,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

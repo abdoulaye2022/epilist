@@ -10915,12 +10915,6 @@ abstract class AppLocalizations {
   /// **'Quantité à racheter'**
   String get inventoryReorderQuantity;
 
-  /// No description provided for @inventoryBelowMin.
-  ///
-  /// In fr, this message translates to:
-  /// **'sous le seuil'**
-  String get inventoryBelowMin;
-
   /// No description provided for @twoFactorTitle.
   ///
   /// In fr, this message translates to:
@@ -11509,29 +11503,11 @@ abstract class AppLocalizations {
   /// **'Voyez ce qu\'il vous reste à la maison. EpiList vous prévient quand un produit est presque fini ou bientôt périmé.'**
   String get inventoryIntro;
 
-  /// No description provided for @inventoryQuantityLine.
-  ///
-  /// In fr, this message translates to:
-  /// **'Quantité restante : {quantity}.'**
-  String inventoryQuantityLine(String quantity);
-
   /// No description provided for @inventoryQuantityThreshold.
   ///
   /// In fr, this message translates to:
   /// **'Quantité restante : {quantity}, pour un seuil de {threshold}.'**
   String inventoryQuantityThreshold(String quantity, String threshold);
-
-  /// No description provided for @inventoryLowWarning.
-  ///
-  /// In fr, this message translates to:
-  /// **'Alerte stock bas : {product}, sous le seuil que vous avez fixé.'**
-  String inventoryLowWarning(String product);
-
-  /// No description provided for @inventoryOutWarning.
-  ///
-  /// In fr, this message translates to:
-  /// **'Alerte rupture : {product}, il n\'y en a plus à la maison.'**
-  String inventoryOutWarning(String product);
 
   /// No description provided for @stockStateAvailable.
   ///
@@ -11890,7 +11866,7 @@ abstract class AppLocalizations {
   /// No description provided for @shoppingSaveForLater.
   ///
   /// In fr, this message translates to:
-  /// **'Enregistrer et revenir plus tard'**
+  /// **'Mettre mes courses en pause'**
   String get shoppingSaveForLater;
 
   /// No description provided for @shoppingSuccessTitle.
@@ -11928,6 +11904,108 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dans le panier'**
   String get shoppingInBasket;
+
+  /// No description provided for @shoppingPauseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos coches et vos prix sont déjà enregistrés.'**
+  String get shoppingPauseHint;
+
+  /// No description provided for @shoppingPriceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix de {product}'**
+  String shoppingPriceTitle(String product);
+
+  /// No description provided for @shoppingPriceAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix'**
+  String get shoppingPriceAdd;
+
+  /// No description provided for @shoppingPriceExact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exact'**
+  String get shoppingPriceExact;
+
+  /// No description provided for @shoppingPriceEstimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approximatif'**
+  String get shoppingPriceEstimate;
+
+  /// Un prix approximatif porte le signe ~.
+  ///
+  /// In fr, this message translates to:
+  /// **'≈ {amount}'**
+  String shoppingPriceApprox(String amount);
+
+  /// No description provided for @shoppingTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total : {amount}'**
+  String shoppingTotal(String amount);
+
+  /// No description provided for @shoppingTotalEstimated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total estimé : {amount}'**
+  String shoppingTotalEstimated(String amount);
+
+  /// No description provided for @shoppingBudgetLeft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste dans le budget : {amount}'**
+  String shoppingBudgetLeft(String amount);
+
+  /// No description provided for @shoppingMissingPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Il manque le prix de 1 article.} other{Il manque le prix de {count} articles.}}'**
+  String shoppingMissingPrices(int count);
+
+  /// No description provided for @shoppingFinishNeedsAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour terminer, entrez les prix manquants, donnez un total, ou scannez le reçu.'**
+  String get shoppingFinishNeedsAmount;
+
+  /// No description provided for @shoppingGiveTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donner un total'**
+  String get shoppingGiveTotal;
+
+  /// No description provided for @shoppingTotalGiven.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total enregistré : {amount}'**
+  String shoppingTotalGiven(String amount);
+
+  /// No description provided for @shoppingMyShopping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes courses'**
+  String get shoppingMyShopping;
+
+  /// No description provided for @shoppingUncheckedKept.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 article n\'a pas été coché. Il reste dans votre liste pour la prochaine fois.} other{{count} articles n\'ont pas été cochés. Ils restent dans votre liste pour la prochaine fois.}}'**
+  String shoppingUncheckedKept(int count);
+
+  /// No description provided for @shoppingSeeRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir ce qui reste'**
+  String get shoppingSeeRemaining;
+
+  /// No description provided for @itemsWithoutPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 article sans prix} other{{count} articles sans prix}}'**
+  String itemsWithoutPrice(int count);
 
   /// No description provided for @shoppingFilterAll.
   ///

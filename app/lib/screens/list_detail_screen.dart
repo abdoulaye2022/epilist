@@ -317,7 +317,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
       appBar: ListDetailAppBar(
         listName: currentList.name,
         shoppingList: currentList,
-        onAddItem: currentList.canManageItems ? _addNewItem : null,
+        // Pas de « + » ici : le bouton flottant vert en bas a droite
+        // fait deja exactement ca, et deux boutons identiques sur le
+        // meme ecran font hesiter avant de toucher l'un ou l'autre.
+        onAddItem: null,
         onShare: currentList.canShare ? _showShareDialog : null,
         onEdit: currentList.canEdit ? _showEditListDialog : null,
         onDelete: currentList.canDelete ? _showDeleteConfirmation : null,
@@ -493,6 +496,7 @@ class _ListDetailViewState extends State<_ListDetailView> {
             0.0,
             (sum, item) => sum + (item.price ?? 0) * item.quantity,
           ),
+          itemsWithoutPrice: items.where((item) => !item.hasPrice).length,
         ),
         if (_myStores.isNotEmpty) _buildActiveStoreSelector(),
         // Widget de filtres
@@ -595,7 +599,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
     if (items.isEmpty) {
       return EmptyItemsState(
         shoppingList: currentList,
-        onAddItem: currentList.canManageItems ? _addNewItem : null,
+        // Pas de « + » ici : le bouton flottant vert en bas a droite
+        // fait deja exactement ca, et deux boutons identiques sur le
+        // meme ecran font hesiter avant de toucher l'un ou l'autre.
+        onAddItem: null,
       );
     }
 
@@ -875,7 +882,10 @@ class _ListDetailViewState extends State<_ListDetailView> {
             ),
             if (item.price != null && item.price! > 0) ...[
               Text(
-                ' • ',
+                // Le signe d'un prix approximatif, devant le montant :
+                // « a peu pres 8 $ » et 8 $ lus sur l'etiquette ne
+                // valent pas la meme chose dans un budget.
+                item.priceIsEstimate ? ' • ≈ ' : ' • ',
                 style: TextStyle(
                   color:
                       currentList.isReadOnly

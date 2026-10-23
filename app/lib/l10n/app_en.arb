@@ -3220,7 +3220,7 @@
     }
   },
   "shoppingFinish": "Finish my shopping",
-  "shoppingSaveForLater": "Save and come back later",
+  "shoppingSaveForLater": "Pause my shopping",
   "shoppingSuccessTitle": "Shopping done, well done!",
   "shoppingSuccessSentence": "You finished the list {list}. {count} items are in your basket.",
   "@shoppingSuccessSentence": {
@@ -3237,6 +3237,87 @@
   "shoppingSuccessBackHome": "Back to the dashboard",
   "shoppingSuccessBackLists": "Back to my lists",
   "shoppingInBasket": "In the basket",
+  "shoppingPauseHint": "Your ticks and prices are already saved.",
+  "shoppingPriceTitle": "Price of {product}",
+  "@shoppingPriceTitle": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingPriceAdd": "Price",
+  "shoppingPriceExact": "Exact",
+  "shoppingPriceEstimate": "Approximate",
+  "shoppingPriceApprox": "≈ {amount}",
+  "@shoppingPriceApprox": {
+    "description": "Un prix approximatif porte le signe ~.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingTotal": "Total: {amount}",
+  "@shoppingTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingTotalEstimated": "Estimated total: {amount}",
+  "@shoppingTotalEstimated": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingBudgetLeft": "Left in the budget: {amount}",
+  "@shoppingBudgetLeft": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingMissingPrices": "{count, plural, =1{The price of 1 item is missing.} other{The price of {count} items is missing.}}",
+  "@shoppingMissingPrices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingFinishNeedsAmount": "To finish, enter the missing prices, give a total, or scan the receipt.",
+  "shoppingGiveTotal": "Give a total",
+  "shoppingTotalGiven": "Total saved: {amount}",
+  "@shoppingTotalGiven": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shoppingMyShopping": "My shopping",
+  "shoppingUncheckedKept": "{count, plural, =1{1 item was not ticked. It stays in your list for next time.} other{{count} items were not ticked. They stay in your list for next time.}}",
+  "@shoppingUncheckedKept": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shoppingSeeRemaining": "See what is left",
+  "itemsWithoutPrice": "{count, plural, =1{1 item without a price} other{{count} items without a price}}",
+  "@itemsWithoutPrice": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shoppingFilterAll": "All",
   "shoppingFilterToGet": "To get",
   "shoppingBasketCount": "{done} / {total} in the basket",
