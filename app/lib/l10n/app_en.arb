@@ -2851,9 +2851,7 @@
     }
   },
   "allSections": "All sections",
-  "allSectionsIntro": "The app's architecture is flat: ten equal destinations, all at the same level. Price alerts, Analytics, Budgets and Recurring lists are standalone top-level sections, exactly like My lists: none of them is a sub-section of the lists, and each has its own page.",
-  "allSectionsMenuHint": "You can also open the side menu with the menu button at the top of the screen: it shows the same ten destinations, flat, with no grouping.",
-  "openSideMenu": "Open the side menu",
+  "allSectionsIntro": "Every section of EpiList. Tap a tile to go there.",
   "dictateList": "Dictate my list",
   "settingsAndMore": "Settings and more",
   "cartIllustration": "Illustration of a shopping cart filled with fresh produce",
@@ -2933,7 +2931,7 @@
       }
     }
   },
-  "recurringIntro": "Your lists that come back on their own. Tap a switch to turn a list on or pause it: its state is always written out.",
+  "recurringIntro": "Your lists that come back on their own. Tap a list to change what is in it, or its switch to pause it.",
   "addToMyList": "Add to my list",
   "alreadyInList": "{product} is already in the list {list}.",
   "@alreadyInList": {
@@ -2957,7 +2955,7 @@
       }
     }
   },
-  "inventoryIntro": "Your pantry inventory, zone by zone. Quantities are written out, and low-stock alerts are full sentences.",
+  "inventoryIntro": "See what you still have at home. EpiList warns you when something is nearly finished or close to expiring.",
   "inventoryQuantityLine": "Quantity left: {quantity}.",
   "@inventoryQuantityLine": {
     "placeholders": {
@@ -2993,7 +2991,7 @@
       }
     }
   },
-  "storesIntro": "Your stores, with their storefront, their aisle order and their active alerts. Tap the star to mark a store as a favourite: the state is written out.",
+  "storesIntro": "Your stores, their address and their opening hours. Tap the star to keep a store as a favourite.",
   "storeFavoriteYes": "Favourite: Yes, favourite store",
   "storeFavoriteNo": "Favourite: No, not a favourite yet",
   "storeActiveAlerts": "{count, plural, =0{Active alerts in this store: none for now.} =1{Active alerts in this store: 1 alert.} other{Active alerts in this store: {count} alerts.}}",
@@ -3022,7 +3020,7 @@
       }
     }
   },
-  "mealPlannerIntro": "One meal per block, full width: nothing is cut off at the side. Pick your meals for the week, then a single large button creates the shopping list with every ingredient.",
+  "mealPlannerIntro": "Pick your meals for the week. Tap a day to add or change a meal, then create your shopping list.",
   "mealChooseForWeek": "Choose this meal for the week",
   "mealChosenForWeek": "Chosen for this week",
   "mealServingsLine": "For {count} people.",
@@ -3049,7 +3047,7 @@
       }
     }
   },
-  "priceAlertsIntro": "The products you follow, and where their price stands. Every drop is written out, with an arrow and the word Drop: you never depend on colour alone.",
+  "priceAlertsIntro": "The products you follow, and where their price stands. Set a target price: you are warned as soon as the price drops below it.",
   "priceAlertDrop": "Down {percent} per cent",
   "@priceAlertDrop": {
     "placeholders": {

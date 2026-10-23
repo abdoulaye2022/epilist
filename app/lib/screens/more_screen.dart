@@ -47,6 +47,7 @@ import 'package:epilist/widgets/common/app_action_tile.dart';
 import 'package:epilist/widgets/common/app_card.dart';
 import 'package:epilist/widgets/common/app_section_header.dart';
 import 'package:epilist/widgets/common/app_search_field.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 
 /// Une destination de l'index.
@@ -190,17 +191,17 @@ class _MoreScreenState extends State<MoreScreen> {
     return [
       _Section(l10n.moreSectionSpending, [
         _Destination(
-          icon: Icons.insights_outlined,
+          icon: AppIcons.analytics,
           label: l10n.statistics,
           open: (c) => _push(c, const AnalyticsScreen()),
         ),
         _Destination(
-          icon: Icons.savings_outlined,
+          icon: AppIcons.budgets,
           label: l10n.budgets,
           open: (c) => _push(c, const BudgetScreen()),
         ),
         _Destination(
-          icon: Icons.notifications_active_outlined,
+          icon: AppIcons.priceAlerts,
           label: l10n.priceAlerts,
           open: (c) => _push(c, const PriceAlertsScreen()),
         ),
@@ -219,7 +220,7 @@ class _MoreScreenState extends State<MoreScreen> {
           open: openShoppingMode,
         ),
         _Destination(
-          icon: Icons.assistant_outlined,
+          icon: AppIcons.preShopping,
           label: l10n.preShopping,
           open: (c) => _push(c, const PreShoppingScreen()),
         ),
@@ -229,17 +230,17 @@ class _MoreScreenState extends State<MoreScreen> {
           open: (c) => _push(c, const PredictionsScreen()),
         ),
         _Destination(
-          icon: Icons.event_repeat_outlined,
+          icon: AppIcons.recurring,
           label: l10n.recurringListsTitle,
           open: (c) => _push(c, const RecurringListsScreen()),
         ),
         _Destination(
-          icon: Icons.restaurant_menu_outlined,
+          icon: AppIcons.mealPlanner,
           label: l10n.mealPlannerTitle,
           open: (c) => _push(c, const MealPlannerScreen()),
         ),
         _Destination(
-          icon: Icons.kitchen_outlined,
+          icon: AppIcons.inventory,
           label: l10n.inventoryTitle,
           open: (c) => _push(c, const InventoryScreen()),
         ),
@@ -250,7 +251,7 @@ class _MoreScreenState extends State<MoreScreen> {
           open: _scanBarcode,
         ),
         _Destination(
-          icon: Icons.storefront_outlined,
+          icon: AppIcons.stores,
           label: l10n.myStores,
           hint: l10n.aisleOrder,
           open: (c) => _push(c, const StoresScreen()),

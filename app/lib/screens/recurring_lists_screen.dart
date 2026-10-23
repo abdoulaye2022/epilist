@@ -12,6 +12,7 @@ import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -204,7 +205,7 @@ class _RecurringListsScreenState extends State<RecurringListsScreen> {
                           children: [
                             const SizedBox(height: 120),
                             Icon(
-                              Icons.event_repeat_outlined,
+                              AppIcons.recurring,
                               size: 56,
                               color: AppColors.textDisabled,
                             ),

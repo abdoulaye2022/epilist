@@ -12,6 +12,7 @@ import 'package:epilist/screens/store_comparison_screen.dart';
 import 'package:epilist/utils/receipt_scan_flow.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -286,7 +287,7 @@ class ListDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         value: 'compare_stores',
         child: Row(
           children: [
-            Icon(Icons.storefront_outlined, size: 20, color: AppColors.accent),
+            Icon(AppIcons.stores, size: 20, color: AppColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(

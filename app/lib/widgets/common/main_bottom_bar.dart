@@ -4,6 +4,11 @@
 // pages. Une pastille ronde teintée marque la section ouverte — la
 // forme, pas seulement la couleur.
 //
+// Les icônes viennent du jeu commun (`AppIcons`), comme celles du menu
+// et des tuiles : un seul style de trait dans toute l'application. Les
+// glyphes pleins et multicolores d'avant disaient leur couleur avant de
+// dire leur section, et deux d'entre eux ne la disaient pas du tout.
+//
 // Elle vit dans son propre fichier parce qu'elle a une HAUTEUR, et
 // qu'une hauteur se teste. Voir [MainBottomBar.build] : le Scaffold lui
 // offre tout l'écran, et c'est à elle de n'en prendre que ce qu'il lui
@@ -12,8 +17,8 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/widgets/common/app_nav.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class MainBottomBar extends StatelessWidget {
   const MainBottomBar({
@@ -36,34 +41,34 @@ class MainBottomBar extends StatelessWidget {
     final destinations = <_Destination>[
       _Destination(
         tab: MainTab.home,
-        actif: 'accueil',
+        icone: AppIcons.dashboard,
         label: l10n.tabHome,
-        pastille: AppColors.primaryLight,
+        teinte: AppColors.primary,
         montreLeLabel: true,
       ),
       _Destination(
         tab: MainTab.lists,
-        actif: 'listes',
+        icone: AppIcons.lists,
         label: l10n.myShoppingLists,
-        pastille: AppColors.warningTint,
+        teinte: AppColors.primaryVivid,
       ),
       _Destination(
         tab: MainTab.preShopping,
-        actif: 'avant',
+        icone: AppIcons.preShopping,
         label: l10n.preShopping,
-        pastille: AppColors.goldTint,
+        teinte: AppColors.gold,
       ),
       _Destination(
         tab: MainTab.alerts,
-        actif: 'alertes',
+        icone: AppIcons.priceAlerts,
         label: l10n.priceAlerts,
-        pastille: AppColors.errorTint,
+        teinte: AppColors.error,
       ),
       _Destination(
         tab: MainTab.sections,
-        actif: 'sections',
+        icone: AppIcons.inventory,
         label: l10n.allSections,
-        pastille: AppColors.warningTint,
+        teinte: AppColors.warning,
       ),
     ];
 
@@ -114,13 +119,16 @@ class MainBottomBar extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: selected ? d.pastille : null,
+                    color: selected ? AppTint.fill(d.teinte) : null,
                     shape: BoxShape.circle,
                   ),
-                  child: SvgPicture.asset(
-                    'assets/images/nav/${d.actif}.svg',
-                    width: 30,
-                    height: 30,
+                  child: Icon(
+                    d.icone,
+                    size: 30,
+                    color:
+                        selected
+                            ? AppTint.ink(d.teinte)
+                            : AppColors.textSecondary,
                   ),
                 ),
                 if (d.montreLeLabel) ...[
@@ -150,27 +158,30 @@ class MainBottomBar extends StatelessWidget {
 }
 
 /// Une destination de la barre : l'onglet, son dessin, son libellé parlé
-/// et la teinte de sa pastille active.
+/// et la couleur de sa famille.
 @immutable
 class _Destination {
   const _Destination({
     required this.tab,
-    required this.actif,
+    required this.icone,
     required this.label,
-    required this.pastille,
+    required this.teinte,
     this.montreLeLabel = false,
   });
 
   final MainTab tab;
 
-  /// Nom du fichier SVG, sans son chemin ni son extension.
-  final String actif;
+  /// Son dessin, pris dans le jeu commun.
+  final IconData icone;
 
   /// Lu par les lecteurs d'écran, et affiché sous l'icône quand
   /// [montreLeLabel] — la planche ne l'écrit que sous Accueil.
   final String label;
 
-  final Color pastille;
+  /// La couleur de sa famille : elle teinte la pastille de la section
+  /// ouverte, et son encre porte l'icône.
+  final Color teinte;
+
   final bool montreLeLabel;
 }
 

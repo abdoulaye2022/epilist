@@ -2,6 +2,7 @@
 // sur la marque. Sélecteur de langue compact en haut, promesses de l'app au
 // centre, action principale en bas.
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
@@ -77,7 +78,7 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: AppSpacing.md),
                           _buildFeatureRow(
-                            Icons.savings_outlined,
+                            AppIcons.budgets,
                             l10n.trackYourBudget,
                           ),
                           const Spacer(flex: 3),

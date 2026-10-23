@@ -6,6 +6,7 @@ import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/screens/all_receipts_screen.dart';
 import 'package:epilist/screens/analytics_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/budget/budget_bloc.dart';
@@ -293,7 +294,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                             builder: (_) => const AnalyticsScreen(),
                           ),
                         ),
-                    icon: const Icon(Icons.insights_outlined),
+                    icon: const Icon(AppIcons.analytics),
                     label: Text(l10n.seeMyAnalytics),
                   ),
                 ],

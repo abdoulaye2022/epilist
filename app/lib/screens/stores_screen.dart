@@ -16,6 +16,7 @@ import 'package:epilist/models/store.dart';
 import 'package:epilist/screens/store_aisle_order_screen.dart';
 import 'package:epilist/services/store_service.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -365,7 +366,7 @@ class _StoresViewState extends State<_StoresView> {
                             builder: (_) => const PriceAlertsScreen(),
                           ),
                         ),
-                    icon: const Icon(Icons.notifications_active_outlined),
+                    icon: const Icon(AppIcons.priceAlerts),
                     label: Text(l10n.storeSeeAlerts),
                   ),
                   const SizedBox(height: AppSpacing.sm + 4),

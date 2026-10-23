@@ -1,6 +1,7 @@
 // widgets/budget/create_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -140,7 +141,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
                           icon:
                               isEditing
                                   ? Icons.edit_outlined
-                                  : Icons.savings_outlined,
+                                  : AppIcons.budgets,
                           title:
                               isEditing ? l10n.editBudget : l10n.createBudget,
                         ),

@@ -36,6 +36,7 @@ import 'package:epilist/models/intelligence.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/screens/meal_planner_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -633,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen>
         const SizedBox(height: AppSpacing.sm + 2),
         ActionTileRow(
           left: ActionTile(
-            icon: Icons.restaurant_menu_outlined,
+            icon: AppIcons.mealPlanner,
             label: l10n.mealPlannerTitle,
             tint: AppColors.gold,
             onTap:
@@ -643,7 +644,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
           ),
           right: ActionTile(
-            icon: Icons.storefront_outlined,
+            icon: AppIcons.stores,
             label: l10n.myStores,
             tint: AppColors.warning,
             onTap:

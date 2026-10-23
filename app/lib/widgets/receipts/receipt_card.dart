@@ -3,6 +3,7 @@ import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/widgets/common/app_card.dart';
 
@@ -71,7 +72,7 @@ class ReceiptCard extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              Icons.checklist_rounded,
+              AppIcons.lists,
               size: 15,
               color: AppColors.textDisabled,
             ),

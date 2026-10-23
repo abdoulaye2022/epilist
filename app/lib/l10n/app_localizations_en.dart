@@ -6057,14 +6057,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allSectionsIntro =>
-      'The app\'s architecture is flat: ten equal destinations, all at the same level. Price alerts, Analytics, Budgets and Recurring lists are standalone top-level sections, exactly like My lists: none of them is a sub-section of the lists, and each has its own page.';
-
-  @override
-  String get allSectionsMenuHint =>
-      'You can also open the side menu with the menu button at the top of the screen: it shows the same ten destinations, flat, with no grouping.';
-
-  @override
-  String get openSideMenu => 'Open the side menu';
+      'Every section of EpiList. Tap a tile to go there.';
 
   @override
   String get dictateList => 'Dictate my list';
@@ -6188,7 +6181,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recurringIntro =>
-      'Your lists that come back on their own. Tap a switch to turn a list on or pause it: its state is always written out.';
+      'Your lists that come back on their own. Tap a list to change what is in it, or its switch to pause it.';
 
   @override
   String get addToMyList => 'Add to my list';
@@ -6205,7 +6198,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryIntro =>
-      'Your pantry inventory, zone by zone. Quantities are written out, and low-stock alerts are full sentences.';
+      'See what you still have at home. EpiList warns you when something is nearly finished or close to expiring.';
 
   @override
   String inventoryQuantityLine(String quantity) {
@@ -6229,7 +6222,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storesIntro =>
-      'Your stores, with their storefront, their aisle order and their active alerts. Tap the star to mark a store as a favourite: the state is written out.';
+      'Your stores, their address and their opening hours. Tap the star to keep a store as a favourite.';
 
   @override
   String get storeFavoriteYes => 'Favourite: Yes, favourite store';
@@ -6267,7 +6260,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mealPlannerIntro =>
-      'One meal per block, full width: nothing is cut off at the side. Pick your meals for the week, then a single large button creates the shopping list with every ingredient.';
+      'Pick your meals for the week. Tap a day to add or change a meal, then create your shopping list.';
 
   @override
   String get mealChooseForWeek => 'Choose this meal for the week';
@@ -6292,7 +6285,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceAlertsIntro =>
-      'The products you follow, and where their price stands. Every drop is written out, with an arrow and the word Drop: you never depend on colour alone.';
+      'The products you follow, and where their price stands. Set a target price: you are warned as soon as the price drops below it.';
 
   @override
   String priceAlertDrop(String percent) {

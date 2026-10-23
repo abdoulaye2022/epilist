@@ -13,6 +13,7 @@ import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -262,7 +263,7 @@ class _MealPlannerScreenState extends State<MealPlannerScreen> {
                     AppZoneCard(
                       title: r.name,
                       tint: AppColors.chart[n % AppColors.chart.length],
-                      icon: Icons.restaurant_menu_outlined,
+                      icon: AppIcons.mealPlanner,
                       children: [
                         // La photo du plat : elle dormait en base
                         // (recipes.image_url) sans jamais sortir de

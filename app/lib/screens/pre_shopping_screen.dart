@@ -14,6 +14,7 @@ import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/widgets/common/app_card.dart';
@@ -324,7 +325,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
               context,
               MaterialPageRoute(builder: (_) => const InventoryScreen()),
             ),
-        icon: const Icon(Icons.kitchen_outlined),
+        icon: const Icon(AppIcons.inventory),
         label: Text(l10n.preShoppingCheckStock),
       ),
     ];
@@ -347,7 +348,7 @@ class _PreShoppingScreenState extends State<PreShoppingScreen> {
       // Budget du mois
       if (budget != null)
         _card(
-          icon: Icons.savings_outlined,
+          icon: AppIcons.budgets,
           title: l10n.preShoppingBudget,
           child: Text(
             l10n.preShoppingBudgetRemaining(

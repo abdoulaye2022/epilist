@@ -14,6 +14,7 @@ import 'package:epilist/models/price_intelligence.dart';
 import 'package:epilist/services/price_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -370,7 +371,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
           child: Row(
             children: [
               Icon(
-                Icons.savings_outlined,
+                AppIcons.budgets,
                 size: 18,
                 color: AppColors.primaryDark,
               ),
@@ -398,7 +399,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
                 Row(
                   children: [
                     Icon(
-                      Icons.storefront_outlined,
+                      AppIcons.stores,
                       size: 18,
                       color: AppColors.primary,
                     ),
@@ -468,7 +469,7 @@ class _StoreComparisonScreenState extends State<StoreComparisonScreen> {
       child: Column(
         children: [
           Icon(
-            Icons.storefront_outlined,
+            AppIcons.stores,
             size: 56,
             color: AppColors.textDisabled,
           ),

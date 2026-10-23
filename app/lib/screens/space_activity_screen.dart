@@ -10,6 +10,7 @@ import 'package:epilist/models/space.dart';
 import 'package:epilist/services/screen_cache.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -86,7 +87,7 @@ class _SpaceActivityScreenState extends State<SpaceActivityScreen> {
         l10n.actReceiptAdded(who, storeName),
       ),
       'budget_created' => (
-        Icons.savings_outlined,
+        AppIcons.budgets,
         l10n.actBudgetCreated(who, budgetName),
       ),
       'member_joined' => (

@@ -18,6 +18,7 @@ import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -433,7 +434,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     if (_items.isEmpty) ...[
                       const SizedBox(height: AppSpacing.xl),
                       Icon(
-                        Icons.kitchen_outlined,
+                        AppIcons.inventory,
                         size: 56,
                         color: AppColors.textDisabled,
                       ),

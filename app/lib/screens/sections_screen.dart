@@ -1,13 +1,13 @@
 // screens/sections_screen.dart - « Toutes les sections ».
 //
-// L'écran qui MONTRE l'architecture, parce qu'une architecture à plat ne
-// se devine pas : dix destinations égales, numérotées, chacune avec sa
-// page. Budgets, Analyses, Alertes de prix et Listes récurrentes sont
-// ici au même rang que Mes listes — elles n'en sont pas des
-// sous-sections, et ne se trouvent plus seulement au fond d'un menu.
+// Dix tuiles, dix pages. Budgets, Analyses, Alertes de prix et Listes
+// récurrentes sont ici au même rang que Mes listes — aucune n'est une
+// sous-section d'une autre, et aucune ne se trouve seulement au fond
+// d'un menu.
 //
-// Chaque tuile porte la teinte et la bordure de sa famille : la couleur
-// dit de quoi on parle, le numéro et le titre le disent aussi. Jamais la
+// Les tuiles étaient numérotées « 1. » à « 10. ». Un numéro n'aide pas
+// à naviguer : personne ne cherche la section 7. Chaque tuile porte la
+// teinte et la bordure de sa famille, et son nom écrit — jamais la
 // couleur seule.
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -19,6 +19,7 @@ import 'package:epilist/screens/recurring_lists_screen.dart';
 import 'package:epilist/screens/stores_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 
 class SectionsScreen extends StatelessWidget {
@@ -31,72 +32,62 @@ class SectionsScreen extends StatelessWidget {
 
     final sections = <_Section>[
       _Section(
-        rang: 1,
         titre: l10n.dashboardTitle,
-        icone: Icons.space_dashboard_outlined,
+        icone: AppIcons.dashboard,
         teinte: AppColors.primary,
         ouvrir: () => scope?.goToTab(MainTab.home),
       ),
       _Section(
-        rang: 2,
         titre: l10n.myShoppingLists,
-        icone: Icons.checklist_rounded,
+        icone: AppIcons.lists,
         teinte: AppColors.primaryVivid,
         ouvrir: () => scope?.goToTab(MainTab.lists),
       ),
       _Section(
-        rang: 3,
         titre: l10n.budgets,
-        icone: Icons.savings_outlined,
+        icone: AppIcons.budgets,
         teinte: AppColors.warning,
         ouvrir: () => _push(context, const BudgetScreen()),
       ),
       _Section(
-        rang: 4,
         titre: l10n.analytics,
-        icone: Icons.insights_outlined,
+        icone: AppIcons.analytics,
         teinte: AppColors.accent,
         ouvrir: () => _push(context, const AnalyticsScreen()),
       ),
       _Section(
-        rang: 5,
         titre: l10n.preShopping,
-        icone: Icons.assistant_outlined,
+        icone: AppIcons.preShopping,
         teinte: AppColors.gold,
         ouvrir: () => scope?.goToTab(MainTab.preShopping),
       ),
       _Section(
-        rang: 6,
         titre: l10n.priceAlerts,
-        icone: Icons.notifications_active_outlined,
+        icone: AppIcons.priceAlerts,
         teinte: AppColors.error,
         ouvrir: () => scope?.goToTab(MainTab.alerts),
       ),
       _Section(
-        rang: 7,
         titre: l10n.inventoryTitle,
-        icone: Icons.kitchen_outlined,
+        icone: AppIcons.inventory,
         teinte: AppColors.primaryDark,
         ouvrir: () => _push(context, const InventoryScreen()),
       ),
       _Section(
-        rang: 8,
         titre: l10n.recurringListsTitle,
-        icone: Icons.event_repeat_outlined,
+        icone: AppIcons.recurring,
         teinte: AppColors.accent,
         ouvrir: () => _push(context, const RecurringListsScreen()),
       ),
       _Section(
-        rang: 9,
         titre: l10n.mealPlannerTitle,
-        icone: Icons.restaurant_menu_outlined,
+        icone: AppIcons.mealPlanner,
         teinte: AppColors.gold,
         ouvrir: () => _push(context, const MealPlannerScreen()),
       ),
       _Section(
-        rang: 10,
         titre: l10n.myStores,
-        icone: Icons.storefront_outlined,
+        icone: AppIcons.stores,
         teinte: AppColors.warning,
         ouvrir: () => _push(context, const StoresScreen()),
       ),
@@ -125,23 +116,11 @@ class SectionsScreen extends StatelessWidget {
             mainAxisSpacing: AppSpacing.sm + 2,
             crossAxisSpacing: AppSpacing.sm + 2,
             // La tuile s'allonge quand le texte grossit : a deux fois,
-            // « 10. Mes magasins » sur deux lignes ne tenait plus dans
-            // un rapport fixe.
+            // « Mes magasins » sur deux lignes ne tenait plus dans un
+            // rapport fixe.
             childAspectRatio: 1.45 / appTextScale(context),
             children: sections.map(_tuile).toList(),
           ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.allSectionsMenuHint,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (scope != null)
-            FilledButton.icon(
-              onPressed: scope.openDrawer,
-              icon: const Icon(Icons.menu_rounded),
-              label: Text(l10n.openSideMenu),
-            ),
         ],
       ),
     );
@@ -165,7 +144,7 @@ class SectionsScreen extends StatelessWidget {
             children: [
               Icon(s.icone, size: 30, color: AppTint.ink(s.teinte)),
               Text(
-                '${s.rang}. ${s.titre}',
+                s.titre,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -189,14 +168,12 @@ class SectionsScreen extends StatelessWidget {
 @immutable
 class _Section {
   const _Section({
-    required this.rang,
     required this.titre,
     required this.icone,
     required this.teinte,
     required this.ouvrir,
   });
 
-  final int rang;
   final String titre;
   final IconData icone;
 

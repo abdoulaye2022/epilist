@@ -14,14 +14,10 @@ void main() {
   // premier `loadString` echoue avant d'avoir rien lu.
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const dessins = [
-    'assets/images/chariot.svg',
-    'assets/images/nav/accueil.svg',
-    'assets/images/nav/listes.svg',
-    'assets/images/nav/avant.svg',
-    'assets/images/nav/alertes.svg',
-    'assets/images/nav/sections.svg',
-  ];
+  // La barre du bas portait cinq SVG de plus. Elle prend maintenant ses
+  // dessins dans `AppIcons`, avec le menu et les tuiles : un seul style
+  // de trait, et plus rien a declarer.
+  const dessins = ['assets/images/chariot.svg'];
 
   const fontes = [
     'assets/fonts/AtkinsonHyperlegible-Regular.ttf',

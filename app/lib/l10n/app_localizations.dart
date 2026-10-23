@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @myGroceryLists.
   ///
   /// In fr, this message translates to:
-  /// **'Mes Listes d\'Épicerie'**
+  /// **'Mes listes de courses'**
   String get myGroceryLists;
 
   /// No description provided for @viewAll.
@@ -431,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @groceryListApp.
   ///
   /// In fr, this message translates to:
-  /// **'Votre application de listes d\'épicerie'**
+  /// **'Votre application de listes de courses'**
   String get groceryListApp;
 
   /// No description provided for @alreadyHaveAccount.
@@ -8104,7 +8104,7 @@ abstract class AppLocalizations {
   /// No description provided for @trackYourBudget.
   ///
   /// In fr, this message translates to:
-  /// **'Suivez vos budgets d\'épicerie'**
+  /// **'Suivez vos budgets de courses'**
   String get trackYourBudget;
 
   /// No description provided for @takePhoto.
@@ -11326,20 +11326,8 @@ abstract class AppLocalizations {
   /// No description provided for @allSectionsIntro.
   ///
   /// In fr, this message translates to:
-  /// **'L\'architecture de l\'application est à plat : dix destinations égales, au même niveau. Alertes de prix, Analyses, Budgets et Listes récurrentes sont des sections autonomes de premier niveau, exactement comme Mes listes : aucune n\'est une sous-section des listes, et chacune a sa propre page.'**
+  /// **'Toutes les sections d\'EpiList. Touchez une tuile pour y aller.'**
   String get allSectionsIntro;
-
-  /// No description provided for @allSectionsMenuHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vous pouvez aussi ouvrir le menu latéral avec le bouton menu en haut de l\'écran : il présente les mêmes dix destinations à plat, sans aucun regroupement.'**
-  String get allSectionsMenuHint;
-
-  /// No description provided for @openSideMenu.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir le menu latéral'**
-  String get openSideMenu;
 
   /// No description provided for @dictateList.
   ///
@@ -11506,7 +11494,7 @@ abstract class AppLocalizations {
   /// No description provided for @recurringIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Vos listes qui reviennent toutes seules. Touchez un interrupteur pour activer la liste ou la mettre en pause : son état est toujours écrit en texte.'**
+  /// **'Vos listes qui reviennent toutes seules. Touchez une liste pour changer ce qu\'elle contient, ou son interrupteur pour la mettre en pause.'**
   String get recurringIntro;
 
   /// No description provided for @addToMyList.
@@ -11530,7 +11518,7 @@ abstract class AppLocalizations {
   /// No description provided for @inventoryIntro.
   ///
   /// In fr, this message translates to:
-  /// **'L\'inventaire de vos provisions, zone par zone. Les quantités sont écrites, et les alertes de stock bas sont rédigées en phrases complètes.'**
+  /// **'Voyez ce qu\'il vous reste à la maison. EpiList vous prévient quand un produit est presque fini ou bientôt périmé.'**
   String get inventoryIntro;
 
   /// No description provided for @inventoryQuantityLine.
@@ -11560,7 +11548,7 @@ abstract class AppLocalizations {
   /// No description provided for @storesIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Vos magasins, avec leur devanture, l\'ordre de leurs rayons et leurs alertes actives. Touchez l\'étoile pour marquer un magasin comme favori : l\'état est écrit en texte.'**
+  /// **'Vos magasins, leur adresse et leurs heures d\'ouverture. Touchez l\'étoile pour garder un magasin en favori.'**
   String get storesIntro;
 
   /// No description provided for @storeFavoriteYes.
@@ -11608,7 +11596,7 @@ abstract class AppLocalizations {
   /// No description provided for @mealPlannerIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Un repas par bloc, en pleine largeur : rien n\'est coupé sur le côté. Choisissez vos repas de la semaine, puis un seul grand bouton crée la liste de courses avec tous les ingrédients.'**
+  /// **'Choisissez vos repas de la semaine. Touchez un jour pour ajouter ou changer un repas, puis créez votre liste de courses.'**
   String get mealPlannerIntro;
 
   /// No description provided for @mealChooseForWeek.
@@ -11644,7 +11632,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceAlertsIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Les produits que vous suivez, et où en est leur prix. Chaque baisse est écrite en toutes lettres, avec une flèche et le mot Baisse : vous ne dépendez jamais de la seule couleur.'**
+  /// **'Les produits que vous suivez, et où en est leur prix. Fixez un prix cible : vous êtes prévenu dès que le prix passe dessous.'**
   String get priceAlertsIntro;
 
   /// No description provided for @priceAlertDrop.

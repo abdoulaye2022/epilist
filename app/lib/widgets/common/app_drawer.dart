@@ -40,6 +40,7 @@ import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/common/space_selector_sheet.dart';
 import 'package:epilist/widgets/common/user_avatar.dart';
 import 'package:epilist/widgets/dialogs/logout_confirmation_dialog.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -69,63 +70,63 @@ class AppDrawer extends StatelessWidget {
                   // ── Les dix sections, à plat ──────────────────────
                   _tab(
                     context,
-                    icon: Icons.space_dashboard_outlined,
+                    icon: AppIcons.dashboard,
                     label: l10n.dashboardTitle,
                     tab: MainTab.home,
                   ),
                   _tab(
                     context,
-                    icon: Icons.checklist_rounded,
+                    icon: AppIcons.lists,
                     label: l10n.myShoppingLists,
                     tab: MainTab.lists,
                   ),
                   _item(
                     context,
-                    icon: Icons.savings_outlined,
+                    icon: AppIcons.budgets,
                     label: l10n.budgets,
                     onTap: () => _push(context, const BudgetScreen()),
                   ),
                   _item(
                     context,
-                    icon: Icons.insights_outlined,
+                    icon: AppIcons.analytics,
                     label: l10n.analytics,
                     onTap: () => _push(context, const AnalyticsScreen()),
                   ),
                   _tab(
                     context,
-                    icon: Icons.assistant_outlined,
+                    icon: AppIcons.preShopping,
                     label: l10n.preShopping,
                     tab: MainTab.preShopping,
                   ),
                   _tab(
                     context,
-                    icon: Icons.notifications_active_outlined,
+                    icon: AppIcons.priceAlerts,
                     label: l10n.priceAlerts,
                     tab: MainTab.alerts,
                   ),
                   _separator(),
                   _item(
                     context,
-                    icon: Icons.kitchen_outlined,
+                    icon: AppIcons.inventory,
                     label: l10n.inventoryTitle,
                     onTap: () => _push(context, const InventoryScreen()),
                   ),
                   _item(
                     context,
-                    icon: Icons.event_repeat_outlined,
+                    icon: AppIcons.recurring,
                     label: l10n.recurringListsTitle,
                     onTap: () => _push(context, const RecurringListsScreen()),
                   ),
                   _item(
                     context,
-                    icon: Icons.restaurant_menu_outlined,
+                    icon: AppIcons.mealPlanner,
                     label: l10n.mealPlannerTitle,
                     onTap: () => _push(context, const MealPlannerScreen()),
                   ),
                   _separator(),
                   _item(
                     context,
-                    icon: Icons.storefront_outlined,
+                    icon: AppIcons.stores,
                     label: l10n.myStores,
                     onTap: () => _push(context, const StoresScreen()),
                   ),

@@ -13,6 +13,7 @@ import 'package:epilist/blocs/analytics/analytics_state.dart';
 import 'package:epilist/widgets/analytics/period_chart_card.dart';
 import 'package:epilist/services/connectivity_service.dart';
 import 'package:epilist/widgets/connectivity/connected_action_widgets.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/analytics/analytics_bloc.dart';
@@ -177,7 +178,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   context,
                   MaterialPageRoute(builder: (_) => const BudgetScreen()),
                 ),
-            icon: const Icon(Icons.savings_outlined),
+            icon: const Icon(AppIcons.budgets),
             label: Text(l10n.seeMyBudgets),
           ),
           const SizedBox(height: AppSpacing.sm + 4),
@@ -293,7 +294,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.18),
         Icon(
-          offline ? Icons.cloud_off_rounded : Icons.insights_outlined,
+          offline ? Icons.cloud_off_rounded : AppIcons.analytics,
           size: 64,
           color: AppColors.textDisabled,
         ),

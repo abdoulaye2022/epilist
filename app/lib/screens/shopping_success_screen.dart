@@ -1,9 +1,8 @@
 // screens/shopping_success_screen.dart - « Courses terminées, bravo ! »
 //
-// La planche « Version B » célèbre la fin des courses, et c'est une
-// leçon prise à Happy Shared Shopping : le dernier article coché ne
-// renvoyait sur rien. On refermait l'écran, et rien ne disait que
-// c'était fini.
+// La planche « Version B » célèbre la fin des courses. Avant, le
+// dernier article coché ne renvoyait sur rien : on refermait l'écran,
+// et rien ne disait que c'était fini.
 //
 // L'écran dit trois choses : c'est fini, voilà ce que vous avez fait, et
 // voilà où aller maintenant.
@@ -12,6 +11,7 @@ import 'package:epilist/screens/budget_screen.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingSuccessScreen extends StatelessWidget {
@@ -91,19 +91,19 @@ class ShoppingSuccessScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (_) => const BudgetScreen()),
                   ),
-              icon: const Icon(Icons.savings_outlined),
+              icon: const Icon(AppIcons.budgets),
               label: Text(l10n.shoppingSuccessSeeBudgets),
             ),
             const SizedBox(height: AppSpacing.sm + 4),
             OutlinedButton.icon(
               onPressed: () => _back(context, MainTab.home),
-              icon: const Icon(Icons.space_dashboard_outlined),
+              icon: const Icon(AppIcons.dashboard),
               label: Text(l10n.shoppingSuccessBackHome),
             ),
             const SizedBox(height: AppSpacing.sm + 4),
             OutlinedButton.icon(
               onPressed: () => _back(context, MainTab.lists),
-              icon: const Icon(Icons.checklist_rounded),
+              icon: const Icon(AppIcons.lists),
               label: Text(l10n.shoppingSuccessBackLists),
             ),
           ],

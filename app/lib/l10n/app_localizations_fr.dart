@@ -21,7 +21,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageGroceryLists => 'Gérez vos listes d\'épicerie facilement';
 
   @override
-  String get myGroceryLists => 'Mes Listes d\'Épicerie';
+  String get myGroceryLists => 'Mes listes de courses';
 
   @override
   String get viewAll => 'Voir tout';
@@ -178,7 +178,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get welcomeToEpiList => 'Bienvenue sur EpiList';
 
   @override
-  String get groceryListApp => 'Votre application de listes d\'épicerie';
+  String get groceryListApp => 'Votre application de listes de courses';
 
   @override
   String get alreadyHaveAccount => 'Déjà un compte ?';
@@ -4313,7 +4313,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareAndCollaborate => 'Partagez vos listes en famille';
 
   @override
-  String get trackYourBudget => 'Suivez vos budgets d\'épicerie';
+  String get trackYourBudget => 'Suivez vos budgets de courses';
 
   @override
   String get takePhoto => 'Prendre une photo';
@@ -6151,14 +6151,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allSectionsIntro =>
-      'L\'architecture de l\'application est à plat : dix destinations égales, au même niveau. Alertes de prix, Analyses, Budgets et Listes récurrentes sont des sections autonomes de premier niveau, exactement comme Mes listes : aucune n\'est une sous-section des listes, et chacune a sa propre page.';
-
-  @override
-  String get allSectionsMenuHint =>
-      'Vous pouvez aussi ouvrir le menu latéral avec le bouton menu en haut de l\'écran : il présente les mêmes dix destinations à plat, sans aucun regroupement.';
-
-  @override
-  String get openSideMenu => 'Ouvrir le menu latéral';
+      'Toutes les sections d\'EpiList. Touchez une tuile pour y aller.';
 
   @override
   String get dictateList => 'Dicter ma liste';
@@ -6284,7 +6277,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recurringIntro =>
-      'Vos listes qui reviennent toutes seules. Touchez un interrupteur pour activer la liste ou la mettre en pause : son état est toujours écrit en texte.';
+      'Vos listes qui reviennent toutes seules. Touchez une liste pour changer ce qu\'elle contient, ou son interrupteur pour la mettre en pause.';
 
   @override
   String get addToMyList => 'Ajouter à ma liste';
@@ -6301,7 +6294,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inventoryIntro =>
-      'L\'inventaire de vos provisions, zone par zone. Les quantités sont écrites, et les alertes de stock bas sont rédigées en phrases complètes.';
+      'Voyez ce qu\'il vous reste à la maison. EpiList vous prévient quand un produit est presque fini ou bientôt périmé.';
 
   @override
   String inventoryQuantityLine(String quantity) {
@@ -6325,7 +6318,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get storesIntro =>
-      'Vos magasins, avec leur devanture, l\'ordre de leurs rayons et leurs alertes actives. Touchez l\'étoile pour marquer un magasin comme favori : l\'état est écrit en texte.';
+      'Vos magasins, leur adresse et leurs heures d\'ouverture. Touchez l\'étoile pour garder un magasin en favori.';
 
   @override
   String get storeFavoriteYes => 'Favori : Oui, magasin favori';
@@ -6364,7 +6357,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mealPlannerIntro =>
-      'Un repas par bloc, en pleine largeur : rien n\'est coupé sur le côté. Choisissez vos repas de la semaine, puis un seul grand bouton crée la liste de courses avec tous les ingrédients.';
+      'Choisissez vos repas de la semaine. Touchez un jour pour ajouter ou changer un repas, puis créez votre liste de courses.';
 
   @override
   String get mealChooseForWeek => 'Choisir ce repas pour la semaine';
@@ -6389,7 +6382,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get priceAlertsIntro =>
-      'Les produits que vous suivez, et où en est leur prix. Chaque baisse est écrite en toutes lettres, avec une flèche et le mot Baisse : vous ne dépendez jamais de la seule couleur.';
+      'Les produits que vous suivez, et où en est leur prix. Fixez un prix cible : vous êtes prévenu dès que le prix passe dessous.';
 
   @override
   String priceAlertDrop(String percent) {

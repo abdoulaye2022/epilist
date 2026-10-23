@@ -15,6 +15,7 @@ import 'package:epilist/services/space_service.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/utils/smart_snackbar_manager.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
+import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,7 +81,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         AppDialogHeader(
-                          icon: Icons.notifications_active_outlined,
+                          icon: AppIcons.priceAlerts,
                           title:
                               existing == null
                                   ? l10n.priceAlertNew
