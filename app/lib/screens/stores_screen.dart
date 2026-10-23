@@ -114,7 +114,12 @@ class _StoresViewState extends State<_StoresView> {
   Future<void> _demanderLaPosition({bool garder = true}) async {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _positionEnCours = true);
-    final position = await LocationService.position();
+    // Sur un rafraichissement (garder == false), on ne REDEMANDE pas la
+    // permission : la fenetre du telephone ne doit s'ouvrir qu'apres la
+    // phrase qui l'explique, jamais a la simple ouverture de l'ecran.
+    final position = await LocationService.position(
+      demanderLaPermission: garder,
+    );
     if (!mounted) return;
     setState(() {
       _position = position;
@@ -122,7 +127,7 @@ class _StoresViewState extends State<_StoresView> {
       if (garder) _choix = LocationChoice.position;
     });
     if (garder) await LocationService.garderLeChoix(LocationChoice.position);
-    if (position == null && mounted) {
+    if (position == null && mounted && garder) {
       // Service eteint, permission refusee, delai depasse : on le DIT,
       // et on propose le code postal plutot que de laisser un bouton
       // qui ne repond pas.

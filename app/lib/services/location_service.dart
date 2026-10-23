@@ -97,17 +97,26 @@ class LocationService {
     return c.substring(0, 3);
   }
 
-  /// Demande la position, en demandant la permission si besoin.
+  /// Demande la position.
+  ///
+  /// [demanderLaPermission] ouvre la fenêtre du téléphone si elle n'a
+  /// pas encore été accordée. À `false`, la position n'est lue que si
+  /// la permission existe DÉJÀ — c'est le cas des rafraîchissements :
+  /// une fenêtre de permission qui s'ouvre à la simple ouverture d'un
+  /// écran, sans un mot d'explication, se refuse. Et une permission
+  /// révoquée depuis les réglages du téléphone ne doit pas se
+  /// redemander dans le dos de l'utilisatrice.
   ///
   /// Rend `null` sur un refus, un service de localisation éteint, ou
   /// une erreur : l'appelant montre alors le code postal, et ne traite
   /// jamais l'absence de position comme une panne.
-  static Future<Position?> position() async {
+  static Future<Position?> position({bool demanderLaPermission = true}) async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) return null;
 
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (!demanderLaPermission) return null;
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.denied ||
