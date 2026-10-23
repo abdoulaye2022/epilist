@@ -19,6 +19,7 @@
 //      contourne.
 import 'dart:math' as math;
 
+import 'package:geocoding/geocoding.dart' as geo;
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -134,6 +135,36 @@ class LocationService {
         ),
       );
     } catch (_) {
+      return null;
+    }
+  }
+
+  /// L'adresse écrite, transformée en coordonnées.
+  ///
+  /// Sans coordonnées, un magasin ne peut porter aucune distance : la
+  /// position du téléphone n'a rien contre quoi se mesurer. C'était le
+  /// trou — l'application savait lire des coordonnées, et rien ne les
+  /// écrivait jamais.
+  ///
+  /// Le géocodeur est celui du TÉLÉPHONE (Android Geocoder, CLGeocoder
+  /// sur iPhone) : pas de clef d'API, pas de contrat, pas de facture à
+  /// l'usage. En échange, il peut être absent d'un appareil ou ne rien
+  /// trouver, et c'est une réponse comme une autre — `null`, et
+  /// l'écran propose alors de relever la position sur place.
+  static Future<({double latitude, double longitude})?> coordonneesDe(
+    String adresse,
+  ) async {
+    final texte = adresse.trim();
+    if (texte.length < 5) return null;
+    try {
+      // La version 5 du paquet passe par une instance : la fonction
+      // libre `locationFromAddress` n'existe plus.
+      final lieux = await geo.Geocoding().locationFromAddress(texte);
+      if (lieux.isEmpty) return null;
+      return (latitude: lieux.first.latitude, longitude: lieux.first.longitude);
+    } catch (_) {
+      // Géocodeur absent, hors ligne, adresse introuvable : pas de
+      // coordonnées, et l'application continue.
       return null;
     }
   }

@@ -64,6 +64,18 @@ void main() {
     });
   });
 
+  group('L adresse transformee en coordonnees', () {
+    // Le geocodeur est celui du telephone : un test ne peut pas
+    // l'appeler. Ce qui se verifie ici, c'est le garde-fou — une
+    // adresse trop courte ne part meme pas, et ne fait donc pas
+    // attendre l'ecran pour rien.
+    test('une adresse trop courte ne part pas', () async {
+      expect(await LocationService.coordonneesDe(''), isNull);
+      expect(await LocationService.coordonneesDe('   '), isNull);
+      expect(await LocationService.coordonneesDe('H3B'), isNull);
+    });
+  });
+
   group('Le secteur d un code postal', () {
     test('les trois premiers caracteres, espaces et casse compris', () {
       expect(LocationService.secteur('H3B 1A1'), 'H3B');

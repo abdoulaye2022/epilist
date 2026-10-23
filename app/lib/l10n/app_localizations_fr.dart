@@ -6659,6 +6659,34 @@ class AppLocalizationsFr extends AppLocalizations {
       'L\'adresse sert à l\'itinéraire et à la distance.';
 
   @override
+  String get storeNotLocated =>
+      'Pas encore situé : aucune distance ne peut être calculée.';
+
+  @override
+  String get storeLocateHere => 'Je suis au magasin';
+
+  @override
+  String get storeLocateHereHint =>
+      'Relève la position de ce magasin, ici et maintenant.';
+
+  @override
+  String storeLocated(String store) {
+    return '$store est situé : la distance s\'affichera.';
+  }
+
+  @override
+  String get storeLocateFailed =>
+      'Position indisponible. Essayez depuis le magasin, ou vérifiez l\'adresse.';
+
+  @override
+  String get storeAddressFound =>
+      'Adresse reconnue : la distance pourra être calculée.';
+
+  @override
+  String get storeAddressNotFound =>
+      'Adresse non reconnue. Touchez « Je suis au magasin » quand vous y serez.';
+
+  @override
   String get storeFavoriteYes => 'Favori : Oui, magasin favori';
 
   @override

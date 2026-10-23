@@ -6560,6 +6560,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'The address is used for directions and distance.';
 
   @override
+  String get storeNotLocated =>
+      'Not located yet: no distance can be worked out.';
+
+  @override
+  String get storeLocateHere => 'I am at the store';
+
+  @override
+  String get storeLocateHereHint =>
+      'Records this store\'s position, here and now.';
+
+  @override
+  String storeLocated(String store) {
+    return '$store is located: the distance will show.';
+  }
+
+  @override
+  String get storeLocateFailed =>
+      'Location unavailable. Try from the store, or check the address.';
+
+  @override
+  String get storeAddressFound =>
+      'Address recognised: the distance can be worked out.';
+
+  @override
+  String get storeAddressNotFound =>
+      'Address not recognised. Tap \"I am at the store\" when you get there.';
+
+  @override
   String get storeFavoriteYes => 'Favourite: Yes, favourite store';
 
   @override

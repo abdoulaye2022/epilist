@@ -14,12 +14,25 @@
 // L'itineraire passe par l'application de cartes du telephone : c'est
 // elle qui sait l'etat du trafic, et elle est deja installee.
 //
+// D'OU VIENNENT LES COORDONNEES. Une distance se mesure entre deux
+// points : sans coordonnees sur le magasin, la position du telephone
+// n'a rien contre quoi se mesurer. Deux chemins, et aucun ne demande
+// de contrat :
+//
+//   - l'adresse ecrite, passee au geocodeur DU TELEPHONE (Android
+//     Geocoder, CLGeocoder sur iPhone) au moment de l'enregistrer ;
+//   - « Je suis au magasin », qui releve la position sur place. C'est
+//     le plus exact, et c'est le moment ou on ajoute un magasin.
+//
+// Un magasin sans coordonnees le DIT, avec le bouton pour y remedier :
+// une distance absente en silence se lit comme une panne.
+//
 // Ce qui N'EST PAS fait, et pourquoi : la carte avec les epingles des
 // magasins favoris demande des tuiles cartographiques, donc un
 // fournisseur, des conditions d'utilisation et un cout a l'usage. De
 // meme pour la photo reelle d'une devanture : elle appartient a
 // l'enseigne ou au service de cartes. La devanture dessinee reste donc
-// l'image de secours, et l'adresse se saisit a la main.
+// l'image de secours.
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -235,6 +248,48 @@ class _StoresViewState extends State<_StoresView> {
       }
     }
     return compte;
+  }
+
+  /// « Je suis au magasin » : relever sa position, ici et maintenant.
+  ///
+  /// C'est le chemin le plus exact — et le plus simple, puisqu'on est
+  /// justement sur place quand on ajoute un magasin. Il ne demande ni
+  /// adresse juste, ni geocodeur disponible.
+  Future<void> _situerIci(Store store) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // La fenetre du telephone peut s'ouvrir ici : c'est un geste
+    // volontaire, sur un bouton qui dit ce qu'il fait.
+    final position = await LocationService.position();
+    if (!mounted) return;
+    if (position == null) {
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.storeLocateFailed);
+      return;
+    }
+
+    try {
+      await context.read<StoreService>().updateStoreDetails(
+        store.id,
+        name: store.name,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+      if (!mounted) return;
+      // La position releve LE MAGASIN. Elle ne sert a trier la liste
+      // que si le partage a ete accepte : relever un magasin sur place
+      // n'est pas accepter d'etre situe en permanence.
+      if (_choix == LocationChoice.position) {
+        setState(() => _position ??= position);
+      }
+      context.read<StoreBloc>().add(const LoadStores());
+      SmartSnackBarManager.showSuccessSnackBar(
+        context,
+        l10n.storeLocated(store.name),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      SmartSnackBarManager.showErrorSnackBar(context, l10n.error);
+    }
   }
 
   /// Ouvre l'itineraire dans l'application de cartes du telephone.
@@ -733,6 +788,16 @@ class _StoresViewState extends State<_StoresView> {
                       ),
                     ),
                   ],
+                  // Pas de coordonnees, pas de distance : le DIRE,
+                  // avec le geste qui repare. Une distance absente en
+                  // silence se lit comme une panne.
+                  if (!pendingSync && store.latitude == null) ...[
+                    const SizedBox(height: AppSpacing.xs + 2),
+                    _ligne(
+                      Icons.location_disabled_outlined,
+                      l10n.storeNotLocated,
+                    ),
+                  ],
                   // Ce qui donne un usage a tout ceci : ce qu'il reste
                   // a prendre ICI.
                   if (aPrendre > 0) ...[
@@ -766,6 +831,14 @@ class _StoresViewState extends State<_StoresView> {
                             : () => _basculerFavori(store),
                   ),
                   const SizedBox(height: AppSpacing.sm + 4),
+                  if (!pendingSync && store.latitude == null) ...[
+                    OutlinedButton.icon(
+                      onPressed: () => _situerIci(store),
+                      icon: const Icon(Icons.my_location_rounded),
+                      label: Text(l10n.storeLocateHere),
+                    ),
+                    const SizedBox(height: AppSpacing.sm + 4),
+                  ],
                   // L'itineraire part dans l'application de cartes du
                   // telephone : c'est elle qui sait le trafic, et elle
                   // est deja installee.
@@ -996,6 +1069,10 @@ class _StoresViewState extends State<_StoresView> {
   }
 
   /// Enregistre l'adresse, en gardant le nom que le serveur exige.
+  ///
+  /// Et la TRANSFORME en coordonnees quand le geocodeur du telephone
+  /// la reconnait : sans elles, l'adresse ne sert qu'a l'itineraire, et
+  /// aucune distance ne peut s'afficher.
   Future<void> _enregistrerLAdresse(
     Store store,
     String nom,
@@ -1004,6 +1081,16 @@ class _StoresViewState extends State<_StoresView> {
     String code,
   ) async {
     final l10n = AppLocalizations.of(context)!;
+    final ecrite = [
+      adresse.trim(),
+      ville.trim(),
+      code.trim(),
+    ].where((m) => m.isNotEmpty).join(', ');
+
+    final point =
+        ecrite.isEmpty ? null : await LocationService.coordonneesDe(ecrite);
+    if (!mounted) return;
+
     try {
       await context.read<StoreService>().updateStoreDetails(
         store.id,
@@ -1011,9 +1098,19 @@ class _StoresViewState extends State<_StoresView> {
         address: adresse.trim(),
         city: ville.trim(),
         postalCode: code.trim().toUpperCase(),
+        latitude: point?.latitude,
+        longitude: point?.longitude,
       );
       if (!mounted) return;
       context.read<StoreBloc>().add(const LoadStores());
+      if (ecrite.isNotEmpty) {
+        // Dire si l'adresse a ete reconnue : sinon, on croit avoir
+        // situe le magasin alors que rien n'a ete trouve.
+        SmartSnackBarManager.showInfoSnackBar(
+          context,
+          point != null ? l10n.storeAddressFound : l10n.storeAddressNotFound,
+        );
+      }
     } catch (_) {
       if (!mounted) return;
       SmartSnackBarManager.showErrorSnackBar(context, l10n.error);

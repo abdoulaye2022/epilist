@@ -12043,6 +12043,48 @@ abstract class AppLocalizations {
   /// **'L\'adresse sert à l\'itinéraire et à la distance.'**
   String get storeDetailsHint;
 
+  /// No description provided for @storeNotLocated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore situé : aucune distance ne peut être calculée.'**
+  String get storeNotLocated;
+
+  /// No description provided for @storeLocateHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je suis au magasin'**
+  String get storeLocateHere;
+
+  /// No description provided for @storeLocateHereHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relève la position de ce magasin, ici et maintenant.'**
+  String get storeLocateHereHint;
+
+  /// No description provided for @storeLocated.
+  ///
+  /// In fr, this message translates to:
+  /// **'{store} est situé : la distance s\'affichera.'**
+  String storeLocated(String store);
+
+  /// No description provided for @storeLocateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position indisponible. Essayez depuis le magasin, ou vérifiez l\'adresse.'**
+  String get storeLocateFailed;
+
+  /// No description provided for @storeAddressFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse reconnue : la distance pourra être calculée.'**
+  String get storeAddressFound;
+
+  /// No description provided for @storeAddressNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse non reconnue. Touchez « Je suis au magasin » quand vous y serez.'**
+  String get storeAddressNotFound;
+
   /// No description provided for @storeFavoriteYes.
   ///
   /// In fr, this message translates to:

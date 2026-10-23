@@ -3209,6 +3209,19 @@
   "storePostalLabel": "Code postal",
   "storeDetailsTitle": "Le magasin et son adresse",
   "storeDetailsHint": "L'adresse sert à l'itinéraire et à la distance.",
+  "storeNotLocated": "Pas encore situé : aucune distance ne peut être calculée.",
+  "storeLocateHere": "Je suis au magasin",
+  "storeLocated": "{store} est situé : la distance s'affichera.",
+  "@storeLocated": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      }
+    }
+  },
+  "storeLocateFailed": "Position indisponible. Essayez depuis le magasin, ou vérifiez l'adresse.",
+  "storeAddressFound": "Adresse reconnue : la distance pourra être calculée.",
+  "storeAddressNotFound": "Adresse non reconnue. Touchez « Je suis au magasin » quand vous y serez.",
   "storeFavoriteYes": "Favori : Oui, magasin favori",
   "storeFavoriteNo": "Favori : Non, pas encore favori",
   "storeActiveAlerts": "{count, plural, =0{Alertes actives dans ce magasin : aucune pour le moment.} =1{Alertes actives dans ce magasin : 1 alerte.} other{Alertes actives dans ce magasin : {count} alertes.}}",

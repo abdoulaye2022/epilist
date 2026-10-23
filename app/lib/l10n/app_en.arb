@@ -3209,6 +3209,19 @@
   "storePostalLabel": "Postal code",
   "storeDetailsTitle": "The store and its address",
   "storeDetailsHint": "The address is used for directions and distance.",
+  "storeNotLocated": "Not located yet: no distance can be worked out.",
+  "storeLocateHere": "I am at the store",
+  "storeLocated": "{store} is located: the distance will show.",
+  "@storeLocated": {
+    "placeholders": {
+      "store": {
+        "type": "String"
+      }
+    }
+  },
+  "storeLocateFailed": "Location unavailable. Try from the store, or check the address.",
+  "storeAddressFound": "Address recognised: the distance can be worked out.",
+  "storeAddressNotFound": "Address not recognised. Tap \"I am at the store\" when you get there.",
   "storeFavoriteYes": "Favourite: Yes, favourite store",
   "storeFavoriteNo": "Favourite: No, not a favourite yet",
   "storeActiveAlerts": "{count, plural, =0{Active alerts in this store: none for now.} =1{Active alerts in this store: 1 alert.} other{Active alerts in this store: {count} alerts.}}",
