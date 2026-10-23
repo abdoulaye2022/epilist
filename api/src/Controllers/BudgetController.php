@@ -48,7 +48,9 @@ class BudgetController
         
         // Period type validation
         if (isset($data['period_type'])) {
-            $validator->rule('in', 'period_type', ['weekly', 'monthly', 'yearly', 'custom'])->message('Invalid period type');
+            // biweekly : beaucoup de menages budgetent selon leur paie,
+            // pas selon le calendrier.
+            $validator->rule('in', 'period_type', ['weekly', 'biweekly', 'monthly', 'yearly', 'custom'])->message('Invalid period type');
         }
         
         // Date validation

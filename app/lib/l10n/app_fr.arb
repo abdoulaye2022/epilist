@@ -1716,6 +1716,62 @@
     }
   },
   "withinBudget": "Vous êtes dans les limites !",
+  "budgetWillExceed": "À ce rythme, le budget sera dépassé",
+  "budgetPeriodTypeBiweekly": "Aux deux semaines (paie)",
+  "budgetPeriodRange": "Budget du {debut} au {fin}",
+  "@budgetPeriodRange": {
+    "description": "Le titre d une carte de budget, avec les deux dates ecrites.",
+    "placeholders": {
+      "debut": {
+        "type": "String"
+      },
+      "fin": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetAutoRenew": "Renouveler à la fin de la période",
+  "budgetAutoRenewOn": "Oui, la période suivante sera créée",
+  "budgetAutoRenewOff": "Non, à recréer à la main",
+  "budgetEndBeforeStart": "La date de fin doit venir après la date de début.",
+  "budgetOverlaps": "Une autre période ({nom}) couvre déjà ces dates.",
+  "@budgetOverlaps": {
+    "placeholders": {
+      "nom": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetBelowSpent": "Attention : vous avez déjà dépensé {depense} sur cette période.",
+  "@budgetBelowSpent": {
+    "placeholders": {
+      "depense": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetRemainingForDays": "Il reste {montant} pour {jours} jours.",
+  "@budgetRemainingForDays": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      },
+      "jours": {
+        "type": "int"
+      }
+    }
+  },
+  "budgetPerDay": "Environ {montant} par jour.",
+  "@budgetPerDay": {
+    "placeholders": {
+      "montant": {
+        "type": "String"
+      }
+    }
+  },
+  "paceFromRecentPurchases": "Estimé d'après vos achats des deux dernières semaines.",
+  "npPriceDigestTitle": "Un résumé par semaine",
+  "npPriceDigestDesc": "Un seul message le lundi, au lieu d'une notification par produit.",
   "budgetExceededShort": "Budget dépassé",
   "createBudgetCta": "Créez un budget pour suivre vos dépenses",
   "spendingThisMonth": "Dépenses ce mois",

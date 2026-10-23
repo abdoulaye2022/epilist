@@ -8191,6 +8191,90 @@ abstract class AppLocalizations {
   /// **'Vous êtes dans les limites !'**
   String get withinBudget;
 
+  /// No description provided for @budgetWillExceed.
+  ///
+  /// In fr, this message translates to:
+  /// **'À ce rythme, le budget sera dépassé'**
+  String get budgetWillExceed;
+
+  /// No description provided for @budgetPeriodTypeBiweekly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aux deux semaines (paie)'**
+  String get budgetPeriodTypeBiweekly;
+
+  /// Le titre d une carte de budget, avec les deux dates ecrites.
+  ///
+  /// In fr, this message translates to:
+  /// **'Budget du {debut} au {fin}'**
+  String budgetPeriodRange(String debut, String fin);
+
+  /// No description provided for @budgetAutoRenew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renouveler à la fin de la période'**
+  String get budgetAutoRenew;
+
+  /// No description provided for @budgetAutoRenewOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, la période suivante sera créée'**
+  String get budgetAutoRenewOn;
+
+  /// No description provided for @budgetAutoRenewOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non, à recréer à la main'**
+  String get budgetAutoRenewOff;
+
+  /// No description provided for @budgetEndBeforeStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'La date de fin doit venir après la date de début.'**
+  String get budgetEndBeforeStart;
+
+  /// No description provided for @budgetOverlaps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une autre période ({nom}) couvre déjà ces dates.'**
+  String budgetOverlaps(String nom);
+
+  /// No description provided for @budgetBelowSpent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Attention : vous avez déjà dépensé {depense} sur cette période.'**
+  String budgetBelowSpent(String depense);
+
+  /// No description provided for @budgetRemainingForDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il reste {montant} pour {jours} jours.'**
+  String budgetRemainingForDays(String montant, int jours);
+
+  /// No description provided for @budgetPerDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Environ {montant} par jour.'**
+  String budgetPerDay(String montant);
+
+  /// No description provided for @paceFromRecentPurchases.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimé d\'après vos achats des deux dernières semaines.'**
+  String get paceFromRecentPurchases;
+
+  /// No description provided for @npPriceDigestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un résumé par semaine'**
+  String get npPriceDigestTitle;
+
+  /// No description provided for @npPriceDigestDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un seul message le lundi, au lieu d\'une notification par produit.'**
+  String get npPriceDigestDesc;
+
   /// No description provided for @budgetExceededShort.
   ///
   /// In fr, this message translates to:

@@ -159,7 +159,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       try {
         final cachedBudgets = await OfflineStorageService.getBudgets();
         if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
-          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          debugPrint(
+            '📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)',
+          );
           emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
           return;
         }
@@ -197,7 +199,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
 
       // Un chargement sans filtre est la vue complète : on la met en cache
       // pour le mode hors ligne (la carte budget du dashboard en dépend).
-      if (event.status == null && event.periodType == null && event.listId == null) {
+      if (event.status == null &&
+          event.periodType == null &&
+          event.listId == null) {
         await OfflineStorageService.saveBudgets(budgets);
       }
 
@@ -217,7 +221,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       try {
         final cachedBudgets = await OfflineStorageService.getBudgets();
         if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
-          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          debugPrint(
+            '📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)',
+          );
           emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
           return;
         }
@@ -345,10 +351,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       if (!_connectivityService.isConnected) {
         await OfflineQueueService.enqueueAction(
           actionType: OfflineQueueService.actionUpdateBudget,
-          payload: {
-            'budget_id': event.budgetId,
-            ...event.request.toJson(),
-          },
+          payload: {'budget_id': event.budgetId, ...event.request.toJson()},
         );
 
         emit(BudgetOperationSuccess(_getTranslatedSuccessMessage('update')));
@@ -410,11 +413,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
 
         emit(BudgetOperationSuccess(_getTranslatedSuccessMessage('delete')));
         if (previousState is BudgetLoaded) {
-          final remaining = previousState.allBudgets
-              .where((b) => b.id != event.budgetId)
-              .toList();
+          final remaining =
+              previousState.allBudgets
+                  .where((b) => b.id != event.budgetId)
+                  .toList();
           await OfflineStorageService.saveBudgets(remaining);
-          emit(previousState.copyWith(budgets: remaining, allBudgets: remaining));
+          emit(
+            previousState.copyWith(budgets: remaining, allBudgets: remaining),
+          );
         }
         return;
       }
@@ -555,7 +561,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       try {
         final cachedBudgets = await OfflineStorageService.getBudgets();
         if (cachedBudgets != null && cachedBudgets.isNotEmpty) {
-          debugPrint('📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)');
+          debugPrint(
+            '📦 Loading ${cachedBudgets.length} budgets from cache (offline mode)',
+          );
           emit(BudgetLoaded(budgets: cachedBudgets, allBudgets: cachedBudgets));
           return;
         }
@@ -666,6 +674,9 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         switch (event.periodFilter) {
           case 'weekly':
             periodType = BudgetPeriodType.weekly;
+            break;
+          case 'biweekly':
+            periodType = BudgetPeriodType.biweekly;
             break;
           case 'monthly':
             periodType = BudgetPeriodType.monthly;

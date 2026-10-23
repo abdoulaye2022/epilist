@@ -26,6 +26,13 @@ class BudgetMonthCard extends StatelessWidget {
   final Budget budget;
   final VoidCallback onSeeDetail;
 
+  /// La projection dépasse-t-elle le budget ? La carte affichait
+  /// « Vous êtes dans les limites ! » dès que le dépensé restait sous
+  /// le montant — y compris quand la ligne juste en dessous annonçait
+  /// 135 $ au rythme actuel pour un budget de 80 $. Deux phrases qui
+  /// se contredisent dans la même carte.
+  final bool willExceed;
+
   /// Mois affiché dans la puce ; un appui ouvre le sélecteur de mois.
   final DateTime selectedMonth;
   final VoidCallback? onPickMonth;
@@ -36,7 +43,24 @@ class BudgetMonthCard extends StatelessWidget {
     required this.onSeeDetail,
     required this.selectedMonth,
     this.onPickMonth,
+    this.willExceed = false,
   });
+
+  /// « Budget du 1er au 31 octobre » : les deux dates, écrites.
+  String _periode(BuildContext context, AppLocalizations l10n) {
+    final locale = Localizations.localeOf(context).toString();
+    // Le mois ne s'écrit qu'une fois quand les deux dates le partagent :
+    // « du 1er au 31 octobre », et non « du 1 octobre au 31 octobre ».
+    final memeMois =
+        budget.startDate.year == budget.endDate.year &&
+        budget.startDate.month == budget.endDate.month;
+    final debut = DateFormat(
+      memeMois ? 'd' : 'd MMMM',
+      locale,
+    ).format(budget.startDate);
+    final fin = DateFormat('d MMMM', locale).format(budget.endDate);
+    return l10n.budgetPeriodRange(debut, fin);
+  }
 
   /// Puce « 📅 mai 2025 ▾ » : appui = sélecteur de mois.
   Widget _monthChip(BuildContext context) {
@@ -116,7 +140,11 @@ class BudgetMonthCard extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        l10n.budgetOfMonth,
+                        // Les deux dates ECRITES, et non « Budget du
+                        // mois » : la phrase reste vraie quand la
+                        // periode n'est pas un mois civil — aux deux
+                        // semaines, ou du 12 au 25.
+                        _periode(context, l10n),
                         style: TextStyle(
                           color: AppColors.onWarning,
                           fontSize: 15,
@@ -193,14 +221,22 @@ class BudgetMonthCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                over ? Icons.error_outline : Icons.eco_outlined,
+                over
+                    ? Icons.error_outline
+                    : (willExceed
+                        ? Icons.trending_up_rounded
+                        : Icons.eco_outlined),
                 size: 14,
                 color: AppColors.onWarning.withValues(alpha: 0.85),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  over ? l10n.budgetExceededShort : l10n.withinBudget,
+                  over
+                      ? l10n.budgetExceededShort
+                      : (willExceed
+                          ? l10n.budgetWillExceed
+                          : l10n.withinBudget),
                   style: TextStyle(
                     color: AppColors.onWarning.withValues(alpha: 0.85),
                     fontSize: 16,

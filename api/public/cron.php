@@ -109,6 +109,20 @@ try {
     echo "Generating due recurring lists...\n";
     generateDueRecurringLists($notificationService);
 
+    // 10. BUDGETS A RENOUVELER (a chaque passage) : ceux dont la periode
+    // est finie et qui portent auto_renew. A chaque passage et non une
+    // fois par jour : un budget qui se termine un 31 ne doit pas
+    // attendre le lendemain soir pour que le suivant existe.
+    echo "Renewing due budgets...\n";
+    renewDueBudgets();
+
+    // 11. RESUME HEBDOMADAIRE DES BAISSES DE PRIX (lundi a 9h) : pour qui
+    // a choisi un resume plutot qu'une notification par produit.
+    if (Carbon::now()->dayOfWeek === Carbon::MONDAY && Carbon::now()->hour === 9) {
+        echo "Sending weekly price alert digests...\n";
+        sendPriceAlertDigests($notificationService);
+    }
+
     echo "=== Cron completed successfully ===\n";
 
 } catch (\Exception $e) {
@@ -1204,4 +1218,138 @@ function generateDueRecurringLists(NotificationService $service): void
     }
 
     echo "Recurring lists generated: {$generated}\n";
+}
+
+/**
+ * BUDGETS QUI SE RENOUVELLENT TOUT SEULS
+ *
+ * « Le budget se renouvelle-t-il automatiquement a la fin de la periode,
+ * ou faut-il le recreer ? » La question se tranche budget par budget :
+ * un budget d'epicerie du mois se renouvelle, un budget « reception de
+ * Noel » non. C'est `auto_renew` qui porte la reponse.
+ *
+ * `renewed_at` empeche le double : deux passages du cron le meme jour
+ * creeraient deux periodes identiques.
+ */
+function renewDueBudgets(): void
+{
+    try {
+        $dus = Budget::where('auto_renew', true)
+            ->whereNull('renewed_at')
+            ->whereNull('deleted_at')
+            ->whereDate('end_date', '<', Carbon::now()->toDateString())
+            ->limit(500)
+            ->get();
+
+        $crees = 0;
+        foreach ($dus as $budget) {
+            try {
+                // La regle vit dans le modele, et elle est verifiee :
+                // voir Budget::prochainePeriode et
+                // scripts/test_budget_periodes.php.
+                [$debut, $fin] = Budget::prochainePeriode(
+                    (string) $budget->period_type,
+                    Carbon::parse($budget->start_date),
+                    Carbon::parse($budget->end_date)
+                );
+
+                $suivant = new Budget([
+                    'space_id' => $budget->space_id,
+                    'created_by_user_id' => $budget->created_by_user_id,
+                    'user_id' => $budget->user_id,
+                    'list_id' => $budget->list_id,
+                    'name' => $budget->name,
+                    'budget_amount' => $budget->budget_amount,
+                    'period_type' => $budget->period_type,
+                    'start_date' => $debut->toDateString(),
+                    'end_date' => $fin->toDateString(),
+                    'alert_threshold' => $budget->alert_threshold,
+                    'is_active' => true,
+                    'auto_renew' => true,
+                ]);
+                $suivant->save();
+
+                $budget->renewed_at = Carbon::now();
+                $budget->save();
+                $crees++;
+            } catch (\Throwable $e) {
+                error_log('Budget non renouvele (' . $budget->id . '): ' . $e->getMessage());
+            }
+        }
+
+        echo "  {$crees} budget(s) renouvele(s)\n";
+    } catch (\Throwable $e) {
+        echo "  ERREUR renouvellement budgets: " . $e->getMessage() . "\n";
+        error_log('renewDueBudgets: ' . $e->getMessage());
+    }
+}
+
+/**
+ * RESUME HEBDOMADAIRE DES BAISSES DE PRIX
+ *
+ * « Notifications : sur demande seulement, avec un resume hebdomadaire
+ * plutot qu'une alerte par produit. » Qui a choisi le resume ne recoit
+ * plus de notification au moment du declenchement (voir
+ * PriceAlertService::notify) : les declenchements de la semaine sont
+ * relus ici, dans price_alerts.last_triggered_at, et tiennent dans UNE
+ * notification.
+ */
+function sendPriceAlertDigests(NotificationService $service): void
+{
+    try {
+        $depuis = Carbon::now()->subDays(7);
+
+        // Les comptes qui ont demande le resume ET la notification de
+        // prix : couper les notifications de prix coupe aussi le resume.
+        $comptes = \App\Models\EmailPreference::where('price_alert_digest', true)
+            ->where('push_price_alert', true)
+            ->pluck('user_id');
+
+        $envoyes = 0;
+        foreach ($comptes as $userId) {
+            $alertes = \App\Models\PriceAlert::where('created_by_user_id', $userId)
+                ->where('is_active', true)
+                ->whereNotNull('last_triggered_at')
+                ->where('last_triggered_at', '>=', $depuis)
+                ->orderBy('product_name')
+                ->get();
+            if ($alertes->isEmpty()) {
+                continue;
+            }
+
+            $user = User::find($userId);
+            if ($user === null) {
+                continue;
+            }
+            $lang = in_array($user->language ?? null, ['fr', 'en'], true) ? $user->language : 'fr';
+            $virgule = $lang === 'fr' ? ',' : '.';
+
+            $lignes = $alertes->take(5)->map(function ($a) use ($virgule, $lang) {
+                $prix = number_format((float) $a->last_notified_price, 2, $virgule, ' ');
+                return $lang === 'fr'
+                    ? "{$a->product_name} a {$prix} $"
+                    : "{$a->product_name} at \${$prix}";
+            })->implode(' · ');
+
+            $reste = $alertes->count() - $alertes->take(5)->count();
+            if ($reste > 0) {
+                $lignes .= $lang === 'fr' ? " · et {$reste} autre(s)" : " · and {$reste} more";
+            }
+
+            $titre = $lang === 'fr'
+                ? 'Vos baisses de prix de la semaine'
+                : 'Your price drops this week';
+
+            $service->sendToUser((int) $userId, 'price_alert', $titre, $lignes, [
+                'digest' => '1',
+                'count' => (string) $alertes->count(),
+            ]);
+            $envoyes++;
+        }
+
+        echo "  {$envoyes} resume(s) envoye(s)\n";
+    } catch (\Throwable $e) {
+        echo "  ERREUR resume prix: " . $e->getMessage() . "\n";
+        error_log('sendPriceAlertDigests: ' . $e->getMessage());
+    }
 }

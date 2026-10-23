@@ -4288,6 +4288,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get withinBudget => 'You\'re within budget!';
 
   @override
+  String get budgetWillExceed => 'At this pace, the budget will be exceeded';
+
+  @override
+  String get budgetPeriodTypeBiweekly => 'Every two weeks (payday)';
+
+  @override
+  String budgetPeriodRange(String debut, String fin) {
+    return 'Budget from $debut to $fin';
+  }
+
+  @override
+  String get budgetAutoRenew => 'Renew at the end of the period';
+
+  @override
+  String get budgetAutoRenewOn => 'Yes, the next period will be created';
+
+  @override
+  String get budgetAutoRenewOff => 'No, to be recreated by hand';
+
+  @override
+  String get budgetEndBeforeStart =>
+      'The end date must come after the start date.';
+
+  @override
+  String budgetOverlaps(String nom) {
+    return 'Another period ($nom) already covers these dates.';
+  }
+
+  @override
+  String budgetBelowSpent(String depense) {
+    return 'Careful: you have already spent $depense in this period.';
+  }
+
+  @override
+  String budgetRemainingForDays(String montant, int jours) {
+    return '$montant left for $jours days.';
+  }
+
+  @override
+  String budgetPerDay(String montant) {
+    return 'About $montant a day.';
+  }
+
+  @override
+  String get paceFromRecentPurchases =>
+      'Estimated from your purchases over the past two weeks.';
+
+  @override
+  String get npPriceDigestTitle => 'One summary a week';
+
+  @override
+  String get npPriceDigestDesc =>
+      'A single message on Monday, instead of one notification per product.';
+
+  @override
   String get budgetExceededShort => 'Budget exceeded';
 
   @override

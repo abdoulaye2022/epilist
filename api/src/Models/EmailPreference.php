@@ -24,12 +24,15 @@ class EmailPreference extends Model
         'push_budget',
         'push_price_alert',
         'push_reminders',
+        // Un resume par semaine au lieu d'une notification par produit.
+        'price_alert_digest',
     ];
 
     protected $casts = [
         'push_list_activity' => 'boolean',
         'push_budget' => 'boolean',
         'push_price_alert' => 'boolean',
+        'price_alert_digest' => 'boolean',
         'push_reminders' => 'boolean',
         'email_verification' => 'boolean',
         'password_change_request' => 'boolean',

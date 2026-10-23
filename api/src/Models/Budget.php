@@ -37,6 +37,11 @@ class Budget extends Model
         'end_date',
         'alert_threshold',
         'is_active',
+        // La periode suivante se recree-t-elle a l'echeance ? La
+        // question se tranche budget par budget : un budget d'epicerie
+        // du mois se renouvelle, un budget « reception de Noel » non.
+        'auto_renew',
+        'renewed_at',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -46,6 +51,8 @@ class Budget extends Model
         'budget_amount' => 'float',
         'alert_threshold' => 'integer',
         'is_active' => 'boolean',
+        'auto_renew' => 'boolean',
+        'renewed_at' => 'datetime',
         'start_date' => 'date',
         'end_date' => 'date',
         'created_at' => 'datetime',
@@ -528,6 +535,7 @@ class Budget extends Model
             'end_date' => $this->end_date->toDateString(),
             'alert_threshold' => $this->alert_threshold,
             'is_active' => $this->is_active,
+            'auto_renew' => (bool) $this->auto_renew,
             
             // Calculated fields
             'spent_amount' => round($spentAmount, 2),
@@ -546,6 +554,36 @@ class Budget extends Model
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];
+    }
+
+    /**
+     * La periode qui SUIT celle-ci : [debut, fin], en dates.
+     *
+     * Elle commence le lendemain de la fin — sans trou, sans
+     * chevauchement. Une periode personnalisee garde sa DUREE : une
+     * duree par defaut inventee ici serait un budget que personne n'a
+     * decide.
+     *
+     * Pure et statique pour une raison : c'est la regle que le
+     * renouvellement automatique applique sans surveillance, et elle se
+     * verifie (scripts/test_budget_periodes.php).
+     *
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    public static function prochainePeriode(string $periodType, Carbon $debut, Carbon $fin): array
+    {
+        $suivantDebut = $fin->copy()->addDay()->startOfDay();
+        $suivantFin = match ($periodType) {
+            'weekly' => $suivantDebut->copy()->addDays(6),
+            'biweekly' => $suivantDebut->copy()->addDays(13),
+            'monthly' => $suivantDebut->copy()->endOfMonth(),
+            'yearly' => $suivantDebut->copy()->addYear()->subDay(),
+            default => $suivantDebut->copy()->addDays(
+                max(1, $debut->copy()->startOfDay()->diffInDays($fin->copy()->startOfDay()))
+            ),
+        };
+
+        return [$suivantDebut, $suivantFin->endOfDay()];
     }
 
     /**

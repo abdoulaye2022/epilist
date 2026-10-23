@@ -98,6 +98,15 @@ class PriceAlertService
             if (!$user) {
                 return;
             }
+            // Resume hebdomadaire choisi : pas de notification ici. Le
+            // declenchement est deja enregistre dans last_triggered_at,
+            // et le cron du lundi relit la semaine en UNE notification
+            // (voir sendPriceAlertDigests dans public/cron.php).
+            $prefs = \App\Models\EmailPreference::where('user_id', $user->id)->first();
+            if ($prefs !== null && (bool) ($prefs->price_alert_digest ?? false)) {
+                return;
+            }
+
             $lang = in_array($user->language ?? null, ['fr', 'en']) ? $user->language : 'fr';
             $priceTxt = number_format($price, 2, $lang === 'fr' ? ',' : '.', ' ');
             $targetTxt = number_format((float) $alert->target_price, 2, $lang === 'fr' ? ',' : '.', ' ');

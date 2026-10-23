@@ -75,6 +75,7 @@ class EmailPreferenceController
                 'push_budget',
                 'push_price_alert',
                 'push_reminders',
+                'price_alert_digest',
             ]);
 
             $validator->rule('in', 'notification_frequency', ['realtime', 'daily', 'weekly']);
@@ -91,6 +92,7 @@ class EmailPreferenceController
                 'list_shared_with_me', 'list_item_added', 'list_item_checked', 'list_completed',
                 'budget_alert', 'budget_summary', 'marketing_emails', 'product_updates', 'tips_and_tricks',
                 'push_list_activity', 'push_budget', 'push_price_alert', 'push_reminders',
+                'price_alert_digest',
             ];
 
             foreach ($booleanFields as $field) {

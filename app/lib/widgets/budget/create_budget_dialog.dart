@@ -1,4 +1,14 @@
-// widgets/budget/create_budget_dialog.dart - VERSION COMPLETE AVEC FormattedAmount
+// widgets/budget/create_budget_dialog.dart - Montant, debut, fin.
+//
+// Le budget etait fige sur un mois : la date de fin ne se modifiait que
+// pour une periode « personnalisee », et le bouton « Ajuster un
+// budget » n'ouvrait rien d'autre. Elle se modifie maintenant toujours
+// — choisir une fin, c'est DIRE que la periode est personnalisee, et le
+// formulaire le fait tout seul.
+//
+// Trois regles de validation, parce que trois erreurs etaient possibles
+// en silence : une fin avant le debut, deux periodes qui se
+// chevauchent, et un budget abaisse sous ce qui est deja depense.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/widgets/common/app_dialog.dart';
 import 'package:epilist/theme/app_icons.dart';
@@ -10,6 +20,8 @@ import 'package:epilist/blocs/shopping_list/shopping_list_bloc.dart';
 import 'package:epilist/models/budget.dart';
 import 'package:epilist/models/shopping_list.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/utils/amount_text.dart';
+import 'package:epilist/widgets/common/app_states.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // ✅ IMPORT AJOUTÉ
 
 class CreateBudgetDialog extends StatefulWidget {
@@ -42,6 +54,11 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
   DateTime _endDate = DateTime.now().add(const Duration(days: 30));
   int _alertThreshold = 80;
   int? _selectedListId;
+  bool _autoRenew = false;
+
+  /// Les erreurs et avertissements de periode, affiches SOUS les dates.
+  String? _erreurPeriode;
+  String? _avertissementPeriode;
 
   List<ShoppingList> _availableLists = [];
   final bool _isLoading = false;
@@ -63,6 +80,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       _endDate = budget.endDate;
       _alertThreshold = budget.alertThreshold;
       _selectedListId = budget.listId;
+      _autoRenew = budget.autoRenew;
     } else {
       _selectedPeriodType =
           widget.initialPeriodType ?? BudgetPeriodType.monthly;
@@ -90,6 +108,8 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     switch (periodType) {
       case BudgetPeriodType.weekly:
         return startDate.add(const Duration(days: 6));
+      case BudgetPeriodType.biweekly:
+        return startDate.add(const Duration(days: 13));
       case BudgetPeriodType.monthly:
         return DateTime(startDate.year, startDate.month + 1, 0);
       case BudgetPeriodType.yearly:
@@ -105,7 +125,9 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     final isEditing = widget.budgetToEdit != null;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       elevation: 10,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Container(
@@ -171,6 +193,20 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         _buildPeriodTypeField(l10n),
         const SizedBox(height: 16),
         _buildDatesRow(l10n),
+        if (_erreurPeriode != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            _erreurPeriode!,
+            style: TextStyle(fontSize: 17, color: AppColors.errorInk),
+          ),
+        ],
+        if (_avertissementPeriode != null) ...[
+          const SizedBox(height: 8),
+          AppWarningLine(text: _avertissementPeriode!),
+        ],
+        const SizedBox(height: 16),
+        _buildEnCours(l10n),
+        _buildAutoRenew(l10n),
         const SizedBox(height: 16),
         _buildListField(l10n),
         const SizedBox(height: 16),
@@ -218,6 +254,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
       onChanged: (value) {
         // ✅ DÉCLENCHER UN REBUILD POUR LE PREVIEW
         setState(() {});
+        _verifiePeriode();
       },
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
@@ -311,6 +348,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
               _endDate = _calculateEndDate(newValue, _startDate);
             }
           });
+          _verifiePeriode();
         }
       },
     );
@@ -334,24 +372,14 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
         const SizedBox(width: 12),
         Expanded(
           child: InkWell(
-            onTap:
-                _selectedPeriodType == BudgetPeriodType.custom
-                    ? _selectEndDate
-                    : null,
+            // Toujours modifiable : c'etait la demande, et c'est la
+            // seule façon de dire « ma periode finit le 12 ».
+            onTap: _selectEndDate,
             child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l10n.endDate,
-                enabled: _selectedPeriodType == BudgetPeriodType.custom,
-              ),
+              decoration: InputDecoration(labelText: l10n.endDate),
               child: Text(
                 _formatDate(_endDate),
-                style: TextStyle(
-                  fontSize: 16,
-                  color:
-                      _selectedPeriodType == BudgetPeriodType.custom
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
               ),
             ),
           ),
@@ -465,6 +493,8 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     switch (type) {
       case BudgetPeriodType.weekly:
         return l10n.weekly;
+      case BudgetPeriodType.biweekly:
+        return l10n.budgetPeriodTypeBiweekly;
       case BudgetPeriodType.monthly:
         return l10n.monthly;
       case BudgetPeriodType.yearly:
@@ -495,6 +525,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           _endDate = _startDate.add(const Duration(days: 30));
         }
       });
+      _verifiePeriode();
     }
   }
 
@@ -509,12 +540,127 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
     if (picked != null && picked != _endDate) {
       setState(() {
         _endDate = picked;
+        // Choisir une fin a la main, c'est DIRE que la periode est
+        // personnalisee : sans ça, le prochain changement de date de
+        // debut recalculerait la fin et effacerait ce choix.
+        if (_endDate != _calculateEndDate(_selectedPeriodType, _startDate)) {
+          _selectedPeriodType = BudgetPeriodType.custom;
+        }
+        _erreurPeriode = null;
+        _avertissementPeriode = null;
       });
+      _verifiePeriode();
     }
+  }
+
+  /// « Il reste 270 $ pour 9 jours. Environ 30 $ par jour. »
+  ///
+  /// Modifier un budget en cours de periode ne doit pas effacer ce qui
+  /// est deja depense : l'ecran le rappelle, et recalcule ce qui reste.
+  Widget _buildEnCours(AppLocalizations l10n) {
+    final budget = widget.budgetToEdit;
+    if (budget == null || !budget.isCurrent) return const SizedBox.shrink();
+
+    final montant =
+        double.tryParse(_amountController.text) ?? budget.budgetAmount;
+    final reste = montant - budget.spentAmount;
+    final jours = budget.daysRemaining;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.budgetRemainingForDays(amountText(context, reste), jours),
+            style: TextStyle(
+              fontSize: 17.5,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          if (jours > 0)
+            Text(
+              l10n.budgetPerDay(amountText(context, reste / jours)),
+              style: TextStyle(fontSize: 17, color: AppColors.textSecondary),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Le renouvellement automatique : la question etait ouverte, elle se
+  /// tranche budget par budget. Un budget d'epicerie du mois se
+  /// renouvelle, un budget « reception de Noel » non.
+  Widget _buildAutoRenew(AppLocalizations l10n) {
+    return AppSwitchTile(
+      title: l10n.budgetAutoRenew,
+      stateLabel: _autoRenew ? l10n.budgetAutoRenewOn : l10n.budgetAutoRenewOff,
+      value: _autoRenew,
+      onChanged: (v) => setState(() => _autoRenew = v),
+    );
+  }
+
+  /// Les deux regles qui peuvent se verifier sans le serveur : la fin
+  /// apres le debut, et pas de chevauchement avec une autre periode du
+  /// meme perimetre.
+  void _verifiePeriode() {
+    final l10n = AppLocalizations.of(context)!;
+    String? erreur;
+    String? avertissement;
+
+    if (!_endDate.isAfter(_startDate)) {
+      erreur = l10n.budgetEndBeforeStart;
+    } else {
+      final state = context.read<BudgetBloc>().state;
+      final autres =
+          state is BudgetLoaded
+              ? state.allBudgets.where(
+                (b) =>
+                    b.id != widget.budgetToEdit?.id &&
+                    b.listId == _selectedListId &&
+                    b.isActive,
+              )
+              : const <Budget>[];
+      for (final b in autres) {
+        // Deux periodes se chevauchent si chacune commence avant que
+        // l'autre ne finisse.
+        final chevauche =
+            !_startDate.isAfter(b.endDate) && !_endDate.isBefore(b.startDate);
+        if (chevauche) {
+          erreur = l10n.budgetOverlaps(b.name);
+          break;
+        }
+      }
+    }
+
+    // Un avertissement, pas une erreur : baisser un budget sous ce qui
+    // est deja depense est un choix possible, mais il ne doit pas
+    // surprendre.
+    final budget = widget.budgetToEdit;
+    final montant = double.tryParse(_amountController.text);
+    if (erreur == null &&
+        budget != null &&
+        montant != null &&
+        montant < budget.spentAmount) {
+      avertissement = l10n.budgetBelowSpent(
+        amountText(context, budget.spentAmount),
+      );
+    }
+
+    setState(() {
+      _erreurPeriode = erreur;
+      _avertissementPeriode = avertissement;
+    });
   }
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      // Les regles de periode d'abord : un formulaire qui se ferme sur
+      // une fin anterieure au debut cree un budget qui ne couvre rien.
+      _verifiePeriode();
+      if (_erreurPeriode != null) return;
+
       final amount = double.parse(_amountController.text);
 
       if (widget.budgetToEdit != null) {
@@ -525,6 +671,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           startDate: _startDate,
           endDate: _endDate,
           alertThreshold: _alertThreshold,
+          autoRenew: _autoRenew,
         );
 
         context.read<BudgetBloc>().add(
@@ -539,6 +686,7 @@ class _CreateBudgetDialogState extends State<CreateBudgetDialog> {
           endDate: _endDate,
           alertThreshold: _alertThreshold,
           listId: _selectedListId,
+          autoRenew: _autoRenew,
         );
 
         context.read<BudgetBloc>().add(CreateBudget(request));

@@ -240,6 +240,28 @@ class _EmailPreferencesScreenState extends State<EmailPreferencesScreen> {
                                   );
                                 }),
                           ),
+                          // « Un resume hebdomadaire plutot qu'une
+                          // alerte par produit » : le choix se range
+                          // sous les notifications de prix, parce
+                          // qu'il ne veut rien dire sans elles.
+                          if (_preferences!.pushPriceAlert)
+                            _buildSwitchTile(
+                              title:
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.npPriceDigestTitle,
+                              subtitle:
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.npPriceDigestDesc,
+                              value: _preferences!.priceAlertDigest,
+                              onChanged:
+                                  (val) => setState(() {
+                                    _preferences = _preferences!.copyWith(
+                                      priceAlertDigest: val,
+                                    );
+                                  }),
+                            ),
                           _buildSwitchTile(
                             title:
                                 AppLocalizations.of(context)!.npRemindersTitle,

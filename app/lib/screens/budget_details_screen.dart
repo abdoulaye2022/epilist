@@ -464,6 +464,7 @@ class BudgetDetailsScreen extends StatelessWidget {
 
             _buildInfoRow(l10n.type, switch (budget.periodType) {
               BudgetPeriodType.weekly => l10n.weekly,
+              BudgetPeriodType.biweekly => l10n.budgetPeriodTypeBiweekly,
               BudgetPeriodType.monthly => l10n.monthly,
               BudgetPeriodType.yearly => l10n.yearly,
               BudgetPeriodType.custom => l10n.custom,

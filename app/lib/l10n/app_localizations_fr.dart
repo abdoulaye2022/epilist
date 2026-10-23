@@ -4360,6 +4360,61 @@ class AppLocalizationsFr extends AppLocalizations {
   String get withinBudget => 'Vous êtes dans les limites !';
 
   @override
+  String get budgetWillExceed => 'À ce rythme, le budget sera dépassé';
+
+  @override
+  String get budgetPeriodTypeBiweekly => 'Aux deux semaines (paie)';
+
+  @override
+  String budgetPeriodRange(String debut, String fin) {
+    return 'Budget du $debut au $fin';
+  }
+
+  @override
+  String get budgetAutoRenew => 'Renouveler à la fin de la période';
+
+  @override
+  String get budgetAutoRenewOn => 'Oui, la période suivante sera créée';
+
+  @override
+  String get budgetAutoRenewOff => 'Non, à recréer à la main';
+
+  @override
+  String get budgetEndBeforeStart =>
+      'La date de fin doit venir après la date de début.';
+
+  @override
+  String budgetOverlaps(String nom) {
+    return 'Une autre période ($nom) couvre déjà ces dates.';
+  }
+
+  @override
+  String budgetBelowSpent(String depense) {
+    return 'Attention : vous avez déjà dépensé $depense sur cette période.';
+  }
+
+  @override
+  String budgetRemainingForDays(String montant, int jours) {
+    return 'Il reste $montant pour $jours jours.';
+  }
+
+  @override
+  String budgetPerDay(String montant) {
+    return 'Environ $montant par jour.';
+  }
+
+  @override
+  String get paceFromRecentPurchases =>
+      'Estimé d\'après vos achats des deux dernières semaines.';
+
+  @override
+  String get npPriceDigestTitle => 'Un résumé par semaine';
+
+  @override
+  String get npPriceDigestDesc =>
+      'Un seul message le lundi, au lieu d\'une notification par produit.';
+
+  @override
   String get budgetExceededShort => 'Budget dépassé';
 
   @override

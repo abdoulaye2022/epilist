@@ -24,6 +24,11 @@ class EmailPreference {
   final bool pushListActivity;
   final bool pushBudget;
   final bool pushPriceAlert;
+
+  /// Un resume par semaine au lieu d'une notification par produit.
+  /// Par defaut non : qui recoit aujourd'hui une notification par
+  /// produit la garde, et choisit le resume s'il le veut.
+  final bool priceAlertDigest;
   final bool pushReminders;
 
   final DateTime? createdAt;
@@ -43,6 +48,7 @@ class EmailPreference {
     this.pushListActivity = true,
     this.pushBudget = true,
     this.pushPriceAlert = true,
+    this.priceAlertDigest = false,
     this.pushReminders = true,
     this.createdAt,
     this.updatedAt,
@@ -52,20 +58,41 @@ class EmailPreference {
     return EmailPreference(
       id: json['id'] as int?,
       userId: json['user_id'] as int,
-      emailVerification: json['email_verification'] == 1 || json['email_verification'] == true,
-      passwordChangeRequest: json['password_change_request'] == 1 || json['password_change_request'] == true,
-      passwordChanged: json['password_changed'] == 1 || json['password_changed'] == true,
-      listSharedWithMe: json['list_shared_with_me'] == 1 || json['list_shared_with_me'] == true,
-      listCompleted: json['list_completed'] == 1 || json['list_completed'] == true,
+      emailVerification:
+          json['email_verification'] == 1 || json['email_verification'] == true,
+      passwordChangeRequest:
+          json['password_change_request'] == 1 ||
+          json['password_change_request'] == true,
+      passwordChanged:
+          json['password_changed'] == 1 || json['password_changed'] == true,
+      listSharedWithMe:
+          json['list_shared_with_me'] == 1 ||
+          json['list_shared_with_me'] == true,
+      listCompleted:
+          json['list_completed'] == 1 || json['list_completed'] == true,
       budgetAlert: json['budget_alert'] == 1 || json['budget_alert'] == true,
-      budgetSummary: json['budget_summary'] == 1 || json['budget_summary'] == true,
-      tipsAndTricks: json['tips_and_tricks'] == 1 || json['tips_and_tricks'] == true,
-      pushListActivity: json['push_list_activity'] != 0 && json['push_list_activity'] != false,
+      budgetSummary:
+          json['budget_summary'] == 1 || json['budget_summary'] == true,
+      tipsAndTricks:
+          json['tips_and_tricks'] == 1 || json['tips_and_tricks'] == true,
+      pushListActivity:
+          json['push_list_activity'] != 0 &&
+          json['push_list_activity'] != false,
       pushBudget: json['push_budget'] != 0 && json['push_budget'] != false,
-      pushPriceAlert: json['push_price_alert'] != 0 && json['push_price_alert'] != false,
-      pushReminders: json['push_reminders'] != 0 && json['push_reminders'] != false,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      pushPriceAlert:
+          json['push_price_alert'] != 0 && json['push_price_alert'] != false,
+      priceAlertDigest:
+          json['price_alert_digest'] == 1 || json['price_alert_digest'] == true,
+      pushReminders:
+          json['push_reminders'] != 0 && json['push_reminders'] != false,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
     );
   }
 
@@ -83,6 +110,7 @@ class EmailPreference {
       'push_list_activity': pushListActivity,
       'push_budget': pushBudget,
       'push_price_alert': pushPriceAlert,
+      'price_alert_digest': priceAlertDigest,
       'push_reminders': pushReminders,
     };
   }
@@ -101,6 +129,7 @@ class EmailPreference {
     bool? pushListActivity,
     bool? pushBudget,
     bool? pushPriceAlert,
+    bool? priceAlertDigest,
     bool? pushReminders,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -109,7 +138,8 @@ class EmailPreference {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       emailVerification: emailVerification ?? this.emailVerification,
-      passwordChangeRequest: passwordChangeRequest ?? this.passwordChangeRequest,
+      passwordChangeRequest:
+          passwordChangeRequest ?? this.passwordChangeRequest,
       passwordChanged: passwordChanged ?? this.passwordChanged,
       listSharedWithMe: listSharedWithMe ?? this.listSharedWithMe,
       listCompleted: listCompleted ?? this.listCompleted,
@@ -119,6 +149,7 @@ class EmailPreference {
       pushListActivity: pushListActivity ?? this.pushListActivity,
       pushBudget: pushBudget ?? this.pushBudget,
       pushPriceAlert: pushPriceAlert ?? this.pushPriceAlert,
+      priceAlertDigest: priceAlertDigest ?? this.priceAlertDigest,
       pushReminders: pushReminders ?? this.pushReminders,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

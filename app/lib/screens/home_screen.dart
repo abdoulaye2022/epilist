@@ -532,6 +532,12 @@ class _HomeScreenState extends State<HomeScreen>
                               onSeeDetail: _openBudgets,
                               selectedMonth: _selectedMonth,
                               onPickMonth: _pickBudgetMonth,
+                              // La carte ne peut pas dire « vous etes
+                              // dans les limites » quand la ligne
+                              // juste dessous annonce un depassement.
+                              willExceed:
+                                  _forecast?.hasBudget == true &&
+                                  _forecast!.projectionGap > 0,
                             )
                           else
                             BudgetCtaCard(
@@ -713,6 +719,16 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ),
+            // D'ou sort ce chiffre : une projection de 135 \$ avec 0 \$
+            // depense n'etait expliquee par rien, et ressemblait a une
+            // erreur.
+            Padding(
+              padding: const EdgeInsets.only(top: 2, left: 24),
+              child: Text(
+                l10n.paceFromRecentPurchases,
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+              ),
+            ),
           ],
         ),
       ),

@@ -2,7 +2,11 @@
 import 'package:epilist/models/currency.dart';
 import 'package:equatable/equatable.dart';
 
-enum BudgetPeriodType { weekly, monthly, yearly, custom }
+/// Les periodes d'un budget.
+///
+/// `biweekly` a ete ajoute pour une raison simple : beaucoup de menages
+/// budgetent selon leur paie, pas selon le calendrier.
+enum BudgetPeriodType { weekly, biweekly, monthly, yearly, custom }
 
 enum BudgetStatus { ok, warning, exceeded }
 
@@ -19,6 +23,9 @@ class Budget extends Equatable {
   final DateTime endDate;
   final int alertThreshold;
   final bool isActive;
+
+  /// La periode suivante se recree-t-elle a l'echeance ?
+  final bool autoRenew;
 
   // Champs calculés
   final double spentAmount;
@@ -52,6 +59,7 @@ class Budget extends Equatable {
     required this.endDate,
     required this.alertThreshold,
     required this.isActive,
+    this.autoRenew = false,
     required this.spentAmount,
     required this.formattedSpentAmount,
     required this.remainingAmount,
@@ -80,6 +88,8 @@ class Budget extends Equatable {
     switch (periodType) {
       case BudgetPeriodType.weekly:
         return 'Hebdomadaire';
+      case BudgetPeriodType.biweekly:
+        return 'Aux deux semaines';
       case BudgetPeriodType.monthly:
         return 'Mensuel';
       case BudgetPeriodType.yearly:
@@ -111,6 +121,9 @@ class Budget extends Equatable {
     switch (json['period_type'] as String) {
       case 'weekly':
         periodType = BudgetPeriodType.weekly;
+        break;
+      case 'biweekly':
+        periodType = BudgetPeriodType.biweekly;
         break;
       case 'monthly':
         periodType = BudgetPeriodType.monthly;
@@ -152,6 +165,7 @@ class Budget extends Equatable {
       endDate: DateTime.parse(json['end_date'] as String),
       alertThreshold: json['alert_threshold'] as int,
       isActive: json['is_active'] as bool,
+      autoRenew: json['auto_renew'] == true || json['auto_renew'] == 1,
       spentAmount: (json['spent_amount'] as num).toDouble(),
       formattedSpentAmount: json['formatted_spent_amount'] as String,
       remainingAmount: (json['remaining_amount'] as num).toDouble(),
@@ -352,6 +366,7 @@ class CreateBudgetRequest extends Equatable {
   final DateTime endDate;
   final int alertThreshold;
   final int? listId;
+  final bool autoRenew;
 
   const CreateBudgetRequest({
     required this.name,
@@ -361,6 +376,7 @@ class CreateBudgetRequest extends Equatable {
     required this.endDate,
     this.alertThreshold = 80,
     this.listId,
+    this.autoRenew = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -371,6 +387,7 @@ class CreateBudgetRequest extends Equatable {
       'start_date': startDate.toIso8601String().split('T')[0], // Date seulement
       'end_date': endDate.toIso8601String().split('T')[0], // Date seulement
       'alert_threshold': alertThreshold,
+      'auto_renew': autoRenew,
       if (listId != null) 'list_id': listId,
     };
   }
@@ -384,6 +401,7 @@ class CreateBudgetRequest extends Equatable {
     endDate,
     alertThreshold,
     listId,
+    autoRenew,
   ];
 }
 
@@ -395,6 +413,7 @@ class UpdateBudgetRequest extends Equatable {
   final DateTime? endDate;
   final int? alertThreshold;
   final bool? isActive;
+  final bool? autoRenew;
 
   const UpdateBudgetRequest({
     this.name,
@@ -404,6 +423,7 @@ class UpdateBudgetRequest extends Equatable {
     this.endDate,
     this.alertThreshold,
     this.isActive,
+    this.autoRenew,
   });
 
   Map<String, dynamic> toJson() {
@@ -419,6 +439,7 @@ class UpdateBudgetRequest extends Equatable {
     }
     if (alertThreshold != null) json['alert_threshold'] = alertThreshold;
     if (isActive != null) json['is_active'] = isActive;
+    if (autoRenew != null) json['auto_renew'] = autoRenew;
     return json;
   }
 
@@ -431,6 +452,7 @@ class UpdateBudgetRequest extends Equatable {
     endDate,
     alertThreshold,
     isActive,
+    autoRenew,
   ];
 }
 
