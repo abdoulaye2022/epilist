@@ -64,9 +64,23 @@ class AppGauge extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(child: ColoredBox(color: AppColors.border)),
-                    FractionallySizedBox(
-                      widthFactor: r,
-                      child: ColoredBox(color: teinte),
+                    // Positioned.fill AUTOUR du remplissage, et pas
+                    // seulement autour du fond.
+                    //
+                    // Dans un Stack, un enfant non positionne recoit
+                    // des contraintes LACHES : hauteur minimale zero.
+                    // Le FractionallySizedBox les laissait passer, et
+                    // le ColoredBox, qui n'a pas de taille a lui,
+                    // tombait a zero. Le remplissage mesurait donc
+                    // 150 x 0 : la barre n'a jamais rien montre, sur
+                    // aucun ecran. Un budget a 280 % affichait une
+                    // barre vide.
+                    Positioned.fill(
+                      child: FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: r,
+                        child: ColoredBox(color: teinte),
+                      ),
                     ),
                   ],
                 ),

@@ -1,4 +1,15 @@
-// widgets/budget/budget_card.dart - VERSION AVEC BACKGROUND BLANC
+// widgets/budget/budget_card.dart - La carte d'un budget.
+//
+// Le pourcentage tenait dans un carre de 44 x 44 points, en gras.
+// « 280 % » y fait 46 points de large : le texte passait a la ligne, le
+// signe « % » se retrouvait seul sous le nombre, et l'ensemble
+// debordait de la pastille. Le texte de cet ecran grossit avec les
+// reglages du telephone — une boite de taille FIXE qui loge du texte ne
+// peut pas tenir.
+//
+// La pastille est donc une gelule qui se mesure sur son contenu : elle
+// s'elargit avec le nombre et avec la taille du texte, et rien n'y
+// passe jamais a la ligne.
 import 'package:epilist/widgets/common/app_meters.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +49,12 @@ class BudgetCard extends StatelessWidget {
     final ratio = (budget.spentPercentage / 100).clamp(0.0, 1.0);
     final expired = budget.isExpired;
 
+    // « 280 % » en francais, « 280% » en anglais : l'espace insecable
+    // de la typographie francaise vient de la locale, et il ne se coupe
+    // pas — c'est justement ce qu'on veut ici.
+    final pourcentage = NumberFormat.percentPattern(locale)
+      ..maximumFractionDigits = 0;
+
     final df = DateFormat('d MMM', locale);
     final period =
         '${df.format(budget.startDate)} – ${df.format(budget.endDate)}';
@@ -58,21 +75,33 @@ class BudgetCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Pourcentage dans une pastille couleur statut
+                  // Le pourcentage, dans une gelule teintee de son
+                  // etat. Pas de largeur ni de hauteur imposees : la
+                  // boite se mesure sur le texte, et « 280 % » tient
+                  // aussi bien que « 7 % ».
                   Container(
-                    width: 44,
-                    height: 44,
-                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm + 2,
+                      vertical: AppSpacing.xs + 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: _statusColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      color: AppTint.fill(_statusColor),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      border: Border.all(color: AppTint.line(_statusColor)),
                     ),
                     child: Text(
-                      '${budget.spentPercentage.round()}%',
+                      pourcentage.format(budget.spentPercentage / 100),
+                      // Une seule ligne, et jamais de coupure : le
+                      // signe « % » appartient au nombre.
+                      maxLines: 1,
+                      softWrap: false,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.w800,
-                        color: _statusColor,
+                        // L'encre de la famille, et non la couleur
+                        // pleine : du rouge vif sur un rose pale se lit
+                        // mal, et c'est a cela que sert AppTint.ink.
+                        color: AppTint.ink(_statusColor),
                       ),
                     ),
                   ),
@@ -100,12 +129,20 @@ class BudgetCard extends StatelessWidget {
                             ),
                             if (expired) ...[
                               const SizedBox(width: 6),
-                              Text(
-                                l10n.expired,
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  color: AppColors.textDisabled,
-                                  fontWeight: FontWeight.w600,
+                              // Flexible lui aussi : sans cela, le mot
+                              // « Expires » prend sa largeur naturelle
+                              // et pousse le nom du budget hors de la
+                              // ligne.
+                              Flexible(
+                                child: Text(
+                                  l10n.expired,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 14.5,
+                                    color: AppColors.textDisabled,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
@@ -122,25 +159,34 @@ class BudgetCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        budget.formattedSpentAmount,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: _statusColor,
+                  // Flexible : les montants prenaient leur largeur
+                  // naturelle au bout de la ligne, et c'est la ligne
+                  // entiere qui debordait des que le texte grossissait.
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          budget.formattedSpentAmount,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: AppTint.ink(_statusColor),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '/ ${budget.formattedBudgetAmount}',
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          color: AppColors.textSecondary,
+                        Text(
+                          '/ ${budget.formattedBudgetAmount}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14.5,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (!compact) _buildMenu(context, l10n),
                 ],
@@ -248,7 +294,9 @@ class BudgetAlertsWidget extends StatelessWidget {
     return Card(
       elevation: 3,
       color: AppColors.surface, // ✅ BACKGROUND BLANC
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -541,7 +589,9 @@ class BudgetSummaryCard extends StatelessWidget {
     return Card(
       elevation: 4,
       color: AppColors.surface, // ✅ BACKGROUND BLANC
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(

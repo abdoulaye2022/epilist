@@ -29,6 +29,51 @@ void main() {
       expect(find.text('85 pour cent pleine'), findsOneWidget);
     });
 
+    testWidgets('le remplissage a une HAUTEUR, et la bonne largeur', (
+      tester,
+    ) async {
+      // Il mesurait 150 x 0 : la barre n'a jamais rien montre, sur
+      // aucun ecran. Dans un Stack, un enfant non positionne recoit
+      // des contraintes laches — hauteur minimale zero — et un
+      // ColoredBox sans enfant tombe a zero.
+      //
+      // Un budget depense a 280 % affichait donc une barre vide, de la
+      // couleur du fond : la seule chose que la barre disait etait
+      // fausse.
+      await poser(
+        tester,
+        const SizedBox(
+          width: 300,
+          child: AppGauge(ratio: 0.5, label: 'moitie'),
+        ),
+      );
+      // La mesure porte sur le CARRE DE COULEUR, et non sur le
+      // FractionallySizedBox : celui-ci remplit la barre (300), et
+      // c'est son enfant qu'il retrecit a la fraction voulue.
+      expect(_remplissage(tester).size, const Size(150, 16));
+    });
+
+    testWidgets('a zero, le remplissage ne prend aucune largeur', (
+      tester,
+    ) async {
+      await poser(
+        tester,
+        const SizedBox(width: 300, child: AppGauge(ratio: 0, label: 'vide')),
+      );
+      expect(_remplissage(tester).size.width, 0);
+      // La hauteur, elle, reste celle de la barre : c'est la largeur
+      // qui dit le remplissage, pas la hauteur.
+      expect(_remplissage(tester).size.height, 16);
+    });
+
+    testWidgets('a cent pour cent, il couvre toute la barre', (tester) async {
+      await poser(
+        tester,
+        const SizedBox(width: 300, child: AppGauge(ratio: 1, label: 'pleine')),
+      );
+      expect(_remplissage(tester).size.width, 300);
+    });
+
     testWidgets('un ratio hors bornes ne deborde pas', (tester) async {
       for (final ratio in [-1.0, 1.4, double.nan]) {
         await poser(tester, AppGauge(ratio: ratio, label: 'peu importe'));
@@ -196,3 +241,13 @@ void main() {
     });
   });
 }
+
+/// Le carre de couleur qui remplit la barre — l'enfant du
+/// FractionallySizedBox, et non la boite elle-meme : celle-ci remplit
+/// toute la barre, et c'est son enfant qu'elle retrecit.
+RenderBox _remplissage(WidgetTester tester) => tester.renderObject<RenderBox>(
+  find.descendant(
+    of: find.byType(FractionallySizedBox),
+    matching: find.byType(ColoredBox),
+  ),
+);
