@@ -844,7 +844,7 @@
   "termsContactText": "Pour toute question concernant ces conditions d'utilisation ou pour de l'assistance, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre le plus rapidement possible.",
   "privacyLastUpdated": "Dernière mise à jour : 5 juillet 2025",
   "privacyCollectionTitle": "1. Collecte d'informations",
-  "privacyCollectionText": "EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d'accès (lecture, édition, administration)\n• Données d'utilisation : statut d'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d'erreurs, performance de l'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.",
+  "privacyCollectionText": "EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d'accès (lecture, édition, administration)\n• Données d'utilisation : statut d'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d'erreurs, performance de l'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.\n\nPOSITION : si vous l'autorisez, EpiList lit la position de votre téléphone pour calculer la distance jusqu'à vos magasins et les trier du plus proche au plus loin. Cette position reste SUR votre téléphone : elle n'est ni enregistrée, ni envoyée à nos serveurs, ni partagée. Vous pouvez refuser, donner seulement votre code postal, ou revenir sur votre choix à tout moment depuis « Mes magasins ».",
   "privacyUsageTitle": "2. Utilisation des données",
   "privacyUsageText": "Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d'épicerie\n• Calculer les totaux et pourcentages d'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d'accès (lecture, édition, administration)\n• Synchroniser vos données sur tous vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.",
   "privacyStorageTitle": "3. Stockage et sécurité",
@@ -3140,6 +3140,50 @@
   "inventoryAddAnyway": "Ajouter quand même",
   "inventoryAtHomeTitle": "Déjà à la maison",
   "storesIntro": "Vos magasins, leur adresse et leurs heures d'ouverture. Touchez l'étoile pour garder un magasin en favori.",
+  "storeLocationTitle": "Trier mes magasins par distance ?",
+  "storeLocationWhy": "EpiList calculerait la distance jusqu'à chacun et les trierait du plus proche au plus loin. Votre position servirait à cela seulement : elle n'est ni enregistrée, ni envoyée.",
+  "storeLocationUse": "Utiliser ma position",
+  "storeLocationPostal": "Donner mon code postal",
+  "storeLocationNever": "Ne pas partager ma position",
+  "storeLocationRefused": "Position non partagée. Vos magasins restent triés par favori.",
+  "storeLocationUnavailable": "Position indisponible. Vous pouvez donner votre code postal à la place.",
+  "storeLocationRedo": "Revoir ce choix",
+  "storePostalTitle": "Votre code postal",
+  "storePostalWhy": "Sans votre position, le code postal sert seulement à repérer les magasins de votre secteur. Aucune distance n'est calculée.",
+  "storeInMySector": "Dans votre secteur ({secteur})",
+  "@storeInMySector": {
+    "placeholders": {
+      "secteur": {
+        "type": "String"
+      }
+    }
+  },
+  "storeDistance": "À {distance} d'ici",
+  "@storeDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "storeOpenNow": "Ouvert maintenant",
+  "storeClosedNow": "Fermé maintenant",
+  "storeDirections": "Itinéraire",
+  "storeDirectionsFailed": "Aucune application de cartes n'a répondu.",
+  "storeDirectionsNoAddress": "Ce magasin n'a pas encore d'adresse.",
+  "storeItemsToGet": "{count, plural, =1{1 article à prendre ici} other{{count} articles à prendre ici}}",
+  "@storeItemsToGet": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAddressLabel": "Adresse",
+  "storeCityLabel": "Ville",
+  "storePostalLabel": "Code postal",
+  "storeDetailsTitle": "Le magasin et son adresse",
+  "storeDetailsHint": "L'adresse sert à l'itinéraire et à la distance.",
   "storeFavoriteYes": "Favori : Oui, magasin favori",
   "storeFavoriteNo": "Favori : Non, pas encore favori",
   "storeActiveAlerts": "{count, plural, =0{Alertes actives dans ce magasin : aucune pour le moment.} =1{Alertes actives dans ce magasin : 1 alerte.} other{Alertes actives dans ce magasin : {count} alertes.}}",

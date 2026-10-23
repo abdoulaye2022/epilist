@@ -120,6 +120,68 @@ void main() {
     });
   });
 
+  group('Ouvert maintenant', () {
+    // La question qu'on se pose devant une carte de magasin, et a
+    // laquelle rien ne repondait : les horaires du jour etaient
+    // affiches, a charge de comparer avec sa montre.
+    Store avecHeures(Map<String, dynamic> heures) =>
+        depuis({'opening_hours': heures});
+
+    test('dans la plage : ouvert', () {
+      final s = avecHeures({
+        'tue': ['08:00', '21:00'],
+      });
+      // Un mardi, a 14 h.
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 14)), isTrue);
+    });
+
+    test('avant l ouverture et apres la fermeture : ferme', () {
+      final s = avecHeures({
+        'tue': ['08:00', '21:00'],
+      });
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 7, 59)), isFalse);
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 21)), isFalse);
+    });
+
+    test('pile a l ouverture : ouvert', () {
+      final s = avecHeures({
+        'tue': ['08:00', '21:00'],
+      });
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 8)), isTrue);
+    });
+
+    test('un jour ferme repond non, pas « on ne sait pas »', () {
+      final s = avecHeures({
+        'tue': ['08:00', '21:00'],
+        'sun': null,
+      });
+      // Un dimanche.
+      expect(s.isOpenAt(DateTime(2026, 10, 25, 14)), isFalse);
+    });
+
+    test('sans aucun horaire, on ne sait pas', () {
+      // Et « Ferme » affiche faute d'horaires ferait renoncer a une
+      // sortie : la reponse est nulle, et l'ecran n'ecrit rien.
+      expect(depuis({}).isOpenAt(DateTime(2026, 10, 20, 14)), isNull);
+    });
+
+    test('une plage qui passe minuit se lit a l envers', () {
+      final s = avecHeures({
+        'tue': ['22:00', '02:00'],
+      });
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 23)), isTrue);
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 1)), isTrue);
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 12)), isFalse);
+    });
+
+    test('une heure mal formee ne fait pas planter', () {
+      final s = avecHeures({
+        'tue': ['huit heures', '21:00'],
+      });
+      expect(s.isOpenAt(DateTime(2026, 10, 20, 14)), isNull);
+    });
+  });
+
   test('aller-retour JSON : ce qui sort se relit', () {
     final avant = depuis({
       'address': '1200 rue Sainte-Catherine',

@@ -3622,7 +3622,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyCollectionText.
   ///
   /// In fr, this message translates to:
-  /// **'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.'**
+  /// **'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.\n\nPOSITION : si vous l\'autorisez, EpiList lit la position de votre téléphone pour calculer la distance jusqu\'à vos magasins et les trier du plus proche au plus loin. Cette position reste SUR votre téléphone : elle n\'est ni enregistrée, ni envoyée à nos serveurs, ni partagée. Vous pouvez refuser, donner seulement votre code postal, ou revenir sur votre choix à tout moment depuis « Mes magasins ».'**
   String get privacyCollectionText;
 
   /// No description provided for @privacyUsageTitle.
@@ -11868,6 +11868,144 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vos magasins, leur adresse et leurs heures d\'ouverture. Touchez l\'étoile pour garder un magasin en favori.'**
   String get storesIntro;
+
+  /// No description provided for @storeLocationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trier mes magasins par distance ?'**
+  String get storeLocationTitle;
+
+  /// No description provided for @storeLocationWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'EpiList calculerait la distance jusqu\'à chacun et les trierait du plus proche au plus loin. Votre position servirait à cela seulement : elle n\'est ni enregistrée, ni envoyée.'**
+  String get storeLocationWhy;
+
+  /// No description provided for @storeLocationUse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser ma position'**
+  String get storeLocationUse;
+
+  /// No description provided for @storeLocationPostal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donner mon code postal'**
+  String get storeLocationPostal;
+
+  /// No description provided for @storeLocationNever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne pas partager ma position'**
+  String get storeLocationNever;
+
+  /// No description provided for @storeLocationRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position non partagée. Vos magasins restent triés par favori.'**
+  String get storeLocationRefused;
+
+  /// No description provided for @storeLocationUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position indisponible. Vous pouvez donner votre code postal à la place.'**
+  String get storeLocationUnavailable;
+
+  /// No description provided for @storeLocationRedo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revoir ce choix'**
+  String get storeLocationRedo;
+
+  /// No description provided for @storePostalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre code postal'**
+  String get storePostalTitle;
+
+  /// No description provided for @storePostalWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans votre position, le code postal sert seulement à repérer les magasins de votre secteur. Aucune distance n\'est calculée.'**
+  String get storePostalWhy;
+
+  /// No description provided for @storeInMySector.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans votre secteur ({secteur})'**
+  String storeInMySector(String secteur);
+
+  /// No description provided for @storeDistance.
+  ///
+  /// In fr, this message translates to:
+  /// **'À {distance} d\'ici'**
+  String storeDistance(String distance);
+
+  /// No description provided for @storeOpenNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvert maintenant'**
+  String get storeOpenNow;
+
+  /// No description provided for @storeClosedNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé maintenant'**
+  String get storeClosedNow;
+
+  /// No description provided for @storeDirections.
+  ///
+  /// In fr, this message translates to:
+  /// **'Itinéraire'**
+  String get storeDirections;
+
+  /// No description provided for @storeDirectionsFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune application de cartes n\'a répondu.'**
+  String get storeDirectionsFailed;
+
+  /// No description provided for @storeDirectionsNoAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce magasin n\'a pas encore d\'adresse.'**
+  String get storeDirectionsNoAddress;
+
+  /// No description provided for @storeItemsToGet.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 article à prendre ici} other{{count} articles à prendre ici}}'**
+  String storeItemsToGet(int count);
+
+  /// No description provided for @storeAddressLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get storeAddressLabel;
+
+  /// No description provided for @storeCityLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get storeCityLabel;
+
+  /// No description provided for @storePostalLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code postal'**
+  String get storePostalLabel;
+
+  /// No description provided for @storeDetailsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le magasin et son adresse'**
+  String get storeDetailsTitle;
+
+  /// No description provided for @storeDetailsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'adresse sert à l\'itinéraire et à la distance.'**
+  String get storeDetailsHint;
 
   /// No description provided for @storeFavoriteYes.
   ///

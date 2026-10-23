@@ -103,6 +103,43 @@ class Store extends Equatable {
     return openingHours[kJoursApi[weekday - 1]];
   }
 
+  /// Ouvert à CET instant ?
+  ///
+  /// `null` quand on ne sait pas — aucune heure renseignée. Et c'est
+  /// une réponse à part entière : « Fermé » affiché faute d'horaires
+  /// serait un mensonge, et ferait renoncer à une sortie.
+  ///
+  /// [maintenant] n'est là que pour le test : sans elle, une horloge se
+  /// vérifie en attendant la bonne heure.
+  bool? isOpenAt([DateTime? maintenant]) {
+    if (!hasOpeningHours) return null;
+    final t = maintenant ?? DateTime.now();
+    final plage = hoursFor(t.weekday);
+    if (plage == null) return false; // jour fermé : la réponse est non
+
+    final debut = _minutes(plage.open);
+    final fin = _minutes(plage.close);
+    if (debut == null || fin == null) return null;
+
+    final actuel = t.hour * 60 + t.minute;
+    // Une plage qui finit après minuit (« 22:00 » à « 02:00 ») se lit
+    // à l'envers : elle est ouverte avant la fin OU après le début.
+    if (fin <= debut) return actuel >= debut || actuel < fin;
+    return actuel >= debut && actuel < fin;
+  }
+
+  /// « 08:30 » -> 510. `null` si ce n'est pas une heure.
+  static int? _minutes(String heure) {
+    final morceaux = heure.split(':');
+    if (morceaux.length < 2) return null;
+    final h = int.tryParse(morceaux[0]);
+    final m = int.tryParse(morceaux[1]);
+    if (h == null || m == null || h < 0 || h > 23 || m < 0 || m > 59) {
+      return null;
+    }
+    return h * 60 + m;
+  }
+
   factory Store.fromJson(Map<String, dynamic> json) {
     final heures = <String, StoreHours?>{};
     final brut = json['opening_hours'];

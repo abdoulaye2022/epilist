@@ -1956,7 +1956,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyCollectionText =>
-      'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.';
+      'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.\n\nPOSITION : si vous l\'autorisez, EpiList lit la position de votre téléphone pour calculer la distance jusqu\'à vos magasins et les trier du plus proche au plus loin. Cette position reste SUR votre téléphone : elle n\'est ni enregistrée, ni envoyée à nos serveurs, ni partagée. Vous pouvez refuser, donner seulement votre code postal, ou revenir sur votre choix à tout moment depuis « Mes magasins ».';
 
   @override
   String get privacyUsageTitle => '2. Utilisation des données';
@@ -6536,6 +6536,94 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get storesIntro =>
       'Vos magasins, leur adresse et leurs heures d\'ouverture. Touchez l\'étoile pour garder un magasin en favori.';
+
+  @override
+  String get storeLocationTitle => 'Trier mes magasins par distance ?';
+
+  @override
+  String get storeLocationWhy =>
+      'EpiList calculerait la distance jusqu\'à chacun et les trierait du plus proche au plus loin. Votre position servirait à cela seulement : elle n\'est ni enregistrée, ni envoyée.';
+
+  @override
+  String get storeLocationUse => 'Utiliser ma position';
+
+  @override
+  String get storeLocationPostal => 'Donner mon code postal';
+
+  @override
+  String get storeLocationNever => 'Ne pas partager ma position';
+
+  @override
+  String get storeLocationRefused =>
+      'Position non partagée. Vos magasins restent triés par favori.';
+
+  @override
+  String get storeLocationUnavailable =>
+      'Position indisponible. Vous pouvez donner votre code postal à la place.';
+
+  @override
+  String get storeLocationRedo => 'Revoir ce choix';
+
+  @override
+  String get storePostalTitle => 'Votre code postal';
+
+  @override
+  String get storePostalWhy =>
+      'Sans votre position, le code postal sert seulement à repérer les magasins de votre secteur. Aucune distance n\'est calculée.';
+
+  @override
+  String storeInMySector(String secteur) {
+    return 'Dans votre secteur ($secteur)';
+  }
+
+  @override
+  String storeDistance(String distance) {
+    return 'À $distance d\'ici';
+  }
+
+  @override
+  String get storeOpenNow => 'Ouvert maintenant';
+
+  @override
+  String get storeClosedNow => 'Fermé maintenant';
+
+  @override
+  String get storeDirections => 'Itinéraire';
+
+  @override
+  String get storeDirectionsFailed =>
+      'Aucune application de cartes n\'a répondu.';
+
+  @override
+  String get storeDirectionsNoAddress =>
+      'Ce magasin n\'a pas encore d\'adresse.';
+
+  @override
+  String storeItemsToGet(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles à prendre ici',
+      one: '1 article à prendre ici',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get storeAddressLabel => 'Adresse';
+
+  @override
+  String get storeCityLabel => 'Ville';
+
+  @override
+  String get storePostalLabel => 'Code postal';
+
+  @override
+  String get storeDetailsTitle => 'Le magasin et son adresse';
+
+  @override
+  String get storeDetailsHint =>
+      'L\'adresse sert à l\'itinéraire et à la distance.';
 
   @override
   String get storeFavoriteYes => 'Favori : Oui, magasin favori';

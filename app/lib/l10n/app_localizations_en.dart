@@ -1920,7 +1920,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyCollectionText =>
-      'EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, administration)\n• Usage data: item purchase status, totals and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.';
+      'EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, administration)\n• Usage data: item purchase status, totals and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.\n\nLOCATION: if you allow it, EpiList reads your phone\'s location to work out how far your stores are and sort them from nearest to farthest. That location stays ON your phone: it is never stored, never sent to our servers, never shared. You may refuse, give only your postal code, or change your mind at any time from « My stores ».';
 
   @override
   String get privacyUsageTitle => '2. Data Usage';
@@ -6438,6 +6438,92 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get storesIntro =>
       'Your stores, their address and their opening hours. Tap the star to keep a store as a favourite.';
+
+  @override
+  String get storeLocationTitle => 'Sort my stores by distance?';
+
+  @override
+  String get storeLocationWhy =>
+      'EpiList would work out how far each one is and sort them from nearest to farthest. Your location would serve that only: it is neither stored nor sent.';
+
+  @override
+  String get storeLocationUse => 'Use my location';
+
+  @override
+  String get storeLocationPostal => 'Give my postal code';
+
+  @override
+  String get storeLocationNever => 'Do not share my location';
+
+  @override
+  String get storeLocationRefused =>
+      'Location not shared. Your stores stay sorted by favourite.';
+
+  @override
+  String get storeLocationUnavailable =>
+      'Location unavailable. You can give your postal code instead.';
+
+  @override
+  String get storeLocationRedo => 'Change this choice';
+
+  @override
+  String get storePostalTitle => 'Your postal code';
+
+  @override
+  String get storePostalWhy =>
+      'Without your location, the postal code only serves to spot the stores in your area. No distance is worked out.';
+
+  @override
+  String storeInMySector(String secteur) {
+    return 'In your area ($secteur)';
+  }
+
+  @override
+  String storeDistance(String distance) {
+    return '$distance from here';
+  }
+
+  @override
+  String get storeOpenNow => 'Open now';
+
+  @override
+  String get storeClosedNow => 'Closed now';
+
+  @override
+  String get storeDirections => 'Directions';
+
+  @override
+  String get storeDirectionsFailed => 'No map app answered.';
+
+  @override
+  String get storeDirectionsNoAddress => 'This store has no address yet.';
+
+  @override
+  String storeItemsToGet(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items to pick up here',
+      one: '1 item to pick up here',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get storeAddressLabel => 'Address';
+
+  @override
+  String get storeCityLabel => 'City';
+
+  @override
+  String get storePostalLabel => 'Postal code';
+
+  @override
+  String get storeDetailsTitle => 'The store and its address';
+
+  @override
+  String get storeDetailsHint =>
+      'The address is used for directions and distance.';
 
   @override
   String get storeFavoriteYes => 'Favourite: Yes, favourite store';

@@ -844,7 +844,7 @@
   "termsContactText": "For any questions regarding these terms of service or for assistance, please contact us through our website.\n\nWe are committed to responding as quickly as possible.",
   "privacyLastUpdated": "Last updated: July 5, 2025",
   "privacyCollectionTitle": "1. Information Collection",
-  "privacyCollectionText": "EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, administration)\n• Usage data: item purchase status, totals and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.",
+  "privacyCollectionText": "EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, administration)\n• Usage data: item purchase status, totals and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.\n\nLOCATION: if you allow it, EpiList reads your phone's location to work out how far your stores are and sort them from nearest to farthest. That location stays ON your phone: it is never stored, never sent to our servers, never shared. You may refuse, give only your postal code, or change your mind at any time from « My stores ».",
   "privacyUsageTitle": "2. Data Usage",
   "privacyUsageText": "Your data is used exclusively to:\n\n• Create and manage your user account\n• Create, edit and delete your grocery lists\n• Calculate totals and percentages of purchased items\n• Duplicate your existing lists\n• Share your lists with family members or friends via secure links\n• Manage access permissions (read, edit, administration)\n• Synchronize your data across your devices\n• Provide technical support\n\nWe do not sell or rent your personal data to third parties.",
   "privacyStorageTitle": "3. Storage and Security",
@@ -3140,6 +3140,50 @@
   "inventoryAddAnyway": "Add anyway",
   "inventoryAtHomeTitle": "Already at home",
   "storesIntro": "Your stores, their address and their opening hours. Tap the star to keep a store as a favourite.",
+  "storeLocationTitle": "Sort my stores by distance?",
+  "storeLocationWhy": "EpiList would work out how far each one is and sort them from nearest to farthest. Your location would serve that only: it is neither stored nor sent.",
+  "storeLocationUse": "Use my location",
+  "storeLocationPostal": "Give my postal code",
+  "storeLocationNever": "Do not share my location",
+  "storeLocationRefused": "Location not shared. Your stores stay sorted by favourite.",
+  "storeLocationUnavailable": "Location unavailable. You can give your postal code instead.",
+  "storeLocationRedo": "Change this choice",
+  "storePostalTitle": "Your postal code",
+  "storePostalWhy": "Without your location, the postal code only serves to spot the stores in your area. No distance is worked out.",
+  "storeInMySector": "In your area ({secteur})",
+  "@storeInMySector": {
+    "placeholders": {
+      "secteur": {
+        "type": "String"
+      }
+    }
+  },
+  "storeDistance": "{distance} from here",
+  "@storeDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "storeOpenNow": "Open now",
+  "storeClosedNow": "Closed now",
+  "storeDirections": "Directions",
+  "storeDirectionsFailed": "No map app answered.",
+  "storeDirectionsNoAddress": "This store has no address yet.",
+  "storeItemsToGet": "{count, plural, =1{1 item to pick up here} other{{count} items to pick up here}}",
+  "@storeItemsToGet": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeAddressLabel": "Address",
+  "storeCityLabel": "City",
+  "storePostalLabel": "Postal code",
+  "storeDetailsTitle": "The store and its address",
+  "storeDetailsHint": "The address is used for directions and distance.",
   "storeFavoriteYes": "Favourite: Yes, favourite store",
   "storeFavoriteNo": "Favourite: No, not a favourite yet",
   "storeActiveAlerts": "{count, plural, =0{Active alerts in this store: none for now.} =1{Active alerts in this store: 1 alert.} other{Active alerts in this store: {count} alerts.}}",
