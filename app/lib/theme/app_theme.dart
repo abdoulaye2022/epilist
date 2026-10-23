@@ -22,6 +22,8 @@
 // chaque changement de mode. C'est ce qui permet au mode sombre
 // d'atteindre les ~1 900 appels de jetons déjà écrits sans les réécrire.
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Les jetons qui CHANGENT entre clair et sombre.
@@ -63,6 +65,10 @@ class AppPalette {
     required this.goldInk,
     required this.brown,
     required this.slate,
+    required this.stockOk,
+    required this.stockLow,
+    required this.stockOut,
+    required this.stockExpiring,
   });
 
   final Brightness brightness;
@@ -127,6 +133,19 @@ class AppPalette {
   final Color brown;
   final Color slate;
 
+  /// Les quatre états d'une provision à la maison. Ce sont des PLEINS :
+  /// le badge d'état remplit un disque ou un triangle de cette couleur
+  /// et pose son glyphe dessus, pour rester lisible sur les quatre
+  /// fonds de zone (lilas, menthe, miel, crème) comme en mode sombre.
+  ///
+  /// En clair ce sont des teintes sombres qui portent du blanc ; en
+  /// sombre, des teintes claires qui portent de l'encre sombre. C'est
+  /// `AppTint.onFilled` qui choisit, et non l'appelant.
+  final Color stockOk;
+  final Color stockLow;
+  final Color stockOut;
+  final Color stockExpiring;
+
   bool get isDark => brightness == Brightness.dark;
 
   static const AppPalette light = AppPalette(
@@ -160,6 +179,10 @@ class AppPalette {
     goldInk: Color(0xFF854D0E),
     brown: Color(0xFFC2410C),
     slate: Color(0xFF4B5563),
+    stockOk: Color(0xFF15803D), // vert fonce : 5,0 sur blanc
+    stockLow: Color(0xFFC2410C), // orange fonce : 4,6
+    stockOut: Color(0xFFB91C1C), // rouge : 6,0
+    stockExpiring: Color(0xFF6D28D9), // violet : 7,1
   );
 
   /// Mode sombre. Les fonds ne sont pas noirs mais tres sombres et
@@ -197,6 +220,12 @@ class AppPalette {
     goldInk: Color(0xFFFDE68A),
     brown: Color(0xFFFDBA74),
     slate: Color(0xFFCBD5E1),
+    // Sur fond sombre, les quatre teintes claires : les sombres du mode
+    // clair ne se detacheraient plus du fond de la zone.
+    stockOk: Color(0xFF4ADE80),
+    stockLow: Color(0xFFFB923C),
+    stockOut: Color(0xFFF87171),
+    stockExpiring: Color(0xFFC4B5FD),
   );
 }
 
@@ -299,6 +328,12 @@ abstract final class AppColors {
   static const Color brownTint = Color(0x1AC2410C);
   static Color get slate => palette.slate;
   static const Color slateTint = Color(0x1A4B5563);
+
+  /// Les quatre états d'une provision. Voir [AppPalette.stockOk].
+  static Color get stockOk => palette.stockOk;
+  static Color get stockLow => palette.stockLow;
+  static Color get stockOut => palette.stockOut;
+  static Color get stockExpiring => palette.stockExpiring;
 
   /// L'or sert au distinctif : un favori, une étoile, un palmarès.
   /// Il a ses quatre jetons comme un état, parce qu'il porte souvent un
@@ -412,6 +447,45 @@ abstract final class AppTint {
         AppColors.isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
         0.4,
       )!;
+
+  /// Encre lisible sur une pastille PLEINE de cette couleur.
+  ///
+  /// Rien à voir avec [ink], qui s'écrit sur un fond à 10 % : ici le
+  /// fond est la couleur elle-même, et le choix ne se fait pas sur le
+  /// mode clair ou sombre mais sur la LUMINANCE du fond. Le même vert
+  /// vif porte de l'encre sombre dans les deux modes ; le même vert
+  /// foncé porte du blanc dans les deux.
+  ///
+  /// Les deux encres sont invariantes exprès : une pastille rouge ne
+  /// doit pas voir son glyphe changer de couleur parce que la page a
+  /// basculé en sombre.
+  ///
+  /// Le choix ne se fait pas sur un seuil de luminance choisi à la
+  /// main — un rouge clair (#F87171) tombait juste du mauvais côté et
+  /// recevait du blanc, à 2,8 de contraste. Il se fait en CALCULANT les
+  /// deux contrastes et en gardant le meilleur.
+  static Color onFilled(Color c) {
+    const clair = Color(0xFFFFFFFF);
+    final sombre = AppColors.onVivid;
+    return _contraste(clair, c) >= _contraste(sombre, c) ? clair : sombre;
+  }
+
+  /// Rapport de contraste WCAG 2.1 entre deux couleurs opaques.
+  static double _contraste(Color a, Color b) {
+    final la = _luminance(a), lb = _luminance(b);
+    final haut = la > lb ? la : lb, bas = la > lb ? lb : la;
+    return (haut + 0.05) / (bas + 0.05);
+  }
+
+  /// Luminance relative WCAG 2.1 (1.4.3). La formule, pas une
+  /// approximation : c'est elle qui décide si un glyphe reste lisible.
+  static double _luminance(Color c) {
+    double canal(double v) =>
+        v <= 0.03928
+            ? v / 12.92
+            : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
+    return 0.2126 * canal(c.r) + 0.7152 * canal(c.g) + 0.0722 * canal(c.b);
+  }
 }
 
 /// Rayons de courbure — trois valeurs, pas plus.

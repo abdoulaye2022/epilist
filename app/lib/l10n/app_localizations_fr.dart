@@ -5929,10 +5929,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inventoryUnit => 'Unité';
 
   @override
-  String get inventoryMinQuantity => 'Seuil d\'alerte (min)';
+  String get inventoryMinQuantity => 'Prévenez-moi quand il en reste';
 
   @override
-  String get inventoryReorderQuantity => 'Quantité de réappro';
+  String get inventoryReorderQuantity => 'Quantité à racheter';
 
   @override
   String get inventoryBelowMin => 'sous le seuil';
@@ -6034,10 +6034,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inventoryThresholdsTitle => 'Quantité et seuils';
 
   @override
-  String get inventoryMinQuantityHint => 'En dessous, le produit est signalé';
+  String get inventoryMinQuantityHint =>
+      'Vous serez averti quand la quantité atteint ce nombre ou passe en dessous.';
 
   @override
-  String get inventoryReorderQuantityHint => 'Quantité suggérée à la commande';
+  String get inventoryReorderQuantityHint =>
+      'Quantité proposée quand vous l\'ajoutez à la liste';
 
   @override
   String get fieldRequired => 'Champ obligatoire';
@@ -6309,6 +6311,91 @@ class AppLocalizationsFr extends AppLocalizations {
   String inventoryOutWarning(String product) {
     return 'Alerte rupture : $product, il n\'y en a plus à la maison.';
   }
+
+  @override
+  String get stockStateAvailable => 'Disponible';
+
+  @override
+  String get stockStateLow => 'Stock bas';
+
+  @override
+  String get stockStateOut => 'Rupture';
+
+  @override
+  String inventoryExpiringIn(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'À terminer dans $days jours',
+      one: 'À terminer demain',
+      zero: 'À terminer aujourd\'hui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String inventoryExpired(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Périmé depuis $days jours',
+      one: 'Périmé depuis hier',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inventoryExpiryDate => 'Date de péremption';
+
+  @override
+  String get inventoryExpiryNone => 'Aucune date';
+
+  @override
+  String get inventoryExpiryPick => 'Choisir une date';
+
+  @override
+  String get inventoryZoneExpiring => 'À terminer bientôt';
+
+  @override
+  String get inventoryLevel => 'Niveau';
+
+  @override
+  String get inventoryLevelHint =>
+      'Pour ce qui ne se compte pas : le liquide vaisselle, la farine.';
+
+  @override
+  String get inventoryLevelFull => 'Plein';
+
+  @override
+  String get inventoryLevelHalf => 'À moitié';
+
+  @override
+  String get inventoryLevelLow => 'Presque vide';
+
+  @override
+  String get inventoryLevelNone => 'Aucun';
+
+  @override
+  String get inventoryPlusOne => 'Ajouter une unité';
+
+  @override
+  String get inventoryMinusOne => 'Retirer une unité';
+
+  @override
+  String inventoryLevelLine(String level) {
+    return 'Niveau : $level.';
+  }
+
+  @override
+  String inventoryAlreadyAtHome(String quantity) {
+    return 'Vous en avez déjà $quantity à la maison.';
+  }
+
+  @override
+  String get inventoryAddAnyway => 'Ajouter quand même';
+
+  @override
+  String get inventoryAtHomeTitle => 'Déjà à la maison';
 
   @override
   String get storesIntro =>

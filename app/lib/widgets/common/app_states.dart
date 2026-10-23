@@ -131,6 +131,143 @@ class AppCheckRow extends StatelessWidget {
   }
 }
 
+/// Les quatre états d'une provision à la maison.
+///
+/// Il n'y en avait qu'un de dessiné — un triangle orange « stock bas » —
+/// et rien pour « disponible » ni « rupture » : l'absence de triangle
+/// devait vouloir dire « tout va bien », ce qui demande de savoir qu'un
+/// triangle existe ailleurs.
+enum StockState {
+  disponible,
+  stockBas,
+  rupture,
+
+  /// À terminer dans deux jours. Seul état qui vient d'une DATE et non
+  /// d'une quantité.
+  peremption,
+}
+
+/// Le badge d'état : une pastille PLEINE, qui garde son propre fond.
+///
+/// Les zones de « À la maison » ont des fonds colorés (lilas, menthe,
+/// miel, crème). Une icône de contour mince y disparaît — c'est le
+/// problème qu'avait le triangle orange sur fond miel. Ici, un disque
+/// ou un triangle rempli, un glyphe par-dessus, un contour de la
+/// couleur de la surface et un fin liseré sombre : le badge est lisible
+/// sur n'importe quel fond, en clair comme en sombre.
+///
+/// Les FORMES diffèrent — disque, triangle — et pas seulement les
+/// couleurs : qui distingue mal le vert et le rouge lit la forme. Et le
+/// texte reste écrit à côté, parce que même une forme ne suffit pas.
+class AppStateBadge extends StatelessWidget {
+  const AppStateBadge({super.key, required this.state, this.size = 24});
+
+  final StockState state;
+
+  /// Diamètre de la pastille. Le contour et le liseré s'ajoutent
+  /// autour : la boîte mesure `size + 4`.
+  final double size;
+
+  /// La couleur de l'état. Publique : la zone et la ligne s'en teintent
+  /// aussi, et deux teintes différentes pour le même état seraient pire
+  /// que pas de couleur du tout.
+  static Color couleurDe(StockState state) => switch (state) {
+    StockState.disponible => AppColors.stockOk,
+    StockState.stockBas => AppColors.stockLow,
+    StockState.rupture => AppColors.stockOut,
+    StockState.peremption => AppColors.stockExpiring,
+  };
+
+  static IconData _formeDe(StockState state) => switch (state) {
+    // Disque et coche.
+    StockState.disponible => Icons.check_circle,
+    // Triangle et point d'exclamation.
+    StockState.stockBas => Icons.warning_rounded,
+    // Disque et croix.
+    StockState.rupture => Icons.cancel,
+    // Disque et horloge.
+    StockState.peremption => Icons.watch_later,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final couleur = couleurDe(state);
+    final forme = _formeDe(state);
+
+    return SizedBox(
+      width: size + 4,
+      height: size + 4,
+      child: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Le liseré sombre, puis le contour : le badge se détache
+            // même d'un fond de la même famille de couleur.
+            Icon(
+              forme,
+              size: size + 4,
+              color: AppColors.onVivid.withValues(alpha: 0.28),
+            ),
+            Icon(forme, size: size + 2.5, color: AppColors.surface),
+            // Le glyphe de ces icônes pleines est un TROU : sans ce
+            // disque dessous, c'est le fond de la zone qu'on voit
+            // dedans, et la coche disparaît sur fond menthe.
+            Container(
+              width: size * 0.45,
+              height: size * 0.45,
+              decoration: BoxDecoration(
+                color: AppTint.onFilled(couleur),
+                shape: BoxShape.circle,
+              ),
+            ),
+            Icon(forme, size: size, color: couleur),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Le badge, et l'état ÉCRIT à côté.
+class AppStateChip extends StatelessWidget {
+  const AppStateChip({
+    super.key,
+    required this.state,
+    required this.label,
+    this.size = 24,
+  });
+
+  final StockState state;
+
+  /// « Disponible », « Stock bas », « Rupture », « À terminer dans 2
+  /// jours ». Jamais vide : la couleur ne porte pas seule le sens.
+  final String label;
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppStateBadge(state: state, size: size),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 17.5,
+              fontWeight: FontWeight.w700,
+              height: 1.3,
+              color: AppTint.ink(AppStateBadge.couleurDe(state)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Un interrupteur, et son état écrit à côté.
 class AppStateSwitch extends StatelessWidget {
   const AppStateSwitch({

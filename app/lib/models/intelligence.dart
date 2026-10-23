@@ -64,6 +64,18 @@ class InventoryItem {
   final double? reorderQuantity;
   final bool belowMin;
 
+  /// Plein, à moitié, presque vide — pour ce qui ne se compte pas. Un
+  /// liquide vaisselle n'a pas de quantité juste, et demander un nombre
+  /// pour chaque produit décourage dès le dixième.
+  final String? level;
+
+  /// Péremption, facultative. `daysToExpiry` est négatif si la date est
+  /// passée ; il vient du serveur, parce qu'une date de péremption
+  /// calculée sur l'horloge du téléphone dérive avec son fuseau.
+  final DateTime? expiresAt;
+  final int? daysToExpiry;
+  final bool expiringSoon;
+
   const InventoryItem({
     required this.id,
     required this.productName,
@@ -76,7 +88,33 @@ class InventoryItem {
     this.minQuantity,
     this.reorderQuantity,
     this.belowMin = false,
+    this.level,
+    this.expiresAt,
+    this.daysToExpiry,
+    this.expiringSoon = false,
   });
+
+  /// Suivi par niveau plutôt que par quantité.
+  bool get suiviAuNiveau => quantity == null && level != null;
+
+  InventoryItem copyWith({double? quantity, String? status, bool? belowMin}) =>
+      InventoryItem(
+        id: id,
+        productName: productName,
+        status: status ?? this.status,
+        quantity: quantity ?? this.quantity,
+        unit: unit,
+        source: source,
+        updatedAt: updatedAt,
+        estimatedStatus: estimatedStatus,
+        minQuantity: minQuantity,
+        reorderQuantity: reorderQuantity,
+        belowMin: belowMin ?? this.belowMin,
+        level: level,
+        expiresAt: expiresAt,
+        daysToExpiry: daysToExpiry,
+        expiringSoon: expiringSoon,
+      );
 
   factory InventoryItem.fromJson(Map<String, dynamic> json) => InventoryItem(
     id: (json['id'] as num).toInt(),
@@ -93,6 +131,13 @@ class InventoryItem {
     minQuantity: (json['min_quantity'] as num?)?.toDouble(),
     reorderQuantity: (json['reorder_quantity'] as num?)?.toDouble(),
     belowMin: json['below_min'] == true,
+    level: json['level'] as String?,
+    expiresAt:
+        json['expires_at'] != null
+            ? DateTime.tryParse(json['expires_at'] as String)
+            : null,
+    daysToExpiry: (json['days_to_expiry'] as num?)?.toInt(),
+    expiringSoon: json['expiring_soon'] == true,
   );
 }
 

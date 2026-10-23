@@ -122,7 +122,14 @@ class IntelligenceController
                 'product_name' => $i->product_name,
                 'normalized_name' => $i->normalized_name,
                 'category_id' => $i->category_id,
-                'status' => $i->status,
+                // L'etat RENDU est celui que la quantite impose. Les
+                // lignes d'avant la migration 013 peuvent encore porter
+                // un status incoherent : il ne sort pas d'ici.
+                'status' => HomeInventory::deduireStatut(
+                    $i->quantity !== null ? (float) $i->quantity : null,
+                    $i->min_quantity !== null ? (float) $i->min_quantity : null,
+                    $i->status
+                ),
                 'min_quantity' => $i->min_quantity !== null ? (float) $i->min_quantity : null,
                 'reorder_quantity' => $i->reorder_quantity !== null ? (float) $i->reorder_quantity : null,
                 'preferred_supplier_id' => $i->preferred_supplier_id,
@@ -130,6 +137,10 @@ class IntelligenceController
                     && (float) $i->quantity <= (float) $i->min_quantity,
                 'quantity' => $i->quantity,
                 'unit' => $i->unit,
+                'level' => $i->level,
+                'expires_at' => $i->expires_at?->format('Y-m-d'),
+                'days_to_expiry' => $i->joursAvantPeremption(),
+                'expiring_soon' => $i->peremptionProche(),
                 'source' => $i->source,
                 'updated_at' => $i->updated_at?->toIso8601String(),
                 'estimated_status' => $estimates[$i->normalized_name] ?? null,
@@ -196,11 +207,36 @@ class IntelligenceController
                 $values['preferred_supplier_id'] = is_numeric($data['preferred_supplier_id'])
                     ? (int) $data['preferred_supplier_id'] : null;
             }
+            if (array_key_exists('expires_at', $data)) {
+                $values['expires_at'] = self::dateOuNull($data['expires_at']);
+            }
+            if (array_key_exists('level', $data)) {
+                $values['level'] = in_array($data['level'], HomeInventory::LEVELS, true)
+                    ? $data['level'] : null;
+            }
+
+            $normalized = PurchaseHistory::normalizeProductName($product);
+            $existant = \App\Services\SpaceAccessService::scopeQuery(
+                HomeInventory::where('normalized_name', $normalized), $space, $userId
+            )->first();
+
+            // L'etat se DEDUIT de la quantite des qu'une quantite est
+            // connue — celle du payload, ou celle deja en base quand le
+            // payload n'en parle pas. Le `status` recu ne sert plus que
+            // pour les produits sans quantite.
+            $quantite = array_key_exists('quantity', $values)
+                ? $values['quantity']
+                : ($existant?->quantity !== null ? (float) $existant->quantity : null);
+            $seuil = array_key_exists('min_quantity', $values)
+                ? $values['min_quantity']
+                : ($existant?->min_quantity !== null ? (float) $existant->min_quantity : null);
+            $values['status'] = HomeInventory::deduireStatut($quantite, $seuil, $status);
+            $status = $values['status'];
 
             $item = HomeInventory::updateOrCreate(
                 [
                     'space_id' => $space->id,
-                    'normalized_name' => PurchaseHistory::normalizeProductName($product),
+                    'normalized_name' => $normalized,
                 ],
                 $values
             );
@@ -223,6 +259,91 @@ class IntelligenceController
             error_log('setInventoryStatus: ' . $e->getMessage());
             return $this->json($response, ['success' => false, 'message' => 'Erreur inventaire'], 500);
         }
+    }
+
+    /**
+     * POST /inventory/{id}/quantity { quantity }
+     *
+     * Les boutons « − » et « + » de chaque ligne. Ils ne touchent QUE
+     * la quantité : l'état se recalcule, la date de péremption et le
+     * seuil ne bougent pas.
+     *
+     * Un endpoint à part parce que le geste est à part : il part d'un
+     * appui, doit répondre tout de suite, et se répète (−, −, −). Passer
+     * par /inventory/status obligerait l'application à renvoyer un état
+     * qu'elle n'a pas à calculer.
+     */
+    public function setInventoryQuantity(Request $request, Response $response, array $args): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        $data = $request->getParsedBody() ?? [];
+
+        if (!array_key_exists('quantity', $data) || !is_numeric($data['quantity'])) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => 'quantity (nombre) requis',
+            ], 422);
+        }
+        // Une quantité négative n'existe pas : on ne descend pas sous zéro.
+        $quantite = max(0.0, (float) $data['quantity']);
+
+        try {
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, $userId, 'manage_inventory');
+
+            $item = \App\Services\SpaceAccessService::scopeQuery(
+                HomeInventory::where('id', (int) $args['id']), $space, $userId
+            )->first();
+            if ($item === null) {
+                return $this->json($response, ['success' => false, 'message' => 'Produit introuvable'], 404);
+            }
+
+            $item->quantity = $quantite;
+            $item->status = HomeInventory::deduireStatut(
+                $quantite,
+                $item->min_quantity !== null ? (float) $item->min_quantity : null,
+                $item->status
+            );
+            $item->source = 'manual';
+            $item->save();
+
+            if ($item->status === HomeInventory::STATUS_OUT) {
+                \App\Services\SpaceActivityService::log($space, $userId,
+                    \App\Services\SpaceActivityService::INVENTORY_OUT,
+                    ['product_name' => $item->product_name]);
+            }
+
+            return $this->json($response, [
+                'success' => true,
+                'data' => ['item' => $item->fresh()],
+                'message' => 'Quantité mise à jour',
+            ]);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
+        } catch (\Throwable $e) {
+            error_log('setInventoryQuantity: ' . $e->getMessage());
+            return $this->json($response, ['success' => false, 'message' => 'Erreur inventaire'], 500);
+        }
+    }
+
+    /**
+     * Une date « AAAA-MM-JJ » venue du client, ou null.
+     *
+     * Tout ce qui n'est pas une date valide vaut null : une chaîne vide,
+     * une date inventée (2026-02-31), un tableau. Mieux vaut pas de date
+     * qu'une alerte de péremption sur une date fausse.
+     */
+    private static function dateOuNull(mixed $brut): ?string
+    {
+        if (!is_string($brut) || trim($brut) === '') {
+            return null;
+        }
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', trim($brut));
+        if ($date === false) {
+            return null;
+        }
+        return $date->format('Y-m-d') === trim($brut) ? $date->format('Y-m-d') : null;
     }
 
     /** DELETE /inventory/{id} */

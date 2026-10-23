@@ -10906,13 +10906,13 @@ abstract class AppLocalizations {
   /// No description provided for @inventoryMinQuantity.
   ///
   /// In fr, this message translates to:
-  /// **'Seuil d\'alerte (min)'**
+  /// **'Prévenez-moi quand il en reste'**
   String get inventoryMinQuantity;
 
   /// No description provided for @inventoryReorderQuantity.
   ///
   /// In fr, this message translates to:
-  /// **'Quantité de réappro'**
+  /// **'Quantité à racheter'**
   String get inventoryReorderQuantity;
 
   /// No description provided for @inventoryBelowMin.
@@ -11104,13 +11104,13 @@ abstract class AppLocalizations {
   /// No description provided for @inventoryMinQuantityHint.
   ///
   /// In fr, this message translates to:
-  /// **'En dessous, le produit est signalé'**
+  /// **'Vous serez averti quand la quantité atteint ce nombre ou passe en dessous.'**
   String get inventoryMinQuantityHint;
 
   /// No description provided for @inventoryReorderQuantityHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quantité suggérée à la commande'**
+  /// **'Quantité proposée quand vous l\'ajoutez à la liste'**
   String get inventoryReorderQuantityHint;
 
   /// No description provided for @fieldRequired.
@@ -11532,6 +11532,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Alerte rupture : {product}, il n\'y en a plus à la maison.'**
   String inventoryOutWarning(String product);
+
+  /// No description provided for @stockStateAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible'**
+  String get stockStateAvailable;
+
+  /// No description provided for @stockStateLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock bas'**
+  String get stockStateLow;
+
+  /// No description provided for @stockStateOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rupture'**
+  String get stockStateOut;
+
+  /// Alerte de peremption, 0 a 3 jours avant la date.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days, plural, =0{À terminer aujourd\'hui} =1{À terminer demain} other{À terminer dans {days} jours}}'**
+  String inventoryExpiringIn(int days);
+
+  /// La date est passee.
+  ///
+  /// In fr, this message translates to:
+  /// **'{days, plural, =1{Périmé depuis hier} other{Périmé depuis {days} jours}}'**
+  String inventoryExpired(int days);
+
+  /// No description provided for @inventoryExpiryDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de péremption'**
+  String get inventoryExpiryDate;
+
+  /// No description provided for @inventoryExpiryNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune date'**
+  String get inventoryExpiryNone;
+
+  /// No description provided for @inventoryExpiryPick.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir une date'**
+  String get inventoryExpiryPick;
+
+  /// No description provided for @inventoryZoneExpiring.
+  ///
+  /// In fr, this message translates to:
+  /// **'À terminer bientôt'**
+  String get inventoryZoneExpiring;
+
+  /// No description provided for @inventoryLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau'**
+  String get inventoryLevel;
+
+  /// No description provided for @inventoryLevelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour ce qui ne se compte pas : le liquide vaisselle, la farine.'**
+  String get inventoryLevelHint;
+
+  /// No description provided for @inventoryLevelFull.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plein'**
+  String get inventoryLevelFull;
+
+  /// No description provided for @inventoryLevelHalf.
+  ///
+  /// In fr, this message translates to:
+  /// **'À moitié'**
+  String get inventoryLevelHalf;
+
+  /// No description provided for @inventoryLevelLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Presque vide'**
+  String get inventoryLevelLow;
+
+  /// No description provided for @inventoryLevelNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun'**
+  String get inventoryLevelNone;
+
+  /// No description provided for @inventoryPlusOne.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une unité'**
+  String get inventoryPlusOne;
+
+  /// No description provided for @inventoryMinusOne.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer une unité'**
+  String get inventoryMinusOne;
+
+  /// Le niveau ecrit, pour un produit sans quantite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau : {level}.'**
+  String inventoryLevelLine(String level);
+
+  /// Avant d ajouter a la liste un produit deja en stock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous en avez déjà {quantity} à la maison.'**
+  String inventoryAlreadyAtHome(String quantity);
+
+  /// No description provided for @inventoryAddAnyway.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter quand même'**
+  String get inventoryAddAnyway;
+
+  /// No description provided for @inventoryAtHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déjà à la maison'**
+  String get inventoryAtHomeTitle;
 
   /// No description provided for @storesIntro.
   ///

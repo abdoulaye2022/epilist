@@ -438,6 +438,7 @@ $app->group('', function ($group) {
     $group->post('/predictions/feedback', [IntelligenceController::class, 'predictionFeedback']);
     $group->get('/inventory', [IntelligenceController::class, 'getInventory']);
     $group->post('/inventory/status', [IntelligenceController::class, 'setInventoryStatus']);
+    $group->post('/inventory/{id:[0-9]+}/quantity', [IntelligenceController::class, 'setInventoryQuantity']);
     $group->delete('/inventory/{id}', [IntelligenceController::class, 'deleteInventoryItem']);
     // (budgets/forecast est déclaré plus haut, avant /budgets/{id})
 

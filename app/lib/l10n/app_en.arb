@@ -2764,9 +2764,8 @@
   "inventoryThresholds": "Quantity & thresholds…",
   "inventoryQuantity": "Quantity",
   "inventoryUnit": "Unit",
-  "inventoryMinQuantity": "Alert threshold (min)",
-  "inventoryReorderQuantity": "Reorder quantity",
-  "inventoryBelowMin": "below threshold",
+  "inventoryMinQuantity": "Warn me when this much is left",
+  "inventoryReorderQuantity": "Quantity to buy again",
   "twoFactorTitle": "Two-step verification",
   "twoFactorSentTo": "We sent a 6-digit code to {email}.",
   "@twoFactorSentTo": {
@@ -2804,8 +2803,8 @@
   "npEmailsDesc": "Nothing to set",
   "npEmailsBody": "We only email you when it is essential: account activation, password recovery, security alert, sign-in code and account deletion. Everything else goes through the notifications above.",
   "inventoryThresholdsTitle": "Quantity & thresholds",
-  "inventoryMinQuantityHint": "Below this, the product is flagged",
-  "inventoryReorderQuantityHint": "Suggested quantity when reordering",
+  "inventoryMinQuantityHint": "You will be warned when the quantity reaches this number or drops below it.",
+  "inventoryReorderQuantityHint": "Quantity suggested when you add it to your list",
   "fieldRequired": "Required field",
   "invalidNumber": "Invalid number",
   "receiptPhotoAdd": "Add a photo of the receipt",
@@ -2954,14 +2953,6 @@
     }
   },
   "inventoryIntro": "See what you still have at home. EpiList warns you when something is nearly finished or close to expiring.",
-  "inventoryQuantityLine": "Quantity left: {quantity}.",
-  "@inventoryQuantityLine": {
-    "placeholders": {
-      "quantity": {
-        "type": "String"
-      }
-    }
-  },
   "inventoryQuantityThreshold": "Quantity left: {quantity}, for a threshold of {threshold}.",
   "@inventoryQuantityThreshold": {
     "placeholders": {
@@ -2973,22 +2964,59 @@
       }
     }
   },
-  "inventoryLowWarning": "Low stock alert: {product}, below the threshold you set.",
-  "@inventoryLowWarning": {
+  "stockStateAvailable": "Available",
+  "stockStateLow": "Low stock",
+  "stockStateOut": "Out of stock",
+  "inventoryExpiringIn": "{days, plural, =0{Finish today} =1{Finish tomorrow} other{Finish within {days} days}}",
+  "@inventoryExpiringIn": {
+    "description": "Alerte de peremption, 0 a 3 jours avant la date.",
     "placeholders": {
-      "product": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "inventoryExpired": "{days, plural, =1{Expired since yesterday} other{Expired {days} days ago}}",
+  "@inventoryExpired": {
+    "description": "La date est passee.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "inventoryExpiryDate": "Expiry date",
+  "inventoryExpiryNone": "No date",
+  "inventoryExpiryPick": "Pick a date",
+  "inventoryZoneExpiring": "Finish soon",
+  "inventoryLevel": "Level",
+  "inventoryLevelHint": "For what cannot be counted: dish soap, flour.",
+  "inventoryLevelFull": "Full",
+  "inventoryLevelHalf": "Half",
+  "inventoryLevelLow": "Nearly empty",
+  "inventoryLevelNone": "None",
+  "inventoryPlusOne": "Add one",
+  "inventoryMinusOne": "Remove one",
+  "inventoryLevelLine": "Level: {level}.",
+  "@inventoryLevelLine": {
+    "description": "Le niveau ecrit, pour un produit sans quantite.",
+    "placeholders": {
+      "level": {
         "type": "String"
       }
     }
   },
-  "inventoryOutWarning": "Out of stock alert: {product}, there is none left at home.",
-  "@inventoryOutWarning": {
+  "inventoryAlreadyAtHome": "You already have {quantity} at home.",
+  "@inventoryAlreadyAtHome": {
+    "description": "Avant d ajouter a la liste un produit deja en stock.",
     "placeholders": {
-      "product": {
+      "quantity": {
         "type": "String"
       }
     }
   },
+  "inventoryAddAnyway": "Add anyway",
+  "inventoryAtHomeTitle": "Already at home",
   "storesIntro": "Your stores, their address and their opening hours. Tap the star to keep a store as a favourite.",
   "storeFavoriteYes": "Favourite: Yes, favourite store",
   "storeFavoriteNo": "Favourite: No, not a favourite yet",

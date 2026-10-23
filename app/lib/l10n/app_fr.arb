@@ -2764,9 +2764,8 @@
   "inventoryThresholds": "Quantité et seuils…",
   "inventoryQuantity": "Quantité",
   "inventoryUnit": "Unité",
-  "inventoryMinQuantity": "Seuil d'alerte (min)",
-  "inventoryReorderQuantity": "Quantité de réappro",
-  "inventoryBelowMin": "sous le seuil",
+  "inventoryMinQuantity": "Prévenez-moi quand il en reste",
+  "inventoryReorderQuantity": "Quantité à racheter",
   "twoFactorTitle": "Vérification en deux étapes",
   "twoFactorSentTo": "Nous avons envoyé un code à 6 chiffres à {email}.",
   "@twoFactorSentTo": {
@@ -2804,8 +2803,8 @@
   "npEmailsDesc": "Rien à régler",
   "npEmailsBody": "Nous ne vous écrivons que lorsque c'est indispensable : activation du compte, récupération du mot de passe, alerte de sécurité, code de connexion et suppression de compte. Tout le reste passe par les notifications ci-dessus.",
   "inventoryThresholdsTitle": "Quantité et seuils",
-  "inventoryMinQuantityHint": "En dessous, le produit est signalé",
-  "inventoryReorderQuantityHint": "Quantité suggérée à la commande",
+  "inventoryMinQuantityHint": "Vous serez averti quand la quantité atteint ce nombre ou passe en dessous.",
+  "inventoryReorderQuantityHint": "Quantité proposée quand vous l'ajoutez à la liste",
   "fieldRequired": "Champ obligatoire",
   "invalidNumber": "Nombre invalide",
   "receiptPhotoAdd": "Ajouter une photo du reçu",
@@ -2954,14 +2953,6 @@
     }
   },
   "inventoryIntro": "Voyez ce qu'il vous reste à la maison. EpiList vous prévient quand un produit est presque fini ou bientôt périmé.",
-  "inventoryQuantityLine": "Quantité restante : {quantity}.",
-  "@inventoryQuantityLine": {
-    "placeholders": {
-      "quantity": {
-        "type": "String"
-      }
-    }
-  },
   "inventoryQuantityThreshold": "Quantité restante : {quantity}, pour un seuil de {threshold}.",
   "@inventoryQuantityThreshold": {
     "placeholders": {
@@ -2973,22 +2964,59 @@
       }
     }
   },
-  "inventoryLowWarning": "Alerte stock bas : {product}, sous le seuil que vous avez fixé.",
-  "@inventoryLowWarning": {
+  "stockStateAvailable": "Disponible",
+  "stockStateLow": "Stock bas",
+  "stockStateOut": "Rupture",
+  "inventoryExpiringIn": "{days, plural, =0{À terminer aujourd'hui} =1{À terminer demain} other{À terminer dans {days} jours}}",
+  "@inventoryExpiringIn": {
+    "description": "Alerte de peremption, 0 a 3 jours avant la date.",
     "placeholders": {
-      "product": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "inventoryExpired": "{days, plural, =1{Périmé depuis hier} other{Périmé depuis {days} jours}}",
+  "@inventoryExpired": {
+    "description": "La date est passee.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "inventoryExpiryDate": "Date de péremption",
+  "inventoryExpiryNone": "Aucune date",
+  "inventoryExpiryPick": "Choisir une date",
+  "inventoryZoneExpiring": "À terminer bientôt",
+  "inventoryLevel": "Niveau",
+  "inventoryLevelHint": "Pour ce qui ne se compte pas : le liquide vaisselle, la farine.",
+  "inventoryLevelFull": "Plein",
+  "inventoryLevelHalf": "À moitié",
+  "inventoryLevelLow": "Presque vide",
+  "inventoryLevelNone": "Aucun",
+  "inventoryPlusOne": "Ajouter une unité",
+  "inventoryMinusOne": "Retirer une unité",
+  "inventoryLevelLine": "Niveau : {level}.",
+  "@inventoryLevelLine": {
+    "description": "Le niveau ecrit, pour un produit sans quantite.",
+    "placeholders": {
+      "level": {
         "type": "String"
       }
     }
   },
-  "inventoryOutWarning": "Alerte rupture : {product}, il n'y en a plus à la maison.",
-  "@inventoryOutWarning": {
+  "inventoryAlreadyAtHome": "Vous en avez déjà {quantity} à la maison.",
+  "@inventoryAlreadyAtHome": {
+    "description": "Avant d ajouter a la liste un produit deja en stock.",
     "placeholders": {
-      "product": {
+      "quantity": {
         "type": "String"
       }
     }
   },
+  "inventoryAddAnyway": "Ajouter quand même",
+  "inventoryAtHomeTitle": "Déjà à la maison",
   "storesIntro": "Vos magasins, leur adresse et leurs heures d'ouverture. Touchez l'étoile pour garder un magasin en favori.",
   "storeFavoriteYes": "Favori : Oui, magasin favori",
   "storeFavoriteNo": "Favori : Non, pas encore favori",

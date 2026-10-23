@@ -16,6 +16,9 @@ import 'package:epilist/widgets/dialogs/duplicate_confirmation_dialog.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart';
 import 'package:epilist/screens/barcode_scanner_screen.dart';
 import 'package:epilist/services/category_guesser.dart';
+import 'package:epilist/models/intelligence.dart';
+import 'package:epilist/services/inventory_lookup.dart';
+import 'package:epilist/services/intelligence_service.dart';
 import 'package:epilist/services/product_api_service.dart';
 import 'package:epilist/widgets/list_detail/barcode_input_dialog.dart';
 import 'package:epilist/widgets/dialogs/product_confirmation_dialog.dart';
@@ -822,7 +825,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
     }
   }
 
-  void _addItem(AppLocalizations l10n) {
+  Future<void> _addItem(AppLocalizations l10n) async {
     // Validation côté client
     if (productController.text.trim().isEmpty) {
       SmartSnackBarManager.showWarningSnackBar(
@@ -866,6 +869,13 @@ class _AddItemDialogState extends State<AddItemDialog> {
           productController.text.trim(),
         );
 
+    // Déjà à la maison ? Le même sac de riz se retrouvait a la fois
+    // dans la liste de courses et dans l'inventaire, sans un mot. La
+    // question se pose AVANT l'ajout, et la réponse reste celle de
+    // l'utilisatrice : elle rachète peut-être exprès.
+    if (!await _confirmeMalgreLeStock(l10n)) return;
+    if (!mounted) return;
+
     // ✅ Utiliser le BLoC sauvegardé pour éviter les erreurs
     _listItemBloc.add(
       AddListItem(
@@ -881,6 +891,64 @@ class _AddItemDialogState extends State<AddItemDialog> {
       ),
     );
   }
+
+  /// « Vous en avez déjà 1 sac à la maison. L'ajouter quand même ? »
+  ///
+  /// Rend `true` s'il faut continuer : produit non suivi, stock vide,
+  /// inventaire illisible, ou réponse « Ajouter quand même ». Une
+  /// vérification qui empêcherait d'ajouter serait pire que pas de
+  /// vérification du tout.
+  Future<bool> _confirmeMalgreLeStock(AppLocalizations l10n) async {
+    final nom = productController.text.trim();
+    InventoryItem? chezMoi;
+    try {
+      chezMoi = await InventoryLookup(
+        context.read<IntelligenceService>(),
+      ).chezMoi(nom);
+    } catch (_) {
+      return true;
+    }
+    if (!mounted) return true;
+
+    // Rien a la maison, ou justement en rupture : aucune question.
+    final quantite = chezMoi?.quantity;
+    final enStock =
+        chezMoi != null &&
+        chezMoi.status != 'out' &&
+        (quantite == null || quantite > 0);
+    if (!enStock) return true;
+
+    final combien =
+        quantite == null
+            ? chezMoi.productName
+            : '${_sansZeroInutile(quantite)}'
+                '${chezMoi.unit != null && chezMoi.unit!.isNotEmpty ? ' ${chezMoi.unit}' : ''}';
+
+    final quandMeme = await showDialog<bool>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.inventoryAtHomeTitle),
+            content: Text(
+              l10n.inventoryAlreadyAtHome(combien),
+              style: const TextStyle(fontSize: 17.5, height: 1.4),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(l10n.inventoryAddAnyway),
+              ),
+            ],
+          ),
+    );
+    return quandMeme == true;
+  }
+
+  String _sansZeroInutile(double v) => v.toStringAsFixed(v % 1 == 0 ? 0 : 1);
 
   /// Catégories de l'utilisateur telles que chargées par le CategoryBloc
   /// (liste vide si pas encore chargées : le guesser ne s'applique pas).

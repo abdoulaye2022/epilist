@@ -81,6 +81,13 @@ class IntelligenceService {
     String? unit,
     double? minQuantity,
     double? reorderQuantity,
+    // Ces trois-là s'envoient MÊME à null : c'est ainsi qu'on efface
+    // une date de péremption ou un niveau. Les drapeaux disent de les
+    // mettre dans le corps, la valeur dit quoi y mettre.
+    bool sendExpiresAt = false,
+    DateTime? expiresAt,
+    bool sendLevel = false,
+    String? level,
   }) async {
     final response = await _dio.post(
       '/inventory/status',
@@ -91,7 +98,23 @@ class IntelligenceService {
         if (unit != null) 'unit': unit,
         if (minQuantity != null) 'min_quantity': minQuantity,
         if (reorderQuantity != null) 'reorder_quantity': reorderQuantity,
+        if (sendExpiresAt)
+          'expires_at': expiresAt?.toIso8601String().substring(0, 10),
+        if (sendLevel) 'level': level,
       },
+    );
+    return InventoryItem.fromJson(
+      response.data['data']['item'] as Map<String, dynamic>,
+    );
+  }
+
+  /// Les boutons « − » et « + ». Ils ne touchent QUE la quantité :
+  /// l'état se recalcule côté serveur, le seuil et la date ne bougent
+  /// pas.
+  Future<InventoryItem> setInventoryQuantity(int id, double quantity) async {
+    final response = await _dio.post(
+      '/inventory/$id/quantity',
+      data: {'quantity': quantity},
     );
     return InventoryItem.fromJson(
       response.data['data']['item'] as Map<String, dynamic>,
