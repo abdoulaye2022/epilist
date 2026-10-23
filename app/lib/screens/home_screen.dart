@@ -22,6 +22,7 @@ import 'package:epilist/services/offline_storage_service.dart';
 import 'package:epilist/models/space.dart';
 import 'package:epilist/services/space_service.dart';
 import 'package:epilist/widgets/home/space_dashboard_card.dart';
+import 'package:epilist/widgets/common/app_nav.dart';
 import 'package:epilist/widgets/common/main_shell_scope.dart';
 import 'package:epilist/widgets/dashboard/dashboard_widgets.dart';
 import 'package:epilist/screens/budget_screen.dart';
@@ -742,7 +743,13 @@ class _HomeScreenState extends State<HomeScreen>
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<ShoppingListBloc>(),
-            child: const CreateListDialog(),
+            // Creee depuis le tableau de bord, la liste s'ouvrait
+            // nulle part : il fallait aller la chercher. On arrive
+            // maintenant sur la page des listes, ou elle est en haut,
+            // surlignee.
+            child: CreateListDialog(
+              onCreated: (_) => AppNav.goTo(context, MainTab.lists),
+            ),
           ),
     );
   }

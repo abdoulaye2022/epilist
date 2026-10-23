@@ -33,6 +33,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createList => 'Create a list';
 
   @override
+  String get listOpenCreated => 'Open the list';
+
+  @override
+  String get listJustCreated => 'New';
+
+  @override
   String get noGroceryLists => 'No grocery lists';
 
   @override

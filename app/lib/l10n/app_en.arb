@@ -8,6 +8,8 @@
   "viewAll": "View all",
   "newList": "New",
   "createList": "Create a list",
+  "listOpenCreated": "Open the list",
+  "listJustCreated": "New",
   "noGroceryLists": "No grocery lists",
   "createFirstList": "Create your first list",
   "loadingError": "Loading error",

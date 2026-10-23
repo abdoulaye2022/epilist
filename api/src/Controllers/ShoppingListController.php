@@ -67,11 +67,34 @@ class ShoppingListController
                 }
             }
 
+            // Un nom deja pris, aux majuscules pres, est refuse : la
+            // fenetre « Dans quelle liste ? » montrait « semaine 1 —
+            // 22/10 » (7 articles) et « Semaine 1 » (0 article), deux
+            // listes qu'on ne distingue pas d'un coup d'oeil, et on
+            // remplit la mauvaise.
+            //
+            // Le controle est ici ET dans l'application : celle-ci
+            // repond tout de suite, celui-la tient quand deux appareils
+            // creent la meme liste en meme temps.
+            $nom = trim((string) $data['name']);
+            $deja = SpaceAccessService::scopeQuery(ShoppingList::query(), $space, (int) $user_id)
+                ->whereNull('deleted_at')
+                ->get()
+                ->first(fn($l) => mb_strtolower(trim((string) $l->name)) === mb_strtolower($nom));
+            if ($deja !== null) {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'code' => 'DUPLICATE_LIST_NAME',
+                    'message' => 'Une liste porte deja ce nom',
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(409);
+            }
+
             $shoppingList = ShoppingList::create([
                 'user_id' => $user_id,
                 'space_id' => $space->id,
                 'created_by_user_id' => $user_id,
-                'name' => $data['name'],
+                'name' => $nom,
             ]);
 
             SpaceActivityService::log($space, (int) $user_id, SpaceActivityService::LIST_CREATED, [

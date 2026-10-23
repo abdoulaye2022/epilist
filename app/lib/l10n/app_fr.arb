@@ -8,6 +8,8 @@
   "viewAll": "Voir tout",
   "newList": "Nouvelle",
   "createList": "Créer une liste",
+  "listOpenCreated": "Ouvrir la liste",
+  "listJustCreated": "Nouvelle",
   "noGroceryLists": "Aucune liste d'épicerie",
   "createFirstList": "Créez votre première liste",
   "loadingError": "Erreur de chargement",

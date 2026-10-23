@@ -1,4 +1,6 @@
 // screens/shopping_list_screen.dart - VERSION AVEC NAVIGATION FACTURES CORRIGÉE
+import 'dart:async';
+
 import 'package:epilist/screens/create_space_screen.dart';
 import 'package:epilist/screens/space_members_screen.dart';
 import 'package:epilist/services/space_service.dart';
@@ -33,6 +35,16 @@ class ShoppingListScreen extends StatefulWidget {
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
   ListFilter _currentFilter = ListFilter.all;
+
+  /// La liste qui vient d'etre creee, surlignee quelques secondes.
+  int? _nouvelle;
+  Timer? _finDuSurlignage;
+
+  @override
+  void dispose() {
+    _finDuSurlignage?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -80,6 +92,26 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             context,
             state.message,
             duration: const Duration(seconds: 3),
+          );
+        } else if (state is ShoppingListCreated) {
+          // La liste est la, en haut, surlignee — et le message porte
+          // le bouton qui l'ouvre, pour qui veut y mettre des articles
+          // tout de suite.
+          setState(() => _nouvelle = state.list.id);
+          _finDuSurlignage?.cancel();
+          _finDuSurlignage = Timer(const Duration(seconds: 6), () {
+            if (mounted) setState(() => _nouvelle = null);
+          });
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: l10n.listOpenCreated,
+                onPressed: () => _openListDetails(state.list),
+              ),
+            ),
           );
         } else if (state is ShoppingListOperationSuccess) {
           SmartSnackBarManager.showSuccessSnackBar(
@@ -214,6 +246,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                         final list = filteredLists[index];
                         return ShoppingListCard(
                           list: list,
+                          highlighted: list.id == _nouvelle,
                           onTap: () => _openListDetails(list),
                           onAction: (action) => _handleListAction(action, list),
                         );

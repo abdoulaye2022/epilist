@@ -71,6 +71,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       'not_found': 'Liste non trouvée',
       'validation': 'Données invalides',
       'server': 'Erreur du serveur',
+      'duplicate_name': 'Une liste porte déjà ce nom.',
       'general': 'Une erreur est survenue',
     };
 
@@ -80,6 +81,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       'not_found': 'List not found',
       'validation': 'Invalid data',
       'server': 'Server error',
+      'duplicate_name': 'A list already has this name.',
       'general': 'An error occurred',
     };
 
@@ -137,7 +139,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     // que s'il n'y a RIEN a afficher. Sinon les donnees deja a
     // l'ecran restent visibles pendant la mise a jour, et un
     // rafraichissement rate ne les remplace pas par une erreur.
-    final nothingDisplayed = state is ShoppingListInitial || state is ShoppingListError;
+    final nothingDisplayed =
+        state is ShoppingListInitial || state is ShoppingListError;
     if (nothingDisplayed) {
       emit(ShoppingListLoading());
     }
@@ -155,7 +158,9 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       final cachedLists = await OfflineStorageService.getShoppingLists();
 
       if (cachedLists != null && cachedLists.isNotEmpty) {
-        debugPrint("📦 Loading ${cachedLists.length} shopping lists from cache (offline mode)");
+        debugPrint(
+          "📦 Loading ${cachedLists.length} shopping lists from cache (offline mode)",
+        );
         emit(ShoppingListLoaded(cachedLists));
         return;
       }
@@ -172,6 +177,22 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
     CreateShoppingList event,
     Emitter<ShoppingListState> emit,
   ) async {
+    // Un nom deja pris, aux majuscules pres : refuse ici pour repondre
+    // tout de suite, et refuse aussi par le serveur (deux appareils
+    // peuvent creer la meme liste en meme temps). La fenetre « Dans
+    // quelle liste ? » montrait « semaine 1 — 22/10 » (7 articles) et
+    // « Semaine 1 » (0 article) : deux listes qu'on ne distingue pas
+    // d'un coup d'oeil, et on remplit la mauvaise.
+    final voulu = event.name.trim().toLowerCase();
+    final connues =
+        state is ShoppingListLoaded
+            ? (state as ShoppingListLoaded).lists
+            : const <ShoppingList>[];
+    if (connues.any((l) => l.name.trim().toLowerCase() == voulu)) {
+      emit(ShoppingListError(_getTranslatedErrorMessage('duplicate_name')));
+      return;
+    }
+
     // ✅ OPTIMISATION: Vérifier la connectivité AVANT l'appel API
     if (!_connectivityService.isConnected) {
       // Mode hors ligne : créer liste temporaire et mettre en queue.
@@ -208,7 +229,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
       await OfflineStorageService.saveShoppingLists(updatedLists);
 
       final successMessage = _getTranslatedSuccessMessage('create');
-      emit(ShoppingListOperationSuccess(successMessage));
+      emit(ShoppingListCreated(tempList, successMessage));
       emit(ShoppingListLoaded(updatedLists));
       return;
     }
@@ -224,11 +245,11 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
         await OfflineStorageService.saveShoppingLists(updatedLists);
 
         final successMessage = _getTranslatedSuccessMessage('create');
-        emit(ShoppingListOperationSuccess(successMessage));
+        emit(ShoppingListCreated(newList, successMessage));
         emit(ShoppingListLoaded(updatedLists));
       } else {
         final successMessage = _getTranslatedSuccessMessage('create');
-        emit(ShoppingListOperationSuccess(successMessage));
+        emit(ShoppingListCreated(newList, successMessage));
         add(LoadShoppingLists());
       }
     } catch (e) {

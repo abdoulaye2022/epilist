@@ -52,22 +52,17 @@ class EmptyListState extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20), // ✅ Espacement réduit
-              ElevatedButton.icon(
-                onPressed: onCreateList,
-                icon: const Icon(Icons.add, size: 18),
-                label: Text(
-                  l10n.createList,
-                  style: const TextStyle(fontSize: 16), // ✅ Taille réduite
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 10,
-                  ), // ✅ Padding réduit
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+              // Le bouton du thème : 60 dp de haut, en gélule, sur
+              // toute la largeur. Il était rétréci a la main — et
+              // c'est le seul geste de cet écran.
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: onCreateList,
+                    icon: const Icon(Icons.add),
+                    label: Text(l10n.createList),
                   ),
                 ),
               ),

@@ -11,11 +11,18 @@ class ShoppingListCard extends StatelessWidget {
   final VoidCallback onTap;
   final Function(String) onAction;
 
+  /// Cette liste vient d'etre creee : elle porte un fond teinte et le
+  /// mot « Nouvelle », quelques secondes. Sans ca, une liste creee
+  /// depuis le tableau de bord se perd au milieu des autres, et il
+  /// faut la chercher.
+  final bool highlighted;
+
   const ShoppingListCard({
     super.key,
     required this.list,
     required this.onTap,
     required this.onAction,
+    this.highlighted = false,
   });
 
   @override
@@ -49,8 +56,14 @@ class ShoppingListCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          border: Border.all(color: teinte, width: 3),
+          color:
+              highlighted
+                  ? AppTint.fill(AppColors.primaryVivid)
+                  : AppColors.surface,
+          border: Border.all(
+            color: highlighted ? AppColors.primaryVivid : teinte,
+            width: 3,
+          ),
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Padding(
@@ -69,6 +82,19 @@ class ShoppingListCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  // Le mot, pas seulement la teinte.
+                  if (highlighted)
+                    Padding(
+                      padding: const EdgeInsets.only(right: AppSpacing.xs),
+                      child: Text(
+                        l10n.listJustCreated,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primaryDark,
+                        ),
+                      ),
+                    ),
                   if (list.isShared)
                     Padding(
                       padding: const EdgeInsets.only(right: AppSpacing.xs),

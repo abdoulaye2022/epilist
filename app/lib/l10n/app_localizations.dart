@@ -146,6 +146,18 @@ abstract class AppLocalizations {
   /// **'Créer une liste'**
   String get createList;
 
+  /// No description provided for @listOpenCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la liste'**
+  String get listOpenCreated;
+
+  /// No description provided for @listJustCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle'**
+  String get listJustCreated;
+
   /// No description provided for @noGroceryLists.
   ///
   /// In fr, this message translates to:
