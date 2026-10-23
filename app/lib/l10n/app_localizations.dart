@@ -12055,12 +12055,6 @@ abstract class AppLocalizations {
   /// **'Je suis au magasin'**
   String get storeLocateHere;
 
-  /// No description provided for @storeLocateHereHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Relève la position de ce magasin, ici et maintenant.'**
-  String get storeLocateHereHint;
-
   /// No description provided for @storeLocated.
   ///
   /// In fr, this message translates to:

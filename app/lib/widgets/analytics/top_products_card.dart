@@ -147,6 +147,7 @@ class TopProductsCard extends StatelessWidget {
                       final index = entry.key;
                       final product = entry.value;
                       return _buildProductItem(
+                        context,
                         product,
                         index + 1,
                         sortBy,
@@ -293,6 +294,7 @@ class TopProductsCard extends StatelessWidget {
   }
 
   Widget _buildProductItem(
+    BuildContext context,
     Map<String, dynamic> product,
     int rank,
     String sortBy,
@@ -375,14 +377,18 @@ class TopProductsCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Rang
+          // Rang. Le cercle suit le grossissement du texte : fige a
+          // 32 points, le dixieme rang — deux chiffres — en sortait
+          // des que la personne agrandissait le texte de son
+          // telephone.
           Container(
-            width: 32,
-            height: 32,
+            width: 32 * appTextScale(context, max: 1.6),
+            height: 32 * appTextScale(context, max: 1.6),
             decoration: BoxDecoration(color: rankColor, shape: BoxShape.circle),
             child: Center(
               child: Text(
                 '$rank',
+                maxLines: 1,
                 style: TextStyle(
                   color: AppColors.onPrimary,
                   fontWeight: FontWeight.bold,

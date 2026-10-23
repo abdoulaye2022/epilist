@@ -6666,10 +6666,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get storeLocateHere => 'Je suis au magasin';
 
   @override
-  String get storeLocateHereHint =>
-      'Relève la position de ce magasin, ici et maintenant.';
-
-  @override
   String storeLocated(String store) {
     return '$store est situé : la distance s\'affichera.';
   }

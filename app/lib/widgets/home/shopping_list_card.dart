@@ -6,6 +6,10 @@ import 'package:epilist/screens/receipts_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 
+/// Le grossissement du texte, borne pour les pastilles d'initiales :
+/// au-dela de 1,6, elles mangeraient la moitie de la carte.
+double _echelle(BuildContext context) => appTextScale(context, max: 1.6);
+
 class ShoppingListCard extends StatelessWidget {
   final ShoppingList list;
   final VoidCallback onTap;
@@ -138,7 +142,7 @@ class ShoppingListCard extends StatelessWidget {
 
               if (list.isShared) ...[
                 const SizedBox(height: AppSpacing.sm + 4),
-                _buildCollaborators(l10n, noms),
+                _buildCollaborators(context, l10n, noms),
               ],
 
               if (list.hasReceipts) ...[
@@ -168,24 +172,35 @@ class ShoppingListCard extends StatelessWidget {
   /// Les collaborateurs : leurs initiales en pastilles colorees, ET
   /// leurs noms ecrits en toutes lettres. La pastille seule ne dit rien
   /// a qui ne connait pas la couleur de chacun.
-  Widget _buildCollaborators(AppLocalizations l10n, List<String> noms) {
+  Widget _buildCollaborators(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<String> noms,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (noms.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.sm + 2),
+            // Les pastilles d'initiales suivent le grossissement du
+            // texte : figees a 38 points, l'initiale en sortait des que
+            // la personne agrandissait le texte de son telephone. Le
+            // chevauchement suit la meme echelle, sinon les pastilles
+            // se recouvriraient entierement.
             child: SizedBox(
-              height: 38,
-              width: 38 + (noms.length - 1) * 29,
+              height: 38 * _echelle(context),
+              width:
+                  38 * _echelle(context) +
+                  (noms.length - 1) * 29 * _echelle(context),
               child: Stack(
                 children: [
                   for (final (i, nom) in noms.indexed)
                     Positioned(
-                      left: i * 29,
+                      left: i * 29 * _echelle(context),
                       child: Container(
-                        width: 38,
-                        height: 38,
+                        width: 38 * _echelle(context),
+                        height: 38 * _echelle(context),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: AppColors.chart[i % AppColors.chart.length],

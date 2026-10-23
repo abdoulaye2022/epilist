@@ -138,7 +138,10 @@ class DashboardCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               SizedBox(
-                height: 70,
+                // La bande des sept jours loge deux lignes de texte :
+                // figee a 70 points, elle les coupait des que la
+                // personne agrandissait le texte de son telephone.
+                height: 70 * appTextScale(context, max: 1.6),
                 child:
                     last7Days.length <= 4
                         ? Row(
