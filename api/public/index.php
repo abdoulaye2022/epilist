@@ -452,6 +452,7 @@ $app->group('', function ($group) {
 
     // 🍽️ Planificateur de repas
     $group->get('/recipes', [MealPlanController::class, 'recipes']);
+    $group->post('/recipes', [MealPlanController::class, 'storeRecipe']);
     // Le favori appartient au MEMBRE : les recettes livrees avec
     // l'application sont partagees par tous les comptes.
     $group->put('/recipes/{id:[0-9]+}/favorite', [MealPlanController::class, 'setRecipeFavorite']);

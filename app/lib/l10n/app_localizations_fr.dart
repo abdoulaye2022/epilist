@@ -6577,10 +6577,97 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez vos repas de la semaine. Touchez un jour pour ajouter ou changer un repas, puis créez votre liste de courses.';
 
   @override
-  String get mealChooseForWeek => 'Choisir ce repas pour la semaine';
+  String get mealAddMeal => 'Ajouter un repas';
 
   @override
-  String get mealChosenForWeek => 'Choisi pour cette semaine';
+  String get mealWriteTab => 'Écrire mon repas';
+
+  @override
+  String get mealSearchTab => 'Chercher une recette';
+
+  @override
+  String get mealName => 'Nom du repas';
+
+  @override
+  String get mealIngredientsOptional => 'Ingrédients (facultatif)';
+
+  @override
+  String get mealNoIngredientsWarning =>
+      'Sans ingrédient, ce repas n\'ajoutera rien à vos courses.';
+
+  @override
+  String get mealAddIngredient => 'Ajouter un ingrédient';
+
+  @override
+  String get mealSlotQuestion => 'Quand ?';
+
+  @override
+  String get mealSlotLunch => 'Midi';
+
+  @override
+  String get mealSlotDinner => 'Soir';
+
+  @override
+  String get mealSearchHint => 'Nom ou ingrédient';
+
+  @override
+  String get mealFilterTime => 'Temps de préparation';
+
+  @override
+  String get mealTimeAny => 'Peu importe';
+
+  @override
+  String mealTimeUnder(int minutes) {
+    return '$minutes min ou moins';
+  }
+
+  @override
+  String get mealFavoritesOnly => 'Mes favorites seulement';
+
+  @override
+  String get mealYes => 'Oui';
+
+  @override
+  String get mealNo => 'Non';
+
+  @override
+  String get mealChoose => 'Choisir';
+
+  @override
+  String get mealNoResults => 'Aucune recette ne correspond.';
+
+  @override
+  String get mealEmptyDay => 'Aucun repas prévu.';
+
+  @override
+  String get mealMove => 'Déplacer';
+
+  @override
+  String get mealReplace => 'Remplacer';
+
+  @override
+  String get mealRemove => 'Retirer du plan';
+
+  @override
+  String get mealMoveTo => 'Déplacer vers';
+
+  @override
+  String mealWeekCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count repas cette semaine.',
+      one: '1 repas cette semaine.',
+      zero: 'Aucun repas pour l\'instant.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mealWritten => 'Écrit à la main';
+
+  @override
+  String get mealSaveMeal => 'Enregistrer ce repas';
 
   @override
   String mealServingsLine(int count) {
@@ -7004,17 +7091,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get recipeFavoriteFailed =>
       'L\'étoile n\'a pas pu être enregistrée. Réessayez.';
-
-  @override
-  String mealDayLabel(String day) {
-    return 'Jour : $day';
-  }
-
-  @override
-  String get mealDayNotChosen => 'Jour : pas encore choisi';
-
-  @override
-  String get mealDayQuestion => 'Quel jour de la semaine ?';
 
   @override
   String get weekdayMon => 'Lundi';

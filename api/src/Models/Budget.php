@@ -17,6 +17,7 @@ class Budget extends Model
     public $timestamps = true;
 
     const PERIOD_WEEKLY = 'weekly';
+    const PERIOD_BIWEEKLY = 'biweekly';
     const PERIOD_MONTHLY = 'monthly';
     const PERIOD_YEARLY = 'yearly';
     const PERIOD_CUSTOM = 'custom';
@@ -147,6 +148,14 @@ class Budget extends Model
             case self::PERIOD_WEEKLY:
                 if ($startDate->diffInDays($endDate) > 7) {
                     throw new \InvalidArgumentException('Weekly budget period cannot exceed 7 days');
+                }
+                break;
+
+            // Le cycle de paie : quatorze jours, et un de plus de marge
+            // comme pour les autres bornes.
+            case self::PERIOD_BIWEEKLY:
+                if ($startDate->diffInDays($endDate) > 14) {
+                    throw new \InvalidArgumentException('Biweekly budget period cannot exceed 14 days');
                 }
                 break;
             
@@ -456,7 +465,11 @@ class Budget extends Model
             'budget_amount' => self::validateBudgetAmount($data['budget_amount']),
             'period_type' => $data['period_type'],
             'alert_threshold' => $data['alert_threshold'] ?? 80,
-            'is_active' => $data['is_active'] ?? true
+            'is_active' => $data['is_active'] ?? true,
+            // La periode suivante se recree-t-elle a l'echeance ? Sans
+            // cette ligne, la reponse de l'utilisatrice se perdait
+            // entre le formulaire et la base.
+            'auto_renew' => !empty($data['auto_renew']),
         ];
 
         [$startDate, $endDate] = self::validatePeriodDates(
@@ -489,6 +502,24 @@ class Budget extends Model
         
         if (isset($data['is_active'])) {
             $cleanData['is_active'] = (bool)$data['is_active'];
+        }
+
+        if (array_key_exists('auto_renew', $data)) {
+            $cleanData['auto_renew'] = (bool)$data['auto_renew'];
+            // Rouvrir le renouvellement d'un budget deja renouvele doit
+            // pouvoir reprendre : sinon renewed_at le bloque a jamais.
+            if ($cleanData['auto_renew']) {
+                $cleanData['renewed_at'] = null;
+            }
+        }
+
+        // Le type de periode SEUL, sans changement de dates : changer
+        // « mensuel » en « aux deux semaines » ne touche pas forcement
+        // les dates.
+        if (isset($data['period_type'])
+            && !isset($data['start_date'])
+            && !isset($data['end_date'])) {
+            $cleanData['period_type'] = $data['period_type'];
         }
 
         // Handle date updates

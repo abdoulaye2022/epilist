@@ -33,16 +33,55 @@ class MealPlanController
         return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
     }
 
-    /** GET /recipes — recettes de base (user_id NULL) + celles de l'utilisateur */
+    /**
+     * GET /recipes — recettes de base (user_id NULL) + celles de
+     * l'utilisateur.
+     *
+     * Trois filtres, parce que « chercher une recette » n'a de sens
+     * qu'avec eux :
+     *   q         : par NOM ou par INGREDIENT (« qu'est-ce que je fais
+     *               avec du poulet ? ») ;
+     *   max_time  : temps de preparation, en minutes ;
+     *   favorites : les favorites seulement.
+     */
     public function recipes(Request $request, Response $response): Response
     {
         $userId = (int) $request->getAttribute('auth_id');
+        $params = $request->getQueryParams();
+        $q = trim((string) ($params['q'] ?? ''));
+        $maxTime = isset($params['max_time']) && is_numeric($params['max_time'])
+            ? (int) $params['max_time'] : null;
+        $favorisSeuls = in_array($params['favorites'] ?? null, ['1', 'true', true], true);
 
-        $recipes = Recipe::with(['ingredients', 'favorites'])
+        $requete = Recipe::with(['ingredients', 'favorites'])
             ->where('active', true)
-            ->where(fn($q) => $q->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)))
-            ->orderBy('name')
+            ->where(fn($q2) => $q2->whereNull('user_id')->orWhere(fn($qq) => \App\Services\SpaceAccessService::scopeQuery($qq, \App\Services\SpaceAccessService::resolveSpace($request, $userId), $userId)));
+
+        if ($q !== '') {
+            // Le nom OU un ingredient : « poulet » doit trouver le
+            // poulet roti comme la recette qui en contient.
+            $normalise = \App\Models\PurchaseHistory::normalizeProductName($q);
+            $requete->where(function ($w) use ($q, $normalise) {
+                $w->where('name', 'like', '%' . $q . '%')
+                  ->orWhereIn('id', function ($sub) use ($normalise, $q) {
+                      $sub->select('recipe_id')
+                          ->from('recipe_ingredients')
+                          ->where('normalized_name', 'like', '%' . $normalise . '%')
+                          ->orWhere('ingredient_name', 'like', '%' . $q . '%');
+                  });
+            });
+        }
+        if ($maxTime !== null) {
+            // Une recette sans temps renseigne n'est pas exclue : on ne
+            // sait pas qu'elle est longue.
+            $requete->where(function ($w) use ($maxTime) {
+                $w->whereNull('preparation_time')->orWhere('preparation_time', '<=', $maxTime);
+            });
+        }
+
+        $recipes = $requete->orderBy('name')
             ->get()
+            ->filter(fn($r) => !$favorisSeuls || $r->isFavoriteFor($userId))
             // Les favorites d'abord : la planche en fait une grille a
             // part. Le tri se fait ici et non en SQL, parce que le
             // favori appartient au membre, pas a la recette.
@@ -68,6 +107,102 @@ class MealPlanController
             'success' => true,
             'data' => ['recipes' => $recipes],
         ]);
+    }
+
+    /**
+     * POST /recipes { name, servings?, preparation_time?, ingredients? }
+     *
+     * « Ecrire mon repas » : les cinq repas de la planche etaient fixes,
+     * et aucun chemin ne menait a un sixieme. La recette appartient a
+     * l'espace (user_id non nul) ; les recettes livrees avec
+     * l'application gardent user_id NULL et restent partagees.
+     *
+     * Les ingredients sont FACULTATIFS, et c'est dit a l'ecran : sans
+     * eux, le repas n'ajoutera rien aux courses.
+     */
+    public function storeRecipe(Request $request, Response $response): Response
+    {
+        $userId = (int) $request->getAttribute('auth_id');
+        $data = $request->getParsedBody() ?? [];
+        $nom = trim(is_scalar($data['name'] ?? null) ? (string) $data['name'] : '');
+
+        if ($nom === '' || mb_strlen($nom) > 150) {
+            return $this->json($response, [
+                'success' => false,
+                'message' => 'name requis (150 caracteres au plus)',
+            ], 422);
+        }
+
+        try {
+            $space = \App\Services\SpaceAccessService::resolveSpace($request, $userId);
+            \App\Services\SpaceAccessService::assertWrite($space, $userId, 'add_items');
+
+            $recette = null;
+            DB::connection()->transaction(function () use ($data, $nom, $userId, $space, &$recette) {
+                $recette = Recipe::create([
+                    'space_id' => $space->id,
+                    'created_by_user_id' => $userId,
+                    'user_id' => $userId,
+                    'name' => $nom,
+                    'description' => isset($data['description']) && is_scalar($data['description'])
+                        ? mb_substr(trim((string) $data['description']), 0, 500) : null,
+                    'servings' => max(1, min(20, (int) ($data['servings'] ?? 4))),
+                    'preparation_time' => isset($data['preparation_time']) && is_numeric($data['preparation_time'])
+                        ? max(0, min(600, (int) $data['preparation_time'])) : null,
+                    'category' => isset($data['category']) && is_scalar($data['category'])
+                        ? mb_substr(trim((string) $data['category']), 0, 30) : null,
+                    'active' => true,
+                ]);
+
+                foreach ((array) ($data['ingredients'] ?? []) as $ing) {
+                    $nomIng = trim(
+                        is_array($ing)
+                            ? (string) ($ing['ingredient_name'] ?? $ing['product_name'] ?? '')
+                            : (string) $ing
+                    );
+                    if ($nomIng === '') {
+                        continue;
+                    }
+                    \App\Models\RecipeIngredient::create([
+                        'recipe_id' => $recette->id,
+                        'ingredient_name' => mb_substr($nomIng, 0, 150),
+                        'normalized_name' => \App\Models\PurchaseHistory::normalizeProductName($nomIng),
+                        'quantity' => is_array($ing) && is_numeric($ing['quantity'] ?? null)
+                            ? max(0.001, (float) $ing['quantity']) : 1,
+                        'unit' => is_array($ing) && isset($ing['unit']) && trim((string) $ing['unit']) !== ''
+                            ? mb_substr(trim((string) $ing['unit']), 0, 10) : null,
+                        'optional' => is_array($ing) && !empty($ing['optional']) ? 1 : 0,
+                    ]);
+                }
+            });
+
+            $recette->load('ingredients');
+
+            return $this->json($response, [
+                'success' => true,
+                'data' => [
+                    'recipe' => [
+                        'id' => $recette->id,
+                        'name' => $recette->name,
+                        'description' => $recette->description,
+                        'servings' => $recette->servings,
+                        'preparation_time' => $recette->preparation_time,
+                        'category' => $recette->category,
+                        'image_url' => $recette->image_url,
+                        'is_favorite' => false,
+                        'is_mine' => true,
+                        'ingredients_count' => $recette->ingredients->count(),
+                    ],
+                ],
+                'message' => 'Recette enregistree',
+            ], 201);
+        } catch (\App\Services\SpaceAccessException $sae) {
+            $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
+        } catch (\Throwable $e) {
+            error_log('storeRecipe: ' . $e->getMessage());
+            return $this->json($response, ['success' => false, 'message' => 'Erreur enregistrement'], 500);
+        }
     }
 
     /**
@@ -128,6 +263,11 @@ class MealPlanController
         // plan sans jours reste un plan, et c'est ce que l'application
         // envoyait jusqu'ici.
         //   assignments: [{recipe_id: 3, weekday: 1, meal_slot: 'dinner'}]
+        //
+        // Une LISTE, et non une table indexee par recette : le meme
+        // plat peut revenir deux fois dans la semaine, et deux repas
+        // peuvent tomber le meme jour (midi et soir). Indexer par
+        // recipe_id n'en gardait qu'un.
         $jours = [];
         foreach ((array) ($data['assignments'] ?? []) as $a) {
             $rid = (int) ($a['recipe_id'] ?? 0);
@@ -148,7 +288,8 @@ class MealPlanController
                     'message' => "meal_slot doit valoir 'lunch' ou 'dinner'",
                 ], 422);
             }
-            $jours[$rid] = [
+            $jours[] = [
+                'recipe_id' => $rid,
                 'weekday' => $jour === null ? null : (int) $jour,
                 'meal_slot' => $moment,
             ];
@@ -285,6 +426,11 @@ class MealPlanController
         // plan sans jours reste un plan, et c'est ce que l'application
         // envoyait jusqu'ici.
         //   assignments: [{recipe_id: 3, weekday: 1, meal_slot: 'dinner'}]
+        //
+        // Une LISTE, et non une table indexee par recette : le meme
+        // plat peut revenir deux fois dans la semaine, et deux repas
+        // peuvent tomber le meme jour (midi et soir). Indexer par
+        // recipe_id n'en gardait qu'un.
         $jours = [];
         foreach ((array) ($data['assignments'] ?? []) as $a) {
             $rid = (int) ($a['recipe_id'] ?? 0);
@@ -305,7 +451,8 @@ class MealPlanController
                     'message' => "meal_slot doit valoir 'lunch' ou 'dinner'",
                 ], 422);
             }
-            $jours[$rid] = [
+            $jours[] = [
+                'recipe_id' => $rid,
                 'weekday' => $jour === null ? null : (int) $jour,
                 'meal_slot' => $moment,
             ];
@@ -334,13 +481,19 @@ class MealPlanController
                 ]);
                 $planId = $plan->id;
 
-                foreach ($recipeIds as $rid) {
+                // Les assignations font loi quand elles sont la : une
+                // ligne par repas place, meme plat deux fois comprise.
+                // Sans elles, les recettes choisies, sans jour.
+                $lignes = $jours !== []
+                    ? $jours
+                    : array_map(fn($rid) => ['recipe_id' => $rid, 'weekday' => null, 'meal_slot' => null], $recipeIds);
+                foreach ($lignes as $ligne) {
                     MealPlanRecipe::create([
                         'meal_plan_id' => $plan->id,
-                        'recipe_id' => $rid,
+                        'recipe_id' => $ligne['recipe_id'],
                         'servings' => $people,
-                        'weekday' => $jours[$rid]['weekday'] ?? null,
-                        'meal_slot' => $jours[$rid]['meal_slot'] ?? null,
+                        'weekday' => $ligne['weekday'],
+                        'meal_slot' => $ligne['meal_slot'],
                     ]);
                 }
 

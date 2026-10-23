@@ -238,12 +238,53 @@ class IntelligenceService {
 
   // --- Planificateur de repas ---------------------------------------------------
 
-  Future<List<RecipeSummary>> getRecipes() async {
-    final response = await _dio.get('/recipes');
+  /// Le catalogue, filtré.
+  ///
+  /// [q] cherche dans le NOM et dans les INGRÉDIENTS (« qu'est-ce que
+  /// je fais avec du poulet ? »), [maxTime] en minutes, [favoritesOnly]
+  /// ne garde que les favorites. Sans filtre, tout le catalogue, les
+  /// favorites d'abord.
+  Future<List<RecipeSummary>> getRecipes({
+    String? q,
+    int? maxTime,
+    bool favoritesOnly = false,
+  }) async {
+    final response = await _dio.get(
+      '/recipes',
+      queryParameters: {
+        if (q != null && q.trim().isNotEmpty) 'q': q.trim(),
+        if (maxTime != null) 'max_time': maxTime,
+        if (favoritesOnly) 'favorites': 1,
+      },
+    );
     final data = response.data['data']['recipes'] as List<dynamic>? ?? [];
     return data
         .map((e) => RecipeSummary.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  /// « Écrire mon repas » : une recette à soi, avec ses ingrédients.
+  ///
+  /// Les ingrédients sont facultatifs — un repas sans ingrédient
+  /// n'ajoutera rien aux courses, et c'est l'écran qui le dit.
+  Future<RecipeSummary> createRecipe({
+    required String name,
+    int servings = 4,
+    int? preparationTime,
+    List<Map<String, dynamic>> ingredients = const [],
+  }) async {
+    final response = await _dio.post(
+      '/recipes',
+      data: {
+        'name': name,
+        'servings': servings,
+        if (preparationTime != null) 'preparation_time': preparationTime,
+        'ingredients': ingredients,
+      },
+    );
+    return RecipeSummary.fromJson(
+      response.data['data']['recipe'] as Map<String, dynamic>,
+    );
   }
 
   Future<MealPlanPreview> previewMealPlan({
@@ -270,7 +311,7 @@ class IntelligenceService {
     required int people,
     double? budgetMax,
     required List<MealPlanItem> items,
-    Map<int, int>? weekdays,
+    List<Map<String, dynamic>>? assignments,
   }) async {
     final response = await _dio.post(
       '/meal-plans',
@@ -278,14 +319,13 @@ class IntelligenceService {
         'recipe_ids': recipeIds,
         'people': people,
         if (budgetMax != null) 'budget_max': budgetMax,
-        // « Lundi vert, Mardi jaune, Mercredi bleu » : un plat, un jour.
-        // 1 = lundi ... 7 = dimanche. Facultatif — un plan sans jours
-        // reste un plan, et c'est ainsi que l'application l'envoyait.
-        if (weekdays != null && weekdays.isNotEmpty)
-          'assignments':
-              weekdays.entries
-                  .map((e) => {'recipe_id': e.key, 'weekday': e.value})
-                  .toList(),
+        // Un repas place, c'est une recette, un JOUR et un MOMENT :
+        // 1 = lundi ... 7 = dimanche, 'lunch' ou 'dinner'. Une LISTE,
+        // et non une table par recette — le meme plat peut revenir
+        // deux fois dans la semaine, et deux repas peuvent tomber le
+        // meme jour.
+        if (assignments != null && assignments.isNotEmpty)
+          'assignments': assignments,
         'items':
             items
                 .map(

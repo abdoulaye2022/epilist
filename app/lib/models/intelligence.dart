@@ -295,6 +295,10 @@ class RecipeSummary {
   /// partagees par tous les comptes.
   final bool isFavorite;
 
+  /// Ecrite a la main, par quelqu'un de l'espace — et non livree avec
+  /// l'application. L'ecran le dit : une recette a soi se reconnait.
+  final bool isMine;
+
   const RecipeSummary({
     required this.id,
     required this.name,
@@ -305,6 +309,7 @@ class RecipeSummary {
     this.ingredientsCount = 0,
     this.imageUrl,
     this.isFavorite = false,
+    this.isMine = false,
   });
 
   RecipeSummary copyWith({bool? isFavorite}) => RecipeSummary(
@@ -317,6 +322,7 @@ class RecipeSummary {
     ingredientsCount: ingredientsCount,
     imageUrl: imageUrl,
     isFavorite: isFavorite ?? this.isFavorite,
+    isMine: isMine,
   );
 
   factory RecipeSummary.fromJson(Map<String, dynamic> json) => RecipeSummary(
@@ -329,6 +335,7 @@ class RecipeSummary {
     ingredientsCount: (json['ingredients_count'] as num?)?.toInt() ?? 0,
     imageUrl: json['image_url'] as String?,
     isFavorite: json['is_favorite'] == true,
+    isMine: json['is_mine'] == true,
   );
 }
 

@@ -6478,10 +6478,97 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick your meals for the week. Tap a day to add or change a meal, then create your shopping list.';
 
   @override
-  String get mealChooseForWeek => 'Choose this meal for the week';
+  String get mealAddMeal => 'Add a meal';
 
   @override
-  String get mealChosenForWeek => 'Chosen for this week';
+  String get mealWriteTab => 'Write my meal';
+
+  @override
+  String get mealSearchTab => 'Search for a recipe';
+
+  @override
+  String get mealName => 'Meal name';
+
+  @override
+  String get mealIngredientsOptional => 'Ingredients (optional)';
+
+  @override
+  String get mealNoIngredientsWarning =>
+      'Without ingredients, this meal will not add anything to your shopping.';
+
+  @override
+  String get mealAddIngredient => 'Add an ingredient';
+
+  @override
+  String get mealSlotQuestion => 'When?';
+
+  @override
+  String get mealSlotLunch => 'Lunch';
+
+  @override
+  String get mealSlotDinner => 'Dinner';
+
+  @override
+  String get mealSearchHint => 'Name or ingredient';
+
+  @override
+  String get mealFilterTime => 'Preparation time';
+
+  @override
+  String get mealTimeAny => 'Any';
+
+  @override
+  String mealTimeUnder(int minutes) {
+    return '$minutes min or less';
+  }
+
+  @override
+  String get mealFavoritesOnly => 'My favourites only';
+
+  @override
+  String get mealYes => 'Yes';
+
+  @override
+  String get mealNo => 'No';
+
+  @override
+  String get mealChoose => 'Choose';
+
+  @override
+  String get mealNoResults => 'No recipe matches.';
+
+  @override
+  String get mealEmptyDay => 'No meal planned.';
+
+  @override
+  String get mealMove => 'Move';
+
+  @override
+  String get mealReplace => 'Replace';
+
+  @override
+  String get mealRemove => 'Remove from the plan';
+
+  @override
+  String get mealMoveTo => 'Move to';
+
+  @override
+  String mealWeekCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count meals this week.',
+      one: '1 meal this week.',
+      zero: 'No meals yet.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mealWritten => 'Written by hand';
+
+  @override
+  String get mealSaveMeal => 'Save this meal';
 
   @override
   String mealServingsLine(int count) {
@@ -6900,17 +6987,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recipeFavoriteFailed => 'The star could not be saved. Try again.';
-
-  @override
-  String mealDayLabel(String day) {
-    return 'Day: $day';
-  }
-
-  @override
-  String get mealDayNotChosen => 'Day: not chosen yet';
-
-  @override
-  String get mealDayQuestion => 'Which day of the week?';
 
   @override
   String get weekdayMon => 'Monday';

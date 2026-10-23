@@ -11917,17 +11917,167 @@ abstract class AppLocalizations {
   /// **'Choisissez vos repas de la semaine. Touchez un jour pour ajouter ou changer un repas, puis créez votre liste de courses.'**
   String get mealPlannerIntro;
 
-  /// No description provided for @mealChooseForWeek.
+  /// No description provided for @mealAddMeal.
   ///
   /// In fr, this message translates to:
-  /// **'Choisir ce repas pour la semaine'**
-  String get mealChooseForWeek;
+  /// **'Ajouter un repas'**
+  String get mealAddMeal;
 
-  /// No description provided for @mealChosenForWeek.
+  /// No description provided for @mealWriteTab.
   ///
   /// In fr, this message translates to:
-  /// **'Choisi pour cette semaine'**
-  String get mealChosenForWeek;
+  /// **'Écrire mon repas'**
+  String get mealWriteTab;
+
+  /// No description provided for @mealSearchTab.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chercher une recette'**
+  String get mealSearchTab;
+
+  /// No description provided for @mealName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du repas'**
+  String get mealName;
+
+  /// No description provided for @mealIngredientsOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédients (facultatif)'**
+  String get mealIngredientsOptional;
+
+  /// No description provided for @mealNoIngredientsWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans ingrédient, ce repas n\'ajoutera rien à vos courses.'**
+  String get mealNoIngredientsWarning;
+
+  /// No description provided for @mealAddIngredient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un ingrédient'**
+  String get mealAddIngredient;
+
+  /// No description provided for @mealSlotQuestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand ?'**
+  String get mealSlotQuestion;
+
+  /// No description provided for @mealSlotLunch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Midi'**
+  String get mealSlotLunch;
+
+  /// No description provided for @mealSlotDinner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soir'**
+  String get mealSlotDinner;
+
+  /// No description provided for @mealSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom ou ingrédient'**
+  String get mealSearchHint;
+
+  /// No description provided for @mealFilterTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Temps de préparation'**
+  String get mealFilterTime;
+
+  /// No description provided for @mealTimeAny.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu importe'**
+  String get mealTimeAny;
+
+  /// No description provided for @mealTimeUnder.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes} min ou moins'**
+  String mealTimeUnder(int minutes);
+
+  /// No description provided for @mealFavoritesOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes favorites seulement'**
+  String get mealFavoritesOnly;
+
+  /// No description provided for @mealYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui'**
+  String get mealYes;
+
+  /// No description provided for @mealNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non'**
+  String get mealNo;
+
+  /// No description provided for @mealChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir'**
+  String get mealChoose;
+
+  /// No description provided for @mealNoResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune recette ne correspond.'**
+  String get mealNoResults;
+
+  /// No description provided for @mealEmptyDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun repas prévu.'**
+  String get mealEmptyDay;
+
+  /// No description provided for @mealMove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déplacer'**
+  String get mealMove;
+
+  /// No description provided for @mealReplace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplacer'**
+  String get mealReplace;
+
+  /// No description provided for @mealRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer du plan'**
+  String get mealRemove;
+
+  /// No description provided for @mealMoveTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déplacer vers'**
+  String get mealMoveTo;
+
+  /// No description provided for @mealWeekCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucun repas pour l\'instant.} =1{1 repas cette semaine.} other{{count} repas cette semaine.}}'**
+  String mealWeekCount(int count);
+
+  /// No description provided for @mealWritten.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écrit à la main'**
+  String get mealWritten;
+
+  /// No description provided for @mealSaveMeal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer ce repas'**
+  String get mealSaveMeal;
 
   /// No description provided for @mealServingsLine.
   ///
@@ -12468,24 +12618,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'L\'étoile n\'a pas pu être enregistrée. Réessayez.'**
   String get recipeFavoriteFailed;
-
-  /// No description provided for @mealDayLabel.
-  ///
-  /// In fr, this message translates to:
-  /// **'Jour : {day}'**
-  String mealDayLabel(String day);
-
-  /// No description provided for @mealDayNotChosen.
-  ///
-  /// In fr, this message translates to:
-  /// **'Jour : pas encore choisi'**
-  String get mealDayNotChosen;
-
-  /// No description provided for @mealDayQuestion.
-  ///
-  /// In fr, this message translates to:
-  /// **'Quel jour de la semaine ?'**
-  String get mealDayQuestion;
 
   /// No description provided for @weekdayMon.
   ///

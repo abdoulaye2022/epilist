@@ -3169,8 +3169,47 @@
     }
   },
   "mealPlannerIntro": "Pick your meals for the week. Tap a day to add or change a meal, then create your shopping list.",
-  "mealChooseForWeek": "Choose this meal for the week",
-  "mealChosenForWeek": "Chosen for this week",
+  "mealAddMeal": "Add a meal",
+  "mealWriteTab": "Write my meal",
+  "mealSearchTab": "Search for a recipe",
+  "mealName": "Meal name",
+  "mealIngredientsOptional": "Ingredients (optional)",
+  "mealNoIngredientsWarning": "Without ingredients, this meal will not add anything to your shopping.",
+  "mealAddIngredient": "Add an ingredient",
+  "mealSlotQuestion": "When?",
+  "mealSlotLunch": "Lunch",
+  "mealSlotDinner": "Dinner",
+  "mealSearchHint": "Name or ingredient",
+  "mealFilterTime": "Preparation time",
+  "mealTimeAny": "Any",
+  "mealTimeUnder": "{minutes} min or less",
+  "@mealTimeUnder": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "mealFavoritesOnly": "My favourites only",
+  "mealYes": "Yes",
+  "mealNo": "No",
+  "mealChoose": "Choose",
+  "mealNoResults": "No recipe matches.",
+  "mealEmptyDay": "No meal planned.",
+  "mealMove": "Move",
+  "mealReplace": "Replace",
+  "mealRemove": "Remove from the plan",
+  "mealMoveTo": "Move to",
+  "mealWeekCount": "{count, plural, =0{No meals yet.} =1{1 meal this week.} other{{count} meals this week.}}",
+  "@mealWeekCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealWritten": "Written by hand",
+  "mealSaveMeal": "Save this meal",
   "mealServingsLine": "For {count} people.",
   "@mealServingsLine": {
     "placeholders": {
@@ -3613,16 +3652,6 @@
   "recipeFavoriteYes": "Favourite: Yes, favourite recipe",
   "recipeFavoriteNo": "Favourite: No, not a favourite yet",
   "recipeFavoriteFailed": "The star could not be saved. Try again.",
-  "mealDayLabel": "Day: {day}",
-  "@mealDayLabel": {
-    "placeholders": {
-      "day": {
-        "type": "String"
-      }
-    }
-  },
-  "mealDayNotChosen": "Day: not chosen yet",
-  "mealDayQuestion": "Which day of the week?",
   "weekdayMon": "Monday",
   "weekdayTue": "Tuesday",
   "weekdayWed": "Wednesday",

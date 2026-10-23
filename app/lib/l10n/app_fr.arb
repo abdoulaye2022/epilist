@@ -3169,8 +3169,47 @@
     }
   },
   "mealPlannerIntro": "Choisissez vos repas de la semaine. Touchez un jour pour ajouter ou changer un repas, puis créez votre liste de courses.",
-  "mealChooseForWeek": "Choisir ce repas pour la semaine",
-  "mealChosenForWeek": "Choisi pour cette semaine",
+  "mealAddMeal": "Ajouter un repas",
+  "mealWriteTab": "Écrire mon repas",
+  "mealSearchTab": "Chercher une recette",
+  "mealName": "Nom du repas",
+  "mealIngredientsOptional": "Ingrédients (facultatif)",
+  "mealNoIngredientsWarning": "Sans ingrédient, ce repas n'ajoutera rien à vos courses.",
+  "mealAddIngredient": "Ajouter un ingrédient",
+  "mealSlotQuestion": "Quand ?",
+  "mealSlotLunch": "Midi",
+  "mealSlotDinner": "Soir",
+  "mealSearchHint": "Nom ou ingrédient",
+  "mealFilterTime": "Temps de préparation",
+  "mealTimeAny": "Peu importe",
+  "mealTimeUnder": "{minutes} min ou moins",
+  "@mealTimeUnder": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "mealFavoritesOnly": "Mes favorites seulement",
+  "mealYes": "Oui",
+  "mealNo": "Non",
+  "mealChoose": "Choisir",
+  "mealNoResults": "Aucune recette ne correspond.",
+  "mealEmptyDay": "Aucun repas prévu.",
+  "mealMove": "Déplacer",
+  "mealReplace": "Remplacer",
+  "mealRemove": "Retirer du plan",
+  "mealMoveTo": "Déplacer vers",
+  "mealWeekCount": "{count, plural, =0{Aucun repas pour l'instant.} =1{1 repas cette semaine.} other{{count} repas cette semaine.}}",
+  "@mealWeekCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealWritten": "Écrit à la main",
+  "mealSaveMeal": "Enregistrer ce repas",
   "mealServingsLine": "Pour {count} personnes.",
   "@mealServingsLine": {
     "placeholders": {
@@ -3613,16 +3652,6 @@
   "recipeFavoriteYes": "Favori : Oui, recette favorite",
   "recipeFavoriteNo": "Favori : Non, pas encore favorite",
   "recipeFavoriteFailed": "L'étoile n'a pas pu être enregistrée. Réessayez.",
-  "mealDayLabel": "Jour : {day}",
-  "@mealDayLabel": {
-    "placeholders": {
-      "day": {
-        "type": "String"
-      }
-    }
-  },
-  "mealDayNotChosen": "Jour : pas encore choisi",
-  "mealDayQuestion": "Quel jour de la semaine ?",
   "weekdayMon": "Lundi",
   "weekdayTue": "Mardi",
   "weekdayWed": "Mercredi",
