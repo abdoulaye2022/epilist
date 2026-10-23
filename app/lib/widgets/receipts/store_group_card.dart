@@ -1,4 +1,19 @@
-// widgets/receipts/store_group_card.dart
+// widgets/receipts/store_group_card.dart - Un magasin, ses factures.
+//
+// Les deux pastilles d'information — « 3 factures », « Derniere visite :
+// 12/10/2026 » — tenaient dans une Row. Sur un ecran de 320 dp, elles
+// debordaient de 29 px par la droite : la date etait coupee, et la rayure
+// jaune et noire de Flutter s'affichait par-dessus.
+//
+// La cause tient en une phrase : une Row donne a ses enfants une largeur
+// NON BORNEE. La pastille prenait donc sa largeur naturelle, le Flexible
+// qu'elle contient n'avait rien contre quoi se retrecir, et c'est la Row
+// du dessus qui debordait.
+//
+// C'est un Wrap maintenant. Il borne chaque ligne, donc le Flexible
+// fonctionne, et la seconde pastille passe a la ligne au lieu d'etre
+// coupee. Le texte de cet ecran grossit avec les reglages du telephone,
+// et une Row ne peut pas s'etirer.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
@@ -39,7 +54,9 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
         children: [
           InkWell(
             onTap: () => setState(() => _isExpanded = !_isExpanded),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.sm)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppRadius.sm),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -103,63 +120,18 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
     );
   }
 
-  Widget _buildStoreStats(AppLocalizations l10n) {
-    return Row(
-      children: [
-        _buildStatChip(
-          icon: Icons.receipt,
-          label: '${widget.storeGroup.receiptsCount} ${l10n.receipts}',
-          color: AppColors.violet,
-        ),
-        const SizedBox(width: 8),
-        _buildStatChip(
-          icon: Icons.schedule,
-          label:
-              '${l10n.lastVisit}: ${_formatDate(widget.storeGroup.latestPurchase)}',
-          color: AppColors.warning,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatChip({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTint.fill(color),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppTint.line(color)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                color: AppTint.ink(color),
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildStoreStats(AppLocalizations l10n) => StoreStatChips(
+    receiptsCount: widget.storeGroup.receiptsCount,
+    lastVisit: _formatDate(widget.storeGroup.latestPurchase),
+  );
 
   Widget _buildReceiptsList() {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.background,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppRadius.sm)),
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(AppRadius.sm),
+        ),
       ),
       child: Column(
         children:
@@ -193,5 +165,96 @@ class _StoreGroupCardState extends State<StoreGroupCard> {
     } catch (e) {
       return dateString;
     }
+  }
+}
+
+/// Les deux pastilles d'information d'un magasin : combien de factures,
+/// et la derniere visite.
+///
+/// Publique, et c'est voulu : c'est elle qui debordait de 29 px sur un
+/// ecran de 320 dp, et elle se teste SEULE. La carte entiere demande
+/// les blocs de devise (`FormattedAmount`), que monter dans un test
+/// couterait plus cher que ce qu'il verifierait.
+class StoreStatChips extends StatelessWidget {
+  const StoreStatChips({
+    super.key,
+    required this.receiptsCount,
+    required this.lastVisit,
+  });
+
+  final int receiptsCount;
+
+  /// La date, DEJA formatee : la mise en forme appartient a la carte,
+  /// pas aux pastilles.
+  final String lastVisit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Un Wrap, et non une Row : la seconde pastille passe a la ligne au
+    // lieu d'etre coupee. Le texte de cet ecran grossit avec les
+    // reglages du telephone, et une Row ne peut pas s'etirer.
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [
+          _pastille(
+            icon: Icons.receipt,
+            label: '$receiptsCount ${l10n.receipts}',
+            color: AppColors.violet,
+          ),
+          _pastille(
+            icon: Icons.schedule,
+            label: '${l10n.lastVisit}: $lastVisit',
+            color: AppColors.warning,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pastille({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppTint.fill(color),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: AppTint.line(color)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          // Le Flexible est SUR : dans un Wrap, la pastille recoit une
+          // largeur bornee (celle d'une ligne du Wrap), et non pas
+          // l'infini qu'une Row donne a ses enfants. C'etait tout le
+          // probleme d'avant : la pastille prenait sa largeur naturelle
+          // et c'est la Row du dessus qui debordait, de 29 px.
+          //
+          // Le Wrap passe a la ligne ; ce Flexible rattrape le cas
+          // extreme — un libelle plus large qu'une ligne entiere, au
+          // double grossissement.
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppTint.ink(color),
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
