@@ -50,10 +50,14 @@ export const epilistAppSchema: AppSchema = {
     "@type": "Organization",
     name: "EpiList Team"
   },
+  // Les trois ecrans de la section « L'application, telle qu'elle est »,
+  // rendus en image. Les trois adresses d'avant pointaient sur une
+  // capture de deux refontes (dash.png) et sur deux fichiers qui
+  // n'existent pas : Google les lisait, et ne trouvait rien.
   screenshots: [
-    "https://epilist.app/dash.png",
-    "https://epilist.app/images/app-screenshot-1.jpg",
-    "https://epilist.app/images/app-screenshot-2.jpg"
+    "https://epilist.app/images/ecran-accueil.jpg",
+    "https://epilist.app/images/ecran-a-la-maison.jpg",
+    "https://epilist.app/images/ecran-au-magasin.jpg"
   ],
   featureList: [
     "Synchronisation familiale temps réel",

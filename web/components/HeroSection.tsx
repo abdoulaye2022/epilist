@@ -1,10 +1,16 @@
 "use client";
 
-// Hero sobre : un badge honnête, un titre net, deux CTA, la capture de
+// Hero sobre : un badge honnête, un titre net, deux CTA, et l'écran de
 // l'app. Pas d'effets de souris ni de compteurs invérifiables.
+//
+// L'écran n'est plus une capture : app-fr.jpg datait de deux refontes
+// (bandeau bleu « Bonjour Alex », bouton « + » central dans la barre du
+// bas) et montrait donc une application qui n'existe plus. Il est
+// redessiné en HTML — voir components/AppScreens.tsx — et deux cartes
+// flottantes en détachent ce qu'on y fait vraiment.
 import { trackAppDownload } from "@/lib/gtag";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { AppScreenAccueil } from "@/components/AppScreens";
 import Link from "next/link";
 import {
   Download,
@@ -113,26 +119,47 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Colonne visuelle */}
-          <div className="relative mx-auto w-full max-w-[320px]">
+          {/* Colonne visuelle : l'écran d'accueil tel qu'il est
+              aujourd'hui, et deux cartes qui disent ce qu'on y fait. */}
+          <div className="relative mx-auto w-full max-w-[340px] pb-10 sm:pb-0">
             <div
               className="absolute -inset-6 rounded-[2.5rem] bg-green-100/70 blur-2xl"
               aria-hidden="true"
             ></div>
-            <div className="relative rounded-3xl border border-gray-200 bg-white p-3 shadow-xl">
-              {/* Capture du tableau de bord dans la langue de la page */}
-              <Image
-                src={language === "fr" ? "/app-fr.jpg" : "/app-en.jpg"}
-                alt={
-                  language === "fr"
-                    ? "Tableau de bord de l'application EpiList"
-                    : "EpiList app dashboard"
-                }
-                width={900}
-                height={1956}
-                className="w-full h-auto rounded-2xl object-cover"
-                priority
-              />
+
+            <div className="relative">
+              <AppScreenAccueil />
+
+              {/* Ce que le prix saisi en magasin change : le budget
+                  suit, au lieu de rester au chiffre d'avant. */}
+              <div className="absolute hidden sm:block -left-3 top-[36%] w-[148px] rounded-xl border border-gray-200 bg-white p-2.5 shadow-lg sm:-left-32">
+                <p className="text-[10px] font-semibold text-gray-500">
+                  {language === "fr" ? "Au magasin" : "At the store"}
+                </p>
+                <p className="mt-1 text-[13px] font-bold text-gray-900">
+                  {language === "fr" ? "Total : 87,40 $" : "Total: $87.40"}
+                </p>
+                <p className="text-[10px] text-gray-600">
+                  {language === "fr"
+                    ? "Reste : 272,55 $"
+                    : "Left: $272.55"}
+                </p>
+              </div>
+
+              <div className="absolute hidden sm:block -right-3 -bottom-2 w-[158px] rounded-xl border border-gray-200 bg-white p-2.5 shadow-lg sm:-right-32 sm:bottom-10">
+                <p className="text-[10px] font-semibold text-gray-500">
+                  {language === "fr" ? "À la maison" : "At home"}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 text-[12px] font-bold text-gray-900">
+                  <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#C2410C] ring-2 ring-white" />
+                  {language === "fr" ? "Riz : stock bas" : "Rice: low stock"}
+                </p>
+                <p className="text-[10px] text-gray-600">
+                  {language === "fr"
+                    ? "Il en reste 1 sac sur 1"
+                    : "1 bag left out of 1"}
+                </p>
+              </div>
             </div>
           </div>
         </div>
