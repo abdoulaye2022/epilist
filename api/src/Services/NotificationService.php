@@ -9,6 +9,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\ApnsConfig;
+use App\Models\ShoppingList;
 use App\Models\UserDevice;
 use App\Models\User;
 use App\Models\Currency;
@@ -32,6 +33,16 @@ class NotificationService
     const TYPE_WEEKLY_LIST_REMINDER = 'weekly_list_reminder';
     const TYPE_DAILY_LIST_REMINDER = 'daily_list_reminder';
     const TYPE_NEW_MESSAGE = 'new_message';
+
+    /**
+     * Fenetre de regroupement des changements d'une liste, en secondes.
+     *
+     * Une session de courses produit des dizaines de coches : sans
+     * fenetre, chaque article coche ferait vibrer les telephones de
+     * tout le foyer. Trois minutes, donc — mais les changements de la
+     * fenetre sont maintenant RESUMES, plus jetes.
+     */
+    private const FENETRE_REGROUPEMENT = 180;
 
     public function __construct()
     {
@@ -1142,23 +1153,169 @@ class NotificationService
      *  NOUVELLE MÉTHODE: Envoyer notification de nouveau message
      */
     /**
-     * Notifier les autres participants d'une liste partagée qu'elle a changé
-     * (article ajouté, coché...). Anti-spam : au plus une notification par
-     * liste toutes les 3 minutes (une session de courses = des dizaines de
-     * coches), via un fichier témoin.
+     * Notifier les autres participants d'une liste partagee qu'elle a
+     * change — dans LEUR langue, et sans rien perdre en route.
+     *
+     * DEUX DEFAUTS CORRIGES ICI.
+     *
+     * 1. Le corps arrivait tout fait, ecrit en francais en dur par le
+     *    controleur, et partait tel quel a tout le monde. Un membre
+     *    anglophone recevait ses notifications en francais. Desormais
+     *    l'appelant nomme un EVENEMENT (`$cle`) et ses parametres ; la
+     *    phrase est fabriquee une fois par destinataire, dans sa langue.
+     *
+     * 2. L'anti-spam JETAIT les notifications : une session de courses
+     *    produit des dizaines de coches, et tout ce qui tombait dans la
+     *    fenetre de trois minutes disparaissait. Le premier changement
+     *    part toujours tout de suite ; les suivants sont ACCUMULES et
+     *    partent en un seul resume (« Marie a ajoute 4 articles »),
+     *    envoye par le cron des que la fenetre est passee.
+     *
+     * @param string $cle    cle d'evenement (voir NotificationTexts)
+     * @param array  $params parametres du texte, ex. ['produit' => 'Pain']
      */
-    public function sendListUpdateNotification(User $actor, $list, string $body, array $recipientUserIds): array
-    {
-        $cooldownDir = dirname(__DIR__, 2) . '/storage/list_update_cooldowns';
-        if (!is_dir($cooldownDir)) {
-            @mkdir($cooldownDir, 0755, true);
+    public function sendListUpdateNotification(
+        User $actor,
+        $list,
+        string $cle,
+        array $params,
+        array $recipientUserIds
+    ): array {
+        if (!NotificationTexts::existe($cle)) {
+            return ['skipped' => 'cle_inconnue'];
         }
-        $cooldownFile = $cooldownDir . '/list_' . (int) $list->id . '.lock';
-        if (file_exists($cooldownFile) && (time() - filemtime($cooldownFile)) < 180) {
-            return ['skipped' => 'cooldown'];
-        }
-        @touch($cooldownFile);
 
+        $etat = $this->chargerEtatListe((int) $list->id);
+        $maintenant = time();
+
+        // Dans la fenetre : on ne jette pas, on empile.
+        if ($maintenant - (int) $etat['derniere_notification'] < self::FENETRE_REGROUPEMENT) {
+            $etat['en_attente'][] = [
+                'cle' => $cle,
+                'params' => $params,
+                'acteur_id' => (int) $actor->id,
+                'acteur_prenom' => (string) ($actor->first_name ?? ''),
+                'destinataires' => array_values(array_map('intval', $recipientUserIds)),
+                'a' => $maintenant,
+            ];
+            $this->ecrireEtatListe((int) $list->id, $etat);
+
+            return ['skipped' => 'regroupe', 'en_attente' => count($etat['en_attente'])];
+        }
+
+        $etat['derniere_notification'] = $maintenant;
+        $etat['en_attente'] = [];
+        $this->ecrireEtatListe((int) $list->id, $etat);
+
+        return $this->envoyerAuxParticipants($actor, $list, $cle, $params, $recipientUserIds);
+    }
+
+    /**
+     * Envoie le resume des listes qui ont accumule des changements.
+     *
+     * Appelee par le cron a chaque passage : sans elle, les changements
+     * mis de cote attendraient le prochain evenement sur la meme liste,
+     * c'est-a-dire parfois jamais.
+     *
+     * @return int nombre de resumes envoyes
+     */
+    public function flushListUpdates(): int
+    {
+        $dossier = $this->dossierEtatsListes();
+        $envoyes = 0;
+        $maintenant = time();
+
+        foreach (glob($dossier . '/list_*.json') ?: [] as $fichier) {
+            $listId = (int) preg_replace('/\D/', '', basename($fichier));
+            $etat = $this->chargerEtatListe($listId);
+
+            if ($etat['en_attente'] === []) {
+                continue;
+            }
+
+            if ($maintenant - (int) $etat['derniere_notification'] < self::FENETRE_REGROUPEMENT) {
+                continue;
+            }
+
+            $list = ShoppingList::find($listId);
+            $attente = $etat['en_attente'];
+
+            // La liste a disparu entre-temps : on efface l'attente,
+            // sinon le fichier resterait la pour toujours.
+            $etat['en_attente'] = [];
+            $etat['derniere_notification'] = $maintenant;
+            $this->ecrireEtatListe($listId, $etat);
+
+            if (!$list) {
+                continue;
+            }
+
+            $acteur = User::find((int) $attente[0]['acteur_id']);
+            if (!$acteur) {
+                continue;
+            }
+
+            [$cle, $params] = $this->resumerAttente($attente);
+
+            $destinataires = [];
+            foreach ($attente as $evenement) {
+                foreach ($evenement['destinataires'] as $id) {
+                    $destinataires[$id] = $id;
+                }
+            }
+
+            $this->envoyerAuxParticipants($acteur, $list, $cle, $params, array_values($destinataires));
+            $envoyes++;
+        }
+
+        return $envoyes;
+    }
+
+    /**
+     * Un seul message pour tout ce qui s'est passe dans la fenetre.
+     *
+     * Si c'est la meme personne et le meme genre de changement, on le
+     * dit : « Marie a ajoute 4 articles ». Sinon on reste general —
+     * mieux vaut un compte juste qu'une phrase precise et fausse.
+     *
+     * @return array{0: string, 1: array}
+     */
+    private function resumerAttente(array $attente): array
+    {
+        $nombre = count($attente);
+        $acteurs = array_unique(array_column($attente, 'acteur_id'));
+        $cles = array_unique(array_column($attente, 'cle'));
+        $prenom = (string) ($attente[0]['acteur_prenom'] ?? '');
+
+        if (count($acteurs) > 1 || $prenom === '') {
+            return ['group_changes', ['nombre' => $nombre]];
+        }
+
+        if (count($cles) === 1) {
+            $specifiques = [
+                'item_added' => 'group_items_added',
+                'item_purchased' => 'group_items_purchased',
+            ];
+
+            if (isset($specifiques[$cles[array_key_first($cles)]])) {
+                return [
+                    $specifiques[$cles[array_key_first($cles)]],
+                    ['acteur' => $prenom, 'nombre' => $nombre],
+                ];
+            }
+        }
+
+        return ['group_changes_actor', ['acteur' => $prenom, 'nombre' => $nombre]];
+    }
+
+    /** Le meme evenement, traduit pour chacun. */
+    private function envoyerAuxParticipants(
+        User $actor,
+        $list,
+        string $cle,
+        array $params,
+        array $recipientUserIds
+    ): array {
         $title = "🛒 {$list->name}";
         $data = [
             'list_id' => (string) $list->id,
@@ -1172,20 +1329,93 @@ class NotificationService
             if ((int) $recipientId === (int) $actor->id) {
                 continue;
             }
+
             $recipient = User::find($recipientId);
             if (!$recipient || !$this->canSendNotification($recipient, self::TYPE_LIST_UPDATED)) {
                 continue;
             }
+
+            // LA correction : la langue de celui qui recoit, pas celle
+            // de celui qui a agi, ni celle du serveur.
+            $corps = $this->corpsPour($recipient, $cle, $params);
+
+            if ($corps === '') {
+                continue;
+            }
+
             $results[$recipientId] = $this->sendToUser(
                 $recipientId,
                 self::TYPE_LIST_UPDATED,
                 $title,
-                $body,
+                $corps,
                 $data,
                 'normal'
             );
         }
+
         return $results;
+    }
+
+    /**
+     * Le corps d'une notification pour UNE personne.
+     *
+     * Methode a part, et publique, parce que c'est exactement ce qui
+     * etait casse : le texte doit suivre la langue enregistree du
+     * destinataire. Elle se verifie donc directement, sans telephone
+     * ni service d'envoi.
+     */
+    public function corpsPour(User $destinataire, string $cle, array $params = []): string
+    {
+        return NotificationTexts::rendre($cle, $params, $destinataire->language);
+    }
+
+    // ---------- l'etat de regroupement, un fichier par liste ----------
+
+    private function dossierEtatsListes(): string
+    {
+        $dossier = dirname(__DIR__, 2) . '/storage/list_update_cooldowns';
+
+        if (!is_dir($dossier)) {
+            @mkdir($dossier, 0755, true);
+        }
+
+        return $dossier;
+    }
+
+    /** @return array{derniere_notification: int, en_attente: array} */
+    private function chargerEtatListe(int $listId): array
+    {
+        $vide = ['derniere_notification' => 0, 'en_attente' => []];
+        $fichier = $this->dossierEtatsListes() . '/list_' . $listId . '.json';
+
+        if (!file_exists($fichier)) {
+            // Fichier temoin de l'ancienne version (list_X.lock) : sa
+            // date de modification vaut la derniere notification.
+            $ancien = $this->dossierEtatsListes() . '/list_' . $listId . '.lock';
+            if (file_exists($ancien)) {
+                $vide['derniere_notification'] = (int) filemtime($ancien);
+                @unlink($ancien);
+            }
+
+            return $vide;
+        }
+
+        $brut = json_decode((string) @file_get_contents($fichier), true);
+
+        if (!is_array($brut)) {
+            return $vide;
+        }
+
+        return [
+            'derniere_notification' => (int) ($brut['derniere_notification'] ?? 0),
+            'en_attente' => is_array($brut['en_attente'] ?? null) ? $brut['en_attente'] : [],
+        ];
+    }
+
+    private function ecrireEtatListe(int $listId, array $etat): void
+    {
+        $fichier = $this->dossierEtatsListes() . '/list_' . $listId . '.json';
+        @file_put_contents($fichier, json_encode($etat), LOCK_EX);
     }
 
     public function sendNewMessageNotification(

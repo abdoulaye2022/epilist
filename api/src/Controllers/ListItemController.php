@@ -191,11 +191,17 @@ class ListItemController
 
     /**
      * Push "liste mise à jour" aux autres participants d'une liste partagée.
-     * Silencieux et jamais bloquant ; l'anti-spam (3 min/liste) est dans
-     * NotificationService::sendListUpdateNotification.
+     * Silencieux et jamais bloquant. On passe une CLE d'evenement et
+     * ses parametres, pas une phrase : le texte est fabrique dans la
+     * langue de chaque destinataire, et les changements rapproches sont
+     * regroupes plutot que jetes (NotificationService).
      */
-    private function notifyListParticipants(int $actorId, int $listId, string $body): void
-    {
+    private function notifyListParticipants(
+        int $actorId,
+        int $listId,
+        string $cle,
+        array $params = []
+    ): void {
         try {
             $list = ShoppingList::find($listId);
             if (!$list) {
@@ -209,7 +215,7 @@ class ListItemController
             if (!$actor) {
                 return;
             }
-            (new NotificationService())->sendListUpdateNotification($actor, $list, $body, $recipients);
+            (new NotificationService())->sendListUpdateNotification($actor, $list, $cle, $params, $recipients);
         } catch (\Throwable $e) {
             error_log("Notification liste non envoyee: " . $e->getMessage());
         }
@@ -564,7 +570,12 @@ class ListItemController
             // Update suggestions
             $this->updateProductSuggestion($user_id, $cleanData);
 
-            $this->notifyListParticipants((int) $user_id, (int) $listId, "\"{$item->product_name}\" a été ajouté à la liste");
+            $this->notifyListParticipants(
+                (int) $user_id,
+                (int) $listId,
+                'item_added',
+                ['produit' => $item->product_name]
+            );
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -796,7 +807,12 @@ class ListItemController
                     \App\Services\SpaceActivityService::ITEM_PURCHASED,
                     ['list_id' => (int) $listId, 'list_name' => $access['list']->name, 'product_name' => $item->product_name]
                 );
-                $this->notifyListParticipants($user_id, (int) $listId, "\"{$item->product_name}\" a été acheté");
+                $this->notifyListParticipants(
+                    (int) $user_id,
+                    (int) $listId,
+                    'item_purchased',
+                    ['produit' => $item->product_name]
+                );
             }
 
             $response->getBody()->write(json_encode([
@@ -1199,7 +1215,7 @@ class ListItemController
                 ]);
 
             if ((bool) $purchased && $updatedCount > 0) {
-                $this->notifyListParticipants((int) $user_id, (int) $listId, 'Tous les articles ont été achetés ✅');
+                $this->notifyListParticipants((int) $user_id, (int) $listId, 'all_purchased');
             }
 
             $response->getBody()->write(json_encode([

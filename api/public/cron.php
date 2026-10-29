@@ -123,6 +123,14 @@ try {
         sendPriceAlertDigests($notificationService);
     }
 
+    // 13. RESUMES DES LISTES (a chaque passage) : les changements mis
+    // de cote pendant la fenetre de regroupement partent en un seul
+    // message — « Marie a ajoute 4 articles ». Avant, ils etaient
+    // simplement perdus.
+    echo "Flushing grouped list updates...\n";
+    $resumes = $notificationService->flushListUpdates();
+    echo "Grouped list summaries sent: {$resumes}\n";
+
     // 12. PURGE DEFINITIVE (dimanche a 3h) : les lignes deja supprimees
     // depuis plus de 30 jours quittent la base pour de bon. Loi 25 et
     // exigences des magasins d'applications : « supprime » doit finir
