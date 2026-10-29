@@ -1,38 +1,13 @@
-"use client";
+// Page d'arrivée d'un lien de partage. Hors index : une invitation ne
+// se référence pas, elle se transmet.
+import type { Metadata } from "next";
+import ShareLanding from "@/components/ShareLanding";
 
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
+export const metadata: Metadata = {
+  title: "Invitation — EpiList",
+  robots: { index: false, follow: false },
+};
 
-export default function SharePage() {
-  const params = useParams();
-  const token = params.token as string;
-
-  useEffect(() => {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isMobile = isAndroid || isIOS;
-
-    if (token) {
-      if (!isMobile) {
-        window.location.href =
-          "https://apps.apple.com/ca/app/epilist/id6748285596";
-        return;
-      }
-
-      // Tentative d'ouverture de l'app
-      const appUrl = `epilist://share/${token}`;
-      window.location.href = appUrl;
-
-      // Fallback vers le store après 3 secondes
-      const fallbackTimeout = setTimeout(() => {
-        window.location.href = isIOS
-          ? "https://apps.apple.com/ca/app/epilist/id6748285596"
-          : "https://play.google.com/store/apps/details?id=com.m2atech.epilist";
-      }, 3000);
-
-      return () => clearTimeout(fallbackTimeout);
-    }
-  }, [token]);
-
-  return null;
+export default function SharePage({ params }: { params: { token: string } }) {
+  return <ShareLanding token={params.token} />;
 }

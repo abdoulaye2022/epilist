@@ -742,6 +742,64 @@ class SharedListController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
+    /**
+     * GET /share/public/{token} — ce qu'une page web peut montrer.
+     *
+     * La page de partage n'a que le jeton dans son URL, et elle doit
+     * afficher le code court : sans lui, la personne qui installe
+     * l'application depuis le magasin n'a plus rien en main.
+     *
+     * Ce qui sort d'ici est deja dans le message de partage que
+     * l'invitant a envoye : le prenom de l'invitant, le nom de la
+     * liste, le code. Rien de plus — pas de courriel, pas d'articles,
+     * pas d'identifiant d'utilisateur.
+     */
+    public function getPublicShareInfo(Request $request, Response $response, array $args): Response
+    {
+        $token = preg_replace('/[^a-f0-9]/', '', (string) ($args['token'] ?? ''));
+        $limiteur = new \App\Services\RateLimiter();
+        $ip = $this->clientIp($request);
+
+        if (!$limiteur->checkIPLimit('invite_code', $ip)) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'RATE_LIMIT_EXCEEDED',
+                'message' => 'Trop de tentatives. Réessayez plus tard.',
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(429);
+        }
+
+        $partage = $token === '' ? null : SharedList::with(['shoppingList', 'owner'])
+            ->where('share_token', $token)
+            ->where('status', SharedList::STATUS_PENDING)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$partage || ($partage->expires_at && Carbon::now()->gt($partage->expires_at))) {
+            $limiteur->recordAttempt('invite_code', $ip);
+
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'SHARE_NOT_FOUND',
+                'message' => "Cette invitation n'est plus valable.",
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'data' => [
+                'invite_code' => $partage->invite_code,
+                'list_name' => $partage->shoppingList->name ?? null,
+                'owner_first_name' => $partage->owner->first_name ?? null,
+                'permission' => $partage->permission,
+                'expires_at' => $partage->expires_at ? Carbon::parse($partage->expires_at)->toISOString() : null,
+            ],
+        ]));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
     /** L'adresse de l'appelant, pour les plafonds de cadence. */
     private function clientIp(Request $request): string
     {

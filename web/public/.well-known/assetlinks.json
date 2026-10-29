@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.m2atech.epilist",
+      "sha256_cert_fingerprints": [
+        "REMPLACER_PAR_L_EMPREINTE_SHA256_DE_LA_CLE_DE_SIGNATURE_DE_L_APPLICATION_PLAY_CONSOLE",
+        "27:D7:5A:EA:A7:CF:BD:41:9E:3A:14:4D:D1:74:66:32:DB:DC:5A:D4:28:5E:AA:5C:E9:ED:2E:89:90:94:A6:87"
+      ]
+    }
+  }
+]

@@ -37,6 +37,14 @@ export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   const url = request.nextUrl.clone()
 
+  // /.well-known/ passe toujours tout droit. Android et iOS lisent ces
+  // fichiers eux-mêmes, sans suivre de redirection : une seule 301 et
+  // la vérification du domaine échoue, donc les liens de partage
+  // n'ouvrent plus l'application.
+  if (pathname.startsWith('/.well-known/')) {
+    return NextResponse.next()
+  }
+
   if (redirectMap[pathname]) {
     return NextResponse.redirect(
       new URL(redirectMap[pathname] + search, request.url),

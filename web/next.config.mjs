@@ -8,6 +8,17 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Les deux fichiers qui lient le domaine aux applications.
+        // Android et iOS exigent application/json ; l'un des deux n'a
+        // pas d'extension, et serait sinon servi en octet-stream puis
+        // ignoré en silence. Voir docs/liens-applicatifs.md.
+        source: "/.well-known/:fichier(assetlinks.json|apple-app-site-association)",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           {
