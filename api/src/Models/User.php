@@ -38,6 +38,7 @@ class User extends Model
         'deletion_reason',
         'is_deletion_requested',
         'deletion_requested_at',
+        'anonymized_at',
         'is_active',
         'email_marketing_consent',
         'email_marketing_unsubscribed_at',
@@ -72,6 +73,7 @@ class User extends Model
         'email_verification_code_expires_at' => 'datetime',
         'account_deletion_code_expires_at' => 'datetime',
         'deletion_requested_at' => 'datetime',
+        'anonymized_at' => 'datetime',
         'email_marketing_consent' => 'boolean',
         'email_marketing_unsubscribed_at' => 'datetime',
         'two_factor_enabled' => 'boolean',
@@ -272,23 +274,116 @@ class User extends Model
         ]);
     }
 
+    /**
+     * Vide la ligne de tout ce qui identifie une personne.
+     *
+     * Appelee par AccountDeletionService::supprimer() — plus jamais
+     * laissee de cote : c'est elle qui fait la difference entre « le
+     * compte est marque supprime » et « il n'y a plus rien dedans ».
+     *
+     * Ce qui part : courriel, prenom, nom, empreinte du mot de passe,
+     * avatar, tous les codes a usage unique, le jeton de desabonnement,
+     * la deuxieme etape de connexion, la raison de depart (texte libre
+     * ecrit par la personne, donc potentiellement identifiant), le
+     * fournisseur SSO.
+     *
+     * Ce qui reste : l'identifiant numerique, la devise, la langue et
+     * les dates. L'identifiant doit survivre tant que la ligne existe —
+     * des cles etrangeres pointent dessus. La ligne elle-meme part a la
+     * purge des trente jours (cron.php, tache 12).
+     *
+     * Le courriel devient deleted_user_{id}@deleted.local : unique (la
+     * colonne l'exige), impossible a joindre, et il LIBERE l'ancienne
+     * adresse, qui peut donc se reinscrire.
+     */
     public function anonymizeData(): void
     {
         $anonymizedEmail = "deleted_user_{$this->id}@deleted.local";
-        
-        $this->update([
+
+        $this->forceFill([
             'first_name' => 'Utilisateur',
-            'last_name' => 'Supprimé',
+            'last_name' => 'supprime',
             'email' => $anonymizedEmail,
             'password_hash' => null,
+            'avatar_url' => null,
             'email_verification_code' => null,
             'password_change_code' => null,
             'account_deletion_code' => null,
             'email_verification_code_expires_at' => null,
             'password_change_code_expires_at' => null,
             'account_deletion_code_expires_at' => null,
-            'is_active' => false
-        ]);
+            'email_verified' => false,
+            'email_verified_at' => null,
+            'two_factor_enabled' => false,
+            'admin_otp_code' => null,
+            'admin_otp_expires_at' => null,
+            'unsubscribe_token' => null,
+            'email_marketing_consent' => false,
+            'email_marketing_unsubscribed_at' => Carbon::now(),
+            'community_prices_enabled' => false,
+            'deletion_reason' => null,
+            'sso_provider' => null,
+            'role' => 'user',
+            'is_active' => false,
+            'is_deletion_requested' => true,
+            'anonymized_at' => Carbon::now(),
+        ])->save();
+    }
+
+    /** La ligne ne contient plus rien d'identifiant. */
+    public function estAnonymise(): bool
+    {
+        return $this->anonymized_at !== null;
+    }
+
+    /**
+     * Courriel reserve de l'auteur « Utilisateur supprime » (migration 016).
+     */
+    public const EMAIL_RESERVE = 'deleted@deleted.local';
+
+    /**
+     * La ligne qui porte les messages des comptes supprimes.
+     *
+     * Les messages de clavardage appartiennent a la conversation d'une
+     * liste : les effacer trouerait l'historique des autres membres.
+     * Mais list_messages.user_id est en ON DELETE CASCADE, donc purger
+     * la ligne de l'auteur les emporterait. Ils sont re-attribues ici.
+     *
+     * @throws \RuntimeException si la migration 016 n'a pas ete jouee
+     */
+    public static function reserve(): self
+    {
+        $reserve = self::withTrashed()->where('email', self::EMAIL_RESERVE)->first();
+
+        if (!$reserve) {
+            throw new \RuntimeException(
+                'Utilisateur reserve absent : jouer migrations/016_suppression_compte.sql'
+            );
+        }
+
+        return $reserve;
+    }
+
+    /** Vrai pour la ligne reservee elle-meme, qui ne se supprime jamais. */
+    public function estReserve(): bool
+    {
+        return $this->email === self::EMAIL_RESERVE;
+    }
+
+    /**
+     * Nom a afficher. Pour un compte supprime, un libelle traduit — la
+     * base ne garde qu'une version francaise, l'affichage doit suivre la
+     * langue de qui regarde.
+     */
+    public function nomAffiche(string $lang = 'fr'): string
+    {
+        if ($this->estAnonymise()) {
+            return $lang === 'en' ? 'Deleted user' : 'Utilisateur supprimé';
+        }
+
+        $nom = trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
+
+        return $nom !== '' ? $nom : ($this->email ?? '');
     }
 
     // ===================== MÉTHODES POUR LES DEVISES =====================
