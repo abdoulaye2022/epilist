@@ -528,6 +528,9 @@ $app->group('', function ($group) {
     $group->get('/suggestions/stats', [SuggestionController::class, 'getStatistics']);
     // Get trending products
     $group->get('/suggestions/trending', [SuggestionController::class, 'getTrending']);
-})->add($jwtMiddleware);
+// L'ordre de Slim : le dernier ajoute s'execute EN PREMIER. Le jeton
+// est donc verifie avant que l'activite ne soit notee, et une requete
+// non authentifiee ne note rien.
+})->add(new \App\Middleware\ActivityMiddleware())->add($jwtMiddleware);
 
 $app->run();
