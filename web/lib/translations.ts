@@ -220,8 +220,6 @@ export const translations = {
     // Footer
     footerDescription: 'L\'application complète qui révolutionne votre façon de faire les courses. Organisez, partagez, budgétisez et analysez vos habitudes d\'achat avec votre famille.',
     footerNewBrunswick: 'Fièrement développé au Nouveau-Brunswick, Canada',
-    footerAddress: '123 Avenue Innovation, Fredericton, NB E3B 1A1',
-    footerPhone: '+1 (506) 123-4567',
     footerFeatures: 'Fonctionnalités',
     footerSupport2: 'Support',
     footerNewsletter: 'Restez informé des nouveautés',
@@ -870,8 +868,6 @@ export const translations = {
     // Footer
     footerDescription: 'The complete app that revolutionizes your way of shopping. Organize, share, budget and analyze your shopping habits with your family.',
     footerNewBrunswick: 'Proudly developed in New Brunswick, Canada',
-    footerAddress: '123 Innovation Avenue, Fredericton, NB E3B 1A1',
-    footerPhone: '+1 (506) 123-4567',
     footerFeatures: 'Features',
     footerSupport2: 'Support',
     footerNewsletter: 'Stay informed about news',
