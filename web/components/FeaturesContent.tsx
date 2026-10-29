@@ -227,11 +227,16 @@ export default function FeaturesContent() {
                     ? "Langues" : "Languages",
               },
               {
-                number: "150+",
+                // Le « 150+ » d'avant n'etait verifiable nulle part : la
+                // table des devises est peuplee en production et le
+                // depot ne contient aucun INSERT. Requete de controle :
+                //   SELECT COUNT(*) FROM currencies WHERE is_active = 1;
+                // Tant qu'elle n'a pas tourne, pas de chiffre ici.
+                number: t("language") === "fr" ? "Hors ligne" : "Offline",
                 label:
                   t("language") === "fr"
-                    ? "Devises supportées"
-                    : "Supported currencies",
+                    ? "Fonctionne sans réseau"
+                    : "Works with no network",
               },
               {
                 number: "100 %",

@@ -159,8 +159,7 @@ export default function TermsContent() {
             <div className="mt-8 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
               <CheckCircle className="h-5 w-5 text-green-300" />
               <span className="text-white/90">
-                {t("lastUpdated")}:{" "}
-                {t("language") === "fr" ? "5 juillet 2025" : "July 5, 2025"}
+                {t("lastUpdated")}: {t("privacyUpdatedDate")}
               </span>
             </div>
           </div>

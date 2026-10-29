@@ -1,10 +1,10 @@
 "use client";
 
-// Appel à l'action final : fond vert de marque, deux badges de stores,
-// trois garanties honnêtes.
+// Appel a l'action final : fond vert de marque, deux badges de stores,
+// trois faits verifiables — gratuite, hors ligne, sans publicite.
 import { trackAppDownload } from "@/lib/gtag";
 import { Button } from "@/components/ui/button";
-import { Apple, Play, BadgeCheck, WifiOff, ShieldCheck } from "lucide-react";
+import { Apple, Play, BadgeCheck, WifiOff, Ban } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 
 const APP_STORE_URL =
@@ -59,8 +59,8 @@ export default function CTASection() {
             {language === "fr" ? "Fonctionne hors ligne" : "Works offline"}
           </span>
           <span className="inline-flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4" />
-            {t("secureData")}
+            <Ban className="h-4 w-4" />
+            {t("adFree")}
           </span>
         </div>
       </div>

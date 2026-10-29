@@ -1,6 +1,21 @@
 "use client";
 
+// La politique de confidentialite.
+//
+// Onze sections, numerotees par leur position : les numeros ne sont plus
+// ecrits dans les textes traduits, ou ils devenaient faux des qu'une
+// section s'ajoutait au milieu.
+//
+// Trois sections sont nouvelles — les recus, la suppression du compte et
+// la mesure d'audience — parce que ces trois choses se produisent
+// vraiment et n'etaient ecrites nulle part.
+//
+// La phrase sur l'emplacement des serveurs est derriere un interrupteur
+// (lib/config.ts) : elle ne s'affiche pas tant que la region du
+// stockage n'a pas ete verifiee.
 import { useLanguage } from "@/hooks/useLanguage";
+import { DATA_RESIDENCY_CANADA_CONFIRMED } from "@/lib/config";
+import { href } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -19,11 +34,14 @@ import {
   Settings,
   Share2,
   Calculator,
+  Receipt,
+  Trash2,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function PrivacyContent() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const privacySections = [
     {
@@ -39,6 +57,13 @@ export default function PrivacyContent() {
       contentKey: "dataUsageContent",
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
+    },
+    {
+      icon: Receipt,
+      titleKey: "receiptsTitle",
+      contentKey: "receiptsContent",
+      color: "from-amber-500 to-amber-600",
+      bgColor: "bg-amber-50",
     },
     {
       icon: Lock,
@@ -62,11 +87,25 @@ export default function PrivacyContent() {
       bgColor: "bg-indigo-50",
     },
     {
+      icon: Trash2,
+      titleKey: "accountDeletionTitle",
+      contentKey: "accountDeletionContent",
+      color: "from-red-500 to-red-600",
+      bgColor: "bg-red-50",
+    },
+    {
       icon: Calculator,
       titleKey: "appFeaturesTitle",
       contentKey: "appFeaturesContent",
       color: "from-teal-500 to-teal-600",
       bgColor: "bg-teal-50",
+    },
+    {
+      icon: BarChart3,
+      titleKey: "measurementTitle",
+      contentKey: "measurementContent",
+      color: "from-sky-500 to-sky-600",
+      bgColor: "bg-sky-50",
     },
     {
       icon: Eye,
@@ -77,8 +116,8 @@ export default function PrivacyContent() {
     },
     {
       icon: FileText,
-      titleKey: "modificationsTitle",
-      contentKey: "modificationsContent",
+      titleKey: "privacyModificationsTitle",
+      contentKey: "privacyModificationsContent",
       color: "from-gray-500 to-gray-600",
       bgColor: "bg-gray-50",
     },
@@ -95,7 +134,7 @@ export default function PrivacyContent() {
         </div>
 
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <Link href="/">
+          <Link href={href("home", language)}>
             <Button
               variant="ghost"
               className="text-white hover:bg-white/20 mb-8 group"
@@ -118,8 +157,7 @@ export default function PrivacyContent() {
             <div className="mt-8 inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
               <CheckCircle className="h-5 w-5 text-green-300" />
               <span className="text-white/90">
-                {t("lastUpdated")}:{" "}
-                {t("language") === "fr" ? "5 juillet 2025" : "July 5, 2025"}
+                {t("lastUpdated")}: {t("privacyUpdatedDate")}
               </span>
             </div>
           </div>
@@ -181,12 +219,18 @@ export default function PrivacyContent() {
                       </div>
                       <div className="flex-1">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                          {t(section.titleKey as any)}
+                          {index + 1}. {t(section.titleKey as any)}
                         </h2>
                         <div className="prose prose-lg max-w-none text-gray-700">
                           <div className="whitespace-pre-line leading-relaxed">
                             {t(section.contentKey as any)}
                           </div>
+                          {section.titleKey === "dataSecurityTitle" &&
+                            DATA_RESIDENCY_CANADA_CONFIRMED && (
+                              <p className="mt-4 font-medium leading-relaxed">
+                                {t("dataResidencyCanada")}
+                              </p>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -212,7 +256,7 @@ export default function PrivacyContent() {
                       <p className="text-gray-700 leading-relaxed mb-6">
                         {t("contactContent")}
                       </p>
-                      <Link href="/contact">
+                      <Link href={href("contact", language)}>
                         <Button className="bg-gradient-epilist hover:shadow-glow-green text-white transition-all duration-300">
                           <Mail className="mr-2 h-4 w-4" />
                           {t("contact")}
@@ -228,7 +272,7 @@ export default function PrivacyContent() {
           {/* Copyright */}
           <div className="text-center mt-16">
             <p className="text-gray-500 text-sm">
-              © 2025 EpiList - {t("allRightsReserved")}
+              © {new Date().getFullYear()} EpiList - {t("allRightsReserved")}
             </p>
           </div>
         </div>

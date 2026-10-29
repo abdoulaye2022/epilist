@@ -4,6 +4,16 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import '../utils/smart_snackbar_manager.dart';
 
+// La politique de confidentialite, telle qu'elle est affichee dans
+// l'application. Elle doit dire EXACTEMENT la meme chose que celle du
+// site (web/components/PrivacyContent.tsx) : deux textes qui divergent,
+// c'est un seul texte faux.
+//
+// Trois sections ont ete ajoutees parce que ces trois choses se
+// produisent vraiment et n'etaient ecrites nulle part : les recus (la
+// lecture se fait sur l'appareil, l'image est rangee en prive), la
+// suppression du compte (ce qui part, ce qui est transmis, en combien de
+// temps), et la mesure d'audience (aucune dans l'application).
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
@@ -49,6 +59,11 @@ class PrivacyPolicyPage extends StatelessWidget {
             _buildPolicySection(l10n.privacyUsageTitle, l10n.privacyUsageText),
 
             _buildPolicySection(
+              l10n.privacyReceiptsTitle,
+              l10n.privacyReceiptsText,
+            ),
+
+            _buildPolicySection(
               l10n.privacyStorageTitle,
               l10n.privacyStorageText,
             ),
@@ -64,8 +79,18 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
 
             _buildPolicySection(
+              l10n.privacyAccountDeletionTitle,
+              l10n.privacyAccountDeletionText,
+            ),
+
+            _buildPolicySection(
               l10n.privacyFeaturesTitle,
               l10n.privacyFeaturesText,
+            ),
+
+            _buildPolicySection(
+              l10n.privacyMeasurementTitle,
+              l10n.privacyMeasurementText,
             ),
 
             _buildPolicySection(
@@ -88,7 +113,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             SizedBox(height: 32),
             Center(
               child: Text(
-                '© 2025 EpiList - ${l10n.aboutRightsReserved}',
+                '© ${DateTime.now().year} EpiList - ${l10n.aboutRightsReserved}',
                 style: TextStyle(color: AppColors.textDisabled, fontSize: 16),
               ),
             ),

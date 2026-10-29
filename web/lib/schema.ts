@@ -1,3 +1,10 @@
+// Les donnees structurees envoyees a Google.
+//
+// Ce fichier portait un aggregateRating : note 4.9 sur 1247 avis, deux
+// nombres ecrits a la main que rien ne soutient. Google les lisait et
+// pouvait les afficher comme des avis verifies : c'est exactement ce que
+// ses regles sur les faux avis interdisent. Ils sont partis. Un
+// SoftwareApplication sans note reste parfaitement valide.
 export interface AppSchema {
   "@context": string
   "@type": string
@@ -8,11 +15,6 @@ export interface AppSchema {
     "@type": string
     price: string
     priceCurrency: string
-  }
-  aggregateRating: {
-    "@type": string
-    ratingValue: string
-    ratingCount: string
   }
   downloadUrl: string[]
   description: string
@@ -36,19 +38,14 @@ export const epilistAppSchema: AppSchema = {
     price: "0",
     priceCurrency: "CAD"
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    ratingCount: "1247"
-  },
   downloadUrl: [
     "https://apps.apple.com/ca/app/epilist/id6748285596",
     "https://play.google.com/store/apps/details?id=com.m2atech.epilist"
   ],
-  description: "L'application mobile qui révolutionne votre façon de faire les courses. Créez, partagez et gérez vos listes en famille avec synchronisation temps réel.",
+  description: "L'application mobile de listes de courses partagées : créez vos listes, partagez-les avec votre foyer, suivez votre budget et lisez vos reçus. Gratuite, sans publicité, et utilisable hors ligne.",
   author: {
     "@type": "Organization",
-    name: "EpiList Team"
+    name: "M2atech Solutions Inc."
   },
   // Les trois ecrans de la section « L'application, telle qu'elle est »,
   // rendus en image. Les trois adresses d'avant pointaient sur une
@@ -60,12 +57,14 @@ export const epilistAppSchema: AppSchema = {
     "https://epilist.app/images/ecran-au-magasin.jpg"
   ],
   featureList: [
-    "Synchronisation familiale temps réel",
-    "Mode hors ligne disponible",
-    "Suggestions intelligentes d'achats",
-    "Interface intuitive et moderne",
-    "Sécurité des données garantie",
-    "Gratuit à vie, sans publicité"
+    "Listes partagées avec le foyer, avec droits par personne",
+    "Notifications instantanées lors des changements",
+    "Mode hors ligne",
+    "Lecture des reçus sur l'appareil",
+    "Budgets et alertes de dépassement",
+    "Comparaison des prix entre magasins",
+    "Bilingue français et anglais",
+    "Gratuite, sans publicité"
   ]
 }
 
@@ -87,7 +86,7 @@ export const epilistFAQSchema = {
       name: "Comment synchroniser mes listes avec ma famille ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Créez simplement votre liste et partagez-la avec les membres de votre famille via un code unique. Tous les changements sont synchronisés en temps réel sur tous les appareils."
+        text: "Créez votre liste et partagez-la avec les membres de votre foyer par lien ou par invitation. Chacun retrouve la liste sur son appareil, et reçoit une notification instantanée quand un article change."
       }
     },
     {
@@ -103,13 +102,14 @@ export const epilistFAQSchema = {
       name: "Sur quelles plateformes EpiList est-elle disponible ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "EpiList est disponible sur iOS (App Store) et Android (Google Play). Une version web est également accessible depuis n'importe quel navigateur."
+        text: "EpiList est disponible sur iOS (App Store) et sur Android (Google Play)."
       }
     }
   ]
 }
 
-// Schema LocalBusiness (si vous avez une entreprise au Nouveau-Brunswick)
+// L'editeur. « EpiList Inc. » n'existe pas : la societe est M2atech
+// Solutions Inc., au Nouveau-Brunswick.
 export const epilistBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -120,10 +120,10 @@ export const epilistBusinessSchema = {
     "https://play.google.com/store/apps/details?id=com.m2atech.epilist"
   ],
   applicationCategory: "Business",
-  operatingSystem: "iOS, Android, Web",
+  operatingSystem: "iOS, Android",
   provider: {
     "@type": "Organization",
-    name: "EpiList Inc.",
+    name: "M2atech Solutions Inc.",
     location: {
       "@type": "Place",
       addressLocality: "Nouveau-Brunswick",

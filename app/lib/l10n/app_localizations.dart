@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @checkPurchasesRealTime.
   ///
   /// In fr, this message translates to:
-  /// **'Cochez vos achats en temps réel'**
+  /// **'Cochez vos achats au fur et à mesure'**
   String get checkPurchasesRealTime;
 
   /// No description provided for @trackGroceryExpenses.
@@ -3316,7 +3316,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutMissionText.
   ///
   /// In fr, this message translates to:
-  /// **'EpiList révolutionne la façon dont vous gérez vos courses. Créez des listes intelligentes, suivez vos dépenses en temps réel, partagez avec votre famille et ne manquez plus jamais un article important grâce à notre système de gestion collaborative.'**
+  /// **'EpiList simplifie vos courses. Créez vos listes, suivez vos dépenses au fil des achats, partagez avec votre foyer et ne repartez plus du magasin en ayant oublié l\'essentiel.'**
   String get aboutMissionText;
 
   /// No description provided for @aboutFeatures.
@@ -3328,7 +3328,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutFeaturesText.
   ///
   /// In fr, this message translates to:
-  /// **'• Création de compte sécurisée (prénom, nom, email)\n• Listes d\'épicerie personnalisées et intelligentes\n• Ajout d\'articles avec quantité, prix et magasin\n• Calcul automatique des totaux et pourcentages\n• Marquage en temps réel des articles achetés\n• Duplication rapide des listes existantes\n• Partage sécurisé via liens avec permissions\n• Gestion des droits (lecture, édition, administration)\n• Synchronisation sur tous vos appareils\n• Interface moderne et intuitive'**
+  /// **'• Création de compte sécurisée (prénom, nom, email)\n• Listes d\'épicerie personnalisées et intelligentes\n• Ajout d\'articles avec quantité, prix et magasin\n• Calcul automatique des totaux et pourcentages\n• Marquage des articles au fur et à mesure\n• Duplication rapide des listes existantes\n• Partage sécurisé via liens avec permissions\n• Gestion des droits (lecture, édition, administration)\n• Vos listes sur tous vos appareils\n• Notification instantanée à chaque changement'**
   String get aboutFeaturesText;
 
   /// No description provided for @aboutCollaboration.
@@ -3340,7 +3340,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutCollaborationText.
   ///
   /// In fr, this message translates to:
-  /// **'EpiList facilite les courses en famille avec son système de partage avancé. Partagez vos listes d\'un simple lien, définissez qui peut voir, modifier ou administrer chaque liste. Tout le monde reste synchronisé en temps réel!'**
+  /// **'EpiList facilite les courses en famille avec son système de partage. Partagez vos listes d\'un simple lien, définissez qui peut voir, modifier ou administrer chaque liste. Chaque membre reçoit une notification instantanée quand un article change.'**
   String get aboutCollaborationText;
 
   /// No description provided for @aboutDevelopment.
@@ -3424,7 +3424,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutShareDescription.
   ///
   /// In fr, this message translates to:
-  /// **'Organisez vos courses en famille avec EpiList! Listes partagées, calculs automatiques, synchronisation temps réel.'**
+  /// **'Organisez vos courses en famille avec EpiList ! Listes partagées, calculs automatiques, notifications instantanées.'**
   String get aboutShareDescription;
 
   /// No description provided for @aboutDiscoverApp.
@@ -3610,19 +3610,19 @@ abstract class AppLocalizations {
   /// No description provided for @privacyLastUpdated.
   ///
   /// In fr, this message translates to:
-  /// **'Dernière mise à jour : 5 juillet 2025'**
+  /// **'Dernière mise à jour : 29 octobre 2026'**
   String get privacyLastUpdated;
 
   /// No description provided for @privacyCollectionTitle.
   ///
   /// In fr, this message translates to:
-  /// **'1. Collecte d\'informations'**
+  /// **'1. Collecte des données'**
   String get privacyCollectionTitle;
 
   /// No description provided for @privacyCollectionText.
   ///
   /// In fr, this message translates to:
-  /// **'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : prénom, nom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms de listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, édition, administration)\n• Données d\'utilisation : statut d\'achat des articles, totaux et calculs de pourcentages\n• Données techniques : journaux d\'erreurs, performance de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.\n\nPOSITION : si vous l\'autorisez, EpiList lit la position de votre téléphone pour calculer la distance jusqu\'à vos magasins et les trier du plus proche au plus loin. Cette position reste SUR votre téléphone : elle n\'est ni enregistrée, ni envoyée à nos serveurs, ni partagée. Vous pouvez refuser, donner seulement votre code postal, ou revenir sur votre choix à tout moment depuis « Mes magasins ».'**
+  /// **'EpiList collecte les informations suivantes :\n\n• Compte : prénom, nom, adresse courriel, mot de passe (jamais conservé en clair — seule une empreinte est stockée)\n• Listes : noms des listes, articles, quantités, prix, magasins (facultatif)\n• Partage : liens de partage et droits d\'accès (lecture, modification, administration)\n• Reçus : photo du reçu, magasin, date et montants — voir la section 3\n• Usage : articles cochés, totaux et pourcentages calculés\n• Technique : journaux d\'erreurs et de performance de l\'application\n• Appareil : un jeton d\'envoi de notifications, si vous les acceptez\n\nPOSITION : si vous l\'autorisez, EpiList lit la position de votre téléphone pour calculer la distance jusqu\'à vos magasins et les trier du plus proche au plus loin. Cette position reste SUR votre téléphone : elle n\'est ni enregistrée, ni envoyée à nos serveurs, ni partagée. Vous pouvez refuser, donner seulement votre code postal, ou revenir sur votre choix à tout moment depuis « Mes magasins ».\n\nNous ne collectons aucune donnée sensible au-delà de ce qui est nécessaire au fonctionnement.'**
   String get privacyCollectionText;
 
   /// No description provided for @privacyUsageTitle.
@@ -3634,49 +3634,73 @@ abstract class AppLocalizations {
   /// No description provided for @privacyUsageText.
   ///
   /// In fr, this message translates to:
-  /// **'Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d\'épicerie\n• Calculer les totaux et pourcentages d\'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d\'accès (lecture, édition, administration)\n• Synchroniser vos données sur tous vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.'**
+  /// **'Vos données servent uniquement à :\n\n• Créer et gérer votre compte\n• Créer, modifier, dupliquer et supprimer vos listes\n• Calculer les totaux et le pourcentage d\'articles achetés\n• Partager vos listes avec les personnes que vous choisissez, selon les droits que vous fixez\n• Retrouver vos listes sur chacun de vos appareils\n• Suivre vos budgets et vous alerter avant un dépassement\n• Vous envoyer les courriels liés à votre compte : vérification, changement de mot de passe, suppression\n• Vous aider quand vous nous écrivez\n\nNous ne vendons, ne louons et n\'échangeons aucune donnée personnelle.'**
   String get privacyUsageText;
+
+  /// No description provided for @privacyReceiptsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'3. Reçus et photos de reçus'**
+  String get privacyReceiptsTitle;
+
+  /// No description provided for @privacyReceiptsText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand vous photographiez un reçu :\n\n• La lecture du texte se fait SUR votre téléphone. L\'image n\'est pas envoyée à un service d\'analyse, et nous ne l\'analysons pas sur nos serveurs.\n• Vous validez ce qui a été lu. Seuls le magasin, la date et les montants sont enregistrés dans votre compte, pour vos budgets et votre historique.\n• La photo, si vous la conservez, est rangée de façon privée chez notre fournisseur d\'hébergement infonuagique. Elle n\'a pas d\'adresse publique : l\'application demande un lien temporaire, valable quinze minutes, et seulement si vous avez le droit de voir la liste concernée.\n• Les membres d\'une liste partagée voient les reçus de cette liste. Personne d\'autre.\n• Vos reçus et leurs photos sont effacés avec votre compte.'**
+  String get privacyReceiptsText;
 
   /// No description provided for @privacyStorageTitle.
   ///
   /// In fr, this message translates to:
-  /// **'3. Stockage et sécurité'**
+  /// **'4. Stockage et sécurité'**
   String get privacyStorageTitle;
 
   /// No description provided for @privacyStorageText.
   ///
   /// In fr, this message translates to:
-  /// **'Vos données sont protégées par :\n\n• Stockage sécurisé sur nos serveurs avec chiffrement\n• Chiffrement des mots de passe avec des algorithmes sécurisés\n• Protection des données en transit et au repos\n• Liens de partage sécurisés avec contrôle d\'accès\n• Sauvegarde régulière de vos listes et données\n• Mesures de sécurité conformes aux standards de l\'industrie\n\nNous appliquons les meilleures pratiques de sécurité pour protéger vos informations.'**
+  /// **'Vos données sont protégées par :\n\n• Un transport chiffré entre l\'application et nos serveurs\n• Des mots de passe conservés sous forme d\'empreinte, jamais en clair : nous ne pouvons pas les lire\n• Une vérification en deux étapes par courriel, si vous l\'activez\n• Des photos de reçus rangées en accès privé, qui ne s\'ouvrent que par un lien temporaire\n• Des liens de partage dont vous fixez les droits, révocables à tout moment\n• Des sauvegardes régulières\n\nAucun système n\'est à l\'abri de tout. Si un incident touchait vos données, nous vous en informerions.'**
   String get privacyStorageText;
 
   /// No description provided for @privacySharingTitle.
   ///
   /// In fr, this message translates to:
-  /// **'4. Partage des données'**
+  /// **'5. Partage des données'**
   String get privacySharingTitle;
 
   /// No description provided for @privacySharingText.
   ///
   /// In fr, this message translates to:
-  /// **'Vos données personnelles ne sont partagées que dans les cas suivants :\n\n• Avec les personnes que vous autorisez via les liens de partage de listes\n• Avec nos prestataires de services techniques (hébergement, support)\n• Avec les autorités légales si requis par la loi\n\nLe partage de listes se fait selon les permissions que vous définissez :\n• Lecture seule : consultation des listes sans modification\n• Édition : ajout, suppression et modification d\'articles\n• Administration : gestion complète incluant suppression de listes\n\nAucun partage commercial de vos données n\'est effectué.'**
+  /// **'Vos données personnelles ne sont partagées que dans ces cas :\n\n• Avec les personnes que vous autorisez, par le partage d\'une liste ou d\'un espace\n• Avec nos fournisseurs techniques, et strictement pour faire fonctionner le service : hébergement infonuagique de la base de données et des images, envoi des courriels, envoi des notifications\n• Avec les autorités, si la loi l\'exige\n\nLe partage d\'une liste suit les droits que vous définissez :\n• Lecture seule : consulter, sans modifier\n• Modification : ajouter, cocher et supprimer des articles\n• Administration : tout gérer, y compris supprimer la liste\n\nAucun partage commercial n\'est effectué.'**
   String get privacySharingText;
 
   /// No description provided for @privacyRightsTitle.
   ///
   /// In fr, this message translates to:
-  /// **'5. Vos droits'**
+  /// **'6. Vos droits'**
   String get privacyRightsTitle;
 
   /// No description provided for @privacyRightsText.
   ///
   /// In fr, this message translates to:
-  /// **'Vous avez le droit de :\n\n• Accéder à toutes vos données personnelles\n• Modifier vos informations de compte (prénom, nom, email)\n• Supprimer votre compte et toutes les données associées\n• Exporter vos listes d\'épicerie\n• Révoquer les liens de partage à tout moment\n• Modifier les permissions d\'accès pour les utilisateurs invités\n• Supprimer vos listes ou articles individuellement\n\nContactez-nous pour exercer ces droits.'**
+  /// **'Vous avez le droit de :\n\n• Accéder à vos données personnelles\n• Corriger vos informations de compte (prénom, nom, courriel)\n• Supprimer votre compte et les données qui s\'y rattachent — voir la section 7\n• Exporter vos reçus en PDF ou en CSV\n• Révoquer un lien de partage, ou changer les droits d\'un membre, à tout moment\n• Supprimer une liste ou un article un par un\n• Retirer votre consentement aux courriels d\'information, sans perdre votre compte\n\nÉcrivez-nous pour exercer un droit que l\'application ne couvre pas encore.'**
   String get privacyRightsText;
+
+  /// No description provided for @privacyAccountDeletionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'7. Suppression du compte'**
+  String get privacyAccountDeletionTitle;
+
+  /// No description provided for @privacyAccountDeletionText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez supprimer votre compte depuis Profil, puis Sécurité — ou depuis epilist.app/suppression-compte si vous n\'avez plus l\'application. Dans les deux cas, une confirmation par courriel est demandée : personne ne peut supprimer votre compte sans accès à votre boîte.\n\nCe qui se passe dès la confirmation :\n\n• Votre prénom, votre nom, votre adresse courriel, votre mot de passe et votre photo de profil sont effacés\n• Vos listes personnelles, vos reçus et leurs photos, vos budgets, votre inventaire, votre historique d\'achats et vos préférences sont détruits\n• Vos appareils, vos jetons de connexion et vos liens de connexion externes sont révoqués\n• Les listes et espaces que vous partagiez sont transmis à un autre membre qui peut les administrer, pour ne pas lui retirer ses courses ; ceux que personne d\'autre ne peut reprendre sont détruits\n• Vos messages dans les conversations partagées restent, signés « Utilisateur supprimé », pour ne pas trouer l\'historique des autres membres\n\nLa ligne vide qui subsiste dans notre base est détruite au plus tard trente jours après la suppression. Votre adresse courriel redevient disponible : vous pouvez créer un nouveau compte avec elle.'**
+  String get privacyAccountDeletionText;
 
   /// No description provided for @privacyFeaturesTitle.
   ///
   /// In fr, this message translates to:
-  /// **'6. Fonctionnalités de l\'application'**
+  /// **'8. Fonctionnalités de l\'application'**
   String get privacyFeaturesTitle;
 
   /// No description provided for @privacyFeaturesText.
@@ -3685,34 +3709,46 @@ abstract class AppLocalizations {
   /// **'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n• Création et gestion de comptes utilisateurs\n• Création, duplication, modification et suppression de listes\n• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n• Marquage d\'articles comme achetés ou suppression d\'articles\n• Calcul automatique des totaux et pourcentages d\'achats\n• Génération de liens de partage sécurisés\n• Gestion des permissions d\'accès collaboratif\n\nToutes ces données restent sous votre contrôle.'**
   String get privacyFeaturesText;
 
+  /// No description provided for @privacyMeasurementTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'9. Mesure d\'audience'**
+  String get privacyMeasurementTitle;
+
+  /// No description provided for @privacyMeasurementText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans l\'application : aucun outil de mesure. Aucun événement d\'usage n\'est envoyé à un tiers. Les seules communications sortantes sont celles qui font fonctionner le service — nos serveurs, l\'envoi des courriels et l\'envoi des notifications.\n\nSur notre site web : des outils de mesure d\'audience fournis par des tiers comptent les visites et indiquent par où les visiteurs arrivent. Ils n\'ont aucun accès au contenu de votre compte EpiList.\n\nSi cela devait changer dans l\'application, nous vous le demanderions avant, et cette page le dirait.'**
+  String get privacyMeasurementText;
+
   /// No description provided for @privacyCookiesTitle.
   ///
   /// In fr, this message translates to:
-  /// **'7. Cookies et technologies similaires'**
+  /// **'10. Témoins et technologies similaires'**
   String get privacyCookiesTitle;
 
   /// No description provided for @privacyCookiesText.
   ///
   /// In fr, this message translates to:
-  /// **'EpiList utilise des technologies de suivi pour :\n\n• Maintenir votre session active\n• Mémoriser vos préférences d\'utilisation\n• Analyser l\'usage de l\'application (données anonymes)\n• Optimiser les performances de l\'application\n\nVous pouvez désactiver ces fonctions dans les paramètres de l\'application.'**
+  /// **'Aucun témoin publicitaire. L\'application garde sur votre téléphone ce qu\'il faut pour vous reconnaître d\'une ouverture à l\'autre — un jeton de connexion — ainsi que vos préférences d\'affichage, comme la langue et le thème.\n\nRien de tout cela ne sert à vous suivre ailleurs, et il n\'y a aucune publicité dans EpiList. Se déconnecter efface le jeton de connexion de l\'appareil.'**
   String get privacyCookiesText;
 
   /// No description provided for @privacyChangesTitle.
   ///
   /// In fr, this message translates to:
-  /// **'8. Modifications'**
+  /// **'11. Modifications'**
   String get privacyChangesTitle;
 
   /// No description provided for @privacyChangesText.
   ///
   /// In fr, this message translates to:
-  /// **'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Email à l\'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l\'application après les changements constitue votre acceptation.'**
+  /// **'Cette politique peut être mise à jour pour suivre les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Un courriel à l\'adresse associée à votre compte\n• La mise à jour de la date en haut de cette page'**
   String get privacyChangesText;
 
   /// No description provided for @privacyContactTitle.
   ///
   /// In fr, this message translates to:
-  /// **'9. Contact'**
+  /// **'12. Nous écrire'**
   String get privacyContactTitle;
 
   /// No description provided for @privacyContactText.

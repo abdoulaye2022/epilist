@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | EpiList",
   },
   description:
-    "Listes de courses partagées en temps réel, suivi de budget, scanner de reçus, comparateur de prix et suggestions selon vos habitudes. Gratuit, sans publicité, hors ligne, iOS et Android.",
+    "Listes de courses partagées avec notifications instantanées, suivi de budget, lecture des reçus, comparateur de prix et suggestions selon vos habitudes. Gratuit, sans publicité, hors ligne, iOS et Android.",
 
   keywords: [
     "liste de courses",
@@ -40,11 +40,11 @@ export const metadata: Metadata = {
     "synchronisation courses famille",
     "courses hors ligne mobile",
     "multi-devises courses",
-    "150 devises supportées",
+    "budget épicerie",
     "SSO Google Apple",
     "catégories personnalisables courses",
     "reçus photo courses",
-    "notifications temps réel",
+    "notifications instantanées",
     "analytiques visuelles courses",
     "organisateur courses intelligent",
     "application courses Canada",
@@ -56,9 +56,10 @@ export const metadata: Metadata = {
     "préférences email courses",
   ].join(", "),
 
-  authors: [{ name: "EpiList Team", url: "https://epilist.app" }],
-  creator: "EpiList Inc.",
-  publisher: "EpiList Inc.",
+  // « EpiList Inc. » n'existe pas : l'editeur est M2atech Solutions Inc.
+  authors: [{ name: "M2atech Solutions Inc.", url: "https://epilist.app" }],
+  creator: "M2atech Solutions Inc.",
+  publisher: "M2atech Solutions Inc.",
 
   robots: {
     index: true,
@@ -82,13 +83,13 @@ export const metadata: Metadata = {
     siteName: "EpiList",
     title: "EpiList — Listes de courses partagées, budget et prix intelligents",
     description:
-      "Listes partagées, synchronisation en temps réel, budget, scanner de reçus et comparateur de prix. Gratuit et sans publicité.",
+      "Listes partagées, notifications instantanées, budget, lecture des reçus et comparateur de prix. Gratuit et sans publicité.",
     images: [
       {
         url: "/images/og-image-main.jpg",
         width: 1200,
         height: 630,
-        alt: "EpiList - Application de courses familiale avec synchronisation temps réel",
+        alt: "EpiList - Application de listes de courses partagées",
         type: "image/jpeg",
       },
       {

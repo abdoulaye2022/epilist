@@ -16,14 +16,14 @@ const seo: Record<RouteKey, Record<Language, PageSeo>> = {
       title:
         'EpiList — Listes de courses partagées, budget et prix intelligents',
       description:
-        "Listes de courses partagées en temps réel, suivi de budget, scanner de reçus, comparateur de prix entre magasins et suggestions selon vos habitudes. Gratuit, sans publicité, hors ligne, iOS et Android.",
+        "Listes de courses partagées avec notifications instantanées, suivi de budget, lecture des reçus, comparateur de prix entre magasins et suggestions selon vos habitudes. Gratuit, sans publicité, hors ligne, iOS et Android.",
       keywords:
         'liste de courses, application courses famille, liste partagée, budget épicerie, scanner de reçus, comparateur de prix épicerie, application courses gratuite, courses hors ligne, EpiList Canada',
     },
     en: {
       title: 'EpiList — Shared grocery lists, smart budget and prices',
       description:
-        'Real-time shared grocery lists, budget tracking, receipt scanner, store price comparison and suggestions based on your habits. Free, ad-free, offline-ready, iOS and Android.',
+        'Shared grocery lists with instant notifications, budget tracking, receipt reading, store price comparison and suggestions based on your habits. Free, ad-free, offline-ready, iOS and Android.',
       keywords:
         'grocery list app, shared shopping list, family groceries, grocery budget, receipt scanner, grocery price comparison, free shopping list app, offline grocery list, EpiList Canada',
     },
@@ -32,14 +32,14 @@ const seo: Record<RouteKey, Record<Language, PageSeo>> = {
     fr: {
       title: 'Fonctionnalités — EpiList',
       description:
-        "Tout EpiList : listes partagées et synchronisées, scanner de reçus, historique et comparateur de prix, suggestions prédictives, inventaire maison, mode magasin trié par rayon, budgets et analyses, 150+ devises, hors ligne.",
+        "Tout EpiList : listes partagées, lecture des reçus, historique et comparateur de prix, suggestions prédictives, inventaire par zone, mode magasin trié par rayon, budgets et analyses, hors ligne.",
       keywords:
         'fonctionnalités EpiList, synchronisation liste courses, scanner reçu épicerie, comparateur prix magasins, suggestions courses, inventaire maison, tri par rayon, budget courses',
     },
     en: {
       title: 'Features — EpiList',
       description:
-        'Everything in EpiList: shared synced lists, receipt scanner, price history and store comparison, predictive suggestions, home inventory, in-store mode sorted by aisle, budgets and analytics, 150+ currencies, offline.',
+        'Everything in EpiList: shared lists, receipt reading, price history and store comparison, predictive suggestions, inventory by zone, in-store mode sorted by aisle, budgets and analytics, offline.',
       keywords:
         'EpiList features, shopping list sync, grocery receipt scanner, store price comparison, shopping suggestions, home inventory, aisle sorting, grocery budget',
     },

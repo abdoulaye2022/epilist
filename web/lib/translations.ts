@@ -18,9 +18,7 @@ export const translations = {
     heroSubtitleHighlight: 'Créez, partagez, économisez.',
     downloadNow: 'Télécharger maintenant',
     watchDemo: 'Voir la démo',
-    timeSaved: '70% de temps économisé',
     familySync: 'Synchronisation familiale',
-    secureData: 'Données sécurisées',
     freeForLife: 'Gratuit à vie',
     noAds: 'Sans publicité',
     instantInstall: 'Installation instantanée',
@@ -37,7 +35,7 @@ export const translations = {
     feature1Desc: 'Créez, modifiez et dupliquez vos listes avec suggestions automatiques et organisation par catégories',
     
     feature2Title: 'Partage familial instantané',
-    feature2Desc: 'Partagez vos listes via liens sécurisés avec gestion des permissions et synchronisation temps réel',
+    feature2Desc: 'Partagez vos listes par lien sécurisé, avec les droits de chacun et une notification instantanée à chaque changement',
     
     feature3Title: 'Gestion avancée des articles',
     feature3Desc: 'Ajoutez des articles avec suggestions intelligentes, quantités et statuts d\'achat personnalisables',
@@ -52,13 +50,18 @@ export const translations = {
     feature6Desc: 'Comptes sécurisés avec confirmation email, gestion de profil et récupération de mot de passe',
     
     feature7Title: 'Collaboration familiale',
-    feature7Desc: 'Invitez votre famille, gérez les permissions et collaborez en temps réel sur vos achats',
+    feature7Desc: 'Invitez votre famille, gérez les droits, et travaillez à plusieurs sur la même liste',
     
     feature8Title: 'Mode hors ligne avancé',
     feature8Desc: 'Travaillez sans connexion avec cache intelligent, synchronisation automatique et file d\'attente des actions',
 
     feature9Title: 'Multi-devises international',
-    feature9Desc: 'Gérez vos budgets dans plus de 150 devises avec conversion automatique et formatage local',
+    // TODO (devises) : le site annoncait « 150+ devises ». Le nombre
+    // reel est en production — le depot ne contient aucun INSERT dans
+    // la table `currencies`. Avant d'ecrire un chiffre ici, verifier :
+    //   SELECT COUNT(*) AS total FROM currencies;
+    //   SELECT COUNT(*) AS actives FROM currencies WHERE is_active = 1;
+    feature9Desc: 'Tenez vos budgets dans la devise de votre pays, avec le formatage local des montants',
 
     feature10Title: 'Connexion SSO simplifiée',
     feature10Desc: 'Connectez-vous rapidement avec Google ou Apple Sign-In, sécurisé et sans mot de passe',
@@ -66,8 +69,8 @@ export const translations = {
     feature11Title: 'Catégories personnalisables',
     feature11Desc: 'Créez et gérez vos propres catégories d\'articles avec icônes et couleurs personnalisées',
 
-    feature12Title: 'Notifications temps réel',
-    feature12Desc: 'Recevez des alertes instantanées pour les partages, modifications et dépassements de budget',
+    feature12Title: 'Notifications instantanées',
+    feature12Desc: 'Recevez une alerte pour les partages, les modifications et les dépassements de budget',
 
     feature13Title: 'Analytiques visuelles',
     feature13Desc: 'Graphiques détaillés de vos dépenses mensuelles, top produits et tendances d\'achat',
@@ -88,7 +91,7 @@ export const translations = {
     feature18Desc: 'Scannez les codes-barres pour ajouter rapidement des produits avec informations nutritionnelles via OpenFoodFacts',
 
     feature19Title: 'Messagerie de listes',
-    feature19Desc: 'Communiquez directement avec les membres de vos listes partagées pour coordonner vos achats en temps réel',
+    feature19Desc: 'Communiquez avec les membres de vos listes partagées pour coordonner vos achats',
 
     feature20Title: 'Gestion des reçus',
     feature20Desc: 'Attachez des photos de reçus à vos listes pour suivre vos dépenses réelles et conserver un historique visuel',
@@ -157,7 +160,6 @@ export const translations = {
     collaborationFeatures: 'Fonctionnalités collaboratives',
     familyInvites: 'Invitations familiales',
     permissionManagement: 'Gestion des permissions',
-    realTimeSync: 'Synchronisation temps réel',
     sharedLists: 'Listes partagées',
     teamwork: 'Travail d\'équipe',
     
@@ -180,84 +182,46 @@ export const translations = {
     // Enhanced Benefits Section
     benefitsTitle: 'Transformez votre',
     benefitsTitleHighlight: 'quotidien',
-    benefitsSubtitle: 'Rejoignez plus de 50 000 familles qui ont déjà révolutionné leur façon de faire les courses avec EpiList',
-    concreteAdvantages: 'Avantages concrets',
+    benefitsSubtitle: 'Ce que l\'application fait vraiment, et que vous pouvez vérifier dès votre première liste',
     
-    benefit1Title: 'Économisez 70% de votre temps',
-    benefit1Desc: 'Fini les allers-retours au magasin et les oublis. Organisez vos courses en quelques minutes avec budgets intégrés.',
-    benefit1Stat: '70%',
-    benefit1StatLabel: 'de temps économisé',
+    benefit1Title: 'Gratuite, et sans publicité',
+    benefit1Desc: 'Aucun abonnement, aucun achat dans l\'application, aucune bannière. Tout ce que vous voyez est accessible sans payer.',
     
-    benefit2Title: 'Coordination familiale parfaite',
-    benefit2Desc: 'Synchronisez vos achats avec tous les membres de votre famille en temps réel avec permissions personnalisées.',
-    benefit2Stat: '100%',
-    benefit2StatLabel: 'de synchronisation',
+    benefit2Title: 'Bilingue d\'un bout à l\'autre',
+    benefit2Desc: 'Français et anglais dans toute l\'application et dans les courriels que vous recevez. On change de langue sans rien perdre.',
     
-    benefit3Title: 'Contrôle budgétaire intelligent',
-    benefit3Desc: 'Suivez vos dépenses avec graphiques détaillés et alertes budgétaires pour éviter les dépassements.',
-    benefit3Stat: '30%',
-    benefit3StatLabel: 'd\'économies moyennes',
+    benefit3Title: 'Fonctionne hors ligne',
+    benefit3Desc: 'Vos listes s\'ouvrent et se modifient sans réseau. Ce que vous faites dans le magasin part dès que la connexion revient.',
     
-    benefit4Title: 'Analyses approfondies',
-    benefit4Desc: 'Découvrez vos habitudes d\'achat avec statistiques avancées et recommandations personnalisées.',
-    benefit4Stat: '∞',
-    benefit4StatLabel: 'insights précieux',
+    benefit4Title: 'Vos reçus se lisent sur votre téléphone',
+    benefit4Desc: 'Vous photographiez un reçu, le texte est lu sur l\'appareil. L\'image n\'est pas analysée sur nos serveurs.',
     
-    benefit5Title: 'Sécurité maximale',
-    benefit5Desc: 'Comptes protégés avec authentification email et récupération sécurisée de mot de passe.',
-    benefit5Stat: '100%',
-    benefit5StatLabel: 'sécurisé',
+    benefit5Title: 'Une liste pour tout le foyer',
+    benefit5Desc: 'Chacun ajoute, coche et voit les mêmes articles, avec les droits que vous choisissez : lecture, modification ou administration.',
     
-    benefit6Title: 'Expérience offline',
-    benefit6Desc: 'Accédez à vos listes même sans connexion internet avec synchronisation automatique.',
-    benefit6Stat: '24/7',
-    benefit6StatLabel: 'disponible',
+    benefit6Title: 'Budgets et alertes',
+    benefit6Desc: 'Fixez un budget par semaine ou par mois, suivez les dépenses, et recevez une alerte avant de le dépasser.',
     
     // Testimonials
     testimonialsTitle: 'Ils ont adopté',
     testimonialsTitleHighlight: 'EpiList',
-    testimonialsSubtitle: 'Découvrez comment EpiList transforme le quotidien de milliers de familles à travers le Canada',
-    clientTestimonials: 'Témoignages clients',
-    autoPlay: 'Lecture automatique',
-    pause: 'Pause',
-    resume: 'Reprendre',
-    positiveReviews: 'Plus de 2000 avis positifs',
-    downloads: '200+ utilisateurs actifs',
+    testimonialsSubtitle: 'Des retours de personnes qui utilisent EpiList, publiés avec leur accord écrit',
     
     // Enhanced testimonials
-    testimonial1Name: 'Marie Dubois',
-    testimonial1Role: 'Mère de famille, Moncton',
-    testimonial1Content: 'Les budgets intelligents d\'EpiList m\'ont aidée à économiser 200$ par mois ! Les graphiques montrent exactement où va notre argent.',
     
-    testimonial2Name: 'Pierre Martin',
-    testimonial2Role: 'Père de 3 enfants, Fredericton',
-    testimonial2Content: 'Le partage familial avec permissions est génial. Ma femme gère les budgets, moi les courses, et les enfants ajoutent leurs demandes.',
     
-    testimonial3Name: 'Sophie Laurent',
-    testimonial3Role: 'Étudiante, Saint John',
-    testimonial3Content: 'Les suggestions d\'articles et les analyses de dépenses m\'aident à mieux gérer mon budget étudiant. Interface parfaite !',
     
-    testimonial4Name: 'Jean-Marc Petit',
-    testimonial4Role: 'Retraité, Bathurst',
-    testimonial4Content: 'Même hors ligne, je peux consulter mes listes. La synchronisation automatique au retour est magique !',
     
-    testimonial5Name: 'Amélie Chen',
-    testimonial5Role: 'Professeure, Dieppe',
-    testimonial5Content: 'Les graphiques des top produits et le suivi mensuel m\'ont révélé mes habitudes. J\'ai optimisé mon budget courses !',
     
     // CTA Section
     ctaTitle: 'Prêt à révolutionner vos courses ?',
-    ctaSubtitle: 'Rejoignez plus de 50 000 familles qui ont déjà transformé leur quotidien avec EpiList',
-    ctaBottomText: 'Commencez dès aujourd\'hui et découvrez pourquoi EpiList est l\'application de courses préférée des familles canadiennes',
-    trustUs: 'nous font confiance',
-    protectedData: 'données protégées',
+    ctaSubtitle: 'Gratuite, sans publicité, et utilisable hors ligne. Sur iOS et sur Android.',
     
     // Footer
     footerDescription: 'L\'application complète qui révolutionne votre façon de faire les courses. Organisez, partagez, budgétisez et analysez vos habitudes d\'achat avec votre famille.',
     footerNewBrunswick: 'Fièrement développé au Nouveau-Brunswick, Canada',
     footerAddress: '123 Avenue Innovation, Fredericton, NB E3B 1A1',
     footerPhone: '+1 (506) 123-4567',
-    footerSupport: 'Support 24h/7j',
     footerFeatures: 'Fonctionnalités',
     footerSupport2: 'Support',
     footerNewsletter: 'Restez informé des nouveautés',
@@ -307,12 +271,6 @@ export const translations = {
     
     // Common
     activeUsers: 'utilisateurs actifs',
-    averageRating: 'Note moyenne',
-    listsCreated: 'Listes créées',
-    satisfaction: 'Satisfaction client',
-    stars: 'étoiles',
-    synchronized: 'Synchronisé',
-    members: 'membres',
     free: '100% Gratuit',
     noHiddenFees: 'Aucun frais caché',
     adFree: 'Sans publicité',
@@ -330,58 +288,22 @@ export const translations = {
     
     // Privacy Policy
     privacyPolicyTitle: 'Politique de confidentialité',
-    privacyPolicySubtitle: 'Votre vie privée est notre priorité. Découvrez comment nous protégeons vos données.',
-    privacyIntroTitle: 'Introduction',
-    privacyIntroText1: 'Chez EpiList, nous nous engageons à protéger votre vie privée et vos données personnelles. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos informations.',
+    privacyPolicySubtitle: 'Ce que nous collectons, pourquoi, où cela est rangé, et ce que vous pouvez en faire.',
     
     // Privacy additional content
-    bankLevelSecurity: 'Sécurité bancaire',
-    aes256Encryption: 'Chiffrement AES-256',
-    canadianServers: 'Serveurs canadiens',
-    dataStaysInCanada: 'Vos données restent au Canada',
-    gdprCompliant: 'Conforme RGPD',
-    internationalStandards: 'Standards internationaux',
-    dataCollectionText: 'Nous collectons uniquement les données nécessaires pour vous offrir la meilleure expérience possible avec EpiList.',
-    dataUsageText: 'Vos données sont utilisées exclusivement pour améliorer votre expérience et assurer le bon fonctionnement de l\'application.',
-    dataSecurityText: 'Nous utilisons les technologies de sécurité les plus avancées pour protéger vos informations personnelles.',
-    userRightsTextP: 'Vous avez un contrôle total sur vos données personnelles et pouvez exercer vos droits à tout moment.',
+    bankLevelSecurity: 'Mots de passe illisibles',
     emailSupport: 'Support par email',
     phoneSupport: 'Support téléphonique',
     ourLocation: 'Notre emplacement',
     
     dataCollectionTitle: 'Collecte des données',
-    personalDataTitle: 'Données personnelles',
-    personalData1: 'Adresse email (pour la création de compte)',
-    personalData2: 'Nom d\'utilisateur (optionnel)',
-    personalData3: 'Préférences de l\'application',
-    usageDataTitle: 'Données d\'utilisation',
-    usageData1: 'Listes de courses créées',
-    usageData2: 'Fréquence d\'utilisation de l\'application',
-    usageData3: 'Données de synchronisation entre appareils',
     
     dataUsageTitle: 'Utilisation des données',
-    dataUsage1: 'Fournir et améliorer nos services',
-    dataUsage2: 'Synchroniser vos listes entre appareils',
-    dataUsage3: 'Personnaliser votre expérience utilisateur',
-    dataUsage4: 'Assurer la sécurité de votre compte',
-    dataUsage5: 'Vous contacter concernant les mises à jour importantes',
     
     dataSecurityTitle: 'Sécurité des données',
-    dataSecurityText1: 'Nous mettons en œuvre des mesures de sécurité robustes pour protéger vos données personnelles contre tout accès non autorisé, altération ou divulgation.',
-    dataSecurity1: 'Chiffrement de niveau bancaire (AES-256)',
-    dataSecurity2: 'Authentification à deux facteurs disponible',
-    dataSecurity3: 'Serveurs sécurisés au Canada',
-    dataSecurity4: 'Audits de sécurité réguliers',
     
     userRightsTitle: 'Vos droits',
-    userRightsText: 'Conformément aux lois canadiennes sur la protection de la vie privée, vous disposez des droits suivants :',
-    userRight1: 'Accéder à vos données personnelles',
-    userRight2: 'Corriger des informations inexactes',
-    userRight3: 'Supprimer votre compte et vos données',
-    userRight4: 'Exporter vos données',
-    userRight5: 'Retirer votre consentement à tout moment',
     
-    contactUsText: 'Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, contactez-nous :',
     
     // Terms of Service
     termsOfServiceTitle: 'Conditions d\'utilisation',
@@ -402,7 +324,7 @@ export const translations = {
     acceptanceContent: 'En téléchargeant, installant ou utilisant l\'application EpiList, vous acceptez d\'être lié par ces conditions d\'utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser notre service.',
     
     serviceDescriptionTitle: 'Description du service',
-    serviceDescriptionContent: 'EpiList est une application mobile gratuite qui permet aux utilisateurs de créer, gérer et partager des listes de courses avec leur famille. Le service comprend la création et gestion de listes de courses, la synchronisation en temps réel entre appareils, le partage familial sécurisé et les suggestions intelligentes d\'articles.',
+    serviceDescriptionContent: 'EpiList est une application mobile gratuite qui permet de créer, gérer et partager des listes de courses avec son foyer. Le service comprend la création et la gestion de listes, le partage avec les droits de chacun, les notifications instantanées lors des changements, les budgets, la lecture des reçus et les suggestions d\'articles.',
     
     userAccountTitle: 'Compte utilisateur',
     userAccountContent: 'Pour utiliser EpiList, vous devez créer un compte avec une adresse email valide. Vous êtes responsable de maintenir la confidentialité de vos informations de connexion et de toutes les activités qui se produisent sous votre compte.',
@@ -423,7 +345,7 @@ export const translations = {
     serviceAvailabilityContent: 'Nous nous efforçons de maintenir EpiList disponible 24h/7j, mais nous ne garantissons pas un service ininterrompu. Des maintenances programmées ou des problèmes techniques peuvent occasionnellement affecter la disponibilité.',
     
     limitationLiabilityTitle: 'Limitation de responsabilité',
-    limitationLiabilityContent: 'EpiList est fourni "tel quel" sans garantie d\'aucune sorte. Nous ne garantissons pas que le service sera ininterrompu ou exempt d\'erreurs. Dans la mesure permise par la loi, EpiList Inc. ne sera pas responsable des dommages indirects, accessoires ou consécutifs résultant de l\'utilisation du service.',
+    limitationLiabilityContent: 'EpiList est fourni "tel quel" sans garantie d\'aucune sorte. Nous ne garantissons pas que le service sera ininterrompu ou exempt d\'erreurs. Dans la mesure permise par la loi, M2atech Solutions Inc. ne sera pas responsable des dommages indirects, accessoires ou consécutifs résultant de l\'utilisation du service.',
     
     suspensionTitle: 'Suspension et résiliation',
     suspensionContent: 'Nous nous réservons le droit de suspendre ou résilier votre accès à EpiList en cas de violation de ces conditions. Vous pouvez supprimer votre compte à tout moment depuis les paramètres de l\'application.',
@@ -489,7 +411,7 @@ export const translations = {
     faq2Question: 'Comment partager une liste avec ma famille ?',
     faq2Answer: 'Dans votre liste, appuyez sur l\'icône de partage, puis invitez les membres de votre famille par email. Ils recevront une invitation à rejoindre la liste.',
     faq3Question: 'Mes données sont-elles synchronisées entre mes appareils ?',
-    faq3Answer: 'Oui, toutes vos listes sont automatiquement synchronisées en temps réel entre tous vos appareils connectés au même compte.',
+    faq3Answer: 'Vos listes sont conservées sur votre compte et se retrouvent sur chacun de vos appareils. L\'application récupère les changements à l\'ouverture et au rafraîchissement, et une notification instantanée signale ce qui bouge dans une liste partagée.',
     faq4Question: 'L\'application fonctionne-t-elle hors ligne ?',
     faq4Answer: 'Oui, vous pouvez consulter et modifier vos listes hors ligne. Les changements seront synchronisés dès que vous retrouverez une connexion internet.',
     
@@ -508,7 +430,7 @@ export const translations = {
     averageResponseTime: 'Temps de réponse moyen',
     
     // Contact Page
-    contactTitle: 'Contactez-nous',
+    contactTitle: 'Nous écrire',
     contactSubtitle: 'Nous sommes là pour vous aider. Envoyez-nous un message et nous vous répondrons rapidement.',
     getInTouch: 'Entrer en contact',
     contactFormDescription: 'Remplissez le formulaire ci-dessous et nous vous répondrons dans les plus brefs délais.',
@@ -538,25 +460,35 @@ export const translations = {
     
     // Privacy Policy - Detailed Content
     dataCollectionTitleP: '1. Collecte des informations',
-    dataCollectionContent: 'EpiList collecte les informations suivantes pour son fonctionnement :\n\n• Informations de compte : nom, prénom, email, mot de passe (chiffré)\n• Données de listes d\'épicerie : noms des listes, articles, quantités, prix, magasins (optionnel)\n• Données de partage : liens de partage, permissions d\'accès (lecture, modification, administration)\n• Données d\'usage : statut d\'achat des articles, calculs de totaux et pourcentages\n• Données techniques : logs d\'erreur, performances de l\'application\n\nNous ne collectons aucune information personnelle sensible au-delà de ce qui est nécessaire au fonctionnement.',
+    dataCollectionContent: 'EpiList collecte les informations suivantes :\n\n• Compte : prénom, nom, adresse courriel, mot de passe (jamais conservé en clair — seule une empreinte est stockée)\n• Listes : noms des listes, articles, quantités, prix, magasins (facultatif)\n• Partage : liens de partage et droits d\'accès (lecture, modification, administration)\n• Reçus : photo du reçu, magasin, date et montants — voir la section « Reçus et photos de reçus »\n• Usage : articles cochés, totaux et pourcentages calculés\n• Technique : journaux d\'erreurs et de performance de l\'application\n• Appareil : un jeton d\'envoi de notifications, si vous les acceptez\n\nPosition : si vous l\'autorisez, l\'application lit la position de votre téléphone pour trier vos magasins du plus proche au plus loin. Cette position reste sur l\'appareil — elle n\'est ni enregistrée, ni envoyée à nos serveurs. Vous pouvez la refuser et ne donner que votre code postal.\n\nNous ne collectons aucune donnée sensible au-delà de ce qui est nécessaire au fonctionnement.',
     
     dataUsageTitleP: '2. Utilisation des données',
-    dataUsageContent: 'Vos données sont utilisées exclusivement pour :\n\n• Créer et gérer votre compte utilisateur\n• Créer, modifier et supprimer vos listes d\'épicerie\n• Calculer les totaux et pourcentages d\'articles achetés\n• Dupliquer vos listes existantes\n• Partager vos listes avec des membres de la famille ou amis via des liens sécurisés\n• Gérer les permissions d\'accès (lecture, modification, administration)\n• Synchroniser vos données entre vos appareils\n• Fournir un support technique\n\nNous ne vendons ni ne louons vos données personnelles à des tiers.',
+    dataUsageContent: 'Vos données servent uniquement à :\n\n• Créer et gérer votre compte\n• Créer, modifier, dupliquer et supprimer vos listes\n• Calculer les totaux et le pourcentage d\'articles achetés\n• Partager vos listes avec les personnes que vous choisissez, selon les droits que vous fixez\n• Retrouver vos listes sur chacun de vos appareils\n• Suivre vos budgets et vous alerter avant un dépassement\n• Vous envoyer les courriels liés à votre compte : vérification, changement de mot de passe, suppression\n• Vous aider quand vous nous écrivez\n\nNous ne vendons, ne louons et n\'échangeons aucune donnée personnelle.',
+    receiptsTitle: 'Reçus et photos de reçus',
+    receiptsContent: 'Quand vous photographiez un reçu :\n\n• La lecture du texte se fait SUR votre téléphone. L\'image n\'est pas envoyée à un service d\'analyse, et nous ne l\'analysons pas sur nos serveurs.\n• Vous validez ce qui a été lu. Seuls le magasin, la date et les montants sont enregistrés dans votre compte, pour vos budgets et votre historique.\n• La photo, si vous la conservez, est rangée de façon privée chez notre fournisseur d\'hébergement infonuagique. Elle n\'a pas d\'adresse publique : l\'application demande un lien temporaire, valable quinze minutes, et seulement si vous avez le droit de voir la liste concernée.\n• Les membres d\'une liste partagée voient les reçus de cette liste. Personne d\'autre.\n• Vos reçus et leurs photos sont effacés avec votre compte.',
     
     dataSecurityTitleP: '3. Stockage et sécurité',
-    dataSecurityContent: 'Vos données sont protégées par :\n\n• Stockage sécurisé sur nos serveurs avec chiffrement\n• Chiffrement des mots de passe avec des algorithmes sécurisés\n• Protection des données lors du transit et au repos\n• Liens de partage sécurisés avec contrôle d\'accès\n• Sauvegarde régulière de vos listes et données\n• Mesures de sécurité conformes aux standards de l\'industrie\n\nNous appliquons les meilleures pratiques de sécurité pour protéger vos informations.',
+    dataSecurityContent: 'Vos données sont protégées par :\n\n• Un transport chiffré entre l\'application et nos serveurs\n• Des mots de passe conservés sous forme d\'empreinte, jamais en clair : nous ne pouvons pas les lire\n• Une vérification en deux étapes par courriel, si vous l\'activez\n• Des photos de reçus rangées en accès privé, qui ne s\'ouvrent que par un lien temporaire\n• Des liens de partage dont vous fixez les droits, révocables à tout moment\n• Des sauvegardes régulières\n\nAucun système n\'est à l\'abri de tout. Si un incident touchait vos données, nous vous en informerions.',
     
-    dataSharingTitle: '4. Partage des données',
-    dataSharingContent: 'Vos données personnelles sont uniquement partagées dans les cas suivants :\n\n• Avec les personnes que vous autorisez via les liens de partage de listes\n• Avec nos prestataires de services techniques (hébergement, support)\n• Avec les autorités légales si requis par la loi\n\nLe partage de listes se fait selon les permissions que vous définissez :\n• Lecture seule : consultation des listes sans modification\n• Modification : ajout, suppression et modification d\'articles\n• Administration : gestion complète incluant suppression de liste\n\nAucun partage commercial de vos données n\'est effectué.',
+    dataSharingTitle: 'Partage des données',
+    dataSharingContent: 'Vos données personnelles ne sont partagées que dans ces cas :\n\n• Avec les personnes que vous autorisez, par le partage d\'une liste ou d\'un espace\n• Avec nos fournisseurs techniques, et strictement pour faire fonctionner le service : hébergement infonuagique de la base de données et des images, envoi des courriels, envoi des notifications\n• Avec les autorités, si la loi l\'exige\n\nLe partage d\'une liste suit les droits que vous définissez :\n• Lecture seule : consulter, sans modifier\n• Modification : ajouter, cocher et supprimer des articles\n• Administration : tout gérer, y compris supprimer la liste\n\nAucun partage commercial n\'est effectué.',
     
     userRightsTitleP: '5. Vos droits',
-    userRightsContent: 'Vous avez le droit de :\n\n• Accéder à toutes vos données personnelles\n• Modifier vos informations de compte (nom, prénom, email)\n• Supprimer votre compte et toutes vos données associées\n• Exporter vos listes d\'épicerie\n• Révoquer les liens de partage à tout moment\n• Modifier les permissions d\'accès des utilisateurs invités\n• Supprimer individuellement vos listes ou articles\n\nContactez-nous pour exercer ces droits.',
+    userRightsContent: 'Vous avez le droit de :\n\n• Accéder à vos données personnelles\n• Corriger vos informations de compte (prénom, nom, courriel)\n• Supprimer votre compte et les données qui s\'y rattachent — depuis l\'application, ou depuis la page de suppression de compte de ce site\n• Exporter vos reçus en PDF ou en CSV depuis l\'application\n• Révoquer un lien de partage, ou changer les droits d\'un membre, à tout moment\n• Supprimer une liste ou un article un par un\n• Retirer votre consentement aux courriels d\'information, sans perdre votre compte\n\nÉcrivez-nous pour exercer un droit que l\'application ne couvre pas encore.',
+    accountDeletionTitle: 'Suppression du compte',
+    accountDeletionContent: 'Vous pouvez supprimer votre compte depuis l\'application — Profil, puis Sécurité — ou depuis la page de suppression de compte de ce site si vous n\'avez plus l\'application. Dans les deux cas, une confirmation par courriel est demandée : personne ne peut supprimer votre compte sans accès à votre boîte.\n\nCe qui se passe dès la confirmation :\n\n• Votre prénom, votre nom, votre adresse courriel, votre mot de passe et votre photo de profil sont effacés\n• Vos listes personnelles, vos reçus et leurs photos, vos budgets, votre inventaire, votre historique d\'achats et vos préférences sont détruits\n• Vos appareils, vos jetons de connexion et vos liens de connexion externes sont révoqués\n• Les listes et espaces que vous partagiez sont transmis à un autre membre qui peut les administrer, pour ne pas lui retirer ses courses ; ceux que personne d\'autre ne peut reprendre sont détruits\n• Vos messages dans les conversations partagées restent, signés « Utilisateur supprimé », pour ne pas trouer l\'historique des autres membres\n\nLa ligne vide qui subsiste dans notre base est détruite au plus tard trente jours après la suppression. Votre adresse courriel redevient disponible : vous pouvez créer un nouveau compte avec elle.',
     
-    appFeaturesTitle: '6. Fonctionnalités de l\'application',
+    appFeaturesTitle: 'Fonctionnalités de l\'application',
     appFeaturesContent: 'EpiList traite vos données pour offrir les fonctionnalités suivantes :\n\n• Création et gestion de comptes utilisateurs\n• Création, duplication, modification et suppression de listes\n• Ajout d\'articles avec nom, quantité, prix et magasin (optionnel)\n• Marquage d\'articles comme achetés ou suppression d\'articles\n• Calcul automatique des totaux et pourcentages d\'achat\n• Génération de liens de partage sécurisés\n• Gestion des permissions d\'accès collaboratif\n\nToutes ces données restent sous votre contrôle.',
+    measurementTitle: 'Mesure d\'audience',
+    measurementContent: 'Dans l\'application : aucun outil de mesure. Aucun événement d\'usage n\'est envoyé à un tiers. Les seules communications sortantes sont celles qui font fonctionner le service — nos serveurs, l\'envoi des courriels et l\'envoi des notifications.\n\nSur ce site web : nous utilisons des outils de mesure d\'audience fournis par des tiers, pour savoir combien de personnes visitent les pages et par où elles arrivent. Ils déposent des témoins et enregistrent des informations techniques : pages vues, provenance, type d\'appareil. Ils n\'ont aucun accès au contenu de votre compte EpiList — ce site ne le lit jamais.\n\nVous pouvez les bloquer en refusant les témoins dans votre navigateur. Un réglage de consentement sur le site est en préparation.',
     
-    cookiesTitle: '7. Cookies et technologies similaires',
-    cookiesContent: 'EpiList utilise des technologies de suivi pour :\n\n• Maintenir votre session active\n• Mémoriser vos préférences d\'utilisation\n• Analyser l\'utilisation de l\'application (données anonymes)\n• Optimiser les performances de l\'application\n\nVous pouvez désactiver ces fonctions dans les paramètres de l\'application.',
+    cookiesTitle: 'Témoins et technologies similaires',
+    cookiesContent: 'Dans l\'application : aucun témoin publicitaire. L\'application garde sur votre téléphone ce qu\'il faut pour vous reconnaître d\'une ouverture à l\'autre — un jeton de connexion — ainsi que vos préférences d\'affichage, comme la langue et le thème.\n\nSur ce site : votre choix de langue est conservé par votre navigateur, et les outils de mesure d\'audience décrits à la section précédente déposent leurs propres témoins. Vous pouvez tout effacer depuis votre navigateur ; le site reste utilisable.\n\nNous n\'utilisons aucun témoin pour vous montrer de la publicité : il n\'y en a pas dans EpiList.',
+    privacyModificationsTitle: 'Modifications de cette politique',
+    privacyModificationsContent: 'Cette politique peut être mise à jour pour suivre les évolutions de l\'application. Les changements importants vous seront annoncés par courriel à l\'adresse de votre compte, et la date en haut de cette page sera modifiée.',
+    privacyUpdatedDate: '29 octobre 2026',
+    dataResidencyCanada: 'Nos serveurs et le stockage des images sont situés au Canada.',
     
     modificationsTitleP: '8. Modifications',
     modificationsContentP: 'Cette politique peut être mise à jour pour refléter les évolutions de l\'application. Nous vous informerons des changements importants par :\n\n• Email à l\'adresse associée à votre compte\n• Mise à jour de la date en haut de cette politique\n\nVotre utilisation continue de l\'application après les modifications constitue votre acceptation.',
@@ -565,11 +497,11 @@ export const translations = {
     contactContent: 'Pour toute question concernant cette politique de confidentialité ou vos données, veuillez nous contacter via notre site web.\n\nNous nous engageons à répondre sous 48h ouvrées.',
     
     // Additional privacy terms
-    encryptedStorage: 'Stockage chiffré',
-    dataProtection: 'Protection des données',
-    industryStandards: 'Standards de l\'industrie',
-    userControl: 'Contrôle utilisateur',
-    fullDataControl: 'Contrôle total de vos données',
+    encryptedStorage: 'Conservés sous forme d\'empreinte, même pour nous',
+    dataProtection: 'Photos de reçus privées',
+    industryStandards: 'Ouvertes par un lien de quinze minutes',
+    userControl: 'Suppression réelle',
+    fullDataControl: 'Vos données effacées, pas seulement désactivées',
     allRightsReserved: 'Tous droits réservés',
 
     // Footer additional
@@ -587,7 +519,7 @@ export const translations = {
     newsletterDescription: 'Nouvelles fonctionnalités, conseils courses et mises à jour exclusives',
     subscribe: 'S\'abonner',
     newBrunswick: '🍁 Nouveau-Brunswick',
-    copyright: '© 2025 EpiList Inc. Tous droits réservés.',
+    copyright: '© EpiList — M2atech Solutions Inc. Tous droits réservés.',
     madeWith: 'Made with',
     inNewBrunswick: 'in New Brunswick',
 
@@ -599,9 +531,9 @@ export const translations = {
     featurePredictTitle: 'Suggestions prédictives',
     featurePredictDesc: "« Il vous manque probablement du lait » : EpiList apprend vos habitudes et prévient avant la panne.",
     featureInventoryTitle: 'Inventaire maison',
-    featureInventoryDesc: "Trois états simples — à la maison, bientôt terminé, terminé — synchronisés avec vos listes.",
+    featureInventoryDesc: 'Rangé par zone — garde-manger, frigo, congélateur, entretien — et relié à vos listes.',
     featureStoreModeTitle: 'Mode magasin',
-    featureStoreModeDesc: 'Votre liste triée rayon par rayon selon votre magasin, avec progression en temps réel.',
+    featureStoreModeDesc: 'Votre liste triée rayon par rayon selon votre magasin, avec la progression qui suit vos achats.',
     featureMealsTitle: 'Planificateur de repas',
     featureMealsDesc: 'Choisissez vos repas, EpiList consolide les ingrédients et crée la liste en tenant compte de votre inventaire.',
     switchToEnglish: 'English version',
@@ -627,8 +559,8 @@ export const translations = {
     aboutStat2Label: 'Gratuite, sans publicité',
     aboutStat3Value: '2',
     aboutStat3Label: 'Langues (français, anglais)',
-    aboutStat4Value: '150+',
-    aboutStat4Label: 'Devises supportées',
+    aboutStat4Value: 'Hors ligne',
+    aboutStat4Label: 'Listes accessibles sans réseau',
     aboutTeamTitle: 'Une équipe des Maritimes',
     aboutTeamText: 'EpiList est développée par M2atech Solutions Inc., une équipe qui combine expertise technique et compréhension concrète des besoins des familles canadiennes.',
     // Page Aide
@@ -638,7 +570,7 @@ export const translations = {
     helpFaq1Q: 'EpiList est-elle vraiment gratuite ?',
     helpFaq1A: 'Oui, EpiList est entièrement gratuite : aucun frais caché, aucun abonnement, aucune publicité.',
     helpFaq2Q: 'Comment partager mes listes avec ma famille ?',
-    helpFaq2A: 'Créez votre liste puis partagez-la par lien ou invitation. Tous les changements se synchronisent instantanément chez chaque membre.',
+    helpFaq2A: 'Créez votre liste puis partagez-la par lien ou par invitation. Chaque membre reçoit une notification instantanée lorsqu\'un article change.',
     helpFaq3Q: 'L\u2019application fonctionne-t-elle hors ligne ?',
     helpFaq3A: 'Oui. Vos listes restent disponibles sans connexion et se synchronisent dès que vous retrouvez Internet.',
     helpFaq4Q: 'Sur quelles plateformes EpiList est-elle disponible ?',
@@ -667,7 +599,7 @@ export const translations = {
     dlShot2Title: 'Analyses détaillées',
     dlShot2Desc: 'Suivez vos habitudes d\u2019achat',
     dlShot3Title: 'Budget maîtrisé',
-    dlShot3Desc: 'Contrôlez vos dépenses en temps réel',
+    dlShot3Desc: 'Suivez vos dépenses de près',
     // Page Comparaison
     cmpTitle: 'Pourquoi choisir EpiList ?',
     cmpSubtitle: 'Comparaison factuelle avec les principales applications de listes de courses.',
@@ -736,9 +668,7 @@ export const translations = {
     heroSubtitleHighlight: 'Create, share, save.',
     downloadNow: 'Download now',
     watchDemo: 'Watch demo',
-    timeSaved: '70% time saved',
     familySync: 'Family synchronization',
-    secureData: 'Secure data',
     freeForLife: 'Free for life',
     noAds: 'Ad-free',
     instantInstall: 'Instant install',
@@ -755,7 +685,7 @@ export const translations = {
     feature1Desc: 'Create, edit and duplicate your lists with automatic suggestions and category organization',
     
     feature2Title: 'Instant Family Sharing',
-    feature2Desc: 'Share your lists via secure links with permission management and real-time synchronization',
+    feature2Desc: 'Share your lists by secure link, with each person’s rights and an instant notification on every change',
     
     feature3Title: 'Advanced Item Management',
     feature3Desc: 'Add items with smart suggestions, customizable quantities and purchase statuses',
@@ -770,13 +700,18 @@ export const translations = {
     feature6Desc: 'Secure accounts with email confirmation, profile management and password recovery',
     
     feature7Title: 'Family Collaboration',
-    feature7Desc: 'Invite your family, manage permissions and collaborate in real-time on your purchases',
+    feature7Desc: 'Invite your family, manage rights, and work together on the same list',
     
     feature8Title: 'Advanced Offline Mode',
     feature8Desc: 'Work without connection with smart cache, automatic sync and action queue',
 
     feature9Title: 'Multi-Currency International',
-    feature9Desc: 'Manage budgets in 150+ currencies with automatic conversion and local formatting',
+    // TODO (devises) : le site annoncait « 150+ devises ». Le nombre
+    // reel est en production — le depot ne contient aucun INSERT dans
+    // la table `currencies`. Avant d'ecrire un chiffre ici, verifier :
+    //   SELECT COUNT(*) AS total FROM currencies;
+    //   SELECT COUNT(*) AS actives FROM currencies WHERE is_active = 1;
+    feature9Desc: 'Keep your budgets in your own currency, with amounts formatted the local way',
 
     feature10Title: 'Simplified SSO Login',
     feature10Desc: 'Sign in quickly with Google or Apple Sign-In, secure and password-free',
@@ -784,8 +719,8 @@ export const translations = {
     feature11Title: 'Customizable Categories',
     feature11Desc: 'Create and manage your own item categories with custom icons and colors',
 
-    feature12Title: 'Real-Time Notifications',
-    feature12Desc: 'Receive instant alerts for sharing, changes and budget overruns',
+    feature12Title: 'Instant notifications',
+    feature12Desc: 'Get an alert for shares, changes and budget overruns',
 
     feature13Title: 'Visual Analytics',
     feature13Desc: 'Detailed charts of monthly expenses, top products and shopping trends',
@@ -806,7 +741,7 @@ export const translations = {
     feature18Desc: 'Scan barcodes to quickly add products with nutritional information via OpenFoodFacts',
 
     feature19Title: 'List Messaging',
-    feature19Desc: 'Communicate directly with members of your shared lists to coordinate your purchases in real-time',
+    feature19Desc: 'Talk with the members of your shared lists to coordinate your shopping',
 
     feature20Title: 'Receipt Management',
     feature20Desc: 'Attach receipt photos to your lists to track actual expenses and maintain a visual history',
@@ -875,7 +810,6 @@ export const translations = {
     collaborationFeatures: 'Collaborative Features',
     familyInvites: 'Family invitations',
     permissionManagement: 'Permission management',
-    realTimeSync: 'Real-time synchronization',
     sharedLists: 'Shared lists',
     teamwork: 'Teamwork',
     
@@ -898,84 +832,46 @@ export const translations = {
     // Enhanced Benefits Section
     benefitsTitle: 'Transform your',
     benefitsTitleHighlight: 'daily life',
-    benefitsSubtitle: 'Join over 50,000 families who have already revolutionized their shopping with EpiList',
-    concreteAdvantages: 'Concrete advantages',
+    benefitsSubtitle: 'What the app actually does — and what you can check for yourself on your first list',
     
-    benefit1Title: 'Save 70% of your time',
-    benefit1Desc: 'No more back-and-forth trips to the store and forgotten items. Organize your shopping in minutes with integrated budgets.',
-    benefit1Stat: '70%',
-    benefit1StatLabel: 'time saved',
+    benefit1Title: 'Free, and ad-free',
+    benefit1Desc: 'No subscription, no in-app purchase, no banner. Everything you see is available without paying.',
     
-    benefit2Title: 'Perfect family coordination',
-    benefit2Desc: 'Synchronize your purchases with all family members in real-time with personalized permissions.',
-    benefit2Stat: '100%',
-    benefit2StatLabel: 'synchronization',
+    benefit2Title: 'Bilingual all the way through',
+    benefit2Desc: 'French and English across the whole app and in the emails you receive. Switch language without losing anything.',
     
-    benefit3Title: 'Smart budget control',
-    benefit3Desc: 'Track your expenses with detailed charts and budget alerts to avoid overspending.',
-    benefit3Stat: '30%',
-    benefit3StatLabel: 'average savings',
+    benefit3Title: 'Works offline',
+    benefit3Desc: 'Your lists open and change with no network. What you do in the store syncs as soon as the connection is back.',
     
-    benefit4Title: 'Deep insights',
-    benefit4Desc: 'Discover your shopping habits with advanced statistics and personalized recommendations.',
-    benefit4Stat: '∞',
-    benefit4StatLabel: 'valuable insights',
+    benefit4Title: 'Your receipts are read on your phone',
+    benefit4Desc: 'You photograph a receipt and the text is read on the device. The image is not analysed on our servers.',
     
-    benefit5Title: 'Maximum security',
-    benefit5Desc: 'Protected accounts with email authentication and secure password recovery.',
-    benefit5Stat: '100%',
-    benefit5StatLabel: 'secure',
+    benefit5Title: 'One list for the whole household',
+    benefit5Desc: 'Everyone adds, checks off and sees the same items, with the rights you choose: read, edit or admin.',
     
-    benefit6Title: 'Offline experience',
-    benefit6Desc: 'Access your lists even without internet connection with automatic synchronization.',
-    benefit6Stat: '24/7',
-    benefit6StatLabel: 'available',
+    benefit6Title: 'Budgets and alerts',
+    benefit6Desc: 'Set a weekly or monthly budget, track spending, and get an alert before you go over.',
     
     // Testimonials
     testimonialsTitle: 'They adopted',
     testimonialsTitleHighlight: 'EpiList',
-    testimonialsSubtitle: 'Discover how EpiList transforms the daily lives of thousands of families across Canada',
-    clientTestimonials: 'Client testimonials',
-    autoPlay: 'Auto-play',
-    pause: 'Pause',
-    resume: 'Resume',
-    positiveReviews: 'Over 2000 positive reviews',
-    downloads: '200+ active users',
+    testimonialsSubtitle: 'Feedback from people who use EpiList, published with their written consent',
     
     // Enhanced testimonials
-    testimonial1Name: 'Marie Dubois',
-    testimonial1Role: 'Mother of family, Moncton',
-    testimonial1Content: 'EpiList\'s smart budgets helped me save $200 per month! The charts show exactly where our money goes.',
     
-    testimonial2Name: 'Pierre Martin',
-    testimonial2Role: 'Father of 3 children, Fredericton',
-    testimonial2Content: 'Family sharing with permissions is brilliant. My wife manages budgets, I handle shopping, and kids add their requests.',
     
-    testimonial3Name: 'Sophie Laurent',
-    testimonial3Role: 'Student, Saint John',
-    testimonial3Content: 'Item suggestions and expense analysis help me better manage my student budget. Perfect interface!',
     
-    testimonial4Name: 'Jean-Marc Petit',
-    testimonial4Role: 'Retiree, Bathurst',
-    testimonial4Content: 'Even offline, I can check my lists. The automatic sync when back online is magical!',
     
-    testimonial5Name: 'Amélie Chen',
-    testimonial5Role: 'Teacher, Dieppe',
-    testimonial5Content: 'Top product charts and monthly tracking revealed my habits. I optimized my grocery budget!',
     
     // CTA Section
     ctaTitle: 'Ready to revolutionize your shopping?',
-    ctaSubtitle: 'Join over 50,000 families who have already transformed their daily lives with EpiList',
-    ctaBottomText: 'Start today and discover why EpiList is the favorite shopping app for Canadian families',
-    trustUs: 'trust us',
-    protectedData: 'protected data',
+    ctaSubtitle: 'Free, ad-free, and usable offline. On iOS and on Android.',
     
     // Footer
     footerDescription: 'The complete app that revolutionizes your way of shopping. Organize, share, budget and analyze your shopping habits with your family.',
     footerNewBrunswick: 'Proudly developed in New Brunswick, Canada',
     footerAddress: '123 Innovation Avenue, Fredericton, NB E3B 1A1',
     footerPhone: '+1 (506) 123-4567',
-    footerSupport: '24/7 Support',
     footerFeatures: 'Features',
     footerSupport2: 'Support',
     footerNewsletter: 'Stay informed about news',
@@ -1025,12 +921,6 @@ export const translations = {
     
     // Common
     activeUsers: 'active users',
-    averageRating: 'Average rating',
-    listsCreated: 'Lists created',
-    satisfaction: 'Customer satisfaction',
-    stars: 'stars',
-    synchronized: 'Synchronized',
-    members: 'members',
     free: '100% Free',
     noHiddenFees: 'No hidden fees',
     adFree: 'Ad-free',
@@ -1048,58 +938,22 @@ export const translations = {
     
     // Privacy Policy
     privacyPolicyTitle: 'Privacy Policy',
-    privacyPolicySubtitle: 'Your privacy is our priority. Learn how we protect your data.',
-    privacyIntroTitle: 'Introduction',
-    privacyIntroText1: 'At EpiList, we are committed to protecting your privacy and personal data. This privacy policy explains how we collect, use, and protect your information.',
+    privacyPolicySubtitle: 'What we collect, why, where it is kept, and what you can do about it.',
     
     // Privacy additional content
-    bankLevelSecurity: 'Bank-level security',
-    aes256Encryption: 'AES-256 encryption',
-    canadianServers: 'Canadian servers',
-    dataStaysInCanada: 'Your data stays in Canada',
-    gdprCompliant: 'GDPR compliant',
-    internationalStandards: 'International standards',
-    dataCollectionText: 'We only collect the data necessary to provide you with the best possible EpiList experience.',
-    dataUsageText: 'Your data is used exclusively to improve your experience and ensure the proper functioning of the application.',
-    dataSecurityText: 'We use the most advanced security technologies to protect your personal information.',
-    userRightsTextP: 'You have complete control over your personal data and can exercise your rights at any time.',
+    bankLevelSecurity: 'Unreadable passwords',
     emailSupport: 'Email support',
     phoneSupport: 'Phone support',
     ourLocation: 'Our location',
     
-    dataCollectionTitle: 'Data Collection',
-    personalDataTitle: 'Personal Data',
-    personalData1: 'Email address (for account creation)',
-    personalData2: 'Username (optional)',
-    personalData3: 'Application preferences',
-    usageDataTitle: 'Usage Data',
-    usageData1: 'Shopping lists created',
-    usageData2: 'Application usage frequency',
-    usageData3: 'Device synchronization data',
+    dataCollectionTitle: 'Data we collect',
     
-    dataUsageTitle: 'Data Usage',
-    dataUsage1: 'Provide and improve our services',
-    dataUsage2: 'Synchronize your lists across devices',
-    dataUsage3: 'Personalize your user experience',
-    dataUsage4: 'Ensure your account security',
-    dataUsage5: 'Contact you regarding important updates',
+    dataUsageTitle: 'How we use your data',
     
-    dataSecurityTitle: 'Data Security',
-    dataSecurityText1: 'We implement robust security measures to protect your personal data against unauthorized access, alteration, or disclosure.',
-    dataSecurity1: 'Bank-level encryption (AES-256)',
-    dataSecurity2: 'Two-factor authentication available',
-    dataSecurity3: 'Secure servers in Canada',
-    dataSecurity4: 'Regular security audits',
+    dataSecurityTitle: 'Data security',
     
-    userRightsTitle: 'Your Rights',
-    userRightsText: 'In accordance with Canadian privacy laws, you have the following rights:',
-    userRight1: 'Access your personal data',
-    userRight2: 'Correct inaccurate information',
-    userRight3: 'Delete your account and data',
-    userRight4: 'Export your data',
-    userRight5: 'Withdraw your consent at any time',
+    userRightsTitle: 'Your rights',
     
-    contactUsText: 'For any questions regarding this privacy policy or to exercise your rights, contact us:',
     
     // Terms of Service
     termsOfServiceTitle: 'Terms of Service',
@@ -1120,7 +974,7 @@ export const translations = {
     acceptanceContent: 'By downloading, installing, or using the EpiList application, you agree to be bound by these terms of service. If you do not agree to these terms, please do not use our service.',
     
     serviceDescriptionTitle: 'Service Description',
-    serviceDescriptionContent: 'EpiList is a free mobile application that allows users to create, manage, and share shopping lists with their family. The service includes creation and management of shopping lists, real-time synchronization across devices, secure family sharing, and smart item suggestions.',
+    serviceDescriptionContent: 'EpiList is a free mobile application for creating, managing and sharing grocery lists with your household. The service includes list creation and management, sharing with per-person rights, instant notifications on changes, budgets, receipt reading and item suggestions.',
     
     userAccountTitle: 'User Account',
     userAccountContent: 'To use EpiList, you must create an account with a valid email address. You are responsible for maintaining the confidentiality of your login information and all activities that occur under your account.',
@@ -1141,7 +995,7 @@ export const translations = {
     serviceAvailabilityContent: 'We strive to keep EpiList available 24/7, but we do not guarantee uninterrupted service. Scheduled maintenance or technical issues may occasionally affect availability.',
     
     limitationLiabilityTitle: 'Limitation of Liability',
-    limitationLiabilityContent: 'EpiList is provided "as is" without warranty of any kind. We do not guarantee that the service will be uninterrupted or error-free. To the extent permitted by law, EpiList Inc. will not be liable for indirect, incidental, or consequential damages resulting from the use of the service.',
+    limitationLiabilityContent: 'EpiList is provided "as is" without warranty of any kind. We do not guarantee that the service will be uninterrupted or error-free. To the extent permitted by law, M2atech Solutions Inc. will not be liable for indirect, incidental, or consequential damages resulting from the use of the service.',
     
     suspensionTitle: 'Suspension and Termination',
     suspensionContent: 'We reserve the right to suspend or terminate your access to EpiList in case of violation of these terms. You can delete your account at any time from the application settings.',
@@ -1207,7 +1061,7 @@ export const translations = {
     faq2Question: 'How do I share a list with my family?',
     faq2Answer: 'In your list, tap the share icon, then invite family members by email. They will receive an invitation to join the list.',
     faq3Question: 'Is my data synchronized across my devices?',
-    faq3Answer: 'Yes, all your lists are automatically synchronized in real-time across all your devices connected to the same account.',
+    faq3Answer: 'Your lists live in your account and show up on each of your devices. The app fetches changes when it opens and when you refresh, and an instant notification tells you what moved in a shared list.',
     faq4Question: 'Does the app work offline?',
     faq4Answer: 'Yes, you can view and edit your lists offline. Changes will be synchronized as soon as you regain an internet connection.',
     
@@ -1226,7 +1080,7 @@ export const translations = {
     averageResponseTime: 'Average response time',
     
     // Contact Page
-    contactTitle: 'Contact Us',
+    contactTitle: 'Write to us',
     contactSubtitle: 'We\'re here to help. Send us a message and we\'ll respond quickly.',
     getInTouch: 'Get in Touch',
     contactFormDescription: 'Fill out the form below and we\'ll get back to you as soon as possible.',
@@ -1256,25 +1110,35 @@ export const translations = {
     
     // Privacy Policy - Detailed Content
     dataCollectionTitleP: '1. Information Collection',
-    dataCollectionContent: 'EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, admin)\n• Usage data: item purchase status, total and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.',
+    dataCollectionContent: 'EpiList collects the following information:\n\n• Account: first name, last name, email address, password (never kept in clear text — only a hash is stored)\n• Lists: list names, items, quantities, prices, stores (optional)\n• Sharing: sharing links and access rights (read, edit, admin)\n• Receipts: the receipt photo, store, date and amounts — see the "Receipts and receipt photos" section\n• Usage: items checked off, totals and percentages computed\n• Technical: application error and performance logs\n• Device: a notification token, if you accept notifications\n\nLocation: if you allow it, the app reads your phone’s location to sort your stores from nearest to farthest. That location stays on the device — it is not stored and not sent to our servers. You can refuse it and give only your postal code.\n\nWe collect no sensitive data beyond what the service needs to work.',
     
     dataUsageTitleP: '2. Data Usage',
-    dataUsageContent: 'Your data is used exclusively to:\n\n• Create and manage your user account\n• Create, edit and delete your grocery lists\n• Calculate totals and percentages of purchased items\n• Duplicate your existing lists\n• Share your lists with family members or friends via secure links\n• Manage access permissions (read, edit, admin)\n• Synchronize your data across your devices\n• Provide technical support\n\nWe do not sell or rent your personal data to third parties.',
+    dataUsageContent: 'Your data is used only to:\n\n• Create and manage your account\n• Create, edit, duplicate and delete your lists\n• Compute totals and the percentage of items bought\n• Share your lists with the people you choose, with the rights you set\n• Find your lists again on each of your devices\n• Track your budgets and alert you before you go over\n• Send you the emails tied to your account: verification, password change, deletion\n• Help you when you write to us\n\nWe do not sell, rent or trade any personal data.',
+    receiptsTitle: 'Receipts and receipt photos',
+    receiptsContent: 'When you photograph a receipt:\n\n• The text is read ON your phone. The image is not sent to an analysis service, and we do not analyse it on our servers.\n• You confirm what was read. Only the store, the date and the amounts are saved to your account, for your budgets and your history.\n• The photo, if you keep it, is stored privately with our cloud hosting provider. It has no public address: the app asks for a temporary link, valid for fifteen minutes, and only if you are allowed to see the list it belongs to.\n• The members of a shared list see that list’s receipts. Nobody else.\n• Your receipts and their photos are erased along with your account.',
     
     dataSecurityTitleP: '3. Storage and Security',
-    dataSecurityContent: 'Your data is protected by:\n\n• Secure storage on our servers with encryption\n• Password encryption with secure algorithms\n• Data protection during transit and at rest\n• Secure sharing links with access control\n• Regular backup of your lists and data\n• Security measures compliant with industry standards\n\nWe apply security best practices to protect your information.',
+    dataSecurityContent: 'Your data is protected by:\n\n• Encrypted transport between the app and our servers\n• Passwords kept as a hash, never in clear text: we cannot read them\n• Two-step email verification, if you turn it on\n• Receipt photos kept private, which open only through a temporary link\n• Sharing links whose rights you set, revocable at any time\n• Regular backups\n\nNo system is beyond reach. If an incident affected your data, we would tell you.',
     
-    dataSharingTitle: '4. Data Sharing',
-    dataSharingContent: 'Your personal data is only shared in the following cases:\n\n• With people you authorize via list sharing links\n• With our technical service providers (hosting, support)\n• With legal authorities if required by law\n\nList sharing is done according to the permissions you define:\n• Read-only: view lists without modification\n• Edit: add, delete and modify items\n• Admin: complete management including list deletion\n\nNo commercial sharing of your data is performed.',
+    dataSharingTitle: 'Data sharing',
+    dataSharingContent: 'Your personal data is shared only in these cases:\n\n• With the people you authorize, by sharing a list or a space\n• With our technical providers, strictly to run the service: cloud hosting of the database and images, sending emails, sending notifications\n• With the authorities, where the law requires it\n\nSharing a list follows the rights you set:\n• Read-only: view, without changing\n• Edit: add, check off and remove items\n• Admin: manage everything, including deleting the list\n\nNo commercial sharing takes place.',
     
     userRightsTitleP: '5. Your Rights',
-    userRightsContent: 'You have the right to:\n\n• Access all your personal data\n• Modify your account information (first name, last name, email)\n• Delete your account and all associated data\n• Export your grocery lists\n• Revoke sharing links at any time\n• Modify access permissions for invited users\n• Delete your lists or items individually\n\nContact us to exercise these rights.',
+    userRightsContent: 'You have the right to:\n\n• Access your personal data\n• Correct your account information (first name, last name, email)\n• Delete your account and the data attached to it — from the app, or from the account deletion page on this site\n• Export your receipts as PDF or CSV from the app\n• Revoke a sharing link, or change a member’s rights, at any time\n• Delete a list or an item one at a time\n• Withdraw your consent to our news emails without losing your account\n\nWrite to us to exercise a right the app does not cover yet.',
+    accountDeletionTitle: 'Deleting your account',
+    accountDeletionContent: 'You can delete your account from the app — Profile, then Security — or from the account deletion page on this site if you no longer have the app. Either way, an email confirmation is required: nobody can delete your account without access to your inbox.\n\nWhat happens as soon as you confirm:\n\n• Your first name, last name, email address, password and profile photo are erased\n• Your personal lists, your receipts and their photos, your budgets, your inventory, your purchase history and your preferences are destroyed\n• Your devices, sign-in tokens and external sign-in links are revoked\n• The lists and spaces you shared are handed over to another member who can administer them, so they do not lose their groceries; those nobody else can take over are destroyed\n• Your messages in shared conversations stay, signed "Deleted user", so the other members’ history keeps its thread\n\nThe empty row left in our database is destroyed within thirty days of the deletion. Your email address becomes available again: you can create a new account with it.',
     
-    appFeaturesTitle: '6. Application Features',
+    appFeaturesTitle: 'Application features',
     appFeaturesContent: 'EpiList processes your data to offer the following features:\n\n• Creation and management of user accounts\n• Creation, duplication, modification and deletion of lists\n• Adding items with name, quantity, price and store (optional)\n• Marking items as purchased or deleting items\n• Automatic calculation of purchase totals and percentages\n• Generation of secure sharing links\n• Management of collaborative access permissions\n\nAll this data remains under your control.',
+    measurementTitle: 'Audience measurement',
+    measurementContent: 'In the app: no measurement tool. No usage event is sent to a third party. The only outgoing traffic is what makes the service work — our servers, sending emails and sending notifications.\n\nOn this website: we use third-party audience measurement tools, to know how many people visit the pages and where they come from. They set cookies and record technical information: pages viewed, referrer, device type. They have no access to the contents of your EpiList account — this site never reads it.\n\nYou can block them by refusing cookies in your browser. A consent setting for the site is in preparation.',
     
-    cookiesTitle: '7. Cookies and Similar Technologies',
-    cookiesContent: 'EpiList uses tracking technologies to:\n\n• Maintain your active session\n• Remember your usage preferences\n• Analyze application usage (anonymous data)\n• Optimize application performance\n\nYou can disable these functions in the application settings.',
+    cookiesTitle: 'Cookies and similar technologies',
+    cookiesContent: 'In the app: no advertising cookie. The app keeps on your phone what it needs to recognise you from one launch to the next — a sign-in token — plus your display preferences, such as language and theme.\n\nOn this site: your language choice is kept by your browser, and the audience measurement tools described in the previous section set their own cookies. You can clear all of it from your browser; the site stays usable.\n\nWe use no cookie to show you advertising: there is none in EpiList.',
+    privacyModificationsTitle: 'Changes to this policy',
+    privacyModificationsContent: 'This policy may be updated to follow changes in the app. Significant changes will be announced by email to your account address, and the date at the top of this page will change.',
+    privacyUpdatedDate: 'October 29, 2026',
+    dataResidencyCanada: 'Our servers and image storage are located in Canada.',
     
     modificationsTitleP: '8. Modifications',
     modificationsContentP: 'This policy may be updated to reflect application developments. We will inform you of important changes by:\n\n• Email to the address associated with your account\n• Updating the date at the top of this policy\n\nYour continued use of the application after modifications constitutes your acceptance.',
@@ -1283,11 +1147,11 @@ export const translations = {
     contactContent: 'For any questions regarding this privacy policy or your data, please contact us via our website.\n\nWe are committed to responding within 48 business hours.',
     
     // Additional privacy terms
-    encryptedStorage: 'Encrypted storage',
-    dataProtection: 'Data protection',
-    industryStandards: 'Industry standards',
-    userControl: 'User control',
-    fullDataControl: 'Full control of your data',
+    encryptedStorage: 'Kept as a hash, even from us',
+    dataProtection: 'Private receipt photos',
+    industryStandards: 'Opened by a fifteen-minute link',
+    userControl: 'Real deletion',
+    fullDataControl: 'Your data erased, not just deactivated',
     allRightsReserved: 'All rights reserved',
 
     // Footer
@@ -1305,7 +1169,7 @@ export const translations = {
     stayInformed: 'Stay informed 📬',
     newsletterDescription: 'New features, shopping tips and exclusive updates',
     subscribe: 'Subscribe',
-    copyright: '© 2025 EpiList Inc. All rights reserved.',
+    copyright: '© EpiList — M2atech Solutions Inc. All rights reserved.',
     madeWith: 'Made with',
     inNewBrunswick: 'in New Brunswick',
     // New 2026 features (price & household intelligence)
@@ -1316,9 +1180,9 @@ export const translations = {
     featurePredictTitle: 'Predictive suggestions',
     featurePredictDesc: '"You are probably out of milk": EpiList learns your habits and warns you before you run out.',
     featureInventoryTitle: 'Home inventory',
-    featureInventoryDesc: 'Three simple states — at home, running low, out — synced with your lists.',
+    featureInventoryDesc: 'Sorted by zone — pantry, fridge, freezer, household — and linked to your lists.',
     featureStoreModeTitle: 'In-store mode',
-    featureStoreModeDesc: 'Your list sorted aisle by aisle for your store, with real-time progress.',
+    featureStoreModeDesc: 'Your list sorted aisle by aisle for your store, with progress that follows what you pick up.',
     featureMealsTitle: 'Meal planner',
     featureMealsDesc: 'Pick your meals; EpiList consolidates the ingredients and builds the list around your inventory.',
     switchToEnglish: 'English version',
@@ -1344,8 +1208,8 @@ export const translations = {
     aboutStat2Label: 'Free, ad-free',
     aboutStat3Value: '2',
     aboutStat3Label: 'Languages (French, English)',
-    aboutStat4Value: '150+',
-    aboutStat4Label: 'Supported currencies',
+    aboutStat4Value: 'Offline',
+    aboutStat4Label: 'Lists available with no network',
     aboutTeamTitle: 'A Maritime team',
     aboutTeamText: 'EpiList is built by M2atech Solutions Inc., a team combining technical expertise with a practical understanding of Canadian families.',
     // Help page
@@ -1355,7 +1219,7 @@ export const translations = {
     helpFaq1Q: 'Is EpiList really free?',
     helpFaq1A: 'Yes, EpiList is completely free: no hidden fees, no subscription, no ads.',
     helpFaq2Q: 'How do I share my lists with my family?',
-    helpFaq2A: 'Create your list and share it by link or invitation. Every change syncs instantly for each member.',
+    helpFaq2A: 'Create your list then share it by link or invitation. Each member gets an instant notification when an item changes.',
     helpFaq3Q: 'Does the app work offline?',
     helpFaq3A: 'Yes. Your lists stay available without a connection and sync as soon as you are back online.',
     helpFaq4Q: 'Which platforms is EpiList available on?',
@@ -1384,7 +1248,7 @@ export const translations = {
     dlShot2Title: 'Detailed analytics',
     dlShot2Desc: 'Track your shopping habits',
     dlShot3Title: 'Budget under control',
-    dlShot3Desc: 'Track your spending in real time',
+    dlShot3Desc: 'Keep a close eye on your spending',
     // Comparison page
     cmpTitle: 'Why choose EpiList?',
     cmpSubtitle: 'A factual comparison with the main grocery list apps.',

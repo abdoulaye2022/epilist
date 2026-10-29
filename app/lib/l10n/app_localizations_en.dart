@@ -435,7 +435,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create your lists before going shopping';
 
   @override
-  String get checkPurchasesRealTime => 'Check your purchases in real-time';
+  String get checkPurchasesRealTime => 'Check off your purchases as you go';
 
   @override
   String get trackGroceryExpenses => 'Track your grocery expenses in CAD\$';
@@ -1747,21 +1747,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutMissionText =>
-      'EpiList revolutionizes how you manage your grocery shopping. Create smart lists, track your expenses in real-time, share with your family and never miss an important item again thanks to our collaborative management system.';
+      'EpiList makes grocery shopping simpler. Create your lists, track your spending as you shop, share with your household, and stop leaving the store having forgotten the one thing you needed.';
 
   @override
   String get aboutFeatures => 'Main Features';
 
   @override
   String get aboutFeaturesText =>
-      '• Secure account creation (first name, last name, email)\n• Personalized and smart grocery lists\n• Add items with quantity, price and store\n• Automatic calculation of totals and percentages\n• Real-time marking of purchased items\n• Quick duplication of existing lists\n• Secure sharing via links with permissions\n• Rights management (read, edit, administration)\n• Synchronization across all your devices\n• Modern and intuitive interface';
+      '• Secure account creation (first name, last name, email)\n• Personalized and smart grocery lists\n• Add items with quantity, price and store\n• Automatic calculation of totals and percentages\n• Check off items as you go\n• Quick duplication of existing lists\n• Secure sharing via links with permissions\n• Rights management (read, edit, administration)\n• Your lists on all your devices\n• An instant notification on every change';
 
   @override
   String get aboutCollaboration => 'Family Collaboration';
 
   @override
   String get aboutCollaborationText =>
-      'EpiList makes family shopping easy with its advanced sharing system. Share your lists with a simple link, define who can view, edit or administer each list. Everyone stays synchronized in real-time!';
+      'EpiList makes family shopping easy with its sharing system. Share your lists with a simple link, and define who can view, edit or administer each one. Every member gets an instant notification when an item changes.';
 
   @override
   String get aboutDevelopment => 'Development';
@@ -1806,7 +1806,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutShareDescription =>
-      'Organize your grocery shopping with family using EpiList! Shared lists, automatic calculations, real-time synchronization.';
+      'Organize your family grocery shopping with EpiList! Shared lists, automatic calculations, instant notifications.';
 
   @override
   String get aboutDiscoverApp => 'Discover the app';
@@ -1913,66 +1913,87 @@ class AppLocalizationsEn extends AppLocalizations {
       'For any questions regarding these terms of service or for assistance, please contact us through our website.\n\nWe are committed to responding as quickly as possible.';
 
   @override
-  String get privacyLastUpdated => 'Last updated: July 5, 2025';
+  String get privacyLastUpdated => 'Last updated: October 29, 2026';
 
   @override
-  String get privacyCollectionTitle => '1. Information Collection';
+  String get privacyCollectionTitle => '1. Data we collect';
 
   @override
   String get privacyCollectionText =>
-      'EpiList collects the following information for its operation:\n\n• Account information: first name, last name, email, password (encrypted)\n• Grocery list data: list names, items, quantities, prices, stores (optional)\n• Sharing data: sharing links, access permissions (read, edit, administration)\n• Usage data: item purchase status, totals and percentage calculations\n• Technical data: error logs, application performance\n\nWe do not collect any sensitive personal information beyond what is necessary for operation.\n\nLOCATION: if you allow it, EpiList reads your phone\'s location to work out how far your stores are and sort them from nearest to farthest. That location stays ON your phone: it is never stored, never sent to our servers, never shared. You may refuse, give only your postal code, or change your mind at any time from « My stores ».';
+      'EpiList collects the following information:\n\n• Account: first name, last name, email address, password (never kept in clear text — only a hash is stored)\n• Lists: list names, items, quantities, prices, stores (optional)\n• Sharing: sharing links and access rights (read, edit, admin)\n• Receipts: the receipt photo, store, date and amounts — see section 3\n• Usage: items checked off, totals and percentages computed\n• Technical: application error and performance logs\n• Device: a notification token, if you accept notifications\n\nLOCATION: if you allow it, EpiList reads your phone\'s location to compute the distance to your stores and sort them from nearest to farthest. That location stays ON your phone: it is not stored, not sent to our servers, and not shared. You can refuse, give only your postal code, or change your mind at any time from « My stores ».\n\nWe collect no sensitive data beyond what the service needs to work.';
 
   @override
-  String get privacyUsageTitle => '2. Data Usage';
+  String get privacyUsageTitle => '2. How we use your data';
 
   @override
   String get privacyUsageText =>
-      'Your data is used exclusively to:\n\n• Create and manage your user account\n• Create, edit and delete your grocery lists\n• Calculate totals and percentages of purchased items\n• Duplicate your existing lists\n• Share your lists with family members or friends via secure links\n• Manage access permissions (read, edit, administration)\n• Synchronize your data across your devices\n• Provide technical support\n\nWe do not sell or rent your personal data to third parties.';
+      'Your data is used only to:\n\n• Create and manage your account\n• Create, edit, duplicate and delete your lists\n• Compute totals and the percentage of items bought\n• Share your lists with the people you choose, with the rights you set\n• Find your lists again on each of your devices\n• Track your budgets and alert you before you go over\n• Send you the emails tied to your account: verification, password change, deletion\n• Help you when you write to us\n\nWe do not sell, rent or trade any personal data.';
 
   @override
-  String get privacyStorageTitle => '3. Storage and Security';
+  String get privacyReceiptsTitle => '3. Receipts and receipt photos';
+
+  @override
+  String get privacyReceiptsText =>
+      'When you photograph a receipt:\n\n• The text is read ON your phone. The image is not sent to an analysis service, and we do not analyse it on our servers.\n• You confirm what was read. Only the store, the date and the amounts are saved to your account, for your budgets and your history.\n• The photo, if you keep it, is stored privately with our cloud hosting provider. It has no public address: the app asks for a temporary link, valid for fifteen minutes, and only if you are allowed to see the list it belongs to.\n• The members of a shared list see that list\'s receipts. Nobody else.\n• Your receipts and their photos are erased along with your account.';
+
+  @override
+  String get privacyStorageTitle => '4. Storage and security';
 
   @override
   String get privacyStorageText =>
-      'Your data is protected by:\n\n• Secure storage on our servers with encryption\n• Password encryption with secure algorithms\n• Data protection during transit and at rest\n• Secure sharing links with access control\n• Regular backup of your lists and data\n• Security measures compliant with industry standards\n\nWe apply security best practices to protect your information.';
+      'Your data is protected by:\n\n• Encrypted transport between the app and our servers\n• Passwords kept as a hash, never in clear text: we cannot read them\n• Two-step email verification, if you turn it on\n• Receipt photos kept private, which open only through a temporary link\n• Sharing links whose rights you set, revocable at any time\n• Regular backups\n\nNo system is beyond reach. If an incident affected your data, we would tell you.';
 
   @override
-  String get privacySharingTitle => '4. Data Sharing';
+  String get privacySharingTitle => '5. Data sharing';
 
   @override
   String get privacySharingText =>
-      'Your personal data is only shared in the following cases:\n\n• With people you authorize via list sharing links\n• With our technical service providers (hosting, support)\n• With legal authorities if required by law\n\nList sharing is done according to the permissions you define:\n• Read-only: viewing lists without modification\n• Edit: adding, deleting and modifying items\n• Administration: complete management including list deletion\n\nNo commercial sharing of your data is performed.';
+      'Your personal data is shared only in these cases:\n\n• With the people you authorize, by sharing a list or a space\n• With our technical providers, strictly to run the service: cloud hosting of the database and images, sending emails, sending notifications\n• With the authorities, where the law requires it\n\nSharing a list follows the rights you set:\n• Read-only: view, without changing\n• Edit: add, check off and remove items\n• Admin: manage everything, including deleting the list\n\nNo commercial sharing takes place.';
 
   @override
-  String get privacyRightsTitle => '5. Your Rights';
+  String get privacyRightsTitle => '6. Your rights';
 
   @override
   String get privacyRightsText =>
-      'You have the right to:\n\n• Access all your personal data\n• Modify your account information (first name, last name, email)\n• Delete your account and all associated data\n• Export your grocery lists\n• Revoke sharing links at any time\n• Modify access permissions for invited users\n• Delete your lists or items individually\n\nContact us to exercise these rights.';
+      'You have the right to:\n\n• Access your personal data\n• Correct your account information (first name, last name, email)\n• Delete your account and the data attached to it — see section 7\n• Export your receipts as PDF or CSV\n• Revoke a sharing link, or change a member\'s rights, at any time\n• Delete a list or an item one at a time\n• Withdraw your consent to our news emails without losing your account\n\nWrite to us to exercise a right the app does not cover yet.';
 
   @override
-  String get privacyFeaturesTitle => '6. Application Features';
+  String get privacyAccountDeletionTitle => '7. Deleting your account';
+
+  @override
+  String get privacyAccountDeletionText =>
+      'You can delete your account from Profile, then Security — or from epilist.app/en/delete-account if you no longer have the app. Either way, an email confirmation is required: nobody can delete your account without access to your inbox.\n\nWhat happens as soon as you confirm:\n\n• Your first name, last name, email address, password and profile photo are erased\n• Your personal lists, your receipts and their photos, your budgets, your inventory, your purchase history and your preferences are destroyed\n• Your devices, sign-in tokens and external sign-in links are revoked\n• The lists and spaces you shared are handed over to another member who can administer them, so they do not lose their groceries; those nobody else can take over are destroyed\n• Your messages in shared conversations stay, signed « Deleted user », so the other members\' history keeps its thread\n\nThe empty row left in our database is destroyed within thirty days of the deletion. Your email address becomes available again: you can create a new account with it.';
+
+  @override
+  String get privacyFeaturesTitle => '8. Application features';
 
   @override
   String get privacyFeaturesText =>
       'EpiList processes your data to offer the following features:\n\n• Creation and management of user accounts\n• Creation, duplication, modification and deletion of lists\n• Adding items with name, quantity, price and store (optional)\n• Marking items as purchased or deleting items\n• Automatic calculation of totals and purchase percentages\n• Generation of secure sharing links\n• Management of collaborative access permissions\n\nAll this data remains under your control.';
 
   @override
-  String get privacyCookiesTitle => '7. Cookies and Similar Technologies';
+  String get privacyMeasurementTitle => '9. Audience measurement';
+
+  @override
+  String get privacyMeasurementText =>
+      'In the app: no measurement tool. No usage event is sent to a third party. The only outgoing traffic is what makes the service work — our servers, sending emails and sending notifications.\n\nOn our website: third-party audience measurement tools count visits and show where visitors come from. They have no access to the contents of your EpiList account.\n\nIf that were to change inside the app, we would ask you first, and this page would say so.';
+
+  @override
+  String get privacyCookiesTitle => '10. Cookies and similar technologies';
 
   @override
   String get privacyCookiesText =>
-      'EpiList uses tracking technologies to:\n\n• Maintain your active session\n• Remember your usage preferences\n• Analyze application usage (anonymous data)\n• Optimize application performance\n\nYou can disable these functions in the application settings.';
+      'No advertising cookie. The app keeps on your phone what it needs to recognise you from one launch to the next — a sign-in token — plus your display preferences, such as language and theme.\n\nNone of it is used to follow you elsewhere, and there is no advertising in EpiList. Signing out erases the sign-in token from the device.';
 
   @override
-  String get privacyChangesTitle => '8. Changes';
+  String get privacyChangesTitle => '11. Changes';
 
   @override
   String get privacyChangesText =>
-      'This policy may be updated to reflect application developments. We will inform you of important changes by:\n\n• Email to the address associated with your account\n• Updating the date at the top of this policy\n\nYour continued use of the application after changes constitutes your acceptance.';
+      'This policy may be updated to follow changes in the app. We will tell you about significant changes by:\n\n• An email to the address attached to your account\n• Updating the date at the top of this page';
 
   @override
-  String get privacyContactTitle => '9. Contact';
+  String get privacyContactTitle => '12. Write to us';
 
   @override
   String get privacyContactText =>
