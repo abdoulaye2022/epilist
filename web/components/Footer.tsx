@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { href, type RouteKey } from "@/lib/routes";
+import { redemanderLeChoix } from "@/lib/consent";
 
 export default function Footer() {
   const { t, language } = useLanguage();
@@ -93,6 +94,15 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6 text-center">
+          {/* Un consentement qu'on ne peut pas retirer n'en est pas un :
+              ce lien rouvre la bannière, à tout moment. */}
+          <button
+            type="button"
+            onClick={redemanderLeChoix}
+            className="mb-3 text-xs text-gray-400 underline-offset-2 transition-colors hover:text-green-400 hover:underline"
+          >
+            {t("manageCookies")}
+          </button>
           <p className="text-xs text-gray-500">
             © {year} EpiList · M2atech Solutions Inc. ·{" "}
             {language === "fr"

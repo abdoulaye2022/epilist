@@ -1,9 +1,22 @@
 "use client";
 
+// Google Analytics, en Consent Mode v2.
+//
+// Le composant n'est monté QUE si la mesure a été acceptée
+// (`ConsentGate`). Et même là, le mode de consentement est posé
+// AVANT le chargement de gtag.js, tout en « denied », puis mis à jour :
+// sans cette séquence, GA considère le consentement accordé et écrit
+// ses cookies dès la première image.
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import * as gtag from "@/lib/gtag";
+import { capturerUtm } from "@/lib/utm";
+import {
+  appliquerAuConsentMode,
+  lireConsentement,
+  scriptConsentModeParDefaut,
+} from "@/lib/consent";
 
 interface ScrollDepthTracked {
   [key: number]: boolean;
@@ -12,6 +25,12 @@ interface ScrollDepthTracked {
 export default function GoogleAnalytics(): JSX.Element | null {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Les UTM de l'URL, gardés pour la session. Faits AVANT la vue de
+  // page : la première vue doit déjà porter la campagne.
+  useEffect(() => {
+    capturerUtm(window.location.search);
+  }, []);
 
   // Track page views
   useEffect(() => {
@@ -86,6 +105,13 @@ export default function GoogleAnalytics(): JSX.Element | null {
 
   return (
     <>
+      {/* AVANT gtag.js : tout refusé par défaut. L'ordre fait la
+          conformité — l'inverse pose les cookies puis les retire. */}
+      <Script
+        id="gtag-consent-default"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{ __html: scriptConsentModeParDefaut() }}
+      />
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
@@ -93,6 +119,12 @@ export default function GoogleAnalytics(): JSX.Element | null {
       <Script
         id="gtag-init"
         strategy="afterInteractive"
+        onReady={() => {
+          // Le composant n'existe que si la mesure est acceptée : on
+          // transmet le choix réel, catégorie par catégorie.
+          const choix = lireConsentement();
+          if (choix) appliquerAuConsentMode(choix);
+        }}
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];

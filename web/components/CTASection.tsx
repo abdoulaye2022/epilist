@@ -3,6 +3,7 @@
 // Appel a l'action final : fond vert de marque, deux badges de stores,
 // trois faits verifiables — gratuite, hors ligne, sans publicite.
 import { trackAppDownload } from "@/lib/gtag";
+import { lienPlay } from "@/lib/utm";
 import { Button } from "@/components/ui/button";
 import { Apple, Play, BadgeCheck, WifiOff, Ban } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -17,7 +18,14 @@ export default function CTASection() {
 
   const open = (store: "ios" | "android") => {
     trackAppDownload(store, "cta_section");
-    window.open(store === "ios" ? APP_STORE_URL : GOOGLE_PLAY_URL, "_blank", "noopener,noreferrer");
+    // Le lien Play emporte la campagne : Google la rend à
+    // l'application au premier lancement, et c'est le seul fil entre
+    // « a cliqué sur la publicité » et « a créé un compte ».
+    window.open(
+      store === "ios" ? APP_STORE_URL : lienPlay(GOOGLE_PLAY_URL),
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   return (

@@ -5,7 +5,8 @@ import LanguageProvider from "@/components/LanguageProvider";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import FacebookPixel from "@/components/FacebookPixel";
 import Hotjar from "@/components/Hotjar";
-import TrackingGate from "@/components/TrackingGate";
+import ConsentGate from "@/components/ConsentGate";
+import ConsentBanner from "@/components/ConsentBanner";
 import {
   epilistAppSchema,
   epilistFAQSchema,
@@ -185,8 +186,12 @@ export default function RootLayout({
 
         {/* Preconnect pour performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://connect.facebook.net" />
+        {/* Pas de preconnect vers les outils de mesure : une
+            préconnexion ouvre une vraie connexion — DNS, puis TLS — et
+            livre donc l'adresse IP du visiteur avant qu'il ait choisi
+            quoi que ce soit. Le gain de vitesse ne vaut pas ça. Les
+            scripts se chargent après consentement, et ouvrent leur
+            connexion à ce moment-là. */}
 
         {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//apps.apple.com" />
@@ -219,15 +224,25 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         {/* Tracking Scripts */}
         <Suspense fallback={null}>
-          <TrackingGate>
+          {/* Rien ne se charge avant le choix, et chacun selon sa
+              catégorie. La mesure d'audience et le marketing se
+              refusent séparément. */}
+          <ConsentGate categorie="mesure">
             <GoogleAnalytics />
-            <FacebookPixel />
             <Hotjar />
-          </TrackingGate>
+          </ConsentGate>
+          <ConsentGate categorie="marketing">
+            <FacebookPixel />
+          </ConsentGate>
         </Suspense>
 
-        {/* Application */}
-        <LanguageProvider>{children}</LanguageProvider>
+        {/* Application. La bannière de consentement vit À L'INTÉRIEUR du
+            fournisseur de langue : elle parle la langue de la page, et
+            un texte juridique dans la mauvaise langue ne vaut rien. */}
+        <LanguageProvider>
+          {children}
+          <ConsentBanner />
+        </LanguageProvider>
 
         {/* Skip Link pour accessibilité */}
 

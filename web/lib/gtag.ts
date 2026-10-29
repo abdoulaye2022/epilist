@@ -1,3 +1,5 @@
+import { lireUtm } from './utm'
+
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID
 
 // Fonction helper pour vérifier si gtag est disponible
@@ -59,14 +61,43 @@ type FeatureName =
   | 'voice_input'
   | 'shopping_history'
 
-// Tracking des téléchargements par plateforme
+// Tracking des téléchargements par plateforme.
+//
+// TROIS événements partent, et ce n'est pas de la redondance :
+//
+//   - `app_download_click` existait déjà. Il reste, sinon les rapports
+//     et les conversions déjà configurés dans GA s'arrêtent net le jour
+//     du déploiement ;
+//   - `store_click_ios` / `store_click_android` sont les noms demandés
+//     pour l'entonnoir. Un événement par plateforme plutôt qu'un
+//     paramètre : on peut en faire une conversion, ce qu'un paramètre
+//     ne permet pas ;
+//   - `app_download`, la conversion GA4 historique.
+//
+// Les UTM de la session voyagent avec : sans eux, une installation
+// venue d'une campagne apparaît comme organique.
 export const trackAppDownload = (platform: Platform, source: DownloadSource): void => {
   event({
     action: 'app_download_click',
     category: 'app_engagement', 
     label: `${platform}_from_${source}`,
   })
-  
+
+  const utm = lireUtm()
+
+  if (isGtagAvailable()) {
+    (window as any).gtag(
+      'event',
+      platform === 'ios' ? 'store_click_ios' : 'store_click_android',
+      {
+        source,
+        utm_source: utm.utm_source,
+        utm_medium: utm.utm_medium,
+        utm_campaign: utm.utm_campaign,
+      }
+    )
+  }
+
   // Événement spécial pour les conversions GA4
   if (isGtagAvailable()) {
     (window as any).gtag('event', 'app_download', {
@@ -78,7 +109,7 @@ export const trackAppDownload = (platform: Platform, source: DownloadSource): vo
   
   // Debug en développement
   if (process.env.NODE_ENV === 'development') {
-    console.log('📱 Download tracked:', { platform, source })
+    console.log('📱 Download tracked:', { platform, source, utm })
   }
 }
 

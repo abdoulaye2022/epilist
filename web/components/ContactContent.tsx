@@ -191,7 +191,15 @@ export default function ContactContent() {
                         </p>
                       </div>
 
-                      <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Hotjar rejoue les sessions : sans
+                          data-hj-suppress, le message libre écrit ici —
+                          qui peut contenir n'importe quoi — serait
+                          rejouable image par image. */}
+                      <form
+                        data-hj-suppress
+                        onSubmit={handleSubmit}
+                        className="space-y-6"
+                      >
                         {/* Name Field */}
                         <div>
                           <label
