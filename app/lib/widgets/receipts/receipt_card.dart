@@ -4,6 +4,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/receipt.dart';
 import 'package:epilist/widgets/currency/formatted_amount.dart'; // Import ajouté
 import 'package:epilist/theme/app_icons.dart';
+import 'package:epilist/widgets/receipts/receipt_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:epilist/widgets/common/app_card.dart';
 
@@ -46,7 +47,7 @@ class ReceiptCard extends StatelessWidget {
             ],
             const SizedBox(height: 8),
             _buildDateInfo(context),
-            if (receipt.imageUrl != null && receipt.imageUrl!.isNotEmpty) ...[
+            if (receipt.hasImage) ...[
               const SizedBox(height: 10),
               _buildPhoto(context),
             ],
@@ -117,8 +118,11 @@ class ReceiptCard extends StatelessWidget {
                       InteractiveViewer(
                         maxScale: 5,
                         child: Center(
-                          child: Image.network(
-                            receipt.imageUrl!,
+                          child: ReceiptPhoto(
+                            listId: receipt.listId,
+                            receiptId: receipt.id,
+                            width: double.infinity,
+                            height: double.infinity,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -137,25 +141,12 @@ class ReceiptCard extends StatelessWidget {
           ),
       child: Row(
         children: [
-          ClipRRect(
+          ReceiptPhoto(
+            listId: receipt.listId,
+            receiptId: receipt.id,
+            width: 48,
+            height: 48,
             borderRadius: BorderRadius.circular(AppRadius.sm),
-            child: Image.network(
-              receipt.imageUrl!,
-              width: 48,
-              height: 48,
-              fit: BoxFit.cover,
-              errorBuilder:
-                  (context, error, stack) => Container(
-                    width: 48,
-                    height: 48,
-                    color: AppColors.background,
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      size: 20,
-                      color: AppColors.textDisabled,
-                    ),
-                  ),
-            ),
           ),
           const SizedBox(width: 10),
           Text(

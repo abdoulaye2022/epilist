@@ -184,6 +184,11 @@ class ReceiptService {
   /// la facture pour y rattacher l'image. Un échec du téléversement ne
   /// perd PAS la facture : elle est déjà enregistrée.
   /// Attache (ou remplace) la photo du reçu papier.
+  ///
+  /// L'image est rangée PRIVÉE côté serveur : la réponse ne contient
+  /// plus d'URL, seulement `has_image`. Après cet appel, pensez à
+  /// `ReceiptImageService.oublier(receiptId)` — l'URL signée gardée en
+  /// mémoire désigne encore l'ancienne photo pendant quinze minutes.
   Future<Receipt> uploadReceiptImage(int listId, int receiptId, File file) async {
     final token = await _authService.getToken();
     final form = FormData.fromMap({
@@ -200,6 +205,10 @@ class ReceiptService {
   }
 
   /// Retire la photo du reçu.
+  ///
+  /// Même remarque : `ReceiptImageService.oublier(receiptId)` après coup,
+  /// sans quoi l'aperçu continuerait d'afficher une image supprimée
+  /// jusqu'à l'expiration de l'URL signée.
   Future<Receipt> deleteReceiptImage(int listId, int receiptId) async {
     final token = await _authService.getToken();
     final response = await _dio.delete(

@@ -31,6 +31,7 @@ import 'package:epilist/services/contact_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
+import 'package:epilist/services/receipt_image_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/suggestion_service.dart';
 import 'package:epilist/services/shopping_list_service.dart';
@@ -271,6 +272,18 @@ void main() async {
           RepositoryProvider<ReceiptService>(
             create:
                 (context) => ReceiptService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
+          ),
+          // Les URL signées des photos de reçus. UNE seule instance pour
+          // toute l'application : son cache n'a de sens que partagé — la
+          // même photo s'ouvre depuis l'onglet Factures et depuis le
+          // détail d'une liste, et il serait absurde de redemander au
+          // serveur à chaque écran.
+          RepositoryProvider<ReceiptImageService>(
+            create:
+                (context) => ReceiptImageService(
                   dio: dio,
                   authService: context.read<AuthService>(),
                 ),

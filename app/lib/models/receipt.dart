@@ -14,8 +14,18 @@ class Receipt extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  /// Photo du reçu papier (stockage GCS), null si absente.
+  /// Ancienne URL publique de la photo, null depuis la migration 015.
+  ///
+  /// Elle n'est plus produite : un reçu porte le magasin, la date et les
+  /// montants, et une URL publique le rendait lisible par quiconque la
+  /// connaissait. Le champ survit pour les reçus d'avant, le temps que
+  /// le rattrapage soit joué côté serveur.
   final String? imageUrl;
+
+  /// Ce reçu porte-t-il une photo ? C'est le serveur qui le dit, quelle
+  /// que soit la façon dont l'image est rangée. L'URL pour la regarder
+  /// se demande au moment de l'afficher, et ne vaut que quinze minutes.
+  final bool hasImage;
 
   /// Nom de la liste porteuse. Renseigné par GET /receipts (onglet
   /// Factures, toutes listes confondues), absent des routes par liste —
@@ -34,6 +44,7 @@ class Receipt extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.imageUrl,
+    this.hasImage = false,
     this.listName,
   });
 
@@ -68,6 +79,12 @@ class Receipt extends Equatable {
       createdAt: asDate(json['created_at']),
       updatedAt: asDate(json['updated_at']),
       imageUrl: json['image_url'] as String?,
+      // `has_image` vient des serveurs à jour. Sans lui — serveur plus
+      // ancien que la migration 015 — on retombe sur la présence d'une
+      // URL, qui était alors le seul indice.
+      hasImage:
+          json['has_image'] as bool? ??
+          ((json['image_url'] as String?)?.isNotEmpty ?? false),
       listName: json['list_name'] as String?,
     );
   }
@@ -85,6 +102,7 @@ class Receipt extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'image_url': imageUrl,
+      'has_image': hasImage,
       'list_name': listName,
     };
   }
@@ -101,6 +119,7 @@ class Receipt extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? imageUrl,
+    bool? hasImage,
     String? listName,
   }) {
     return Receipt(
@@ -115,6 +134,7 @@ class Receipt extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       imageUrl: imageUrl ?? this.imageUrl,
+      hasImage: hasImage ?? this.hasImage,
       listName: listName ?? this.listName,
     );
   }
@@ -132,6 +152,7 @@ class Receipt extends Equatable {
     createdAt,
     updatedAt,
     imageUrl,
+    hasImage,
     listName,
   ];
 

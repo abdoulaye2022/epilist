@@ -2909,6 +2909,7 @@
   "invalidNumber": "Nombre invalide",
   "receiptPhotoAdd": "Ajouter une photo du reçu",
   "receiptPhotoAttached": "Photo du reçu jointe",
+  "receiptPhotoUnavailable": "Photo indisponible pour le moment",
   "receiptPhotoTitle": "Photo du reçu",
   "appearance": "Apparence",
   "appearanceHint": "Clair, sombre, ou comme votre téléphone",
