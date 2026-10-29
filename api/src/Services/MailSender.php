@@ -19,13 +19,17 @@ class MailSender
     private const SENDER_EMAIL = 'noreply@epilist.app'; // domaine authentifie dans Brevo
 
     /**
-     * Boite de test : en developpement (APP_ENV=dev), AUCUN email ne part
-     * vers une vraie adresse — tout atterrit ici. La garde est posee dans
-     * sendMail(), seul point du projet qui appelle l'API Brevo : tout
-     * email present ET futur est couvert, sans redirection a recopier
-     * dans chaque controleur.
+     * Boite de test : quand on CHOISIT d'envoyer pour de vrai en
+     * developpement (MAIL_DEV_SEND=true), tout atterrit ici plutot que
+     * chez de vraies personnes.
      */
     private const DEV_MAILBOX = 'm2atodev@gmail.com';
+
+    /**
+     * Ou s'ecrivent les courriels non envoyes, en developpement.
+     * Un fichier .html par courriel : il s'ouvre dans un navigateur.
+     */
+    private const DEV_MAIL_DIR = 'storage/mails';
     private const MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024; // 25MB
     private const ALLOWED_ATTACHMENT_TYPES = [
         'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
@@ -41,9 +45,23 @@ class MailSender
             // Validation des paramètres (sur les VRAIS destinataires)
             self::validateEmailParameters($subject, $recipients, $htmlBody, $attachments);
 
-            // 🔒 Développement : tout le courrier est détourné vers la boîte
-            // de test, et le sujet rappelle le destinataire réel. En
-            // production (APP_ENV != dev), rien ne change.
+            // 🔒 DEVELOPPEMENT : par defaut, AUCUN envoi.
+            //
+            // Le courriel est ECRIT SUR DISQUE et la fonction rend true.
+            // Avant, il partait quand meme — redirige vers la boite de
+            // test, mais bel et bien envoye par le fournisseur : chaque
+            // execution de la suite de tests consommait du quota, et en
+            // produisait des dizaines.
+            //
+            // Pour voir un courriel : ouvrir le .html ecrit dans
+            // storage/mails/. Pour le recevoir vraiment (verifier le
+            // rendu dans un client), poser MAIL_DEV_SEND=true dans .env :
+            // il part alors vers la boite de test, jamais vers l'adresse
+            // reelle.
+            //
+            // La garde est ici, dans le seul point du projet qui appelle
+            // le fournisseur : tout courriel present ET futur est
+            // couvert, sans rien a recopier dans les controleurs.
             if (Config::get('APP_ENV') === 'dev') {
                 $realTargets = implode(', ', array_map(
                     fn($r) => $r['email'] ?? '?',
@@ -52,6 +70,17 @@ class MailSender
                 if (count($recipients) > 3) {
                     $realTargets .= ' +' . (count($recipients) - 3);
                 }
+
+                $envoyerQuandMeme = filter_var(
+                    Config::get('MAIL_DEV_SEND', 'false'),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                if (!$envoyerQuandMeme) {
+                    self::ecrireSurDisque($subject, $realTargets, $htmlBody);
+                    return true;
+                }
+
                 error_log("[MailSender] DEV — « {$subject} » destiné à [{$realTargets}]"
                     . ' redirigé vers ' . self::DEV_MAILBOX);
                 $subject = '[DEV → ' . mb_substr($realTargets, 0, 80) . "] {$subject}";
@@ -82,6 +111,57 @@ class MailSender
             // Log détaillé de l'erreur
             error_log("Email sending failed: " . $e->getMessage() . " | Trace: " . $e->getTraceAsString());
             return false;
+        }
+    }
+
+    /**
+     * Ecrit un courriel de developpement sur disque, au lieu de
+     * l'envoyer.
+     *
+     * Le nom du fichier porte l'heure et le destinataire reel : on
+     * retrouve « le courriel de suppression envoye a untel » sans
+     * ouvrir les fichiers un par un. Les anciens sont effaces au-dela
+     * de deux cents, pour que le dossier ne gonfle pas indefiniment.
+     */
+    private static function ecrireSurDisque(string $subject, string $destinataires, string $htmlBody): void
+    {
+        try {
+            $dossier = dirname(__DIR__, 2) . '/' . self::DEV_MAIL_DIR;
+
+            if (!is_dir($dossier) && !@mkdir($dossier, 0755, true) && !is_dir($dossier)) {
+                error_log('[MailSender] DEV — dossier ' . $dossier . ' impossible a creer');
+                return;
+            }
+
+            $horodatage = date('Ymd-His');
+            $cible = preg_replace('/[^a-zA-Z0-9@._-]/', '_', mb_substr($destinataires, 0, 60));
+            $fichier = $dossier . '/' . $horodatage . '-' . $cible . '.html';
+
+            $entete = '<!-- ' . $subject . ' | destinataire reel : ' . $destinataires . ' -->' . PHP_EOL;
+            @file_put_contents($fichier, $entete . $htmlBody);
+
+            error_log("[MailSender] DEV — « {$subject} » pour [{$destinataires}] ecrit dans "
+                . self::DEV_MAIL_DIR . '/' . basename($fichier) . ' (aucun envoi)');
+
+            self::purgerCourrielsDeDev($dossier);
+        } catch (\Throwable $e) {
+            error_log('[MailSender] DEV — ecriture impossible : ' . $e->getMessage());
+        }
+    }
+
+    /** Garde les deux cents derniers courriels de developpement. */
+    private static function purgerCourrielsDeDev(string $dossier): void
+    {
+        $fichiers = glob($dossier . '/*.html') ?: [];
+
+        if (count($fichiers) <= 200) {
+            return;
+        }
+
+        sort($fichiers); // noms horodates : l'ordre alphabetique est chronologique
+
+        foreach (array_slice($fichiers, 0, count($fichiers) - 200) as $vieux) {
+            @unlink($vieux);
         }
     }
 
