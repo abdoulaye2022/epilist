@@ -687,6 +687,34 @@ export const translations = {
     cmpWhy3Title: 'Conçue au Canada',
     cmpWhy3Desc: 'Bilingue, multidevise, pensée pour les familles d\u2019ici',
 
+    // Suppression de compte depuis le site (exigence des magasins
+    // d'applications : la procédure doit exister hors de l'application)
+    delTitle: 'Supprimer votre compte EpiList',
+    delFooterLink: 'Supprimer mon compte',
+    delIntro: 'Vous pouvez supprimer votre compte depuis l\'application, dans Profil puis Sécurité. Si vous n\'avez plus l\'application, utilisez ce formulaire : nous vous enverrons un lien de confirmation par courriel.',
+    delEmailLabel: 'Votre adresse courriel',
+    delEmailPlaceholder: 'vous@exemple.com',
+    delSubmit: 'Envoyer le lien de confirmation',
+    delSending: 'Envoi en cours...',
+    delSentTitle: 'Vérifiez votre courriel',
+    delWhatTitle: 'Ce qui sera effacé',
+    delWhat1: 'Votre nom, votre adresse courriel et votre mot de passe',
+    delWhat2: 'Vos listes personnelles, leurs articles et leur historique',
+    delWhat3: 'Vos reçus et les photos de reçus',
+    delWhat4: 'Vos budgets, votre inventaire et vos préférences',
+    delKeptTitle: 'Ce qui est transmis',
+    delKept1: 'Les listes que vous partagez avec d\'autres personnes leur sont transmises, pour ne pas leur retirer leurs courses.',
+    delKept2: 'Vos messages dans les conversations partagées restent, signés « Utilisateur supprimé ».',
+    delDelayTitle: 'Dans quels délais',
+    delDelayText: 'Vos données personnelles sont effacées dès la confirmation. La ligne vide qui reste est détruite au plus tard trente jours après.',
+    delHelpText: 'Une question avant de vous décider ? Écrivez-nous.',
+    delInvalidEmail: 'Veuillez saisir une adresse courriel valide.',
+    delFailed: 'L\'envoi a échoué. Réessayez dans un instant ou écrivez-nous.',
+    delConfirmChecking: 'Vérification du lien...',
+    delConfirmOkTitle: 'Compte supprimé',
+    delConfirmErrorTitle: 'Lien plus valable',
+    delBackHome: 'Retour à l\'accueil',
+
 
   },
   en: {
@@ -1375,6 +1403,33 @@ export const translations = {
     cmpWhy2Desc: 'Full offline mode, synced data',
     cmpWhy3Title: 'Built in Canada',
     cmpWhy3Desc: 'Bilingual, multi-currency, made for families here',
+
+    // Account deletion from the website
+    delTitle: 'Delete your EpiList account',
+    delFooterLink: 'Delete my account',
+    delIntro: 'You can delete your account from the app, under Profile then Security. If you no longer have the app, use this form: we will email you a confirmation link.',
+    delEmailLabel: 'Your email address',
+    delEmailPlaceholder: 'you@example.com',
+    delSubmit: 'Send the confirmation link',
+    delSending: 'Sending...',
+    delSentTitle: 'Check your email',
+    delWhatTitle: 'What will be erased',
+    delWhat1: 'Your name, email address and password',
+    delWhat2: 'Your personal lists, their items and their history',
+    delWhat3: 'Your receipts and receipt photos',
+    delWhat4: 'Your budgets, your inventory and your preferences',
+    delKeptTitle: 'What is handed over',
+    delKept1: 'Lists you share with other people are handed over to them, so they do not lose their groceries.',
+    delKept2: 'Your messages in shared conversations stay, signed “Deleted user”.',
+    delDelayTitle: 'How long it takes',
+    delDelayText: 'Your personal data is erased as soon as you confirm. The empty row that remains is destroyed within thirty days.',
+    delHelpText: 'A question before you decide? Write to us.',
+    delInvalidEmail: 'Please enter a valid email address.',
+    delFailed: 'Sending failed. Try again in a moment, or write to us.',
+    delConfirmChecking: 'Checking the link...',
+    delConfirmOkTitle: 'Account deleted',
+    delConfirmErrorTitle: 'Link no longer valid',
+    delBackHome: 'Back to home',
 
   }
 };

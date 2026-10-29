@@ -13,7 +13,8 @@ export type RouteKey =
   | 'about'
   | 'privacy'
   | 'terms'
-  | 'comparison';
+  | 'comparison'
+  | 'accountDeletion';
 
 export const routes: Record<RouteKey, { fr: string; en: string }> = {
   home: { fr: '/', en: '/en' },
@@ -28,6 +29,10 @@ export const routes: Record<RouteKey, { fr: string; en: string }> = {
     fr: '/comparaison-applications-courses',
     en: '/en/grocery-app-comparison',
   },
+  // Supprimer son compte sans passer par l'application : Google Play et
+  // l'App Store exigent cette page, et elle doit rester atteignable
+  // depuis le pied de page.
+  accountDeletion: { fr: '/suppression-compte', en: '/en/delete-account' },
 };
 
 export const BASE_URL = 'https://epilist.app';

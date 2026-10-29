@@ -35,6 +35,7 @@ export default function Footer() {
       links: [
         { key: "privacy", label: t("privacyPolicy") },
         { key: "terms", label: t("termsOfService") },
+        { key: "accountDeletion", label: t("delFooterLink") },
       ],
     },
   ];

@@ -150,6 +150,22 @@ const seo: Record<RouteKey, Record<Language, PageSeo>> = {
         'grocery app comparison, AnyList alternative, Bring alternative, best grocery list app',
     },
   },
+  accountDeletion: {
+    fr: {
+      title: 'Supprimer votre compte — EpiList',
+      description:
+        "Demandez la suppression de votre compte EpiList et de vos données personnelles, depuis l'application ou depuis cette page. Délais, ce qui est effacé, ce qui est transmis aux listes partagées.",
+      keywords:
+        'supprimer compte EpiList, suppression de compte, effacer mes données, vie privée EpiList',
+    },
+    en: {
+      title: 'Delete your account — EpiList',
+      description:
+        'Request the deletion of your EpiList account and personal data, from the app or from this page. Timelines, what is erased, what is handed over on shared lists.',
+      keywords:
+        'delete EpiList account, account deletion, erase my data, EpiList privacy',
+    },
+  },
 };
 
 /** Métadonnées complètes d'une page (titre, description, OG, hreflang). */

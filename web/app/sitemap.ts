@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     comparison: 0.6,
     privacy: 0.3,
     terms: 0.3,
+    accountDeletion: 0.3,
   }
 
   // (Next 13.5 ne supporte pas `alternates` dans le sitemap : les
