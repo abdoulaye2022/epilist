@@ -397,6 +397,17 @@ class SpaceController
             return $this->json($response, ['success' => false, 'code' => 'PERSONAL_SPACE_PROTECTED'], 422);
         }
 
+        // Inviter fait PARTIR un courriel de notre part. Depuis que la
+        // verification ne bloque plus l'entree dans l'application, elle
+        // tient ici : sans elle, un compte cree avec une adresse
+        // quelconque transformerait le service en relais d'envoi.
+        $refus = \App\Controllers\AuthController::exigerCourrielVerifie(
+            \App\Models\User::find($userId)
+        );
+        if ($refus !== null) {
+            return $refus;
+        }
+
         $data = (array) $request->getParsedBody();
         $email = strtolower(trim((string) ($data['email'] ?? '')));
         $role = (string) ($data['role'] ?? SpaceMember::ROLE_MEMBER);

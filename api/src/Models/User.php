@@ -36,6 +36,9 @@ class User extends Model
         // 'install_referrer' — et l'identifiant du partage, s'il y en a.
         'signup_source',
         'signup_share_id',
+        // Date de fin (ou de passage) du parcours de depart. Cote
+        // serveur, pour qu'un changement d'appareil ne le remontre pas.
+        'onboarding_done_at',
         // Champs pour la suppression
         'account_deletion_code',
         'account_deletion_code_expires_at',
@@ -78,6 +81,7 @@ class User extends Model
         'account_deletion_code_expires_at' => 'datetime',
         'deletion_requested_at' => 'datetime',
         'anonymized_at' => 'datetime',
+        'onboarding_done_at' => 'datetime',
         'email_marketing_consent' => 'boolean',
         'email_marketing_unsubscribed_at' => 'datetime',
         'two_factor_enabled' => 'boolean',

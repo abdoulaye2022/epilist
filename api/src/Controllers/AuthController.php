@@ -1232,6 +1232,17 @@ class AuthController
         }
 
         $enabled = filter_var($data['enabled'], FILTER_VALIDATE_BOOLEAN);
+
+        // La deuxieme etape s'appuie sur le courriel : l'activer sur une
+        // adresse non verifiee enfermerait la personne dehors au
+        // prochain demarrage. La desactiver reste possible, toujours.
+        if ($enabled) {
+            $refus = self::exigerCourrielVerifie($user);
+            if ($refus !== null) {
+                return $refus;
+            }
+        }
+
         $user->two_factor_enabled = $enabled ? 1 : 0;
         // Un code en attente n'a plus lieu d'être après un changement.
         $user->admin_otp_code = null;
@@ -1448,6 +1459,10 @@ class AuthController
                 'apple' => in_array('apple', $linkedProviders),
             ],
             'has_password' => !is_null($user->password_hash),
+            // Le parcours de depart a-t-il deja ete vu ? L'application
+            // s'y fie plutot qu'a une preference locale : changer de
+            // telephone ne doit pas le faire revenir.
+            'onboarding_done' => $user->onboarding_done_at !== null,
             'created_at' => $user->created_at->toISOString(),
             'updated_at' => $user->updated_at->toISOString()
         ];
@@ -1611,21 +1626,19 @@ class AuthController
             $this->rateLimiter->resetAttempts('login', $ipAddress);
             $this->rateLimiter->resetAttempts('login_email', $loginEmailKey);
 
-            if (!$user->isEmailVerified()) {
-                $response->getBody()->write(json_encode([
-                    'success' => false,
-                    'code' => 'EMAIL_NOT_VERIFIED',
-                    'message' => 'Please verify your email address before logging in.',
-                    'data' => [
-                        'email' => $user->email,
-                        'verification_required' => true,
-                        'can_resend_code' => true
-                    ]
-                ]));
-                return $response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus(403);
-            }
+            // LA VERIFICATION DU COURRIEL NE BLOQUE PLUS L'ENTREE.
+            //
+            // Elle refusait la connexion tant que le code n'avait pas
+            // ete saisi : quatorze gestes separaient l'installation de
+            // la premiere liste, dont un aller-retour dans une boite de
+            // courriel — et beaucoup de gens ne reviennent pas.
+            //
+            // Le compte entre donc dans l'application tout de suite, et
+            // l'etat « non verifie » voyage dans la reponse pour que
+            // l'application affiche son rappel. Ce qui RESTE interdit
+            // sans verification : changer de courriel, activer la
+            // deuxieme etape, inviter quelqu'un par courriel. Voir
+            // exigerCourrielVerifie().
 
             // 2FA par email (optionnelle) : si l'utilisateur l'a activée,
             // aucun jeton n'est délivré ici — un code part par email et la
@@ -1676,7 +1689,11 @@ class AuthController
                 'message' => 'Login successful',
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
-                'data' => $this->formatUserData($user)
+                'data' => $this->formatUserData($user) + [
+                    // L'application s'en sert pour poser son bandeau de
+                    // rappel, pas pour bloquer quoi que ce soit.
+                    'verification_required' => !$user->isEmailVerified(),
+                ],
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -2495,7 +2512,10 @@ class AuthController
 
         $validator = new Validator($data);
 
-        $validator->rule('required', ['first_name', 'last_name', 'email', 'password'])
+        // Prenom, courriel, mot de passe. Le nom de famille reste
+        // accepte s'il est envoye, mais il n'est plus demande : c'est un
+        // champ de moins entre l'installation et la premiere liste.
+        $validator->rule('required', ['first_name', 'email', 'password'])
             ->message('{field} is required');
 
         $validator->rule('email', 'email')
@@ -2598,7 +2618,7 @@ class AuthController
             // Créer l'utilisateur
             $user = User::create([
                 'first_name' => trim($data['first_name']),
-                'last_name' => trim($data['last_name']),
+                'last_name' => trim((string) ($data['last_name'] ?? '')),
                 'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
                 'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
                 'terms_accepted' => true,
@@ -2641,9 +2661,19 @@ class AuthController
 
             error_log("✅ [AuthController] Inscription réussie depuis IP: {$ipAddress}");
 
+            // L'inscription DELIVRE les jetons. Avant, elle rendait un
+            // compte sans acces : il fallait aller chercher un code
+            // dans sa boite de courriel, revenir, le saisir, puis se
+            // connecter. Le courriel de verification part quand meme,
+            // et l'application le rappelle par un bandeau.
+            $accessToken = $this->jwtService->generateToken(['auth_id' => $user->id]);
+            $refreshToken = $this->jwtService->generateRefreshToken(['auth_id' => $user->id]);
+
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Account created successfully. Please check your email for verification code.',
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
                 'data' => $this->formatUserData($user) + [
                     'verification_required' => true
                 ]
@@ -2665,6 +2695,78 @@ class AuthController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(500);
         }
+    }
+
+    /**
+     * POST /user/onboarding-complete — le parcours de depart est vu.
+     *
+     * Appelee aussi bien quand la personne le termine que quand elle le
+     * passe : dans les deux cas, il ne doit plus revenir.
+     */
+    public function completeOnboarding(Request $request, Response $response)
+    {
+        $user = User::find((int) $request->getAttribute('auth_id'));
+
+        if (!$user) {
+            return $this->createErrorResponse('Utilisateur non trouvé', 404);
+        }
+
+        // Idempotente : la premiere date est la bonne, et l'application
+        // peut rappeler cette route sans consequence.
+        if ($user->onboarding_done_at === null) {
+            $user->onboarding_done_at = Carbon::now();
+            $user->save();
+        }
+
+        return new JsonResponse(
+            200,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => true,
+                'data' => ['onboarding_done' => true],
+            ]))
+        );
+    }
+
+    /**
+     * Refuse une action sensible a un compte dont le courriel n'est pas
+     * verifie.
+     *
+     * Depuis que la verification ne bloque plus l'entree, elle doit
+     * tenir ailleurs — la ou une adresse non prouvee ferait des degats :
+     *
+     *   - changer de courriel : sinon n'importe qui deplace un compte
+     *     vers une adresse qu'il ne possede pas ;
+     *   - activer la deuxieme etape : elle s'appuie sur le courriel,
+     *     l'activer sur une adresse fausse enferme dehors ;
+     *   - faire PARTIR un courriel de notre part (invitation d'espace) :
+     *     sinon le service devient un relais d'envoi gratuit.
+     *
+     * La recuperation de mot de passe, elle, reste ouverte : elle ne
+     * fait qu'envoyer un code a l'adresse inscrite, et la refuser
+     * enfermerait dehors quelqu'un qui n'a jamais verifie.
+     *
+     * @return JsonResponse|null null si le compte peut agir
+     */
+    public static function exigerCourrielVerifie(?User $user): ?JsonResponse
+    {
+        if ($user && $user->isEmailVerified()) {
+            return null;
+        }
+
+        return new JsonResponse(
+            403,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode([
+                'success' => false,
+                'code' => 'EMAIL_NOT_VERIFIED',
+                'message' => 'Vérifiez votre adresse courriel pour faire cette action.',
+                'data' => [
+                    'email' => $user->email ?? null,
+                    'can_resend_code' => true,
+                ],
+            ]))
+        );
     }
 
     /**
@@ -3242,7 +3344,10 @@ class AuthController
         $data = $request->getParsedBody();
 
         $validator = new Validator($data);
-        $validator->rule('required', ['first_name', 'last_name'])
+        // Le nom de famille n'est plus exige : une liste d'epicerie n'en
+        // a pas besoin, et chaque champ obligatoire de plus fait perdre
+        // du monde a l'inscription.
+        $validator->rule('required', ['first_name'])
             ->message('{field} is required');
         $validator->rule('lengthMax', ['first_name', 'last_name'], 100)
             ->message('{field} is too long (max 100 characters)');
@@ -3275,7 +3380,7 @@ class AuthController
 
             $updateData = [
                 'first_name' => trim($data['first_name']),
-                'last_name' => trim($data['last_name']),
+                'last_name' => trim((string) ($data['last_name'] ?? '')),
                 'updated_at' => new \DateTime()
             ];
 

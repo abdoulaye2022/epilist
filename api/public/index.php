@@ -272,6 +272,7 @@ $app->group('', function ($group) {
     $group->post('/currency/format', [CurrencyController::class, 'formatUserAmount']);
 
     //  ROUTES POUR LA SUPPRESSION DE COMPTE
+    $group->post('/user/onboarding-complete', [AuthController::class, 'completeOnboarding']);
     $group->post('/auth/request-account-deletion', [AuthController::class, 'requestAccountDeletion']);
     $group->post('/auth/confirm-account-deletion', [AuthController::class, 'confirmAccountDeletion']);
     $group->post('/auth/cancel-account-deletion', [AuthController::class, 'cancelAccountDeletion']);
