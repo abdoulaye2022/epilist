@@ -56,6 +56,10 @@ class MessageController
                 ->offset($offset)
                 ->get();
 
+            // La langue du LECTEUR : c'est elle qui decide du libelle
+            // « Utilisateur supprime » / « Deleted user ».
+            ListMessage::$langueAffichage = self::langueDe($userId);
+
             // Get unread count for this user
             $unreadCount = ListMessage::getUnreadCountForList($listId, $userId);
 
@@ -135,6 +139,7 @@ class MessageController
 
             // Load user relation
             $message->load('user');
+            ListMessage::$langueAffichage = self::langueDe($userId);
 
             // Send push notifications to all users who have access to this list
             try {
@@ -321,4 +326,13 @@ class MessageController
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
+
+    /** Langue enregistree d'un lecteur, francais par defaut. */
+    private static function langueDe($userId): string
+    {
+        $lang = User::where('id', $userId)->value('language');
+
+        return $lang === 'en' ? 'en' : 'fr';
+    }
 }
+

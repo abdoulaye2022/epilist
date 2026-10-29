@@ -316,7 +316,7 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
 
       SmartSnackBarManager.showInfoSnackBar(
         context,
-        l10n.accountWillBeDeletedOn(_formatDate(state.deletionEffectiveDate)),
+        l10n.accountDeletedNow,
         duration: const Duration(seconds: 5),
       );
     } else if (state is AuthFailure) {
@@ -347,9 +347,4 @@ class _DeleteAccountDialogState extends State<DeleteAccountDialog> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/'
-        '${date.month.toString().padLeft(2, '0')}'
-        '/${date.year}';
-  }
 }

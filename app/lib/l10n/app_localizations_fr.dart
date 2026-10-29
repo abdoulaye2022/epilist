@@ -975,7 +975,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sharedListsAnonymized =>
-      '• Les listes partagées avec d\'autres utilisateurs (anonymisées)';
+      '• Les listes partagées sont transmises à un autre membre';
 
   @override
   String get reasonOptional => 'Raison (optionnelle)';
@@ -6166,6 +6166,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get receiptPhotoUnavailable => 'Photo indisponible pour le moment';
+
+  @override
+  String get deletedUser => 'Utilisateur supprimé';
+
+  @override
+  String get accountDeletedNow =>
+      'Votre compte est supprimé. Vos données personnelles ont été effacées.';
 
   @override
   String get receiptPhotoTitle => 'Photo du reçu';

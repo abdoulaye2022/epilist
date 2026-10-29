@@ -40,6 +40,15 @@ class ListMessage extends Model
     ];
 
     /**
+     * Langue dans laquelle rendre l'auteur d'un message supprime.
+     *
+     * La base ne garde qu'un libelle francais ; qui lit la conversation
+     * peut etre en anglais. Le controleur pose ici la langue du
+     * lecteur avant de serialiser (MessageController).
+     */
+    public static string $langueAffichage = 'fr';
+
+    /**
      * Get the shopping list that owns the message.
      */
     public function shoppingList(): BelongsTo
@@ -104,17 +113,18 @@ class ListMessage extends Model
     {
         $data = parent::toArray();
 
-        // Add user info
+        // L'auteur. Un compte supprime garde sa place dans la
+        // conversation — retirer ses messages trouerait l'historique de
+        // ceux qui restent — mais il n'a plus de nom ni d'adresse :
+        // « Utilisateur supprime », et rien d'autre.
         if ($this->relationLoaded('user') && $this->user) {
-            $fullName = trim(($this->user->first_name ?? '') . ' ' . ($this->user->last_name ?? ''));
-            if (empty($fullName)) {
-                $fullName = $this->user->email ?? 'Unknown User';
-            }
+            $supprime = $this->user->estAnonymise();
 
             $data['user'] = [
                 'id' => $this->user->id,
-                'name' => $fullName,
-                'email' => $this->user->email ?? '',
+                'name' => $this->user->nomAffiche(self::$langueAffichage),
+                'email' => $supprime ? '' : ($this->user->email ?? ''),
+                'is_deleted' => $supprime,
             ];
         }
 

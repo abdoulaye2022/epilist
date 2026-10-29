@@ -1311,19 +1311,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final result = await accountDeletionService.confirmAccountDeletion(
+      await accountDeletionService.confirmAccountDeletion(
         deletionCode: event.deletionCode,
         reason: event.reason,
       );
 
-      emit(
-        AccountDeletionConfirmed(
-          deletionEffectiveDate: DateTime.parse(
-            result['deletion_effective_date'],
-          ),
-          canCancelUntil: DateTime.parse(result['can_cancel_until']),
-        ),
-      );
+      // Avant, on lisait ici deletion_effective_date et can_cancel_until :
+      // deux cles que l'API n'a jamais envoyees. DateTime.parse(null)
+      // levait, et la personne voyait une erreur alors que son compte
+      // etait supprime.
+      emit(const AccountDeletionConfirmed());
 
       await Future.delayed(const Duration(seconds: 2));
 

@@ -154,17 +154,18 @@ class AccountDeletionCodeSent extends AuthState {
   List<Object> get props => [email, codeExpiresInMinutes];
 }
 
+/// Le compte est supprime, maintenant.
+///
+/// Cet etat portait deux dates — « supprime le... », « annulable
+/// jusqu'au... » — qui decrivaient un delai de grace de trente jours que
+/// l'API n'a jamais mis en place. Les donnees personnelles sont effacees
+/// des la confirmation ; seule la ligne vide attend la purge. Il n'y a
+/// donc plus rien a annuler, et plus de date a annoncer.
 class AccountDeletionConfirmed extends AuthState {
-  final DateTime deletionEffectiveDate;
-  final DateTime canCancelUntil;
-
-  const AccountDeletionConfirmed({
-    required this.deletionEffectiveDate,
-    required this.canCancelUntil,
-  });
+  const AccountDeletionConfirmed();
 
   @override
-  List<Object> get props => [deletionEffectiveDate, canCancelUntil];
+  List<Object> get props => [];
 }
 
 class AccountDeletionCancelled extends AuthState {}

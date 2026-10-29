@@ -408,7 +408,11 @@ class _MessageBubble extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 3),
                         child: Text(
-                          message.user!.displayName,
+                          // Un auteur supprime suit la langue de
+                          // l'application, pas celle qu'avait son compte.
+                          message.user!.isDeleted
+                              ? AppLocalizations.of(context)!.deletedUser
+                              : message.user!.displayName,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,

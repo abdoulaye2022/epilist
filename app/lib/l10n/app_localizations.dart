@@ -1853,7 +1853,7 @@ abstract class AppLocalizations {
   /// No description provided for @sharedListsAnonymized.
   ///
   /// In fr, this message translates to:
-  /// **'• Les listes partagées avec d\'autres utilisateurs (anonymisées)'**
+  /// **'• Les listes partagées sont transmises à un autre membre'**
   String get sharedListsAnonymized;
 
   /// No description provided for @reasonOptional.
@@ -11286,6 +11286,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Photo indisponible pour le moment'**
   String get receiptPhotoUnavailable;
+
+  /// No description provided for @deletedUser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisateur supprimé'**
+  String get deletedUser;
+
+  /// No description provided for @accountDeletedNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre compte est supprimé. Vos données personnelles ont été effacées.'**
+  String get accountDeletedNow;
 
   /// No description provided for @receiptPhotoTitle.
   ///

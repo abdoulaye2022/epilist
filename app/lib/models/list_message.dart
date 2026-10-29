@@ -129,10 +129,20 @@ class MessageUser {
   final String name;
   final String email;
 
+  /// L'auteur a supprime son compte.
+  ///
+  /// Ses messages restent — les retirer trouerait la conversation de
+  /// ceux qui restent — mais il n'a plus de nom. Le serveur envoie deja
+  /// un libelle traduit dans la langue enregistree du compte ; ce
+  /// drapeau permet a l'ecran de suivre la langue REELLE de
+  /// l'application, qui peut en differer.
+  final bool isDeleted;
+
   MessageUser({
     required this.id,
     required this.name,
     required this.email,
+    this.isDeleted = false,
   });
 
   factory MessageUser.fromJson(Map<String, dynamic> json) {
@@ -140,6 +150,7 @@ class MessageUser {
       id: json['id'] as int,
       name: (json['name'] as String?) ?? 'Unknown User',
       email: (json['email'] as String?) ?? '',
+      isDeleted: json['is_deleted'] as bool? ?? false,
     );
   }
 
@@ -148,6 +159,7 @@ class MessageUser {
       'id': id,
       'name': name,
       'email': email,
+      'is_deleted': isDeleted,
     };
   }
 
@@ -158,6 +170,9 @@ class MessageUser {
   }
 
   String get initials {
+    // Un compte supprime n'a plus d'initiales a montrer.
+    if (isDeleted) return '?';
+
     final parts = name.split(' ');
     if (parts.length >= 2) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();

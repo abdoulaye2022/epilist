@@ -128,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else if (state is AccountDeletionConfirmed) {
       SmartSnackBarManager.showInfoSnackBar(
         context,
-        l10n.accountWillBeDeletedIn30Days,
+        l10n.accountDeletedNow,
         duration: const Duration(seconds: 5),
       );
     } else if (state is AccountDeletionCancelled) {
