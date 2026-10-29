@@ -14,6 +14,7 @@
 //   3. il ne se montre QU'UNE FOIS, et le drapeau vit sur le serveur :
 //      changer de téléphone ne doit pas le faire revenir.
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/models/shared_enums.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/onboarding_service.dart';
@@ -70,11 +71,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final service = context.read<OnboardingService>();
     final navigateur = Navigator.of(context);
 
+    // Passer est une reponse, pas un silence : on la mesure comme le
+    // reste, sinon on ne saura jamais QUELLE etape fait fuir.
+    _mesurer(_etapeCourante, 'skip');
+
     await service.marquerTermine();
 
     if (mounted) {
       navigateur.pop();
     }
+  }
+
+  /// Le nom de l'etape affichee, pour la mesure.
+  String get _etapeCourante => switch (_page) {
+    0 => 'first_list',
+    1 => 'invite',
+    _ => 'budget',
+  };
+
+  /// Aucun contenu ne part : l'etape et « done » ou « skip », rien de plus.
+  void _mesurer(String etape, String action) {
+    context.read<AnalyticsTracker>().etapeParcours(etape: etape, action: action);
   }
 
   void _pageSuivante() {
@@ -121,6 +138,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       if (!mounted) return;
 
+      _mesurer('first_list', 'done');
       setState(() => _enCours = false);
       _pageSuivante();
     } catch (e) {
@@ -172,6 +190,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await SharePlus.instance.share(ShareParams(text: message));
 
       if (mounted) {
+        _mesurer('invite', 'done');
+        context.read<AnalyticsTracker>().listePartagee(canal: 'native_sheet');
         _pageSuivante();
       }
     } catch (e) {
@@ -397,7 +417,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       titre: l10n.onboardBudgetTitle,
       corps: l10n.onboardBudgetBody,
       libelleAction: l10n.onboardFinish,
-      action: _terminer,
+      action: () {
+        _mesurer('budget', 'done');
+        _terminer();
+      },
       contenu: const [],
     );
   }

@@ -1,6 +1,7 @@
 // services/budget_service.dart
 import 'package:dio/dio.dart';
 import 'package:epilist/models/budget.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,9 +9,17 @@ class BudgetService {
   final Dio _dio;
   final AuthService _authService;
 
-  BudgetService({required Dio dio, required AuthService authService})
-    : _dio = dio,
-      _authService = authService;
+  /// [tracker] : la mesure d'usage. Ni le montant, ni le nom du budget
+  /// ne partent — seulement le fait qu'il en existe un de plus.
+  BudgetService({
+    required Dio dio,
+    required AuthService authService,
+    AnalyticsTracker? tracker,
+  }) : _dio = dio,
+       _authService = authService,
+       _tracker = tracker;
+
+  final AnalyticsTracker? _tracker;
 
   /// Obtenir tous les budgets avec filtres optionnels
   Future<List<Budget>> getBudgets({
@@ -83,6 +92,10 @@ class BudgetService {
       );
 
       debugPrint('✅ Budget créé avec succès: ${response.data['data']['name']}');
+
+      // Ni le montant ni le nom ne partent : seulement qu'il existe un
+      // budget de plus.
+      _tracker?.budgetCree();
 
       return Budget.fromJson(response.data['data']);
     } on DioException catch (e) {

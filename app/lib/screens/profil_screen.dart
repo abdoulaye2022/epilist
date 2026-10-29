@@ -1,5 +1,6 @@
 // screens/profile_screen.dart - VERSION AVEC FEEDBACK
 
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/widgets/common/app_drawer.dart';
 import 'package:epilist/widgets/common/app_top_bar.dart';
 import 'package:epilist/widgets/common/main_bottom_bar.dart';
@@ -53,11 +54,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// null tant que le réglage n'est pas connu du serveur
   bool? _twoFactorEnabled;
 
+  /// La mesure d'usage est-elle coupée ? null le temps de la lire.
+  bool? _mesureDesactivee;
+
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
     _loadTwoFactor();
+    _lireLeChoixDeMesure();
+  }
+
+  Future<void> _lireLeChoixDeMesure() async {
+    final desactivee = await context.read<AnalyticsTracker>().estDesactivee();
+    if (!mounted) return;
+    setState(() => _mesureDesactivee = desactivee);
   }
 
   Future<void> _loadTwoFactor() async {
@@ -437,8 +448,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : (_twoFactorEnabled! ? l10n.enabled : l10n.disabled),
           onTap: _toggleTwoFactor,
         ),
+        // La mesure d'usage, et le moyen de la couper. Un réglage qu'on
+        // ne trouve pas n'est pas un choix.
+        ProfileActionTile(
+          icon:
+              _mesureDesactivee == true
+                  ? Icons.insights_outlined
+                  : Icons.insights,
+          title: l10n.measurementSetting,
+          subtitle:
+              _mesureDesactivee == null
+                  ? '…'
+                  : (_mesureDesactivee!
+                      ? l10n.measurementSettingOff
+                      : l10n.measurementSettingOn),
+          onTap: _basculerLaMesure,
+        ),
       ],
     );
+  }
+
+  /// Coupe ou rallume la mesure d'usage.
+  ///
+  /// Le réglage dit AVANT de basculer ce qui est mesuré et ce qui ne
+  /// l'est pas : accepter sans savoir n'est pas accepter.
+  Future<void> _basculerLaMesure() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (_mesureDesactivee == null) return;
+
+    final tracker = context.read<AnalyticsTracker>();
+    final cible = !_mesureDesactivee!;
+
+    final confirme = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(l10n.measurementSetting),
+            content: Text(
+              l10n.measurementSettingHint,
+              style: const TextStyle(fontSize: 15, height: 1.4),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: Text(
+                  cible ? l10n.measurementSettingOff : l10n.measurementSettingOn,
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirme != true) return;
+
+    await tracker.definirDesactivee(cible);
+
+    if (mounted) {
+      setState(() => _mesureDesactivee = cible);
+    }
   }
 
   /// Active/désactive la vérification en deux étapes. Le serveur exige le

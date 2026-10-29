@@ -6195,6 +6195,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inviteCodeButton => 'J\'ai un code d\'invitation';
 
   @override
+  String get measurementSetting => 'Mesure d\'usage';
+
+  @override
+  String get measurementSettingOn => 'Activée — aucun contenu n\'est envoyé';
+
+  @override
+  String get measurementSettingOff => 'Désactivée';
+
+  @override
+  String get measurementSettingHint =>
+      'Nous comptons des actions — une liste créée, un reçu confirmé — pour savoir ce qui sert. Jamais le nom d\'un article, d\'une liste, un montant ni votre adresse courriel. Vous pouvez couper cette mesure ici, et elle s\'arrête aussitôt.';
+
+  @override
   String get continueWithEmail => 'Continuer avec un courriel';
 
   @override

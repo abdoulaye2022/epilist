@@ -3,6 +3,7 @@ import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/services/notification_service.dart';
 import 'package:epilist/services/sso_service.dart';
@@ -26,6 +27,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// inscription part en « direct », ce qui est vrai par defaut.
   final InvitationService? invitationService;
 
+  /// La mesure d'usage. Optionnelle : un bloc construit sans elle (un
+  /// test, par exemple) fonctionne exactement pareil, sans rien
+  /// envoyer.
+  final AnalyticsTracker? analyticsTracker;
+
   Timer? _tokenRefreshTimer;
 
   AuthBloc({
@@ -33,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.accountDeletionService,
     required this.localizationBloc,
     this.invitationService,
+    this.analyticsTracker,
   }) : super(AuthInitial()) {
     // Événements existants
     on<LoginButtonPressed>(_onLoginButtonPressed);
@@ -1089,6 +1096,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       _scheduleTokenRefresh();
       await _registerFCMAfterSuccessfulLogin();
+
+      // « email », et « invite » si une invitation a amene ce compte.
+      // Jamais l'adresse, jamais le prenom, jamais le jeton.
+      analyticsTracker?.compteCree(
+        methode: 'email',
+        source: jetonInvitation != null ? 'invite' : 'organic',
+      );
 
       emit(AuthSuccess(user: utilisateur, authMethod: 'email'));
     } catch (e) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:epilist/models/receipt.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,9 +11,17 @@ class ReceiptService {
   final Dio _dio;
   final AuthService _authService;
 
-  ReceiptService({required Dio dio, required AuthService authService})
-    : _dio = dio,
-      _authService = authService;
+  /// [tracker] : la mesure d'usage. Ni le magasin, ni la date, ni les
+  /// montants ne partent — seulement le fait qu'un recu a ete confirme.
+  ReceiptService({
+    required Dio dio,
+    required AuthService authService,
+    AnalyticsTracker? tracker,
+  }) : _dio = dio,
+       _authService = authService,
+       _tracker = tracker;
+
+  final AnalyticsTracker? _tracker;
 
   /// ✅ PARSE RESPONSE HELPER - Adapté à votre structure API
   Map<String, dynamic> _parseApiResponse(dynamic responseData) {
@@ -250,6 +259,10 @@ class ReceiptService {
       if (responseData['success'] == true) {
         final receiptData = responseData['data'];
         if (receiptData is Map<String, dynamic>) {
+          // Ni le magasin, ni la date, ni le montant : seulement qu'un
+          // recu de plus a ete confirme par quelqu'un.
+          _tracker?.recuConfirme();
+
           final receipt = Receipt.fromJson(receiptData);
           if (image == null) return receipt;
           // La facture existe : son identifiant permet d'y rattacher la

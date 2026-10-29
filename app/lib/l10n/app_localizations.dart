@@ -11335,6 +11335,30 @@ abstract class AppLocalizations {
   /// **'J\'ai un code d\'invitation'**
   String get inviteCodeButton;
 
+  /// No description provided for @measurementSetting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mesure d\'usage'**
+  String get measurementSetting;
+
+  /// No description provided for @measurementSettingOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activée — aucun contenu n\'est envoyé'**
+  String get measurementSettingOn;
+
+  /// No description provided for @measurementSettingOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivée'**
+  String get measurementSettingOff;
+
+  /// No description provided for @measurementSettingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous comptons des actions — une liste créée, un reçu confirmé — pour savoir ce qui sert. Jamais le nom d\'un article, d\'une liste, un montant ni votre adresse courriel. Vous pouvez couper cette mesure ici, et elle s\'arrête aussitôt.'**
+  String get measurementSettingHint;
+
   /// No description provided for @continueWithEmail.
   ///
   /// In fr, this message translates to:

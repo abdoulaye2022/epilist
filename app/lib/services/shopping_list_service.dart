@@ -1,6 +1,7 @@
 // services/shopping_list_service.dart - VERSION AVEC LEAVE SHARED LIST
 import 'package:dio/dio.dart';
 import 'package:epilist/models/shopping_list.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,9 +9,18 @@ class ShoppingListService {
   final Dio _dio;
   final AuthService _authService;
 
-  ShoppingListService({required Dio dio, required AuthService authService})
-    : _dio = dio,
-      _authService = authService;
+  /// [tracker] : la mesure d'usage. Branchee ICI et pas dans chaque
+  /// ecran, parce qu'une liste se cree depuis trois endroits — et que
+  /// le quatrieme, ecrit dans six mois, serait oublie.
+  ShoppingListService({
+    required Dio dio,
+    required AuthService authService,
+    AnalyticsTracker? tracker,
+  }) : _dio = dio,
+       _authService = authService,
+       _tracker = tracker;
+
+  final AnalyticsTracker? _tracker;
 
   Future<List<ShoppingList>> getShoppingLists() async {
     final token = await _authService.getToken();
@@ -36,6 +46,10 @@ class ShoppingListService {
       data: {'name': name},
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
+
+    // Le NOM de la liste ne part pas : seulement le fait qu'il y en ait
+    // une de plus.
+    _tracker?.listeCreee();
 
     return ShoppingList.fromJson(response.data['data']);
   }

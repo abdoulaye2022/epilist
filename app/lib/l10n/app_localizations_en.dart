@@ -6101,6 +6101,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteCodeButton => 'I have an invitation code';
 
   @override
+  String get measurementSetting => 'Usage measurement';
+
+  @override
+  String get measurementSettingOn => 'On — no content is sent';
+
+  @override
+  String get measurementSettingOff => 'Off';
+
+  @override
+  String get measurementSettingHint =>
+      'We count actions — a list created, a receipt confirmed — to know what gets used. Never an item name, a list name, an amount or your email address. You can turn this off here, and it stops right away.';
+
+  @override
   String get continueWithEmail => 'Continue with email';
 
   @override

@@ -31,6 +31,7 @@ import 'package:epilist/services/contact_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/services/onboarding_service.dart';
 import 'package:epilist/services/receipt_image_service.dart';
@@ -160,12 +161,24 @@ void main() async {
     );
 
     // ✅ ÉTAPE 5: Créer les services pour les listes et items (nécessaires pour le sync)
+    // La mesure d'usage. Le choix de la personne est applique AVANT
+    // tout envoi : si elle l'a coupee, le SDK ne collecte rien des la
+    // premiere image.
+    final analyticsTracker = AnalyticsTracker();
+    await analyticsTracker.appliquerLeChoixAuDemarrage();
+    unawaited(analyticsTracker.premiereOuverture());
+
     final shoppingListService = ShoppingListService(
       dio: dio,
       authService: authService,
+      tracker: analyticsTracker,
     );
 
-    final listItemService = ListItemService(dio: dio, authService: authService);
+    final listItemService = ListItemService(
+      dio: dio,
+      authService: authService,
+      tracker: analyticsTracker,
+    );
 
     // ✅ ÉTAPE 6: Initialiser le service de synchronisation hors ligne.
     // TOUS les services rejouables doivent être injectés : un service
@@ -195,6 +208,7 @@ void main() async {
       accountDeletionService: accountDeletionService,
       localizationBloc: localizationBloc,
       invitationService: invitationService,
+      analyticsTracker: analyticsTracker,
     );
 
     dio.interceptors.add(
@@ -279,6 +293,7 @@ void main() async {
                 (context) => ReceiptService(
                   dio: dio,
                   authService: context.read<AuthService>(),
+                  tracker: analyticsTracker,
                 ),
           ),
           // Les URL signées des photos de reçus. UNE seule instance pour
@@ -300,6 +315,7 @@ void main() async {
           RepositoryProvider<InvitationService>.value(
             value: invitationService,
           ),
+          RepositoryProvider<AnalyticsTracker>.value(value: analyticsTracker),
           RepositoryProvider<OnboardingService>(
             create:
                 (context) => OnboardingService(
@@ -312,11 +328,13 @@ void main() async {
                 (context) => BudgetService(
                   dio: dio,
                   authService: context.read<AuthService>(),
+                  tracker: analyticsTracker,
                 ),
           ),
           RepositoryProvider<ContactService>(
             create:
                 (context) => ContactService(
+                  tracker: analyticsTracker,
                   dio: dio,
                   authService: context.read<AuthService>(),
                 ),

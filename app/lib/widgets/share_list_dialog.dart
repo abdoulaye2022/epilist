@@ -1,4 +1,5 @@
 // widgets/share_list_dialog.dart - VERSION AVEC DESIGN COHÉRENT ET TRADUCTIONS
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/shared_enums.dart';
@@ -602,6 +603,10 @@ class _ShareListDialogState extends State<ShareListDialog> {
 
   void _shareLink(String link) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // Ni le lien, ni le jeton, ni le nom de la liste : seulement qu'un
+    // partage est parti, et par quel moyen.
+    context.read<AnalyticsTracker>().listePartagee(canal: 'native_sheet');
 
     try {
       if (_shareToken != null) {

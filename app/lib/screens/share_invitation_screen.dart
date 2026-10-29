@@ -1,4 +1,5 @@
 // screens/share_invitation_screen.dart - VERSION WITH MINIMAL SNACKBARS
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/shared_list/shared_list_event.dart';
@@ -59,6 +60,10 @@ class _ShareInvitationScreenState extends State<ShareInvitationScreen> {
         body: BlocConsumer<SharedListBloc, SharedListState>(
           listener: (context, state) {
             if (state is ShareInvitationAccepted) {
+              // Le bout de la boucle : quelqu'un a ete invite, et il
+              // est entre. C'est le seul chiffre qui dit si le partage
+              // ramene vraiment du monde.
+              context.read<AnalyticsTracker>().invitationAcceptee();
               _hasPerformedAction = true;
 
               SmartSnackBarManager.showSuccessSnackBar(

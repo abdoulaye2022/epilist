@@ -6,6 +6,7 @@ import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/models/parsed_receipt.dart';
 import 'package:epilist/models/store.dart';
 import 'package:epilist/screens/receipt_validation_screen.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/receipt_ocr_service.dart';
 import 'package:epilist/services/receipt_parser_service.dart';
 import 'package:epilist/services/store_service.dart';
@@ -53,6 +54,11 @@ Future<bool> startReceiptScan(BuildContext context, {required int listId}) async
     imageQuality: 95,
   );
   if (picked == null || !context.mounted) return false;
+
+  // La photo est prise : le scan commence vraiment. Mesure ici et pas
+  // a l'ouverture du menu — choisir « appareil photo » puis changer
+  // d'avis n'est pas un scan.
+  context.read<AnalyticsTracker>().scanRecuCommence();
 
   // OCR + parsing sous un voile de chargement
   showDialog(

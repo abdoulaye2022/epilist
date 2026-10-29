@@ -1,6 +1,7 @@
 // services/contact_service.dart - VERSION AVEC LANGUE
 import 'package:dio/dio.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +28,15 @@ class ContactService {
   final AuthService authService;
   final ConnectivityService _connectivityService = ConnectivityService();
 
-  ContactService({required this.dio, required this.authService});
+  /// [tracker] : la mesure d'usage. Le CONTENU du message ne part
+  /// jamais — seulement le fait qu'un avis a ete envoye.
+  ContactService({
+    required this.dio,
+    required this.authService,
+    AnalyticsTracker? tracker,
+  }) : _tracker = tracker;
+
+  final AnalyticsTracker? _tracker;
 
   /// ✅ NOUVEAU: Obtient la langue actuelle du device
   String _getCurrentLanguage() {
@@ -208,6 +217,7 @@ class ContactService {
 
       if (response.statusCode == 200 && response.data['success'] == true) {
         debugPrint('✅ Feedback envoyé avec succès');
+        _tracker?.avisEnvoye();
         return {
           'message': response.data['message'],
           'feedbackId': response.data['data']?['feedback_id'] ?? '',

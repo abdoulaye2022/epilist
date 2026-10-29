@@ -12,6 +12,7 @@
 // — parce qu'on recopie ce qu'on voit, pas ce que le code attend.
 import 'package:epilist/l10n/app_localizations.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/theme/app_theme.dart';
@@ -88,6 +89,11 @@ class _EtatDialogueCodeInvitation extends State<_DialogueCodeInvitation> {
     });
 
     final service = context.read<InvitationService>();
+
+    // Le CODE lui-meme ne part pas — c'est une cle d'acces a une liste.
+    // Seul le fait qu'on en ait saisi un est mesure.
+    context.read<AnalyticsTracker>().codeInvitationSaisi();
+
     final jeton = await service.resoudreCode(saisi);
 
     if (!mounted) return;

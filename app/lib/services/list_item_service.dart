@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 // services/list_item_service.dart - VERSION CORRIGÉE POUR DIO EXCEPTION
 import 'package:dio/dio.dart';
 import 'package:epilist/models/list_item.dart';
+import 'package:epilist/services/analytics_tracker.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/blocs/list_item/list_item_bloc.dart';
 
@@ -9,9 +10,18 @@ class ListItemService {
   final Dio _dio;
   final AuthService _authService;
 
-  ListItemService({required Dio dio, required AuthService authService})
-    : _dio = dio,
-      _authService = authService;
+  /// [tracker] : la mesure d'usage. Un article s'ajoute a la voix, par
+  /// code-barres, par la boite de dialogue et par les suggestions :
+  /// un seul point de passage vaut mieux que quatre appels a tenir.
+  ListItemService({
+    required Dio dio,
+    required AuthService authService,
+    AnalyticsTracker? tracker,
+  }) : _dio = dio,
+       _authService = authService,
+       _tracker = tracker;
+
+  final AnalyticsTracker? _tracker;
 
   Future<List<ListItem>> getListItems(int listId) async {
     final token = await _authService.getToken();
@@ -58,6 +68,12 @@ class ListItemService {
 
       // ✅ VÉRIFIER MANUELLEMENT LE STATUS CODE
       if (response.statusCode == 201) {
+        // Le NOM du produit ne part pas. Seuls le premier et le
+        // cinquieme article comptent, et seulement par leur rang : le
+        // premier dit que la liste a servi, le cinquieme qu'elle est
+        // devenue une vraie liste de courses.
+        _tracker?.articleAjoute();
+
         // Succès - pas de doublon détecté
         return AddItemResult.success(ListItem.fromJson(response.data['data']));
       } else if (response.statusCode == 409) {
