@@ -150,6 +150,9 @@ $app->get('/currencies/popular', [CurrencyController::class, 'getPopular']);
 $app->get('/currencies/{id}', [CurrencyController::class, 'show']);
 
 //  ROUTES DE PARTAGE PUBLIQUES
+// L'ordre compte : /share/code/{code} AVANT /share/{token}, sinon
+// « code » serait pris pour un jeton.
+$app->get('/share/code/{code}', [SharedListController::class, 'resolveInviteCode']);
 $app->get('/share/{token}', [SharedListController::class, 'showSharePage']);
 
 //  ROUTES DE TEST

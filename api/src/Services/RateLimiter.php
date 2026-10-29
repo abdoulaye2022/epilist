@@ -53,6 +53,13 @@ class RateLimiter
             'max_attempts' => 5,
             'window_minutes' => 30,
         ],
+        // Résolution d'un code d'invitation : porte publique, six
+        // caractères. Le hasard protège (850 millions de possibilités),
+        // le plafond protège du reste.
+        'invite_code' => [
+            'max_attempts_per_ip' => 20,
+            'window_minutes' => 60,
+        ],
         // Demandes faites depuis le SITE : un formulaire ouvert à tous,
         // donc plus serré. Le courriel partira vers une adresse qui n'a
         // rien demandé si quelqu'un s'amuse.

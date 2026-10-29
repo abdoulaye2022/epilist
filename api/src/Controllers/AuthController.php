@@ -133,6 +133,8 @@ class AuthController
                         'currency_id' => 1, // CAD par défaut
                         'email_verified' => true, // Google vérifie déjà l'email
                         'email_verified_at' => Carbon::now(),
+                        'signup_source' => $this->tracerProvenance($data)[0],
+                        'signup_share_id' => $this->tracerProvenance($data)[1],
                         'created_at' => new \DateTime(),
                         'updated_at' => new \DateTime()
                     ]);
@@ -291,6 +293,8 @@ class AuthController
                 'currency_id' => $currencyId,
                 'email_verified' => true,
                 'email_verified_at' => Carbon::now(),
+                'signup_source' => $this->tracerProvenance($data)[0],
+                'signup_share_id' => $this->tracerProvenance($data)[1],
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()
             ]);
@@ -518,6 +522,8 @@ class AuthController
                         'currency_id' => 1, // CAD par défaut
                         'email_verified' => true, // Apple vérifie déjà l'email
                         'email_verified_at' => Carbon::now(),
+                        'signup_source' => $this->tracerProvenance($data)[0],
+                        'signup_share_id' => $this->tracerProvenance($data)[1],
                         'created_at' => new \DateTime(),
                         'updated_at' => new \DateTime()
                     ]);
@@ -728,6 +734,8 @@ class AuthController
                     'currency_id' => $currencyId,
                     'email_verified' => true,
                     'email_verified_at' => Carbon::now(),
+                    'signup_source' => $this->tracerProvenance($data)[0],
+                    'signup_share_id' => $this->tracerProvenance($data)[1],
                     'created_at' => new \DateTime(),
                     'updated_at' => new \DateTime()
                 ]);
@@ -2577,6 +2585,16 @@ class AuthController
             $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiration = Carbon::now()->addHours(2);
 
+            // D'OU VIENT CE COMPTE.
+            //
+            // Sans ces deux colonnes, « combien d'inscriptions une
+            // invitation a-t-elle produites » n'a pas de reponse, et la
+            // boucle de partage ne se mesure pas. L'application envoie
+            // la provenance et, s'il y en a un, le jeton de partage qui
+            // l'a amenee ; le jeton est traduit ici en identifiant de
+            // partage, et jamais conserve tel quel.
+            [$signupSource, $signupShareId] = $this->tracerProvenance($data);
+
             // Créer l'utilisateur
             $user = User::create([
                 'first_name' => trim($data['first_name']),
@@ -2588,6 +2606,8 @@ class AuthController
                 'language' => $language, // 🌍 Langue de l'utilisateur
                 'email_verification_code' => $verificationCode,
                 'email_verification_code_expires_at' => $expiration,
+                'signup_source' => $signupSource,
+                'signup_share_id' => $signupShareId,
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime()
             ]);
@@ -2645,6 +2665,53 @@ class AuthController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(500);
         }
+    }
+
+    /**
+     * La provenance d'une inscription, ramenee a deux valeurs sures.
+     *
+     * Ce que l'application envoie n'est pas digne de confiance : la
+     * source est bornee a une liste fermee, et le jeton n'est accepte
+     * que s'il designe VRAIMENT un partage. Un jeton invente ne laisse
+     * aucune trace.
+     *
+     * @return array{0: string, 1: int|null}
+     */
+    /** Memoire d'un appel a l'autre : les creations SSO l'appellent deux fois. */
+    private ?array $provenanceCalculee = null;
+
+    private function tracerProvenance(array $data): array
+    {
+        if ($this->provenanceCalculee !== null) {
+            return $this->provenanceCalculee;
+        }
+
+        $sourcesConnues = ['direct', 'share_link', 'invite_code', 'install_referrer'];
+        $source = (string) ($data['signup_source'] ?? 'direct');
+
+        if (!in_array($source, $sourcesConnues, true)) {
+            $source = 'direct';
+        }
+
+        $jeton = preg_replace('/[^a-f0-9]/', '', (string) ($data['share_token'] ?? ''));
+
+        if ($jeton === '') {
+            return $this->provenanceCalculee = [$source, null];
+        }
+
+        $partage = \App\Models\SharedList::where('share_token', $jeton)->first();
+
+        if (!$partage) {
+            return $this->provenanceCalculee = [$source, null];
+        }
+
+        // Un jeton valide suffit a dire que le compte vient d'un
+        // partage, meme si l'application a oublie de le preciser.
+        if ($source === 'direct') {
+            $source = 'share_link';
+        }
+
+        return $this->provenanceCalculee = [$source, (int) $partage->id];
     }
 
     public function confirmEmail(Request $request, Response $response)

@@ -25,6 +25,19 @@ class SharedList extends Model
     public const STATUS_REVOKED = 'revoked';           // Révoquée par le propriétaire
     public const STATUS_LEFT = 'left';                 // Utilisateur a quitté
 
+    /**
+     * Alphabet du code d'invitation : ni 0 ni O, ni 1 ni I ni L.
+     *
+     * Un code court se transmet a voix haute, se recopie depuis une
+     * photo d'ecran, se lit de travers. Les paires qui se confondent
+     * coutent plus cher que les quelques combinaisons perdues : il
+     * reste 31 caracteres, soit 31^6 — plus de 850 millions de codes.
+     */
+    public const ALPHABET_CODE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+    /** Longueur du code d'invitation. */
+    public const LONGUEUR_CODE = 6;
+
     //  CONSTANTES POUR LES PERMISSIONS
     public const PERMISSION_READ_ONLY = 'readOnly';
     public const PERMISSION_EDIT = 'edit';
@@ -36,6 +49,7 @@ class SharedList extends Model
         'shared_with_user_id',
         'permission',
         'share_token',
+        'invite_code',
         'status',           //  Nouveau champ
         'is_active',
         'expires_at',
@@ -289,5 +303,38 @@ class SharedList extends Model
                     ->pending()
                     ->notExpired()
                     ->first();
+    }
+
+    /**
+     * Un code d'invitation libre.
+     *
+     * L'unicite est garantie par l'index, pas par cette boucle : deux
+     * requetes simultanees peuvent tirer le meme code, et c'est
+     * l'insertion qui tranchera. D'ou la reprise en cas de collision,
+     * cote appelant.
+     */
+    public static function genererCodeInvitation(): string
+    {
+        do {
+            $code = '';
+            for ($i = 0; $i < self::LONGUEUR_CODE; $i++) {
+                $code .= self::ALPHABET_CODE[random_int(0, strlen(self::ALPHABET_CODE) - 1)];
+            }
+        } while (self::where('invite_code', $code)->exists());
+
+        return $code;
+    }
+
+    /**
+     * Normalise ce qu'une personne a tape.
+     *
+     * Minuscules, espaces et tirets : on les accepte et on les retire.
+     * Aucune substitution « intelligente » : 0, O, 1, I et L n'existent
+     * pas dans l'alphabet, donc un code qui en contient est faux, et le
+     * deviner a la place de la personne ferait ouvrir la mauvaise liste.
+     */
+    public static function normaliserCode(string $saisi): string
+    {
+        return strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $saisi) ?? '');
     }
 }

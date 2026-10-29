@@ -49,18 +49,44 @@ class SharedListController
             $shareToken = $this->generateShareToken();
             $expirationDays = $data['expiration_days'] ?? 30;
             $expiresAt = $expirationDays ? Carbon::now()->addDays($expirationDays) : null;
-            
-            SharedList::create([
-                'list_id' => $list_id,
-                'owner_id' => $user_id,
-                'share_token' => $shareToken,
-                'permission' => $data['permission'],
-                'status' => SharedList::STATUS_PENDING,
-                'expires_at' => $expiresAt,
-                'is_active' => true,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
+
+            // Le code court double le lien. Il sert quand le lien ne
+            // survit pas au passage par le magasin d'applications —
+            // c'est-a-dire presque toujours : on clique, on installe, on
+            // ouvre, et le jeton a disparu en chemin.
+            //
+            // Deux requetes simultanees peuvent tirer le meme code ;
+            // c'est l'index unique qui tranche, et on retire une fois.
+            $inviteCode = SharedList::genererCodeInvitation();
+
+            try {
+                $partage = SharedList::create([
+                    'list_id' => $list_id,
+                    'owner_id' => $user_id,
+                    'share_token' => $shareToken,
+                    'invite_code' => $inviteCode,
+                    'permission' => $data['permission'],
+                    'status' => SharedList::STATUS_PENDING,
+                    'expires_at' => $expiresAt,
+                    'is_active' => true,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                $inviteCode = SharedList::genererCodeInvitation();
+                $partage = SharedList::create([
+                    'list_id' => $list_id,
+                    'owner_id' => $user_id,
+                    'share_token' => $shareToken,
+                    'invite_code' => $inviteCode,
+                    'permission' => $data['permission'],
+                    'status' => SharedList::STATUS_PENDING,
+                    'expires_at' => $expiresAt,
+                    'is_active' => true,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ]);
+            }
 
             $owner = User::find($user_id);
             $ownerName = $owner->name ?? $owner->email;
@@ -70,6 +96,7 @@ class SharedListController
                 'success' => true,
                 'data' => [
                     'share_token' => $shareToken,
+                    'invite_code' => $inviteCode,
                     'share_url' => $shareUrl,
                     'list_name' => $list->name,
                     'owner_name' => $ownerName,
@@ -78,10 +105,22 @@ class SharedListController
                     'expires_in_days' => $expirationDays,
                     'app_url' => $this->generateAppUrl($shareToken),
                     'store_urls' => [
-                        'android' => self::ANDROID_STORE_URL,
+                        // Le lien Play porte le jeton dans « referrer » :
+                        // Google le rend a l'application au premier
+                        // lancement, et l'invitation survit a
+                        // l'installation.
+                        'android' => self::ANDROID_STORE_URL . '&referrer=' . rawurlencode(
+                            'share_token=' . $shareToken . '&utm_source=share'
+                        ),
                         'ios' => self::IOS_STORE_URL
                     ],
-                    'share_message' => $this->generateWebShareMessage($shareToken, $list->name, $ownerName, $shareUrl)
+                    'share_message' => $this->generateWebShareMessage(
+                        $shareToken,
+                        $list->name,
+                        $ownerName,
+                        $shareUrl,
+                        $inviteCode
+                    )
                 ],
                 'message' => 'Lien de partage créé avec succès'
             ]));
@@ -631,6 +670,93 @@ class SharedListController
     }
 
     /**
+     * GET /share/code/{code} — un code court rend son jeton.
+     *
+     * Publique, et elle doit l'etre : la personne qui tape ce code vient
+     * d'installer l'application et n'a pas encore de compte. Elle
+     * n'ouvre rien par elle-meme — elle rend le jeton, et accepter
+     * l'invitation demande ensuite d'etre connecte, comme avant.
+     *
+     * Limitee en cadence : six caracteres sur 31, c'est 850 millions de
+     * possibilites, mais une porte publique qui repond sans compter
+     * finit toujours par etre essayee.
+     */
+    public function resolveInviteCode(Request $request, Response $response, array $args): Response
+    {
+        $code = SharedList::normaliserCode((string) ($args['code'] ?? ''));
+        $limiteur = new \App\Services\RateLimiter();
+        $ip = $this->clientIp($request);
+
+        if (!$limiteur->checkIPLimit('invite_code', $ip)) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'RATE_LIMIT_EXCEEDED',
+                'message' => 'Trop de tentatives. Réessayez plus tard.',
+                'retry_after' => $limiteur->getRetryAfter('invite_code', $ip),
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(429);
+        }
+
+        $limiteur->recordAttempt('invite_code', $ip);
+
+        if (strlen($code) !== SharedList::LONGUEUR_CODE) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'INVALID_CODE',
+                'message' => 'Code invalide',
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        $partage = SharedList::with(['shoppingList', 'owner'])
+            ->where('invite_code', $code)
+            ->where('status', SharedList::STATUS_PENDING)
+            ->where('is_active', true)
+            ->first();
+
+        // Expire, revoque, deja accepte : meme reponse qu'un code
+        // inexistant. Distinguer les deux dirait a un inconnu quels
+        // codes ont existe.
+        if (!$partage || ($partage->expires_at && Carbon::now()->gt($partage->expires_at))) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'code' => 'CODE_NOT_FOUND',
+                'message' => 'Ce code ne correspond à aucune invitation en cours.',
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'data' => [
+                'share_token' => $partage->share_token,
+                'list_name' => $partage->shoppingList->name ?? null,
+                'owner_name' => $partage->owner
+                    ? trim(($partage->owner->first_name ?? '') . ' ' . ($partage->owner->last_name ?? ''))
+                    : null,
+                'permission' => $partage->permission,
+                'expires_at' => $partage->expires_at ? Carbon::parse($partage->expires_at)->toISOString() : null,
+            ],
+        ]));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    /** L'adresse de l'appelant, pour les plafonds de cadence. */
+    private function clientIp(Request $request): string
+    {
+        $server = $request->getServerParams();
+
+        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $cle) {
+            if (!empty($server[$cle]) && filter_var($server[$cle], FILTER_VALIDATE_IP)) {
+                return (string) $server[$cle];
+            }
+        }
+
+        return '0.0.0.0';
+    }
+
+    /**
      * Seuls le propriétaire de la liste et les partagés "admin" peuvent
      * gérer les partages (voir, modifier, révoquer).
      */
@@ -667,11 +793,24 @@ class SharedListController
         return self::APP_SCHEME . "://share/{$token}";
     }
 
-    private function generateWebShareMessage(string $token, string $listName, string $ownerName, string $webUrl): string
-    {
-        return "{$ownerName} vous invite à collaborer sur la liste d'épicerie \"{$listName}\".\n\n" .
-               "🔗 Cliquez sur ce lien pour ouvrir l'app ou la télécharger :\n{$webUrl}\n\n" .
-               "📱 EpiList - Vos listes de courses partagées";
+    private function generateWebShareMessage(
+        string $token,
+        string $listName,
+        string $ownerName,
+        string $webUrl,
+        ?string $inviteCode = null
+    ): string {
+        $message = "{$ownerName} vous invite à collaborer sur la liste d'épicerie \"{$listName}\".\n\n" .
+                   "🔗 Ouvrir dans EpiList (ou installer l'application) :\n{$webUrl}\n\n";
+
+        // Le code survit la ou le lien se perd : apres un passage par le
+        // magasin d'applications, il n'y a plus de lien, il reste ce
+        // que la personne a sous les yeux.
+        if ($inviteCode !== null) {
+            $message .= "Après l'installation, entrez ce code : {$inviteCode}\n\n";
+        }
+
+        return $message . "📱 EpiList - Vos listes de courses partagées";
     }
 
     private function getPermissionDisplayName(string $permission): string

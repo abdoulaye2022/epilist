@@ -32,6 +32,10 @@ class User extends Model
         'email_verified',
         'currency_id',
         'language', // Langue préférée de l'utilisateur (fr, en)
+        // D'où vient ce compte : 'direct', 'share_link', 'invite_code',
+        // 'install_referrer' — et l'identifiant du partage, s'il y en a.
+        'signup_source',
+        'signup_share_id',
         // Champs pour la suppression
         'account_deletion_code',
         'account_deletion_code_expires_at',
