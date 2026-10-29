@@ -26,6 +26,7 @@ class ListReceipt extends Model
         'taxes',
         'currency',
         'image_url',
+        'image_path',
         'source',
         'signature',
         'notes',
@@ -300,12 +301,43 @@ class ListReceipt extends Model
             'notes' => $this->notes,
             'purchase_date' => $this->purchase_date->toDateString(),
             'formatted_amount' => $this->getFormattedAmountInCurrency(),
-            // Photo du reçu papier : sans elle dans la charge utile,
-            // l'application ne peut pas l'afficher.
+            // Photo du reçu papier. L'URL publique n'est plus produite
+            // pour les nouveaux reçus (migration 015) : elle reste ici
+            // pour les applications déjà installées, qui ne connaissent
+            // que ce champ. Les versions à jour regardent `has_image` et
+            // demandent une URL signée à
+            // GET /shopping-lists/{listId}/receipts/{id}/image-url.
             'image_url' => $this->image_url,
+            'has_image' => $this->aUneImage(),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];
+    }
+
+    /**
+     * Ce reçu porte-t-il une photo, quelle que soit la forme stockée ?
+     *
+     * `image_path` depuis la migration 015, `image_url` avant elle : les
+     * deux cohabitent le temps que le parc d'applications tourne.
+     */
+    public function aUneImage(): bool
+    {
+        return trim((string) $this->image_path) !== ''
+            || trim((string) $this->image_url) !== '';
+    }
+
+    /**
+     * La clé de l'objet à signer, ou null si ce reçu n'a pas de photo.
+     * Une vieille URL publique est ramenée à sa clé par le service de
+     * stockage : la même image, désignée autrement.
+     */
+    public function cleDeLImage(\App\Services\ImageStorageService $stockage): ?string
+    {
+        $valeur = trim((string) $this->image_path) !== ''
+            ? $this->image_path
+            : $this->image_url;
+
+        return $stockage->cleDeLObjet($valeur);
     }
 
     public function getApiDataForUser(?User $user = null): array
