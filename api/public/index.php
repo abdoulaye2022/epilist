@@ -479,6 +479,9 @@ $app->group('', function ($group) {
     $group->post('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'uploadItemImage']);
     // Photo du reçu papier
     $group->post('/shopping-lists/{listId}/receipts/{receiptId}/image', [ImageController::class, 'uploadReceiptImage']);
+    // URL signee de 15 minutes pour regarder la photo d'un recu : depuis
+    // la migration 015 l'objet n'est plus public, c'est le seul chemin.
+    $group->get('/shopping-lists/{listId}/receipts/{receiptId}/image-url', [ImageController::class, 'receiptImageUrl']);
     $group->delete('/shopping-lists/{listId}/receipts/{receiptId}/image', [ImageController::class, 'deleteReceiptImage']);
     $group->delete('/shopping-lists/{listId}/items/{itemId}/image', [ImageController::class, 'deleteItemImage']);
 
