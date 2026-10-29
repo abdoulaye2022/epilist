@@ -183,17 +183,19 @@ class AccountDeletionService
             $successeur = $this->successeurDEspace((int) $espace->id, (int) $user->id);
 
             if ($successeur === null) {
-                foreach (ShoppingList::withTrashed()->where('space_id', $espace->id)->get() as $liste) {
-                    $this->collecterImagesDeLaListe((int) $liste->id, $images);
-                    $this->detruireListe((int) $liste->id);
-                    $rapport['listes_supprimees']++;
-                }
-                // Les tables de groupe de cet espace tombent avec lui :
+                // L'espace part, mais PAS ses listes d'un bloc : une
+                // liste rangee dans un espace vide peut tres bien etre
+                // partagee, par shared_list, avec quelqu'un qui n'est
+                // pas de l'espace. Les detruire ici lui retirerait ses
+                // courses sans le prevenir. Chaque liste est donc
+                // examinee une par une juste apres, par traiterListes(),
+                // qui regarde d'abord les partages.
+                //
+                // Les tables rattachees a l'espace tombent avec lui :
                 // space_members, space_activities, space_invitations,
                 // purchase_requests et suppliers sont en CASCADE ; les
-                // autres gardent un space_id orphelin, et sont reprises
-                // par la passe « tables de groupe » (espace non
-                // survivant = suppression).
+                // autres sont reprises par la passe « tables de
+                // groupe » (espace non survivant = suppression).
                 $espace->delete();
                 $rapport['espaces_supprimes']++;
                 continue;
@@ -268,11 +270,26 @@ class AccountDeletionService
                 continue;
             }
 
-            DB::table('shopping_lists')->where('id', $liste->id)->update([
+            $maj = [
                 'user_id' => $repreneur,
                 'created_by_user_id' => $repreneur,
                 'updated_at' => Carbon::now(),
-            ]);
+            ];
+
+            // Une liste rangee dans un espace n'est atteignable QUE par
+            // les membres de cet espace : ListAccessService::
+            // checkSharedSpace refuse l'acces, sans repli vers la regle
+            // du proprietaire, des que l'espace a disparu ou que la
+            // personne n'en est pas membre. Transferer la liste sans y
+            // regarder la rendait donc invisible pour tout le monde, y
+            // compris pour son nouveau proprietaire. Elle quitte
+            // l'espace quand celui-ci ne peut plus lui servir de porte.
+            if ($liste->space_id !== null && !$this->espaceOuvreLaPorte((int) $liste->space_id, $repreneur)) {
+                $maj['space_id'] = null;
+                $rapport['listes_detachees']++;
+            }
+
+            DB::table('shopping_lists')->where('id', $liste->id)->update($maj);
 
             // Le partage du repreneur n'a plus d'objet : il est chez lui.
             DB::table('shared_list')
@@ -333,6 +350,31 @@ class AccountDeletionService
         }
 
         return null;
+    }
+
+    /**
+     * L'espace existe-t-il encore, et ce membre y est-il actif ?
+     *
+     * Les deux conditions comptent : un espace supprime ne donne acces a
+     * rien, et un repreneur venu d'un simple partage de liste n'est pas
+     * membre de l'espace.
+     */
+    private function espaceOuvreLaPorte(int $spaceId, int $userId): bool
+    {
+        $vivant = DB::table('spaces')
+            ->where('id', $spaceId)
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if (!$vivant) {
+            return false;
+        }
+
+        return DB::table('space_members')
+            ->where('space_id', $spaceId)
+            ->where('user_id', $userId)
+            ->where('status', SpaceMember::STATUS_ACTIVE)
+            ->exists();
     }
 
     /**
@@ -516,6 +558,7 @@ class AccountDeletionService
             'espaces_supprimes' => 0,
             'appartenances_retirees' => 0,
             'listes_transferees' => 0,
+            'listes_detachees' => 0,
             'listes_supprimees' => 0,
             'partages_retires' => 0,
             'budgets_transferes' => 0,

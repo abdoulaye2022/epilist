@@ -53,6 +53,21 @@ class JwtMiddleware
             return $this->createErrorResponse('Invalid token payload', 401);
         }
 
+        // Le compte existe-t-il ENCORE ?
+        //
+        // Un jeton d'acces vit une heure. Sans ce controle, quelqu'un
+        // qui vient de supprimer son compte continue d'appeler l'API
+        // avec le jeton qu'il a deja — jusqu'a soixante minutes apres sa
+        // suppression. Une requete de base par appel, et la porte se
+        // ferme a l'instant ou le compte part.
+        $compte = \Illuminate\Database\Capsule\Manager::table('users')
+            ->where('id', $userId)
+            ->first(['deleted_at', 'anonymized_at']);
+
+        if (!$compte || $compte->deleted_at !== null || $compte->anonymized_at !== null) {
+            return $this->createErrorResponse('Account deleted', 401);
+        }
+
         // Add user ID to request attributes
         $request = $request->withAttribute('auth_id', $userId);
         $request = $request->withAttribute('user_id', $userId); // Pour la compatibilité avec les contrôleurs
