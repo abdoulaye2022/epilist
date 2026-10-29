@@ -6071,6 +6071,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receiptPhotoAttached => 'Receipt photo attached';
 
   @override
+  String get receiptPhotoUnavailable => 'Photo unavailable right now';
+
+  @override
   String get receiptPhotoTitle => 'Receipt photo';
 
   @override

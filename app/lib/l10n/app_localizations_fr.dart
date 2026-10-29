@@ -6165,6 +6165,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get receiptPhotoAttached => 'Photo du reçu jointe';
 
   @override
+  String get receiptPhotoUnavailable => 'Photo indisponible pour le moment';
+
+  @override
   String get receiptPhotoTitle => 'Photo du reçu';
 
   @override

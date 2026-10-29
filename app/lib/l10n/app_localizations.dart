@@ -11281,6 +11281,12 @@ abstract class AppLocalizations {
   /// **'Photo du reçu jointe'**
   String get receiptPhotoAttached;
 
+  /// No description provided for @receiptPhotoUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo indisponible pour le moment'**
+  String get receiptPhotoUnavailable;
+
   /// No description provided for @receiptPhotoTitle.
   ///
   /// In fr, this message translates to:
