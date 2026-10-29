@@ -1894,44 +1894,74 @@ class AuthController
     }
 
     /**
-     *  NOUVELLE ROUTE: Demander la suppression du compte
+     * POST /auth/request-account-deletion — envoie le code de suppression.
+     *
+     * Deux temps, et c'est voulu : demander puis confirmer. Le code part
+     * par courriel, donc supprimer un compte demande l'acces a la boite
+     * de courriel, pas seulement a un telephone deverrouille.
+     *
+     * Le compte reste UTILISABLE entre les deux : la demande ne coupe
+     * rien. Une personne qui change d'avis n'a rien a reparer.
      */
     public function requestAccountDeletion(Request $request, Response $response)
     {
         $authId = $request->getAttribute('auth_id');
-        
+
         if (!$authId) {
             return $this->createErrorResponse('Non autorisé', 401);
         }
 
-        $data = $request->getParsedBody();
-        $reason = $data['reason'] ?? 'Non spécifié';
+        $data = $request->getParsedBody() ?? [];
+        $reason = isset($data['reason']) ? mb_substr(trim((string) $data['reason']), 0, 255) : null;
 
         try {
             $user = User::find($authId);
-            
-            if (!$user || !$user->isActive()) {
-                return $this->createErrorResponse('Utilisateur non trouvé ou inactif', 404);
+
+            if (!$user) {
+                return $this->createErrorResponse('Utilisateur non trouvé', 404);
             }
 
-            // Générer un code de confirmation
-            $confirmationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-            $expiration = Carbon::now()->addHours(24);
+            if ($user->estAnonymise()) {
+                return $this->createErrorResponse('Compte déjà supprimé', 410, 'ACCOUNT_ALREADY_DELETED');
+            }
+
+            // Un code de suppression part par courriel : sans limite, la
+            // route devient un robinet d'envois vers une adresse.
+            $ip = $this->getClientIP($request);
+            if (!$this->rateLimiter->checkIPLimit('account_deletion', $ip)
+                || !$this->rateLimiter->checkEmailLimit('account_deletion', $user->email)) {
+                return $this->createErrorResponse(
+                    'Trop de demandes. Réessayez plus tard.',
+                    429,
+                    'RATE_LIMIT_EXCEEDED',
+                    ['retry_after' => $this->rateLimiter->getRetryAfter('account_deletion', $ip)]
+                );
+            }
+            $this->rateLimiter->recordAttempt('account_deletion', $ip);
+            $this->rateLimiter->recordAttempt('account_deletion', $user->email);
+
+            // generateDeletionCode() ecrit account_deletion_code et son
+            // echeance (2 h). On n'appelle PAS requestDeletion() : elle
+            // poserait is_active = 0, et la personne serait deconnectee
+            // avant d'avoir confirme quoi que ce soit.
+            $code = $user->generateDeletionCode();
 
             $user->update([
-                'deletion_confirmation_code' => $confirmationCode,
-                'deletion_confirmation_code_expires_at' => $expiration,
                 'deletion_reason' => $reason,
                 'deletion_requested_at' => Carbon::now(),
-                'updated_at' => new \DateTime()
             ]);
 
-            // Envoyer email de confirmation
+            $lang = in_array($user->language ?? null, ['fr', 'en'], true) ? $user->language : 'fr';
+
             try {
-                $mailSender = new MailSender();
-                $mailSender->sendAccountDeletionConfirmation($user->email, $user->first_name, $confirmationCode);
+                MailSender::sendMail(
+                    EmailTemplates::getSubject('account_deletion_code', $lang),
+                    [['email' => $user->email, 'name' => $user->first_name]],
+                    EmailTemplates::accountDeletionCodeEmail($user->first_name ?? '', $code, $lang)
+                );
             } catch (\Exception $emailError) {
-                error_log(" Erreur lors de l'envoi de l'email de suppression: " . $emailError->getMessage());
+                // Le code est en base : la personne peut le redemander.
+                error_log('[AuthController] code de suppression non envoyé: ' . $emailError->getMessage());
             }
 
             return new JsonResponse(
@@ -1941,49 +1971,89 @@ class AuthController
                     'success' => true,
                     'message' => 'Demande de suppression initiée. Vérifiez votre email pour confirmer.',
                     'data' => [
-                        'expires_at' => $expiration->toISOString()
-                    ]
+                        'expires_at' => $user->account_deletion_code_expires_at
+                            ? Carbon::parse($user->account_deletion_code_expires_at)->toISOString()
+                            : null,
+                    ],
                 ]))
             );
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+            error_log('[AuthController] requestAccountDeletion: ' . $e->getMessage());
+            return $this->createErrorResponse('Erreur serveur', 500);
         }
     }
 
     /**
-     *  NOUVELLE ROUTE: Confirmer la suppression du compte
+     * POST /auth/confirm-account-deletion — supprime pour de bon.
+     *
+     * Cette route etait cassee de deux facons : elle exigeait « email »
+     * et « confirmation_code » alors que l'application envoie
+     * « deletion_code », et elle lisait des colonnes
+     * (deletion_confirmation_code, deletion_confirmed_at) qui n'existent
+     * pas dans la base. Elle repondait donc toujours 400, puis, si elle
+     * avait abouti, elle n'aurait fait qu'un soft delete.
+     *
+     * Les deux noms de champ sont acceptes : les applications deja
+     * installees continuent de fonctionner.
      */
     public function confirmAccountDeletion(Request $request, Response $response)
     {
-        $data = $request->getParsedBody();
+        $authId = $request->getAttribute('auth_id');
 
-        $validator = new Validator($data);
-        $validator->rule('required', ['email', 'confirmation_code'])
-            ->message('{field} est requis');
-        $validator->rule('email', 'email')
-            ->message('Email invalide');
+        if (!$authId) {
+            return $this->createErrorResponse('Non autorisé', 401);
+        }
 
-        if (!$validator->validate()) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'code' => 'VALIDATION_ERROR',
-                'message' => 'Validation échouée',
-                'errors' => $validator->errors()
-            ]));
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus(400);
+        $data = $request->getParsedBody() ?? [];
+        $code = trim((string) ($data['deletion_code'] ?? $data['confirmation_code'] ?? ''));
+
+        if ($code === '') {
+            return $this->createErrorResponse(
+                'Code de confirmation requis',
+                400,
+                'VALIDATION_ERROR',
+                ['deletion_code' => ['Le code de confirmation est requis']]
+            );
         }
 
         try {
-            $user = User::where('email', $data['email'])->first();
-            
+            $user = User::find($authId);
+
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
             }
 
-            if ($user->deletion_confirmation_code !== $data['confirmation_code']) {
+            if ($user->estAnonymise()) {
+                return $this->createErrorResponse('Compte déjà supprimé', 410, 'ACCOUNT_ALREADY_DELETED');
+            }
+
+            // Six chiffres se devinent en un million d'essais : un
+            // plafond par compte, meme derriere un jeton valide.
+            $ip = $this->getClientIP($request);
+            if (!$this->rateLimiter->checkEmailLimit('account_deletion_code', $user->email)
+                || !$this->rateLimiter->checkIPLimit('account_deletion_code', $ip)) {
+                return $this->createErrorResponse(
+                    'Trop de tentatives. Réessayez plus tard.',
+                    429,
+                    'RATE_LIMIT_EXCEEDED',
+                    ['retry_after' => $this->rateLimiter->getRetryAfter('account_deletion_code', $ip)]
+                );
+            }
+
+            if (!$user->isAccountDeletionCodeValid($code)) {
+                $this->rateLimiter->recordAttempt('account_deletion_code', $user->email);
+                $this->rateLimiter->recordAttempt('account_deletion_code', $ip);
+
+                $expire = $user->account_deletion_code_expires_at;
+                if ($user->account_deletion_code !== null && $expire !== null && Carbon::now()->gt($expire)) {
+                    return $this->createErrorResponse(
+                        'Code de confirmation expiré',
+                        400,
+                        'CONFIRMATION_CODE_EXPIRED'
+                    );
+                }
+
                 return $this->createErrorResponse(
                     'Code de confirmation invalide',
                     400,
@@ -1991,62 +2061,76 @@ class AuthController
                 );
             }
 
-            if (Carbon::now()->gt($user->deletion_confirmation_code_expires_at)) {
-                return $this->createErrorResponse(
-                    'Code de confirmation expiré',
-                    400,
-                    'CONFIRMATION_CODE_EXPIRED'
+            // Le courriel part AVANT l'anonymisation : apres, l'adresse
+            // n'existe plus en base.
+            $courriel = $user->email;
+            $prenom = $user->first_name ?? '';
+            $lang = in_array($user->language ?? null, ['fr', 'en'], true) ? $user->language : 'fr';
+
+            $rapport = (new \App\Services\AccountDeletionService())->supprimer($user, 'app');
+
+            try {
+                MailSender::sendMail(
+                    EmailTemplates::getSubject('account_deletion_done', $lang),
+                    [['email' => $courriel, 'name' => $prenom]],
+                    EmailTemplates::accountDeletionDoneEmail($prenom, $lang)
                 );
+            } catch (\Exception $emailError) {
+                error_log('[AuthController] accusé de suppression non envoyé: ' . $emailError->getMessage());
             }
 
-            // Marquer le compte pour suppression (soft delete)
-            $user->update([
-                'is_active' => false,
-                'deleted_at' => Carbon::now(),
-                'deletion_confirmed_at' => Carbon::now(),
-                'updated_at' => new \DateTime()
-            ]);
-
-            error_log(" Compte marqué pour suppression: {$user->email}");
+            $this->rateLimiter->resetAttempts('account_deletion_code', $courriel);
 
             return new JsonResponse(
                 200,
                 new Headers(['Content-Type' => 'application/json']),
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
-                    'message' => 'Compte supprimé avec succès'
+                    'message' => 'Compte supprimé avec succès',
+                    'data' => [
+                        'lists_transferred' => $rapport['listes_transferees'],
+                        'lists_deleted' => $rapport['listes_supprimees'],
+                        'spaces_transferred' => $rapport['espaces_transferes'],
+                        'images_deleted' => $rapport['images_supprimees'],
+                    ],
                 ]))
             );
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+            error_log('[AuthController] confirmAccountDeletion: ' . $e->getMessage());
+            return $this->createErrorResponse('Erreur serveur', 500);
         }
     }
 
     /**
-     *  NOUVELLE ROUTE: Annuler la suppression du compte
+     * POST /auth/cancel-account-deletion — annule la demande.
+     *
+     * N'ecrit que les colonnes qui existent. L'ancienne version posait
+     * deletion_confirmation_code et compagnie : Eloquent les ignorait
+     * silencieusement (hors $fillable), donc la demande n'etait jamais
+     * vraiment annulee et le code restait valable.
      */
     public function cancelAccountDeletion(Request $request, Response $response)
     {
         $authId = $request->getAttribute('auth_id');
-        
+
         if (!$authId) {
             return $this->createErrorResponse('Non autorisé', 401);
         }
 
         try {
             $user = User::find($authId);
-            
+
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
             }
 
             $user->update([
-                'deletion_confirmation_code' => null,
-                'deletion_confirmation_code_expires_at' => null,
+                'account_deletion_code' => null,
+                'account_deletion_code_expires_at' => null,
                 'deletion_reason' => null,
                 'deletion_requested_at' => null,
-                'updated_at' => new \DateTime()
+                'is_deletion_requested' => false,
             ]);
 
             return new JsonResponse(
@@ -2054,35 +2138,38 @@ class AuthController
                 new Headers(['Content-Type' => 'application/json']),
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
-                    'message' => 'Demande de suppression annulée'
+                    'message' => 'Demande de suppression annulée',
                 ]))
             );
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+            error_log('[AuthController] cancelAccountDeletion: ' . $e->getMessage());
+            return $this->createErrorResponse('Erreur serveur', 500);
         }
     }
 
     /**
-     *  NOUVELLE ROUTE: Statut de suppression du compte
+     * GET /auth/account-deletion-status — y a-t-il un code en attente ?
      */
     public function getAccountDeletionStatus(Request $request, Response $response)
     {
         $authId = $request->getAttribute('auth_id');
-        
+
         if (!$authId) {
             return $this->createErrorResponse('Non autorisé', 401);
         }
 
         try {
             $user = User::find($authId);
-            
+
             if (!$user) {
                 return $this->createErrorResponse('Utilisateur non trouvé', 404);
             }
 
-            $hasPendingDeletion = !is_null($user->deletion_requested_at) && 
-                                 is_null($user->deletion_confirmed_at);
+            $expire = $user->account_deletion_code_expires_at;
+            $enAttente = $user->account_deletion_code !== null
+                && $expire !== null
+                && Carbon::now()->lt($expire);
 
             return new JsonResponse(
                 200,
@@ -2090,17 +2177,19 @@ class AuthController
                 (new StreamFactory())->createStream(json_encode([
                     'success' => true,
                     'data' => [
-                        'has_pending_deletion' => $hasPendingDeletion,
-                        'deletion_requested_at' => $user->deletion_requested_at ? 
-                            Carbon::parse($user->deletion_requested_at)->toISOString() : null,
-                        'expires_at' => $user->deletion_confirmation_code_expires_at ? 
-                            Carbon::parse($user->deletion_confirmation_code_expires_at)->toISOString() : null
-                    ]
+                        'has_pending_deletion' => $enAttente,
+                        'deletion_requested_at' => $user->deletion_requested_at
+                            ? Carbon::parse($user->deletion_requested_at)->toISOString()
+                            : null,
+                        'expires_at' => $expire ? Carbon::parse($expire)->toISOString() : null,
+                        'anonymized' => $user->estAnonymise(),
+                    ],
                 ]))
             );
 
         } catch (\Exception $e) {
-            return $this->createErrorResponse('Erreur serveur: ' . $e->getMessage(), 500);
+            error_log('[AuthController] getAccountDeletionStatus: ' . $e->getMessage());
+            return $this->createErrorResponse('Erreur serveur', 500);
         }
     }
 

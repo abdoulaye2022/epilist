@@ -220,6 +220,82 @@ class EmailTemplates
                     'closing' => 'Congratulations on completing this list!<br><br>The EpiList Team',
                 ],
             ],
+            // Suppression de compte. Trois courriels, et aucun ne ment
+            // sur ce qui va se passer : le code (depuis l'application),
+            // le lien (depuis le site, exigence des magasins
+            // d'applications), puis l'accuse de reception.
+            'account_deletion_code' => [
+                'fr' => [
+                    'subject' => 'Votre code de suppression de compte EpiList',
+                    'title' => 'Code de suppression de compte',
+                    'greeting' => 'Bonjour',
+                    'intro' => 'Vous avez demandé la suppression de votre compte EpiList. Voici votre code de confirmation :',
+                    'code_expires' => 'Ce code expire dans 2 heures',
+                    'warning_title' => 'Ce qui sera effacé :',
+                    'warning_text' => 'Votre nom, votre courriel et votre mot de passe, vos listes personnelles, vos reçus et leurs photos, vos budgets, votre inventaire et votre historique d\'achats. Les listes partagées avec d\'autres personnes leur sont transmises. Cette opération est définitive.',
+                    'help_text' => 'Si vous n\'avez pas demandé cette suppression, ignorez ce courriel : rien ne se passera sans ce code.',
+                    'closing' => 'Cordialement,<br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => 'Your EpiList account deletion code',
+                    'title' => 'Account deletion code',
+                    'greeting' => 'Hello',
+                    'intro' => 'You asked to delete your EpiList account. Here is your confirmation code:',
+                    'code_expires' => 'This code expires in 2 hours',
+                    'warning_title' => 'What will be erased:',
+                    'warning_text' => 'Your name, email and password, your personal lists, your receipts and their photos, your budgets, your inventory and your purchase history. Lists shared with other people are handed over to them. This cannot be undone.',
+                    'help_text' => 'If you did not ask for this deletion, ignore this email: nothing happens without the code.',
+                    'closing' => 'Best regards,<br>The EpiList Team',
+                ],
+            ],
+            'account_deletion_link' => [
+                'fr' => [
+                    'subject' => 'Confirmez la suppression de votre compte EpiList',
+                    'title' => 'Confirmez la suppression',
+                    'greeting' => 'Bonjour',
+                    'intro' => 'Une demande de suppression de compte EpiList a été faite depuis notre site web pour cette adresse. Pour la confirmer, cliquez sur le bouton ci-dessous.',
+                    'button' => 'Supprimer mon compte',
+                    'link_expires' => 'Ce lien n\'est valable qu\'une heure, et une seule fois.',
+                    'warning_title' => 'Ce qui sera effacé :',
+                    'warning_text' => 'Votre nom, votre courriel et votre mot de passe, vos listes personnelles, vos reçus et leurs photos, vos budgets, votre inventaire et votre historique d\'achats. Les listes partagées avec d\'autres personnes leur sont transmises. Cette opération est définitive.',
+                    'help_text' => 'Si vous n\'avez pas fait cette demande, ignorez ce courriel : votre compte reste intact.',
+                    'closing' => 'Cordialement,<br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => 'Confirm the deletion of your EpiList account',
+                    'title' => 'Confirm the deletion',
+                    'greeting' => 'Hello',
+                    'intro' => 'Someone asked, on our website, to delete the EpiList account for this address. To confirm, use the button below.',
+                    'button' => 'Delete my account',
+                    'link_expires' => 'This link is valid for one hour, and once only.',
+                    'warning_title' => 'What will be erased:',
+                    'warning_text' => 'Your name, email and password, your personal lists, your receipts and their photos, your budgets, your inventory and your purchase history. Lists shared with other people are handed over to them. This cannot be undone.',
+                    'help_text' => 'If you did not make this request, ignore this email: your account stays untouched.',
+                    'closing' => 'Best regards,<br>The EpiList Team',
+                ],
+            ],
+            'account_deletion_done' => [
+                'fr' => [
+                    'subject' => 'Votre compte EpiList a été supprimé',
+                    'title' => 'Compte supprimé',
+                    'greeting' => 'Bonjour',
+                    'intro' => 'Votre compte EpiList est supprimé. Vos données personnelles ont été effacées immédiatement ; la ligne vide qui reste est détruite au plus tard trente jours après cette date.',
+                    'shared_title' => 'Les listes partagées :',
+                    'shared_text' => 'Celles que vous partagiez avec d\'autres personnes leur ont été transmises, pour ne pas leur retirer leurs courses. Les autres ont été détruites.',
+                    'reuse_text' => 'Votre adresse courriel est libérée : vous pouvez créer un nouveau compte avec elle quand vous voulez.',
+                    'closing' => 'Merci d\'avoir utilisé EpiList.<br>L\'équipe EpiList',
+                ],
+                'en' => [
+                    'subject' => 'Your EpiList account has been deleted',
+                    'title' => 'Account deleted',
+                    'greeting' => 'Hello',
+                    'intro' => 'Your EpiList account is deleted. Your personal data was erased right away; the empty row that remains is destroyed within thirty days of this date.',
+                    'shared_title' => 'Shared lists:',
+                    'shared_text' => 'The ones you shared with other people were handed over to them, so they do not lose their groceries. The others were destroyed.',
+                    'reuse_text' => 'Your email address is free again: you can create a new account with it whenever you like.',
+                    'closing' => 'Thank you for using EpiList.<br>The EpiList Team',
+                ],
+            ],
         ];
 
         return $translations[$template] ?? [];
@@ -728,6 +804,159 @@ class EmailTemplates
     /**
      * Obtenir le sujet d'un email selon la langue
      */
+    /**
+     * Code de suppression de compte (demande faite DANS l'application).
+     *
+     * Le courriel dit ce qui sera effacé avant que la personne ne tape
+     * le code : c'est le dernier moment où elle peut changer d'avis.
+     */
+    public static function accountDeletionCodeEmail(string $firstName, string $code, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('account_deletion_code')[$lang]
+            ?? self::getTranslations('account_deletion_code')['fr'];
+
+        $prenom = htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8');
+        $code = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} {$prenom},<br><br>{$t['intro']}
+                    </p>
+
+                    <div class='verification-code'>
+                        {$code}
+                    </div>
+
+                    <p style='margin: 20px 0; font-size: 14px; color: #6b7280; text-align: center;'>
+                        <strong>{$t['code_expires']}</strong>
+                    </p>
+
+                    <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                        <p style='margin: 0; font-size: 14px; color: #dc2626; line-height: 1.6;'>
+                            <strong>{$t['warning_title']}</strong> {$t['warning_text']}
+                        </p>
+                    </div>
+
+                    <p style='margin: 25px 0; color: #6b7280; font-size: 14px; line-height: 1.6;'>
+                        {$t['help_text']}
+                    </p>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return self::headerContent($t['title'], $lang) . $content . self::footerContent($lang);
+    }
+
+    /**
+     * Lien de suppression de compte (demande faite depuis le SITE).
+     *
+     * Les magasins d'applications exigent une procédure accessible hors
+     * de l'application. Le lien porte un jeton à usage unique : le
+     * courriel est la seule preuve que la personne possède l'adresse.
+     */
+    public static function accountDeletionLinkEmail(string $lien, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('account_deletion_link')[$lang]
+            ?? self::getTranslations('account_deletion_link')['fr'];
+
+        $lienSur = htmlspecialchars($lien, ENT_QUOTES, 'UTF-8');
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['intro']}
+                    </p>
+
+                    <p style='margin: 30px 0; text-align: center;'>
+                        <a href='{$lienSur}' style='display: inline-block; background: #dc2626; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-size: 16px; font-weight: 600;'>
+                            {$t['button']}
+                        </a>
+                    </p>
+
+                    <p style='margin: 20px 0; font-size: 14px; color: #6b7280; text-align: center;'>
+                        <strong>{$t['link_expires']}</strong>
+                    </p>
+
+                    <div style='background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                        <p style='margin: 0; font-size: 14px; color: #dc2626; line-height: 1.6;'>
+                            <strong>{$t['warning_title']}</strong> {$t['warning_text']}
+                        </p>
+                    </div>
+
+                    <p style='margin: 25px 0; color: #6b7280; font-size: 14px; line-height: 1.6;'>
+                        {$t['help_text']}
+                    </p>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return self::headerContent($t['title'], $lang) . $content . self::footerContent($lang);
+    }
+
+    /** Accusé de réception : ce qui a été effacé, et ce qui a été transmis. */
+    public static function accountDeletionDoneEmail(string $firstName, string $lang = 'fr'): string
+    {
+        $t = self::getTranslations('account_deletion_done')[$lang]
+            ?? self::getTranslations('account_deletion_done')['fr'];
+
+        $prenom = htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8');
+
+        $content = "
+            <tr>
+                <td class='content' style='padding: 40px 30px;'>
+                    <h2 style='margin: 0 0 20px; font-size: 24px; font-weight: 600; color: #047857;'>
+                        {$t['title']}
+                    </h2>
+
+                    <p style='margin: 0 0 25px; font-size: 16px; color: #374151; line-height: 1.6;'>
+                        {$t['greeting']} {$prenom},<br><br>{$t['intro']}
+                    </p>
+
+                    <div style='background: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 25px 0;'>
+                        <p style='margin: 0; font-size: 14px; color: #047857; line-height: 1.6;'>
+                            <strong>{$t['shared_title']}</strong> {$t['shared_text']}
+                        </p>
+                    </div>
+
+                    <p style='margin: 25px 0; color: #6b7280; font-size: 14px; line-height: 1.6;'>
+                        {$t['reuse_text']}
+                    </p>
+
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='margin: 0; color: #047857; font-weight: 600; font-size: 15px;'>
+                            {$t['closing']}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        ";
+
+        return self::headerContent($t['title'], $lang) . $content . self::footerContent($lang);
+    }
+
     public static function getSubject(string $template, string $lang = 'fr'): string
     {
         $translations = self::getTranslations($template);
@@ -884,10 +1113,11 @@ class EmailTemplates
     {
         $isFr = $lang !== 'en';
 
-        // Captures du dashboard par langue, les mêmes que le hero du site.
-        $heroImage = $isFr
-            ? 'https://epilist.app/app-fr.jpg'
-            : 'https://epilist.app/app-en.jpg';
+        // Capture de l'écran d'accueil, la même que le hero du site.
+        // app-fr.jpg / app-en.jpg n'existent plus : elles dataient de
+        // deux refontes et ont été retirées avec la mise à jour du site.
+        // Une image absente dans un courriel laisse un cadre vide.
+        $heroImage = 'https://epilist.app/images/ecran-accueil.jpg';
         $ctaUrl = $isFr ? 'https://epilist.app/telecharger' : 'https://epilist.app/en/download';
 
         $t = $isFr ? [

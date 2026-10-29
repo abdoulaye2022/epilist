@@ -9,6 +9,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Slim\Factory\AppFactory;
 use App\Controllers\{
     AuthController,
+    AccountDeletionController,
     ShoppingListController,
     ListItemController,
     SharedListController,
@@ -181,6 +182,13 @@ $app->get('/test-json', function ($request, $response) {
 //  ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
 $app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
 $app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']); 
+
+// 🗑️ SUPPRESSION DE COMPTE DEPUIS LE SITE — PUBLIQUE, et c'est l'objet
+// meme : Google Play et l'App Store exigent une procedure accessible a
+// quelqu'un qui a desinstalle l'application. Rien n'est supprime sans le
+// lien a jeton envoye par courriel (voir AccountDeletionController).
+$app->post('/account-deletion/request', [AccountDeletionController::class, 'requestFromWeb']);
+$app->get('/account-deletion/confirm/{token}', [AccountDeletionController::class, 'confirmFromWeb']);
 
 //  ROUTES DE CONTACT PUBLIQUES (IMPORTANT: AVANT LE GROUPE PROTÉGÉ)
 $app->get('/contact/feedback-types', [ContactController::class, 'getFeedbackTypes']);

@@ -37,6 +37,29 @@ class RateLimiter
             'max_attempts_per_ip' => 10,      // 10 échecs de connexion max par IP
             'max_attempts' => 10,             // 10 échecs max par compte
             'window_minutes' => 15,
+        ],
+        // Suppression de compte, demandée DANS l'application : chaque
+        // demande envoie un courriel, sans plafond la route devient un
+        // robinet d'envois vers une adresse.
+        'account_deletion' => [
+            'max_attempts_per_ip' => 5,
+            'max_attempts' => 5,              // 5 demandes max par compte
+            'window_minutes' => 60,
+        ],
+        // Essais de code : six chiffres se devinent en un million de
+        // tentatives, et le jeton d'accès ne protège pas de ça.
+        'account_deletion_code' => [
+            'max_attempts_per_ip' => 10,
+            'max_attempts' => 5,
+            'window_minutes' => 30,
+        ],
+        // Demandes faites depuis le SITE : un formulaire ouvert à tous,
+        // donc plus serré. Le courriel partira vers une adresse qui n'a
+        // rien demandé si quelqu'un s'amuse.
+        'account_deletion_web' => [
+            'max_attempts_per_ip' => 3,
+            'max_attempts' => 3,              // 3 demandes max par adresse
+            'window_minutes' => 60,
         ]
     ];
 
