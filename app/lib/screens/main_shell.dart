@@ -19,6 +19,11 @@
 //
 // Factures et « Plus » cessent d'être des onglets : les reçus se lisent
 // sur la page Budgets, et les réglages dans le menu latéral.
+import 'package:epilist/blocs/auth/auth_bloc.dart';
+import 'package:epilist/screens/onboarding_screen.dart';
+import 'package:epilist/services/onboarding_service.dart';
+import 'package:epilist/widgets/auth/verification_banner.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/screens/home_screen.dart';
 import 'package:epilist/screens/pre_shopping_screen.dart';
 import 'package:epilist/screens/price_alerts_screen.dart';
@@ -42,6 +47,10 @@ class _MainShellState extends State<MainShell> {
 
   MainTab _tab = MainTab.home;
 
+  /// Le parcours de depart ne se lance qu'une fois par montage, meme si
+  /// l'etat d'authentification est reconstruit plusieurs fois.
+  bool _parcoursLance = false;
+
   /// Onglets déjà visités : seuls ceux-là sont réellement construits, pour
   /// ne pas déclencher cinq chargements API à l'ouverture de l'app.
   final Set<MainTab> _visited = {MainTab.home};
@@ -50,6 +59,38 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
     MainShellRoute.goToTab = _select;
+
+    // Apres la premiere image : pousser un ecran pendant que l'arbre
+    // se construit ferait exploser Navigator.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _peutEtreParcours());
+  }
+
+  /// Le parcours de depart, s'il n'a jamais ete vu.
+  ///
+  /// La reponse vient du serveur (`onboarding_done`) : changer de
+  /// telephone ne doit pas le faire revenir. En cas de doute — serveur
+  /// plus ancien, champ absent — on ne montre rien.
+  Future<void> _peutEtreParcours() async {
+    if (_parcoursLance || !mounted) return;
+
+    final etat = context.read<AuthBloc>().state;
+    if (etat is! AuthSuccess) return;
+
+    final service = context.read<OnboardingService>();
+    final montrer = await service.doitMontrer(
+      dejaFaitSelonServeur: etat.user.onboardingDone,
+    );
+
+    if (!montrer || !mounted || _parcoursLance) return;
+
+    _parcoursLance = true;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const OnboardingScreen(),
+      ),
+    );
   }
 
   @override
@@ -87,9 +128,20 @@ class _MainShellState extends State<MainShell> {
         key: _scaffoldKey,
         backgroundColor: AppColors.background,
         drawer: const AppDrawer(),
-        body: IndexedStack(
-          index: MainTab.values.indexOf(_tab),
-          children: MainTab.values.map(_tabBody).toList(),
+        body: Column(
+          children: [
+            // Le rappel de verification, au-dessus de tous les onglets.
+            // La verification ne bloque plus l'entree : ce bandeau est
+            // ce qui reste pour la demander, et il doit donc dire a quoi
+            // elle sert, pas seulement qu'elle manque.
+            const BandeauVerificationCourriel(),
+            Expanded(
+              child: IndexedStack(
+                index: MainTab.values.indexOf(_tab),
+                children: MainTab.values.map(_tabBody).toList(),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: MainBottomBar(current: _tab, onSelect: _select),
       ),

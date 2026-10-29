@@ -11335,6 +11335,138 @@ abstract class AppLocalizations {
   /// **'J\'ai un code d\'invitation'**
   String get inviteCodeButton;
 
+  /// No description provided for @continueWithEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec un courriel'**
+  String get continueWithEmail;
+
+  /// No description provided for @skipStep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer'**
+  String get skipStep;
+
+  /// No description provided for @onboardFirstListTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre première liste'**
+  String get onboardFirstListTitle;
+
+  /// No description provided for @onboardFirstListBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donnez-lui un nom, ajoutez deux ou trois choses, et c\'est parti.'**
+  String get onboardFirstListBody;
+
+  /// No description provided for @onboardFirstListName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Épicerie de la semaine'**
+  String get onboardFirstListName;
+
+  /// No description provided for @onboardSuggestionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques idées, en un toucher'**
+  String get onboardSuggestionsTitle;
+
+  /// No description provided for @onboardSuggestionBread.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pain'**
+  String get onboardSuggestionBread;
+
+  /// No description provided for @onboardSuggestionMilk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lait'**
+  String get onboardSuggestionMilk;
+
+  /// No description provided for @onboardSuggestionEggs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Œufs'**
+  String get onboardSuggestionEggs;
+
+  /// No description provided for @onboardSuggestionFruit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fruits'**
+  String get onboardSuggestionFruit;
+
+  /// No description provided for @onboardSuggestionCoffee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Café'**
+  String get onboardSuggestionCoffee;
+
+  /// No description provided for @onboardCreateList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer ma liste'**
+  String get onboardCreateList;
+
+  /// No description provided for @onboardInviteTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitez quelqu’un de votre foyer'**
+  String get onboardInviteTitle;
+
+  /// No description provided for @onboardInviteBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une liste partagée, c\'est chacun qui ajoute ce qui manque — et personne qui rachète le même pain.'**
+  String get onboardInviteBody;
+
+  /// No description provided for @onboardInviteAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager la liste'**
+  String get onboardInviteAction;
+
+  /// No description provided for @onboardBudgetTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un budget, si vous voulez'**
+  String get onboardBudgetTitle;
+
+  /// No description provided for @onboardBudgetBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fixez un montant par mois : EpiList suit les dépenses et vous prévient avant le dépassement.'**
+  String get onboardBudgetBody;
+
+  /// No description provided for @onboardBudgetAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les budgets'**
+  String get onboardBudgetAction;
+
+  /// No description provided for @onboardFinish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer'**
+  String get onboardFinish;
+
+  /// No description provided for @verifyEmailBannerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez votre adresse courriel'**
+  String get verifyEmailBannerTitle;
+
+  /// No description provided for @verifyEmailBannerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code vous attend dans votre boîte. Sans vérification, impossible d\'inviter quelqu\'un par courriel ni d\'activer la connexion en deux étapes.'**
+  String get verifyEmailBannerBody;
+
+  /// No description provided for @verifyEmailBannerAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier'**
+  String get verifyEmailBannerAction;
+
   /// No description provided for @inviteCodeTitle.
   ///
   /// In fr, this message translates to:

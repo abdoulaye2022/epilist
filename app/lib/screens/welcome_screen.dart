@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/screens/login_screen.dart';
+import 'package:epilist/screens/signup_screen.dart';
+import 'package:epilist/widgets/auth/sso_buttons.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -127,13 +129,32 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             _buildInvitationBanner(l10n),
                             const SizedBox(height: AppSpacing.md),
                           ],
+
+                          // Google et Apple D'ABORD : ils ne demandent
+                          // ni mot de passe a inventer, ni boite de
+                          // courriel a ouvrir. Ils etaient caches
+                          // derriere l'ecran de connexion.
+                          const BoutonsSSO(),
+                          const SizedBox(height: AppSpacing.md),
+                          _buildOuSeparateur(l10n),
+                          const SizedBox(height: AppSpacing.md),
+
+                          // « Commencer » mene a l'INSCRIPTION, pas a la
+                          // connexion : quelqu'un qui vient d'installer
+                          // l'application n'a pas de compte.
                           SizedBox(
                             child: ElevatedButton(
-                              onPressed: () => _navigateToLogin(context),
-                              child: Text(l10n.getStarted),
+                              onPressed: () => _navigateToSignup(context),
+                              child: Text(l10n.continueWithEmail),
                             ),
                           ),
                           const SizedBox(height: AppSpacing.xs),
+                          Center(
+                            child: TextButton(
+                              onPressed: () => _navigateToLogin(context),
+                              child: Text(l10n.alreadyHaveAccount),
+                            ),
+                          ),
                           Center(
                             child: BoutonCodeInvitation(
                               onJetonTrouve:
@@ -333,6 +354,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         dot(),
         link(l10n.termsOfService, () => _showTerms(context)),
       ],
+    );
+  }
+
+  /// Un filet de séparation avec « OU » au milieu.
+  Widget _buildOuSeparateur(AppLocalizations l10n) {
+    final trait = Expanded(child: Divider(color: AppColors.border, height: 1));
+
+    return Row(
+      children: [
+        trait,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Text(
+            l10n.or,
+            style: TextStyle(
+              color: AppColors.textDisabled,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        trait,
+      ],
+    );
+  }
+
+  void _navigateToSignup(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SignUpPage()),
     );
   }
 

@@ -6101,6 +6101,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteCodeButton => 'I have an invitation code';
 
   @override
+  String get continueWithEmail => 'Continue with email';
+
+  @override
+  String get skipStep => 'Skip';
+
+  @override
+  String get onboardFirstListTitle => 'Your first list';
+
+  @override
+  String get onboardFirstListBody =>
+      'Give it a name, add two or three things, and off you go.';
+
+  @override
+  String get onboardFirstListName => 'Weekly groceries';
+
+  @override
+  String get onboardSuggestionsTitle => 'A few ideas, one tap each';
+
+  @override
+  String get onboardSuggestionBread => 'Bread';
+
+  @override
+  String get onboardSuggestionMilk => 'Milk';
+
+  @override
+  String get onboardSuggestionEggs => 'Eggs';
+
+  @override
+  String get onboardSuggestionFruit => 'Fruit';
+
+  @override
+  String get onboardSuggestionCoffee => 'Coffee';
+
+  @override
+  String get onboardCreateList => 'Create my list';
+
+  @override
+  String get onboardInviteTitle => 'Invite someone from your household';
+
+  @override
+  String get onboardInviteBody =>
+      'A shared list means everyone adds what is missing — and nobody buys the same bread twice.';
+
+  @override
+  String get onboardInviteAction => 'Share the list';
+
+  @override
+  String get onboardBudgetTitle => 'A budget, if you like';
+
+  @override
+  String get onboardBudgetBody =>
+      'Set a monthly amount: EpiList tracks spending and warns you before you go over.';
+
+  @override
+  String get onboardBudgetAction => 'Open budgets';
+
+  @override
+  String get onboardFinish => 'Finish';
+
+  @override
+  String get verifyEmailBannerTitle => 'Verify your email address';
+
+  @override
+  String get verifyEmailBannerBody =>
+      'The code is waiting in your inbox. Without verification you cannot invite anyone by email or turn on two-step sign-in.';
+
+  @override
+  String get verifyEmailBannerAction => 'Verify';
+
+  @override
   String get inviteCodeTitle => 'Enter your code';
 
   @override

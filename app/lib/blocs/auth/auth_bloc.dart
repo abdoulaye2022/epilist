@@ -1052,7 +1052,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final jetonInvitation = await invitationService?.jetonEnAttente();
       final source = await invitationService?.sourceInscription();
 
-      await authService.register(
+      final reponse = await authService.register(
         event.firstName,
         event.lastName,
         event.email,
@@ -1061,7 +1061,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         signupSource: jetonInvitation != null ? source : null,
         shareToken: jetonInvitation,
       );
-      emit(EmailConfirmationRequired(event.email));
+
+      // L'INSCRIPTION OUVRE LA PORTE.
+      //
+      // Elle renvoyait vers l'ecran de verification, et il fallait
+      // aller chercher un code dans sa boite de courriel avant de
+      // pouvoir faire quoi que ce soit. Le serveur delivre maintenant
+      // les jetons : on entre, et un bandeau rappelle la verification.
+      final jetonAcces = reponse['access_token'] as String?;
+      final jetonRafraichissement = reponse['refresh_token'] as String?;
+
+      if (jetonAcces == null || jetonRafraichissement == null) {
+        // Serveur plus ancien : on retombe sur l'ancien parcours
+        // plutot que de laisser la personne devant un ecran vide.
+        emit(EmailConfirmationRequired(event.email));
+        return;
+      }
+
+      await authService.saveTokens(jetonAcces, jetonRafraichissement);
+
+      final utilisateur = await authService.getCurrentUser();
+
+      if (utilisateur == null) {
+        emit(EmailConfirmationRequired(event.email));
+        return;
+      }
+
+      _scheduleTokenRefresh();
+      await _registerFCMAfterSuccessfulLogin();
+
+      emit(AuthSuccess(user: utilisateur, authMethod: 'email'));
     } catch (e) {
       final errorCode = _extractErrorCode(e);
       final errorMessage = _getTranslatedErrorMessage(errorCode, e.toString());

@@ -1140,7 +1140,10 @@ class AuthService {
 
   // ===================== AUTRES MÉTHODES =====================
 
-  Future<void> register(
+  /// Rend la reponse du serveur : depuis que la verification du
+  /// courriel ne bloque plus l'entree, l'inscription delivre des
+  /// jetons, et l'appelant doit pouvoir les enregistrer.
+  Future<Map<String, dynamic>> register(
     String firstName,
     String lastName,
     String email,
@@ -1166,12 +1169,14 @@ class AuthService {
         },
       );
 
-      if (response.statusCode != 201) {
+      if (response.statusCode != 201 && response.statusCode != 200) {
         throw AuthenticationException(
           'REGISTRATION_FAILED',
           'REGISTRATION_FAILED',
         );
       }
+
+      return Map<String, dynamic>.from(response.data as Map);
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         final errorData = e.response?.data;
@@ -1204,6 +1209,11 @@ class AuthService {
       } else {
         throw AuthenticationException('NETWORK_ERROR', 'NETWORK_ERROR');
       }
+
+      // Le bloc 400 ci-dessus retombe ici quand le code d'erreur n'est
+      // pas reconnu : une inscription qui echoue sans raison lisible
+      // reste une inscription qui echoue.
+      throw AuthenticationException('REGISTRATION_ERROR', 'REGISTRATION_ERROR');
     } catch (e) {
       if (e is AuthenticationException) {
         rethrow;

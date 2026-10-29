@@ -6195,6 +6195,76 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inviteCodeButton => 'J\'ai un code d\'invitation';
 
   @override
+  String get continueWithEmail => 'Continuer avec un courriel';
+
+  @override
+  String get skipStep => 'Passer';
+
+  @override
+  String get onboardFirstListTitle => 'Votre première liste';
+
+  @override
+  String get onboardFirstListBody =>
+      'Donnez-lui un nom, ajoutez deux ou trois choses, et c\'est parti.';
+
+  @override
+  String get onboardFirstListName => 'Épicerie de la semaine';
+
+  @override
+  String get onboardSuggestionsTitle => 'Quelques idées, en un toucher';
+
+  @override
+  String get onboardSuggestionBread => 'Pain';
+
+  @override
+  String get onboardSuggestionMilk => 'Lait';
+
+  @override
+  String get onboardSuggestionEggs => 'Œufs';
+
+  @override
+  String get onboardSuggestionFruit => 'Fruits';
+
+  @override
+  String get onboardSuggestionCoffee => 'Café';
+
+  @override
+  String get onboardCreateList => 'Créer ma liste';
+
+  @override
+  String get onboardInviteTitle => 'Invitez quelqu’un de votre foyer';
+
+  @override
+  String get onboardInviteBody =>
+      'Une liste partagée, c\'est chacun qui ajoute ce qui manque — et personne qui rachète le même pain.';
+
+  @override
+  String get onboardInviteAction => 'Partager la liste';
+
+  @override
+  String get onboardBudgetTitle => 'Un budget, si vous voulez';
+
+  @override
+  String get onboardBudgetBody =>
+      'Fixez un montant par mois : EpiList suit les dépenses et vous prévient avant le dépassement.';
+
+  @override
+  String get onboardBudgetAction => 'Ouvrir les budgets';
+
+  @override
+  String get onboardFinish => 'Terminer';
+
+  @override
+  String get verifyEmailBannerTitle => 'Vérifiez votre adresse courriel';
+
+  @override
+  String get verifyEmailBannerBody =>
+      'Le code vous attend dans votre boîte. Sans vérification, impossible d\'inviter quelqu\'un par courriel ni d\'activer la connexion en deux étapes.';
+
+  @override
+  String get verifyEmailBannerAction => 'Vérifier';
+
+  @override
   String get inviteCodeTitle => 'Entrez votre code';
 
   @override

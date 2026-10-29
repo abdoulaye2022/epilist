@@ -32,6 +32,7 @@ import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
 import 'package:epilist/services/invitation_service.dart';
+import 'package:epilist/services/onboarding_service.dart';
 import 'package:epilist/services/receipt_image_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/suggestion_service.dart';
@@ -298,6 +299,13 @@ void main() async {
           // des trois travaillerait sur une memoire perimee.
           RepositoryProvider<InvitationService>.value(
             value: invitationService,
+          ),
+          RepositoryProvider<OnboardingService>(
+            create:
+                (context) => OnboardingService(
+                  dio: dio,
+                  authService: context.read<AuthService>(),
+                ),
           ),
           RepositoryProvider<BudgetService>(
             create:

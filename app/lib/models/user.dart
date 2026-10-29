@@ -18,6 +18,13 @@ class User {
   final Currency? currency;
   final bool isActive;
 
+  /// Le parcours de depart a-t-il deja ete vu ?
+  ///
+  /// null quand le serveur ne le dit pas (version anterieure a la
+  /// migration 018) : dans ce cas l'application ne montre rien, plutot
+  /// que de risquer de le montrer deux fois.
+  final bool? onboardingDone;
+
   User({
     required this.id,
     required this.firstName,
@@ -32,6 +39,7 @@ class User {
     this.updatedAt,
     this.currency,
     this.isActive = true,
+    this.onboardingDone,
   });
 
   bool get isEmailVerified => emailVerified && emailVerifiedAt != null;
@@ -121,6 +129,12 @@ class User {
                 : null,
         currency: parsedCurrency, // ✅ DEVISE PARSÉE
         isActive: isActive,
+        // Absent des serveurs anterieurs a la migration 018 : on laisse
+        // null, et l'application ne montre alors aucun parcours.
+        onboardingDone:
+            data.containsKey('onboarding_done')
+                ? _parseBooleanField(data['onboarding_done'])
+                : null,
         createdAt:
             data['created_at'] != null
                 ? DateTime.tryParse(data['created_at'].toString())
@@ -275,6 +289,7 @@ class User {
       'email_verified_at': emailVerifiedAt?.toIso8601String(),
       'currency': currency?.toJson(),
       'is_active': isActive,
+      'onboarding_done': onboardingDone,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -292,6 +307,7 @@ class User {
       'email_verified_at': emailVerifiedAt?.toIso8601String(),
       'currency': currency?.toJson(),
       'is_active': isActive,
+      'onboarding_done': onboardingDone,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -361,6 +377,7 @@ class User {
     DateTime? updatedAt,
     Currency? currency,
     bool? isActive,
+    bool? onboardingDone,
   }) {
     return User(
       id: id ?? this.id,
@@ -376,6 +393,7 @@ class User {
       updatedAt: updatedAt ?? this.updatedAt,
       currency: currency ?? this.currency,
       isActive: isActive ?? this.isActive,
+      onboardingDone: onboardingDone ?? this.onboardingDone,
     );
   }
 

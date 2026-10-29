@@ -21,13 +21,10 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool _isObscure = true;
-  bool _isConfirmObscure = true;
   bool _acceptTerms = false;
   bool _isLoading = false;
   bool _isGoogleLoading = false;
@@ -116,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
           context,
           l10n.accountCreatedSuccessfully(
             _firstNameController.text.trim(),
-            _lastNameController.text.trim(),
+            '',
           ),
         );
         _navigateToEmailVerification(emailState.email);
@@ -358,39 +355,23 @@ class _SignUpPageState extends State<SignUpPage> {
       key: _formKey,
       child: Column(
         children: [
-          // Prénom et Nom avec bordures vertes fines
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  controller: _firstNameController,
-                  label: l10n.firstName,
-                  icon: Icons.person_outline,
-                  validator: (value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return l10n.firstNameRequired;
-                    }
-                    if (value!.trim().length < 2) return l10n.tooShort;
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTextField(
-                  controller: _lastNameController,
-                  label: l10n.lastName,
-                  icon: Icons.person,
-                  validator: (value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return l10n.lastNameRequired;
-                    }
-                    if (value!.trim().length < 2) return l10n.tooShort;
-                    return null;
-                  },
-                ),
-              ),
-            ],
+          // Le prénom, et c'est tout pour l'identité.
+          //
+          // Le nom de famille était obligatoire : un champ de plus
+          // entre l'installation et la première liste, pour une
+          // information dont une liste d'épicerie n'a aucun usage. Il
+          // reste modifiable dans le profil, pour qui y tient.
+          _buildTextField(
+            controller: _firstNameController,
+            label: l10n.firstName,
+            icon: Icons.person_outline,
+            validator: (value) {
+              if (value?.trim().isEmpty ?? true) {
+                return l10n.firstNameRequired;
+              }
+              if (value!.trim().length < 2) return l10n.tooShort;
+              return null;
+            },
           ),
 
           const SizedBox(height: 16),
@@ -434,33 +415,10 @@ class _SignUpPageState extends State<SignUpPage> {
             },
           ),
 
-          const SizedBox(height: 16),
-
-          // Confirmation mot de passe avec bordure verte fine
-          _buildTextField(
-            controller: _confirmPasswordController,
-            label: l10n.confirmPassword,
-            icon: Icons.lock_outline,
-            obscureText: _isConfirmObscure,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _isConfirmObscure ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed:
-                  _isLoading
-                      ? null
-                      : () => setState(
-                        () => _isConfirmObscure = !_isConfirmObscure,
-                      ),
-            ),
-            validator: (value) {
-              if (value?.isEmpty ?? true) return l10n.confirmYourPassword;
-              if (value != _passwordController.text) {
-                return l10n.passwordsDifferent;
-              }
-              return null;
-            },
-          ),
+          // Pas de confirmation du mot de passe : on le relit avec
+          // l'œil ci-dessus. Retaper une chaîne masquée ne prouve rien
+          // de plus qu'on puisse la lire — et une faute de frappe
+          // identique deux fois passe de toute façon.
 
           const SizedBox(height: 16),
 
@@ -686,7 +644,7 @@ class _SignUpPageState extends State<SignUpPage> {
       context.read<AuthBloc>().add(
         RegisterRequested(
           firstName: _firstNameController.text.trim(),
-          lastName: _lastNameController.text.trim(),
+          lastName: '',
           email: _emailController.text.trim(),
           password: _passwordController.text,
         ),
@@ -737,10 +695,8 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void dispose() {
     _firstNameController.dispose();
-    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 }
