@@ -123,6 +123,25 @@ try {
         sendPriceAlertDigests($notificationService);
     }
 
+    // 12. PURGE DEFINITIVE (dimanche a 3h) : les lignes deja supprimees
+    // depuis plus de 30 jours quittent la base pour de bon. Loi 25 et
+    // exigences des magasins d'applications : « supprime » doit finir
+    // par vouloir dire « n'existe plus ».
+    //
+    // EN MODE CONSTAT PAR DEFAUT : elle compte et n'efface rien. Pour
+    // qu'elle efface, il faut le dire — PURGE_APPLY=true dans .env, ou
+    // l'option --apply en ligne de commande. Une tache planifiee qui
+    // detruit des lignes ne doit pas s'activer parce qu'on a deploye.
+    // --purge-now force le passage hors de la fenetre du dimanche : sans
+    // cela, verifier la purge demanderait d'attendre dimanche 3 h.
+    $purgeDemandee = in_array('--purge-now', $argv ?? [], true);
+    if ($purgeDemandee || (Carbon::now()->dayOfWeek === Carbon::SUNDAY && Carbon::now()->hour === 3)) {
+        $appliquer = in_array('--apply', $argv ?? [], true)
+            || filter_var($_ENV['PURGE_APPLY'] ?? 'false', FILTER_VALIDATE_BOOLEAN);
+        echo "Purging soft-deleted rows older than 30 days...\n";
+        purgerLignesSupprimees($appliquer);
+    }
+
     echo "=== Cron completed successfully ===\n";
 
 } catch (\Exception $e) {
@@ -1352,4 +1371,139 @@ function sendPriceAlertDigests(NotificationService $service): void
         echo "  ERREUR resume prix: " . $e->getMessage() . "\n";
         error_log('sendPriceAlertDigests: ' . $e->getMessage());
     }
+}
+
+/**
+ * PURGE DEFINITIVE des lignes supprimees depuis plus de 30 jours.
+ *
+ * Jusqu'ici, rien ne quittait jamais la base : une liste « supprimee »
+ * gardait son deleted_at et ses articles pour toujours, et un compte
+ * supprime restait entier. Trente jours, c'est le delai annonce dans la
+ * politique de confidentialite : assez pour revenir sur une erreur,
+ * assez court pour que « supprime » veuille dire quelque chose.
+ *
+ * L'ORDRE COMPTE. Les enfants d'abord, le parent ensuite, et les
+ * comptes en dernier : users est la cible de plusieurs contraintes en
+ * ON DELETE CASCADE, mais shopping_lists.user_id est en NO ACTION — un
+ * compte qui possede encore une liste ne peut PAS etre efface. Ces
+ * comptes-la sont comptes a part : ils datent d'avant la migration 016
+ * et relevent de scripts/backfill_deleted_accounts.php.
+ *
+ * @param bool $appliquer false (defaut) = constat seul, rien n'est efface.
+ */
+function purgerLignesSupprimees(bool $appliquer): void
+{
+    $limite = Carbon::now()->subDays(30);
+    $db = \Illuminate\Database\Capsule\Manager::connection();
+    $mode = $appliquer ? 'SUPPRESSION' : 'CONSTAT (rien n\'est efface)';
+
+    echo "  Mode : {$mode}, limite : {$limite->toDateTimeString()}\n";
+
+    // Les images des recus qui vont disparaitre : apres la purge, plus
+    // personne ne saura qu'elles existent. Avant, donc, et seulement en
+    // mode suppression.
+    if ($appliquer) {
+        try {
+            $stockage = new \App\Services\ImageStorageService();
+            $recus = $db->table('list_receipts as r')
+                ->join('shopping_lists as l', 'l.id', '=', 'r.list_id')
+                ->whereNotNull('l.deleted_at')
+                ->where('l.deleted_at', '<', $limite)
+                ->select('r.image_path', 'r.image_url')
+                ->get();
+
+            $effacees = 0;
+            foreach ($recus as $recu) {
+                $cle = $recu->image_path ?: $recu->image_url;
+                if (!is_string($cle) || $cle === '') {
+                    continue;
+                }
+                try {
+                    $stockage->deleteByUrl($cle);
+                    $effacees++;
+                } catch (\Throwable $e) {
+                    error_log('[Purge] image non supprimee (' . $cle . ') : ' . $e->getMessage());
+                }
+            }
+            echo "  images de recus effacees : {$effacees}\n";
+        } catch (\Throwable $e) {
+            echo "  stockage indisponible, images laissees en place : " . $e->getMessage() . "\n";
+        }
+    }
+
+    // Enfants d'abord : list_items n'a pas de cascade depuis
+    // shopping_lists, donc une liste ne peut pas partir avant eux.
+    $enfantsDeListes = ['list_items', 'budgets', 'shared_list', 'list_messages', 'list_receipts'];
+    foreach ($enfantsDeListes as $table) {
+        $n = $db->table($table)
+            ->whereIn('list_id', function ($q) use ($limite) {
+                $q->select('id')->from('shopping_lists')
+                  ->whereNotNull('deleted_at')->where('deleted_at', '<', $limite);
+            })->count();
+
+        if ($appliquer && $n > 0) {
+            $db->table($table)
+                ->whereIn('list_id', function ($q) use ($limite) {
+                    $q->select('id')->from('shopping_lists')
+                      ->whereNotNull('deleted_at')->where('deleted_at', '<', $limite);
+                })->delete();
+        }
+        echo "  {$table} (listes supprimees) : {$n}\n";
+    }
+
+    // Les lignes supprimees pour elles-memes, table par table.
+    foreach (['list_items', 'list_messages', 'list_receipts', 'shared_list', 'budgets',
+              'categories', 'stores', 'suppliers', 'user_devices', 'shopping_lists', 'spaces'] as $table) {
+        $n = $db->table($table)
+            ->whereNotNull('deleted_at')->where('deleted_at', '<', $limite)->count();
+
+        if ($appliquer && $n > 0) {
+            $db->table($table)
+                ->whereNotNull('deleted_at')->where('deleted_at', '<', $limite)->delete();
+        }
+        echo "  {$table} : {$n}\n";
+    }
+
+    // Les comptes, en dernier. Seuls ceux qui sont deja anonymises : une
+    // ligne encore pleine n'est pas a purger, elle est a anonymiser.
+    $comptes = $db->table('users')
+        ->whereNotNull('deleted_at')
+        ->whereNotNull('anonymized_at')
+        ->where('anonymized_at', '<', $limite)
+        ->where('email', '<>', \App\Models\User::EMAIL_RESERVE)
+        ->pluck('id')
+        ->all();
+
+    $bloques = [];
+    $purges = 0;
+    foreach ($comptes as $id) {
+        if ($db->table('shopping_lists')->where('user_id', $id)->exists()) {
+            $bloques[] = $id;
+            continue;
+        }
+        if ($appliquer) {
+            $db->table('users')->where('id', $id)->delete();
+        }
+        $purges++;
+    }
+
+    echo "  comptes anonymises purgeables : {$purges}\n";
+
+    if ($bloques !== []) {
+        echo "  comptes bloques (possedent encore une liste) : " . implode(', ', $bloques) . "\n";
+    }
+
+    $aRattraper = $db->table('users')
+        ->whereNotNull('deleted_at')->whereNull('anonymized_at')->count();
+
+    if ($aRattraper > 0) {
+        echo "  ATTENTION : {$aRattraper} compte(s) supprime(s) mais non anonymise(s).\n";
+        echo "  Lancer : php scripts/backfill_deleted_accounts.php --apply\n";
+    }
+
+    if (!$appliquer) {
+        echo "  Rien n'a ete efface. Pour purger : PURGE_APPLY=true, ou --apply en CLI.\n";
+    }
+
+    echo "Purge finished.\n\n";
 }

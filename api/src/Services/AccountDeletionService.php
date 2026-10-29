@@ -141,7 +141,13 @@ class AccountDeletionService
             }
 
             $user->anonymizeData();
-            $user->delete(); // soft delete : la ligne part a la purge des 30 jours
+
+            // Un compte deja marque supprime garde SA date : un
+            // rattrapage ne doit pas relancer le delai de trente jours
+            // pour quelqu'un qui est parti il y a six mois.
+            if ($user->deleted_at === null) {
+                $user->delete(); // soft delete : la ligne part a la purge
+            }
         });
 
         $rapport['images_vues'] = count($images);
