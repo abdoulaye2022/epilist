@@ -31,6 +31,7 @@ import 'package:epilist/services/contact_service.dart';
 import 'package:epilist/services/currency_service.dart';
 import 'package:epilist/services/list_item_service.dart';
 import 'package:epilist/services/product_suggestion_service.dart';
+import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/services/receipt_image_service.dart';
 import 'package:epilist/services/receipt_service.dart';
 import 'package:epilist/services/suggestion_service.dart';
@@ -186,10 +187,13 @@ void main() async {
       sharedPreferences: sharedPreferences,
     );
 
+    final invitationService = InvitationService(dio: dio);
+
     final authBloc = AuthBloc(
       authService: authService,
       accountDeletionService: accountDeletionService,
       localizationBloc: localizationBloc,
+      invitationService: invitationService,
     );
 
     dio.interceptors.add(
@@ -287,6 +291,13 @@ void main() async {
                   dio: dio,
                   authService: context.read<AuthService>(),
                 ),
+          ),
+          // Une seule instance : le jeton d'invitation en attente est
+          // lu par l'ecran de bienvenue, par l'inscription et par le
+          // gestionnaire de liens profonds. Deux instances, et l'une
+          // des trois travaillerait sur une memoire perimee.
+          RepositoryProvider<InvitationService>.value(
+            value: invitationService,
           ),
           RepositoryProvider<BudgetService>(
             create:
@@ -726,6 +737,10 @@ class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (_deepLinkInitialized) {
                 DeepLinkHandler.processPendingTokenAfterLogin();
+                // Et celle qui vient du disque : invitation recue avant
+                // l'installation, ou application fermee en cours de
+                // route. Sans cet appel, elle attendrait indefiniment.
+                DeepLinkHandler.traiterJetonPersistantApresConnexion();
               }
             });
 

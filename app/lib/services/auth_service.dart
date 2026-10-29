@@ -419,7 +419,10 @@ class AuthService {
   }
 
   /// ✅ INSCRIPTION GOOGLE
-  Future<void> registerWithGoogle() async {
+  Future<void> registerWithGoogle({
+    String? signupSource,
+    String? shareToken,
+  }) async {
     try {
       debugPrint('🔵 [AuthService] Début de l\'inscription Google...');
 
@@ -449,6 +452,8 @@ class AuthService {
           'id_token': result.idToken,
           'access_token': result.accessToken,
           'user_info': result.userInfo!.toMap(),
+          if (signupSource != null) 'signup_source': signupSource,
+          if (shareToken != null) 'share_token': shareToken,
         },
       );
 
@@ -477,7 +482,10 @@ class AuthService {
   }
 
   /// ✅ INSCRIPTION APPLE RESTAURÉE COMPLÈTEMENT
-  Future<void> registerWithApple() async {
+  Future<void> registerWithApple({
+    String? signupSource,
+    String? shareToken,
+  }) async {
     try {
       debugPrint('🍎 [AuthService] Début de l\'inscription Apple...');
 
@@ -512,6 +520,8 @@ class AuthService {
           'id_token': result.idToken,
           'authorization_code': result.accessToken,
           'user_info': result.userInfo!.toMap(),
+          if (signupSource != null) 'signup_source': signupSource,
+          if (shareToken != null) 'share_token': shareToken,
         },
       );
 
@@ -1136,6 +1146,11 @@ class AuthService {
     String email,
     String password, {
     String? language, // 🌍 Langue de l'utilisateur
+    // D'où vient cette inscription. Sans ces deux champs, personne ne
+    // peut dire combien de comptes une invitation a produits — et une
+    // boucle de partage qu'on ne mesure pas ne s'améliore pas.
+    String? signupSource,
+    String? shareToken,
   }) async {
     try {
       final response = await dio.post(
@@ -1146,6 +1161,8 @@ class AuthService {
           'email': email,
           'password': password,
           if (language != null) 'language': language, // 🌍 Envoyer la langue
+          if (signupSource != null) 'signup_source': signupSource,
+          if (shareToken != null) 'share_token': shareToken,
         },
       );
 

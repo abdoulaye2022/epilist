@@ -79,6 +79,7 @@ dependencies:
   avatar_glow: ^3.0.1
   geolocator: ^14.0.2
   geocoding: ^5.0.0
+  play_install_referrer: ^0.6.0
 
 
 dev_dependencies:

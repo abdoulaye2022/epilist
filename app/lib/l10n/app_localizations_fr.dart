@@ -6192,6 +6192,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deletedUser => 'Utilisateur supprimé';
 
   @override
+  String get inviteCodeButton => 'J\'ai un code d\'invitation';
+
+  @override
+  String get inviteCodeTitle => 'Entrez votre code';
+
+  @override
+  String get inviteCodeHint => 'ABC123';
+
+  @override
+  String get inviteCodeExplain =>
+      'Le code figure dans l\'invitation que vous avez reçue. Six caractères, sans 0, O, 1, I ni L.';
+
+  @override
+  String get inviteCodeSubmit => 'Continuer';
+
+  @override
+  String get inviteCodeTooShort => 'Un code fait six caractères.';
+
+  @override
+  String get inviteCodeInvalid =>
+      'Ce code ne correspond à aucune invitation en cours. Demandez-en un nouveau à la personne qui vous a invité.';
+
+  @override
+  String get inviteCodeSignInFirst =>
+      'Invitation trouvée. Connectez-vous ou créez un compte : elle vous attendra.';
+
+  @override
+  String get invitationPendingTitle => 'Une invitation vous attend';
+
+  @override
+  String get invitationPendingBody =>
+      'Créez votre compte ou connectez-vous pour rejoindre la liste partagée.';
+
+  @override
   String get accountDeletedNow =>
       'Votre compte est supprimé. Vos données personnelles ont été effacées.';
 

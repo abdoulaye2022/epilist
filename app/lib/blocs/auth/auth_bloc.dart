@@ -3,6 +3,7 @@ import 'package:epilist/models/account_deletion_status.dart';
 import 'package:epilist/services/account_deletion_service.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/services/auth_service.dart';
+import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/services/notification_service.dart';
 import 'package:epilist/services/sso_service.dart';
 import 'package:epilist/services/offline_storage_service.dart';
@@ -20,12 +21,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
   final AccountDeletionService accountDeletionService;
   final LocalizationBloc localizationBloc;
+
+  /// D'ou vient l'inscription en cours. Optionnel : sans lui, une
+  /// inscription part en « direct », ce qui est vrai par defaut.
+  final InvitationService? invitationService;
+
   Timer? _tokenRefreshTimer;
 
   AuthBloc({
     required this.authService,
     required this.accountDeletionService,
     required this.localizationBloc,
+    this.invitationService,
   }) : super(AuthInitial()) {
     // Événements existants
     on<LoginButtonPressed>(_onLoginButtonPressed);
@@ -1039,12 +1046,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       debugPrint('🌍 [AuthBloc] Inscription avec langue: $userLanguage');
 
+      // L'invitation qui attend, s'il y en a une : c'est elle qui dit
+      // d'ou vient ce compte. Le jeton n'est PAS efface ici — il sert
+      // encore, juste apres, a ouvrir la liste partagee.
+      final jetonInvitation = await invitationService?.jetonEnAttente();
+      final source = await invitationService?.sourceInscription();
+
       await authService.register(
         event.firstName,
         event.lastName,
         event.email,
         event.password,
         language: userLanguage, // 🌍 Passer la langue à l'API
+        signupSource: jetonInvitation != null ? source : null,
+        shareToken: jetonInvitation,
       );
       emit(EmailConfirmationRequired(event.email));
     } catch (e) {

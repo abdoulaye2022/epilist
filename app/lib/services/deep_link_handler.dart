@@ -1,4 +1,11 @@
 // services/deep_link_handler.dart - VERSION AVEC SNACKBARS MINIMAUX
+//
+// Le jeton en attente est aussi ECRIT SUR LE DISQUE (InvitationService).
+// Il vivait dans la seule variable statique ci-dessous : fermer
+// l'application pendant l'inscription — pour aller chercher le code de
+// verification dans sa boite de courriel, par exemple — perdait
+// l'invitation sans laisser de trace. La variable reste, parce qu'elle
+// sert de cache pendant la session ; le disque, lui, survit.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:epilist/blocs/shared_list/shared_list_bloc.dart';
@@ -6,6 +13,7 @@ import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/blocs/localization/localization_bloc.dart';
 import 'package:epilist/screens/share_invitation_screen.dart';
 import 'package:epilist/screens/login_screen.dart';
+import 'package:epilist/services/invitation_service.dart';
 import 'package:epilist/services/shared_list_service.dart';
 import 'package:epilist/services/auth_service.dart';
 import 'package:epilist/services/connectivity_service.dart';
@@ -58,6 +66,43 @@ class DeepLinkHandler {
     } else {
       debugPrint('❌ Aucune connexion - Invitation en attente');
       // Pas de SnackBar - gestion silencieuse ou via l'UI de connectivité
+    }
+  }
+
+  /// Garde le jeton EN MEMOIRE et SUR LE DISQUE.
+  ///
+  /// Les deux, parce qu'ils ne servent pas au meme moment : la memoire
+  /// pour la navigation en cours, le disque pour ce qui vient apres un
+  /// redemarrage.
+  static void _retenirJeton(String token, {String source = SourceInscription.lienPartage}) {
+    _pendingShareToken = token;
+
+    try {
+      _context?.read<InvitationService>().garderJeton(token, source: source);
+    } catch (e) {
+      debugPrint('Jeton non persiste : $e');
+    }
+  }
+
+  /// L'invitation est traitee : plus rien a retenir, nulle part.
+  static void _oublierJeton() {
+    _pendingShareToken = null;
+
+    try {
+      _context?.read<InvitationService>().oublierJeton();
+    } catch (e) {
+      debugPrint('Jeton non efface : $e');
+    }
+  }
+
+  /// Relit le jeton laisse par une session precedente, ou par le
+  /// referrer de Google Play.
+  static Future<String?> jetonPersistant() async {
+    try {
+      return await _context?.read<InvitationService>().jetonEnAttente();
+    } catch (e) {
+      debugPrint('Lecture du jeton persistant impossible : $e');
+      return null;
     }
   }
 
@@ -351,7 +396,7 @@ class DeepLinkHandler {
 
       if (_context == null) {
         debugPrint('⏳ Contexte non disponible, token en attente: $shareToken');
-        _pendingShareToken = shareToken;
+        _retenirJeton(shareToken);
         return;
       }
 
@@ -374,7 +419,7 @@ class DeepLinkHandler {
         !_isNavigating) {
       debugPrint('🔄 Traitement token en attente: $_pendingShareToken');
       final token = _pendingShareToken!;
-      _pendingShareToken = null;
+      _oublierJeton();
 
       Future.delayed(const Duration(milliseconds: 500), () {
         if (!_isProcessing && !_isNavigating) {
@@ -415,7 +460,7 @@ class DeepLinkHandler {
   static void _redirectToLoginWithToken(String shareToken) {
     if (_context == null || _isNavigating) return;
 
-    _pendingShareToken = shareToken;
+    _retenirJeton(shareToken);
     debugPrint('🔄 Redirection vers login avec token: $shareToken');
 
     // Pas de SnackBar - redirection silencieuse
@@ -445,7 +490,7 @@ class DeepLinkHandler {
           !_isNavigating) {
         debugPrint('✅ ${_getTranslatedMessage('auth_success_navigation')}');
         final token = _pendingShareToken!;
-        _pendingShareToken = null;
+        _oublierJeton();
 
         // Vérifier connectivité après authentification
         Future.delayed(const Duration(milliseconds: 1500), () {
@@ -467,6 +512,9 @@ class DeepLinkHandler {
       debugPrint('⏰ Timeout écoute auth, nettoyage');
       _authSubscription?.cancel();
       _authSubscription = null;
+      // La variable de session se vide, PAS le disque : une invitation
+      // peut tres bien etre acceptee le lendemain, et l'effacer ici
+      // reviendrait a la perdre pour avoir attendu dix minutes.
       _pendingShareToken = null;
     });
   }
@@ -491,11 +539,37 @@ class DeepLinkHandler {
     }
   }
 
+  /// Le jeton laisse par une session PRECEDENTE, ou par le referrer de
+  /// Google Play.
+  ///
+  /// processPendingTokenAfterLogin() ne regarde que la variable de
+  /// session : elle est vide quand l'application vient d'etre
+  /// relancee — c'est-a-dire exactement le cas de quelqu'un qui vient
+  /// d'installer et de creer son compte.
+  static Future<void> traiterJetonPersistantApresConnexion() async {
+    if (_pendingShareToken != null || _context == null || _isNavigating) {
+      return;
+    }
+
+    final jeton = await jetonPersistant();
+
+    if (jeton == null || _context == null || _isNavigating) {
+      return;
+    }
+
+    debugPrint('🎯 Invitation retrouvee sur le disque: $jeton');
+    _oublierJeton();
+
+    _requireConnection(() {
+      _navigateToShareInvitation(jeton);
+    });
+  }
+
   static void processPendingTokenAfterLogin() {
     if (_pendingShareToken != null && _context != null && !_isNavigating) {
       debugPrint('🎯 Traitement token après login: $_pendingShareToken');
       final token = _pendingShareToken!;
-      _pendingShareToken = null;
+      _oublierJeton();
 
       Future.delayed(const Duration(milliseconds: 1000), () {
         if (!_isNavigating) {

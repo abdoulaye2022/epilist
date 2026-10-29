@@ -1,6 +1,15 @@
 // screens/welcome_screen.dart - Première impression : sobre, aérée, ancrée
 // sur la marque. Sélecteur de langue compact en haut, promesses de l'app au
 // centre, action principale en bas.
+//
+// C'est aussi l'écran où atterrit quelqu'un qui vient d'installer
+// l'application APRÈS avoir touché un lien d'invitation — et le lien,
+// lui, n'a pas traversé le magasin. Deux rattrapages ici :
+//
+//   - sur Android, la lecture du « referrer » que Google Play a gardé,
+//     faite une seule fois, au premier lancement ;
+//   - partout, « J'ai un code d'invitation », qui est le seul chemin
+//     qui ne dépend de personne.
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/theme/app_icons.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +19,41 @@ import 'package:epilist/screens/login_screen.dart';
 import 'package:epilist/screens/about_screen.dart';
 import 'package:epilist/screens/privacy_policy_screen.dart';
 import 'package:epilist/l10n/app_localizations.dart';
+import 'package:epilist/services/invitation_service.dart';
+import 'package:epilist/widgets/invitation/invitation_code_dialog.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  /// Une invitation attend déjà : lien profond reçu avant la connexion,
+  /// referrer de Google Play, ou code saisi à la main.
+  bool _invitationEnAttente = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _chercherInvitation();
+  }
+
+  /// Le referrer est lu ICI et pas au démarrage de l'application : la
+  /// réponse de Google Play peut prendre plusieurs secondes, et le
+  /// premier écran ne doit pas l'attendre. Sans effet au-delà du
+  /// premier lancement, et sans effet hors Android.
+  Future<void> _chercherInvitation() async {
+    final service = context.read<InvitationService>();
+
+    await service.lireReferrerAuPremierLancement();
+    final jeton = await service.jetonEnAttente();
+
+    if (mounted && jeton != null) {
+      setState(() => _invitationEnAttente = true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +123,26 @@ class WelcomeScreen extends StatelessWidget {
                             l10n.trackYourBudget,
                           ),
                           const Spacer(flex: 3),
+                          if (_invitationEnAttente) ...[
+                            _buildInvitationBanner(l10n),
+                            const SizedBox(height: AppSpacing.md),
+                          ],
                           SizedBox(
                             child: ElevatedButton(
                               onPressed: () => _navigateToLogin(context),
                               child: Text(l10n.getStarted),
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: AppSpacing.xs),
+                          Center(
+                            child: BoutonCodeInvitation(
+                              onJetonTrouve:
+                                  (_) => setState(
+                                    () => _invitationEnAttente = true,
+                                  ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
                           _buildFooterLinks(context, l10n),
                         ],
                       ),
@@ -97,6 +151,49 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
         ),
+      ),
+    );
+  }
+
+  /// Dit à la personne que son invitation n'a pas été perdue. Sans
+  /// cela, elle arrive sur un écran de bienvenue ordinaire et croit que
+  /// le lien n'a pas marché.
+  Widget _buildInvitationBanner(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: AppColors.primary),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.mark_email_unread_outlined, color: AppColors.primaryDark),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.invitationPendingTitle,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryDark,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.invitationPendingBody,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.primaryDark,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

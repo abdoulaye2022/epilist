@@ -11329,6 +11329,66 @@ abstract class AppLocalizations {
   /// **'Utilisateur supprimé'**
   String get deletedUser;
 
+  /// No description provided for @inviteCodeButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai un code d\'invitation'**
+  String get inviteCodeButton;
+
+  /// No description provided for @inviteCodeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez votre code'**
+  String get inviteCodeTitle;
+
+  /// No description provided for @inviteCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ABC123'**
+  String get inviteCodeHint;
+
+  /// No description provided for @inviteCodeExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code figure dans l\'invitation que vous avez reçue. Six caractères, sans 0, O, 1, I ni L.'**
+  String get inviteCodeExplain;
+
+  /// No description provided for @inviteCodeSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get inviteCodeSubmit;
+
+  /// No description provided for @inviteCodeTooShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un code fait six caractères.'**
+  String get inviteCodeTooShort;
+
+  /// No description provided for @inviteCodeInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce code ne correspond à aucune invitation en cours. Demandez-en un nouveau à la personne qui vous a invité.'**
+  String get inviteCodeInvalid;
+
+  /// No description provided for @inviteCodeSignInFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation trouvée. Connectez-vous ou créez un compte : elle vous attendra.'**
+  String get inviteCodeSignInFirst;
+
+  /// No description provided for @invitationPendingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une invitation vous attend'**
+  String get invitationPendingTitle;
+
+  /// No description provided for @invitationPendingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez votre compte ou connectez-vous pour rejoindre la liste partagée.'**
+  String get invitationPendingBody;
+
   /// No description provided for @accountDeletedNow.
   ///
   /// In fr, this message translates to:

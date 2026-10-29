@@ -1,4 +1,5 @@
 // email_verification_screen.dart - VERSION COMPLÈTE CORRIGÉE
+import 'package:epilist/widgets/invitation/invitation_code_dialog.dart';
 import 'package:epilist/theme/app_theme.dart';
 import 'package:epilist/blocs/auth/auth_bloc.dart';
 import 'package:epilist/l10n/app_localizations.dart';
@@ -655,6 +656,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         ),
                     ],
                   ),
+
+                  // « J'ai un code d'invitation », juste apres
+                  // l'inscription : c'est le moment ou quelqu'un qui
+                  // vient d'installer l'application a encore
+                  // l'invitation sous les yeux, et c'est le dernier
+                  // ecran avant qu'il n'entre dans l'application sans
+                  // sa liste partagee.
+                  if (widget.fromRegistration) ...[
+                    const SizedBox(height: 4),
+                    const Center(child: BoutonCodeInvitation()),
+                  ],
 
                   const SizedBox(height: 20),
 

@@ -6098,6 +6098,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletedUser => 'Deleted user';
 
   @override
+  String get inviteCodeButton => 'I have an invitation code';
+
+  @override
+  String get inviteCodeTitle => 'Enter your code';
+
+  @override
+  String get inviteCodeHint => 'ABC123';
+
+  @override
+  String get inviteCodeExplain =>
+      'The code is in the invitation you received. Six characters, with no 0, O, 1, I or L.';
+
+  @override
+  String get inviteCodeSubmit => 'Continue';
+
+  @override
+  String get inviteCodeTooShort => 'A code is six characters long.';
+
+  @override
+  String get inviteCodeInvalid =>
+      'This code does not match any current invitation. Ask the person who invited you for a new one.';
+
+  @override
+  String get inviteCodeSignInFirst =>
+      'Invitation found. Sign in or create an account: it will be waiting for you.';
+
+  @override
+  String get invitationPendingTitle => 'An invitation is waiting for you';
+
+  @override
+  String get invitationPendingBody =>
+      'Create your account or sign in to join the shared list.';
+
+  @override
   String get accountDeletedNow =>
       'Your account is deleted. Your personal data has been erased.';
 
