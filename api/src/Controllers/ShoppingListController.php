@@ -116,10 +116,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la création de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -265,10 +266,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des listes',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -388,10 +390,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -490,10 +493,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -571,10 +575,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -631,10 +636,11 @@ class ShoppingListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la restauration de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -728,10 +734,11 @@ class ShoppingListController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la duplication de la liste',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }

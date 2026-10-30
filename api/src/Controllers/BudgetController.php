@@ -191,7 +191,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving budgets',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -298,7 +297,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while creating the budget',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -347,7 +345,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving the budget',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -429,7 +426,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating the budget',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -477,7 +473,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while deleting the budget',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -536,7 +531,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving budget alerts',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -623,7 +617,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving budget dashboard',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -737,7 +730,6 @@ class BudgetController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while creating the quick budget',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

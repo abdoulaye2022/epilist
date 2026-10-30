@@ -38,12 +38,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving currencies',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -82,12 +82,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving the currency',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -113,12 +113,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving popular currencies',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -187,12 +187,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating display currency',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -227,12 +227,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving user currency',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -286,12 +286,12 @@ class CurrencyController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while formatting amount',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

@@ -188,7 +188,7 @@ class EmailPreferenceController
     /**
      * Helper pour retourner une erreur
      */
-    private function errorResponse(Response $response, string $message, int $status, array $errors = null): Response
+    private function errorResponse(Response $response, string $message, int $status, ?array $errors = null): Response
     {
         $body = [
             'success' => false,

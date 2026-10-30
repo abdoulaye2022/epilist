@@ -137,7 +137,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving receipts',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -332,7 +331,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while adding the receipt',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -400,7 +398,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving the receipt',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -579,7 +576,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating the receipt',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -642,7 +638,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while deleting the receipt',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -723,7 +718,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving store data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -840,7 +834,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving statistics',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -895,7 +888,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'EXPORT_ERROR',
                     'message' => 'Failed to generate PDF export',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -947,7 +939,6 @@ class ListReceiptsController
                 'error' => [
                     'code' => 'EXPORT_ERROR',
                     'message' => 'Failed to generate CSV export',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

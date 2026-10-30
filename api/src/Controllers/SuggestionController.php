@@ -25,7 +25,7 @@ class SuggestionController
         $params = $request->getQueryParams();
 
         $options = [
-            'limit' => isset($params['limit']) ? (int)$params['limit'] : 10,
+            'limit' => min(max(isset($params['limit']) ? (int)$params['limit'] : 10, 1), 100),
             'include_associations' => isset($params['include_associations'])
                 ? filter_var($params['include_associations'], FILTER_VALIDATE_BOOLEAN)
                 : true,
@@ -48,9 +48,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to get suggestions: ' . $e->getMessage()
+                'message' => 'Failed to get suggestions'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
@@ -93,9 +94,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to get product suggestion: ' . $e->getMessage()
+                'message' => 'Failed to get product suggestion'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
@@ -147,9 +149,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to record feedback: ' . $e->getMessage()
+                'message' => 'Failed to record feedback'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
@@ -175,9 +178,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to recalculate patterns: ' . $e->getMessage()
+                'message' => 'Failed to recalculate patterns'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
@@ -203,9 +207,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to get statistics: ' . $e->getMessage()
+                'message' => 'Failed to get statistics'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
@@ -219,7 +224,7 @@ class SuggestionController
     public function getTrending(Request $request, Response $response): Response
     {
         $params = $request->getQueryParams();
-        $limit = isset($params['limit']) ? (int)$params['limit'] : 10;
+        $limit = min(max(isset($params['limit']) ? (int)$params['limit'] : 10, 1), 100);
 
         try {
             $trending = $this->suggestionService->getTrendingProducts($limit);
@@ -235,9 +240,10 @@ class SuggestionController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to get trending products: ' . $e->getMessage()
+                'message' => 'Failed to get trending products'
             ]));
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');

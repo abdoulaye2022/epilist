@@ -479,12 +479,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving items',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -587,12 +587,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while adding the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -654,12 +654,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while adding the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -746,12 +746,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -825,12 +825,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating the purchase status',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -872,12 +872,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while deleting the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -923,12 +923,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while restoring the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -988,12 +988,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving the item',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1090,12 +1090,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while merging items',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1160,12 +1160,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving similar items',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1231,12 +1231,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while updating items',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1281,12 +1281,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while clearing purchased items',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1353,12 +1353,12 @@ class ListItemController
             $response->getBody()->write(json_encode(['success' => false, 'code' => $sae->getMessage()]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus($sae->getStatus());
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving statistics',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

@@ -23,7 +23,7 @@ class MessageController
 
             // Get query parameters
             $params = $request->getQueryParams();
-            $limit = isset($params['limit']) ? (int) $params['limit'] : 50;
+            $limit = min(max(isset($params['limit']) ? (int) $params['limit'] : 50, 1), 100);
             $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
 
             // Check if user has access to this list

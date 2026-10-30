@@ -30,9 +30,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors du chargement des catégories',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -73,9 +74,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors du chargement de la catégorie',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -136,9 +138,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(201);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors de la création de la catégorie',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -209,9 +212,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors de la mise à jour de la catégorie',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -256,9 +260,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors de la suppression de la catégorie',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -301,9 +306,10 @@ class CategoryController
                 ->withHeader('Content-Type', 'application/json')
                 ->withStatus(200);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors de la réorganisation des catégories',
-                'message' => $e->getMessage()
+                'message' => 'Une erreur interne est survenue.'
             ]));
 
             return $response
@@ -389,7 +395,7 @@ class CategoryController
 
             $response->getBody()->write(json_encode([
                 'error' => 'Erreur lors de l\'initialisation des catégories',
-                'message' => $e->getMessage(),
+                'message' => 'Une erreur interne est survenue.',
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()

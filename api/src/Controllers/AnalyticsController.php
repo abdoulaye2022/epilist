@@ -854,7 +854,6 @@ class AnalyticsController
                 'error' => [
                     'code' => 'WEEKLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving weekly spending data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1158,7 +1157,6 @@ public function dashboard(Request $request, Response $response): Response
                 'error' => [
                     'code' => 'DASHBOARD_ERROR',
                     'message' => 'Error retrieving dashboard data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1344,12 +1342,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'TRENDS_ERROR',
                     'message' => 'Error retrieving trend data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1457,12 +1455,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'CATEGORY_ERROR',
                     'message' => 'Error retrieving category data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1620,7 +1618,6 @@ public function dashboard(Request $request, Response $response): Response
                 'error' => [
                     'code' => 'STORE_ANALYTICS_ERROR',
                     'message' => 'Error retrieving store spending data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -1969,7 +1966,6 @@ public function dashboard(Request $request, Response $response): Response
                 'error' => [
                     'code' => 'MONTHLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving monthly spending data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2053,12 +2049,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'BREAKDOWN_ERROR',
                     'message' => 'Error retrieving lists breakdown',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2193,12 +2189,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'TOP_PRODUCTS_ERROR',
                     'message' => 'Error retrieving top products data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2317,12 +2313,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'COMPARISON_ERROR',
                     'message' => 'Error retrieving comparison data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2459,12 +2455,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'DAILY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving daily spending data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2677,7 +2673,6 @@ public function dashboard(Request $request, Response $response): Response
                 'error' => [
                     'code' => 'YEARLY_ANALYTICS_ERROR',
                     'message' => 'Error retrieving yearly spending data',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -2775,12 +2770,12 @@ public function dashboard(Request $request, Response $response): Response
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'DATA_QUALITY_ERROR',
                     'message' => 'Error generating data quality report',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

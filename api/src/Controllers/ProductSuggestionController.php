@@ -36,7 +36,7 @@ class ProductSuggestionController
             }
 
             $query = trim($params['q']);
-            $limit = (int)($params['limit'] ?? 10);
+            $limit = min(max((int)($params['limit'] ?? 10), 1), 100);
 
             $suggestions = ProductSuggestion::searchByName($user_id, $query, $limit);
 
@@ -51,10 +51,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la recherche de suggestions',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -68,7 +69,7 @@ class ProductSuggestionController
         try {
             $user_id = $request->getAttribute('auth_id');
             $params = $request->getQueryParams();
-            $limit = (int)($params['limit'] ?? 20);
+            $limit = min(max((int)($params['limit'] ?? 20), 1), 100);
 
             $validator = new Validator(['limit' => $limit]);
             $validator->rule('integer', 'limit')->message('La limite doit être un nombre entier');
@@ -95,10 +96,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des suggestions populaires',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -133,10 +135,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression de la suggestion',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -159,10 +162,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression des suggestions',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -229,10 +233,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour de la suggestion',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -267,10 +272,11 @@ class ProductSuggestionController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la récupération des statistiques',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }

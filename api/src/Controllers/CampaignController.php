@@ -235,7 +235,6 @@ class CampaignController
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while sending the campaign',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -294,12 +293,12 @@ class CampaignController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while retrieving campaign stats',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -484,7 +483,6 @@ class CampaignController
                     'error' => [
                         'code' => 'INTERNAL_ERROR',
                         'message' => 'Erreur lors du traitement du désabonnement',
-                        'details' => $e->getMessage()
                     ]
                 ]));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -719,12 +717,12 @@ class CampaignController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while sending test email',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -747,12 +745,12 @@ class CampaignController
             return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
 
         } catch (Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'error' => [
                     'code' => 'INTERNAL_ERROR',
                     'message' => 'An error occurred while generating email preview',
-                    'details' => $e->getMessage()
                 ]
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
