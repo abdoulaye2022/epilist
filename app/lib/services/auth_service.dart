@@ -74,8 +74,10 @@ class AuthService {
   Future<void> saveTokens(String accessToken, String refreshToken) async {
     try {
       debugPrint('🔄 [AuthService] Sauvegarde des tokens...');
-      debugPrint('  Access token: ${accessToken.substring(0, 20)}...');
-      debugPrint('  Refresh token: ${refreshToken.substring(0, 20)}...');
+      // Les valeurs ne sont pas journalisees : debugPrint ecrit aussi
+      // en version publiee, et un journal d'appareil se lit.
+      debugPrint('  Access token: ${accessToken.length} caracteres');
+      debugPrint('  Refresh token: ${refreshToken.length} caracteres');
 
       final tokenExpiry = _getTokenExpiration(accessToken);
       debugPrint('  Expiration: ${tokenExpiry ?? "1 an par défaut"}');
@@ -100,7 +102,7 @@ class AuthService {
     try {
       final token = await TokenStore.readAccess();
       if (token != null && token.isNotEmpty) {
-        debugPrint('🔍 [AuthService] Token trouvé: ${token.substring(0, 20)}...');
+        debugPrint('🔍 [AuthService] Token trouvé (${token.length} caractères)');
 
         if (await isTokenExpired()) {
           debugPrint(

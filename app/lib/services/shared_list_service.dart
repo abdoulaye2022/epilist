@@ -19,7 +19,7 @@ class SharedListService {
   // ✅ Obtenir les informations d'une invitation via le token - URL CORRIGÉE
   Future<ShareInvitation> getShareInvitation(String shareToken) async {
     try {
-      debugPrint('🔄 Récupération de l\'invitation pour le token: $shareToken');
+      debugPrint('🔄 Récupération de l\'invitation (jeton de ${shareToken.length} caractères)');
       debugPrint('🌐 URL appelée: /share/invitation/$shareToken');
 
       // ✅ CORRECTION: Utiliser la bonne URL selon votre contrôleur PHP
@@ -250,7 +250,7 @@ class SharedListService {
       final responseData = response.data['data'];
       final shareToken = responseData['share_token'];
 
-      debugPrint('✅ Lien de partage créé avec le token: $shareToken');
+      debugPrint('✅ Lien de partage créé');
 
       // ✅ Gérer les URLs de partage
       final shareUrls = responseData['share_urls'];
