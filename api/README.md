@@ -126,6 +126,35 @@ n'est pas fait, le rapport de suppression porte
 `apple => non_configure`, et la suppression se fait quand même : le
 compte EpiList part entièrement, c'est le lien côté Apple qui subsiste.
 
+## L'adresse du client, et les plafonds de cadence
+
+Les plafonds (connexion, codes a six chiffres, formulaire de contact)
+comptent les essais par adresse IP **et** par compte. L'adresse IP est
+lue par `App\Services\ClientIp`, jamais directement dans un en-tete :
+`X-Forwarded-For` est ecrit par le client, et un client qui en change a
+chaque requete serait une adresse neuve a chaque essai.
+
+| Variable | Defaut | Role |
+|---|---|---|
+| `TRUSTED_PROXIES` | *(vide)* | adresses ou blocs CIDR des mandataires qui se tiennent devant PHP, separes par des virgules (`203.0.113.1, 192.0.2.0/24`) |
+
+**Sans `TRUSTED_PROXIES`** : si la requete arrive d'une adresse privee
+(`10.x`, `172.16-31.x`, `192.168.x`), c'est un equipement de
+l'infrastructure — le cas de l'hebergement mutualise, ou un repartiteur
+precede PHP. `X-Forwarded-For` est alors lu de droite a gauche, et la
+premiere adresse qui n'est pas privee est retenue. Si la requete arrive
+d'une adresse publique, c'est le client lui-meme : tous les en-tetes
+sont ignores.
+
+**Avec `TRUSTED_PROXIES`** : seules les adresses listees sont crues ; la
+detection par adresse privee est desactivee. A regler si l'hebergeur
+documente l'adresse de son repartiteur.
+
+Les plafonds **par compte** (`max_attempts` dans `RateLimiter::LIMITS`)
+ne dependent d'aucune adresse : c'est eux qui tiennent quand l'IP ment.
+`php scripts/test_client_ip.php` et `php scripts/test_plafonds.php`
+verifient les deux, sans serveur.
+
 ## Scripts
 
 Tous les scripts qui touchent à des données existantes sont en

@@ -213,25 +213,10 @@ class AccountDeletionController
         return rtrim($base, '/') . $chemin . $jeton;
     }
 
+    /** L'adresse de l'appelant, par le service qui sait a quel mandataire se fier. */
     private function clientIp(Request $request): string
     {
-        $server = $request->getServerParams();
-
-        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $cle) {
-            if (!empty($server[$cle]) && filter_var($server[$cle], FILTER_VALIDATE_IP)) {
-                return (string) $server[$cle];
-            }
-        }
-
-        $transmis = $request->getHeaderLine('X-Forwarded-For');
-        if ($transmis !== '') {
-            $premier = trim(explode(',', $transmis)[0]);
-            if (filter_var($premier, FILTER_VALIDATE_IP)) {
-                return $premier;
-            }
-        }
-
-        return '0.0.0.0';
+        return \App\Services\ClientIp::depuis($request);
     }
 
     private function json(Response $response, int $statut, array $corps): Response

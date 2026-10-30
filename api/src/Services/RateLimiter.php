@@ -21,7 +21,8 @@ class RateLimiter
             'window_minutes' => 1440,         // Fenêtre de 24h
         ],
         'verification_code' => [
-            'max_attempts' => 5,              // 5 tentatives max de vérification
+            'max_attempts_per_ip' => 10,      // 10 essais max par IP
+            'max_attempts' => 5,              // 5 essais max par compte (le vrai verrou)
             'window_minutes' => 30,           // Fenêtre de 30 minutes
         ],
         'password_reset' => [
@@ -67,7 +68,35 @@ class RateLimiter
             'max_attempts_per_ip' => 3,
             'max_attempts' => 3,              // 3 demandes max par adresse
             'window_minutes' => 60,
-        ]
+        ],
+        // Code 2FA a six chiffres, valable dix minutes. Un plafond PAR
+        // COMPTE, parce qu'un plafond par IP seule se contourne en
+        // changeant d'adresse a chaque essai : cinq essais sur le compte,
+        // et c'est fini jusqu'a ce que le code expire.
+        'two_factor_verify' => [
+            'max_attempts_per_ip' => 10,
+            'max_attempts' => 5,              // 5 essais max par compte
+            'window_minutes' => 10,
+        ],
+        'admin_otp_verify' => [
+            'max_attempts_per_ip' => 10,
+            'max_attempts' => 5,
+            'window_minutes' => 10,
+        ],
+        // Renvoi du code de confirmation : chaque appel part en courriel.
+        'resend_verification' => [
+            'max_attempts_per_ip' => 5,
+            'max_attempts' => 3,              // 3 renvois max par adresse
+            'window_minutes' => 60,
+        ],
+        // Formulaire de contact, ouvert a tous depuis le site : chaque
+        // envoi consomme le quota du fournisseur de courriel.
+        'contact_feedback' => [
+            'max_attempts_per_ip' => 5,
+            'max_attempts' => 3,              // 3 messages max par adresse courriel
+            'window_minutes' => 60,
+            'global_max_per_hour' => 30,      // tous expediteurs confondus
+        ],
     ];
 
     public function __construct()
@@ -125,6 +154,41 @@ class RateLimiter
 
         if (!$allowed) {
             error_log("🚫 [RateLimiter] Limite atteinte pour {$action} - Email: {$emailHash} ({$maxAttempts} tentatives en {$windowMinutes}min)");
+        }
+
+        return $allowed;
+    }
+
+    /**
+     * Enregistre un essai pour un courriel, avec la meme cle que
+     * checkEmailLimit() — pour ne pas avoir a refaire le md5 partout.
+     */
+    public function recordEmailAttempt(string $action, string $email): void
+    {
+        $this->recordAttempt($action . '_email', md5(strtolower($email)));
+    }
+
+    /** Efface les essais d'un courriel apres un succes. */
+    public function resetEmailAttempts(string $action, string $email): void
+    {
+        $this->resetAttempts($action . '_email', md5(strtolower($email)));
+    }
+
+    /**
+     * Plafond global d'une action, tous appelants confondus, sur une
+     * heure — pour les actions qui declarent global_max_per_hour.
+     * Sans declaration : toujours autorise.
+     */
+    public function checkGlobalLimit(string $action): bool
+    {
+        $max = self::LIMITS[$action]['global_max_per_hour'] ?? null;
+        if ($max === null) {
+            return true;
+        }
+
+        $allowed = count($this->getGlobalAttempts($action, 60)) < $max;
+        if (!$allowed) {
+            error_log("🚫 [RateLimiter] Limite GLOBALE atteinte pour {$action} ({$max}/heure)");
         }
 
         return $allowed;

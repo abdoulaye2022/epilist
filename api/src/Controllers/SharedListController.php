@@ -126,10 +126,11 @@ class SharedListController
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la création du lien de partage',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -226,7 +227,7 @@ class SharedListController
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors du chargement de l\'invitation',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -309,10 +310,11 @@ class SharedListController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de l\'acceptation de l\'invitation',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -356,10 +358,11 @@ class SharedListController
             ]));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors du refus de l\'invitation',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
@@ -800,18 +803,10 @@ class SharedListController
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    /** L'adresse de l'appelant, pour les plafonds de cadence. */
+    /** L'adresse de l'appelant, par le service qui sait a quel mandataire se fier. */
     private function clientIp(Request $request): string
     {
-        $server = $request->getServerParams();
-
-        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $cle) {
-            if (!empty($server[$cle]) && filter_var($server[$cle], FILTER_VALIDATE_IP)) {
-                return (string) $server[$cle];
-            }
-        }
-
-        return '0.0.0.0';
+        return \App\Services\ClientIp::depuis($request);
     }
 
     /**
@@ -930,7 +925,7 @@ class SharedListController
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erreur lors de la suppression de la liste partagée',
-                'error' => $e->getMessage()
+                'error' => 'Une erreur interne est survenue.'
             ]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }

@@ -1274,15 +1274,18 @@ class AuthController
         $code = trim((string) ($data['code'] ?? ''));
         $ipAddress = $this->getClientIP($request);
 
-        if (!$this->rateLimiter->checkIPLimit('two_factor_verify', $ipAddress)) {
+        if (!$this->rateLimiter->checkIPLimit('two_factor_verify', $ipAddress)
+            || !$this->rateLimiter->checkEmailLimit('two_factor_verify', $email)) {
             return $this->createErrorResponse('Trop de tentatives. Réessayez plus tard.', 429);
         }
         $this->rateLimiter->recordAttempt('two_factor_verify', $ipAddress);
+        $this->rateLimiter->recordEmailAttempt('two_factor_verify', $email);
 
         $user = User::with('currency')->where('email', $email)->first();
         if (!$this->twoFactorCodeMatches($user, $code)) {
             return $this->createErrorResponse('Code invalide ou expiré', 401, 'INVALID_CODE');
         }
+        $this->rateLimiter->resetEmailAttempts('two_factor_verify', $email);
 
         // Usage unique : le code est consommé.
         $user->admin_otp_code = null;
@@ -1387,10 +1390,12 @@ class AuthController
         $code = trim((string) ($data['code'] ?? ''));
         $ipAddress = $this->getClientIP($request);
 
-        if (!$this->rateLimiter->checkIPLimit('admin_otp_verify', $ipAddress)) {
+        if (!$this->rateLimiter->checkIPLimit('admin_otp_verify', $ipAddress)
+            || !$this->rateLimiter->checkEmailLimit('admin_otp_verify', $email)) {
             return $this->createErrorResponse('Trop de tentatives. Réessayez plus tard.', 429);
         }
         $this->rateLimiter->recordAttempt('admin_otp_verify', $ipAddress);
+        $this->rateLimiter->recordEmailAttempt('admin_otp_verify', $email);
 
         $user = User::with('currency')->where('email', $email)->first();
         $valid = $user && ($user->role ?? null) === 'admin'
@@ -1407,6 +1412,7 @@ class AuthController
         $user->admin_otp_expires_at = null;
         $user->save();
         $this->rateLimiter->resetAttempts('admin_otp', $email);
+        $this->rateLimiter->resetEmailAttempts('admin_otp_verify', $email);
 
         $accessToken = $this->jwtService->generateToken(['auth_id' => $user->id]);
         $refreshToken = $this->jwtService->generateRefreshToken(['auth_id' => $user->id]);
@@ -1700,10 +1706,11 @@ class AuthController
                 ->withStatus(200);
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'code' => 'SERVER_ERROR',
-                'message' => 'Login failed: ' . $e->getMessage()
+                'message' => 'Login failed'
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -2683,13 +2690,14 @@ class AuthController
                 ->withStatus(201);
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             // 🔒 Enregistrer la tentative même en cas d'erreur
             $this->rateLimiter->recordAttempt('registration', $ipAddress);
 
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'code' => 'SERVER_ERROR',
-                'message' => 'Registration failed: ' . $e->getMessage()
+                'message' => 'Registration failed'
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -2883,6 +2891,18 @@ class AuthController
             );
         }
 
+        // Le plafond qui tient vraiment : PAR COMPTE. Une IP se change a
+        // chaque essai, pas l'adresse courriel dont on force le code.
+        // Cinq echecs, et le code ne se laisse plus essayer avant trente
+        // minutes — un code a six chiffres n'y survit pas.
+        if (!$this->rateLimiter->checkEmailLimit('verification_code', (string) $data['email'])) {
+            return $this->createErrorResponse(
+                'Trop de tentatives pour ce compte. Demandez un nouveau code dans 30 minutes.',
+                429,
+                'RATE_LIMIT_EXCEEDED'
+            );
+        }
+
         try {
             $user = User::with('currency')->where('email', $data['email'])->first();
 
@@ -2909,6 +2929,7 @@ class AuthController
             if ($storedVerificationCode === '' || !hash_equals($storedVerificationCode, (string)$data['code'])) {
                 // 🔒 Enregistrer tentative échouée
                 $this->rateLimiter->recordAttempt('verification_code', $ipAddress);
+                $this->rateLimiter->recordEmailAttempt('verification_code', (string) $data['email']);
 
                 return $this->createErrorResponse(
                     'Invalid verification code',
@@ -2930,6 +2951,7 @@ class AuthController
 
             // 🔒 PROTECTION BOT: Réinitialiser les tentatives après succès
             $this->rateLimiter->resetAttempts('verification_code', $ipAddress);
+            $this->rateLimiter->resetEmailAttempts('verification_code', (string) $data['email']);
 
             if (isset($data['fcm_data']) && is_array($data['fcm_data'])) {
                 error_log(" Mise à jour FCM lors de la confirmation d'email pour utilisateur: {$user->id}");
@@ -2965,10 +2987,11 @@ class AuthController
                 ->withStatus(200);
 
         } catch (\Exception $e) {
+            error_log(__METHOD__ . ': ' . $e->getMessage());
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'code' => 'SERVER_ERROR',
-                'message' => 'Error verifying email: ' . $e->getMessage()
+                'message' => 'Error verifying email'
             ]));
             return $response
                 ->withHeader('Content-Type', 'application/json')
@@ -2997,6 +3020,18 @@ class AuthController
                 ->withStatus(400);
         }
 
+        // Chaque renvoi part en courriel : par IP, et par adresse — sinon
+        // une boucle vide le quota du fournisseur sur une seule adresse.
+        $ipAddress = $this->getClientIP($request);
+        if (!$this->rateLimiter->checkIPLimit('resend_verification', $ipAddress)
+            || !$this->rateLimiter->checkEmailLimit('resend_verification', (string) $data['email'])) {
+            return $this->createErrorResponse(
+                'Trop de demandes. Réessayez dans une heure.',
+                429,
+                'RATE_LIMIT_EXCEEDED'
+            );
+        }
+
         try {
             $user = User::findByEmail($data['email']);
             
@@ -3012,6 +3047,8 @@ class AuthController
             $expiration = Carbon::now()->addHours(2);
 
             $user->email_verification_code = $verificationCode;
+            $this->rateLimiter->recordAttempt('resend_verification', $ipAddress);
+            $this->rateLimiter->recordEmailAttempt('resend_verification', (string) $data['email']);
             $user->email_verification_code_expires_at = $expiration;
             $user->save();
 

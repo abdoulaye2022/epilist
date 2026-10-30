@@ -5,6 +5,8 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Services\MailSender;
+use App\Services\RateLimiter;
+use App\Services\ClientIp;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response as SlimResponse;
@@ -213,7 +215,39 @@ class ContactController
         // Récupérer l'ID de l'utilisateur depuis le token JWT (peut être null pour les utilisateurs non connectés)
         $authId = $request->getAttribute('auth_id');
         
-        $data = $request->getParsedBody();
+        $data = $request->getParsedBody() ?? [];
+
+        // POT DE MIEL. Le formulaire du site porte un champ « website »
+        // invisible pour une personne, que les robots remplissent. Le
+        // site le verifie deja de son cote ; ici, c'est pour qui appelle
+        // l'API directement. On repond comme si tout allait bien : un
+        // robot qui recoit un succes n'ajuste rien.
+        if (trim((string) ($data['website'] ?? '')) !== '') {
+            error_log(' [ContactController] Pot de miel rempli, message ignore');
+            return $this->createSuccessResponse([
+                'feedback_id' => uniqid('feedback_', true),
+                'submitted_at' => Carbon::now()->toISOString(),
+            ], 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+        }
+
+        // PLAFONDS. Cette route est publique et chaque message part en
+        // courriel : sans plafond, une boucle remplit la boite de contact
+        // et vide le quota du fournisseur. Par adresse IP, par adresse
+        // courriel de l'expediteur, et un total horaire tous expediteurs
+        // confondus.
+        $limiteur = new RateLimiter();
+        $ipClient = ClientIp::depuis($request);
+        $courrielExpediteur = strtolower(trim((string) ($data['email'] ?? '')));
+
+        if (!$limiteur->checkGlobalLimit('contact_feedback')
+            || !$limiteur->checkIPLimit('contact_feedback', $ipClient)
+            || ($courrielExpediteur !== '' && !$limiteur->checkEmailLimit('contact_feedback', $courrielExpediteur))) {
+            return $this->createErrorResponse(
+                'Trop de messages envoyés. Veuillez réessayer dans une heure.',
+                429,
+                'RATE_LIMIT_EXCEEDED'
+            );
+        }
 
         // Validation des données
         $validator = new Validator($data);
@@ -303,6 +337,14 @@ class ContactController
             ];
 
             // Envoyer l'email de feedback
+            // L'essai compte des qu'il part : un message valide qui echoue a
+            // l'envoi a quand meme sollicite le fournisseur.
+            $limiteur->recordAttempt('contact_feedback', $ipClient);
+            $limiteur->recordGlobalAttempt('contact_feedback');
+            if ($courrielExpediteur !== '') {
+                $limiteur->recordEmailAttempt('contact_feedback', $courrielExpediteur);
+            }
+
             $emailSent = $this->sendFeedbackEmail($feedbackData);
 
             if ($emailSent) {
@@ -512,35 +554,9 @@ class ContactController
     /**
      *  MÉTHODE UTILITAIRE: Récupérer l'adresse IP du client
      */
+    /** L'adresse du client, par le service qui sait a quel mandataire se fier. */
     private function getClientIpAddress(Request $request): string
     {
-        $serverParams = $request->getServerParams();
-        
-        // Vérifier les différents headers pour l'IP
-        $ipHeaders = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
-            'HTTP_X_FORWARDED_FOR',      // Proxy
-            'HTTP_X_FORWARDED',          // Proxy
-            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
-            'HTTP_FORWARDED_FOR',        // Proxy
-            'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR'                // Standard
-        ];
-        
-        foreach ($ipHeaders as $header) {
-            if (!empty($serverParams[$header])) {
-                $ip = $serverParams[$header];
-                // Si plusieurs IPs, prendre la première
-                if (strpos($ip, ',') !== false) {
-                    $ip = trim(explode(',', $ip)[0]);
-                }
-                // Valider l'IP
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
-            }
-        }
-        
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        return ClientIp::depuis($request);
     }
 }
