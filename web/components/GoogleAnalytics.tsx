@@ -1,4 +1,5 @@
 "use client";
+import type { JSX } from "react";
 
 // Google Analytics, en Consent Mode v2.
 //
@@ -44,7 +45,7 @@ export default function GoogleAnalytics(): JSX.Element | null {
 
   // Tracking du scroll depth
   useEffect(() => {
-    let scrollDepthTracked: ScrollDepthTracked = {
+    const scrollDepthTracked: ScrollDepthTracked = {
       25: false,
       50: false,
       75: false,

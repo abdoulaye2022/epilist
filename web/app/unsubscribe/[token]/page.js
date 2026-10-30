@@ -184,7 +184,7 @@ export default function UnsubscribePage() {
                   </h3>
                   <ul className="text-sm text-blue-700 space-y-1 text-left">
                     <li>
-                      • Vous ne recevrez plus d'emails sur les nouvelles
+                      • Vous ne recevrez plus d&apos;emails sur les nouvelles
                       fonctionnalités
                     </li>
                     <li>• Aucune communication marketing ou promotionnelle</li>
@@ -205,7 +205,7 @@ export default function UnsubscribePage() {
                   </a>
 
                   <p className="text-xs text-gray-500 text-center">
-                    Changé d'avis ? Vous pouvez vous réabonner à tout moment
+                    Changé d&apos;avis ? Vous pouvez vous réabonner à tout moment
                     depuis les paramètres de votre compte.
                   </p>
                 </div>
@@ -288,7 +288,7 @@ export default function UnsubscribePage() {
 
                 <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <h3 className="font-semibold text-gray-800 mb-2">
-                    🆘 Besoin d'aide ?
+                    🆘 Besoin d&apos;aide ?
                   </h3>
                   <p className="text-sm text-gray-600">
                     Si le problème persiste, contactez notre support sur notre

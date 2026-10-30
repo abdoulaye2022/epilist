@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function SharePage({ params }: { params: { token: string } }) {
-  return <ShareLanding token={params.token} />;
+// Next 15 : `params` arrive en promesse, la page l'attend.
+export default async function SharePage({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const { token } = await params;
+  return <ShareLanding token={token} />;
 }

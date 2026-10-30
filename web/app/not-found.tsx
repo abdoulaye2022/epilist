@@ -9,14 +9,14 @@ export default function NotFound() {
           Page introuvable
         </h2>
         <p className="text-gray-600 mb-8">
-          La page que vous cherchez n'existe pas ou a été déplacée.
+          La page que vous cherchez n&apos;existe pas ou a été déplacée.
         </p>
         <div className="space-y-4">
           <Link
             href="/"
             className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Link>
           <div className="text-sm text-gray-500">
             <p>Pages populaires :</p>

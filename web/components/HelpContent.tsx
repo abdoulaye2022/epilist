@@ -48,7 +48,7 @@ export default function HelpContent() {
                       className="flex w-full items-center justify-between p-5 text-left transition-colors hover:bg-gray-50"
                     >
                       <h3 className="pr-4 text-base font-semibold text-gray-900">
-                        {t(`helpFaq${n}Q` as any)}
+                        {t(`helpFaq${n}Q` as Parameters<typeof t>[0])}
                       </h3>
                       {openFAQ === index ? (
                         <ChevronDown className="h-5 w-5 flex-shrink-0 text-epilist-green" />
@@ -59,7 +59,7 @@ export default function HelpContent() {
                     {openFAQ === index && (
                       <div className="px-5 pb-5">
                         <p className="text-sm leading-relaxed text-gray-600">
-                          {t(`helpFaq${n}A` as any)}
+                          {t(`helpFaq${n}A` as Parameters<typeof t>[0])}
                         </p>
                       </div>
                     )}

@@ -16,7 +16,7 @@ export const fbPageView = (): void => {
 }
 
 // Événement personnalisé Facebook
-export const fbEvent = (eventName: string, parameters: Record<string, any> = {}): void => {
+export const fbEvent = (eventName: string, parameters: Record<string, unknown> = {}): void => {
   if (isFbqAvailable()) {
     window.fbq('track', eventName, parameters)
     console.log('📘 Facebook Event:', { eventName, parameters })

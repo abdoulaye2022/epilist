@@ -1,18 +1,22 @@
 import { lireUtm } from './utm'
 
+// La fenetre, une fois gtag.js charge. Optionnel : avant le consentement,
+// le script n'existe pas et chaque appel doit le supporter.
+type FenetreGtag = Window & { gtag?: (...args: unknown[]) => void }
+
 export const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID
 
 // Fonction helper pour vérifier si gtag est disponible
 const isGtagAvailable = (): boolean => {
   return typeof window !== 'undefined' && 
-         typeof (window as any).gtag === 'function' && 
+         typeof (window as FenetreGtag).gtag === 'function' &&
          GA_TRACKING_ID !== undefined
 }
 
 // Page view tracking
 export const pageview = (url: string): void => {
   if (isGtagAvailable()) {
-    (window as any).gtag('config', GA_TRACKING_ID, {
+    (window as FenetreGtag).gtag?.('config', GA_TRACKING_ID, {
       page_location: url,
     })
   }
@@ -28,7 +32,7 @@ interface EventParams {
 
 export const event = ({ action, category, label, value }: EventParams): void => {
   if (isGtagAvailable()) {
-    (window as any).gtag('event', action, {
+    (window as FenetreGtag).gtag?.('event', action, {
       event_category: category,
       event_label: label,
       value: value,
@@ -86,7 +90,7 @@ export const trackAppDownload = (platform: Platform, source: DownloadSource): vo
   const utm = lireUtm()
 
   if (isGtagAvailable()) {
-    (window as any).gtag(
+    (window as FenetreGtag).gtag?.(
       'event',
       platform === 'ios' ? 'store_click_ios' : 'store_click_android',
       {
@@ -100,7 +104,7 @@ export const trackAppDownload = (platform: Platform, source: DownloadSource): vo
 
   // Événement spécial pour les conversions GA4
   if (isGtagAvailable()) {
-    (window as any).gtag('event', 'app_download', {
+    (window as FenetreGtag).gtag?.('event', 'app_download', {
       platform: platform,
       source: source,
       app_name: 'EpiList'

@@ -87,10 +87,10 @@ export default function AboutContent() {
                   className="rounded-2xl border border-gray-200 bg-white p-6"
                 >
                   <div className="text-3xl font-bold text-epilist-green mb-1">
-                    {t(`aboutStat${n}Value` as any)}
+                    {t(`aboutStat${n}Value` as Parameters<typeof t>[0])}
                   </div>
                   <div className="text-sm text-gray-600">
-                    {t(`aboutStat${n}Label` as any)}
+                    {t(`aboutStat${n}Label` as Parameters<typeof t>[0])}
                   </div>
                 </div>
               ))}

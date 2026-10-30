@@ -58,10 +58,10 @@ export default function BenefitsSection() {
                 </div>
               </div>
               <h3 className="text-base font-semibold text-gray-900 mb-1.5">
-                {t(`benefit${n}Title` as any)}
+                {t(`benefit${n}Title` as Parameters<typeof t>[0])}
               </h3>
               <p className="text-sm leading-relaxed text-gray-600">
-                {t(`benefit${n}Desc` as any)}
+                {t(`benefit${n}Desc` as Parameters<typeof t>[0])}
               </p>
             </div>
           ))}

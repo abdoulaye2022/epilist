@@ -226,11 +226,11 @@ export default function TermsContent() {
                       </div>
                       <div className="flex-1">
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                          {t(section.titleKey as any)}
+                          {t(section.titleKey as Parameters<typeof t>[0])}
                         </h2>
                         <div className="prose prose-lg max-w-none text-gray-700">
                           <div className="whitespace-pre-line leading-relaxed">
-                            {t(section.contentKey as any)}
+                            {t(section.contentKey as Parameters<typeof t>[0])}
                           </div>
                         </div>
                       </div>

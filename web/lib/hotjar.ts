@@ -11,7 +11,7 @@ const isHjAvailable = (): boolean => {
 }
 
 // Identifier un utilisateur (pour les sessions)
-export const hjIdentify = (userId: string, attributes: Record<string, any> = {}): void => {
+export const hjIdentify = (userId: string, attributes: Record<string, unknown> = {}): void => {
   if (isHjAvailable()) {
     window.hj('identify', userId, attributes)
     console.log('🔥 Hotjar user identified:', { userId, attributes })

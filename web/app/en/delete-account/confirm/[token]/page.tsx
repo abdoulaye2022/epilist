@@ -8,10 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ConfirmDeletionPage({
+// Next 15: `params` is a promise now; the page awaits it.
+export default async function ConfirmDeletionPage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
-  return <AccountDeletionConfirm token={params.token} />;
+  const { token } = await params;
+  return <AccountDeletionConfirm token={token} />;
 }
