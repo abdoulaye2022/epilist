@@ -220,6 +220,7 @@ php public/cron.php --purge-now --apply    # efface
 | `MAIL_DEV_SEND` | `api/.env` **dev seulement** | absente | à `true`, les courriels de développement partent vraiment vers la boîte de test |
 | `NEXT_PUBLIC_DATA_RESIDENCY_CANADA_CONFIRMED` | Vercel | `true` **une fois le bucket vérifié** | affiche « nos serveurs sont au Canada » |
 | `NEXT_PUBLIC_TESTIMONIALS_ENABLED` | Vercel | `true` quand un vrai témoignage existe | rien ne s'affiche tant que la liste est vide |
+| `TRUSTED_PROXIES` | `api/.env` | **facultative** : adresses ou CIDR du répartiteur de l'hébergeur, séparés par des virgules | sans elle, `ClientIp` reconnaît le mandataire à son adresse privée ; à poser seulement si OVH documente la sienne (audit du 2026-10-29, §2.1) |
 
 ---
 
@@ -271,6 +272,21 @@ php public/cron.php --purge-now --apply    # efface
 11. `cd web && vercel --prod` — à lancer vous-même : le classificateur
     me l'a refusé, et de toute façon le projet n'a jamais eu
     d'intégration Git (treize déploiements, tous manuels).
+12. **Depuis les corrections de sécurité du 2026-10-29, API et site
+    partent ensemble** : le formulaire de contact du site parle à la
+    route `/contact/feedback-anonymous` désormais plafonnée (un site
+    neuf contre une API ancienne fonctionne, l'inverse aussi, mais les
+    plafonds ne protègent qu'une fois l'API déployée), et
+    `/campaign/preview` n'existe plus en public — elle est devenue
+    `/campaigns/preview` dans le groupe administrateur.
+13. **Après le déploiement de l'API**, vérifier dans `api_error_logs`
+    (admin → Monitoring) qu'aucune route ne répond 500 : quatre-vingt-sept
+    réponses d'erreur ont changé de forme (message générique au client,
+    détail dans le journal du serveur).
+14. **Console Google Cloud → Identifiants** : restreindre les deux clés
+    Firebase de `app/lib/firebase_options.dart` par application
+    (empreinte Android, identifiant de lot iOS). Elles sont publiques
+    par conception ; la restriction est ce qui les rend inoffensives.
 
 ---
 
