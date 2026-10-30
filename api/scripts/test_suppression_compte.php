@@ -531,12 +531,16 @@ verifie('et cette page est hors index', str_contains($corps, 'name="robots" cont
 echo "\nLe rattrapage (comptes « supprimes » d avant)\n";
 
 $legacy = 'suppr-legacy@epilist.test';
+// La date de depart se calcule en PHP, pas avec NOW() de MySQL : les deux
+// horloges ne sont pas dans le meme fuseau, et autour de minuit la
+// verification « conservee » comparait deux jours differents.
+$departLegacy = date('Y-m-d H:i:s', strtotime('-200 days'));
 $pdo->prepare('DELETE FROM users WHERE email = ?')->execute([$legacy]);
 $pdo->prepare(
     "INSERT INTO users (first_name, last_name, email, password_hash, terms_accepted, is_active,
                         email_verified, role, currency_id, language, deleted_at, created_at, updated_at)
-     VALUES ('Ancien', 'Parti', ?, 'empreinte-bidon', 1, 0, 1, 'user', 1, 'fr', DATE_SUB(NOW(), INTERVAL 200 DAY), NOW(), NOW())"
-)->execute([$legacy]);
+     VALUES ('Ancien', 'Parti', ?, 'empreinte-bidon', 1, 0, 1, 'user', 1, 'fr', ?, NOW(), NOW())"
+)->execute([$legacy, $departLegacy]);
 $idLegacy = (int) $pdo->lastInsertId();
 
 $pdo->prepare(
