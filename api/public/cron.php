@@ -150,6 +150,12 @@ try {
         purgerLignesSupprimees($appliquer);
     }
 
+    // 14. MENAGE DES PLAFONDS DE CADENCE (a chaque passage) : les
+    // compteurs vivent dans storage/rate_limits, un fichier par couple
+    // action x identifiant. RateLimiter::cleanup() existait, mais
+    // personne ne l'appelait — le dossier grossissait sans fin.
+    (new \App\Services\RateLimiter())->cleanup();
+
     echo "=== Cron completed successfully ===\n";
 
 } catch (\Exception $e) {

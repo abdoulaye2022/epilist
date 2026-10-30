@@ -244,14 +244,12 @@ class SSOService
                 error_log(" [SSOService] Client ID Google invalide");
                 error_log("   Reçu: " . $receivedAudience);
                 error_log("   Attendus: " . implode(', ', $validClientIds));
-                
-                //  ANDROID: Essayer une vérification plus permissive
-                if (strpos($receivedAudience, '695717834998-') === 0) {
-                    error_log(" [SSOService] Client ID du même projet Google - accepté");
-                    $audienceValid = true;
-                } else {
-                    return null;
-                }
+
+                // Pas de repli : un temps, tout client OAuth du meme projet
+                // Google etait accepte sur son seul prefixe. Une liste
+                // blanche qui accepte ce qui n'y figure pas n'en est pas
+                // une. Les identifiants Android vont dans GOOGLE_CLIENT_IDS.
+                return null;
             }
 
             //  Validation issuer flexible

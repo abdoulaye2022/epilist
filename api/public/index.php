@@ -162,30 +162,16 @@ $app->get('/', function ($request, $response) {
     return $response;
 });
 
-$app->get('/test', function ($request, $response) {
-    $response->getBody()->write('Test route works!');
-    return $response->withHeader('Content-Type', 'text/plain');
-});
-
-$app->get('/test-json', function ($request, $response) {
-    $data = [
-        'success' => true,
-        'message' => 'API fonctionne correctement',
-        'timestamp' => time(),
-        'php_version' => PHP_VERSION,
-        'currencies_available' => true
-    ];
-    
-    $response->getBody()->write(json_encode($data));
-    return $response->withHeader('Content-Type', 'application/json');
-});
+// Routes /test et /test-json supprimees : la seconde annoncait la
+// version de PHP a quiconque la demandait. La route / suffit a savoir
+// que l'API repond.
 
 // Route /test-auth-header supprimée : elle renvoyait tous les headers recus
 // (dont Authorization) a n'importe qui, sans authentification.
 
-//  ROUTE PUBLIQUE POUR PRÉVISUALISER L'EMAIL (avant le groupe protégé)
-$app->get('/campaign/preview', [CampaignController::class, 'previewCampaignEmail']);
-$app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']); 
+// Le desabonnement reste public : on y arrive depuis un courriel, sans
+// session. L'apercu de campagne, lui, est passe dans le groupe admin.
+$app->get('/unsubscribe/{token}', [CampaignController::class, 'handleUnsubscribe']);
 
 // 🗑️ SUPPRESSION DE COMPTE DEPUIS LE SITE — PUBLIQUE, et c'est l'objet
 // meme : Google Play et l'App Store exigent une procedure accessible a
@@ -407,6 +393,9 @@ $app->group('', function ($group) {
     $group->post('/campaigns/new-version', [CampaignController::class, 'sendNewVersionCampaign'])->add(new AdminMiddleware());
     $group->get('/campaigns/stats', [CampaignController::class, 'getCampaignStats'])->add(new AdminMiddleware());
     $group->post('/campaigns/test-email', [CampaignController::class, 'sendTestEmail'])->add(new AdminMiddleware());
+    // L'apercu rendait du HTML public avec un parametre non echappe :
+    // reserve aux administrateurs, comme le reste des campagnes.
+    $group->get('/campaigns/preview', [CampaignController::class, 'previewCampaignEmail'])->add(new AdminMiddleware());
 
     // 📧 ROUTES DE PRÉFÉRENCES D'EMAIL
     $group->get('/user/email-preferences', [EmailPreferenceController::class, 'getPreferences']);

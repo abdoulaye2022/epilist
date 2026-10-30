@@ -1091,6 +1091,9 @@ class MailSender
      */
     public static function newVersionCampaignEmail(string $prenom, ?string $unsubscribeUrl = null): string
     {
+        // Le prenom vient d'un formulaire ou d'une URL : il entre dans du
+        // HTML, donc il est echappe. Le gabarit sert aussi a l'apercu.
+        $prenom = htmlspecialchars($prenom, ENT_QUOTES, 'UTF-8');
         $header = self::headerContent('EpiList 2.0.0 - La révolution de vos courses !');
         $footer = self::footerContent($unsubscribeUrl); //  Passer l'URL de désabonnement
 
